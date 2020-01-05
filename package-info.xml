@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>Bugo:LightPortal</id>
+	<name>Light Portal</name>
+	<version>0.1</version>
+	<type>modification</type>
+
+	<install for="2.1 RC2, 2.1 RC3, 2.1 - 2.1.99">
+		<readme parsebbc="true" lang="english" type="file">readme/english.txt</readme>
+		<readme parsebbc="true" lang="russian" type="file">readme/russian.txt</readme>
+		<readme parsebbc="true" lang="ukrainian" type="file">readme/ukrainian.txt</readme>
+		<license parsebbc="true">license.txt</license>
+		<require-dir name="Themes" destination="$boarddir" />
+		<require-dir name="Sources" destination="$boarddir" />
+		<database>database.php</database>
+		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks" file="$sourcedir/LightPortal/Integration.php" />
+		<redirect url="?action=admin;area=lp_settings" timeout="1000" />
+	</install>
+
+	<uninstall for="2.1 RC2, 2.1 RC3, 2.1 - 2.1.99">
+		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks" file="$sourcedir/LightPortal/Integration.php" reverse="true" />
+		<remove-dir name="$sourcedir/LightPortal" />
+		<remove-dir name="$themedir/LightPortal" />
+		<remove-dir name="$themedir/css/light_portal" />
+		<remove-dir name="$themedir/scripts/light_portal" />
+		<remove-dir name="$languagedir/LightPortal" />
+		<redirect url="?action=admin;area=packages;sa=browse" timeout="1000" />
+	</uninstall>
+
+</package-info>

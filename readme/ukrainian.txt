@@ -1,0 +1,4 @@
+[center][color=red][size=16pt][b][url=https://dragomano.ru/mods/light-portal]Light Portal[/url][/b][/size][/color]
+[color=blue][b][size=10pt]By Bugo[/size][/b][/color]
+
+[color=green]Простий і досить універсальний портал для створення головної сторінки форуму, а також додаткових сторінок і блоків.[/color][/center][hr]Мод поширюється по ліцензії [url=https://github.com/dragomano/Light-Portal/blob/master/LICENSE]BSD 3[/url]
