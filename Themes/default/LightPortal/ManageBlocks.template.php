@@ -76,7 +76,7 @@ function template_manage_blocks()
 // Displaying a table with blocks | Отображение таблицы с блоками
 function show_block_table()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt, $settings, $scripturl;
 
 	if (empty($context['lp_current_blocks'])) {
 		echo '
@@ -148,9 +148,17 @@ function show_block_table()
 					echo '
 					<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
 
-				echo '
+				if ($settings['name'] == 'Lunarfall') {
+					echo '
+					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-edit settings" title="', $txt['edit'], '"></span></a>
+					<span class="fas fa-trash unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+				} else {
+					echo '
 					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
-					<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>
+					<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+				}
+
+				echo '
 				</td>
 			</tr>';
 			}
@@ -215,7 +223,7 @@ function template_block_add()
 // Block creation/editing template | Шаблон создания/редактирования блока
 function template_post_block()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title'], $context['lp_block']['title_style']);

@@ -23,6 +23,10 @@
 	content: "\f0ac";
 }
 
+.actions .fas {
+	vertical-align: middle;
+}
+
 #lp_blocks .item {
 	cursor: pointer;
 }

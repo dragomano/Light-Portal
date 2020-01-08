@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -88,8 +88,7 @@ class Integration
 
 		loadLanguage('LightPortal/');
 
-		Subs::runAddons('block');
-		Subs::runAddons('page');
+		Subs::runAddons();
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
 	}

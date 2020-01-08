@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -24,7 +24,7 @@ class BoardList
 	 *
 	 * @return void
 	 */
-	public static function block()
+	public static function lang()
 	{
 		global $user_info, $txt;
 
@@ -144,13 +144,12 @@ class BoardList
 			cache_put_data('light_portal_boardlist_addon', $context['lp_boardlist'], 3600);
 		}
 
-		$parameters = $context['lp_block']['options']['parameters'] ?? $context['lp_active_blocks'][$block_id]['parameters'];
+		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
 
-		if ($parameters['board_class'] == '_') {
+		if ($parameters['board_class'] == '_')
 			$parameters['board_class'] = '';
-		} else {
+		else
 			$parameters['board_class'] = strtr($parameters['board_class'], array('div.' => '', '.' => ' '));
-		}
 
 		ob_start();
 		require(__DIR__ . '/template.php');

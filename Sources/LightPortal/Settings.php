@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -152,6 +152,7 @@ class Settings
 				array('text', 'lp_standalone_excluded_actions', 80, 'subtext' => $txt['lp_standalone_excluded_actions_subtext']),
 				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 				array('int', 'lp_num_per_page'),
+				array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 				array('title', 'edit_permissions'),
 				array('permissions', 'light_portal_view'),
 				array('permissions', 'light_portal_manage')

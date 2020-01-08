@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -24,7 +24,7 @@ class SimpleMDE
 	 *
 	 * @return void
 	 */
-	public static function page()
+	public static function lang()
 	{
 		global $txt;
 

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -247,11 +247,11 @@ class Subs
 	 * Run addons
 	 * Подключаем аддоны
 	 *
-	 * @param string $type ('block', 'blockOptions', 'page', 'prepareEditor', 'validateBlockData', 'prepareBlockFields', 'parseContent', 'prepareContent', 'credits')
+	 * @param string $type ('lang', 'blockOptions', 'prepareEditor', 'validateBlockData', 'prepareBlockFields', 'parseContent', 'prepareContent', 'credits')
 	 * @param array $vars (extra variables for changing)
 	 * @return void
 	 */
-	public static function runAddons($type = 'block', $vars = [])
+	public static function runAddons($type = 'lang', $vars = [])
 	{
 		global $sourcedir;
 
@@ -313,7 +313,7 @@ class Subs
 	 */
 	public static function setMeta()
 	{
-		global $context, $modSettings;
+		global $context, $modSettings, $settings, $smcFunc;
 
 		if (empty($context['lp_page']))
 			return;
@@ -322,6 +322,16 @@ class Subs
 		$modSettings['meta_keywords'] = $context['lp_page']['keywords'];
 		$context['optimus_og_type']['article']['published_time'] = date('Y-m-d\TH:i:s', $context['lp_page']['created_at']);
 		$context['optimus_og_type']['article']['modified_time']  = date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']);
+
+		// Looking for an image in the page content | Ищем ссылку на последнее изображение в тексте страницы
+		if (!empty($modSettings['lp_page_og_image'])) {
+			$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $context['lp_page']['content'], $values);
+			if ($image_found && is_array($values)) {
+				$all_images = array_pop($values);
+				$image = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
+				$settings['og_image'] = $smcFunc['htmlspecialchars']($image);
+			}
+		}
 	}
 
 	/**

@@ -3,7 +3,7 @@
 // The management page section template | Шаблон раздела управления страницами
 function template_manage_pages_above()
 {
-	global $modSettings, $context, $txt, $user_info, $scripturl;
+	global $modSettings, $context, $txt, $user_info, $settings, $scripturl;
 
 	if (!empty($modSettings['lp_main_page_disable']))
 		$context['lp_main_page']['status'] = false;
@@ -47,8 +47,17 @@ function template_manage_pages_above()
 					', (!empty($modSettings['lp_main_page_title_' . $user_info['language']]) ? $modSettings['lp_main_page_title_' . $user_info['language']] : $context['lp_main_page']['title']), '
 				</td>
 				<td class="actions centertext" style="cursor: pointer">
-					', empty($context['lp_main_page']['status']) ? ('<span class="toggle_status off" data-id="1" title="' . $txt['lp_action_on'] . '"></span>') : ('<span class="toggle_status on" data-id="1" title="' . $txt['lp_action_off'] . '"></span>'), '
-					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
+					', empty($context['lp_main_page']['status']) ? ('<span class="toggle_status off" data-id="1" title="' . $txt['lp_action_on'] . '"></span>') : ('<span class="toggle_status on" data-id="1" title="' . $txt['lp_action_off'] . '"></span>');
+
+	if ($settings['name'] == 'Lunarfall') {
+		echo '
+					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="fas fa-edit settings" title="', $txt['edit'], '"></span></a>';
+	} else {
+		echo '
+					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>';
+	}
+
+	echo '
 				</td>
 			</tr>
 		</tbody>
@@ -93,7 +102,7 @@ function template_manage_pages_below()
 // Page creation/editing template | Шаблон создания/редактирования страницы
 function template_post_page()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '

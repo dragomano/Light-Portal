@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\ThemeSwitcher;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -24,7 +24,7 @@ class ThemeSwitcher
 	 *
 	 * @return void
 	 */
-	public static function block()
+	public static function lang()
 	{
 		global $user_info, $txt;
 
@@ -65,7 +65,7 @@ class ThemeSwitcher
 				SELECT id_theme, value
 				FROM {db_prefix}themes
 				WHERE id_member = 0
-					AND variable = "name"
+					AND variable = \'name\'
 					AND id_theme IN ({array_int:themes})',
 				array(
 					'themes' => explode(',', $modSettings['knownThemes'])

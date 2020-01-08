@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -195,10 +195,20 @@ class Page
 					'data' => array(
 						'function' => function ($entry) use ($txt, $scripturl)
 						{
-							return (empty($entry['status']) ? '
-							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>') . '
-							<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
+							global $settings;
+
+							$actions = (empty($entry['status']) ? '
+							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
+
+							if ($settings['name'] == 'Lunarfall') {
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-edit settings" title="' . $txt['edit'] . '"></span></a>' . '
+							<span class="fas fa-trash unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+							} else {
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
 							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+							}
+
+							return $actions;
 						},
 						'class' => 'centertext',
 						'style' => 'cursor: pointer'

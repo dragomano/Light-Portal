@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.1
+ * @version 0.2
  */
 
 if (!defined('SMF'))
@@ -46,11 +46,10 @@ class Block
 				if (empty($data['title'][$context['user']['language']]))
 					$data['title_class'] = '';
 
-				if (empty($data['content'])) {
+				if (empty($data['content']))
 					Subs::runAddons('prepareContent', array(&$data['content'], $data['type'], $data['id']));
-				} else {
+				else
 					Subs::parseContent($data['content'], $data['type']);
-				}
 
 				$context['lp_blocks'][$data['placement']][$item] = $data;
 				$icon = self::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
@@ -181,21 +180,21 @@ class Block
 		if ($db_type == 'postgresql') {
 			$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_blocks
-				WHERE {db_prefix}lp_blocks.block_id = {int:id}',
+				WHERE block_id = {int:id}',
 				array(
 					'id' => $item
 				)
 			);
 			$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_block_titles
-				WHERE {db_prefix}lp_block_titles.block_id = {db_prefix}lp_blocks.block_id',
+				WHERE block_id = {int:id}',
 				array(
 					'id' => $item
 				)
 			);
 			$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_block_params
-				WHERE {db_prefix}lp_block_params.block_id = {db_prefix}lp_blocks.block_id',
+				WHERE block_id = {int:id}',
 				array(
 					'id' => $item
 				)
@@ -675,9 +674,6 @@ class Block
 
 		checkSubmitOnce('free');
 
-		// Hide active blocks during preview | Во время превью скроем активные блоки
-		$context['lp_active_blocks'] = [];
-
 		$context['preview_title']   = Subs::cleanBbcode($context['lp_block']['title'][$user_info['language']]);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
@@ -689,7 +685,7 @@ class Block
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
-		$context['page_title']    = $txt['preview'] . ' - ' . $context['preview_title'];
+		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = self::getIcon() . $context['preview_title'] . '<span class="floatright">' . $txt['preview'] . '</span>';
 	}
 
