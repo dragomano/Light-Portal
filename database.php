@@ -8,10 +8,10 @@ elseif(!defined('SMF'))
 if (version_compare(PHP_VERSION, '7.2', '<'))
 	die('This mod needs PHP 7.2 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
+global $user_info, $mbname;
+
 if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
-
-global $mbname;
 
 $tables[] = array(
 	'name' => 'lp_blocks',
@@ -172,6 +172,13 @@ $tables[] = array(
 			'auto'     => true
 		),
 		array(
+			'name'     => 'author_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true,
+			'default'  => 0
+		),
+		array(
 			'name' => 'title',
 			'type' => 'varchar',
 			'size' => 255,
@@ -252,6 +259,7 @@ $tables[] = array(
 	'default' => array(
 		'columns' => array(
 			'page_id'     => 'int',
+			'author_id'   => 'int',
 			'title'       => 'string-255',
 			'alias'       => 'string-255',
 			'content'     => 'string',
@@ -260,7 +268,7 @@ $tables[] = array(
 			'created_at'  => 'int'
 		),
 		'values' => array(
-			array(1, $mbname, '/', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.
+			array(1, $user_info['id'], $mbname, '/', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.
 
 			Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.
 

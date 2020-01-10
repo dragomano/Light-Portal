@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -407,12 +407,12 @@ class Subs
 	public static function getTitleClasses()
 	{
 		return [
-			'div.cat_bar > h3.catbg'     => '<div class="cat_bar"><h3 class="catbg" style="%2$s">%1$s</h3></div>',
-			'div.title_bar > h3.titlebg' => '<div class="title_bar"><h3 class="titlebg" style="%2$s">%1$s</h3></div>',
-			'div.title_bar > h4.titlebg' => '<div class="title_bar"><h4 class="titlebg" style="%2$s">%1$s</h4></div>',
-			'div.sub_bar > h3.subbg'     => '<div class="sub_bar"><h3 class="subbg" style="%2$s">%1$s</h3></div>',
-			'div.sub_bar > h4.subbg'     => '<div class="sub_bar"><h4 class="subbg" style="%2$s">%1$s</h4></div>',
-			'div.errorbox > h3'          => '<div class="errorbox"><h3 style="%2$s">%1$s</h3></div>'
+			'div.cat_bar > h3.catbg'     => '<div class="cat_bar"><h3 class="catbg"%2$s>%1$s%3$s</h3></div>',
+			'div.title_bar > h3.titlebg' => '<div class="title_bar"><h3 class="titlebg"%2$s>%1$s%3$s</h3></div>',
+			'div.title_bar > h4.titlebg' => '<div class="title_bar"><h4 class="titlebg"%2$s>%1$s%3$s</h4></div>',
+			'div.sub_bar > h3.subbg'     => '<div class="sub_bar"><h3 class="subbg"%2$s>%1$s%3$s</h3></div>',
+			'div.sub_bar > h4.subbg'     => '<div class="sub_bar"><h4 class="subbg"%2$s>%1$s%3$s</h4></div>',
+			'div.errorbox > h3'          => '<div class="errorbox"><h3%2$s>%1$s%3$s</h3></div>'
 		];
 	}
 
@@ -425,14 +425,14 @@ class Subs
 	public static function getContentClasses()
 	{
 		return [
-			'div.roundframe.noup' => '<div class="roundframe noup" style="%2$s">%1$s</div>',
-			'div.roundframe'      => '<div class="roundframe" style="%2$s">%1$s</div>',
-			'div.windowbg'        => '<div class="windowbg" style="%2$s">%1$s</div>',
-			'div.information'     => '<div class="information" style="%2$s">%1$s</div>',
-			'div.errorbox'        => '<div class="errorbox" style="%2$s">%1$s</div>',
-			'div.noticebox'       => '<div class="noticebox" style="%2$s">%1$s</div>',
-			'div.infobox'         => '<div class="infobox" style="%2$s">%1$s</div>',
-			'div.descbox'         => '<div class="descbox" style="%2$s">%1$s</div>',
+			'div.roundframe.noup' => '<div class="roundframe noup"%2$s>%1$s</div>',
+			'div.roundframe'      => '<div class="roundframe"%2$s>%1$s</div>',
+			'div.windowbg'        => '<div class="windowbg"%2$s>%1$s</div>',
+			'div.information'     => '<div class="information"%2$s>%1$s</div>',
+			'div.errorbox'        => '<div class="errorbox"%2$s>%1$s</div>',
+			'div.noticebox'       => '<div class="noticebox"%2$s>%1$s</div>',
+			'div.infobox'         => '<div class="infobox"%2$s>%1$s</div>',
+			'div.descbox'         => '<div class="descbox"%2$s>%1$s</div>',
 			'_'                   => '%1$s'
 		];
 	}

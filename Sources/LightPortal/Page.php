@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -85,7 +85,6 @@ class Page
 	{
 		global $context, $txt, $modSettings, $scripturl, $sourcedir;
 
-		isAllowedTo('light_portal_manage');
 		loadTemplate('LightPortal/ManagePages');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_manage'];
@@ -95,7 +94,8 @@ class Page
 			'description' => $txt['lp_pages_manage_tab_description']
 		);
 
-		$context['template_layers'][] = 'manage_pages';
+		if (allowedTo('admin_forum'))
+			$context['template_layers'][] = 'manage_pages';
 
 		self::postActions();
 
@@ -241,11 +241,14 @@ class Page
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT page_id, title, alias, type, status, num_views, GREATEST(created_at, updated_at) AS date
-			FROM {db_prefix}lp_pages
+			SELECT page_id, author_id, title, alias, type, status, num_views, GREATEST(created_at, updated_at) AS date
+			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
+			WHERE author_id = {int:user_id}') . '
 			ORDER BY ' . $sort . ', page_id
 			LIMIT ' . $start . ', ' . $items_per_page,
-			array()
+			array(
+				'user_id' => $context['user']['id']
+			)
 		);
 
 		$items = [];
@@ -282,14 +285,16 @@ class Page
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
-			WHERE alias != {string:alias}',
+			WHERE alias != {string:alias}' . (allowedTo('admin_forum') ? '' : '
+				AND author_id = {int:user_id}'),
 			array(
-				'alias' => '/'
+				'alias'   => '/',
+				'user_id' => $context['user']['id']
 			)
 		);
 
@@ -380,12 +385,11 @@ class Page
 	{
 		global $context, $txt, $scripturl;
 
-		isAllowedTo('light_portal_manage');
 		loadTemplate('LightPortal/ManagePages');
 
-		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_add_title'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_add_title'];
 		$context['page_area_title'] = $txt['lp_pages_add_title'];
-		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_pages;sa=add';
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -411,7 +415,6 @@ class Page
 	{
 		global $context, $txt, $scripturl;
 
-		isAllowedTo('light_portal_manage');
 		loadTemplate('LightPortal/ManagePages');
 
 		$item = !empty($_REQUEST['page_id']) ? (int) $_REQUEST['page_id'] : null;
@@ -431,10 +434,13 @@ class Page
 
 		$context['lp_page'] = self::getData($item, is_int($item) ? false : true);
 
+		if (!$context['lp_page']['can_edit'])
+			fatal_lang_error('lp_page_not_editable', false);
+
 		self::validateData();
 
 		$context['page_area_title'] = $txt['lp_pages_edit_title'] . ' - ' . $context['lp_page']['title'];
-		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'];
 
 		self::prepareFormFields();
 		self::prepareEditor();
@@ -717,6 +723,7 @@ class Page
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_pages',
 				array_merge(array(
+					'author_id'   => 'int',
 					'title'       => 'string-255',
 					'alias'       => 'string-255',
 					'description' => 'string-255',
@@ -727,6 +734,7 @@ class Page
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
+					$context['user']['id'],
 					$context['lp_page']['title'],
 					$context['lp_page']['alias'],
 					$context['lp_page']['description'],
@@ -799,14 +807,14 @@ class Page
 	 */
 	public static function getData($item, $useAlias = true)
 	{
-		global $smcFunc;
+		global $smcFunc, $user_info;
 
 		if (empty($item))
 			return;
 
 		if (($data = cache_get_data('light_portal_page_' . $item, 3600)) == null) {
 			$request = $smcFunc['db_query']('', '
-				SELECT page_id, title, alias, description, keywords, content, type, permissions, status, created_at, updated_at
+				SELECT page_id, author_id, title, alias, description, keywords, content, type, permissions, status, created_at, updated_at
 				FROM {db_prefix}lp_pages
 				WHERE ' . ($useAlias ? 'alias = {string' : 'page_id = {int') . ':item}
 				LIMIT 1',
@@ -825,6 +833,7 @@ class Page
 
 				$data = array(
 					'id'          => $row['page_id'],
+					'author_id'   => $row['author_id'],
 					'title'       => $row['title'],
 					'alias'       => $row['alias'],
 					'description' => $row['description'],
@@ -835,7 +844,8 @@ class Page
 					'status'      => $row['status'],
 					'created_at'  => $row['created_at'],
 					'updated_at'  => $row['updated_at'],
-					'can_show'    => Subs::canShowItem($row['permissions'])
+					'can_show'    => Subs::canShowItem($row['permissions']),
+					'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
 				);
 			}
 

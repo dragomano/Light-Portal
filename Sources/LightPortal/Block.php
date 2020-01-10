@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -84,7 +84,6 @@ class Block
 	{
 		global $context, $txt;
 
-		isAllowedTo('light_portal_manage');
 		loadTemplate('LightPortal/ManageBlocks');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_manage'];
@@ -299,7 +298,6 @@ class Block
 	{
 		global $context, $txt, $scripturl;
 
-		isAllowedTo('light_portal_manage');
 		loadTemplate('LightPortal/ManageBlocks');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
@@ -339,8 +337,6 @@ class Block
 	public static function edit()
 	{
 		global $context, $txt, $user_info, $scripturl;
-
-		isAllowedTo('light_portal_manage');
 
 		$item = !empty($_REQUEST['block_id']) ? (int) $_REQUEST['block_id'] : null;
 		$item = $item ?: (!empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null);

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -31,7 +31,6 @@ class Settings
 		global $sourcedir, $txt;
 
 		require_once($sourcedir . '/ManageSettings.php');
-
 		loadLanguage('ManageSettings');
 
 		// Looking for the "Forum" section... | Ищем раздел "Форум"...
@@ -43,7 +42,7 @@ class Settings
 			array(
 				'lp_portal' => array(
 					'title' => $txt['lp_portal'],
-					'permission' => array('admin_forum', 'moderate_forum', 'light_portal_manage'),
+					'permission' => array('admin_forum', 'light_portal_manage'),
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
@@ -51,7 +50,7 @@ class Settings
 								self::settingArea();
 							},
 							'icon' => 'features',
-							'permission' => array('admin_forum', 'light_portal_manage'),
+							'permission' => array('admin_forum'),
 							'subsections' => array()
 						),
 						'lp_blocks' => array(
@@ -110,8 +109,6 @@ class Settings
 	{
 		global $sourcedir, $txt, $scripturl, $db_type, $context, $modSettings;
 
-		isAllowedTo('light_portal_manage');
-
 		require_once($sourcedir . '/ManageServer.php');
 
 		$databases = self::getDatabases();
@@ -120,8 +117,6 @@ class Settings
 			'title'       => LP_NAME,
 			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $databases[$db_type]['name'], eval($databases[$db_type]['version_check']))
 		);
-
-		$context['permissions_excluded']['light_portal_manage'] = array(-1);
 
 		$context['page_title']     = $txt['lp_settings'];
 		$context['settings_title'] = $txt['settings'];
@@ -212,9 +207,7 @@ class Settings
 			'edit' => 'Block::edit'
 		);
 
-		loadGeneralSettingParameters($subActions, 'main');
-
-		call_helper(__NAMESPACE__ . '\\' . $subActions[$_REQUEST['sa']]);
+		self::loadGeneralSettingParameters($subActions, 'main');
 	}
 
 	/**
@@ -231,7 +224,31 @@ class Settings
 			'edit' => 'Page::edit'
 		);
 
-		loadGeneralSettingParameters($subActions, 'main');
+		self::loadGeneralSettingParameters($subActions, 'main');
+	}
+
+	/**
+	 * Calls the requested subaction if it does exist; otherwise, calls the default action
+	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
+	 *
+	 * @param array $subActions
+	 * @param string $defaultAction
+	 * @return void
+	 */
+	private static function loadGeneralSettingParameters($subActions = [], $defaultAction = null)
+	{
+		global $sourcedir, $context;
+
+		isAllowedTo('light_portal_manage');
+
+		require_once($sourcedir . '/ManageServer.php');
+
+		$context['sub_template'] = 'show_settings';
+
+		$defaultAction = $defaultAction ?: key($subActions);
+
+		$_REQUEST['sa'] = isset($_REQUEST['sa'], $subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : $defaultAction;
+		$context['sub_action'] = $_REQUEST['sa'];
 
 		call_helper(__NAMESPACE__ . '\\' . $subActions[$_REQUEST['sa']]);
 	}

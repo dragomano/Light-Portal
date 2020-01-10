@@ -226,7 +226,7 @@ function template_post_block()
 	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
-		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title'], $context['lp_block']['title_style']);
+		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title'], $context['lp_block']['title_style'], null);
 
 		if (!empty($context['lp_block']['content_class']))
 			echo sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $context['lp_block']['content_style']);

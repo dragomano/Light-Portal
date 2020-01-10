@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -67,7 +67,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.1',
+			'LP_VERSION' => '0.3',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -85,6 +85,9 @@ class Integration
 	public static function loadTheme()
 	{
 		global $txt;
+
+		if (!defined('LP_NAME'))
+			return;
 
 		loadLanguage('LightPortal/');
 
@@ -182,8 +185,11 @@ class Integration
 		if (!defined('LP_NAME'))
 			return;
 
+		$context['allow_light_portal_manage'] = allowedTo('light_portal_manage');
+
 		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
-		if ($context['allow_admin']) {
+		if ($context['allow_light_portal_manage']) {
+			$buttons['admin']['show'] = true;
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
 				$counter++;
@@ -193,11 +199,11 @@ class Integration
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				array(
-					'portalsettings' => array(
+				allowedTo('admin_forum') ? array(
+					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
-						'show'  => allowedTo('admin_forum'),
+						'show'  => true,
 						'sub_buttons' => array(
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
@@ -211,6 +217,17 @@ class Integration
 								'is_last' => true
 							)
 						)
+					)
+				) : array(
+					'portal_blocks' => array(
+						'title' => $txt['lp_blocks'],
+						'href'  => $scripturl . '?action=admin;area=lp_blocks',
+						'show'  => true
+					),
+					'portal_pages' => array(
+						'title'   => $txt['lp_pages'],
+						'href'    => $scripturl . '?action=admin;area=lp_pages',
+						'show'    => true
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
@@ -308,7 +325,6 @@ class Integration
 	public static function loadPermissions(&$permissionGroups, &$permissionList, &$leftPermissionGroups)
 	{
 		$permissionList['membergroup']['light_portal_view']   = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage'] = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}

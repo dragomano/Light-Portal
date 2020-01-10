@@ -21,6 +21,8 @@ $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
 $txt['lp_num_per_page']                        = 'Maximum number of items in the page list (for pagination)';
+$txt['lp_page_og_image']                       = 'Use an image within the page content for the <strong>og-image</strong> metatag';
+$txt['lp_page_og_image_set']                   = array('None', 'First found', 'Last found');
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage']             = 'Who can manage the portal';
 
@@ -88,7 +90,7 @@ $txt['lp_pages_manage']                 = 'Manage pages';
 $txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
-$txt['lp_pages_add_tab_description']    = 'Pay special attention to the<strong>page alias</strong> — it is used in the address bar and can only contain Latin characters and numbers!<br>The main page always has an alias equal to "/".';
+$txt['lp_pages_add_tab_description']    = 'Pay special attention to the <strong>page alias</strong> — it is used in the address bar and can only contain Latin characters and numbers!<br>The main page always has an alias equal to "/".';
 $txt['lp_pages_edit_title']             = 'Editing page';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Additional pages';
@@ -110,6 +112,7 @@ $txt['lp_post_error_no_valid_alias']  = 'The specified alias is not correct!';
 $txt['lp_post_error_no_unique_alias'] = 'A page with this alias already exists!';
 $txt['lp_post_error_no_content']      = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
+$txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
 
 // Who
 $txt['lp_who_main'] = 'Viewing <a href="%1$s">the main portal page</a>.';
@@ -120,7 +123,7 @@ $txt['permissiongroup_light_portal']       = LP_NAME;
 $txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'View the portal';
 $txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Manage the portal';
 $txt['permissionhelp_light_portal_view']   = 'Ability to view portal pages and blocks.';
-$txt['permissionhelp_light_portal_manage'] = 'Access to manage portal pages and blocks, as well as its settings.';
+$txt['permissionhelp_light_portal_manage'] = 'Access to manage portal pages and blocks.';
 $txt['cannot_light_portal_view']           = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage']         = 'Sorry, you are not allowed to manage the portal!';
 $txt['cannot_light_portal_view_page']      = 'Sorry, you are not allowed to view this page!';

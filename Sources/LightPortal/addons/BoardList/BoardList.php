@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.2
+ * @version 0.3
  */
 
 if (!defined('SMF'))
@@ -45,8 +45,8 @@ class BoardList
 		$options['boardlist'] = array(
 			'no_content_class' => true,
 			'parameters' => array(
-				'category_class'   => 'div.title_bar > h4.titlebg',
-				'board_class'      => 'div.roundframe.noup'
+				'category_class' => 'div.title_bar > h4.titlebg',
+				'board_class'    => 'div.roundframe.noup'
 			)
 		);
 	}

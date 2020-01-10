@@ -3,10 +3,10 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>0.2</version>
+	<version>0.3</version>
 	<type>modification</type>
 
-	<install for="2.1 RC2, 2.1 RC3, 2.1 - 2.1.99">
+	<install for="2.1.*">
 		<readme parsebbc="true" lang="english" type="file">readme/english.txt</readme>
 		<readme parsebbc="true" lang="russian" type="file">readme/russian.txt</readme>
 		<readme parsebbc="true" lang="ukrainian" type="file">readme/ukrainian.txt</readme>
@@ -18,7 +18,7 @@
 		<redirect url="?action=admin;area=lp_settings" timeout="1000" />
 	</install>
 
-	<uninstall for="2.1 RC2, 2.1 RC3, 2.1 - 2.1.99">
+	<uninstall for="2.1.*">
 		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks" file="$sourcedir/LightPortal/Integration.php" reverse="true" />
 		<remove-dir name="$sourcedir/LightPortal" />
 		<remove-dir name="$themedir/LightPortal" />

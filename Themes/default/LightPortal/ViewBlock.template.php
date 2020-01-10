@@ -64,7 +64,7 @@ function template_portal_above()
 
 	echo '
 					<div class="row">
-						<div class="col-xs">';
+						<div class="col-xs noup">';
 }
 
 // The output of blocks AFTER content | Вывод блоков после контента
@@ -136,18 +136,28 @@ function template_portal_below()
 // Output the title and content of the block | Вывод заголовка и содержимого блока
 function lp_show_block($block)
 {
-	global $context;
+	global $context, $scripturl, $txt;
 
 	echo '
 	<div id="block_', $block['id'], '">';
 
+	if ($context['allow_light_portal_manage'])
+		$edit_link = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '"><span class="floatright fas fa-edit" title="' . $txt['edit'] . '"></span></a>';
+
+	if (!empty($block['title_style']))
+		$style = ' style="' . $block['title_style'] . '"';
+
 	if (!empty($block['title_class']))
-		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title'], $block['title_style']);
+		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title'], $style ?? '', $edit_link ?? '');
 	else
 		echo $block['title'];
 
+	$style = '';
+	if (!empty($block['content_style']))
+		$style = ' style="' . $block['content_style'] . '"';
+
 	if (!empty($block['content_class']))
-		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $block['content_style']);
+		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
 	else
 		echo $block['content'];
 

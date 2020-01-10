@@ -2,7 +2,7 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [BSD 3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
-* **Tested on:** PHP 7.0-7.3 / MariaDB 10.3 / PostgreSQL 9.6
+* **Tested on:** PHP 7.3.13 / MariaDB 10.3.13 / PostgreSQL 9.6.12
 * **Hooks only:** Yes
 * **Languages:** English, Russian, Ukrainian
 
