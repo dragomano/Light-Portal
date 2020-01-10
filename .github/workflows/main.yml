@@ -1,0 +1,15 @@
+name: ApiGen
+
+on: [push]
+
+jobs:
+  apigen:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: ApiGen Docs
+      uses: varunsridharan/action-apigen@1.0
+      with:
+        push_to_branch: docs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
