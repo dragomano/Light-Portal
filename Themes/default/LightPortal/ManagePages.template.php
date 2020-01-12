@@ -15,6 +15,9 @@ function template_manage_pages_above()
 	<table class="table_grid">
 		<thead>
 			<tr class="title_bar">
+				<th scope="col" class="date">
+					', $txt['date'], '
+				</th>
 				<th scope="col" class="num_views">
 					', $txt['views'], '
 				</th>
@@ -34,6 +37,9 @@ function template_manage_pages_above()
 		</thead>
 		<tbody>
 			<tr class="windowbg">
+				<td class="date centertext">
+					', $context['lp_main_page']['created_at'], '
+				</td>
 				<td class="num_views centertext">
 					', $context['lp_main_page']['num_views'], '
 				</td>

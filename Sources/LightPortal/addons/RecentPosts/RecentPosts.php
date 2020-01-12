@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentTopics;
+namespace Bugo\LightPortal\Addons\RecentPosts;
 
 use Bugo\LightPortal\Subs;
 
 /**
- * RecentTopics
+ * RecentPosts
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -19,14 +19,14 @@ use Bugo\LightPortal\Subs;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class RecentTopics
+class RecentPosts
 {
 	/**
-	 * Максимальное количество тем для вывода
+	 * Максимальное количество сообщений для вывода
 	 *
 	 * @var int
 	 */
-	private static $num_topics = 10;
+	private static $num_posts = 10;
 
 	/**
 	 * Подключаем языковой файл
@@ -48,9 +48,9 @@ class RecentTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_topics'] = array(
+		$options['recent_posts'] = array(
 			'parameters' => array(
-				'num_topics' => static::$num_topics
+				'num_posts' => static::$num_posts
 			)
 		);
 	}
@@ -65,11 +65,11 @@ class RecentTopics
 	{
 		global $context;
 
-		if ($context['current_block']['type'] !== 'recent_topics')
+		if ($context['current_block']['type'] !== 'recent_posts')
 			return;
 
 		$args['parameters'] = array(
-			'num_topics' => FILTER_VALIDATE_INT
+			'num_posts' => FILTER_VALIDATE_INT
 		);
 	}
 
@@ -82,15 +82,15 @@ class RecentTopics
 	{
 		global $context, $txt;
 
-		if ($context['lp_block']['type'] !== 'recent_topics')
+		if ($context['lp_block']['type'] !== 'recent_posts')
 			return;
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics_addon_num_topics'];
-		$context['posting_fields']['num_topics']['input'] = array(
+		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_recent_posts_addon_num_posts'];
+		$context['posting_fields']['num_posts']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_topics',
-				'value' => $context['lp_block']['options']['parameters']['num_topics']
+				'id' => 'num_posts',
+				'value' => $context['lp_block']['options']['parameters']['num_posts']
 			),
 			'options' => array()
 		);
@@ -108,25 +108,25 @@ class RecentTopics
 	{
 		global $context, $boarddir, $txt;
 
-		if ($type !== 'recent_topics')
+		if ($type !== 'recent_posts')
 			return;
 
 		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
 
-		if (($recent_topics = cache_get_data('light_portal_recent_topics_addon', 3600)) == null) {
+		if (($recent_posts = cache_get_data('light_portal_recent_posts_addon', 3600)) == null) {
 			require_once($boarddir . '/SSI.php');
 
-			$recent_topics = ssi_recentTopics($parameters['num_topics'], null, null, 'array');
+			$recent_posts = ssi_recentPosts($parameters['num_posts'], null, null, 'array');
 
-			cache_put_data('light_portal_recent_topics_addon', $recent_topics, 3600);
+			cache_put_data('light_portal_recent_posts_addon', $recent_posts, 3600);
 		}
 
 		ob_start();
 
-		foreach ($recent_topics as $topic) {
+		foreach ($recent_posts as $post) {
 			echo '
 			<div class="sub_bar">
-				', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], ' ', $txt['by'], ' ', $topic['poster']['link'], ' <br><span class="smalltext">', Subs::getFriendlyTime($topic['timestamp']), '</span>
+				', ($post['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span> ' : ''), $post['link'], ' ', $txt['by'], ' ', $post['poster']['link'], ' <br><span class="smalltext">', Subs::getFriendlyTime($post['timestamp']), '</span>
 			</div>';
 		}
 

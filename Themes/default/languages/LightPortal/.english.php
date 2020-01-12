@@ -50,22 +50,22 @@ $txt['lp_block_priority']                = 'Priority';
 $txt['lp_block_placement']               = 'Placement';
 
 $txt['lp_block_placement_set'] = array(
-    'header' => 'Header',
-    'top'    => 'Center (top)',
-    'left'   => 'Left side',
-    'right'  => 'Right side',
-    'bottom' => 'Center (bottom)',
-    'footer' => 'Footer'
+	'header' => 'Header',
+	'top'    => 'Center (top)',
+	'left'   => 'Left side',
+	'right'  => 'Right side',
+	'bottom' => 'Center (bottom)',
+	'footer' => 'Footer'
 );
 
 $txt['lp_block_areas']         = 'Actions';
 $txt['lp_block_areas_subtext'] = '<div class="infobox smalltext">Specify one or more areas (separate by comma) to display the block in:<br>
 <ul>
-    <li><strong>all</strong> — display everywhere</li>
-    <li><strong>forum</strong> — display only on the forum area</li>
-    <li><strong>portal</strong> — display only on the portal area (including pages)</li>
-    <li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
-    <li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>all</strong> — display everywhere</li>
+	<li><strong>forum</strong> — display only on the forum area</li>
+	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
+	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
 </ul></div>';
 $txt['lp_block_title_class']   = 'CSS title class';
 $txt['lp_block_title_style']   = 'CSS title style';
@@ -73,14 +73,14 @@ $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_content_style'] = 'CSS content class';
 
 $txt['lp_block_types'] = array(
-    'bbc'  => 'Custom BBC',
-    'html' => 'Custom HTML',
-    'php'  => 'Custom PHP'
+	'bbc'  => 'Custom BBC',
+	'html' => 'Custom HTML',
+	'php'  => 'Custom PHP'
 );
 $txt['lp_block_types_descriptions'] = array(
-    'bbc'  => 'In this block, any BB tags of the forum can be used as content.',
-    'html' => 'In this block, you can use any HTML tags as content.',
-    'php'  => 'In this block, you can use any PHP code as content.'
+	'bbc'  => 'In this block, any BBC tags of the forum can be used as content.',
+	'html' => 'In this block, you can use any HTML tags as content.',
+	'php'  => 'In this block, you can use any PHP code as content.'
 );
 
 // Pages
@@ -127,3 +127,10 @@ $txt['permissionhelp_light_portal_manage'] = 'Access to manage portal pages and 
 $txt['cannot_light_portal_view']           = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage']         = 'Sorry, you are not allowed to manage the portal!';
 $txt['cannot_light_portal_view_page']      = 'Sorry, you are not allowed to view this page!';
+
+// Time units
+$txt['lp_days_set']       = array('day','days');
+$txt['lp_minutes_set']    = array('minute','minutes');
+$txt['lp_seconds_set']    = array('second','seconds');
+$txt['lp_remained']       = '%1$s left';
+$txt['lp_time_label_ago'] = ' ago';

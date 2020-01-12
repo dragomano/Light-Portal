@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -107,15 +107,15 @@ class Settings
 	 */
 	public static function settingArea($return_config = false)
 	{
-		global $sourcedir, $txt, $scripturl, $db_type, $context, $modSettings;
+		global $sourcedir, $txt, $scripturl, $context, $modSettings;
 
 		require_once($sourcedir . '/ManageServer.php');
 
-		$databases = self::getDatabases();
+		[$db_engine, $db_version] = self::getDbInfo();
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $databases[$db_type]['name'], eval($databases[$db_type]['version_check']))
+			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $db_engine, $db_version)
 		);
 
 		$context['page_title']     = $txt['lp_settings'];
@@ -172,25 +172,23 @@ class Settings
 	}
 
 	/**
-	 * Getting information about the database engine
-	 * Получаем информацию о движке базы данных
+	 * Getting information about the database engine/version
+	 * Получаем информацию о движке и версии базы данных
 	 *
 	 * @return array
 	 */
-	private static function getDatabases()
+	private static function getDbInfo()
 	{
+		global $db_type, $smcFunc;
+
 		$databases = array(
-			'mysql' => array(
-				'name'          => 'MySQL',
-				'version_check' =>  'global $db_connection; return mysqli_get_server_info($db_connection);'
-			),
-			'postgresql' => array(
-				'name'          => 'PostgreSQL',
-				'version_check' => '$request = pg_query(\'SHOW server_version\'); list ($version) = pg_fetch_row($request); return $version;'
-			)
+			'mysql'      => defined('MYSQL_TITLE') ? MYSQL_TITLE : 'MySQL',
+			'postgresql' => defined('POSTGRE_TITLE') ? POSTGRE_TITLE : 'PostgreSQL'
 		);
 
-		return $databases;
+		$db_version = $smcFunc['db_server_info']();
+
+		return [$databases[$db_type], $db_version];
 	}
 
 	/**

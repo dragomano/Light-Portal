@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -20,7 +20,28 @@ if (!defined('SMF'))
 class BoardList
 {
 	/**
-	 * Добавляем заголовок и описание блока
+	 * Нельзя выбрать класс для оформления контента этого блока
+	 *
+	 * @var bool
+	 */
+	private static $no_content_class = true;
+
+	/**
+	 * Класс (по умолчанию) для оформления заголовков категорий
+	 *
+	 * @var string
+	 */
+	private static $category_class = 'div.title_bar > h4.titlebg';
+
+	/**
+	 * Класс (по умолчанию) для оформления блока со списком разделов
+	 *
+	 * @var string
+	 */
+	private static $board_class = 'div.roundframe.noup';
+
+	/**
+	 * Подключаем языковой файл
 	 *
 	 * @return void
 	 */
@@ -29,9 +50,6 @@ class BoardList
 		global $user_info, $txt;
 
 		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-
-		$txt['lp_block_types']['boardlist'] = $txt['lp_boardlist_addon_title'];
-		$txt['lp_block_types_descriptions']['boardlist'] = $txt['lp_boardlist_addon_desc'];
 	}
 
 	/**
@@ -43,10 +61,10 @@ class BoardList
 	public static function blockOptions(&$options)
 	{
 		$options['boardlist'] = array(
-			'no_content_class' => true,
+			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
-				'category_class' => 'div.title_bar > h4.titlebg',
-				'board_class'    => 'div.roundframe.noup'
+				'category_class' => static::$category_class,
+				'board_class'    => static::$board_class
 			)
 		);
 	}
@@ -64,8 +82,10 @@ class BoardList
 		if ($context['current_block']['type'] !== 'boardlist')
 			return;
 
-		$args['category_class'] = FILTER_SANITIZE_STRING;
-		$args['board_class']    = FILTER_SANITIZE_STRING;
+		$args['parameters'] = array(
+			'category_class' => FILTER_SANITIZE_STRING,
+			'board_class'    => FILTER_SANITIZE_STRING
+		);
 	}
 
 	/**

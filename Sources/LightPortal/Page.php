@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -118,10 +118,7 @@ class Page
 						'value' => $txt['date']
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return timeformat($entry['created_at']);
-						},
+						'db'    => 'created_at',
 						'class' => 'centertext'
 					),
 					'sort' => array(
@@ -179,7 +176,10 @@ class Page
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'db'    => 'title',
+						'function' => function ($entry) use ($scripturl)
+						{
+							return $entry['status'] ? '<a href="' . $scripturl . '?page=' . $entry['alias'] . '">' . $entry['title'] . '</a>' : $entry['title'];
+						},
 						'class' => 'centertext'
 					),
 					'sort' => array(
@@ -260,7 +260,7 @@ class Page
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['num_views'],
-				'created_at' => $row['date']
+				'created_at' => Subs::getFriendlyTime($row['date'])
 			);
 		}
 
@@ -694,13 +694,15 @@ class Page
 		$title = isset($context['lp_page']['title_' . $user_info['language']]) ? $context['lp_page']['title_' . $user_info['language']] : $context['lp_page']['title'];
 		$context['preview_title']   = Subs::cleanBbcode($title);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
-		Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
+
+		if (!empty($context['preview_content']))
+			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
 
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
 
 		$context['page_title']    = $txt['preview'] . ' - ' . $context['preview_title'];
-		$context['preview_title'] = $context['preview_title'] . '<span class="floatright">' . $txt['preview'] . '</span>';
+		$context['preview_title'] = Subs::getPreviewTitle();
 	}
 
 	/**

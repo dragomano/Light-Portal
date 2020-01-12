@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -67,7 +67,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.3',
+			'LP_VERSION' => '0.4',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -325,6 +325,7 @@ class Integration
 	public static function loadPermissions(&$permissionGroups, &$permissionList, &$leftPermissionGroups)
 	{
 		$permissionList['membergroup']['light_portal_view']   = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage'] = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}

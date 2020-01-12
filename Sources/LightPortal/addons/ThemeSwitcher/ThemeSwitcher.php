@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\ThemeSwitcher;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -20,7 +20,7 @@ if (!defined('SMF'))
 class ThemeSwitcher
 {
 	/**
-	 * Добавляем заголовок и описание блока
+	 * Подключаем языковой файл
 	 *
 	 * @return void
 	 */
@@ -29,9 +29,6 @@ class ThemeSwitcher
 		global $user_info, $txt;
 
 		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-
-		$txt['lp_block_types']['themeswitcher'] = $txt['lp_themeswitcher_addon_title'];
-		$txt['lp_block_types_descriptions']['themeswitcher'] = $txt['lp_themeswitcher_addon_desc'];
 	}
 
 	/**

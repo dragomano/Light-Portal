@@ -1,4 +1,4 @@
 <?php
 
-$txt['lp_themeswitcher_addon_title'] = 'Переключатель шаблонов';
-$txt['lp_themeswitcher_addon_desc']  = 'Отображает список тем оформления, доступных для выбора.';
+$txt['lp_block_types']['themeswitcher']              = 'Переключатель шаблонов';
+$txt['lp_block_types_descriptions']['themeswitcher'] = 'Отображает список тем оформления, доступных для выбора.';

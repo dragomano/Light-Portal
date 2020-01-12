@@ -50,22 +50,22 @@ $txt['lp_block_priority']                = 'Приоритет';
 $txt['lp_block_placement']               = 'Расположение';
 
 $txt['lp_block_placement_set'] = array(
-    'header' => 'Шапка',
-    'top'    => 'Центральная часть (верх)',
-    'left'   => 'Левая панель',
-    'right'  => 'Правая панель',
-    'bottom' => 'Центральная часть (низ)',
-    'footer' => 'Подвал'
+	'header' => 'Шапка',
+	'top'    => 'Центральная часть (верх)',
+	'left'   => 'Левая панель',
+	'right'  => 'Правая панель',
+	'bottom' => 'Центральная часть (низ)',
+	'footer' => 'Подвал'
 );
 
 $txt['lp_block_areas']         = 'Области';
 $txt['lp_block_areas_subtext'] = '<div class="infobox smalltext">Укажите одну или несколько областей (через запятую) для отображения в них блока:<br>
 <ul>
-    <li><strong>all</strong> — отображать везде</li>
-    <li><strong>forum</strong> — отображать только на форуме</li>
-    <li><strong>portal</strong> — отображать только на портале (включая страницы)</li>
-    <li><strong>custom_action</strong> — отображать в области <em>index.php?action</em>=<strong>custom_action</strong></li>
-    <li><strong>page=alias</strong> — отображать на странице <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>all</strong> — отображать везде</li>
+	<li><strong>forum</strong> — отображать только на форуме</li>
+	<li><strong>portal</strong> — отображать только на портале (включая страницы)</li>
+	<li><strong>custom_action</strong> — отображать в области <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>page=alias</strong> — отображать на странице <em>index.php?page</em>=<strong>alias</strong></li>
 </ul></div>';
 $txt['lp_block_title_class']   = 'CSS класс заголовка';
 $txt['lp_block_title_style']   = 'CSS стили заголовка';
@@ -73,14 +73,14 @@ $txt['lp_block_content_class'] = 'CSS класс содержимого';
 $txt['lp_block_content_style'] = 'CSS стили содержимого';
 
 $txt['lp_block_types'] = array(
-    'bbc'  => 'Блок с ББ-кодом',
-    'html' => 'Блок с HTML-кодом',
-    'php'  => 'Блок с PHP-кодом'
+	'bbc'  => 'Блок с ББ-кодом',
+	'html' => 'Блок с HTML-кодом',
+	'php'  => 'Блок с PHP-кодом'
 );
 $txt['lp_block_types_descriptions'] = array(
-    'bbc'  => 'В этом блоке в качестве контента можно использовать любые ББ-теги форума.',
-    'html' => 'В этом блоке в качестве контента можно использовать любые теги HTML.',
-    'php'  => 'В этом блоке в качестве контента можно использовать произвольный код PHP.'
+	'bbc'  => 'В этом блоке в качестве контента можно использовать любые ББ-теги форума.',
+	'html' => 'В этом блоке в качестве контента можно использовать любые теги HTML.',
+	'php'  => 'В этом блоке в качестве контента можно использовать произвольный код PHP.'
 );
 
 // Pages
@@ -127,3 +127,10 @@ $txt['permissionhelp_light_portal_manage'] = 'Доступ к управлени
 $txt['cannot_light_portal_view']           = 'Извините, вам запрещен просмотр портала!';
 $txt['cannot_light_portal_manage']         = 'Извините, вам запрещено управление порталом!';
 $txt['cannot_light_portal_view_page']      = 'Извините, вам не разрешен просмотр этой страницы!';
+
+// Time units
+$txt['lp_days_set']       = array('день','дня','дней');
+$txt['lp_minutes_set']    = array('минуту','минуты','минут');
+$txt['lp_seconds_set']    = array('секунду','секунды','секунд');
+$txt['lp_remained']       = 'Осталось %1$s';
+$txt['lp_time_label_ago'] = ' назад';

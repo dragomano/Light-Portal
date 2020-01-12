@@ -192,7 +192,7 @@ function template_block_add()
 
 	foreach ($txt['lp_block_types'] as $type => $title) {
 		echo '
-				<div class="col-xs">
+				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div>
 						<div class="item roundframe" data-type="', $type, '">
 							<h4>', $title, '</h4>
@@ -215,7 +215,18 @@ function template_block_add()
 					this_form.children("input[name=add_block]").val(block_name);
 					this_form.submit();
 				});
+				setEqualHeight($("#lp_blocks .row .item"));
 			});
+			function setEqualHeight(columns) {
+				let tallestcolumn = 0;
+				columns.each(function() {
+					currentHeight = $(this).height();
+					if (currentHeight > tallestcolumn) {
+						tallestcolumn = currentHeight;
+					}
+				});
+				columns.height(tallestcolumn);
+			}
 		</script>
 	</div>';
 }

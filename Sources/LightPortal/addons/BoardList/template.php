@@ -6,7 +6,7 @@ if (empty($context['lp_boardlist']))
 	return;
 
 foreach ($context['lp_boardlist'] as $category) {
-	echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name'], '');
+	echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name'], null, null);
 
 	echo '
 	<div', !empty($parameters['board_class']) ? ' class="' . $parameters['board_class'] . '"' : '', '>

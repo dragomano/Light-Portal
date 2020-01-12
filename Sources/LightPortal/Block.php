@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.3
+ * @version 0.4
  */
 
 if (!defined('SMF'))
@@ -357,7 +357,7 @@ class Block
 
 		Subs::getForumLanguages();
 
-		$context['sub_template'] = 'post_block';
+		$context['sub_template']  = 'post_block';
 		$context['current_block'] = self::getData($item);
 
 		self::validateData();
@@ -428,7 +428,10 @@ class Block
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 
+			$parameters = $args['parameters'];
+			unset($args['parameters']);
 			$post_data = filter_input_array(INPUT_POST, $args);
+			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
 
 			self::findErrors($post_data);
 		}
@@ -455,7 +458,7 @@ class Block
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value)
-				$context['lp_block']['options']['parameters'][$option] = $post_data[$option] ?? $block_options['parameters'][$option] ?? $value;
+				$context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
 		}
 
 		foreach ($context['languages'] as $lang)
@@ -676,13 +679,13 @@ class Block
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
 
-		if (empty($context['lp_block']['content']))
+		if (empty($context['preview_content']))
 			Subs::runAddons('prepareContent', array(&$context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']));
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = self::getIcon() . $context['preview_title'] . '<span class="floatright">' . $txt['preview'] . '</span>';
+		$context['preview_title'] = self::getIcon() . Subs::getPreviewTitle();
 	}
 
 	/**

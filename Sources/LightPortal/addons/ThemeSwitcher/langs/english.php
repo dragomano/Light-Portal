@@ -1,4 +1,4 @@
 <?php
 
-$txt['lp_themeswitcher_addon_title'] = 'Theme Switcher';
-$txt['lp_themeswitcher_addon_desc']  = 'Displays a list of themes that available to quick selecting.';
+$txt['lp_block_types']['themeswitcher']              = 'Theme Switcher';
+$txt['lp_block_types_descriptions']['themeswitcher'] = 'Displays a list of themes that available to quick selecting.';
