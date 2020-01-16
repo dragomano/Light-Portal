@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -39,18 +39,6 @@ class BoardList
 	 * @var string
 	 */
 	private static $board_class = 'div.roundframe.noup';
-
-	/**
-	 * Подключаем языковой файл
-	 *
-	 * @return void
-	 */
-	public static function lang()
-	{
-		global $user_info, $txt;
-
-		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-	}
 
 	/**
 	 * Добавляем параметры блока

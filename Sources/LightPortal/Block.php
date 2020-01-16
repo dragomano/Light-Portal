@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -362,9 +362,10 @@ class Block
 
 		self::validateData();
 
-		$block_title = $context['lp_block']['title'][$user_info['language']] ?? '';
+		$lang = Helpers::getUserLanguage();
+		$block_title = $context['lp_block']['title'][$lang] ?? '';
 		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
-		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
 		self::prepareFormFields();
 		self::prepareEditor();
@@ -428,7 +429,7 @@ class Block
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 
-			$parameters = $args['parameters'];
+			$parameters = $args['parameters'] ?? [];
 			unset($args['parameters']);
 			$post_data = filter_input_array(INPUT_POST, $args);
 			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
@@ -457,14 +458,18 @@ class Block
 		);
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
-			foreach ($context['lp_block']['options']['parameters'] as $option => $value)
+			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
+				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && is_null($post_data['parameters'][$option]))
+					$post_data['parameters'][$option] = 0;
+
 				$context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
+			}
 		}
 
 		foreach ($context['languages'] as $lang)
 			$context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_block']['title'][$lang['filename']] ?? '';
 
-		$context['lp_block']['title'] = Subs::cleanBbcode($context['lp_block']['title']);
+		$context['lp_block']['title'] = Helpers::cleanBbcode($context['lp_block']['title']);
 	}
 
 	/**
@@ -511,9 +516,9 @@ class Block
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
-					'size'      => '100%',
 					'maxlength' => 255,
-					'value'     => $context['lp_block']['title'][$lang['filename']] ?? ''
+					'value'     => $context['lp_block']['title'][$lang['filename']] ?? '',
+					'style'     => 'width: 100%'
 				)
 			);
 		}
@@ -524,9 +529,10 @@ class Block
 			'type' => 'text',
 			'after' => '<span id="block_icon">' . self::getIcon() . '</span>',
 			'attributes' => array(
-				'size'      => '100%',
+				'id'        => 'icon',
 				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon']
+				'value'     => $context['lp_block']['icon'],
+				'style'     => 'width: 100%'
 			)
 		);
 
@@ -567,10 +573,10 @@ class Block
 			'type' => 'text',
 			'after' => $txt['lp_block_areas_subtext'],
 			'attributes' => array(
-				'size'      => '100%',
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
-				'required'  => true
+				'required'  => true,
+				'style'     => 'width: 100%'
 			)
 		);
 
@@ -594,9 +600,9 @@ class Block
 		$context['posting_fields']['title_style']['input'] = array(
 			'type' => 'text',
 			'attributes' => array(
-				'size'      => '100%',
 				'maxlength' => 255,
-				'value'     => $context['lp_block']['title_style']
+				'value'     => $context['lp_block']['title_style'],
+				'style'     => 'width: 100%'
 			)
 		);
 
@@ -621,9 +627,9 @@ class Block
 			$context['posting_fields']['content_style']['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
-					'size'      => '100%',
 					'maxlength' => 255,
-					'value'     => $context['lp_block']['content_style']
+					'value'     => $context['lp_block']['content_style'],
+					'style'     => 'width: 100%'
 				)
 			);
 		}
@@ -633,7 +639,7 @@ class Block
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'maxlength' => Subs::getMaxMessageLength(),
+					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_block']['content']
 				)
 			);
@@ -666,14 +672,15 @@ class Block
 	 */
 	private static function showPreview()
 	{
-		global $context, $user_info, $smcFunc, $txt;
+		global $context, $smcFunc, $txt;
 
 		if (!isset($_POST['preview']))
 			return;
 
 		checkSubmitOnce('free');
 
-		$context['preview_title']   = Subs::cleanBbcode($context['lp_block']['title'][$user_info['language']]);
+		$lang = Helpers::getUserLanguage();
+		$context['preview_title']   = Helpers::cleanBbcode($context['lp_block']['title'][$lang]);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
 		censorText($context['preview_title']);
@@ -685,7 +692,7 @@ class Block
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = self::getIcon() . Subs::getPreviewTitle();
+		$context['preview_title'] = self::getIcon() . Helpers::getPreviewTitle();
 	}
 
 	/**
@@ -705,7 +712,7 @@ class Block
 		checkSubmitOnce('check');
 
 		if (empty($item)) {
-			$max_length = Subs::getMaxMessageLength();
+			$max_length = Helpers::getMaxMessageLength();
 
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
@@ -785,7 +792,7 @@ class Block
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, type = {string:type}, content = {string:content}, placement = {string:placement}, priority = {int:priority}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				SET icon = {string:icon}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
 				array(
 					'block_id'      => $item,
@@ -793,7 +800,6 @@ class Block
 					'type'          => $context['lp_block']['type'],
 					'content'       => $context['lp_block']['content'],
 					'placement'     => $context['lp_block']['placement'],
-					'priority'      => $context['lp_block']['priority'],
 					'permissions'   => $context['lp_block']['permissions'],
 					'areas'         => $context['lp_block']['areas'],
 					'title_class'   => $context['lp_block']['title_class'],

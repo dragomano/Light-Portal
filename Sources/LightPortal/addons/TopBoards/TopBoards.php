@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentPosts;
+namespace Bugo\LightPortal\Addons\TopBoards;
 
 use Bugo\LightPortal\Helpers;
 
 /**
- * RecentPosts
+ * TopBoards
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -19,14 +19,14 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class RecentPosts
+class TopBoards
 {
 	/**
-	 * Максимальное количество сообщений для вывода
+	 * Максимальное количество разделов для вывода
 	 *
 	 * @var int
 	 */
-	private static $num_posts = 10;
+	private static $num_boards = 10;
 
 	/**
 	 * Добавляем параметры блока
@@ -36,9 +36,9 @@ class RecentPosts
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_posts'] = array(
+		$options['top_boards'] = array(
 			'parameters' => array(
-				'num_posts' => static::$num_posts
+				'num_boards' => static::$num_boards
 			)
 		);
 	}
@@ -53,11 +53,11 @@ class RecentPosts
 	{
 		global $context;
 
-		if ($context['current_block']['type'] !== 'recent_posts')
+		if ($context['current_block']['type'] !== 'top_boards')
 			return;
 
 		$args['parameters'] = array(
-			'num_posts' => FILTER_VALIDATE_INT
+			'num_boards' => FILTER_VALIDATE_INT
 		);
 	}
 
@@ -70,16 +70,16 @@ class RecentPosts
 	{
 		global $context, $txt;
 
-		if ($context['lp_block']['type'] !== 'recent_posts')
+		if ($context['lp_block']['type'] !== 'top_boards')
 			return;
 
-		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_recent_posts_addon_num_posts'];
-		$context['posting_fields']['num_posts']['input'] = array(
+		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards_addon_num_boards'];
+		$context['posting_fields']['num_boards']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_posts',
+				'id' => 'num_boards',
 				'min' => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_posts']
+				'value' => $context['lp_block']['options']['parameters']['num_boards']
 			)
 		);
 	}
@@ -96,32 +96,38 @@ class RecentPosts
 	{
 		global $context, $boarddir, $txt;
 
-		if ($type !== 'recent_posts')
+		if ($type !== 'top_boards')
 			return;
 
 		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
 
-		if (($recent_posts = cache_get_data('light_portal_recent_posts_addon', 3600)) == null) {
+		if (($top_boards = cache_get_data('light_portal_top_boards_addon', 3600)) == null) {
 			require_once($boarddir . '/SSI.php');
-			$recent_posts = ssi_recentPosts($parameters['num_posts'], null, null, 'array');
-			cache_put_data('light_portal_recent_posts_addon', $recent_posts, 3600);
+			$top_boards = ssi_topBoards($parameters['num_boards'], 'array');
+			cache_put_data('light_portal_top_boards_addon', $top_boards, 3600);
 		}
 
 		ob_start();
 
-		if (!empty($recent_posts)) {
+		if (!empty($top_boards)) {
 			echo '
-			<ul class="recent_posts normallist">';
+			<dl class="stats">';
 
-			foreach ($recent_posts as $post) {
+			$max = $top_boards[0]['num_topics'];
+
+			foreach ($top_boards as $board) {
+				$width = $board['num_topics'] * 100 / $max;
+
 				echo '
-				<li>
-					', ($post['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span> ' : ''), $post['link'], ' ', $txt['by'], ' ', $post['poster']['link'], ' <br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
-				</li>';
+				<dt>', $board['link'], '</dt>
+				<dd class="statsbar generic_bar righttext">
+					<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+					<span>', Helpers::correctDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
+				</dd>';
 			}
 
 			echo '
-			</ul>';
+			</dl>';
 		}
 
 		$content = ob_get_clean();

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -40,6 +40,8 @@ class Page
 
 		isAllowedTo('light_portal_view');
 		loadTemplate('LightPortal/ViewPage');
+
+		$alias = explode(';', $alias)[0];
 
 		$context['lp_page'] = self::getData($alias);
 
@@ -260,7 +262,7 @@ class Page
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['num_views'],
-				'created_at' => Subs::getFriendlyTime($row['date'])
+				'created_at' => Helpers::getFriendlyTime($row['date'])
 			);
 		}
 
@@ -562,9 +564,9 @@ class Page
 				$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 					'type' => 'text',
 					'attributes' => array(
-						'size'      => '100%',
 						'maxlength' => 255,
-						'value'     => $context['lp_page']['title_' . $lang['filename']]
+						'value'     => $context['lp_page']['title_' . $lang['filename']],
+						'style'     => 'width: 100%'
 					)
 				);
 			}
@@ -573,10 +575,10 @@ class Page
 			$context['posting_fields']['title']['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
-					'size'      => '100%',
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'],
-					'required'  => true
+					'required'  => true,
+					'style'     => 'width: 100%'
 				)
 			);
 		}
@@ -585,12 +587,12 @@ class Page
 		$context['posting_fields']['alias']['input'] = array(
 			'type' => 'text',
 			'attributes' => array(
-				'size'      => '100%',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['alias'],
 				'required'  => true,
 				'disabled'  => $context['lp_page']['alias'] === '/',
-				'pattern'   => static::$alias_pattern
+				'pattern'   => static::$alias_pattern,
+				'style'     => 'width: 100%'
 			)
 		);
 
@@ -650,7 +652,7 @@ class Page
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'maxlength' => Subs::getMaxMessageLength(),
+					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_page']['content'],
 					'required'  => true
 				)
@@ -684,15 +686,16 @@ class Page
 	 */
 	private static function showPreview()
 	{
-		global $context, $user_info, $smcFunc, $txt;
+		global $context, $smcFunc, $txt;
 
 		if (!isset($_POST['preview']))
 			return;
 
 		checkSubmitOnce('free');
 
-		$title = isset($context['lp_page']['title_' . $user_info['language']]) ? $context['lp_page']['title_' . $user_info['language']] : $context['lp_page']['title'];
-		$context['preview_title']   = Subs::cleanBbcode($title);
+		$lang  = Helpers::getUserLanguage();
+		$title = isset($context['lp_page']['title_' . $lang]) ? $context['lp_page']['title_' . $lang] : $context['lp_page']['title'];
+		$context['preview_title']   = Helpers::cleanBbcode($title);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
 
 		if (!empty($context['preview_content']))
@@ -702,7 +705,7 @@ class Page
 		censorText($context['preview_content']);
 
 		$context['page_title']    = $txt['preview'] . ' - ' . $context['preview_title'];
-		$context['preview_title'] = Subs::getPreviewTitle();
+		$context['preview_title'] = Helpers::getPreviewTitle();
 	}
 
 	/**
@@ -730,7 +733,7 @@ class Page
 					'alias'       => 'string-255',
 					'description' => 'string-255',
 					'keywords'    => 'string-255',
-					'content'     => 'string-' . Subs::getMaxMessageLength(),
+					'content'     => 'string-' . Helpers::getMaxMessageLength(),
 					'type'        => 'string-4',
 					'permissions' => 'int',
 					'created_at'  => 'int'
@@ -770,8 +773,10 @@ class Page
 
 		if ($context['lp_page']['alias'] === '/') {
 			$main_page_title = [];
+
 			foreach ($context['languages'] as $lang)
 				$main_page_title['lp_main_page_title_' . $lang['filename']] = $context['lp_page']['title_' . $lang['filename']];
+
 			updateSettings($main_page_title);
 		}
 

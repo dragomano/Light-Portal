@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TopTopics;
 
-use Bugo\LightPortal\Subs;
+use Bugo\LightPortal\Helpers;
 
 /**
  * TopTopics
@@ -13,7 +13,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -34,18 +34,6 @@ class TopTopics
 	 * @var int
 	 */
 	private static $num_topics = 10;
-
-	/**
-	 * Подключаем языковой файл
-	 *
-	 * @return void
-	 */
-	public static function lang()
-	{
-		global $user_info, $txt;
-
-		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-	}
 
 	/**
 	 * Добавляем параметры блока
@@ -115,9 +103,9 @@ class TopTopics
 			'type' => 'number',
 			'attributes' => array(
 				'id' => 'num_topics',
+				'min' => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
-			),
-			'options' => array()
+			)
 		);
 	}
 
@@ -140,9 +128,7 @@ class TopTopics
 
 		if (($top_topics = cache_get_data('light_portal_top_topics_addon', 3600)) == null) {
 			require_once($boarddir . '/SSI.php');
-
 			$top_topics = ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
-
 			cache_put_data('light_portal_top_topics_addon', $top_topics, 3600);
 		}
 
@@ -155,11 +141,13 @@ class TopTopics
 			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
 
 			foreach ($top_topics as $topic) {
+				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+
 				echo '
 				<dt>', $topic['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
-					<div class="bar', empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ', ($topic['num_' . $parameters['popularity_type']] * 100 / $max), '%"', '></div>
-					<span>', Subs::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_top_topics_addon_' . $parameters['popularity_type']]), '</span>
+					<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+					<span>', Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_top_topics_addon_' . $parameters['popularity_type']]), '</span>
 				</dd>';
 			}
 

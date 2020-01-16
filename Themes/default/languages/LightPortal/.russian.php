@@ -44,7 +44,7 @@ $txt['lp_blocks_add_instruction']        = 'Выберите нужный бло
 $txt['lp_blocks_edit_title']             = 'Редактирование блока';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Содержимое';
-$txt['lp_block_icon_cheatsheet']         = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">Больше иконок</a></div>';
+$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">Больше иконок</a></span>';
 $txt['lp_block_type']                    = 'Тип блока';
 $txt['lp_block_priority']                = 'Приоритет';
 $txt['lp_block_placement']               = 'Расположение';
@@ -59,7 +59,7 @@ $txt['lp_block_placement_set'] = array(
 );
 
 $txt['lp_block_areas']         = 'Области';
-$txt['lp_block_areas_subtext'] = '<div class="infobox smalltext">Укажите одну или несколько областей (через запятую) для отображения в них блока:<br>
+$txt['lp_block_areas_subtext'] = '<div class="information alternative smalltext">Укажите одну или несколько областей (через запятую) для отображения в них блока:<br>
 <ul>
 	<li><strong>all</strong> — отображать везде</li>
 	<li><strong>forum</strong> — отображать только на форуме</li>
@@ -134,3 +134,7 @@ $txt['lp_minutes_set']    = array('минуту','минуты','минут');
 $txt['lp_seconds_set']    = array('секунду','секунды','секунд');
 $txt['lp_remained']       = 'Осталось %1$s';
 $txt['lp_time_label_ago'] = ' назад';
+
+// Copyrights
+$txt['lp_credits']         = 'Копирайты';
+$txt['lp_used_components'] = 'Компоненты портала';

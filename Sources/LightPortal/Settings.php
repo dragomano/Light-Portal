@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -95,7 +95,7 @@ class Settings
 	 */
 	public static function adminSearch(&$language_files, &$include_files, &$settings_search)
 	{
-		$settings_search[] = array(__NAMESPACE__ . '\Settings::settingArea', 'area=lp_settings');
+		$settings_search[] = array(__CLASS__ . '::settingArea', 'area=lp_settings');
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Settings
 	 * Выводим общие настройки
 	 *
 	 * @param boolean $return_config
-	 * @return void|array
+	 * @return array|void
 	 */
 	public static function settingArea($return_config = false)
 	{
@@ -121,9 +121,8 @@ class Settings
 		$context['page_title']     = $txt['lp_settings'];
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
-		$context['sub_template']   = 'show_settings';
 
-		// Setup initial settings | Устанавливаем первоначальные настройки
+		// Initial settings | Устанавливаем первоначальные настройки
 		$add_settings = [];
 		if (!isset($modSettings['lp_standalone_excluded_actions']))
 			$add_settings['lp_standalone_excluded_actions'] = 'home,admin,profile,pm,signup,logout';
@@ -134,6 +133,7 @@ class Settings
 
 		Subs::getForumLanguages();
 
+		$config_vars = [];
 		foreach ($context['languages'] as $lang) {
 			$txt['lp_main_page_title_' . $lang['filename']] = $txt['lp_main_page_title'] . ' [<strong>' . $lang['filename'] . '</strong>]';
 			$config_vars[] = array('text', 'lp_main_page_title_' . $lang['filename'], 80, 'disabled' => !empty($modSettings['lp_main_page_disable']));
@@ -157,8 +157,11 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
+		$context['sub_template'] = 'show_settings';
+
 		if (isset($_GET['save'])) {
 			checkSession();
+
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
 
@@ -179,16 +182,9 @@ class Settings
 	 */
 	private static function getDbInfo()
 	{
-		global $db_type, $smcFunc;
+		global $smcFunc;
 
-		$databases = array(
-			'mysql'      => defined('MYSQL_TITLE') ? MYSQL_TITLE : 'MySQL',
-			'postgresql' => defined('POSTGRE_TITLE') ? POSTGRE_TITLE : 'PostgreSQL'
-		);
-
-		$db_version = $smcFunc['db_server_info']();
-
-		return [$databases[$db_type], $db_version];
+		return [$smcFunc['db_title'], $smcFunc['db_server_info']()];
 	}
 
 	/**

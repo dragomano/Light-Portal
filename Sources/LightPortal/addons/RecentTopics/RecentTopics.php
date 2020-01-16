@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
-use Bugo\LightPortal\Subs;
+use Bugo\LightPortal\Helpers;
 
 /**
  * RecentTopics
@@ -13,7 +13,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -27,18 +27,6 @@ class RecentTopics
 	 * @var int
 	 */
 	private static $num_topics = 10;
-
-	/**
-	 * Подключаем языковой файл
-	 *
-	 * @return void
-	 */
-	public static function lang()
-	{
-		global $user_info, $txt;
-
-		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-	}
 
 	/**
 	 * Добавляем параметры блока
@@ -90,9 +78,9 @@ class RecentTopics
 			'type' => 'number',
 			'attributes' => array(
 				'id' => 'num_topics',
+				'min' => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
-			),
-			'options' => array()
+			)
 		);
 	}
 
@@ -115,19 +103,25 @@ class RecentTopics
 
 		if (($recent_topics = cache_get_data('light_portal_recent_topics_addon', 3600)) == null) {
 			require_once($boarddir . '/SSI.php');
-
 			$recent_topics = ssi_recentTopics($parameters['num_topics'], null, null, 'array');
-
 			cache_put_data('light_portal_recent_topics_addon', $recent_topics, 3600);
 		}
 
 		ob_start();
 
-		foreach ($recent_topics as $topic) {
+		if (!empty($recent_topics)) {
 			echo '
-			<div class="sub_bar">
-				', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], ' ', $txt['by'], ' ', $topic['poster']['link'], ' <br><span class="smalltext">', Subs::getFriendlyTime($topic['timestamp']), '</span>
-			</div>';
+			<ul class="recent_topics">';
+
+			foreach ($recent_topics as $topic) {
+				echo '
+				<li>
+					', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], ' ', $txt['by'], ' ', $topic['poster']['link'], ' <br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
+				</li>';
+			}
+
+			echo '
+			</ul>';
 		}
 
 		$content = ob_get_clean();

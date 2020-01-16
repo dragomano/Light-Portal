@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\ThemeSwitcher;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -19,18 +19,6 @@ if (!defined('SMF'))
 
 class ThemeSwitcher
 {
-	/**
-	 * Подключаем языковой файл
-	 *
-	 * @return void
-	 */
-	public static function lang()
-	{
-		global $user_info, $txt;
-
-		require_once(__DIR__ . '/langs/' . $user_info['language'] . '.php');
-	}
-
 	/**
 	 * Добавляем параметры блока
 	 *
@@ -82,8 +70,8 @@ class ThemeSwitcher
 
 		if (!empty($available_themes)) {
 			echo '
-			<div class="centertext">
-				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();" style="cursor: pointer">';
+			<div class="themeswitcher centertext">
+				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();">';
 
 			foreach ($available_themes as $theme_id => $name) {
 				echo '
@@ -95,7 +83,16 @@ class ThemeSwitcher
 				<script>
 					function lp_block_', $block_id, '_themeswitcher_change() {
 						let lp_block_', $block_id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $block_id, '_themeswitcher").value;
-						window.location = smf_prepareScriptUrl(smf_scripturl) + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
+						let search = window.location.search.split(";");
+						let arr = search.filter(function(item) {
+							return !item.startsWith("theme=");
+						});
+						search = arr.join(";");
+						if (search != "") {
+							search = search.replace("?", "") + ";";
+						}
+						console.log(search);
+						window.location = smf_prepareScriptUrl(smf_scripturl) + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
 					}
 				</script>';
 

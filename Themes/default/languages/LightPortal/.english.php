@@ -44,7 +44,7 @@ $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Content';
-$txt['lp_block_icon_cheatsheet']         = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">More icons</a></div>';
+$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">More icons</a></span>';
 $txt['lp_block_type']                    = 'Block type';
 $txt['lp_block_priority']                = 'Priority';
 $txt['lp_block_placement']               = 'Placement';
@@ -59,7 +59,7 @@ $txt['lp_block_placement_set'] = array(
 );
 
 $txt['lp_block_areas']         = 'Actions';
-$txt['lp_block_areas_subtext'] = '<div class="infobox smalltext">Specify one or more areas (separate by comma) to display the block in:<br>
+$txt['lp_block_areas_subtext'] = '<div class="information alternative smalltext">Specify one or more areas (separate by comma) to display the block in:<br>
 <ul>
 	<li><strong>all</strong> — display everywhere</li>
 	<li><strong>forum</strong> — display only on the forum area</li>
@@ -134,3 +134,7 @@ $txt['lp_minutes_set']    = array('minute','minutes');
 $txt['lp_seconds_set']    = array('second','seconds');
 $txt['lp_remained']       = '%1$s left';
 $txt['lp_time_label_ago'] = ' ago';
+
+// Copyrights
+$txt['lp_credits']         = 'Credits';
+$txt['lp_used_components'] = 'The portal components';

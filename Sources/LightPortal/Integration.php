@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.4
+ * @version 0.5
  */
 
 if (!defined('SMF'))
@@ -27,20 +27,20 @@ class Integration
 	 */
 	public static function hooks()
 	{
-		add_integration_function('integrate_autoload', __NAMESPACE__ . '\Integration::autoload', false, __FILE__);
-		add_integration_function('integrate_user_info', __NAMESPACE__ . '\Integration::userInfo', false, __FILE__);
-		add_integration_function('integrate_load_theme', __NAMESPACE__ . '\Integration::loadTheme', false, __FILE__);
-		add_integration_function('integrate_actions', __NAMESPACE__ . '\Integration::actions', false, __FILE__);
-		add_integration_function('integrate_default_action', __NAMESPACE__ . '\Integration::defaultAction', false, __FILE__);
-		add_integration_function('integrate_current_action', __NAMESPACE__ . '\Integration::currentAction', false, __FILE__);
+		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
+		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
+		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
+		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
+		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
+		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_menu_buttons', __NAMESPACE__ . '\Integration::menuButtons', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', __NAMESPACE__ . '\Integration::loadIllegalGuestPermissions', false, __FILE__);
-		add_integration_function('integrate_load_permissions', __NAMESPACE__ . '\Integration::loadPermissions', false, __FILE__);
-		add_integration_function('integrate_change_member_data', __NAMESPACE__ . '\Integration::changeMemberData', false, __FILE__);
-		add_integration_function('integrate_credits', __NAMESPACE__ . '\Integration::credits', false, __FILE__);
-		add_integration_function('integrate_whos_online', __NAMESPACE__ . '\Integration::whosOnline', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
+		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
+		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
+		add_integration_function('integrate_change_member_data', __CLASS__ . '::changeMemberData', false, __FILE__);
+		add_integration_function('integrate_credits', __CLASS__ . '::credits', false, __FILE__);
+		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.4',
+			'LP_VERSION' => '0.5',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -349,9 +349,21 @@ class Integration
 	 */
 	public static function credits()
 	{
-		global $context;
+		global $context, $txt;
 
-		$context['credits_modifications'][] = Subs::getCopyrights();
+		$context['credits_modifications'][] = Subs::getCredits();
+
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
+			Subs::getComponentCredits();
+
+			loadTemplate('LightPortal/Credits');
+
+			$context['sub_template']   = 'portal_credits';
+			$context['robot_no_index'] = true;
+			$context['page_title']     = LP_NAME . ' - ' . $txt['lp_credits'];
+
+			obExit();
+		}
 	}
 
 	/**

@@ -68,3 +68,32 @@
 		display: none;
 	}
 }
+
+/* Addons */
+
+.likely__widget {
+	opacity: 0.5 !important;
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+.likely__widget:hover {
+	opacity: 1 !important;
+	-webkit-filter: grayscale(0%);
+	filter: grayscale(0%);
+}
+
+.recent_posts li, .recent_topics li {
+	border-bottom: 1px solid #777;
+}
+.recent_posts li:last-child, .recent_topics li:last-child {
+	border: none;
+}
+
+dl.top_posters dt img {
+	width: 24px;
+	vertical-align: middle;
+}
+
+.themeswitcher select {
+	cursor: pointer;
+}
