@@ -1,11 +1,12 @@
 <?php
 
-// The management page section template | Шаблон раздела управления страницами
+// The management page section template
+// Шаблон раздела управления страницами
 function template_manage_pages_above()
 {
 	global $modSettings, $context, $txt, $user_info, $settings, $scripturl;
 
-	if (!empty($modSettings['lp_main_page_disable']))
+	if (!empty($modSettings['lp_frontpage_disable']))
 		$context['lp_main_page']['status'] = false;
 
 	echo '
@@ -38,7 +39,7 @@ function template_manage_pages_above()
 		<tbody>
 			<tr class="windowbg">
 				<td class="date centertext">
-					', $context['lp_main_page']['created_at'], '
+					', $context['lp_main_page']['created'], '
 				</td>
 				<td class="num_views centertext">
 					', $context['lp_main_page']['num_views'], '
@@ -47,10 +48,10 @@ function template_manage_pages_above()
 					', $txt['lp_page_types'][$context['lp_main_page']['type']], '
 				</td>
 				<td class="alias centertext">
-					', (empty($modSettings['lp_main_page_disable']) ? '<a href="' . $scripturl . '">' . $context['lp_main_page']['alias'] . '</a>' : $context['lp_main_page']['alias']), '
+					', (empty($modSettings['lp_frontpage_disable']) ? '<a href="' . $scripturl . '">' . $context['lp_main_page']['alias'] . '</a>' : $context['lp_main_page']['alias']), '
 				</td>
 				<td class="title centertext">
-					', (!empty($modSettings['lp_main_page_title_' . $user_info['language']]) ? $modSettings['lp_main_page_title_' . $user_info['language']] : $context['lp_main_page']['title']), '
+					', (!empty($modSettings['lp_frontpage_title_' . $user_info['language']]) ? $modSettings['lp_frontpage_title_' . $user_info['language']] : $context['lp_main_page']['title']), '
 				</td>
 				<td class="actions centertext" style="cursor: pointer">
 					', empty($context['lp_main_page']['status']) ? ('<span class="toggle_status off" data-id="1" title="' . $txt['lp_action_on'] . '"></span>') : ('<span class="toggle_status on" data-id="1" title="' . $txt['lp_action_off'] . '"></span>');
@@ -105,7 +106,8 @@ function template_manage_pages_below()
 	</script>';
 }
 
-// Page creation/editing template | Шаблон создания/редактирования страницы
+// Page creation/editing template
+// Шаблон создания/редактирования страницы
 function template_post_page()
 {
 	global $context, $txt;

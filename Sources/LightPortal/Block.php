@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,7 @@ class Block
 {
 	/**
 	 * Display blocks in their designated areas
+	 *
 	 * Отображаем блоки в предназначенных им областях
 	 *
 	 * @param string $area
@@ -28,7 +29,7 @@ class Block
 	 */
 	public static function display($area = 'portal')
 	{
-		global $context;
+		global $context, $modSettings;
 
 		if (empty($context['template_layers']))
 			return;
@@ -38,7 +39,7 @@ class Block
 			return isset($block['areas']['all']) || isset($block['areas'][$area]) || isset($block['areas']['page=' . filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING)]);
 		});
 
-		if (empty($blocks))
+		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))
 			return;
 
 		foreach ($blocks as $item => $data) {
@@ -59,7 +60,6 @@ class Block
 
 		loadTemplate('LightPortal/ViewBlock');
 
-		// Zen for layers | Дзен для слоев
 		$counter = 0;
 		foreach ($context['template_layers'] as $position => $name) {
 			$counter++;
@@ -76,6 +76,7 @@ class Block
 
 	/**
 	 * Manage blocks
+	 *
 	 * Управление блоками
 	 *
 	 * @return void
@@ -102,6 +103,7 @@ class Block
 
 	/**
 	 * Get a list of all blocks sorted by placement
+	 *
 	 * Получаем список всех блоков с разбивкой по размещению
 	 *
 	 * @return void
@@ -131,6 +133,7 @@ class Block
 				);
 
 			$context['lp_current_blocks'][$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
+			Helpers::findMissingBlockTypes($row['type']);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -138,6 +141,7 @@ class Block
 
 	/**
 	 * Possible actions with blocks
+	 *
 	 * Возможные действия с блоками
 	 *
 	 * @return void
@@ -163,6 +167,7 @@ class Block
 
 	/**
 	 * Deleting a block
+	 *
 	 * Удаление блока
 	 *
 	 * @return void
@@ -214,6 +219,7 @@ class Block
 
 	/**
 	 * Changing the block status
+	 *
 	 * Смена статуса блока
 	 *
 	 * @param int $item
@@ -240,6 +246,7 @@ class Block
 
 	/**
 	 * Update priority
+	 *
 	 * Обновление приоритета
 	 *
 	 * @return void
@@ -290,6 +297,7 @@ class Block
 
 	/**
 	 * Adding a block
+	 *
 	 * Добавление блока
 	 *
 	 * @return void
@@ -330,6 +338,7 @@ class Block
 
 	/**
 	 * Editing a block
+	 *
 	 * Редактирование блока
 	 *
 	 * @return void
@@ -375,6 +384,7 @@ class Block
 
 	/**
 	 * Get the parameters of all blocks
+	 *
 	 * Получаем параметры всех блоков
 	 *
 	 * @return array
@@ -400,6 +410,7 @@ class Block
 
 	/**
 	 * Validating the sent data
+	 *
 	 * Валидируем отправляемые данные
 	 *
 	 * @return void
@@ -438,6 +449,10 @@ class Block
 		}
 
 		$options = self::getOptions();
+
+		if (empty($options[$context['current_block']['type']]))
+			$options[$context['current_block']['type']] = [];
+
 		$block_options = $context['current_block']['options'] ?? $options;
 
 		$context['lp_block'] = array(
@@ -474,6 +489,7 @@ class Block
 
 	/**
 	 * Check that the fields are filled in correctly
+	 *
 	 * Проверям правильность заполнения полей
 	 *
 	 * @param array $data
@@ -499,6 +515,7 @@ class Block
 
 	/**
 	 * Adding special fields to the form
+	 *
 	 * Добавляем свои поля для формы
 	 *
 	 * @return void
@@ -652,6 +669,7 @@ class Block
 
 	/**
 	 * Run the desired editor
+	 *
 	 * Подключаем нужный редактор
 	 *
 	 * @return void
@@ -666,6 +684,7 @@ class Block
 
 	/**
 	 * Preview
+	 *
 	 * Предварительный просмотр
 	 *
 	 * @return void
@@ -696,7 +715,38 @@ class Block
 	}
 
 	/**
+	 * Get correct priority for a new block
+	 *
+	 * Получаем правильный приоритет для нового блока
+	 *
+	 * @param string $placement
+	 * @return int
+	 */
+	private static function calculatePriority($placement)
+	{
+		global $smcFunc;
+
+		if (empty($placement))
+			return 0;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT MAX(priority) + 1
+			FROM {db_prefix}lp_blocks
+			WHERE placement = {string:placement}',
+			array(
+				'placement' => $placement
+			)
+		);
+
+		list ($priority) = $smcFunc['db_fetch_row']($request);
+		$smcFunc['db_free_result']($request);
+
+		return $priority;
+	}
+
+	/**
 	 * Creating or updating a block
+	 *
 	 * Создаем или обновляем блок
 	 *
 	 * @param int $item
@@ -713,6 +763,8 @@ class Block
 
 		if (empty($item)) {
 			$max_length = Helpers::getMaxMessageLength();
+
+			$priority = self::calculatePriority($context['lp_block']['placement']);
 
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
@@ -734,7 +786,7 @@ class Block
 					$context['lp_block']['type'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
-					$context['lp_block']['priority'],
+					$context['lp_block']['priority'] ?: $priority,
 					$context['lp_block']['permissions'],
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
@@ -860,6 +912,7 @@ class Block
 
 	/**
 	 * Get the block fields
+	 *
 	 * Получаем поля блока
 	 *
 	 * @param mixed $item
@@ -924,6 +977,7 @@ class Block
 
 	/**
 	 * Get the block icon
+	 *
 	 * Получаем иконку блока
 	 *
 	 * @param string $icon

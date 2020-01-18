@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,7 @@ class Integration
 {
 	/**
 	 * Used hooks
+	 *
 	 * Подключаем используемые хуки
 	 *
 	 * @return void
@@ -45,6 +46,7 @@ class Integration
 
 	/**
 	 * Setup for autoloading of used classes
+	 *
 	 * Настраиваем поиск файлов используемых классов для автоподключения
 	 *
 	 * @param array $classMap
@@ -58,6 +60,7 @@ class Integration
 
 	/**
 	 * Determine used constants
+	 *
 	 * Определяем необходимые константы
 	 *
 	 * @return void
@@ -67,7 +70,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.5',
+			'LP_VERSION' => '0.6',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -78,6 +81,7 @@ class Integration
 
 	/**
 	 * Load the mod languages, addons, blocks & styles
+	 *
 	 * Подключаем языковой файл, скрипты и стили, используемые модом
 	 *
 	 * @return void
@@ -98,6 +102,7 @@ class Integration
 
 	/**
 	 * Add "action=portal"
+	 *
 	 * Подключаем action «portal»
 	 *
 	 * @param array $actions
@@ -107,10 +112,11 @@ class Integration
 	{
 		global $context, $modSettings;
 
-		if (!empty($modSettings['lp_main_page_disable']))
+		if (!empty($modSettings['lp_frontpage_disable']))
 			return;
 
-		// Fix for Pretty URLs | Если установлен Pretty URLs, добавляем обработку области "portal"
+		// Fix for Pretty URLs
+		// Если установлен Pretty URLs, добавляем обработку области "portal"
 		if (!empty($context['pretty']['action_array'])) {
 			if (!in_array('portal', array_values($context['pretty']['action_array'])))
 				$context['pretty']['action_array'][] = 'portal';
@@ -129,6 +135,7 @@ class Integration
 
 	/**
 	 * Access the page or call the default method
+	 *
 	 * Обращаемся к странице или вызываем метод по умолчанию
 	 *
 	 * @return void
@@ -142,7 +149,7 @@ class Integration
 			return Page::show($alias);
 		}
 
-		if (empty($modSettings['lp_main_page_disable']))
+		if (empty($modSettings['lp_frontpage_disable']))
 			return Page::show();
 
 		require_once($sourcedir . '/BoardIndex.php');
@@ -152,6 +159,7 @@ class Integration
 
 	/**
 	 * Add a selection of the "Forum" menu item  when viewing boards and topics
+	 *
 	 * Добавляем выделение кнопки «Форум» при просмотре разделов и тем
 	 *
 	 * @param string $current_action
@@ -161,7 +169,7 @@ class Integration
 	{
 		global $modSettings, $context;
 
-		if (!empty($modSettings['lp_main_page_disable']))
+		if (!empty($modSettings['lp_frontpage_disable']))
 			return;
 
 		if (empty($_REQUEST['action']))
@@ -173,6 +181,7 @@ class Integration
 
 	/**
 	 * Manage the display of items in the main menu
+	 *
 	 * Управляем отображением пунктов в главном меню
 	 *
 	 * @param array $buttons
@@ -187,7 +196,8 @@ class Integration
 
 		$context['allow_light_portal_manage'] = allowedTo('light_portal_manage');
 
-		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
+		// Display "Portal settings" in Main Menu => Admin
+		// Отображение пункта "Настройки портала"
 		if ($context['allow_light_portal_manage']) {
 			$buttons['admin']['show'] = true;
 			$counter = 0;
@@ -236,13 +246,14 @@ class Integration
 
 		if (!empty($context['current_action']))
 			Block::display($context['current_action']);
-		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (!empty($modSettings['lp_main_page_disable']) && empty($context['current_action']) && empty($_GET['page'])))
+		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (!empty($modSettings['lp_frontpage_disable']) && empty($context['current_action']) && empty($_GET['page'])))
 			Block::display('forum');
 
-		if (!empty($modSettings['lp_main_page_disable']))
+		if (!empty($modSettings['lp_frontpage_disable']))
 			return;
 
-		// Display "Portal" item in Main Menu | Отображение пункта "Портал"
+		// Display "Portal" item in Main Menu
+		// Отображение пункта "Портал"
 		$buttons = array_merge(
 			array_slice($buttons, 0, 0, true),
 			array(
@@ -258,13 +269,14 @@ class Integration
 			array_slice($buttons, 0, null, true)
 		);
 
-		// "Forum" | "Форум"
+		// "Forum"
 		$buttons['home']['title']   = $txt['lp_forum'];
 		$buttons['home']['href']    = $scripturl . '?action=forum';
 		$buttons['home']['icon']    = 'im_on';
 		$buttons['home']['is_last'] = false;
 
-		// Standalone mode | Автономный режим
+		// Standalone mode
+		// Автономный режим
 		if (!empty($modSettings['lp_standalone'])) {
 			$buttons['home']['title']   = $txt['lp_portal'];
 			$buttons['home']['href']    = $scripturl;
@@ -288,7 +300,8 @@ class Integration
 			Subs::unsetUnusedActions($buttons);
 		}
 
-		// Correct canonical urls | Правильные канонические адреса
+		// Correct canonical urls
+		// Правильные канонические адреса
 		if ($context['current_action'] == 'portal' || (empty($context['current_action']) && empty($_REQUEST['page'])))
 			$context['canonical_url'] = $scripturl;
 		if ($context['current_action'] == 'forum')
@@ -297,6 +310,7 @@ class Integration
 
 	/**
 	 * Guests cannot to manage the portal!
+	 *
 	 * Гости могут только просматривать портал
 	 *
 	 * @return void
@@ -315,6 +329,7 @@ class Integration
 
 	/**
 	 * Determine permissions
+	 *
 	 * Определяем права доступа
 	 *
 	 * @param array $permissionGroups
@@ -332,6 +347,7 @@ class Integration
 
 	/**
 	 * We reset the cache when changing user data (for example, when a user is changing the current language)
+	 *
 	 * Сбрасываем кэш при изменении пользовательских данных (например, текущего языка)
 	 *
 	 * @return void
@@ -343,6 +359,7 @@ class Integration
 
 	/**
 	 * The mod credits for action=credits
+	 *
 	 * Отображаем копирайты на странице action=credits
 	 *
 	 * @return void
@@ -368,6 +385,7 @@ class Integration
 
 	/**
 	 * Display current actions of members (on portal area)
+	 *
 	 * Показываем, кто что делает на портале
 	 *
 	 * @param array $actions
@@ -378,7 +396,7 @@ class Integration
 		global $modSettings, $txt, $scripturl;
 
 		$result = '';
-		if (empty($modSettings['lp_main_page_disable'])) {
+		if (empty($modSettings['lp_frontpage_disable'])) {
 			if (empty($actions['action']))
 				$result = sprintf($txt['lp_who_main'], $scripturl);
 

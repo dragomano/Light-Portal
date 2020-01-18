@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,7 @@ class Settings
 {
 	/**
 	 * Make a section with the mod settings in the admin panel
+	 *
 	 * Формируем раздел с настройками мода в админке
 	 *
 	 * @param array $admin_areas
@@ -33,10 +34,12 @@ class Settings
 		require_once($sourcedir . '/ManageSettings.php');
 		loadLanguage('ManageSettings');
 
-		// Looking for the "Forum" section... | Ищем раздел "Форум"...
+		// Looking for the "Forum" section..
+		// Ищем раздел "Форум"...
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
-		// ... and add a "Portal" section from the right | ... и добавляем справа раздел "Портал"
+		// ... and add a "Portal" section from the right
+		//... и добавляем справа раздел "Портал"
 		$admin_areas = array_merge(
 			array_slice($admin_areas, 0, $counter, true),
 			array(
@@ -86,6 +89,7 @@ class Settings
 
 	/**
 	 * Easy access to the mod settings via a quick search in the admin panel
+	 *
 	 * Легкий доступ к настройкам мода через быстрый поиск в админке
 	 *
 	 * @param array $language_files
@@ -100,6 +104,7 @@ class Settings
 
 	/**
 	 * Output general settings
+	 *
 	 * Выводим общие настройки
 	 *
 	 * @param boolean $return_config
@@ -122,12 +127,19 @@ class Settings
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
 
-		// Initial settings | Устанавливаем первоначальные настройки
+		// Initial settings
+		// Устанавливаем первоначальные настройки
 		$add_settings = [];
-		if (!isset($modSettings['lp_standalone_excluded_actions']))
-			$add_settings['lp_standalone_excluded_actions'] = 'home,admin,profile,pm,signup,logout';
+		if (!isset($modSettings['lp_frontpage_layout']))
+			$add_settings['lp_frontpage_layout'] = 2;
+		if (!isset($modSettings['lp_subject_size']))
+			$add_settings['lp_subject_size'] = 22;
+		if (!isset($modSettings['lp_teaser_size']))
+			$add_settings['lp_teaser_size'] = 100;
 		if (!isset($modSettings['lp_num_per_page']))
 			$add_settings['lp_num_per_page'] = 10;
+		if (!isset($modSettings['lp_standalone_excluded_actions']))
+			$add_settings['lp_standalone_excluded_actions'] = 'home,admin,profile,pm,signup,logout';
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -135,19 +147,30 @@ class Settings
 
 		$config_vars = [];
 		foreach ($context['languages'] as $lang) {
-			$txt['lp_main_page_title_' . $lang['filename']] = $txt['lp_main_page_title'] . ' [<strong>' . $lang['filename'] . '</strong>]';
-			$config_vars[] = array('text', 'lp_main_page_title_' . $lang['filename'], 80, 'disabled' => !empty($modSettings['lp_main_page_disable']));
+			$txt['lp_frontpage_title_' . $lang['filename']] = $txt['lp_frontpage_title'] . ' [<strong>' . $lang['filename'] . '</strong>]';
+			$config_vars[] = array('text', 'lp_frontpage_title_' . $lang['filename'], 80, 'disabled' => !empty($modSettings['lp_frontpage_disable']));
 		}
+
+		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']);
 
 		$config_vars = array_merge(
 			$config_vars,
 			array(
-				array('check', 'lp_main_page_disable', 'disabled' => !empty($modSettings['lp_standalone'])),
-				array('check', 'lp_standalone', 'subtext' => $txt['lp_standalone_help'], 'disabled' => !empty($modSettings['lp_main_page_disable'])),
+				array('check', 'lp_frontpage_disable', 'disabled' => !empty($modSettings['lp_standalone'])),
+				array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
+				array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
+				array('int', 'lp_frontpage_layout', 'min' => 2, 'max' => 3, 'disabled' => $frontpage_disabled),
+				array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
+				array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+				array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+				array('int', 'lp_num_per_page', 'disabled' => $frontpage_disabled),
+				'',
+				array('check', 'lp_standalone', 'subtext' => $txt['lp_standalone_help'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
 				array('text', 'lp_standalone_excluded_actions', 80, 'subtext' => $txt['lp_standalone_excluded_actions_subtext']),
+				'',
 				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
-				array('int', 'lp_num_per_page'),
 				array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
+				array('check', 'lp_hide_blocks_in_admin_section'),
 				array('title', 'edit_permissions'),
 				array('permissions', 'light_portal_view'),
 				array('permissions', 'light_portal_manage')
@@ -165,7 +188,7 @@ class Settings
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
 
-			Page::toggleStatus(1, isset($_POST['lp_main_page_disable']) ? 0 : 1);
+			Page::toggleStatus(1, isset($_POST['lp_frontpage_disable']) ? 0 : 1);
 
 			clean_cache();
 			redirectexit('action=admin;area=lp_settings');
@@ -176,6 +199,7 @@ class Settings
 
 	/**
 	 * Getting information about the database engine/version
+	 *
 	 * Получаем информацию о движке и версии базы данных
 	 *
 	 * @return array
@@ -189,6 +213,7 @@ class Settings
 
 	/**
 	 * The list of available areas to control the blocks
+	 *
 	 * Список доступных областей для управления блоками
 	 *
 	 * @return void
@@ -206,6 +231,7 @@ class Settings
 
 	/**
 	 * The list of available fields to control the pages
+	 *
 	 * Список доступных областей для управления страницами
 	 *
 	 * @return void
@@ -223,6 +249,7 @@ class Settings
 
 	/**
 	 * Calls the requested subaction if it does exist; otherwise, calls the default action
+	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 *
 	 * @param array $subActions

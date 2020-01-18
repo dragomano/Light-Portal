@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -29,6 +29,13 @@ class TopBoards
 	private static $num_boards = 10;
 
 	/**
+	 * Отображать только цифры, или нет
+	 *
+	 * @var bool
+	 */
+	private static $show_numbers_only = false;
+
+	/**
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -38,7 +45,8 @@ class TopBoards
 	{
 		$options['top_boards'] = array(
 			'parameters' => array(
-				'num_boards' => static::$num_boards
+				'num_boards'        => static::$num_boards,
+				'show_numbers_only' => static::$show_numbers_only
 			)
 		);
 	}
@@ -57,7 +65,8 @@ class TopBoards
 			return;
 
 		$args['parameters'] = array(
-			'num_boards' => FILTER_VALIDATE_INT
+			'num_boards'        => FILTER_VALIDATE_INT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -82,6 +91,29 @@ class TopBoards
 				'value' => $context['lp_block']['options']['parameters']['num_boards']
 			)
 		);
+
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id' => 'show_numbers_only',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+			)
+		);
+	}
+
+	/**
+	 * Получаем список популярных разделов
+	 *
+	 * @param int $num_boards
+	 * @return void
+	 */
+	public static function getTopBoards($num_boards)
+	{
+		global $boarddir;
+
+		require_once($boarddir . '/SSI.php');
+		return ssi_topBoards($num_boards, 'array');
 	}
 
 	/**
@@ -94,18 +126,13 @@ class TopBoards
 	 */
 	public static function prepareContent(&$content, $type, $block_id)
 	{
-		global $context, $boarddir, $txt;
+		global $context, $txt;
 
 		if ($type !== 'top_boards')
 			return;
 
 		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-
-		if (($top_boards = cache_get_data('light_portal_top_boards_addon', 3600)) == null) {
-			require_once($boarddir . '/SSI.php');
-			$top_boards = ssi_topBoards($parameters['num_boards'], 'array');
-			cache_put_data('light_portal_top_boards_addon', $top_boards, 3600);
-		}
+		$top_boards = Helpers::useCache('top_boards_addon_u' . $context['user']['id'], 'getTopBoards', __CLASS__, 3600, $parameters['num_boards']);
 
 		ob_start();
 
@@ -122,7 +149,7 @@ class TopBoards
 				<dt>', $board['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', Helpers::correctDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
+					<span>', $parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::correctDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
 				</dd>';
 			}
 

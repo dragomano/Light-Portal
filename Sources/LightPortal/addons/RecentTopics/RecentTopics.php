@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,13 @@ if (!defined('SMF'))
 
 class RecentTopics
 {
+	/**
+	 * Нельзя выбрать класс для оформления контента этого блока
+	 *
+	 * @var bool
+	 */
+	private static $no_content_class = true;
+
 	/**
 	 * Максимальное количество тем для вывода
 	 *
@@ -37,6 +44,7 @@ class RecentTopics
 	public static function blockOptions(&$options)
 	{
 		$options['recent_topics'] = array(
+			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
 				'num_topics' => static::$num_topics
 			)
@@ -85,6 +93,20 @@ class RecentTopics
 	}
 
 	/**
+	 * Получаем последние темы форума
+	 *
+	 * @param int $num_topics
+	 * @return void
+	 */
+	public static function getRecentTopics($num_topics)
+	{
+		global $boarddir;
+
+		require_once($boarddir . '/SSI.php');
+		return ssi_recentTopics($num_topics, null, null, 'array');
+	}
+
+	/**
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -99,24 +121,21 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-
-		if (($recent_topics = cache_get_data('light_portal_recent_topics_addon', 3600)) == null) {
-			require_once($boarddir . '/SSI.php');
-			$recent_topics = ssi_recentTopics($parameters['num_topics'], null, null, 'array');
-			cache_put_data('light_portal_recent_topics_addon', $recent_topics, 3600);
-		}
+		$parameters    = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
+		$recent_topics = Helpers::useCache('recent_topics_addon_u' . $context['user']['id'], 'getRecentTopics', __CLASS__, 3600, $parameters['num_topics']);
 
 		ob_start();
 
 		if (!empty($recent_topics)) {
 			echo '
-			<ul class="recent_topics">';
+			<ul class="recent_topics noup">';
 
 			foreach ($recent_topics as $topic) {
 				echo '
-				<li>
-					', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], ' ', $txt['by'], ' ', $topic['poster']['link'], ' <br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
+				<li class="windowbg">
+					', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
+					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '
+					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
 				</li>';
 			}
 

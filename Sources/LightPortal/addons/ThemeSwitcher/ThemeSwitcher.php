@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * ThemeSwitcher
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\ThemeSwitcher;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -20,14 +22,32 @@ if (!defined('SMF'))
 class ThemeSwitcher
 {
 	/**
-	 * Добавляем параметры блока
+	 * Получаем список активных шаблонов форума
 	 *
-	 * @param array $options
-	 * @return void
+	 * @return array
 	 */
-	public static function blockOptions(&$options)
+	public static function getAvailableThemes()
 	{
-		$options['themeswitcher'] = array();
+		global $smcFunc, $modSettings;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT id_theme, value
+			FROM {db_prefix}themes
+			WHERE id_member = 0
+				AND variable = \'name\'
+				AND id_theme IN ({array_int:themes})',
+			array(
+				'themes' => explode(',', $modSettings['knownThemes'])
+			)
+		);
+
+		$available_themes = [];
+		while ($row = $smcFunc['db_fetch_row']($request))
+			$available_themes[$row[0]] = $row[1];
+
+		$smcFunc['db_free_result']($request);
+
+		return $available_themes;
 	}
 
 	/**
@@ -45,26 +65,7 @@ class ThemeSwitcher
 		if ($type !== 'themeswitcher')
 			return;
 
-		if (($available_themes = cache_get_data('light_portal_themeswitcher_addon', 3600)) == null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT id_theme, value
-				FROM {db_prefix}themes
-				WHERE id_member = 0
-					AND variable = \'name\'
-					AND id_theme IN ({array_int:themes})',
-				array(
-					'themes' => explode(',', $modSettings['knownThemes'])
-				)
-			);
-
-			$available_themes = [];
-			while ($row = $smcFunc['db_fetch_row']($request))
-				$available_themes[$row[0]] = $row[1];
-
-			$smcFunc['db_free_result']($request);
-
-			cache_put_data('light_portal_themeswitcher_addon', $available_themes, 3600);
-		}
+		$available_themes = Helpers::useCache('themeswitcher_addon', 'getAvailableThemes', __CLASS__);
 
 		ob_start();
 
@@ -91,7 +92,6 @@ class ThemeSwitcher
 						if (search != "") {
 							search = search.replace("?", "") + ";";
 						}
-						console.log(search);
 						window.location = smf_prepareScriptUrl(smf_scripturl) + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
 					}
 				</script>';

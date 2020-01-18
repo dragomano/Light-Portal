@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -36,6 +36,13 @@ class TopTopics
 	private static $num_topics = 10;
 
 	/**
+	 * Отображать только цифры, или нет
+	 *
+	 * @var bool
+	 */
+	private static $show_numbers_only = false;
+
+	/**
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -45,8 +52,9 @@ class TopTopics
 	{
 		$options['top_topics'] = array(
 			'parameters' => array(
-				'popularity_type' => static::$type,
-				'num_topics'      => static::$num_topics
+				'popularity_type'   => static::$type,
+				'num_topics'        => static::$num_topics,
+				'show_numbers_only' => static::$show_numbers_only
 			)
 		);
 	}
@@ -65,8 +73,9 @@ class TopTopics
 			return;
 
 		$args['parameters'] = array(
-			'popularity_type' => FILTER_SANITIZE_STRING,
-			'num_topics'      => FILTER_VALIDATE_INT
+			'popularity_type'   => FILTER_SANITIZE_STRING,
+			'num_topics'        => FILTER_VALIDATE_INT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -107,6 +116,31 @@ class TopTopics
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
 			)
 		);
+
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id' => 'show_numbers_only',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+			)
+		);
+	}
+
+	/**
+	 * Получаем список популярных тем
+	 *
+	 * @param array $params
+	 * @return void
+	 */
+	public static function getTopTopics($params)
+	{
+		global $boarddir;
+
+		[$popularity_type, $num_topics] = $params;
+
+		require_once($boarddir . '/SSI.php');
+		return ssi_topTopics($popularity_type, $num_topics, 'array');
 	}
 
 	/**
@@ -119,18 +153,13 @@ class TopTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id)
 	{
-		global $context, $boarddir, $txt;
+		global $context, $txt;
 
 		if ($type !== 'top_topics')
 			return;
 
 		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-
-		if (($top_topics = cache_get_data('light_portal_top_topics_addon', 3600)) == null) {
-			require_once($boarddir . '/SSI.php');
-			$top_topics = ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
-			cache_put_data('light_portal_top_topics_addon', $top_topics, 3600);
-		}
+		$top_topics = Helpers::useCache('top_topics_addon_u' . $context['user']['id'], 'getTopTopics', __CLASS__, 3600, array($parameters['popularity_type'], $parameters['num_topics']));
 
 		ob_start();
 
@@ -147,7 +176,7 @@ class TopTopics
 				<dt>', $topic['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_top_topics_addon_' . $parameters['popularity_type']]), '</span>
+					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_top_topics_addon_' . $parameters['popularity_type']]), '</span>
 				</dd>';
 			}
 

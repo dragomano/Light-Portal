@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,7 @@ class Helpers
 {
 	/**
 	 * Get language of the current user
+	 *
 	 * Получаем язык текущего пользователя
 	 *
 	 * @return string
@@ -34,6 +35,7 @@ class Helpers
 
 	/**
 	 * Get the maximum possible length of the message, in accordance with the settings of the forum
+	 *
 	 * Получаем максимально возможную длину сообщения, в соответствии с настройками форума
 	 *
 	 * @return int
@@ -47,6 +49,7 @@ class Helpers
 
 	/**
 	 * Remove BBCode from transmitted data
+	 *
 	 * Убираем ББ-код из переданных данных
 	 *
 	 * @param array|string $data
@@ -62,6 +65,7 @@ class Helpers
 
 	/**
 	 * Get a title for preview block
+	 *
 	 * Получаем заголовок блока превью
 	 *
 	 * @return string
@@ -75,6 +79,7 @@ class Helpers
 
 	/**
 	 * Get text within span that is floating by defined direction
+	 *
 	 * Получаем текст внутри тега span, с float = $direction (left|right)
 	 *
 	 * @param string $text
@@ -88,7 +93,9 @@ class Helpers
 
 	/**
 	 * The correct declination of words
+	 *
 	 * Правильное склонение слов
+	 *
 	 * https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
 	 * http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
 	 *
@@ -162,6 +169,7 @@ class Helpers
 
 	/**
 	 * Get the time in the format "Yesterday", "Today", "X minutes ago", etc.
+	 *
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
 	 *
 	 * @param integer $a — Unix time
@@ -179,7 +187,8 @@ class Helpers
 		$sec  = $time - $a;
 		$last = round(($sec) / 60);
 
-		// Future time? | Будущее время?
+		// Future time?
+		// Будущее время?
 		if ($a > $time) {
 			$days = ($a - $time) / 60 / 60 / 24;
 
@@ -210,5 +219,52 @@ class Helpers
 			return $d . ' ' . $txt['months'][date('n', $a)] . ' ' . $y;
 		else
 			return timeformat($a);
+	}
+
+	/**
+	 * Using cache
+	 *
+	 * Используем кэш
+	 *
+	 * @param string $data
+	 * @param string $getData
+	 * @param string $class
+	 * @param int $time (in seconds)
+	 * @param array $vars
+	 * @return mixed
+	 */
+	public static function useCache($data, $getData, $class = 'self', $time = 3600, $vars = [])
+	{
+		if (($$data = cache_get_data('light_portal_' . $data, $time)) == null) {
+			$$data = null;
+
+			if (method_exists($class, $getData)) {
+				if ($class == 'self')
+					$$data = self::$getData($vars);
+				else
+					$$data = $class::$getData($vars);
+			} elseif (function_exists($getData)) {
+				$$data = $getData($vars);}
+
+			cache_put_data('light_portal_' . $data, $$data, $time);
+		}
+
+		return $$data;
+	}
+
+	/**
+	 * Form a list of addons that not installed
+	 *
+	 * Формируем список неустановленных плагинов
+	 *
+	 * @param string $type
+	 * @return void
+	 */
+	public static function findMissingBlockTypes($type)
+	{
+		global $txt, $context;
+
+		if (empty($txt['lp_block_types'][$type]))
+			$context['lp_missing_block_types'][$type] = sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_')));
 	}
 }

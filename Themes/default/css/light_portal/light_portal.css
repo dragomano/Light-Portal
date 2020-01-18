@@ -51,6 +51,21 @@
 	width: 14%;
 }
 
+.article_link:hover {
+	text-decoration: none;
+}
+
+.article_content:hover {
+	box-shadow: 0 1px 4px rgba(0,0,0,0.3),0 0 40px rgba(0,0,0,0.1) inset;
+}
+
+.article_image {
+	display: block;
+	height: auto;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
 @media (max-width: 600px) {
 	.lp_current_blocks th.type, .lp_current_blocks td.type, .lp_current_blocks th.areas, .lp_current_blocks td.areas {
 		display: none;
@@ -69,8 +84,16 @@
 	}
 }
 
-/* Addons */
+/* Topic Rating Bar */
+.lp_frontpage_articles .topic_stars_main {
+	float: right;
+}
+.lp_frontpage_articles .topic_stars {
+	background-image: url(../../images/trb/one_star.png);
+	background-repeat: no-repeat;
+}
 
+/* Addons */
 .likely__widget {
 	opacity: 0.5 !important;
 	-webkit-filter: grayscale(100%);
@@ -83,10 +106,8 @@
 }
 
 .recent_posts li, .recent_topics li {
-	border-bottom: 1px solid #777;
-}
-.recent_posts li:last-child, .recent_topics li:last-child {
-	border: none;
+	margin: 4px 0 0 0;
+	padding: 6px 12px;
 }
 
 dl.top_posters dt img {

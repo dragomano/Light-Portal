@@ -1,6 +1,7 @@
 <?php
 
-// Block management section template | Шаблон раздела управления блоками
+// Block management section template
+// Шаблон раздела управления блоками
 function template_manage_blocks()
 {
 	global $settings, $txt;
@@ -73,7 +74,8 @@ function template_manage_blocks()
 	</script>';
 }
 
-// Displaying a table with blocks | Отображение таблицы с блоками
+// Displaying a table with blocks
+// Отображение таблицы с блоками
 function show_block_table()
 {
 	global $context, $txt, $settings, $scripturl;
@@ -131,7 +133,7 @@ function show_block_table()
 					', $data['title'][$context['user']['language']], '
 				</td>
 				<td class="type centertext">
-					', $txt['lp_block_types'][$data['type']], '
+					', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
 				</td>
 				<td class="areas centertext">
 					', $data['areas'], '
@@ -176,10 +178,11 @@ function show_block_table()
 	}
 }
 
-// The page for adding blocks | Страница добавления блоков
+// The page for adding blocks
+// Страница добавления блоков
 function template_block_add()
 {
-	global $txt, $context;
+	global $txt, $context, $settings;
 
 	echo '
 	<div class="cat_bar">
@@ -207,6 +210,7 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 		</form>
 		<br class="clear">
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/jquery.matchHeight-min.js"></script>
 		<script>
 			jQuery(document).ready(function($) {
 				$("#lp_blocks .item").on("click", function() {
@@ -215,23 +219,14 @@ function template_block_add()
 					this_form.children("input[name=add_block]").val(block_name);
 					this_form.submit();
 				});
-				setEqualHeight($("#lp_blocks .row .item"));
+				$("#lp_blocks .row .item").matchHeight();
 			});
-			function setEqualHeight(columns) {
-				let tallestcolumn = 0;
-				columns.each(function() {
-					currentHeight = $(this).height();
-					if (currentHeight > tallestcolumn) {
-						tallestcolumn = currentHeight;
-					}
-				});
-				columns.height(tallestcolumn);
-			}
 		</script>
 	</div>';
 }
 
-// Block creation/editing template | Шаблон создания/редактирования блока
+// Block creation/editing template
+// Шаблон создания/редактирования блока
 function template_post_block()
 {
 	global $context, $txt;

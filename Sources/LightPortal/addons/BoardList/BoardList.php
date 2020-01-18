@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * BoardList
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -122,6 +124,26 @@ class BoardList
 	}
 
 	/**
+	 * Получаем список разделов, с учётом прав доступа и списка игнора
+	 *
+	 * @return array
+	 */
+	public static function getBoardList()
+	{
+		global $sourcedir;
+
+		require_once($sourcedir . '/Subs-MessageIndex.php');
+
+		$boardListOptions = array(
+			'ignore_boards'   => true,
+			'use_permissions' => true,
+			'not_redirection' => true
+		);
+
+		return getBoardList($boardListOptions);
+	}
+
+	/**
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -131,26 +153,13 @@ class BoardList
 	 */
 	public static function prepareContent(&$content, $type, $block_id)
 	{
-		global $context, $sourcedir;
+		global $context;
 
 		if ($type !== 'boardlist')
 			return;
 
 		$context['current_board'] = $context['current_board'] ?? 0;
-
-		if (($context['lp_boardlist'] = cache_get_data('light_portal_boardlist_addon', 3600)) == null) {
-			require_once($sourcedir . '/Subs-MessageIndex.php');
-
-			$boardListOptions = array(
-				'ignore_boards'   => true,
-				'use_permissions' => true,
-				'not_redirection' => true
-			);
-
-			$context['lp_boardlist'] = getBoardList($boardListOptions);
-
-			cache_put_data('light_portal_boardlist_addon', $context['lp_boardlist'], 3600);
-		}
+		$context['lp_boardlist']  = Helpers::useCache('boardlist_addon_u' . $context['user']['id'], 'getBoardList', __CLASS__);
 
 		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
 

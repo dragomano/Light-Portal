@@ -13,18 +13,26 @@ $txt['lp_forum']  = 'Forum';
 // Settings
 $txt['lp_settings']                            = 'Portal settings';
 $txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
-$txt['lp_main_page_title']                     = 'The main page title';
-$txt['lp_main_page_disable']                   = 'Disable the main page';
+$txt['lp_frontpage_title']                     = 'The frontpage title';
+$txt['lp_frontpage_disable']                   = 'Disable the frontpage';
+$txt['lp_frontpage_mode']                      = 'What is should displayed as the frontpage';
+$txt['lp_frontpage_mode_set']                  = array('The main page', 'All topics from selected boards');
+$txt['lp_frontpage_boards']                    = 'Boards as sources of articles for the frontpage';
+$txt['lp_frontpage_layout']                    = 'Number of columns for displaying articles';
+$txt['lp_show_images_in_articles']             = 'Show images that found in articles';
+$txt['lp_subject_size']                        = 'The max size of article titles (in symbols)';
+$txt['lp_teaser_size']                         = 'The max size of article teasers (in symbols)';
+$txt['lp_num_per_page']                        = 'Maximum number of items (for pagination)';
 $txt['lp_standalone']                          = 'Standalone mode';
 $txt['lp_standalone_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
 $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
-$txt['lp_num_per_page']                        = 'Maximum number of items in the page list (for pagination)';
 $txt['lp_page_og_image']                       = 'Use an image within the page content for the <strong>og-image</strong> metatag';
 $txt['lp_page_og_image_set']                   = array('None', 'First found', 'Last found');
+$txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in admin section';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
-$txt['groups_light_portal_manage']             = 'Who can manage the portal';
+$txt['groups_light_portal_manage']             = 'Who can manage blocks and pages';
 
 // Actions
 $txt['lp_title']       = 'Title';
@@ -113,6 +121,7 @@ $txt['lp_post_error_no_unique_alias'] = 'A page with this alias already exists!'
 $txt['lp_post_error_no_content']      = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
+$txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
 
 // Who
 $txt['lp_who_main'] = 'Viewing <a href="%1$s">the main portal page</a>.';

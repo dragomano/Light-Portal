@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -20,32 +20,220 @@ if (!defined('SMF'))
 class Subs
 {
 	/**
-	 * Using cache
-	 * Используем кэш
+	 * Form an array of articles
 	 *
-	 * @param string $data
-	 * @param string $getData
-	 * @param int $time
-	 * @return mixed
+	 * Формируем массив статей
+	 *
+	 * @param string $source (pages|topics)
+	 * @return void
 	 */
-	public static function useCache($data, $getData, $time = 3600)
+	public static function prepareArticles($source = 'pages')
 	{
-		if (($$data = cache_get_data('light_portal_' . $data, $time)) == null) {
-			$$data = null;
+		global $user_info, $modSettings, $context, $scripturl;
 
-			if (method_exists(__CLASS__, $getData))
-				$$data = self::$getData();
-			elseif (function_exists($getData))
-				$$data = $getData();
+		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $source == 'topics' ? 'getTopicsFromSelectedBoards' : 'getActivePages', __CLASS__);
 
-			cache_put_data('light_portal_' . $data, $$data, $time);
+		$total_items = count($articles);
+		$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
+		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], $total_items, $limit);
+		$context['start'] = &$_REQUEST['start'];
+		$start = (int) $_REQUEST['start'];
+
+		$context['lp_frontpage_articles'] = array_slice($articles, $start, $limit);
+	}
+
+	/**
+	 * Get topics from selected boards
+	 *
+	 * Получаем темы из выбранных разделов
+	 *
+	 * @return array
+	 */
+	public static function getTopicsFromSelectedBoards()
+	{
+		global $modSettings, $smcFunc, $user_info, $scripturl, $settings;
+
+		$boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+
+		if (empty($boards))
+			return [];
+
+		// Check whether compatible modifications are installed
+		// Проверяем, установлены ли совместимые модификации
+		$topic_rating_bar = class_exists('TopicRatingBar');
+		$optimus = class_exists('\Bugo\Optimus\Subs') && !empty($modSettings['optimus_allow_change_desc']);
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . ($topic_rating_bar ? ', tr.total_votes, tr.total_value' : '') . ($optimus ? ', COALESCE(t.optimus_description, 0) AS optimus_description' : '') . '
+			FROM {db_prefix}topics AS t
+				INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
+				INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = mf.id_member)
+				LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)' . ($user_info['is_guest'] ? '' : '
+				LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
+				LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
+				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . ($topic_rating_bar ? '
+				LEFT JOIN {db_prefix}topic_ratings AS tr ON (tr.id = t.id_topic)' : '') . '
+			WHERE t.approved = 1
+				AND t.id_poll = 0
+				AND t.id_redirect_topic = 0
+				AND t.id_board IN ({array_int:select_boards})
+				AND {query_wanna_see_board}
+			ORDER BY t.id_last_msg DESC',
+			array(
+				'current_member' => $user_info['id'],
+				'select_boards'  => $boards
+			)
+		);
+
+		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
+		$teaser_size  = !empty($modSettings['lp_teaser_size']) ? (int) $modSettings['lp_teaser_size'] : 0;
+
+		$topics = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			censorText($row['subject']);
+			censorText($row['body']);
+
+			$rating = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
+
+			$image = null;
+			if (!empty($modSettings['lp_show_images_in_articles'])) {
+				$body = parse_bbc($row['body'], false);
+				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
+				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png" width="100%'));
+			}
+
+			if (!empty($teaser_size) && !empty($row['optimus_description']))
+				$row['optimus_description'] = shorten_subject($row['optimus_description'], $teaser_size - 3);
+
+			$row['body'] = preg_replace('~\[spoiler\].*?\[\/spoiler\]~Usi', '', $row['body']);
+			$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')));
+			if (!empty($teaser_size) && $smcFunc['strlen']($row['body']) > $teaser_size)
+				$row['body'] = shorten_subject($row['body'], $teaser_size - 3);
+
+			$colorClass = '';
+			if ($row['is_sticky'])
+				$colorClass .= ' alternative2';
+
+			$topics[$row['id_topic']] = array(
+				'id'          => $row['id_topic'],
+				'poster_id'   => $row['id_member'],
+				'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
+				'poster_name' => $row['poster_name'],
+				'time'        => Helpers::getFriendlyTime($row['poster_time']),
+				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size - $rating) : $row['subject'],
+				'preview'     => $row['optimus_description'] ?: $row['body'],
+				'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
+				'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
+				'is_sticky'   => !empty($row['is_sticky']),
+				'is_new'      => $row['new_from'] <= $row['id_msg_modified'],
+				'num_views'   => $row['num_views'],
+				'num_replies' => $row['num_replies'],
+				'css_class'   => $colorClass,
+				'image'       => $image,
+				'rating'      => $rating
+			);
 		}
 
-		return $$data;
+		$smcFunc['db_free_result']($request);
+
+		return $topics;
+	}
+
+	/**
+	 * Get active pages (except the main one)
+	 *
+	 * Получаем активные страницы
+	 *
+	 * @return array
+	 */
+	public static function getActivePages()
+	{
+		global $smcFunc, $txt, $modSettings, $scripturl, $settings, $user_info;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				p.page_id, p.author_id, p.title, p.alias, p.description, p.type, p.permissions, p.status, p.num_views,
+				GREATEST(created_at, updated_at) AS date, COALESCE(mem.real_name, {string:guest}) AS author_name
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+			WHERE p.alias != {string:alias}
+				AND p.status = {int:status}
+			ORDER BY date DESC',
+			array(
+				'guest'  => $txt['guest'],
+				'alias'  => '/',
+				'status' => 1
+			)
+		);
+
+		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
+		$teaser_size  = !empty($modSettings['lp_teaser_size']) ? (int) $modSettings['lp_teaser_size'] : 0;
+
+		$pages = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			//Subs::parseContent($row['content'], $row['type']);
+
+			$image = null;
+			if (!empty($modSettings['lp_show_images_in_articles'])) {
+				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
+				$image = $first_post_image ? array_pop($value) : ($settings['default_images_url'] . '/lp_default_image.png" width="100%');
+			}
+
+			if (!empty($teaser_size) && !empty($row['description']))
+				$row['description'] = shorten_subject($row['description'], $teaser_size - 3);
+
+			$pages[] = array(
+				'id'          => $row['page_id'],
+				'author_id'   => $row['author_id'],
+				'author_link' => $scripturl . '?action=profile;u=' . $row['author_id'],
+				'author_name' => $row['author_name'],
+				'title'       => !empty($subject_size) ? shorten_subject($row['title'], $subject_size) : $row['title'],
+				'alias'       => $row['alias'],
+				'description' => $row['description'],
+				'content'     => $row['content'],
+				'type'        => $row['type'],
+				'num_views'   => $row['num_views'],
+				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+				'link'        => $scripturl . '?page=' . $row['alias'],
+				'image'       => $image,
+				'can_show'    => Subs::canShowItem($row['permissions']),
+				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		$pages = array_filter($pages, function ($item) {
+			return $item['can_show'] == true;
+		});
+
+		return $pages;
+	}
+
+	/**
+	 *
+	 * Prepare information about current blocks of the portal
+	 *
+	 * Собираем информацию о текущих блоках портала
+	 *
+	 * @return void
+	 */
+	public static function loadBlocks()
+	{
+		global $context;
+
+		$context['lp_all_title_classes']   = self::getTitleClasses();
+		$context['lp_all_content_classes'] = self::getContentClasses();
+
+		$context['lp_active_blocks'] = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
 	}
 
 	/**
 	 * Get information about all active blocks of the portal
+	 *
 	 * Получаем информацию обо всех активных блоках портала
 	 *
 	 * @return array
@@ -101,43 +289,22 @@ class Subs
 	}
 
 	/**
-	 * Prepare information about current blocks of the portal
-	 * Собираем информацию о текущих блоках портала
-	 *
-	 * @return void
-	 */
-	public static function loadBlocks()
-	{
-		global $context;
-
-		$context['lp_all_title_classes']   = self::getTitleClasses();
-		$context['lp_all_content_classes'] = self::getContentClasses();
-
-		$context['lp_active_blocks'] = self::useCache('active_blocks', 'getActiveBlocks');
-
-		if (empty($context['lp_active_blocks']))
-			return;
-	}
-
-	/**
 	 * Load used CSS
+	 *
 	 * Подключаем используемые таблицы стилей
 	 *
 	 * @return void
 	 */
 	public static function loadCssFiles()
 	{
-		global $context;
-
-		if (!empty($context['lp_active_blocks']) || isset($_GET['page']) || empty($context['current_action']) || $context['current_action'] == 'admin') {
-			loadCssFile('light_portal/flexboxgrid.min.css'); // https://cdn.jsdelivr.net/npm/flexboxgrid@6/dist/flexboxgrid.min.css
-			loadCssFile('light_portal/fontawesome.min.css'); // https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/fontawesome.min.css
-			loadCssFile('light_portal/light_portal.css');
-		}
+		loadCssFile('light_portal/flexboxgrid.min.css'); // https://cdn.jsdelivr.net/npm/flexboxgrid@6/dist/flexboxgrid.min.css
+		loadCssFile('light_portal/fontawesome.min.css'); // https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/fontawesome.min.css
+		loadCssFile('light_portal/light_portal.css');
 	}
 
 	/**
 	 * Remove unnecessary areas for standalone mode
+	 *
 	 * Удаляем ненужные в автономном режиме области
 	 *
 	 * @param array $data
@@ -168,6 +335,7 @@ class Subs
 
 	/**
 	 * Parse content depending on the type
+	 *
 	 * Парсим контент в зависимости от типа
 	 *
 	 * @param string $content
@@ -205,6 +373,7 @@ class Subs
 
 	/**
 	 * Get nested directories
+	 *
 	 * Получаем вложенные директории
 	 *
 	 * @param string $path
@@ -222,12 +391,13 @@ class Subs
 	}
 
 	/**
-	 * Get LP addons
+	 * Get names of the current addons
+	 *
 	 * Получаем имена имеющихся дополнений
 	 *
 	 * @return array
 	 */
-	private static function getAddons()
+	public static function getAddons()
 	{
 		$addons = [];
 		foreach (glob(LP_ADDONS . '/*.php') as $filename) {
@@ -245,6 +415,7 @@ class Subs
 
 	/**
 	 * Run addons
+	 *
 	 * Подключаем аддоны
 	 *
 	 * @param string $type ('init', 'blockOptions', 'prepareEditor', 'validateBlockData', 'prepareBlockFields', 'parseContent', 'prepareContent', 'credits')
@@ -253,7 +424,7 @@ class Subs
 	 */
 	public static function runAddons($type = 'init', $vars = [])
 	{
-		$light_portal_addons = self::useCache('addons', 'getAddons');
+		$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
 
 		if (empty($light_portal_addons))
 			return;
@@ -271,6 +442,7 @@ class Subs
 
 	/**
 	 * Require the language file of the addon
+	 *
 	 * Подключаем языковой файл аддона
 	 *
 	 * @param string $addon
@@ -290,14 +462,14 @@ class Subs
 
 		foreach ($languages as $lang) {
 			$lang_file = $base_dir . $lang . '.php';
-			if (is_file($lang_file)) {
+			if (is_file($lang_file))
 				require_once($lang_file);
-			}
 		}
 	}
 
 	/**
 	 * Check whether the current user can view the portal item according to their access rights
+	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 *
 	 * @param int $permissions
@@ -321,6 +493,7 @@ class Subs
 
 	/**
 	 * Creating meta data for SEO
+	 *
 	 * Формируем мета-данные для SEO
 	 *
 	 * @return void
@@ -337,7 +510,8 @@ class Subs
 		$context['optimus_og_type']['article']['published_time'] = date('Y-m-d\TH:i:s', $context['lp_page']['created_at']);
 		$context['optimus_og_type']['article']['modified_time']  = date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']);
 
-		// Looking for an image in the page content | Ищем ссылку на последнее изображение в тексте страницы
+		// Looking for an image in the page content
+		// Ищем ссылку на последнее изображение в тексте страницы
 		if (!empty($modSettings['lp_page_og_image'])) {
 			$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $context['lp_page']['content'], $values);
 			if ($image_found && is_array($values)) {
@@ -350,6 +524,7 @@ class Subs
 
 	/**
 	 * Load BBCode editor
+	 *
 	 * Подключаем редактор ББ-кода
 	 *
 	 * @param string $content
@@ -379,6 +554,7 @@ class Subs
 
 	/**
 	 * Request a list of all localizations of the forum
+	 *
 	 * Запрашиваем список всех локализаций форума
 	 *
 	 * @return void
@@ -389,7 +565,8 @@ class Subs
 
 		getLanguages();
 
-		// Only one language by default! | Если на форуме отключен выбор языков, оставим только один, заданный по умолчанию
+		// Only one language by default!
+		// Если на форуме отключен выбор языков, оставим только один, заданный по умолчанию
 		if (empty($modSettings['userLanguage'])) {
 			$default_lang = $context['languages'][$language];
 			$context['languages'] = [];
@@ -399,6 +576,7 @@ class Subs
 
 	/**
 	 * Get a list of all used classes for blocks with a header
+	 *
 	 * Получаем список всех используемых классов для блоков с заголовком
 	 *
 	 * @return array
@@ -418,6 +596,7 @@ class Subs
 
 	/**
 	 * Get a list of all used classes for blocks with content
+	 *
 	 * Получаем список всех используемых классов для блоков с контентом
 	 *
 	 * @return array
@@ -439,6 +618,7 @@ class Subs
 
 	/**
 	 * Return copyright information
+	 *
 	 * Возвращаем информацию об авторских правах
 	 *
 	 * @return string
@@ -447,11 +627,12 @@ class Subs
 	{
 		global $scripturl;
 
-		return '<a class="bbc_link" href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">BSD</a>';
+		return '<a class="bbc_link" href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">BSD 3-Clause</a> License';
 	}
 
 	/**
 	 * Collect information about used components
+	 *
 	 * Формируем информацию об используемых компонентах
 	 *
 	 * @return void
@@ -472,7 +653,7 @@ class Subs
 			)
 		);
 		$links[] = array(
-			'title' => 'Sortable',
+			'title' => 'Sortable.js',
 			'link' => 'https://github.com/SortableJS/Sortable',
 			'license' => array(
 				'name' => 'the MIT License (MIT)',
@@ -487,8 +668,18 @@ class Subs
 				'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
 			)
 		);
+		$links[] = array(
+			'title' => 'jquery.matchHeight.js',
+			'link' => 'https://github.com/liabru/jquery-match-height',
+			'author' => '2015 Liam Brummitt',
+			'license' => array(
+				'name' => 'the MIT License (MIT)',
+				'link' => 'https://github.com/liabru/jquery-match-height/blob/master/LICENSE'
+			)
+		);
 
-		// Adding copyrights of used plugins | Возможность добавить копирайты используемых плагинов
+		// Adding copyrights of used plugins
+		// Возможность добавить копирайты используемых плагинов
 		self::runAddons('credits', array(&$links));
 
 		$context['lp_components'] = $links;

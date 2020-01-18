@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -21,6 +21,7 @@ class Page
 {
 	/**
 	 * The page name must begin with a Latin letter and consist of lowercase Latin letters and numbers
+	 *
 	 * Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв и цифр
 	 *
 	 * @var string
@@ -29,6 +30,7 @@ class Page
 
 	/**
 	 * Display the page by its alias
+	 *
 	 * Просматриваем страницу по её алиасу
 	 *
 	 * @param string $alias
@@ -55,7 +57,7 @@ class Page
 			Block::display();
 
 		if ($alias === '/') {
-			$context['page_title'] = $modSettings['lp_main_page_title_' . $context['user']['language']] ?? $txt['lp_portal'];
+			$context['page_title'] = $modSettings['lp_frontpage_title_' . $context['user']['language']] ?? $txt['lp_portal'];
 		} else {
 			$context['page_title'] = $context['lp_page']['title'];
 			$context['canonical_url'] = $scripturl . '?page=' . $alias;
@@ -65,9 +67,23 @@ class Page
 			'name' => $context['page_title']
 		);
 
-		$context['sub_template'] = 'show_page';
+		if (!empty($modSettings['lp_frontpage_mode']) && empty($_GET['page'])) {
+			$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
+			$context['lp_frontpage_layout'] = 12 / (!empty($modSettings['lp_frontpage_layout']) ? (int) $modSettings['lp_frontpage_layout'] : 2);
+			if ($limit == 1)
+				$context['lp_frontpage_layout'] = 12;
 
-		self::updateNumViews();
+			if ($modSettings['lp_frontpage_mode'] == 1) {
+				Subs::prepareArticles('topics');
+				$context['sub_template'] = 'show_topics_as_articles';
+			} else {
+				Subs::prepareArticles();
+				$context['sub_template'] = 'show_pages_as_articles';
+			}
+		} else {
+			$context['sub_template'] = 'show_page';
+			self::updateNumViews();
+		}
 
 		if (isset($_REQUEST['page'])) {
 			if ($_REQUEST['page'] !== $alias)
@@ -79,6 +95,7 @@ class Page
 
 	/**
 	 * Manage pages
+	 *
 	 * Управление страницами
 	 *
 	 * @return void
@@ -101,9 +118,11 @@ class Page
 
 		self::postActions();
 
+		$context['lp_main_page'] = self::getData('/');
+
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => $modSettings['lp_num_per_page'] ?? 10,
+			'items_per_page' => 10,
 			'title' => $txt['lp_extra_pages'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages',
@@ -148,7 +167,7 @@ class Page
 					'data' => array(
 						'function' => function ($entry) use ($txt)
 						{
-							return $txt['lp_page_types'][$entry['type']];
+							return $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
 						},
 						'class' => 'centertext'
 					),
@@ -231,6 +250,7 @@ class Page
 
 	/**
 	 * Get the list of pages
+	 *
 	 * Получаем список страниц
 	 *
 	 * @param int $start
@@ -240,16 +260,21 @@ class Page
 	 */
 	public static function getAll($start, $items_per_page, $sort)
 	{
-		global $smcFunc, $context;
+		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT page_id, author_id, title, alias, type, status, num_views, GREATEST(created_at, updated_at) AS date
-			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
-			WHERE author_id = {int:user_id}') . '
-			ORDER BY ' . $sort . ', page_id
+			SELECT
+				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.status, p.num_views,
+				GREATEST(created_at, updated_at) AS date
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+			WHERE p.alias != {string:alias}' . (allowedTo('admin_forum') ? '' : '
+				AND p.author_id = {int:user_id}') . '
+			ORDER BY ' . $sort . ', p.page_id
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
-				'user_id' => $context['user']['id']
+				'alias'   => '/',
+				'user_id' => $user_info['id']
 			)
 		);
 
@@ -268,26 +293,19 @@ class Page
 
 		$smcFunc['db_free_result']($request);
 
-		foreach ($items as $key => $item) {
-			if ($item['alias'] == '/') {
-				$context['lp_main_page'] = $item;
-				unset($items[$key]);
-				break;
-			}
-		}
-
 		return $items;
 	}
 
 	/**
 	 * Get the total number of pages
+	 *
 	 * Подсчитываем общее количество страниц
 	 *
 	 * @return int
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc, $context;
+		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
@@ -296,7 +314,7 @@ class Page
 				AND author_id = {int:user_id}'),
 			array(
 				'alias'   => '/',
-				'user_id' => $context['user']['id']
+				'user_id' => $user_info['id']
 			)
 		);
 
@@ -308,6 +326,7 @@ class Page
 
 	/**
 	 * Possible actions with pages
+	 *
 	 * Возможные действия со страницами
 	 *
 	 * @return void
@@ -322,7 +341,7 @@ class Page
 			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
 
 			if ($item == 1)
-				updateSettings(array('lp_main_page_disable' => $status == 'off' ? 0 : 1));
+				updateSettings(array('lp_frontpage_disable' => $status == 'off' ? 0 : 1));
 
 			self::toggleStatus($item, $status == 'off' ? 1 : 0);
 		}
@@ -330,6 +349,7 @@ class Page
 
 	/**
 	 * Deleting a page
+	 *
 	 * Удаление страницы
 	 *
 	 * @param int $item
@@ -353,6 +373,7 @@ class Page
 
 	/**
 	 * Changing the page status
+	 *
 	 * Смена статуса страницы
 	 *
 	 * @param int $item
@@ -379,6 +400,7 @@ class Page
 
 	/**
 	 * Adding a page
+	 *
 	 * Добавление страницы
 	 *
 	 * @return void
@@ -409,6 +431,7 @@ class Page
 
 	/**
 	 * Editing a page
+	 *
 	 * Редактирование страницы
 	 *
 	 * @return void
@@ -454,6 +477,7 @@ class Page
 
 	/**
 	 * Validating the sent data
+	 *
 	 * Валидируем отправляемые данные
 	 *
 	 * @return void
@@ -495,12 +519,13 @@ class Page
 
 		if ($context['lp_page']['alias'] == '/') {
 			foreach ($context['languages'] as $lang)
-				$context['lp_page']['title_' . $lang['filename']] = $post_data['title_' . $lang['filename']] ?? $modSettings['lp_main_page_title_' . $lang['filename']] ?? '';
+				$context['lp_page']['title_' . $lang['filename']] = $post_data['title_' . $lang['filename']] ?? $modSettings['lp_frontpage_title_' . $lang['filename']] ?? '';
 		}
 	}
 
 	/**
 	 * Check that the fields are filled in correctly
+	 *
 	 * Проверям правильность заполнения полей
 	 *
 	 * @param array $data
@@ -546,6 +571,7 @@ class Page
 
 	/**
 	 * Adding special fields to the form
+	 *
 	 * Добавляем свои поля для формы
 	 *
 	 * @return void
@@ -664,6 +690,7 @@ class Page
 
 	/**
 	 * Run the desired editor
+	 *
 	 * Подключаем нужный редактор
 	 *
 	 * @return void
@@ -680,6 +707,7 @@ class Page
 
 	/**
 	 * Preview
+	 *
 	 * Предварительный просмотр
 	 *
 	 * @return void
@@ -710,6 +738,7 @@ class Page
 
 	/**
 	 * Creating or updating a page
+	 *
 	 * Создаем или обновляем страницу
 	 *
 	 * @param int $item
@@ -775,7 +804,7 @@ class Page
 			$main_page_title = [];
 
 			foreach ($context['languages'] as $lang)
-				$main_page_title['lp_main_page_title_' . $lang['filename']] = $context['lp_page']['title_' . $lang['filename']];
+				$main_page_title['lp_frontpage_title_' . $lang['filename']] = $context['lp_page']['title_' . $lang['filename']];
 
 			updateSettings($main_page_title);
 		}
@@ -786,6 +815,7 @@ class Page
 
 	/**
 	 * Get the correct autoincrement value from lp_pages table
+	 *
 	 * Получаем правильное значение столбца page_id для создания новой записи
 	 *
 	 * @return int
@@ -805,7 +835,62 @@ class Page
 	}
 
 	/**
+	 * Get the page data from lp_pages table
+	 *
+	 * Получаем данные страницы из таблицы в базе данных
+	 *
+	 * @param array $params
+	 * @return void
+	 */
+	public static function getFromPages($params)
+	{
+		global $smcFunc, $user_info;
+
+		[$item, $useAlias] = $params;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT page_id, author_id, title, alias, description, keywords, content, type, permissions, status, num_views, created_at, updated_at
+			FROM {db_prefix}lp_pages
+			WHERE ' . ($useAlias ? 'alias = {string' : 'page_id = {int') . ':item}
+			LIMIT 1',
+			array(
+				'item' => $item
+			)
+		);
+
+		if ($smcFunc['db_num_rows']($request) == 0)	{
+			header('HTTP/1.1 404 Not Found');
+			fatal_lang_error('lp_page_not_found', false);
+		}
+
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			censorText($row['content']);
+
+			$data = array(
+				'id'          => $row['page_id'],
+				'author_id'   => $row['author_id'],
+				'title'       => $row['title'],
+				'alias'       => $row['alias'],
+				'description' => $row['description'],
+				'keywords'    => $row['keywords'],
+				'content'     => $row['content'],
+				'type'        => $row['type'],
+				'permissions' => $row['permissions'],
+				'status'      => $row['status'],
+				'num_views'   => $row['num_views'],
+				'created_at'  => $row['created_at'],
+				'updated_at'  => $row['updated_at']
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $data;
+	}
+
+	/**
 	 * Get the page fields
+	 *
 	 * Получаем поля страницы
 	 *
 	 * @param mixed $item
@@ -814,51 +899,18 @@ class Page
 	 */
 	public static function getData($item, $useAlias = true)
 	{
-		global $smcFunc, $user_info;
+		global $user_info;
 
 		if (empty($item))
 			return;
 
-		if (($data = cache_get_data('light_portal_page_' . $item, 3600)) == null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT page_id, author_id, title, alias, description, keywords, content, type, permissions, status, created_at, updated_at
-				FROM {db_prefix}lp_pages
-				WHERE ' . ($useAlias ? 'alias = {string' : 'page_id = {int') . ':item}
-				LIMIT 1',
-				array(
-					'item' => $item
-				)
-			);
+		$data = Helpers::useCache('light_portal_page_' . ($item == '/' ? 'main' : $item), 'getFromPages', __CLASS__, 3600, array($item, $useAlias));
 
-			if ($smcFunc['db_num_rows']($request) == 0)	{
-				header('HTTP/1.1 404 Not Found');
-				fatal_lang_error('lp_page_not_found', false);
-			}
-
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				censorText($row['content']);
-
-				$data = array(
-					'id'          => $row['page_id'],
-					'author_id'   => $row['author_id'],
-					'title'       => $row['title'],
-					'alias'       => $row['alias'],
-					'description' => $row['description'],
-					'keywords'    => $row['keywords'],
-					'content'     => $row['content'],
-					'type'        => $row['type'],
-					'permissions' => $row['permissions'],
-					'status'      => $row['status'],
-					'created_at'  => $row['created_at'],
-					'updated_at'  => $row['updated_at'],
-					'can_show'    => Subs::canShowItem($row['permissions']),
-					'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
-				);
-			}
-
-			$smcFunc['db_free_result']($request);
-
-			cache_put_data('light_portal_page_' . $item, $data, 3600);
+		if (!empty($data)) {
+			$data['created']  = Helpers::getFriendlyTime($data['created_at']);
+			$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
+			$data['can_show'] = Subs::canShowItem($data['permissions']);
+			$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage') && $data['author_id'] == $user_info['id']);
 		}
 
 		return $data;
@@ -866,6 +918,7 @@ class Page
 
 	/**
 	 * We check whether there is already such an alias in the database
+	 *
 	 * Проверяем, нет ли уже такого алиаса в базе
 	 *
 	 * @param array $data
@@ -894,6 +947,7 @@ class Page
 
 	/**
 	 * Increasing the number of page views
+	 *
 	 * Увеличиваем количество просмотров страницы
 	 *
 	 * @return void

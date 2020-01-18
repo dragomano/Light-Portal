@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.5
+ * @version 0.6
  */
 
 if (!defined('SMF'))
@@ -36,6 +36,13 @@ class TopPosters
 	private static $num_posters = 10;
 
 	/**
+	 * Отображать только цифры, или нет
+	 *
+	 * @var bool
+	 */
+	private static $show_numbers_only = false;
+
+	/**
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -45,8 +52,9 @@ class TopPosters
 	{
 		$options['top_posters'] = array(
 			'parameters' => array(
-				'show_avatars' => static::$show_avatars,
-				'num_posters'  => static::$num_posters
+				'show_avatars'      => static::$show_avatars,
+				'num_posters'       => static::$num_posters,
+				'show_numbers_only' => static::$show_numbers_only
 			)
 		);
 	}
@@ -65,8 +73,9 @@ class TopPosters
 			return;
 
 		$args['parameters'] = array(
-			'show_avatars' => FILTER_VALIDATE_BOOLEAN,
-			'num_posters'  => FILTER_VALIDATE_INT
+			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
+			'num_posters'       => FILTER_VALIDATE_INT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -100,18 +109,28 @@ class TopPosters
 				'value' => $context['lp_block']['options']['parameters']['num_posters']
 			)
 		);
+
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id' => 'show_numbers_only',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+			)
+		);
 	}
 
 	/**
 	 * Получаем список лучших пользователей
 	 *
-	 * @param int $num_posters
-	 * @param bool $show_avatars
+	 * @param array $params
 	 * @return array
 	 */
-	public static function getTopPosters($num_posters = 1, $show_avatars = true)
+	public static function getTopPosters($params)
 	{
 		global $smcFunc, $scripturl, $modSettings;
+
+		[$num_posters, $show_avatars] = $params;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
@@ -153,12 +172,8 @@ class TopPosters
 		if ($type !== 'top_posters')
 			return;
 
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-
-		if (($top_posters = cache_get_data('light_portal_top_posters_addon', 3600)) == null) {
-			$top_posters = self::getTopPosters($parameters['num_posters'], (bool) $parameters['show_avatars']);
-			cache_put_data('light_portal_top_posters_addon', $top_posters, 3600);
-		}
+		$parameters  = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
+		$top_posters = Helpers::useCache('top_posters_addon_u' . $context['user']['id'], 'getTopPosters', __CLASS__, 3600, array($parameters['num_posters'], (bool) $parameters['show_avatars']));
 
 		ob_start();
 
@@ -184,7 +199,7 @@ class TopPosters
 				</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', Helpers::correctDeclension($poster['posts'], $txt['lp_top_posters_addon_posts']), '</span>
+					<span>', $parameters['show_numbers_only'] ? $poster['posts'] : Helpers::correctDeclension($poster['posts'], $txt['lp_top_posters_addon_posts']), '</span>
 				</dd>';
 			}
 

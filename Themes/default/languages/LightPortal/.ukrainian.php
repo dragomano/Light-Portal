@@ -13,18 +13,26 @@ $txt['lp_forum']  = 'Форум';
 // Settings
 $txt['lp_settings']                            = 'Налаштування порталу';
 $txt['lp_php_mysql_info']                      = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.';
-$txt['lp_main_page_title']                     = 'Заголовок головної сторінки';
-$txt['lp_main_page_disable']                   = 'Відключити головну сторінку';
+$txt['lp_frontpage_title']                     = 'Заголовок головної сторінки';
+$txt['lp_frontpage_disable']                   = 'Відключити головну сторінку';
+$txt['lp_frontpage_mode']                      = 'Що повинно відображатися як перша сторінка';
+$txt['lp_frontpage_mode_set']                  = array('Головна сторінка', 'Всі теми з обраних розділів');
+$txt['lp_frontpage_boards']                    = 'Розділи-джерела статей для першої сторінки';
+$txt['lp_frontpage_layout']                    = 'Кількість колонок для виведення статей';
+$txt['lp_show_images_in_articles']             = 'Показувати зображення, знайдені в статтях';
+$txt['lp_subject_size']                        = 'Розмір заголовка статей (у символах)';
+$txt['lp_teaser_size']                         = 'Розмір тизера статей (у символах)';
+$txt['lp_num_per_page']                        = 'Максимальна кількість елементів у списку сторінок (для пагінації)';
 $txt['lp_standalone']                          = 'Автономний режим';
 $txt['lp_standalone_help']                     = 'Буде відключено все, крім сторінок порталу та областей, що ігноруються';
 $txt['lp_standalone_excluded_actions']         = 'Області, що ігноруються';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Вкажіть області, які повинні залишатися доступними в автономному режимі.';
 $txt['lp_page_editor_type_default']            = 'Тип редактора сторінок за замовчуванням';
-$txt['lp_num_per_page']                        = 'Максимальна кількість елементів у списку сторінок (для пагінації)';
 $txt['lp_page_og_image']                       = 'Використовувати зображення в тексті статті для мета-тегу <strong>og-image</strong>';
 $txt['lp_page_og_image_set']                   = array('Ні', 'Перше знайдене', 'Останнє знайдене');
+$txt['lp_hide_blocks_in_admin_section']        = 'Приховувати активні блоки в адмінці';
 $txt['groups_light_portal_view']               = 'Хто може переглядати елементи порталу';
-$txt['groups_light_portal_manage']             = 'Хто може керувати порталом';
+$txt['groups_light_portal_manage']             = 'Хто може керувати блоками та сторінками';
 
 // Actions
 $txt['lp_title']       = 'Заголовок';
@@ -113,6 +121,7 @@ $txt['lp_post_error_no_unique_alias'] = 'Сторінка з таким аліа
 $txt['lp_post_error_no_content']      = 'Не вказано зміст!';
 $txt['lp_post_error_no_areas']        = 'Не вказана область разташування!';
 $txt['lp_page_not_editable']          = 'Вам заборонено редагування цієї сторінки!';
+$txt['lp_addon_not_installed']        = 'Плагін %1$s не встановлений';
 
 // Who
 $txt['lp_who_main'] = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';
