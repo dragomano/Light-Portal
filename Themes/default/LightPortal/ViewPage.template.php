@@ -4,15 +4,38 @@
 // Шаблон просмотра страницы портала
 function template_show_page()
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl, $txt, $settings, $modSettings, $boardurl;
 
 	echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_title'], $context['lp_page']['can_edit'] ? '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '"><span class="floatright fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '</h3>
-	</div>
-	<div class="roundframe page_', $context['lp_page']['type'], '">
-		', $context['lp_page']['content'], '
-	</div>';
+	<section itemscope itemtype="http://schema.org/Article">
+		<div class="cat_bar">
+			<h3 class="catbg" itemprop="headline">', $context['page_title'], $context['lp_page']['can_edit'] ? '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '"><span class="floatright fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '</h3>
+		</div>
+		<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '">
+		<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+			<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+				<img itemprop="url image" src="', $context['header_logo_url_html_safe'] ?: ($settings['images_url'] . '/thumbnail.png'), '" style="display:none;">
+			</span>
+			<meta itemprop="name" content="', $context['forum_name_html_safe'], '">
+			<meta itemprop="address" content="', !empty($modSettings['lp_page_itemprop_address']) ? $modSettings['lp_page_itemprop_address'] : $boardurl, '">
+			<meta itemprop="telephone" content="', !empty($modSettings['lp_page_itemprop_phone']) ? $modSettings['lp_page_itemprop_phone'] : '', '">
+		</span>
+		<div class="information">
+			<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
+			<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
+				<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' (<meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' . $txt['modified_time'] . ': ' . $context['lp_page']['updated'] . ')' : '', '
+			</time>
+		</div>
+		<article class="roundframe" itemprop="articleBody">';
+
+	if (!empty($settings['og_image']))
+		echo '
+			<meta itemprop="image" content="', $settings['og_image'], '">';
+
+	echo '
+			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>
+		</article>
+	</section>';
 }
 
 // Topics from selected boards as sources of articles
@@ -118,7 +141,7 @@ function template_show_pages_as_articles()
 					echo '
 					<a href="' . $page['author_link'] . '" title="' . $txt['profile_of'] . ' ' . $page['author_name'] . '">' . $page['author_name'] . '</a>';
 				else
-					echo $page['author_name'];
+					echo $txt['guest'];
 
 				echo '
 				</div>
@@ -180,4 +203,29 @@ function portal_frontpage_scripts()
 	echo '
 		});
 	</script>';
+}
+
+// The portal credits template
+// Шаблон просмотра копирайтов используемых компонентов портала
+function template_portal_credits()
+{
+	global $txt, $context;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_used_components'], '</h3>
+	</div>
+	<div class="roundframe noup">
+		<ul>';
+
+	foreach ($context['lp_components'] as $item) {
+		echo '
+			<li class="windowbg">
+				<a href="' . $item['link'] . '" target="_blank" rel="noopener">' . $item['title'] . '</a> ' . (isset($item['author']) ? ' | &copy; ' . $item['author'] : '') . ' | Licensed under <a href="' . $item['license']['link'] . '" target="_blank" rel="noopener">' . $item['license']['name'] . '</a>
+			</li>';
+	}
+
+	echo '
+		</ul>
+	</div>';
 }

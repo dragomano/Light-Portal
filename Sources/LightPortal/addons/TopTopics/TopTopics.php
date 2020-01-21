@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.6
+ * @version 0.7
  */
 
 if (!defined('SMF'))
@@ -176,7 +176,7 @@ class TopTopics
 				<dt>', $topic['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_top_topics_addon_' . $parameters['popularity_type']]), '</span>
+					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>
 				</dd>';
 			}
 

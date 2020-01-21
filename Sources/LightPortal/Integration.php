@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.6
+ * @version 0.7
  */
 
 if (!defined('SMF'))
@@ -70,7 +70,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.6',
+			'LP_VERSION' => '0.7',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -373,7 +373,7 @@ class Integration
 		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
 			Subs::getComponentCredits();
 
-			loadTemplate('LightPortal/Credits');
+			loadTemplate('LightPortal/ViewPage');
 
 			$context['sub_template']   = 'portal_credits';
 			$context['robot_no_index'] = true;
@@ -398,14 +398,14 @@ class Integration
 		$result = '';
 		if (empty($modSettings['lp_frontpage_disable'])) {
 			if (empty($actions['action']))
-				$result = sprintf($txt['lp_who_main'], $scripturl);
+				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
 
 			if (!empty($actions['action']) && $actions['action'] == 'portal')
-				$result = sprintf($txt['lp_who_main'], $scripturl . '?action=portal');
+				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
 		}
 
 		if (!empty($actions['page']))
-			$result = sprintf($txt['lp_who_page'], $scripturl . '?page=' . $actions['page']);
+			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?page=' . $actions['page']);
 
 		return $result;
 	}

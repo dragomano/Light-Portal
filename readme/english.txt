@@ -1,4 +1,4 @@
 [center][color=red][size=16pt][b][url=https://dragomano.ru/mods/light-portal]Light Portal[/url][/b][/size][/color]
 [color=blue][b][size=10pt]By Bugo[/size][/b][/color]
 
-[color=green]Simple and moderately versatile portal for creating the main page of the forum, as well as additional pages and blocks.[/color][/center][hr]This work is licensed under [url=https://github.com/dragomano/Light-Portal/blob/master/LICENSE]BSD 3[/url]
+[color=green]Simple and moderately versatile portal for creating the main page of the forum, as well as additional pages and blocks.[/color][/center][hr]This work is licensed under the [url=https://github.com/dragomano/Light-Portal/blob/master/LICENSE]BSD 3-Clause[/url] License

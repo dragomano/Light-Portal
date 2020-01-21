@@ -15,7 +15,7 @@ $txt['lp_settings']                            = 'Portal settings';
 $txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
 $txt['lp_frontpage_title']                     = 'The frontpage title';
 $txt['lp_frontpage_disable']                   = 'Disable the frontpage';
-$txt['lp_frontpage_mode']                      = 'What is should displayed as the frontpage';
+$txt['lp_frontpage_mode']                      = 'What is should be displayed as the frontpage';
 $txt['lp_frontpage_mode_set']                  = array('The main page', 'All topics from selected boards');
 $txt['lp_frontpage_boards']                    = 'Boards as sources of articles for the frontpage';
 $txt['lp_frontpage_layout']                    = 'Number of columns for displaying articles';
@@ -28,9 +28,12 @@ $txt['lp_standalone_help']                     = 'Everything except portal pages
 $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
-$txt['lp_page_og_image']                       = 'Use an image within the page content for the <strong>og-image</strong> metatag';
+$txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in the admin area';
+$txt['lp_open_graph']                          = 'Open Graph';
+$txt['lp_page_og_image']                       = 'Use an image from the page content';
 $txt['lp_page_og_image_set']                   = array('None', 'First found', 'Last found');
-$txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in admin section';
+$txt['lp_page_itemprop_address']               = 'Address of your organization';
+$txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage']             = 'Who can manage blocks and pages';
 
@@ -44,10 +47,10 @@ $txt['lp_action_move'] = 'Move';
 // Blocks
 $txt['lp_blocks']                        = 'Blocks';
 $txt['lp_blocks_manage']                 = 'Manage blocks';
-$txt['lp_blocks_manage_tab_description'] = 'All created portal blocks are listed here. To add an additional block, use the corresponding button.';
+$txt['lp_blocks_manage_tab_description'] = 'All created portal blocks are listed here. To add a block, use the corresponding button.';
 $txt['lp_blocks_add']                    = 'Add block';
 $txt['lp_blocks_add_title']              = 'Adding block';
-$txt['lp_blocks_add_tab_description']    = 'There are not many blocks yet, but the most universal ones are exist - play with them :)';
+$txt['lp_blocks_add_tab_description']    = 'There are not many blocks yet, but the most universal ones exist - play with them :)';
 $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
@@ -124,13 +127,13 @@ $txt['lp_page_not_editable']          = 'You are not allowed to edit this page!'
 $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
 
 // Who
-$txt['lp_who_main'] = 'Viewing <a href="%1$s">the main portal page</a>.';
-$txt['lp_who_page'] = 'Viewing <a href="%1$s">the portal page</a>.';
+$txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
+$txt['lp_who_viewing_page']      = 'Viewing <a href="%1$s">the portal page</a>.';
 
 // Permissions
 $txt['permissiongroup_light_portal']       = LP_NAME;
-$txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'View the portal';
-$txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Manage the portal';
+$txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'View the portal elements';
+$txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Manage the portal blocks and pages';
 $txt['permissionhelp_light_portal_view']   = 'Ability to view portal pages and blocks.';
 $txt['permissionhelp_light_portal_manage'] = 'Access to manage portal pages and blocks.';
 $txt['cannot_light_portal_view']           = 'Sorry, you are not allowed to view the portal!';
@@ -143,6 +146,10 @@ $txt['lp_minutes_set']    = array('minute','minutes');
 $txt['lp_seconds_set']    = array('second','seconds');
 $txt['lp_remained']       = '%1$s left';
 $txt['lp_time_label_ago'] = ' ago';
+
+// Views/replies units
+$txt['lp_replies_set'] = array('reply', 'replies');
+$txt['lp_views_set']   = array('view', 'views');
 
 // Copyrights
 $txt['lp_credits']         = 'Credits';

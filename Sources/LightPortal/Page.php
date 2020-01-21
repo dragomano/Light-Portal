@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.6
+ * @version 0.7
  */
 
 if (!defined('SMF'))
@@ -50,7 +50,6 @@ class Page
 		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
-		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 		Subs::setMeta();
 
 		if (empty($context['current_action']))
@@ -842,16 +841,19 @@ class Page
 	 * @param array $params
 	 * @return void
 	 */
-	public static function getFromPages($params)
+	public static function getFromDB($params)
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc, $modSettings;
 
 		[$item, $useAlias] = $params;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT page_id, author_id, title, alias, description, keywords, content, type, permissions, status, num_views, created_at, updated_at
-			FROM {db_prefix}lp_pages
-			WHERE ' . ($useAlias ? 'alias = {string' : 'page_id = {int') . ':item}
+			SELECT
+				p.page_id, p.author_id, p.title, p.alias, p.description, p.keywords, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, 0) AS author_name
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+			WHERE ' . ($useAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}
 			LIMIT 1',
 			array(
 				'item' => $item
@@ -864,11 +866,23 @@ class Page
 		}
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			Subs::parseContent($row['content'], $row['type']);
 			censorText($row['content']);
+
+			$og_image = null;
+			if (!empty($modSettings['lp_page_og_image'])) {
+				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $values);
+				if ($image_found && is_array($values)) {
+					$all_images = array_pop($values);
+					$image = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
+					$og_image = $smcFunc['htmlspecialchars']($image);
+				}
+			}
 
 			$data = array(
 				'id'          => $row['page_id'],
 				'author_id'   => $row['author_id'],
+				'author'      => $row['author_name'],
 				'title'       => $row['title'],
 				'alias'       => $row['alias'],
 				'description' => $row['description'],
@@ -879,7 +893,8 @@ class Page
 				'status'      => $row['status'],
 				'num_views'   => $row['num_views'],
 				'created_at'  => $row['created_at'],
-				'updated_at'  => $row['updated_at']
+				'updated_at'  => $row['updated_at'],
+				'image'       => $og_image
 			);
 		}
 
@@ -904,7 +919,7 @@ class Page
 		if (empty($item))
 			return;
 
-		$data = Helpers::useCache('light_portal_page_' . ($item == '/' ? 'main' : $item), 'getFromPages', __CLASS__, 3600, array($item, $useAlias));
+		$data = Helpers::useCache('light_portal_page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $useAlias));
 
 		if (!empty($data)) {
 			$data['created']  = Helpers::getFriendlyTime($data['created_at']);

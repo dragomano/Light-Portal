@@ -28,9 +28,12 @@ $txt['lp_standalone_help']                     = 'Буде відключено 
 $txt['lp_standalone_excluded_actions']         = 'Області, що ігноруються';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Вкажіть області, які повинні залишатися доступними в автономному режимі.';
 $txt['lp_page_editor_type_default']            = 'Тип редактора сторінок за замовчуванням';
-$txt['lp_page_og_image']                       = 'Використовувати зображення в тексті статті для мета-тегу <strong>og-image</strong>';
-$txt['lp_page_og_image_set']                   = array('Ні', 'Перше знайдене', 'Останнє знайдене');
 $txt['lp_hide_blocks_in_admin_section']        = 'Приховувати активні блоки в адмінці';
+$txt['lp_open_graph']                          = 'Open Graph';
+$txt['lp_page_og_image']                       = 'Використовувати зображення з тексту статті';
+$txt['lp_page_og_image_set']                   = array('Ні', 'Перше знайдене', 'Останнє знайдене');
+$txt['lp_page_itemprop_address']               = 'Адреса вашої організації';
+$txt['lp_page_itemprop_phone']                 = 'Телефон вашої організації';
 $txt['groups_light_portal_view']               = 'Хто може переглядати елементи порталу';
 $txt['groups_light_portal_manage']             = 'Хто може керувати блоками та сторінками';
 
@@ -124,13 +127,13 @@ $txt['lp_page_not_editable']          = 'Вам заборонено редаг�
 $txt['lp_addon_not_installed']        = 'Плагін %1$s не встановлений';
 
 // Who
-$txt['lp_who_main'] = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';
-$txt['lp_who_page'] = 'Переглядає <a href="%1$s">сторінку порталу</a>.';
+$txt['lp_who_viewing_frontpage'] = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';
+$txt['lp_who_viewing_page']      = 'Переглядає <a href="%1$s">сторінку порталу</a>.';
 
 // Permissions
 $txt['permissiongroup_light_portal']       = LP_NAME;
-$txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'Перегляд порталу';
-$txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Керування порталом';
+$txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'Перегляд елементів порталу';
+$txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Керування блоками і сторінками';
 $txt['permissionhelp_light_portal_view']   = 'Можливість переглядати сторінки і блоки порталу';
 $txt['permissionhelp_light_portal_manage'] = 'Доступ до керування сторінками і блоками порталу.';
 $txt['cannot_light_portal_view']           = 'Вибачте, вам заборонений перегляд порталу!';
@@ -143,6 +146,10 @@ $txt['lp_minutes_set']    = array('хвилину','хвилини','хвили�
 $txt['lp_seconds_set']    = array('секунду','секунды','секунд');
 $txt['lp_remained']       = 'Залишилося %1$s';
 $txt['lp_time_label_ago'] = ' тому';
+
+// Views/replies units
+$txt['lp_replies_set'] = array('відповідь', 'відповіді', 'відповідей');
+$txt['lp_views_set']   = array('перегляд', 'перегляду', 'переглядів');
 
 // Copyrights
 $txt['lp_credits']         = 'Копірайти';

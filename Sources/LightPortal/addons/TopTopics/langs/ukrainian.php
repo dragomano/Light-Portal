@@ -7,5 +7,3 @@ $txt['lp_top_topics_addon_type']              = 'Розрахунок попул
 $txt['lp_top_topics_addon_type_set']          = array('replies' => 'За кількістю відповідей', 'views' => 'За кількістю відповідей');
 $txt['lp_top_topics_addon_num_topics']        = 'Кількість тем для відображення';
 $txt['lp_top_topics_addon_show_numbers_only'] = 'Відображати тільки цифри, без слів';
-$txt['lp_top_topics_addon_replies']           = array('відповідь', 'відповіді', 'відповідей');
-$txt['lp_top_topics_addon_views']             = array('перегляд', 'перегляду', 'переглядів');

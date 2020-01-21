@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.6
+ * @version 0.7
  */
 
 if (!defined('SMF'))
@@ -150,19 +150,18 @@ class Subs
 	 */
 	public static function getActivePages()
 	{
-		global $smcFunc, $txt, $modSettings, $scripturl, $settings, $user_info;
+		global $smcFunc, $modSettings, $scripturl, $settings, $user_info;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.description, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(created_at, updated_at) AS date, COALESCE(mem.real_name, {string:guest}) AS author_name
+				p.page_id, p.author_id, p.title, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views,
+				GREATEST(created_at, updated_at) AS date, COALESCE(mem.real_name, 0) AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.alias != {string:alias}
 				AND p.status = {int:status}
 			ORDER BY date DESC',
 			array(
-				'guest'  => $txt['guest'],
 				'alias'  => '/',
 				'status' => 1
 			)
@@ -173,7 +172,7 @@ class Subs
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			//Subs::parseContent($row['content'], $row['type']);
+			self::parseContent($row['content'], $row['type']);
 
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
@@ -192,14 +191,13 @@ class Subs
 				'title'       => !empty($subject_size) ? shorten_subject($row['title'], $subject_size) : $row['title'],
 				'alias'       => $row['alias'],
 				'description' => $row['description'],
-				'content'     => $row['content'],
 				'type'        => $row['type'],
 				'num_views'   => $row['num_views'],
 				'created_at'  => Helpers::getFriendlyTime($row['date']),
 				'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 				'link'        => $scripturl . '?page=' . $row['alias'],
 				'image'       => $image,
-				'can_show'    => Subs::canShowItem($row['permissions']),
+				'can_show'    => self::canShowItem($row['permissions']),
 				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
 			);
 		}
@@ -500,26 +498,19 @@ class Subs
 	 */
 	public static function setMeta()
 	{
-		global $context, $modSettings, $settings, $smcFunc;
+		global $context, $modSettings, $settings;
 
 		if (empty($context['lp_page']))
 			return;
 
-		$context['meta_description']  = $context['lp_page']['description'];
 		$modSettings['meta_keywords'] = $context['lp_page']['keywords'];
-		$context['optimus_og_type']['article']['published_time'] = date('Y-m-d\TH:i:s', $context['lp_page']['created_at']);
-		$context['optimus_og_type']['article']['modified_time']  = date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']);
+		$context['meta_description']  = $context['lp_page']['description'];
+		$context['optimus_og_type']['article']['published_time'] = date('c', $context['lp_page']['created_at']);
+		$context['optimus_og_type']['article']['modified_time']  = date('c', $context['lp_page']['updated_at']);
+		$context['optimus_og_type']['article']['author'] = $context['lp_page']['author'];
 
-		// Looking for an image in the page content
-		// Ищем ссылку на последнее изображение в тексте страницы
-		if (!empty($modSettings['lp_page_og_image'])) {
-			$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $context['lp_page']['content'], $values);
-			if ($image_found && is_array($values)) {
-				$all_images = array_pop($values);
-				$image = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
-				$settings['og_image'] = $smcFunc['htmlspecialchars']($image);
-			}
-		}
+		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
+			$settings['og_image'] = $context['lp_page']['image'];
 	}
 
 	/**

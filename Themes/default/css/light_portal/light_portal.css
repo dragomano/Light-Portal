@@ -118,3 +118,12 @@ dl.top_posters dt img {
 .themeswitcher select {
 	cursor: pointer;
 }
+
+.page_md .bbc_code {
+	white-space: pre;
+}
+
+.page_md .task-list-item {
+	list-style: none;
+	margin-left: -20px;
+}
