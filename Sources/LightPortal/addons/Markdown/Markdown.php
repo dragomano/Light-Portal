@@ -43,7 +43,7 @@ class Markdown
 		require_once(__DIR__ . '/Michelf/MarkdownExtra.inc.php');
 		require_once(__DIR__ . '/Michelf/MarkdownSMF.php');
 
-		return Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));
+		return \Bugo\LightPortal\Addons\Markdown\Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));
 	}
 
 	/**
