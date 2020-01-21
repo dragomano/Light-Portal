@@ -69,7 +69,8 @@ $tables[] = array(
 		),
 		array(
 			'name'    => 'areas',
-			'type'    => 'text',
+			'type'    => 'varchar',
+			'size'    => 255,
 			'default' => 'all',
 			'null'    => false
 		),
