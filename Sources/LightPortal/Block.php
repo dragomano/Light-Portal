@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -48,7 +48,7 @@ class Block
 					$data['title_class'] = '';
 
 				if (empty($data['content']))
-					Subs::runAddons('prepareContent', array(&$data['content'], $data['type'], $data['id']));
+					Subs::prepareContent($data['content'], $data['type'], $data['id'], 3600);
 				else
 					Subs::parseContent($data['content'], $data['type']);
 
@@ -197,21 +197,24 @@ class Block
 				)
 			);
 			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_block_params
-				WHERE block_id = {int:id}',
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id = {int:id}
+					AND type = {string:type}',
 				array(
-					'id' => $item
+					'id'   => $item,
+					'type' => 'block'
 				)
 			);
 		} else {
 			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_blocks, {db_prefix}lp_block_titles, {db_prefix}lp_block_params
+				DELETE FROM {db_prefix}lp_blocks, {db_prefix}lp_block_titles, {db_prefix}lp_params
 				USING {db_prefix}lp_blocks
 					LEFT JOIN {db_prefix}lp_block_titles ON ({db_prefix}lp_block_titles.block_id = {db_prefix}lp_blocks.block_id)
-					LEFT JOIN {db_prefix}lp_block_params ON ({db_prefix}lp_block_params.block_id = {db_prefix}lp_blocks.block_id)
+					LEFT JOIN {db_prefix}lp_params ON ({db_prefix}lp_params.item_id = {db_prefix}lp_blocks.block_id AND {db_prefix}lp_params.type = {string:type})
 				WHERE {db_prefix}lp_blocks.block_id = {int:id}',
 				array(
-					'id' => $item
+					'type' => 'block',
+					'id'   => $item
 				)
 			);
 		}
@@ -327,7 +330,7 @@ class Block
 
 		Subs::getForumLanguages();
 
-		$context['sub_template'] = 'post_block';
+		$context['sub_template'] = 'block_post';
 
 		self::validateData();
 		self::prepareFormFields();
@@ -366,7 +369,7 @@ class Block
 
 		Subs::getForumLanguages();
 
-		$context['sub_template']  = 'post_block';
+		$context['sub_template']  = 'block_post';
 		$context['current_block'] = self::getData($item);
 
 		self::validateData();
@@ -393,13 +396,13 @@ class Block
 	{
 		$options = [
 			'bbc' => [
-				'content' => 'sceditor'
+				'content' => true
 			],
 			'html' => [
-				'content' => 'textarea'
+				'content' => true
 			],
 			'php' => [
-				'content' => 'textarea'
+				'content' => true
 			]
 		];
 
@@ -651,7 +654,7 @@ class Block
 			);
 		}
 
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['options']['content'] === 'textarea') {
+		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] !== 'bbc') {
 			$context['posting_fields']['content']['label']['text'] = $txt['lp_block_content'];
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
@@ -663,6 +666,11 @@ class Block
 		}
 
 		Subs::runAddons('prepareBlockFields');
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if ($item !== 'icon' && !empty($data['input']['after']))
+				$context['posting_fields'][$item]['input']['after'] = '<div class="information alternative smalltext">' . $data['input']['after'] . '</div>';
+		}
 
 		loadTemplate('Post');
 	}
@@ -678,8 +686,10 @@ class Block
 	{
 		global $context;
 
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['options']['content'] === 'sceditor')
+		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc')
 			Subs::createBbcEditor($context['lp_block']['content']);
+
+		Subs::runAddons('prepareEditor', array($context['lp_block']));
 	}
 
 	/**
@@ -706,12 +716,12 @@ class Block
 		censorText($context['preview_content']);
 
 		if (empty($context['preview_content']))
-			Subs::runAddons('prepareContent', array(&$context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']));
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type']);
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = self::getIcon() . Helpers::getPreviewTitle();
+		$context['preview_title'] = Helpers::getPreviewTitle(self::getIcon());
 	}
 
 	/**
@@ -824,21 +834,21 @@ class Block
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$parameters[] = array(
-						'block_id' => $item,
-						'name'     => $param_name,
-						'value'    => $value
+						'item_id' => $item,
+						'name'    => $param_name,
+						'value'   => $value
 					);
 				}
 
 				$smcFunc['db_insert']('',
-					'{db_prefix}lp_block_params',
+					'{db_prefix}lp_params',
 					array(
-						'block_id' => 'int',
-						'name'     => 'string',
-						'value'    => 'string'
+						'item_id' => 'int',
+						'name'    => 'string',
+						'value'   => 'string'
 					),
 					$parameters,
-					array('block_id', 'name')
+					array('item_id', 'name')
 				);
 			}
 		} else {
@@ -887,21 +897,21 @@ class Block
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$parameters[] = array(
-						'block_id' => $item,
-						'name'     => $param_name,
-						'value'    => $value
+						'item_id' => $item,
+						'name'    => $param_name,
+						'value'   => $value
 					);
 				}
 
 				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_block_params',
+					'{db_prefix}lp_params',
 					array(
-						'block_id' => 'int',
-						'name'     => 'string',
-						'value'    => 'string'
+						'item_id' => 'int',
+						'name'    => 'string',
+						'value'   => 'string'
 					),
 					$parameters,
-					array('block_id', 'name')
+					array('item_id', 'name')
 				);
 			}
 		}
@@ -931,9 +941,10 @@ class Block
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
-				LEFT JOIN {db_prefix}lp_block_params AS bp ON (bp.block_id = b.block_id)
+				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
 			WHERE b.block_id = {int:item}',
 			array(
+				'type' => 'block',
 				'item' => $item
 			)
 		);

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -128,6 +128,7 @@ class Likely
 		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely_addon_buttons'];
 		$context['posting_fields']['buttons']['input'] = array(
 			'type' => 'textarea',
+			'after' => sprintf($txt['lp_likely_addon_buttons_subtext'], static::$buttons),
 			'attributes' => array(
 				'id' => 'buttons',
 				'maxlength' => 255,
@@ -142,22 +143,22 @@ class Likely
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt, $modSettings, $settings;
 
-		if ($type !== 'likely' || !empty($context['robot_no_index']))
+		if ($type !== 'likely')
 			return;
-
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-
-		ob_start();
 
 		if (!empty($parameters['buttons'])) {
 			loadCSSFile('https://unpkg.com/ilyabirman-likely@2/release/likely.css', array('external' => true));
 			loadJavaScriptFile('https://unpkg.com/ilyabirman-likely@2/release/likely.js', array('external' => true));
+
+			ob_start();
 
 			echo '
 			<div class="centertext likely_links">
@@ -175,9 +176,9 @@ class Likely
 			echo '
 				</div>
 			</div>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 
 	/**

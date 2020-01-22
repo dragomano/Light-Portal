@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -149,21 +149,22 @@ class TopTopics
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt;
 
 		if ($type !== 'top_topics')
 			return;
 
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-		$top_topics = Helpers::useCache('top_topics_addon_u' . $context['user']['id'], 'getTopTopics', __CLASS__, 3600, array($parameters['popularity_type'], $parameters['num_topics']));
-
-		ob_start();
+		$top_topics = Helpers::useCache('top_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopTopics', __CLASS__, $cache_time, array($parameters['popularity_type'], $parameters['num_topics']));
 
 		if (!empty($top_topics)) {
+			ob_start();
+
 			echo '
 			<dl class="stats">';
 
@@ -176,14 +177,14 @@ class TopTopics
 				<dt>', $topic['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::correctDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>
+					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>
 				</dd>';
 			}
 
 			echo '
 			</dl>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

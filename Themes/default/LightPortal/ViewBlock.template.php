@@ -155,6 +155,9 @@ function lp_show_block($block)
 	else
 		echo $block['title'];
 
+	if (empty($block['title_class']))
+		$block['content_style'] = 'border-radius: 7px;' . $block['content_style'];
+
 	$style = '';
 	if (!empty($block['content_style']))
 		$style = ' style="' . $block['content_style'] . '"';

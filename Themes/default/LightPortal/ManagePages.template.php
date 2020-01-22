@@ -45,7 +45,7 @@ function template_manage_pages_above()
 					', $context['lp_main_page']['num_views'], '
 				</td>
 				<td class="type centertext">
-					', $txt['lp_page_types'][$context['lp_main_page']['type']], '
+					', $txt['lp_page_types'][$context['lp_main_page']['type']] ?? strtoupper($context['lp_main_page']['type']), '
 				</td>
 				<td class="alias centertext">
 					', (empty($modSettings['lp_frontpage_disable']) ? '<a href="' . $scripturl . '">' . $context['lp_main_page']['alias'] . '</a>' : $context['lp_main_page']['alias']), '
@@ -108,7 +108,7 @@ function template_manage_pages_below()
 
 // Page creation/editing template
 // Шаблон создания/редактирования страницы
-function template_post_page()
+function template_page_post()
 {
 	global $context, $txt;
 
@@ -143,7 +143,7 @@ function template_post_page()
 	}
 
 	echo '
-	<form id="postmodify" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
+	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">';
 
 	template_post_header();
@@ -166,7 +166,7 @@ function template_post_page()
 	</form>
 	<script>
 		jQuery(document).ready(function($) {
-			$("#postmodify").on("change", function (e) {
+			$("#postpage").on("change", function (e) {
 				if ($(e.target).attr("name")) {
 					if ($("#title").val() != "" && $("#alias").val() != "") {
 						$("#type").prop("disabled", false);

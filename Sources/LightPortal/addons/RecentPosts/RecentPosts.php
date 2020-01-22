@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -137,21 +137,22 @@ class RecentPosts
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt;
 
 		if ($type !== 'recent_posts')
 			return;
 
-		$parameters   = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-		$recent_posts = Helpers::useCache('recent_posts_addon_u' . $context['user']['id'], 'getRecentPosts', __CLASS__, 3600, $parameters['num_posts']);
-
-		ob_start();
+		$recent_posts = Helpers::useCache('recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRecentPosts', __CLASS__, $cache_time, $parameters['num_posts']);
 
 		if (!empty($recent_posts)) {
+			ob_start();
+
 			echo '
 			<ul class="recent_posts noup">';
 
@@ -168,8 +169,8 @@ class RecentPosts
 
 			echo '
 			</ul>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

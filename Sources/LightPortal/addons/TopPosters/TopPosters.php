@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -163,21 +163,28 @@ class TopPosters
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$parameters  = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-		$top_posters = Helpers::useCache('top_posters_addon_u' . $context['user']['id'], 'getTopPosters', __CLASS__, 3600, array($parameters['num_posters'], (bool) $parameters['show_avatars']));
-
-		ob_start();
+		$top_posters = Helpers::useCache(
+			'top_posters_addon_b' . $block_id . '_u' . $context['user']['id'],
+			'getTopPosters',
+			__CLASS__,
+			$cache_time,
+			array($parameters['num_posters'], (bool) $parameters['show_avatars'])
+		);
 
 		if (!empty($top_posters)) {
+			ob_start();
+
 			echo '
 			<dl class="top_posters stats">';
 
@@ -199,14 +206,14 @@ class TopPosters
 				</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $poster['posts'] : Helpers::correctDeclension($poster['posts'], $txt['lp_top_posters_addon_posts']), '</span>
+					<span>', $parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set']), '</span>
 				</dd>';
 			}
 
 			echo '
 			</dl>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

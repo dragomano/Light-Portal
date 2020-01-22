@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMDE;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -29,6 +29,19 @@ class EasyMDE
 		global $txt;
 
 		$txt['lp_page_types']['md'] = 'Markdown';
+	}
+
+	/**
+	 * Добавляем параметры блока
+	 *
+	 * @param array $options
+	 * @return void
+	 */
+	public static function blockOptions(&$options)
+	{
+		$options['md'] = array(
+			'content' => true
+		);
 	}
 
 	/**

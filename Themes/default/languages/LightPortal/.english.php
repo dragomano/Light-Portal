@@ -16,7 +16,7 @@ $txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s<
 $txt['lp_frontpage_title']                     = 'The frontpage title';
 $txt['lp_frontpage_disable']                   = 'Disable the frontpage';
 $txt['lp_frontpage_mode']                      = 'What is should be displayed as the frontpage';
-$txt['lp_frontpage_mode_set']                  = array('The main page', 'All topics from selected boards');
+$txt['lp_frontpage_mode_set']                  = array('The portal main page', 'All topics from selected boards');
 $txt['lp_frontpage_boards']                    = 'Boards as sources of articles for the frontpage';
 $txt['lp_frontpage_layout']                    = 'Number of columns for displaying articles';
 $txt['lp_show_images_in_articles']             = 'Show images that found in articles';
@@ -36,6 +36,7 @@ $txt['lp_page_itemprop_address']               = 'Address of your organization';
 $txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage']             = 'Who can manage blocks and pages';
+$txt['lp_extra_settings']                      = 'Extra settings';
 
 // Actions
 $txt['lp_title']       = 'Title';
@@ -70,14 +71,14 @@ $txt['lp_block_placement_set'] = array(
 );
 
 $txt['lp_block_areas']         = 'Actions';
-$txt['lp_block_areas_subtext'] = '<div class="information alternative smalltext">Specify one or more areas (separate by comma) to display the block in:<br>
+$txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
 <ul>
 	<li><strong>all</strong> — display everywhere</li>
 	<li><strong>forum</strong> — display only on the forum area</li>
 	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
 	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
 	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
-</ul></div>';
+</ul>';
 $txt['lp_block_title_class']   = 'CSS title class';
 $txt['lp_block_title_style']   = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
@@ -114,6 +115,10 @@ $txt['lp_page_keywords']                = 'Keywords';
 $txt['lp_permissions']                  = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
 $txt['lp_no_items']                     = 'There is nothing yet. Let\'s add?';
 
+$txt['lp_page_options'] = array(
+	'show_author_and_date' => 'Show the author and creation date'
+);
+
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
 $txt['lp_block_not_found']            = 'Block not found!';
@@ -147,9 +152,18 @@ $txt['lp_seconds_set']    = array('second','seconds');
 $txt['lp_remained']       = '%1$s left';
 $txt['lp_time_label_ago'] = ' ago';
 
-// Views/replies units
-$txt['lp_replies_set'] = array('reply', 'replies');
-$txt['lp_views_set']   = array('view', 'views');
+// Social units
+$txt['lp_posts_set']    = array('post', 'posts');
+$txt['lp_replies_set']  = array('reply', 'replies');
+$txt['lp_views_set']    = array('view', 'views');
+$txt['lp_comments_set'] = array('comment', 'comments');
+
+// Other units
+$txt['lp_users_set']   = array('user', 'users');
+$txt['lp_guests_set']  = array('guest', 'guests');
+$txt['lp_spiders_set'] = array('spider', 'spiders');
+$txt['lp_hidden_set']  = array('hidden', 'hidden');
+$txt['lp_buddies_set'] = array('buddy', 'buddies');
 
 // Copyrights
 $txt['lp_credits']         = 'Credits';

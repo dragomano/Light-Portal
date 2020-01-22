@@ -19,14 +19,20 @@ function template_show_page()
 			<meta itemprop="name" content="', $context['forum_name_html_safe'], '">
 			<meta itemprop="address" content="', !empty($modSettings['lp_page_itemprop_address']) ? $modSettings['lp_page_itemprop_address'] : $boardurl, '">
 			<meta itemprop="telephone" content="', !empty($modSettings['lp_page_itemprop_phone']) ? $modSettings['lp_page_itemprop_phone'] : '', '">
-		</span>
+		</span>';
+
+	if (!empty($context['lp_page']['options']['show_author_and_date'])) {
+		echo '
 		<div class="information">
 			<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 			<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
 				<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' (<meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' . $txt['modified_time'] . ': ' . $context['lp_page']['updated'] . ')' : '', '
 			</time>
-		</div>
-		<article class="roundframe" itemprop="articleBody">';
+		</div>';
+	}
+
+	echo '
+		<article class="roundframe', !empty($context['lp_page']['options']['show_author_and_date']) ? '' : ' noup', '" itemprop="articleBody">';
 
 	if (!empty($settings['og_image']))
 		echo '
@@ -149,7 +155,7 @@ function template_show_pages_as_articles()
 				<a class="article_link" href="', $page['link'], '">
 					<div class="windowbg article_content page_', $page['type'], '">';
 
-				if (!empty($topic['image']))
+				if (!empty($page['image']))
 					echo '
 						<img class="article_image" src="', $page['image'], '" alt="', $page['title'], '">';
 

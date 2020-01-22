@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,10 @@ class ThemeSwitcher
 	 */
 	public static function getAvailableThemes()
 	{
-		global $smcFunc, $modSettings;
+		global $modSettings, $smcFunc;
+
+		if (empty($modSettings['knownThemes']))
+			return [];
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id_theme, value
@@ -56,16 +59,17 @@ class ThemeSwitcher
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
-		global $smcFunc, $modSettings, $settings;
+		global $settings;
 
 		if ($type !== 'themeswitcher')
 			return;
 
-		$available_themes = Helpers::useCache('themeswitcher_addon', 'getAvailableThemes', __CLASS__);
+		$available_themes = Helpers::useCache('themeswitcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
 		ob_start();
 

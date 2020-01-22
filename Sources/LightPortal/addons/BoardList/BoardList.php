@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -149,27 +149,59 @@ class BoardList
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context;
+		global $context, $scripturl;
 
 		if ($type !== 'boardlist')
 			return;
 
-		$context['current_board'] = $context['current_board'] ?? 0;
-		$context['lp_boardlist']  = Helpers::useCache('boardlist_addon_u' . $context['user']['id'], 'getBoardList', __CLASS__);
-
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
+		$context['lp_boardlist'] = Helpers::useCache('boardlist_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
 
 		if ($parameters['board_class'] == '_')
 			$parameters['board_class'] = '';
 		else
 			$parameters['board_class'] = strtr($parameters['board_class'], array('div.' => '', '.' => ' '));
 
-		ob_start();
-		require(__DIR__ . '/template.php');
-		$content = ob_get_clean();
+		$context['current_board'] = $context['current_board'] ?? 0;
+
+		if (!empty($context['lp_boardlist'])) {
+			ob_start();
+
+			foreach ($context['lp_boardlist'] as $category) {
+				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name'], null, null);
+
+				echo '
+			<div', !empty($parameters['board_class']) ? ' class="' . $parameters['board_class'] . '"' : '', '>
+				<ul class="smalltext" style="padding-left: 10px">';
+
+				foreach ($category['boards'] as $board) {
+					echo '
+					<li>';
+
+					if ($board['child_level'])
+						echo '
+						<ul class="smalltext" style="padding-left: 10px">
+							<li>', $context['current_board'] == $board['id'] ? '<strong>' : '', '&raquo; <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '', '</li>
+						</ul>';
+					else
+						echo '
+						', $context['current_board'] == $board['id'] ? '<strong>' : '', '<a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '';
+
+					echo '
+					</li>';
+				}
+
+				echo '
+				</ul>
+			</div>';
+			}
+
+			$content = ob_get_clean();
+		}
 	}
 }

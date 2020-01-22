@@ -193,6 +193,7 @@ function template_block_add()
 		<form name="block_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
 			<div class="row">';
 
+	asort($txt['lp_block_types']);
 	foreach ($txt['lp_block_types'] as $type => $title) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
@@ -227,7 +228,7 @@ function template_block_add()
 
 // Block creation/editing template
 // Шаблон создания/редактирования блока
-function template_post_block()
+function template_block_post()
 {
 	global $context, $txt;
 
@@ -269,12 +270,12 @@ function template_post_block()
 	}
 
 	echo '
-	<form action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
+	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
 		<div class="roundframe">';
 
 	template_post_header();
 
-	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['options']['content'] === 'sceditor') {
+	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
 			<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
 	}

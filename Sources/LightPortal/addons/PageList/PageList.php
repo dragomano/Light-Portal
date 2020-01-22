@@ -2,7 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\PageList;
 
-use Bugo\LightPortal\{Helpers, Subs};
+use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Subs;
 
 /**
  * PageList
@@ -13,7 +14,7 @@ use Bugo\LightPortal\{Helpers, Subs};
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -94,7 +95,7 @@ class PageList
 	 * Получаем список активных страниц
 	 *
 	 * @param string $sort_type
-	 * @return void
+	 * @return array
 	 */
 	public static function getPageList($sort_type)
 	{
@@ -143,37 +144,36 @@ class PageList
 	 * Формируем контент блока
 	 *
 	 * @param string $content
-	 * @param string $sort
+	 * @param string $type
 	 * @param int $block_id
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $sort, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt, $scripturl;
 
-		if ($sort !== 'page_list')
+		if ($type !== 'page_list')
 			return;
 
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-		$page_list  = Helpers::useCache('page_list_addon_u' . $context['user']['id'] . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, 3600, $parameters['sort']);
-
-		ob_start();
+		$page_list = Helpers::useCache('page_list_addon_b' . $block_id . '_u' . $context['user']['id'] . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
 
 		if (!empty($page_list)) {
+			ob_start();
+
 			echo '
 			<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
 				echo '
 				<li>
-					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', $page['created_at'], ' (', Helpers::correctDeclension($page['num_views'], $txt['lp_views_set']), ')
+					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', $page['created_at'], ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']), ')
 				</li>';
 			}
 
 			echo '
 			</ul>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

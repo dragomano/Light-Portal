@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -155,7 +155,7 @@ class Subs
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.title, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(created_at, updated_at) AS date, COALESCE(mem.real_name, 0) AS author_name
+				GREATEST(created_at, updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.alias != {string:alias}
@@ -246,10 +246,11 @@ class Subs
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
-				LEFT JOIN {db_prefix}lp_block_params AS bp ON (bp.block_id = b.block_id)
+				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
 			WHERE b.status = {int:status}
 			ORDER BY b.placement, b.priority',
 			array(
+				'type'   => 'block',
 				'status' => 1
 			)
 		);
@@ -329,6 +330,29 @@ class Subs
 
 		if (!in_array('mlist', $excluded_actions))
 			$context['allow_memberlist'] = false;
+	}
+
+	/**
+	 * Prepare content to display
+	 *
+	 * Готовим контент к отображению в браузере
+	 *
+	 * @param string $content
+	 * @param string $type
+	 * @param int $block_id
+	 * @param int $cache_time
+	 * @return void
+	 */
+	public static function prepareContent(&$content, $type = 'bbc', $block_id = 0, $cache_time = 0)
+	{
+		global $context;
+
+		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
+			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
+		else
+			$parameters = $context['lp_block']['options']['parameters'] ?? [];
+
+		self::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
 	}
 
 	/**
@@ -416,11 +440,11 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $type ('init', 'blockOptions', 'prepareEditor', 'validateBlockData', 'prepareBlockFields', 'parseContent', 'prepareContent', 'credits')
+	 * @param string $hook ('init', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
 	 * @param array $vars (extra variables for changing)
 	 * @return void
 	 */
-	public static function runAddons($type = 'init', $vars = [])
+	public static function runAddons($hook = 'init', $vars = [])
 	{
 		$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
 
@@ -429,11 +453,11 @@ class Subs
 
 		foreach ($light_portal_addons as $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon;
-			$function = $class . '::' . $type;
+			$function = $class . '::' . $hook;
 
 			self::loadAddonLanguage($addon);
 
-			if (method_exists($class, $type))
+			if (method_exists($class, $hook))
 				call_user_func_array($function, $vars);
 		}
 	}

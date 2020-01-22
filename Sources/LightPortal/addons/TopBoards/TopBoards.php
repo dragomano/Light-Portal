@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -122,21 +122,22 @@ class TopBoards
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt;
 
 		if ($type !== 'top_boards')
 			return;
 
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
-		$top_boards = Helpers::useCache('top_boards_addon_u' . $context['user']['id'], 'getTopBoards', __CLASS__, 3600, $parameters['num_boards']);
-
-		ob_start();
+		$top_boards = Helpers::useCache('top_boards_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopBoards', __CLASS__, $cache_time, $parameters['num_boards']);
 
 		if (!empty($top_boards)) {
+			ob_start();
+
 			echo '
 			<dl class="stats">';
 
@@ -149,14 +150,14 @@ class TopBoards
 				<dt>', $board['link'], '</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::correctDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
+					<span>', $parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
 				</dd>';
 			}
 
 			echo '
 			</dl>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

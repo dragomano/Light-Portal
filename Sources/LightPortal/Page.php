@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -50,6 +50,7 @@ class Page
 		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
+		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 		Subs::setMeta();
 
 		if (empty($context['current_action']))
@@ -425,7 +426,7 @@ class Page
 		self::showPreview();
 		self::setData();
 
-		$context['sub_template'] = 'post_page';
+		$context['sub_template'] = 'page_post';
 	}
 
 	/**
@@ -456,9 +457,9 @@ class Page
 			'description' => $txt['lp_pages_edit_tab_description']
 		);
 
-		$context['lp_page'] = self::getData($item, is_int($item) ? false : true);
+		$context['lp_current_page'] = self::getData($item, is_int($item) ? false : true);
 
-		if (!$context['lp_page']['can_edit'])
+		if ($context['lp_current_page']['can_edit'] === false)
 			fatal_lang_error('lp_page_not_editable', false);
 
 		self::validateData();
@@ -471,7 +472,25 @@ class Page
 		self::showPreview();
 		self::setData($context['lp_page']['id']);
 
-		$context['sub_template'] = 'post_page';
+		$context['sub_template'] = 'page_post';
+	}
+
+	/**
+	 * Get the parameters of all pages
+	 *
+	 * Получаем параметры всех страниц
+	 *
+	 * @return array
+	 */
+	private static function getOptions()
+	{
+		$options = [
+			'show_author_and_date' => true
+		];
+
+		Subs::runAddons('pageOptions', array(&$options));
+
+		return $options;
 	}
 
 	/**
@@ -497,26 +516,44 @@ class Page
 				'permissions' => FILTER_VALIDATE_INT
 			);
 
+			$source_args = $args;
+
+			Subs::runAddons('validatePageData', array(&$args));
+
+			$parameters = array_merge(array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN), array_diff($args, $source_args));
+
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 
-			$post_data = filter_input_array(INPUT_POST, $args);
+			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 
 			self::findErrors($post_data);
 		}
 
+		$options = self::getOptions();
+
+		$page_options = $context['lp_current_page']['options'] ?? $options;
+
 		$context['lp_page'] = array(
-			'id'          => $post_data['page_id'] ?? $context['lp_page']['id'] ?? 0,
-			'title'       => $post_data['title'] ?? $context['lp_page']['title'] ?? '',
-			'alias'       => $post_data['alias'] ?? $context['lp_page']['alias'] ?? '',
-			'description' => $post_data['description'] ?? $context['lp_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $context['lp_page']['keywords'] ?? '',
-			'content'     => $post_data['content'] ?? $context['lp_page']['content'] ?? '',
-			'type'        => $post_data['type'] ?? $context['lp_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
-			'permissions' => $post_data['permissions'] ?? $context['lp_page']['permissions'] ?? 0
+			'id'          => $post_data['page_id'] ?? $context['lp_current_page']['id'] ?? 0,
+			'title'       => $post_data['title'] ?? $context['lp_current_page']['title'] ?? '',
+			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
+			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
+			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
+			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
+			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
+			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? 0,
+			'options'     => $options
 		);
 
-		if ($context['lp_page']['alias'] == '/') {
+		foreach ($context['lp_page']['options'] as $option => $value) {
+			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && is_null($post_data[$option]))
+				$post_data[$option] = 0;
+
+			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
+		}
+
+		if ($context['lp_page']['alias'] === '/') {
 			foreach ($context['languages'] as $lang)
 				$context['lp_page']['title_' . $lang['filename']] = $post_data['title_' . $lang['filename']] ?? $modSettings['lp_frontpage_title_' . $lang['filename']] ?? '';
 		}
@@ -536,7 +573,7 @@ class Page
 
 		$post_errors = [];
 
-		if (!empty($context['lp_page']) && $context['lp_page']['alias'] === '/') {
+		if (!empty($context['lp_current_page']) && $context['lp_current_page']['alias'] === '/') {
 			if (empty($data['title_' . $context['user']['language']]))
 				$post_errors[] = 'no_title';
 		} else {
@@ -544,7 +581,7 @@ class Page
 				$post_errors[] = 'no_title';
 		}
 
-		if (empty($data['alias']) && !empty($context['lp_page']) && $context['lp_page']['alias'] !== '/')
+		if (empty($data['alias']) && !empty($context['lp_current_page']) && $context['lp_current_page']['alias'] !== '/')
 			$post_errors[] = 'no_alias';
 
 		$alias_format = array(
@@ -684,6 +721,17 @@ class Page
 			);
 		}
 
+		$context['posting_fields']['show_author_and_date']['label']['text'] = $txt['lp_page_options']['show_author_and_date'];
+		$context['posting_fields']['show_author_and_date']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id' => 'show_author_and_date',
+				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
+			)
+		);
+
+		Subs::runAddons('preparePageFields');
+
 		loadTemplate('Post');
 	}
 
@@ -698,7 +746,7 @@ class Page
 	{
 		global $context;
 
-		if ($context['lp_page']['type'] == 'bbc')
+		if ($context['lp_page']['type'] === 'bbc')
 			Subs::createBbcEditor($context['lp_page']['content']);
 
 		Subs::runAddons('prepareEditor', array($context['lp_page']));
@@ -780,6 +828,30 @@ class Page
 				array('page_id'),
 				1
 			);
+
+			if (!empty($context['lp_page']['options'])) {
+				$parameters = [];
+				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					$parameters[] = array(
+						'item_id' => $item,
+						'type'    => 'page',
+						'name'    => $param_name,
+						'value'   => $value
+					);
+				}
+
+				$smcFunc['db_insert']('',
+					'{db_prefix}lp_params',
+					array(
+						'item_id' => 'int',
+						'type'    => 'string',
+						'name'    => 'string',
+						'value'   => 'string'
+					),
+					$parameters,
+					array('item_id', 'name')
+				);
+			}
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
@@ -797,6 +869,30 @@ class Page
 					'updated_at'  => time()
 				)
 			);
+
+			if (!empty($context['lp_page']['options'])) {
+				$parameters = [];
+				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					$parameters[] = array(
+						'item_id' => $item,
+						'type'    => 'page',
+						'name'    => $param_name,
+						'value'   => $value
+					);
+				}
+
+				$smcFunc['db_insert']('replace',
+					'{db_prefix}lp_params',
+					array(
+						'item_id' => 'int',
+						'type'    => 'string',
+						'name'    => 'string',
+						'value'   => 'string'
+					),
+					$parameters,
+					array('item_id', 'name')
+				);
+			}
 		}
 
 		if ($context['lp_page']['alias'] === '/') {
@@ -850,12 +946,13 @@ class Page
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.title, p.alias, p.description, p.keywords, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, 0) AS author_name
+				mem.real_name AS author_name, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-			WHERE ' . ($useAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}
-			LIMIT 1',
+				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
+			WHERE ' . ($useAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}',
 			array(
+				'type' => 'page',
 				'item' => $item
 			)
 		);
@@ -866,12 +963,14 @@ class Page
 		}
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			Subs::parseContent($row['content'], $row['type']);
 			censorText($row['content']);
 
 			$og_image = null;
 			if (!empty($modSettings['lp_page_og_image'])) {
-				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $values);
+				$content = $row['content'];
+				Subs::parseContent($content, $row['type']);
+				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
+
 				if ($image_found && is_array($values)) {
 					$all_images = array_pop($values);
 					$image = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
@@ -879,23 +978,27 @@ class Page
 				}
 			}
 
-			$data = array(
-				'id'          => $row['page_id'],
-				'author_id'   => $row['author_id'],
-				'author'      => $row['author_name'],
-				'title'       => $row['title'],
-				'alias'       => $row['alias'],
-				'description' => $row['description'],
-				'keywords'    => $row['keywords'],
-				'content'     => $row['content'],
-				'type'        => $row['type'],
-				'permissions' => $row['permissions'],
-				'status'      => $row['status'],
-				'num_views'   => $row['num_views'],
-				'created_at'  => $row['created_at'],
-				'updated_at'  => $row['updated_at'],
-				'image'       => $og_image
-			);
+			if (!isset($data))
+				$data = array(
+					'id'          => $row['page_id'],
+					'author_id'   => $row['author_id'],
+					'author'      => $row['author_name'],
+					'title'       => $row['title'],
+					'alias'       => $row['alias'],
+					'description' => $row['description'],
+					'keywords'    => $row['keywords'],
+					'content'     => $row['content'],
+					'type'        => $row['type'],
+					'permissions' => $row['permissions'],
+					'status'      => $row['status'],
+					'num_views'   => $row['num_views'],
+					'created_at'  => $row['created_at'],
+					'updated_at'  => $row['updated_at'],
+					'image'       => $og_image
+				);
+
+			if (!empty($row['name']))
+				$data['options'][$row['name']] = $row['value'];
 		}
 
 		$smcFunc['db_free_result']($request);

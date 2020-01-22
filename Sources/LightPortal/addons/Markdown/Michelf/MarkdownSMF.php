@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Markdown\Michelf;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 class MarkdownSMF extends \Michelf\MarkdownExtra

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -179,6 +179,15 @@ class Settings
 				array('permissions', 'light_portal_manage')
 			)
 		);
+
+		$extra_settings = [];
+
+		// The mod authors can easily add their own settings
+		// Авторы модов модут легко добавлять собственные настройки
+		Subs::runAddons('addSettings', array(&$extra_settings));
+
+		if (!empty($extra_settings))
+			$config_vars = array_merge($config_vars, array(array('title', 'lp_extra_settings')), $extra_settings);
 
 		if ($return_config)
 			return $config_vars;

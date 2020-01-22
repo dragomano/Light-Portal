@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\YandexTranslate;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -121,16 +121,17 @@ class YandexTranslate
 	 *
 	 * @param string $content
 	 * @param string $type
+	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id)
+	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $language;
+		global $language;
 
 		if ($type !== 'yandex_translate')
 			return;
-
-		$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? $context['lp_block']['options']['parameters'];
 
 		ob_start();
 

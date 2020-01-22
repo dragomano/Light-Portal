@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.7
+ * @version 0.8
  */
 
 if (!defined('SMF'))
@@ -63,18 +63,18 @@ class Helpers
 		return preg_replace('~\[[^]]+]~', '', $data);
 	}
 
-	/**
-	 * Get a title for preview block
+	/**	 * Get a title for preview block
 	 *
 	 * Получаем заголовок блока превью
 	 *
+	 * @param string $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle()
+	public static function getPreviewTitle($prefix = null)
 	{
 		global $context, $txt;
 
-		return self::getFloatSpan($context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right');
+		return self::getFloatSpan((!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right');
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Helpers
 	 * @param array|string $str массив или строка с формами склонения (если в языке только одна форма склонения, см. rule #0)
 	 * @return string
 	 */
-	public static function correctDeclension(int $num, $str)
+	public static function getCorrectDeclension(int $num, $str)
 	{
 		global $txt;
 
@@ -193,22 +193,22 @@ class Helpers
 			$days = ($a - $time) / 60 / 60 / 24;
 
 			if ($days > 1)
-				return sprintf($txt['lp_remained'], self::correctDeclension((int) floor($days), $txt['lp_days_set']));
+				return sprintf($txt['lp_remained'], self::getCorrectDeclension((int) floor($days), $txt['lp_days_set']));
 
 			$minutes = ($a - $time) / 60 / 60;
 
 			if ($minutes > 1)
-				return sprintf($txt['lp_remained'], self::correctDeclension($minutes, $txt['lp_minutes_set']));
+				return sprintf($txt['lp_remained'], self::getCorrectDeclension($minutes, $txt['lp_minutes_set']));
 			else
-				return sprintf($txt['lp_remained'], self::correctDeclension($minutes * 60, $txt['lp_seconds_set']));
+				return sprintf($txt['lp_remained'], self::getCorrectDeclension($minutes * 60, $txt['lp_seconds_set']));
 		}
 
 		if ($last == 0)
-			return self::correctDeclension($sec, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+			return self::getCorrectDeclension($sec, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		elseif ($last == 1)
 			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
 		elseif ($last < 55)
-			return self::correctDeclension((int) $last, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+			return self::getCorrectDeclension((int) $last, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		elseif ($d.$m.$y == date('dmY', $time))
 			return $txt['today'] . $tm;
 		elseif ($d.$m.$y == date('dmY', strtotime('-1 day')))
