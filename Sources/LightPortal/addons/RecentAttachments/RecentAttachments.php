@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.8.1
  */
 
 if (!defined('SMF'))
@@ -173,6 +173,8 @@ class RecentAttachments
 		);
 
 		if (!empty($recent_attachments)) {
+			$fancybox = class_exists('FancyBox');
+
 			ob_start();
 
 			echo '
@@ -182,7 +184,7 @@ class RecentAttachments
 				if (!empty($attach['file']['image'])) {
 					echo '
 				<div class="item">
-					<a data-fancybox="recent_attachments_', $block_id, '" href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
+					<a', $fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : '', ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
 				</div>';
 				} else {
 					echo '
