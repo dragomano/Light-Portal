@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.8.1
  */
 
 if (!defined('SMF'))
@@ -773,8 +773,7 @@ class Block
 
 		if (empty($item)) {
 			$max_length = Helpers::getMaxMessageLength();
-
-			$priority = self::calculatePriority($context['lp_block']['placement']);
+			$priority   = self::calculatePriority($context['lp_block']['placement']);
 
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
@@ -796,7 +795,7 @@ class Block
 					$context['lp_block']['type'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
-					$context['lp_block']['priority'] ?: $priority,
+					$context['lp_block']['priority'] ?: $priority ?: 0,
 					$context['lp_block']['permissions'],
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
