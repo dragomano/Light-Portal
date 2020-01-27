@@ -13,12 +13,14 @@ $txt['lp_forum']  = 'Форум';
 // Settings
 $txt['lp_settings']                            = 'Налаштування порталу';
 $txt['lp_php_mysql_info']                      = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.';
+$txt['lp_new_version_is_available']            = 'Доступна <a href="%1$s" target="_blank" rel="noopener">нова версія</a>!';
 $txt['lp_frontpage_title']                     = 'Заголовок головної сторінки';
 $txt['lp_frontpage_disable']                   = 'Відключити головну сторінку';
 $txt['lp_frontpage_mode']                      = 'Що повинно відображатися як перша сторінка';
-$txt['lp_frontpage_mode_set']                  = array('Головна сторінка порталу', 'Всі теми з обраних розділів');
+$txt['lp_frontpage_mode_set']                  = array('Головна сторінка порталу', 'Всі теми з обраних розділів', 'Всі сторінки (крім першої)', 'Розділи з описами');
 $txt['lp_frontpage_boards']                    = 'Розділи-джерела статей для першої сторінки';
 $txt['lp_frontpage_layout']                    = 'Кількість колонок для виведення статей';
+$txt['lp_frontpage_layout_set']                = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
 $txt['lp_show_images_in_articles']             = 'Показувати зображення, знайдені в статтях';
 $txt['lp_subject_size']                        = 'Розмір заголовка статей (у символах)';
 $txt['lp_teaser_size']                         = 'Розмір тизера статей (у символах)';
@@ -35,7 +37,8 @@ $txt['lp_page_og_image_set']                   = array('Ні', 'Перше зн�
 $txt['lp_page_itemprop_address']               = 'Адреса вашої організації';
 $txt['lp_page_itemprop_phone']                 = 'Телефон вашої організації';
 $txt['groups_light_portal_view']               = 'Хто може переглядати елементи порталу';
-$txt['groups_light_portal_manage']             = 'Хто може керувати блоками та сторінками';
+$txt['groups_light_portal_manage_blocks']      = 'Хто може керувати блоками';
+$txt['groups_light_portal_manage_own_pages']   = 'Хто може керувати своїми сторінками';
 $txt['lp_extra_settings']                      = 'Додаткові налаштування';
 
 // Actions
@@ -44,6 +47,7 @@ $txt['lp_actions']     = 'Дії';
 $txt['lp_action_on']   = 'Увімкнути';
 $txt['lp_action_off']  = 'Вимкнути';
 $txt['lp_action_move'] = 'Перемістити';
+$txt['lp_read_more']   = 'Читати далі...';
 
 // Blocks
 $txt['lp_blocks']                        = 'Блоки';
@@ -136,14 +140,17 @@ $txt['lp_who_viewing_frontpage'] = 'Переглядає <a href="%1$s">голо
 $txt['lp_who_viewing_page']      = 'Переглядає <a href="%1$s">сторінку порталу</a>.';
 
 // Permissions
-$txt['permissiongroup_light_portal']       = LP_NAME;
-$txt['permissionname_light_portal_view']   = $txt['group_perms_name_light_portal_view']   = 'Перегляд елементів порталу';
-$txt['permissionname_light_portal_manage'] = $txt['group_perms_name_light_portal_manage'] = 'Керування блоками і сторінками';
-$txt['permissionhelp_light_portal_view']   = 'Можливість переглядати сторінки і блоки порталу';
-$txt['permissionhelp_light_portal_manage'] = 'Доступ до керування сторінками і блоками порталу.';
-$txt['cannot_light_portal_view']           = 'Вибачте, вам заборонений перегляд порталу!';
-$txt['cannot_light_portal_manage']         = 'Вибачте, вам заборонено керування порталом!';
-$txt['cannot_light_portal_view_page']      = 'Вибачте, вам заборонений перегляд цієї сторінки!';
+$txt['permissiongroup_light_portal']                 = LP_NAME;
+$txt['permissionname_light_portal_view']             = $txt['group_perms_name_light_portal_view']             = 'Перегляд елементів порталу';
+$txt['permissionname_light_portal_manage_blocks']    = $txt['group_perms_name_light_portal_manage_blocks']    = 'Управління блоками';
+$txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Управління своїми сторінками';
+$txt['permissionhelp_light_portal_view']             = 'Можливість переглядати сторінки і блоки порталу.';
+$txt['permissionhelp_light_portal_manage_blocks']    = 'Доступ до управління блоками порталу.';
+$txt['permissionhelp_light_portal_manage_own_pages'] = 'Доступ до управління своїми сторінками.';
+$txt['cannot_light_portal_view']                     = 'Вибачте, вам заборонений перегляд порталу!';
+$txt['cannot_light_portal_manage_blocks']            = 'Вибачте, вам заборонено керування блоками порталу!';
+$txt['cannot_light_portal_manage_own_pages']         = 'Вибачте, вам заборонено Керування сторінками порталу!';
+$txt['cannot_light_portal_view_page']                = 'Вибачте, вам заборонений перегляд цієї сторінки!';
 
 // Time units
 $txt['lp_days_set']       = array('день','дня','днів');

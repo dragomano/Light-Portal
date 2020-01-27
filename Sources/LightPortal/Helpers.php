@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -188,7 +188,6 @@ class Helpers
 		$last = round(($sec) / 60);
 
 		// Future time?
-		// Будущее время?
 		if ($a > $time) {
 			$days = ($a - $time) / 60 / 60 / 24;
 
@@ -215,7 +214,7 @@ class Helpers
 			return $txt['yesterday'] . $tm;
 		elseif ($y == date('Y', $time))
 			return $d . ' ' . $txt['months'][date('n', $a)] . ', ' . $tm;
-		elseif ($tm == '00:00')
+		elseif ($tm == '00:00' || $y < date('Y', $time))
 			return $d . ' ' . $txt['months'][date('n', $a)] . ' ' . $y;
 		else
 			return timeformat($a);
@@ -266,5 +265,25 @@ class Helpers
 
 		if (empty($txt['lp_block_types'][$type]))
 			$context['lp_missing_block_types'][$type] = sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_')));
+	}
+
+	/**
+	 * Get the block icon
+	 *
+	 * Получаем иконку блока
+	 *
+	 * @param string $icon
+	 * @return string
+	 */
+	public static function getIcon($icon = null)
+	{
+		global $context;
+
+		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
+
+		if (!empty($icon))
+			return '<i class="fas fa-' . $icon . '"></i> ';
+		else
+			return '';
 	}
 }

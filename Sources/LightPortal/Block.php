@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8.1
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -53,7 +53,7 @@ class Block
 					Subs::parseContent($data['content'], $data['type']);
 
 				$context['lp_blocks'][$data['placement']][$item] = $data;
-				$icon = self::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
+				$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
 				$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][$context['user']['language']];
 			}
 		}
@@ -124,7 +124,7 @@ class Block
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($context['lp_current_blocks'][$row['placement']][$row['block_id']]))
 				$context['lp_current_blocks'][$row['placement']][$row['block_id']] = array(
-					'icon'        => self::getIcon($row['icon']),
+					'icon'        => Helpers::getIcon($row['icon']),
 					'type'        => $row['type'],
 					'priority'    => $row['priority'],
 					'permissions' => $row['permissions'],
@@ -174,50 +174,36 @@ class Block
 	 */
 	private static function remove()
 	{
-		global $db_type, $smcFunc;
+		global $smcFunc;
 
 		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
 
 		if (empty($item))
 			return;
 
-		if ($db_type == 'postgresql') {
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_blocks
-				WHERE block_id = {int:id}',
-				array(
-					'id' => $item
-				)
-			);
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_block_titles
-				WHERE block_id = {int:id}',
-				array(
-					'id' => $item
-				)
-			);
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id = {int:id}
-					AND type = {string:type}',
-				array(
-					'id'   => $item,
-					'type' => 'block'
-				)
-			);
-		} else {
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_blocks, {db_prefix}lp_block_titles, {db_prefix}lp_params
-				USING {db_prefix}lp_blocks
-					LEFT JOIN {db_prefix}lp_block_titles ON ({db_prefix}lp_block_titles.block_id = {db_prefix}lp_blocks.block_id)
-					LEFT JOIN {db_prefix}lp_params ON ({db_prefix}lp_params.item_id = {db_prefix}lp_blocks.block_id AND {db_prefix}lp_params.type = {string:type})
-				WHERE {db_prefix}lp_blocks.block_id = {int:id}',
-				array(
-					'type' => 'block',
-					'id'   => $item
-				)
-			);
-		}
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_blocks
+			WHERE block_id = {int:id}',
+			array(
+				'id' => $item
+			)
+		);
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_block_titles
+			WHERE block_id = {int:id}',
+			array(
+				'id' => $item
+			)
+		);
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id = {int:id}
+				AND type = {string:type}',
+			array(
+				'id'   => $item,
+				'type' => 'block'
+			)
+		);
 	}
 
 	/**
@@ -547,7 +533,7 @@ class Block
 		$context['posting_fields']['icon']['label']['after'] = $txt['lp_block_icon_cheatsheet'];
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
-			'after' => '<span id="block_icon">' . self::getIcon() . '</span>',
+			'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
 			'attributes' => array(
 				'id'        => 'icon',
 				'maxlength' => 30,
@@ -566,10 +552,17 @@ class Block
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
-			$context['posting_fields']['placement']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_block']['placement']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['placement']['input']['options'][$title]['attributes'] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_block']['placement']
+				);
+			} else {
+				$context['posting_fields']['placement']['input']['options'][$title] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_block']['placement']
+				);
+			}
 		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
@@ -582,10 +575,17 @@ class Block
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_block']['permissions']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_block']['permissions']
+				);
+			} else {
+				$context['posting_fields']['permissions']['input']['options'][$title] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_block']['permissions']
+				);
+			}
 		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
@@ -610,10 +610,17 @@ class Block
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			$context['posting_fields']['title_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['title_class']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['title_class']['input']['options'][$key]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['title_class']
+				);
+			} else {
+				$context['posting_fields']['title_class']['input']['options'][$key] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['title_class']
+				);
+			}
 		}
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
@@ -637,10 +644,17 @@ class Block
 			);
 
 			foreach ($context['lp_all_content_classes'] as $key => $data) {
-				$context['posting_fields']['content_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['content_class']
-				);
+				if (!defined('JQUERY_VERSION')) {
+					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
+						'value'    => $key,
+						'selected' => $key == $context['lp_block']['content_class']
+					);
+				} else {
+					$context['posting_fields']['content_class']['input']['options'][$key] = array(
+						'value'    => $key,
+						'selected' => $key == $context['lp_block']['content_class']
+					);
+				}
 			}
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
@@ -659,6 +673,7 @@ class Block
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
+					'id'        => 'content',
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_block']['content']
 				)
@@ -721,7 +736,7 @@ class Block
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = Helpers::getPreviewTitle(self::getIcon());
+		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());
 	}
 
 	/**
@@ -983,25 +998,5 @@ class Block
 		$smcFunc['db_free_result']($request);
 
 		return $data;
-	}
-
-	/**
-	 * Get the block icon
-	 *
-	 * Получаем иконку блока
-	 *
-	 * @param string $icon
-	 * @return string
-	 */
-	public static function getIcon($icon = null)
-	{
-		global $context;
-
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
-
-		if (!empty($icon))
-			return '<i class="fas fa-' . $icon . '"></i> ';
-		else
-			return '';
 	}
 }

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -100,10 +100,17 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			$context['posting_fields']['category_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['category_class']['input']['options'][$key]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
+				);
+			} else {
+				$context['posting_fields']['category_class']['input']['options'][$key] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
+				);
+			}
 		}
 
 		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_boardlist_addon_board_class'];
@@ -116,10 +123,17 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
-			$context['posting_fields']['board_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['board_class']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['board_class']['input']['options'][$key]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['board_class']
+				);
+			} else {
+				$context['posting_fields']['board_class']['input']['options'][$key] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['board_class']
+				);
+			}
 		}
 	}
 
@@ -173,7 +187,7 @@ class BoardList
 			ob_start();
 
 			foreach ($context['lp_boardlist'] as $category) {
-				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name'], null, null);
+				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
 
 				echo '
 			<div', !empty($parameters['board_class']) ? ' class="' . $parameters['board_class'] . '"' : '', '>

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -70,7 +70,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.8',
+			'LP_VERSION' => '0.9',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -116,7 +116,6 @@ class Integration
 			return;
 
 		// Fix for Pretty URLs
-		// Если установлен Pretty URLs, добавляем обработку области "portal"
 		if (!empty($context['pretty']['action_array'])) {
 			if (!in_array('portal', array_values($context['pretty']['action_array'])))
 				$context['pretty']['action_array'][] = 'portal';
@@ -194,11 +193,12 @@ class Integration
 		if (!defined('LP_NAME'))
 			return;
 
-		$context['allow_light_portal_manage'] = allowedTo('light_portal_manage');
+		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
+		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
 
 		// Display "Portal settings" in Main Menu => Admin
 		// Отображение пункта "Настройки портала"
-		if ($context['allow_light_portal_manage']) {
+		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
 			$buttons['admin']['show'] = true;
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
@@ -218,11 +218,13 @@ class Integration
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
+								'amt'   => count($context['lp_active_blocks']),
 								'show'  => true
 							),
 							'pages' => array(
 								'title'   => $txt['lp_pages'],
 								'href'    => $scripturl . '?action=admin;area=lp_pages',
+								'amt'     => $context['lp_active_pages_num'],
 								'show'    => true,
 								'is_last' => true
 							)
@@ -232,12 +234,14 @@ class Integration
 					'portal_blocks' => array(
 						'title' => $txt['lp_blocks'],
 						'href'  => $scripturl . '?action=admin;area=lp_blocks',
-						'show'  => true
+						'amt'   => count($context['lp_active_blocks']),
+						'show'  => $context['allow_light_portal_manage_blocks']
 					),
 					'portal_pages' => array(
 						'title'   => $txt['lp_pages'],
 						'href'    => $scripturl . '?action=admin;area=lp_pages',
-						'show'    => true
+						'amt'     => $context['lp_active_pages_num'],
+						'show'    => $context['allow_light_portal_manage_own_pages']
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
@@ -322,7 +326,8 @@ class Integration
 		$context['non_guest_permissions'] = array_merge(
 			$context['non_guest_permissions'],
 			array(
-				'light_portal_manage'
+				'light_portal_manage_blocks',
+				'light_portal_manage_own_pages'
 			)
 		);
 	}
@@ -339,8 +344,9 @@ class Integration
 	 */
 	public static function loadPermissions(&$permissionGroups, &$permissionList, &$leftPermissionGroups)
 	{
-		$permissionList['membergroup']['light_portal_view']   = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage'] = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}

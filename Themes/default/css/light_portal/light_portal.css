@@ -2,7 +2,7 @@
  * Font Awesome Free 5.12.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
- @font-face {
+@font-face {
 	font-family: 'Font Awesome 5 Free';
 	font-style: normal;
 	font-weight: 900;
@@ -16,9 +16,10 @@
 	font-weight: 900;
 }
 
-/* Light Portal by Bugo - https://dragomano.ru/mods/light-portal
-* License - https://opensource.org/licenses/BSD-3-Clause BSD
-*/
+
+/*! Light Portal by Bugo - https://dragomano.ru/mods/light-portal
+ * License - https://opensource.org/licenses/BSD-3-Clause BSD
+ */
 .fa-portal::before {
 	content: "\f0ac";
 }
@@ -39,6 +40,20 @@
 	margin-bottom: 5px;
 }
 
+#lp_layout h3, #lp_layout h4 {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#lp_layout h3:hover, #lp_layout h4:hover {
+	white-space: normal;
+}
+
+#lp_layout .file_content {
+	white-space: break-spaces;
+}
+
 .priority span, .actions span {
 	cursor: pointer;
 }
@@ -51,12 +66,14 @@
 	width: 14%;
 }
 
-.article_link:hover {
-	text-decoration: none;
+.lp_frontpage_articles .roundframe {
+	display: flex;
+	flex-direction: column;
+	box-sizing: content-box;
 }
 
-.article_content:hover {
-	box-shadow: 0 1px 4px rgba(0,0,0,0.3),0 0 40px rgba(0,0,0,0.1) inset;
+.article_link {
+	margin-top: 10px;
 }
 
 .article_image {
@@ -64,6 +81,27 @@
 	height: auto;
 	max-width: 100%;
 	margin: 0 auto;
+	border-radius: 5px;
+}
+
+.article_info {
+	flex: 1 1 auto;
+}
+
+.author_and_category, .date_and_views {
+	align-items: center;
+	justify-content: space-between;
+	display: flex;
+}
+
+@media (max-width: 1200px) and (min-width: 1022px) {
+	.article_info div {
+		text-align: center;
+		display: block;
+	}
+	.article_info .floatleft, .article_info .floatright {
+		float: none;
+	}
 }
 
 #postpage #post_header dt {
@@ -137,11 +175,11 @@ dl.top_posters dt img {
 	cursor: pointer;
 }
 
-.page_md .bbc_code {
+.page_md .bbc_code, .block_md .bbc_code {
 	white-space: pre;
 }
 
-.page_md .task-list-item {
+.page_md .task-list-item, .block_md .task-list-item {
 	list-style: none;
 	margin-left: -20px;
 }

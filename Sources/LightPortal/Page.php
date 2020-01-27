@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -59,7 +59,7 @@ class Page
 		if ($alias === '/') {
 			$context['page_title'] = $modSettings['lp_frontpage_title_' . $context['user']['language']] ?? $txt['lp_portal'];
 		} else {
-			$context['page_title'] = $context['lp_page']['title'];
+			$context['page_title']    = $context['lp_page']['title'];
 			$context['canonical_url'] = $scripturl . '?page=' . $alias;
 		}
 
@@ -69,16 +69,17 @@ class Page
 
 		if (!empty($modSettings['lp_frontpage_mode']) && empty($_GET['page'])) {
 			$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
-			$context['lp_frontpage_layout'] = 12 / (!empty($modSettings['lp_frontpage_layout']) ? (int) $modSettings['lp_frontpage_layout'] : 2);
-			if ($limit == 1)
-				$context['lp_frontpage_layout'] = 12;
+			self::calculateNumColumns();
 
 			if ($modSettings['lp_frontpage_mode'] == 1) {
 				Subs::prepareArticles('topics');
 				$context['sub_template'] = 'show_topics_as_articles';
-			} else {
+			} elseif ($modSettings['lp_frontpage_mode'] == 2) {
 				Subs::prepareArticles();
 				$context['sub_template'] = 'show_pages_as_articles';
+			} else {
+				Subs::prepareArticles('boards');
+				$context['sub_template'] = 'show_boards_as_articles';
 			}
 		} else {
 			$context['sub_template'] = 'show_page';
@@ -91,6 +92,38 @@ class Page
 			elseif ($_REQUEST['page'] === '/')
 				redirectexit();
 		}
+	}
+
+	/**
+	 * Calculate the number columns for the frontpage layout
+	 *
+	 * Подсчитываем количество колонок для макета главной страницы
+	 *
+	 * @return void
+	 */
+	private static function calculateNumColumns()
+	{
+		global $modSettings, $context;
+
+		$num_columns = 12;
+
+		if (!empty($modSettings['lp_frontpage_layout'])) {
+			switch ($modSettings['lp_frontpage_layout']) {
+				case '1':
+					$num_columns = 12 / 2;
+					break;
+				case '2':
+					$num_columns = 12 / 3;
+					break;
+				case '3':
+					$num_columns = 12 / 4;
+					break;
+				default:
+					$num_columns = 12 / 6;
+			}
+		}
+
+		$context['lp_frontpage_layout'] = $num_columns;
 	}
 
 	/**
@@ -333,8 +366,10 @@ class Page
 	 */
 	private static function postActions()
 	{
-		if (!empty($_POST['del_page']))
-			self::remove((int) $_POST['del_page']);
+		if (!isset($_REQUEST['actions']))
+			return;
+
+		self::remove();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
@@ -352,12 +387,13 @@ class Page
 	 *
 	 * Удаление страницы
 	 *
-	 * @param int $item
 	 * @return void
 	 */
-	private static function remove($item)
+	private static function remove()
 	{
 		global $smcFunc;
+
+		$item = filter_input(INPUT_POST, 'del_page', FILTER_VALIDATE_INT);
 
 		if (empty($item))
 			return;
@@ -367,6 +403,15 @@ class Page
 			WHERE page_id = {int:id}',
 			array(
 				'id' => $item
+			)
+		);
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id = {int:id}
+				AND type = {string:type}',
+			array(
+				'id'   => $item,
+				'type' => 'page'
 			)
 		);
 	}
@@ -669,10 +714,17 @@ class Page
 		);
 
 		foreach ($txt['lp_page_types'] as $type => $title) {
-			$context['posting_fields']['type']['input']['options'][$title] = array(
-				'value'    => $type,
-				'selected' => $type == $context['lp_page']['type']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
+					'value'    => $type,
+					'selected' => $type == $context['lp_page']['type']
+				);
+			} else {
+				$context['posting_fields']['type']['input']['options'][$title] = array(
+					'value'    => $type,
+					'selected' => $type == $context['lp_page']['type']
+				);
+			}
 		}
 
 		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
@@ -703,10 +755,17 @@ class Page
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_page']['permissions']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_page']['permissions']
+				);
+			} else {
+				$context['posting_fields']['permissions']['input']['options'][$title] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_page']['permissions']
+				);
+			}
 		}
 
 		if ($context['lp_page']['type'] !== 'bbc') {
@@ -714,6 +773,7 @@ class Page
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
+					'id'        => 'content',
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_page']['content'],
 					'required'  => true
@@ -1028,7 +1088,7 @@ class Page
 			$data['created']  = Helpers::getFriendlyTime($data['created_at']);
 			$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
 			$data['can_show'] = Subs::canShowItem($data['permissions']);
-			$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage') && $data['author_id'] == $user_info['id']);
+			$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
 		}
 
 		return $data;

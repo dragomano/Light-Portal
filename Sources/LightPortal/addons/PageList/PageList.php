@@ -14,7 +14,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -84,10 +84,17 @@ class PageList
 		);
 
 		foreach ($txt['lp_page_list_addon_sort_set'] as $key => $value) {
-			$context['posting_fields']['sort']['input']['options'][$value] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['sort']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['sort']['input']['options'][$value]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
+				);
+			} else {
+				$context['posting_fields']['sort']['input']['options'][$value] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
+				);
+			}
 		}
 	}
 

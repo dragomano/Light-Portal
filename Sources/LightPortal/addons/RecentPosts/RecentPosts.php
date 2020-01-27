@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -110,10 +110,17 @@ class RecentPosts
 		);
 
 		foreach ($txt['lp_recent_posts_addon_type_set'] as $key => $value) {
-			$context['posting_fields']['link_type']['input']['options'][$value] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['link_type']['input']['options'][$value]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
+				);
+			} else {
+				$context['posting_fields']['link_type']['input']['options'][$value] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
+				);
+			}
 		}
 	}
 
@@ -162,7 +169,7 @@ class RecentPosts
 				echo '
 				<li class="windowbg">
 					', ($post['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span> ' : ''), $post[$parameters['link_type']], '
-					<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '
+					<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>
 					<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
 				</li>';
 			}

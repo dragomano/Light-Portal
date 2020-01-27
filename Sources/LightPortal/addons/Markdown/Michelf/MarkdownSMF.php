@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Markdown\Michelf;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 class MarkdownSMF extends \Michelf\MarkdownExtra
@@ -206,7 +206,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 		$list = $matches[1];
 		$list_type = preg_match("/$marker_ul_re/", $matches[4]) ? "ul class=\"bbc_list\"" : "ul class=\"bbc_list\" style=\"list-style-type: decimal\"";
 
-		$marker_any_re = ( $list_type == "ul class=\"bbc_list\"" ? $marker_ul_re : $marker_ol_re );
+		$marker_any_re = ($list_type == "ul class=\"bbc_list\"" ? $marker_ul_re : $marker_ol_re);
 
 		$list .= "\n";
 		$result = $this->processListItems($list, $marker_any_re);
@@ -222,10 +222,10 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			}
 		}
 
-		if ($ol_start > 1 && $list_type == 'ul class=\"bbc_list\" style=\"list-style-type: decimal\"'){
-			$result = $this->hashBlock("<$list_type start=\"$ol_start\">\n" . $result . "</$list_type>");
+		if ($ol_start > 1 && $list_type == 'ul class=\"bbc_list\" style=\"list-style-type: decimal\"') {
+			$result = $this->hashBlock("<$list_type start=\"$ol_start\">\n" . $result . "</ul>");
 		} else {
-			$result = $this->hashBlock("<$list_type>\n" . $result . "</$list_type>");
+			$result = $this->hashBlock("<$list_type>\n" . $result . "</ul>");
 		}
 
 		return "\n". $result ."\n\n";

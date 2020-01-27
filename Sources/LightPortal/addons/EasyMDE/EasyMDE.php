@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMDE;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -94,6 +94,7 @@ class EasyMDE
 					className: "fas fa-strikethrough",
 					title: "' . $editortxt['strikethrough'] . '"
 				},
+				"|",
 				{
 					name: "heading-4",
 					action: (editor) => {
@@ -104,6 +105,25 @@ class EasyMDE
 					title: "' . $txt['lp_title'] . '"
 				},
 				"|",
+				{
+					name: "image",
+					action: EasyMDE.drawImage,
+					className: "fas fa-picture-o",
+					title: "' . $editortxt['insert_image'] . '"
+				},
+				{
+					name: "link",
+					action: EasyMDE.drawLink,
+					className: "fas fa-link",
+					title: "' . $editortxt['insert_link'] . '"
+				},
+				"|",
+				{
+					name: "table",
+					action: EasyMDE.drawTable,
+					className: "fas fa-table",
+					title: "' . $editortxt['insert_table'] . '"
+				},
 				{
 					name: "code",
 					action: EasyMDE.toggleCodeBlock,
@@ -116,6 +136,7 @@ class EasyMDE
 					className: "fas fa-quote-left",
 					title: "' . $editortxt['insert_quote'] . '"
 				},
+				"|",
 				{
 					name: "unordered-list",
 					action: EasyMDE.toggleUnorderedList,
@@ -128,24 +149,14 @@ class EasyMDE
 					className: "fas fa-list-ol",
 					title: "' . $editortxt['numbered_list'] . '"
 				},
-				"|",
 				{
-					name: "link",
-					action: EasyMDE.drawLink,
-					className: "fas fa-link",
-					title: "' . $editortxt['insert_link'] . '"
-				},
-				{
-					name: "image",
-					action: EasyMDE.drawImage,
-					className: "fas fa-picture-o",
-					title: "' . $editortxt['insert_image'] . '"
-				},
-				{
-					name: "table",
-					action: EasyMDE.drawTable,
-					className: "fas fa-table",
-					title: "' . $editortxt['insert_table'] . '"
+					name: "task-list",
+					action: (editor) => {
+						editor.codemirror.replaceSelection(\'- [ ] \');
+						editor.codemirror.focus();
+					},
+					className: "fas fa-tasks",
+					title: "' . $txt['lp_easymde_addon_tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",

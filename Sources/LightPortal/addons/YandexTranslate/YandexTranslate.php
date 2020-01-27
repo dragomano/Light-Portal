@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\YandexTranslate;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -93,8 +93,26 @@ class YandexTranslate
 			'type' => 'select',
 			'attributes' => array(
 				'id' => 'widget_theme'
-			),
-			'options' => array(
+			)
+		);
+
+		if (!defined('JQUERY_VERSION')) {
+			$context['posting_fields']['widget_theme']['input']['options'] = array(
+				'light' => array(
+					'attributes' => array(
+						'value'    => 'light',
+						'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
+					)
+				),
+				'dark' => array(
+					'attributes' => array(
+						'value'    => 'dark',
+						'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
+					)
+				)
+			);
+		} else {
+			$context['posting_fields']['widget_theme']['input']['options'] = array(
 				'light' => array(
 					'value'    => 'light',
 					'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
@@ -103,8 +121,8 @@ class YandexTranslate
 					'value'    => 'dark',
 					'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
 				)
-			)
-		);
+			);
+		}
 
 		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_yandex_translate_addon_auto_mode'];
 		$context['posting_fields']['auto_mode']['input'] = array(

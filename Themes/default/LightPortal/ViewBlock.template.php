@@ -142,16 +142,16 @@ function lp_show_block($block)
 	global $context, $scripturl, $txt;
 
 	echo '
-	<div id="block_', $block['id'], '">';
-
-	if ($context['allow_light_portal_manage'])
-		$edit_link = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '"><span class="floatright fas fa-edit" title="' . $txt['edit'] . '"></span></a>';
+	<div id="block_', $block['id'], '" class="block_', $block['type'], '">';
 
 	if (!empty($block['title_style']))
-		$style = ' style="' . $block['title_style'] . '"';
+		$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
+
+	if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
+		$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
 
 	if (!empty($block['title_class']))
-		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title'], $style ?? '', $edit_link ?? '');
+		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
 	else
 		echo $block['title'];
 

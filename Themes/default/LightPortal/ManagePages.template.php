@@ -77,7 +77,7 @@ function template_manage_pages_below()
 
 	echo '
 	<script>
-		let work = smf_scripturl + "?action=admin;area=lp_pages";
+		let work = smf_scripturl + "?action=admin;area=lp_pages;actions";
 		jQuery(document).ready(function($) {
 			$(".del_page").on("click", function() {
 				if (!confirm("' . $txt['quickmod_confirm'] . '"))
@@ -117,7 +117,7 @@ function template_page_post()
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['preview_title'], '</h3>
 	</div>
-	<div class="roundframe noup">
+	<div class="roundframe noup page_', $context['lp_page']['type'], '">
 		', $context['preview_content'], '
 	</div>';
 	} else {
@@ -181,6 +181,9 @@ function template_page_post()
 			});
 			$("#type").on("change", function() {
 				ajax_indicator(true);
+				if ($("#content").val() == "") {
+					$("#content").val(" ");
+				}
 				$("button[name=preview]").click();
 			});
 		});

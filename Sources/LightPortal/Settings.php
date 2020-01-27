@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -29,7 +29,7 @@ class Settings
 	 */
 	public static function adminAreas(&$admin_areas)
 	{
-		global $sourcedir, $txt;
+		global $sourcedir, $txt, $context;
 
 		require_once($sourcedir . '/ManageSettings.php');
 		loadLanguage('ManageSettings');
@@ -45,7 +45,7 @@ class Settings
 			array(
 				'lp_portal' => array(
 					'title' => $txt['lp_portal'],
-					'permission' => array('admin_forum', 'light_portal_manage'),
+					'permission' => array('admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_own_pages'),
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
@@ -62,7 +62,8 @@ class Settings
 								self::blockArea();
 							},
 							'icon' => 'modifications',
-							'permission' => array('admin_forum', 'light_portal_manage'),
+							'amt' => count($context['lp_active_blocks']),
+							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
 								'main' => array($txt['lp_blocks_manage']),
 								'add' => array($txt['lp_blocks_add'])
@@ -74,7 +75,8 @@ class Settings
 								self::pageArea();
 							},
 							'icon' => 'posts',
-							'permission' => array('admin_forum', 'light_portal_manage'),
+							'amt' => $context['lp_active_pages_num'],
+							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array($txt['lp_pages_manage']),
 								'add' => array($txt['lp_pages_add'])
@@ -123,6 +125,11 @@ class Settings
 			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $db_engine, $db_version)
 		);
 
+		if (Helpers::useCache('new_version_is_available', 'isNewVersionExist', __CLASS__)) {
+			$message = '</p><div class="noticebox">' . sprintf($txt['lp_new_version_is_available'], 'https://github.com/dragomano/Light-Portal/releases') . '</div><p>';
+			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
+		}
+
 		$context['page_title']     = $txt['lp_settings'];
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
@@ -159,7 +166,7 @@ class Settings
 				array('check', 'lp_frontpage_disable', 'disabled' => !empty($modSettings['lp_standalone'])),
 				array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
 				array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
-				array('int', 'lp_frontpage_layout', 'min' => 2, 'max' => 3, 'disabled' => $frontpage_disabled),
+				array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 				array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 				array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 				array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
@@ -176,7 +183,8 @@ class Settings
 				array('text', 'lp_page_itemprop_phone', 80),
 				array('title', 'edit_permissions'),
 				array('permissions', 'light_portal_view'),
-				array('permissions', 'light_portal_manage')
+				array('permissions', 'light_portal_manage_blocks'),
+				array('permissions', 'light_portal_manage_own_pages')
 			)
 		);
 
@@ -232,6 +240,8 @@ class Settings
 	 */
 	public static function blockArea()
 	{
+		isAllowedTo('light_portal_manage_blocks');
+
 		$subActions = array(
 			'main' => 'Block::manage',
 			'add'  => 'Block::add',
@@ -250,6 +260,8 @@ class Settings
 	 */
 	public static function pageArea()
 	{
+		isAllowedTo('light_portal_manage_own_pages');
+
 		$subActions = array(
 			'main' => 'Page::manage',
 			'add'  => 'Page::add',
@@ -272,8 +284,6 @@ class Settings
 	{
 		global $sourcedir, $context;
 
-		isAllowedTo('light_portal_manage');
-
 		require_once($sourcedir . '/ManageServer.php');
 
 		$context['sub_template'] = 'show_settings';
@@ -284,5 +294,30 @@ class Settings
 		$context['sub_action'] = $_REQUEST['sa'];
 
 		call_helper(__NAMESPACE__ . '\\' . $subActions[$_REQUEST['sa']]);
+	}
+
+	/**
+	 * Check if exists the new version of LP
+	 *
+	 * Проверка новой версии мода
+	 *
+	 * @return bool
+	 */
+	public static function isNewVersionExist()
+	{
+		$ch = curl_init('https://api.github.com/repos/dragomano/light-portal/releases/latest');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			"User-Agent: dragomano"
+		]);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$data = curl_exec($ch);
+		curl_close($ch);
+		$data = json_decode($data);
+
+		if (LP_VERSION < str_replace('v', '', $data->tag_name))
+			return true;
+
+		return false;
 	}
 }

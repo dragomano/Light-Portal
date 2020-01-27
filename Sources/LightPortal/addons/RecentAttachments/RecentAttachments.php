@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8.1
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -123,10 +123,17 @@ class RecentAttachments
 		);
 
 		foreach ($txt['lp_recent_attachments_addon_direction_set'] as $direction => $title) {
-			$context['posting_fields']['direction']['input']['options'][$title] = array(
-				'value'    => $direction,
-				'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-			);
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
+					'value'    => $direction,
+					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
+				);
+			} else {
+				$context['posting_fields']['direction']['input']['options'][$title] = array(
+					'value'    => $direction,
+					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
+				);
+			}
 		}
 	}
 

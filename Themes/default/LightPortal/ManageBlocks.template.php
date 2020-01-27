@@ -168,7 +168,7 @@ function show_block_table()
 			echo '
 		<tbody data-placement="', $placement, '">
 			<tr class="windowbg centertext">
-				<td colspan="6">', $txt['lp_no_items'], '</td>
+				<td>', $txt['lp_no_items'], '</td>
 			</tr>';
 		}
 
@@ -242,10 +242,16 @@ function template_block_post()
 		if (!empty($context['lp_block']['content_style']))
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
+		echo '
+	<div class="block_', $context['lp_block']['type'], '">';
+
 		if (!empty($context['lp_block']['content_class']))
 			echo sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style);
 		else
 			echo $context['preview_content'];
+
+		echo '
+	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">

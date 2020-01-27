@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -24,14 +24,25 @@ class Subs
 	 *
 	 * Формируем массив статей
 	 *
-	 * @param string $source (pages|topics)
+	 * @param string $source (pages|topics|boards)
 	 * @return void
 	 */
 	public static function prepareArticles($source = 'pages')
 	{
 		global $user_info, $modSettings, $context, $scripturl;
 
-		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $source == 'topics' ? 'getTopicsFromSelectedBoards' : 'getActivePages', __CLASS__);
+		switch ($source) {
+			case 'topics':
+				$function = 'getTopicsFromSelectedBoards';
+				break;
+			case 'boards':
+				$function = 'getSelectedBoards';
+				break;
+			default:
+				$function = 'getActivePages';
+		}
+
+		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $function, __CLASS__);
 
 		$total_items = count($articles);
 		$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
@@ -95,13 +106,15 @@ class Subs
 			censorText($row['subject']);
 			censorText($row['body']);
 
+			$row['subject'] = Helpers::cleanBbcode($row['subject']);
+
 			$rating = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
 
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$body = parse_bbc($row['body'], false);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
-				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png" width="100%'));
+				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png'));
 			}
 
 			if (!empty($teaser_size) && !empty($row['optimus_description']))
@@ -124,7 +137,7 @@ class Subs
 				'time'        => Helpers::getFriendlyTime($row['poster_time']),
 				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size - $rating) : $row['subject'],
 				'preview'     => $row['optimus_description'] ?: $row['body'],
-				'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
+				'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 				'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
 				'is_sticky'   => !empty($row['is_sticky']),
 				'is_new'      => $row['new_from'] <= $row['id_msg_modified'],
@@ -150,7 +163,7 @@ class Subs
 	 */
 	public static function getActivePages()
 	{
-		global $smcFunc, $modSettings, $scripturl, $settings, $user_info;
+		global $smcFunc, $modSettings, $settings, $scripturl, $user_info;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -177,7 +190,7 @@ class Subs
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
-				$image = $first_post_image ? array_pop($value) : ($settings['default_images_url'] . '/lp_default_image.png" width="100%');
+				$image = $first_post_image ? array_pop($value) : ($settings['default_images_url'] . '/lp_default_image.png');
 			}
 
 			if (!empty($teaser_size) && !empty($row['description']))
@@ -212,6 +225,83 @@ class Subs
 	}
 
 	/**
+	 * Get selected boards
+	 *
+	 * Получаем выбранные разделы
+	 *
+	 * @return array
+	 */
+	public static function getSelectedBoards()
+	{
+		global $modSettings, $smcFunc, $user_info, $context, $settings, $scripturl;
+
+		$boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+
+		if (empty($boards))
+			return [];
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
+				GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
+				(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . '
+			FROM {db_prefix}boards AS b
+				LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)
+				LEFT JOIN {db_prefix}messages AS m ON (m.id_msg = b.id_last_msg)' . ($user_info['is_guest'] ? '' : '
+				LEFT JOIN {db_prefix}log_boards AS lb ON (lb.id_board = b.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
+				LEFT JOIN {db_prefix}topics AS t ON (t.id_topic = m.id_topic)
+				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . '
+			WHERE b.id_board IN ({array_int:select_boards})
+				AND {query_see_board}
+			ORDER BY b.id_last_msg DESC',
+			array(
+				'blank_string'   => '',
+				'current_member' => $user_info['id'],
+				'select_boards'  => $boards
+			)
+		);
+
+		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
+		$teaser_size  = !empty($modSettings['lp_teaser_size']) ? (int) $modSettings['lp_teaser_size'] : 0;
+
+		$selected_boards = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$board_name  = parse_bbc($row['name'], false, '', $context['description_allowed_tags']);
+			$description = parse_bbc($row['description'], false, '', $context['description_allowed_tags']);
+			$cat_name    = parse_bbc($row['cat_name'], false, '', $context['description_allowed_tags']);
+
+			$image = null;
+			if (!empty($modSettings['lp_show_images_in_articles'])) {
+				$board_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $description, $value);
+				$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png" width="100%'));
+			}
+
+			$description = strip_tags($description);
+
+			$selected_boards[$row['id_board']] = array(
+				'id'          => $row['id_board'],
+				'name'        => !empty($subject_size) ? shorten_subject($board_name, $subject_size) : $board_name,
+				'description' => !empty($teaser_size) ? shorten_subject($description, $teaser_size) : $description,
+				'category'    => $cat_name,
+				'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
+				'is_redirect' => $row['is_redirect'],
+				'is_updated'  => empty($row['is_read']),
+				'num_posts'   => $row['num_posts'],
+				'image'       => $image
+			);
+
+			if (!empty($row['last_updated'])) {
+				$selected_boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
+				$selected_boards[$row['id_board']]['last_updated'] = Helpers::getFriendlyTime($row['last_updated']);
+			}
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $selected_boards;
+	}
+
+	/**
 	 *
 	 * Prepare information about current blocks of the portal
 	 *
@@ -226,7 +316,8 @@ class Subs
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
 
-		$context['lp_active_blocks'] = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
+		$context['lp_active_blocks']    = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
+		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Page');
 	}
 
 	/**
@@ -296,8 +387,10 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
-		loadCssFile('light_portal/flexboxgrid.min.css'); // https://cdn.jsdelivr.net/npm/flexboxgrid@6/dist/flexboxgrid.min.css
-		loadCssFile('light_portal/fontawesome.min.css'); // https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/fontawesome.min.css
+		//loadCssFile('https://cdn.jsdelivr.net/npm/flexboxgrid@6/dist/flexboxgrid.min.css', array('external' => true));
+		//loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/fontawesome.min.css', array('external' => true));
+		loadCssFile('light_portal/flexboxgrid.min.css');
+		loadCssFile('light_portal/fontawesome.min.css');
 		loadCssFile('light_portal/light_portal.css');
 	}
 
@@ -530,7 +623,7 @@ class Subs
 		$modSettings['meta_keywords'] = $context['lp_page']['keywords'];
 		$context['meta_description']  = $context['lp_page']['description'];
 		$context['optimus_og_type']['article']['published_time'] = date('c', $context['lp_page']['created_at']);
-		$context['optimus_og_type']['article']['modified_time']  = date('c', $context['lp_page']['updated_at']);
+		$context['optimus_og_type']['article']['modified_time']  = !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null;
 		$context['optimus_og_type']['article']['author'] = $context['lp_page']['author'];
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
@@ -581,7 +674,7 @@ class Subs
 		getLanguages();
 
 		// Only one language by default!
-		// Если на форуме отключен выбор языков, оставим только один, заданный по умолчанию
+		// Если на форуме отключен выбор языков, оставим только один (заданный по умолчанию)
 		if (empty($modSettings['userLanguage'])) {
 			$default_lang = $context['languages'][$language];
 			$context['languages'] = [];
@@ -599,13 +692,13 @@ class Subs
 	public static function getTitleClasses()
 	{
 		return [
-			'div.cat_bar > h3.catbg'        => '<div class="cat_bar"><h3 class="catbg"%2$s>%1$s%3$s</h3></div>',
-			'div.title_bar > h3.titlebg'    => '<div class="title_bar"><h3 class="titlebg"%2$s>%1$s%3$s</h3></div>',
-			'div.title_bar > h4.titlebg'    => '<div class="title_bar"><h4 class="titlebg"%2$s>%1$s%3$s</h4></div>',
-			'div.sub_bar > h3.subbg'        => '<div class="sub_bar"><h3 class="subbg"%2$s>%1$s%3$s</h3></div>',
-			'div.sub_bar > h4.subbg'        => '<div class="sub_bar"><h4 class="subbg"%2$s>%1$s%3$s</h4></div>',
-			'div.errorbox > h3'             => '<div class="errorbox"><h3%2$s>%1$s%3$s</h3></div>',
-			'div.generic_list_wrapper > h3' => '<div class="generic_list_wrapper"><h3%2$s>%1$s%3$s</h3></div>'
+			'div.cat_bar > h3.catbg'        => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
+			'div.title_bar > h3.titlebg'    => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
+			'div.title_bar > h4.titlebg'    => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
+			'div.sub_bar > h3.subbg'        => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
+			'div.sub_bar > h4.subbg'        => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
+			'div.errorbox > h3'             => '<div class="errorbox"><h3>%1$s</h3></div>',
+			'div.generic_list_wrapper > h3' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>'
 		];
 	}
 

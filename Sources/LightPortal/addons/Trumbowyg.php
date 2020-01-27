@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.8
+ * @version 0.9
  */
 
 if (!defined('SMF'))
@@ -27,19 +27,48 @@ class Trumbowyg
 	 */
 	public static function prepareEditor($object)
 	{
-		global $txt;
+		global $txt, $editortxt;
 
 		if ($object['type'] == 'html') {
+			loadLanguage('Editor');
+
 			loadCssFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js', array('external' => true));
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $txt['lang_dictionary'] . '.min.js', array('external' => true));
+
+			if ($txt['lang_dictionary'] !== 'en')
+				loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $txt['lang_dictionary'] . '.min.js', array('external' => true));
+
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js', array('external' => true));
 			addInlineJavaScript('
 		$("#content").trumbowyg({
 			lang: "' . $txt['lang_dictionary'] . '",
+			btnsDef: {
+				historyUndo: {
+					title: "' . $editortxt['undo'] . '"
+				},
+				historyRedo: {
+					title: "' . $editortxt['redo'] . '"
+				}
+			},
+			btns: [
+				["historyUndo", "historyRedo"],
+				["strong", "em", "del"],
+				["p", "h4"],
+				["superscript", "subscript"],
+				["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"],
+				["insertImage", "link"],
+				["table", "preformatted", "blockquote"],
+				["unorderedList", "orderedList"],
+				["horizontalRule"],
+				["viewHTML", "removeformat"],
+				["fullscreen"]
+			],
 			semantic: true,
 			urlProtocol: true,
 			imageWidthModalEdit: true
-		}).trumbowyg("toggle");', true);
+		});', true);
 		}
 	}
 
