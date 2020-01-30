@@ -14,3 +14,5 @@ $txt['lp_page_list_addon_sort_set'] = array(
     'created_at'  => 'By date of creation',
     'updated_at'  => 'By date of updating'
 );
+
+$txt['lp_page_list_addon_no_items'] = 'There are no available pages.';

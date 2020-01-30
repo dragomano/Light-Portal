@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9
+ * @version 0.9.1
  */
 
 if (!defined('SMF'))
@@ -178,6 +178,9 @@ class TopTopics
 			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
 
 			foreach ($top_topics as $topic) {
+				if ($topic['num_' . $parameters['popularity_type']] < 1)
+					continue;
+
 				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
 
 				echo '

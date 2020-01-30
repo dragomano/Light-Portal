@@ -26,7 +26,7 @@ function template_show_page()
 		<div class="information">
 			<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 			<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-				<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' (<meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' . $txt['modified_time'] . ': ' . $context['lp_page']['updated'] . ')' : '', '
+				<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' (<meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' . (isset($txt['modified_time']) ? $txt['modified_time'] . ': ' : '') . $context['lp_page']['updated'] . ')' : '', '
 			</time>
 		</div>';
 	}

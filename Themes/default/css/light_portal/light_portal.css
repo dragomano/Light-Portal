@@ -176,6 +176,7 @@ dl.top_posters dt img {
 }
 
 .page_md .bbc_code, .block_md .bbc_code {
+	overflow: auto !important;
 	white-space: pre;
 }
 

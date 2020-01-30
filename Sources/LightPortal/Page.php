@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9
+ * @version 0.9.1
  */
 
 if (!defined('SMF'))
@@ -380,6 +380,8 @@ class Page
 
 			self::toggleStatus($item, $status == 'off' ? 1 : 0);
 		}
+
+		clean_cache();
 	}
 
 	/**
@@ -1033,8 +1035,8 @@ class Page
 
 				if ($image_found && is_array($values)) {
 					$all_images = array_pop($values);
-					$image = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
-					$og_image = $smcFunc['htmlspecialchars']($image);
+					$image      = $modSettings['lp_page_og_image'] == 1 ? array_shift($all_images) : array_pop($all_images);
+					$og_image   = $smcFunc['htmlspecialchars']($image);
 				}
 			}
 

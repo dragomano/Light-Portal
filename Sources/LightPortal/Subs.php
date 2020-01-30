@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9
+ * @version 0.9.1
  */
 
 if (!defined('SMF'))
@@ -545,7 +545,7 @@ class Subs
 			return;
 
 		foreach ($light_portal_addons as $addon) {
-			$class = __NAMESPACE__ . '\Addons\\' . $addon;
+			$class    = __NAMESPACE__ . '\Addons\\' . $addon;
 			$function = $class . '::' . $hook;
 
 			self::loadAddonLanguage($addon);
@@ -761,19 +761,19 @@ class Subs
 			)
 		);
 		$links[] = array(
-			'title' => 'Sortable.js',
-			'link' => 'https://github.com/SortableJS/Sortable',
-			'license' => array(
-				'name' => 'the MIT License (MIT)',
-				'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
-			)
-		);
-		$links[] = array(
 			'title' => 'Font Awesome Free',
 			'link' => 'https://fontawesome.com/cheatsheet/free/solid',
 			'license' => array(
 				'name' => 'the Font Awesome Free License',
 				'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
+			)
+		);
+		$links[] = array(
+			'title' => 'Sortable.js',
+			'link' => 'https://github.com/SortableJS/Sortable',
+			'license' => array(
+				'name' => 'the MIT License (MIT)',
+				'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
 			)
 		);
 		$links[] = array(

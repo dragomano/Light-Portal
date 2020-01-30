@@ -294,7 +294,7 @@ $tables[] = array(
 			'value'   => 'string'
 		),
 		'values' => array(
-			array(1, 'page', 'show_author_and_date', 1)
+			array(1, 'page', 'show_author_and_date', 0)
 		),
 		'keys' => array('item_id', 'name')
 	)

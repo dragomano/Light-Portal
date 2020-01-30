@@ -14,3 +14,5 @@ $txt['lp_page_list_addon_sort_set'] = array(
     'created_at'  => 'За датою створення',
     'updated_at'  => 'За датою поновлення'
 );
+
+$txt['lp_page_list_addon_no_items'] = 'Доступних сторінок немає.';

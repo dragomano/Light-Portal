@@ -14,7 +14,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9
+ * @version 0.9.1
  */
 
 if (!defined('SMF'))
@@ -164,9 +164,9 @@ class PageList
 
 		$page_list = Helpers::useCache('page_list_addon_b' . $block_id . '_u' . $context['user']['id'] . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
 
-		if (!empty($page_list)) {
-			ob_start();
+		ob_start();
 
+		if (!empty($page_list)) {
 			echo '
 			<ul class="normallist page_list">';
 
@@ -179,8 +179,9 @@ class PageList
 
 			echo '
 			</ul>';
+		} else
+			echo $txt['lp_page_list_addon_no_items'];
 
-			$content = ob_get_clean();
-		}
+		$content = ob_get_clean();
 	}
 }
