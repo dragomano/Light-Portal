@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.1
+ * @version 0.9.2
  */
 
 if (!defined('SMF'))
@@ -467,6 +467,8 @@ class Page
 			'description' => $txt['lp_pages_add_tab_description']
 		);
 
+		Subs::getForumLanguages();
+
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
@@ -492,10 +494,8 @@ class Page
 		$item = !empty($_REQUEST['page_id']) ? (int) $_REQUEST['page_id'] : null;
 		$item = $item ?: (!empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null);
 
-		if (empty($item)) {
-			header('HTTP/1.1 404 Not Found');
-			fatal_lang_error('lp_page_not_found', false);
-		}
+		if (empty($item))
+			fatal_lang_error('lp_page_not_found', false, null, 404);
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_edit_title'];
 
@@ -508,6 +508,8 @@ class Page
 
 		if ($context['lp_current_page']['can_edit'] === false)
 			fatal_lang_error('lp_page_not_editable', false);
+
+		Subs::getForumLanguages();
 
 		self::validateData();
 
@@ -1019,10 +1021,8 @@ class Page
 			)
 		);
 
-		if ($smcFunc['db_num_rows']($request) == 0)	{
-			header('HTTP/1.1 404 Not Found');
-			fatal_lang_error('lp_page_not_found', false);
-		}
+		if ($smcFunc['db_num_rows']($request) == 0)
+			fatal_lang_error('lp_page_not_found', false, null, 404);
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['content']);

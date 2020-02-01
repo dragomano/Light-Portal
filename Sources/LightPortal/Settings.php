@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.1
+ * @version 0.9.2
  */
 
 if (!defined('SMF'))
@@ -305,6 +305,9 @@ class Settings
 	 */
 	public static function isNewVersionExist()
 	{
+		if (!extension_loaded('curl'))
+			return false;
+
 		$ch = curl_init('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, [

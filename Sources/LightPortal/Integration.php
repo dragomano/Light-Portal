@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.1
+ * @version 0.9.2
  */
 
 if (!defined('SMF'))
@@ -70,7 +70,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.9.1',
+			'LP_VERSION' => '0.9.2',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -110,7 +110,7 @@ class Integration
 	 */
 	public static function actions(&$actions)
 	{
-		global $context, $modSettings;
+		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_frontpage_disable']))
 			return;

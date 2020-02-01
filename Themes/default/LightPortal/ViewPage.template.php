@@ -297,7 +297,11 @@ function portal_frontpage_scripts()
 
 			echo '
 			let starImg', $topic['id'], ' = $(".catbg a[data-id=', $topic['id'], ']");
-			starImg', $topic['id'], '.after(\'<span class="topic_stars_main">', $img, '</span>\');';
+			starImg', $topic['id'], '.after(\'<span class="topic_stars_main">', $img, '<\/span>\');';
+		} elseif (!empty($topic['kpr_rating'])) {
+			echo '
+			let starImg', $topic['id'], ' = $(".catbg a[data-id=', $topic['id'], ']");
+			starImg', $topic['id'], '.after(\'<span class="floatright"><span class="new_posts">', $topic['kpr_rating'], '<\/span><\/span>\');';
 		}
 	}
 

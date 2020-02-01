@@ -43,7 +43,7 @@ function template_portal_above()
 	}
 
 	echo '
-			<div class="col-xs">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-8">
 				<div class="box">';
 
 	// Center (top) | Центр (верх)

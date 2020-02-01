@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.1
+ * @version 0.9.2
  */
 
 if (!defined('SMF'))
@@ -72,11 +72,12 @@ class Subs
 		// Check whether compatible modifications are installed
 		// Проверяем, установлены ли совместимые модификации
 		$topic_rating_bar = class_exists('TopicRatingBar');
+		$karma_post_rating = class_exists('\Bugo\KarmaPostRating\Subs');
 		$optimus = class_exists('\Bugo\Optimus\Subs') && !empty($modSettings['optimus_allow_change_desc']);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . ($topic_rating_bar ? ', tr.total_votes, tr.total_value' : '') . ($optimus ? ', COALESCE(t.optimus_description, 0) AS optimus_description' : '') . '
+				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . ($topic_rating_bar ? ', tr.total_votes, tr.total_value' : '') . ($karma_post_rating ? ', IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor']) ? ' + t.num_replies' : '') . ', 0) AS rating' : '') . ($optimus ? ', COALESCE(t.optimus_description, 0) AS optimus_description' : '') . '
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
 				INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
@@ -85,16 +86,22 @@ class Subs
 				LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
 				LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . ($topic_rating_bar ? '
-				LEFT JOIN {db_prefix}topic_ratings AS tr ON (tr.id = t.id_topic)' : '') . '
-			WHERE t.approved = 1
-				AND t.id_poll = 0
-				AND t.id_redirect_topic = 0
-				AND t.id_board IN ({array_int:select_boards})
+				LEFT JOIN {db_prefix}topic_ratings AS tr ON (tr.id = t.id_topic)' : '') . ($karma_post_rating ? '
+				LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (kpr.item_id = t.id_first_msg AND kpr.item = "message")' : '') . '
+			WHERE t.approved = {int:is_approved}
+				AND t.id_poll = {int:id_poll}
+				AND t.id_redirect_topic = {int:id_redirect_topic}
+				AND t.id_board IN ({array_int:select_boards})' . ($karma_post_rating && !empty($context['kpr_ignored_boards']) ? '
+				AND t.id_board NOT IN ({array_int:kpr_ignored_boards)' : '') . '
 				AND {query_wanna_see_board}
 			ORDER BY t.id_last_msg DESC',
 			array(
-				'current_member' => $user_info['id'],
-				'select_boards'  => $boards
+				'current_member'     => $user_info['id'],
+				'is_approved'        => 1,
+				'id_poll'            => 0,
+				'id_redirect_topic'  => 0,
+				'select_boards'      => $boards,
+				'kpr_ignored_boards' => !empty($context['kpr_ignored_boards']) ? $context['kpr_ignored_boards'] : null
 			)
 		);
 
@@ -109,6 +116,7 @@ class Subs
 			$row['subject'] = Helpers::cleanBbcode($row['subject']);
 
 			$rating = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
+			$kpr_rating = $row['rating'] ?: 0;
 
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
@@ -135,7 +143,7 @@ class Subs
 				'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
 				'poster_name' => $row['poster_name'],
 				'time'        => Helpers::getFriendlyTime($row['poster_time']),
-				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size - $rating) : $row['subject'],
+				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size - $rating - strlen((string) $kpr_rating)) : $row['subject'],
 				'preview'     => $row['optimus_description'] ?: $row['body'],
 				'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 				'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
@@ -145,7 +153,8 @@ class Subs
 				'num_replies' => $row['num_replies'],
 				'css_class'   => $colorClass,
 				'image'       => $image,
-				'rating'      => $rating
+				'rating'      => $rating,
+				'kpr_rating'  => $kpr_rating
 			);
 		}
 
