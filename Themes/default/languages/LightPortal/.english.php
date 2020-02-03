@@ -29,6 +29,7 @@ $txt['lp_standalone']                          = 'Standalone mode';
 $txt['lp_standalone_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
 $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
+$txt['lp_show_tags_on_page']                   = 'Display keywords at the top of the page';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in the admin area';
 $txt['lp_open_graph']                          = 'Open Graph';
@@ -106,7 +107,7 @@ $txt['lp_pages_manage']                 = 'Manage pages';
 $txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
-$txt['lp_pages_add_tab_description']    = 'Pay special attention to the <strong>page alias</strong> — it is used in the address bar and can only contain Latin characters and numbers!<br>The main page always has an alias equal to "/".';
+$txt['lp_pages_add_tab_description']    = 'Page <strong>alias</strong> is used in the address bar and can only contain Latin characters and numbers!<br>The main page always has an alias equal to "/".';
 $txt['lp_pages_edit_title']             = 'Editing page';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Additional pages';
@@ -122,6 +123,14 @@ $txt['lp_no_items']                     = 'There is nothing yet. Let\'s add?';
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date'
 );
+
+// Tags
+$txt['lp_all_page_tags']    = 'All portal page tags';
+$txt['lp_all_tags_by_key']  = 'All pages with the "%1$s" tag';
+$txt['lp_no_selected_tag']  = 'The specified tag was not found.';
+$txt['lp_no_tags']          = 'There is no tags yet.';
+$txt['lp_keyword_column']   = 'Keyword';
+$txt['lp_frequency_column'] = 'Frequency';
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Markdown\Michelf;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 class MarkdownSMF extends \Michelf\MarkdownExtra
@@ -78,11 +78,11 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	 */
 	protected function _processListItems_callback($matches)
 	{
-		$attr = "";
-		$item = $matches[4];
-		$leading_line =& $matches[1];
+		$attr          = "";
+		$item          = $matches[4];
+		$leading_line  =& $matches[1];
 		$leading_space =& $matches[2];
-		$marker_space = $matches[3];
+		$marker_space  = $matches[3];
 		$tailing_blank_line =& $matches[5];
 
 		if ($leading_line || $tailing_blank_line ||	preg_match('/\n{2,}/', $item)) {
@@ -110,9 +110,9 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	protected function _doAnchors_inline_callback($matches)
 	{
 		$link_text = $this->runSpanGamut($matches[2]);
-		$url = $matches[3] === '' ? $matches[4] : $matches[3];
-		$title =& $matches[7];
-		$attr = $this->doExtraAttributes("a", $dummy =& $matches[8]);
+		$url       = $matches[3] === '' ? $matches[4] : $matches[3];
+		$title     =& $matches[7];
+		$attr      = $this->doExtraAttributes("a", $dummy =& $matches[8]);
 
 		$unhashed = $this->unhash($url);
 		if ($unhashed !== $url)
@@ -141,7 +141,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	 */
 	protected function _doAutoLinks_url_callback($matches)
 	{
-		$url = $this->encodeURLAttribute($matches[1], $text);
+		$url  = $this->encodeURLAttribute($matches[1], $text);
 		$link = "<a class=\"bbc_link\" href=\"$url\">$text</a>";
 
 		return $this->hashPart($link);
@@ -156,7 +156,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	protected function _doAutoLinks_email_callback($matches)
 	{
 		$addr = $matches[1];
-		$url = $this->encodeURLAttribute("mailto:$addr", $text);
+		$url  = $this->encodeURLAttribute("mailto:$addr", $text);
 		$link = "<a class=\"bbc_email\" href=\"$url\">$text</a>";
 
 		return $this->hashPart($link);
@@ -171,13 +171,13 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	protected function _doImages_inline_callback($matches)
 	{
 		$alt_text = $matches[2];
-		$url = $matches[3] === '' ? $matches[4] : $matches[3];
-		$title =& $matches[7];
-		$attr = $this->doExtraAttributes("img", $dummy =& $matches[8]);
+		$url      = $matches[3] === '' ? $matches[4] : $matches[3];
+		$title    =& $matches[7];
+		$attr     = $this->doExtraAttributes("img", $dummy =& $matches[8]);
 
 		$alt_text = $this->encodeAttribute($alt_text);
-		$url = $this->encodeURLAttribute($url);
-		$result = "<img class=\"bbc_img resized\" src=\"$url\" alt=\"$alt_text\"";
+		$url      = $this->encodeURLAttribute($url);
+		$result   = "<img class=\"bbc_img resized\" src=\"$url\" alt=\"$alt_text\"";
 
 		if (isset($title)) {
 			$title = $this->encodeAttribute($title);
@@ -198,9 +198,9 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	 */
 	protected function _doLists_callback($matches)
 	{
-		$marker_ul_re  = '[*+-]';
-		$marker_ol_re  = '\d+[\.]';
-		$marker_any_re = "(?:$marker_ul_re|$marker_ol_re)";
+		$marker_ul_re       = '[*+-]';
+		$marker_ol_re       = '\d+[\.]';
+		$marker_any_re      = "(?:$marker_ul_re|$marker_ol_re)";
 		$marker_ol_start_re = '[0-9]+';
 
 		$list = $matches[1];
@@ -239,13 +239,13 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	 */
 	protected function _doTable_callback($matches)
 	{
-		$head		= $matches[1];
-		$underline	= $matches[2];
-		$content	= $matches[3];
+		$head      = $matches[1];
+		$underline = $matches[2];
+		$content   = $matches[3];
 
-		$head		= preg_replace('/[|] *$/m', '', $head);
-		$underline	= preg_replace('/[|] *$/m', '', $underline);
-		$content	= preg_replace('/[|] *$/m', '', $content);
+		$head      = preg_replace('/[|] *$/m', '', $head);
+		$underline = preg_replace('/[|] *$/m', '', $underline);
+		$content = preg_replace('/[|] *$/m', '', $content);
 
 		$separators	= preg_split('/ *[|] */', $underline);
 		foreach ($separators as $n => $s) {
@@ -259,10 +259,10 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 				$attr[$n] = '';
 		}
 
-		$head		= $this->parseSpan($head);
-		$headers	= preg_split('/ *[|] */', $head);
-		$col_count	= count($headers);
-		$attr       = array_pad($attr, $col_count, '');
+		$head      = $this->parseSpan($head);
+		$headers   = preg_split('/ *[|] */', $head);
+		$col_count = count($headers);
+		$attr      = array_pad($attr, $col_count, '');
 
 		$text = "<table class=\"table_grid\">\n";
 		$text .= "<thead>\n";
@@ -341,10 +341,10 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			$classes[] = $this->code_class_prefix . $classname;
 		}
 
-		$attr_str = $this->doExtraAttributes($this->code_attr_on_pre ? "pre" : "code", $attrs, null, $classes);
+		$attr_str      = $this->doExtraAttributes($this->code_attr_on_pre ? "pre" : "code", $attrs, null, $classes);
 		$pre_attr_str  = $this->code_attr_on_pre ? $attr_str : '';
 		$code_attr_str = $this->code_attr_on_pre ? '' : $attr_str;
-		$codeblock  = "<code$code_attr_str>$codeblock</code>";
+		$codeblock     = "<code$code_attr_str>$codeblock</code>";
 
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";
 	}
@@ -357,16 +357,13 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 	 */
 	protected function _doBlockQuotes_callback($matches)
 	{
-		global $txt;
-
 		$bq = $matches[1];
 		$bq = preg_replace('/^[ ]*>[ ]?|^[ ]+$/m', '', $bq);
 		$bq = $this->runBlockGamut($bq);
 
 		$bq = preg_replace('/^/m', "  ", $bq);
-		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx',
-			array($this, '_doBlockQuotes_callback2'), $bq);
+		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx', array($this, '_doBlockQuotes_callback2'), $bq);
 
-		return "\n" . $this->hashBlock("<blockquote class=\"bbc_standard_quote\">\n<cite>" . $txt['quote'] . "</cite>\n\n$bq\n</blockquote>") . "\n\n";
+		return "\n" . $this->hashBlock("<blockquote class=\"bbc_standard_quote\">\n<cite></cite>\n\n$bq\n</blockquote>") . "\n\n";
 	}
 }

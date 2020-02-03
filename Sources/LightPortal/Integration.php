@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -70,7 +70,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.9.2',
+			'LP_VERSION' => '0.9.3',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -306,7 +306,7 @@ class Integration
 
 		// Correct canonical urls
 		// Правильные канонические адреса
-		if ($context['current_action'] == 'portal' || (empty($context['current_action']) && empty($_REQUEST['page'])))
+		if ($context['current_action'] == 'portal' && empty($_REQUEST['sa']) || (empty($context['current_action']) && empty($_REQUEST['page'])))
 			$context['canonical_url'] = $scripturl;
 		if ($context['current_action'] == 'forum')
 			$context['canonical_url'] = $scripturl . '?action=forum';
@@ -360,7 +360,7 @@ class Integration
 	 */
 	public static function changeMemberData()
 	{
-		clean_cache();
+		//clean_cache();
 	}
 
 	/**
@@ -379,7 +379,7 @@ class Integration
 		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
 			Subs::getComponentCredits();
 
-			loadTemplate('LightPortal/ViewPage');
+			loadTemplate('LightPortal/ViewCredits');
 
 			$context['sub_template']   = 'portal_credits';
 			$context['robot_no_index'] = true;

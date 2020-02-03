@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -41,7 +41,9 @@ class Page
 		global $context, $modSettings, $txt, $scripturl;
 
 		isAllowedTo('light_portal_view');
-		loadTemplate('LightPortal/ViewPage');
+
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags')
+			Tag::show();
 
 		$alias = explode(';', $alias)[0];
 
@@ -66,6 +68,8 @@ class Page
 		$context['linktree'][] = array(
 			'name' => $context['page_title']
 		);
+
+		loadTemplate('LightPortal/ViewPage');
 
 		if (!empty($modSettings['lp_frontpage_mode']) && empty($_GET['page'])) {
 			$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
@@ -176,8 +180,8 @@ class Page
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'created_at DESC',
-						'reverse' => 'created_at'
+						'default' => 'p.created_at DESC',
+						'reverse' => 'p.created_at'
 					)
 				),
 				'num_views' => array(
@@ -189,8 +193,8 @@ class Page
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'num_views DESC',
-						'reverse' => 'num_views'
+						'default' => 'p.num_views DESC',
+						'reverse' => 'p.num_views'
 					)
 				),
 				'type' => array(
@@ -205,8 +209,8 @@ class Page
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'type DESC',
-						'reverse' => 'type'
+						'default' => 'p.type DESC',
+						'reverse' => 'p.type'
 					)
 				),
 				'alias' => array(
@@ -221,8 +225,8 @@ class Page
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'alias DESC',
-						'reverse' => 'alias'
+						'default' => 'p.alias DESC',
+						'reverse' => 'p.alias'
 					)
 				),
 				'title' => array(
@@ -237,8 +241,8 @@ class Page
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'title DESC',
-						'reverse' => 'title'
+						'default' => 'p.title DESC',
+						'reverse' => 'p.title'
 					)
 				),
 				'actions' => array(
@@ -298,7 +302,7 @@ class Page
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(created_at, updated_at) AS date
+				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.alias != {string:alias}' . (allowedTo('admin_forum') ? '' : '
@@ -314,13 +318,15 @@ class Page
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[] = array(
-				'id'         => $row['page_id'],
-				'title'      => $row['title'],
-				'alias'      => $row['alias'],
-				'type'       => $row['type'],
-				'status'     => $row['status'],
-				'num_views'  => $row['num_views'],
-				'created_at' => Helpers::getFriendlyTime($row['date'])
+				'id'          => $row['page_id'],
+				'title'       => $row['title'],
+				'alias'       => $row['alias'],
+				'type'        => $row['type'],
+				'status'      => $row['status'],
+				'num_views'   => $row['num_views'],
+				'author_id'   => $row['author_id'],
+				'author_name' => $row['author_name'],
+				'created_at'  => Helpers::getFriendlyTime($row['date'])
 			);
 		}
 
@@ -848,6 +854,24 @@ class Page
 	}
 
 	/**
+	 * Prepare keywords for saving
+	 *
+	 * Готовим ключевые слова для сохранения
+	 *
+	 * @return void
+	 */
+	private static function prepareKeywords()
+	{
+		global $context;
+
+		$context['lp_page']['keywords'] = explode(',', $context['lp_page']['keywords']);
+		$context['lp_page']['keywords'] = array_map(function ($item) {
+			return trim($item);
+		}, $context['lp_page']['keywords']);
+		$context['lp_page']['keywords'] = implode(', ', $context['lp_page']['keywords']);
+	}
+
+	/**
 	 * Creating or updating a page
 	 *
 	 * Создаем или обновляем страницу
@@ -863,6 +887,8 @@ class Page
 			return;
 
 		checkSubmitOnce('check');
+
+		self::prepareKeywords();
 
 		if (empty($item)) {
 			$item = $smcFunc['db_insert']('',
@@ -1084,12 +1110,12 @@ class Page
 		if (empty($item))
 			return;
 
-		$data = Helpers::useCache('light_portal_page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $useAlias));
+		$data = Helpers::useCache('page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $useAlias));
 
 		if (!empty($data)) {
 			$data['created']  = Helpers::getFriendlyTime($data['created_at']);
 			$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
-			$data['can_show'] = Subs::canShowItem($data['permissions']);
+			$data['can_show'] = Helpers::canShowItem($data['permissions']);
 			$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
 		}
 

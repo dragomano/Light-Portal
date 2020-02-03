@@ -31,8 +31,21 @@ function template_show_page()
 		</div>';
 	}
 
+	if (!empty($context['lp_page']['keywords']) && !empty($modSettings['lp_show_tags_on_page'])) {
+		echo '
+		<div class="roundframe', !empty($context['lp_page']['options']['show_author_and_date']) ? '' : ' noup', '">';
+
+		foreach (explode(', ', $context['lp_page']['keywords']) as $keyword) {
+			echo '
+			<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', $keyword, '">', $keyword, '</a>';
+		}
+
+		echo '
+		</div>';
+	}
+
 	echo '
-		<article class="roundframe', !empty($context['lp_page']['options']['show_author_and_date']) ? '' : ' noup', '" itemprop="articleBody">';
+		<article class="roundframe', !empty($context['lp_page']['options']['show_author_and_date']) || !empty($context['lp_page']['keywords']) ? '' : ' noup', '" itemprop="articleBody">';
 
 	if (!empty($settings['og_image']))
 		echo '
@@ -42,6 +55,14 @@ function template_show_page()
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>
 		</article>
 	</section>';
+
+	echo '
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/inputTags.jquery.min.js"></script>
+	<script>
+		jQuery(document).ready(function($) {
+
+		});
+	</script>';
 }
 
 // Topics from selected boards as sources of articles
@@ -308,29 +329,4 @@ function portal_frontpage_scripts()
 	echo '
 		});
 	</script>';
-}
-
-// The portal credits template
-// Шаблон просмотра копирайтов используемых компонентов портала
-function template_portal_credits()
-{
-	global $txt, $context;
-
-	echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_used_components'], '</h3>
-	</div>
-	<div class="roundframe noup">
-		<ul>';
-
-	foreach ($context['lp_components'] as $item) {
-		echo '
-			<li class="windowbg">
-				<a href="' . $item['link'] . '" target="_blank" rel="noopener">' . $item['title'] . '</a> ' . (isset($item['author']) ? ' | &copy; ' . $item['author'] : '') . ' | Licensed under <a href="' . $item['license']['link'] . '" target="_blank" rel="noopener">' . $item['license']['name'] . '</a>
-			</li>';
-	}
-
-	echo '
-		</ul>
-	</div>';
 }

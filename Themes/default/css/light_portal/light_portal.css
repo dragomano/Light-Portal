@@ -54,6 +54,10 @@
 	white-space: break-spaces;
 }
 
+#lp_layout .preview .button {
+	float: none;
+}
+
 .priority span, .actions span {
 	cursor: pointer;
 }
@@ -183,6 +187,10 @@ dl.top_posters dt img {
 .page_md .task-list-item, .block_md .task-list-item {
 	list-style: none;
 	margin-left: -20px;
+}
+
+.page_md blockquote {
+	width: 100% !important;
 }
 
 .recent_attachments {

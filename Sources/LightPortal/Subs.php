@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -219,7 +219,7 @@ class Subs
 				'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 				'link'        => $scripturl . '?page=' . $row['alias'],
 				'image'       => $image,
-				'can_show'    => self::canShowItem($row['permissions']),
+				'can_show'    => Helpers::canShowItem($row['permissions']),
 				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
 			);
 		}
@@ -373,7 +373,7 @@ class Subs
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
 					'content_style' => $row['content_style'],
-					'can_show'      => self::canShowItem($row['permissions'])
+					'can_show'      => Helpers::canShowItem($row['permissions'])
 				);
 
 			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
@@ -588,30 +588,6 @@ class Subs
 			$lang_file = $base_dir . $lang . '.php';
 			if (is_file($lang_file))
 				require_once($lang_file);
-		}
-	}
-
-	/**
-	 * Check whether the current user can view the portal item according to their access rights
-	 *
-	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
-	 *
-	 * @param int $permissions
-	 * @return bool
-	 */
-	public static function canShowItem($permissions)
-	{
-		global $user_info;
-
-		switch ($permissions) {
-			case 0:
-				return $user_info['is_admin'] == 1;
-			case 1:
-				return $user_info['is_guest'] == 1;
-			case 2:
-				return !empty($user_info['id']);
-			default:
-				return true;
 		}
 	}
 

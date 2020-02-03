@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -982,7 +982,7 @@ class Block
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
 					'content_style' => $row['content_style'],
-					'can_show'      => Subs::canShowItem($row['permissions'])
+					'can_show'      => Helpers::canShowItem($row['permissions'])
 				);
 
 			$data['title'][$row['lang']] = $row['title'];

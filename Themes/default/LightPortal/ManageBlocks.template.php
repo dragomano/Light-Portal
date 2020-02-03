@@ -243,7 +243,7 @@ function template_block_post()
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
-	<div class="block_', $context['lp_block']['type'], '">';
+	<div class="preview block_', $context['lp_block']['type'], '">';
 
 		if (!empty($context['lp_block']['content_class']))
 			echo sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style);

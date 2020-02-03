@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -285,5 +285,29 @@ class Helpers
 			return '<i class="fas fa-' . $icon . '"></i> ';
 		else
 			return '';
+	}
+
+	/**
+	 * Check whether the current user can view the portal item according to their access rights
+	 *
+	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
+	 *
+	 * @param int $permissions
+	 * @return bool
+	 */
+	public static function canShowItem($permissions)
+	{
+		global $user_info;
+
+		switch ($permissions) {
+			case 0:
+				return $user_info['is_admin'] == 1;
+			case 1:
+				return $user_info['is_guest'] == 1;
+			case 2:
+				return !empty($user_info['id']);
+			default:
+				return true;
+		}
 	}
 }

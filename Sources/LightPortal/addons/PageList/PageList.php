@@ -3,7 +3,6 @@
 namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\Subs;
 
 /**
  * PageList
@@ -14,7 +13,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.2
+ * @version 0.9.3
  */
 
 if (!defined('SMF'))
@@ -134,7 +133,7 @@ class PageList
 				'num_views'  => $row['num_views'],
 				'created_at' => Helpers::getFriendlyTime($row['created_at']),
 				'updated_at' => Helpers::getFriendlyTime($row['updated_at']),
-				'can_show'   => Subs::canShowItem($row['permissions'])
+				'can_show'   => Helpers::canShowItem($row['permissions'])
 			);
 		}
 
