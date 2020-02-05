@@ -31,7 +31,7 @@ function template_portal_above()
 	// Left Side | Левая панель
 	if (!empty($context['lp_blocks']['left'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-3 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
 
 		foreach ($context['lp_blocks']['left'] as $id => $block) {
 			if ($block['placement'] == 'left')
@@ -43,7 +43,7 @@ function template_portal_above()
 	}
 
 	echo '
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-8">
+			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? '-12 col-sm-12 col-md-8 col-lg-8' : '', '">
 				<div class="box">';
 
 	// Center (top) | Центр (верх)
@@ -101,7 +101,7 @@ function template_portal_below()
 	// Right Side | Правая панель
 	if (!empty($context['lp_blocks']['right'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-3 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
 
 		foreach ($context['lp_blocks']['right'] as $id => $block) {
 			if ($block['placement'] == 'right')

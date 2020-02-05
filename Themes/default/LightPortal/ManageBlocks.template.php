@@ -78,7 +78,7 @@ function template_manage_blocks()
 // Отображение таблицы с блоками
 function show_block_table()
 {
-	global $context, $txt, $settings, $scripturl;
+	global $context, $txt, $scripturl, $settings;
 
 	if (empty($context['lp_current_blocks'])) {
 		echo '
@@ -93,7 +93,14 @@ function show_block_table()
 	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_block_placement_set'][$placement], '</h3>
+		<h3 class="catbg">
+			<span class="floatright">
+				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '">
+					<i class="fas fa-plus" title="', $txt['lp_blocks_add'], '"></i>
+				</a>
+			</span>
+			', $txt['lp_block_placement_set'][$placement], '
+		</h3>
 	</div>
 	<table class="lp_current_blocks table_grid">';
 
@@ -150,10 +157,10 @@ function show_block_table()
 					echo '
 					<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
 
-				if ($settings['name'] == 'Lunarfall') {
+				if (strpos($settings['name'], 'Lunarfall') !== false) {
 					echo '
-					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-edit settings" title="', $txt['edit'], '"></span></a>
-					<span class="fas fa-trash unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools settings" title="', $txt['edit'], '"></span></a>
+					<span class="fas fa-trash-alt unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 				} else {
 					echo '
 					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
@@ -209,6 +216,7 @@ function template_block_add()
 	echo '
 			</div>
 			<input type="hidden" name="add_block">
+			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
 		<br class="clear">
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/jquery.matchHeight-min.js"></script>

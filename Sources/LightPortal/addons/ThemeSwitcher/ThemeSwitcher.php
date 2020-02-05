@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -76,7 +76,7 @@ class ThemeSwitcher
 		if (!empty($available_themes)) {
 			echo '
 			<div class="themeswitcher centertext">
-				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();">';
+				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
 
 			foreach ($available_themes as $theme_id => $name) {
 				echo '

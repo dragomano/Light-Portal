@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -39,7 +39,6 @@ class Integration
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
-		add_integration_function('integrate_change_member_data', __CLASS__ . '::changeMemberData', false, __FILE__);
 		add_integration_function('integrate_credits', __CLASS__ . '::credits', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
 	}
@@ -70,7 +69,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.9.3',
+			'LP_VERSION' => '0.9.4',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -88,9 +87,9 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $txt;
+		global $context, $txt;
 
-		if (!defined('LP_NAME'))
+		if (!defined('LP_NAME') || !empty($context['uninstalling']))
 			return;
 
 		loadLanguage('LightPortal/');
@@ -190,7 +189,7 @@ class Integration
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		if (!defined('LP_NAME'))
+		if (!defined('LP_NAME') || !empty($context['uninstalling']))
 			return;
 
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
@@ -349,18 +348,6 @@ class Integration
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
-	}
-
-	/**
-	 * We reset the cache when changing user data (for example, when a user is changing the current language)
-	 *
-	 * Сбрасываем кэш при изменении пользовательских данных (например, текущего языка)
-	 *
-	 * @return void
-	 */
-	public static function changeMemberData()
-	{
-		//clean_cache();
 	}
 
 	/**

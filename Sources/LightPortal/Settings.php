@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -109,7 +109,7 @@ class Settings
 	 *
 	 * Выводим общие настройки
 	 *
-	 * @param boolean $return_config
+	 * @param bool $return_config
 	 * @return array|void
 	 */
 	public static function settingArea($return_config = false)
@@ -125,7 +125,7 @@ class Settings
 			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $db_engine, $db_version)
 		);
 
-		if (Helpers::useCache('new_version_is_available', 'isNewVersionExist', __CLASS__)) {
+		if (LP_VERSION < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
 			$message = '</p><div class="noticebox">' . sprintf($txt['lp_new_version_is_available'], 'https://github.com/dragomano/Light-Portal/releases') . '</div><p>';
 			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
 		}
@@ -298,16 +298,16 @@ class Settings
 	}
 
 	/**
-	 * Check if exists the new version of LP
+	 * Get the number of the last version
 	 *
-	 * Проверка новой версии мода
+	 * Получаем номер последней версии LP
 	 *
-	 * @return bool
+	 * @return string
 	 */
-	public static function isNewVersionExist()
+	public static function getLastVersion()
 	{
 		if (!extension_loaded('curl'))
-			return false;
+			return LP_VERSION;
 
 		$ch = curl_init('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -319,9 +319,6 @@ class Settings
 		curl_close($ch);
 		$data = json_decode($data);
 
-		if (LP_VERSION < str_replace('v', '', $data->tag_name))
-			return true;
-
-		return false;
+		return str_replace('v', '', $data->tag_name);
 	}
 }

@@ -135,8 +135,6 @@ function template_show_topics_as_articles()
 			</div>
 		</div>
 	</div>';
-
-		portal_frontpage_scripts();
 	}
 }
 
@@ -211,8 +209,6 @@ function template_show_pages_as_articles()
 			</div>
 		</div>
 	</div>';
-
-		portal_frontpage_scripts();
 	}
 }
 
@@ -293,40 +289,5 @@ function template_show_boards_as_articles()
 			</div>
 		</div>
 	</div>';
-
-		portal_frontpage_scripts();
 	}
-}
-
-// Possibility to load various scripts
-// Возможность загружать различные скрипты
-function portal_frontpage_scripts()
-{
-	global $settings, $context;
-
-	echo '
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/jquery.matchHeight-min.js"></script>
-	<script>
-		jQuery(document).ready(function($) {
-			$(".lp_frontpage_articles .roundframe").matchHeight();';
-
-	foreach ($context['lp_frontpage_articles'] as $topic) {
-		if (!empty($topic['rating'])) {
-			$img = '';
-			for ($i = 0; $i < $topic['rating']; $i++)
-				$img .= '<span class="topic_stars">&nbsp;&nbsp;&nbsp;</span>';
-
-			echo '
-			let starImg', $topic['id'], ' = $(".catbg a[data-id=', $topic['id'], ']");
-			starImg', $topic['id'], '.after(\'<span class="topic_stars_main">', $img, '<\/span>\');';
-		} elseif (!empty($topic['kpr_rating'])) {
-			echo '
-			let starImg', $topic['id'], ' = $(".catbg a[data-id=', $topic['id'], ']");
-			starImg', $topic['id'], '.after(\'<span class="floatright"><span class="new_posts">', $topic['kpr_rating'], '<\/span><\/span>\');';
-		}
-	}
-
-	echo '
-		});
-	</script>';
 }

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -305,6 +305,8 @@ class Block
 			'title'       => LP_NAME,
 			'description' => $txt['lp_blocks_add_tab_description']
 		);
+
+		$context['current_block']['placement'] = $_REQUEST['placement'] ?? '';
 
 		$context['sub_template'] = 'block_add';
 

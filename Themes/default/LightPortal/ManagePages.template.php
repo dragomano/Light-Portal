@@ -56,9 +56,9 @@ function template_manage_pages_above()
 				<td class="actions centertext" style="cursor: pointer">
 					', empty($context['lp_main_page']['status']) ? ('<span class="toggle_status off" data-id="1" title="' . $txt['lp_action_on'] . '"></span>') : ('<span class="toggle_status on" data-id="1" title="' . $txt['lp_action_off'] . '"></span>');
 
-	if ($settings['name'] == 'Lunarfall') {
+	if (strpos($settings['name'], 'Lunarfall') !== false) {
 		echo '
-					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="fas fa-edit settings" title="', $txt['edit'], '"></span></a>';
+					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="fas fa-tools settings" title="', $txt['edit'], '"></span></a>';
 	} else {
 		echo '
 					<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=1"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>';

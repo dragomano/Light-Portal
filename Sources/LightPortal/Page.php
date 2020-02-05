@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -258,9 +258,9 @@ class Page
 							$actions = (empty($entry['status']) ? '
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
-							if ($settings['name'] == 'Lunarfall') {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-edit settings" title="' . $txt['edit'] . '"></span></a>' . '
-							<span class="fas fa-trash unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+							if (strpos($settings['name'], 'Lunarfall') !== false) {
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools settings" title="' . $txt['edit'] . '"></span></a>' . '
+							<span class="fas fa-trash-alt unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
 							} else {
 								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
 							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
@@ -1100,17 +1100,17 @@ class Page
 	 * Получаем поля страницы
 	 *
 	 * @param mixed $item
-	 * @param bool $useAlias
+	 * @param bool $isAlias
 	 * @return array
 	 */
-	public static function getData($item, $useAlias = true)
+	public static function getData($item, $isAlias = true)
 	{
 		global $user_info;
 
 		if (empty($item))
 			return;
 
-		$data = Helpers::useCache('page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $useAlias));
+		$data = Helpers::useCache('page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $isAlias));
 
 		if (!empty($data)) {
 			$data['created']  = Helpers::getFriendlyTime($data['created_at']);

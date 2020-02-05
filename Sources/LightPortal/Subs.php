@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.3
+ * @version 0.9.4
  */
 
 if (!defined('SMF'))
@@ -51,6 +51,14 @@ class Subs
 		$start = (int) $_REQUEST['start'];
 
 		$context['lp_frontpage_articles'] = array_slice($articles, $start, $limit);
+
+		loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
+		addInlineJavaScript('
+		jQuery(document).ready(function ($) {
+			$(".lp_frontpage_articles .roundframe").matchHeight();
+		});', true);
+
+		self::runAddons('frontpageAssets');
 	}
 
 	/**
@@ -64,20 +72,22 @@ class Subs
 	{
 		global $modSettings, $smcFunc, $user_info, $scripturl, $settings;
 
-		$boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
-		if (empty($boards))
+		if (empty($selected_boards))
 			return [];
 
-		// Check whether compatible modifications are installed
-		// Проверяем, установлены ли совместимые модификации
-		$topic_rating_bar = class_exists('TopicRatingBar');
-		$karma_post_rating = class_exists('\Bugo\KarmaPostRating\Subs');
-		$optimus = class_exists('\Bugo\Optimus\Subs') && !empty($modSettings['optimus_allow_change_desc']);
+		$custom_columns    = [];
+		$custom_tables     = [];
+		$custom_wheres     = [];
+		$custom_parameters = [];
+
+		self::runAddons('topicsAsArticles', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . ($topic_rating_bar ? ', tr.total_votes, tr.total_value' : '') . ($karma_post_rating ? ', IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor']) ? ' + t.num_replies' : '') . ', 0) AS rating' : '') . ($optimus ? ', COALESCE(t.optimus_description, 0) AS optimus_description' : '') . '
+				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
+				' . implode(', ', $custom_columns) : '') . '
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
 				INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
@@ -85,24 +95,22 @@ class Subs
 				LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)' . ($user_info['is_guest'] ? '' : '
 				LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
 				LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
-				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . ($topic_rating_bar ? '
-				LEFT JOIN {db_prefix}topic_ratings AS tr ON (tr.id = t.id_topic)' : '') . ($karma_post_rating ? '
-				LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (kpr.item_id = t.id_first_msg AND kpr.item = "message")' : '') . '
+				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
+				' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 			WHERE t.approved = {int:is_approved}
 				AND t.id_poll = {int:id_poll}
 				AND t.id_redirect_topic = {int:id_redirect_topic}
-				AND t.id_board IN ({array_int:select_boards})' . ($karma_post_rating && !empty($context['kpr_ignored_boards']) ? '
-				AND t.id_board NOT IN ({array_int:kpr_ignored_boards)' : '') . '
-				AND {query_wanna_see_board}
+				AND t.id_board IN ({array_int:selected_boards})
+				AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
+				' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 			ORDER BY t.id_last_msg DESC',
-			array(
-				'current_member'     => $user_info['id'],
-				'is_approved'        => 1,
-				'id_poll'            => 0,
-				'id_redirect_topic'  => 0,
-				'select_boards'      => $boards,
-				'kpr_ignored_boards' => !empty($context['kpr_ignored_boards']) ? $context['kpr_ignored_boards'] : null
-			)
+			array_merge(array(
+				'current_member'    => $user_info['id'],
+				'is_approved'       => 1,
+				'id_poll'           => 0,
+				'id_redirect_topic' => 0,
+				'selected_boards'   => $selected_boards
+			), $custom_parameters)
 		);
 
 		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
@@ -115,18 +123,12 @@ class Subs
 
 			$row['subject'] = Helpers::cleanBbcode($row['subject']);
 
-			$rating = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
-			$kpr_rating = $row['rating'] ?: 0;
-
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$body = parse_bbc($row['body'], false);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
 				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png'));
 			}
-
-			if (!empty($teaser_size) && !empty($row['optimus_description']))
-				$row['optimus_description'] = shorten_subject($row['optimus_description'], $teaser_size - 3);
 
 			$row['body'] = preg_replace('~\[spoiler\].*?\[\/spoiler\]~Usi', '', $row['body']);
 			$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')));
@@ -143,8 +145,8 @@ class Subs
 				'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
 				'poster_name' => $row['poster_name'],
 				'time'        => Helpers::getFriendlyTime($row['poster_time']),
-				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size - $rating - strlen((string) $kpr_rating)) : $row['subject'],
-				'preview'     => $row['optimus_description'] ?: $row['body'],
+				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size) : $row['subject'],
+				'preview'     => $row['body'],
 				'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 				'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
 				'is_sticky'   => !empty($row['is_sticky']),
@@ -152,10 +154,10 @@ class Subs
 				'num_views'   => $row['num_views'],
 				'num_replies' => $row['num_replies'],
 				'css_class'   => $colorClass,
-				'image'       => $image,
-				'rating'      => $rating,
-				'kpr_rating'  => $kpr_rating
+				'image'       => $image
 			);
+
+			self::runAddons('topicsAsArticlesResult', array(&$topics, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -205,7 +207,7 @@ class Subs
 			if (!empty($teaser_size) && !empty($row['description']))
 				$row['description'] = shorten_subject($row['description'], $teaser_size - 3);
 
-			$pages[] = array(
+			$pages[$row['page_id']] = array(
 				'id'          => $row['page_id'],
 				'author_id'   => $row['author_id'],
 				'author_link' => $scripturl . '?action=profile;u=' . $row['author_id'],
@@ -222,6 +224,8 @@ class Subs
 				'can_show'    => Helpers::canShowItem($row['permissions']),
 				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
 			);
+
+			self::runAddons('pagesAsArticlesResult', array(&$pages, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -244,9 +248,9 @@ class Subs
 	{
 		global $modSettings, $smcFunc, $user_info, $context, $settings, $scripturl;
 
-		$boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
-		if (empty($boards))
+		if (empty($selected_boards))
 			return [];
 
 		$request = $smcFunc['db_query']('', '
@@ -260,20 +264,20 @@ class Subs
 				LEFT JOIN {db_prefix}log_boards AS lb ON (lb.id_board = b.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
 				LEFT JOIN {db_prefix}topics AS t ON (t.id_topic = m.id_topic)
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . '
-			WHERE b.id_board IN ({array_int:select_boards})
+			WHERE b.id_board IN ({array_int:selected_boards})
 				AND {query_see_board}
 			ORDER BY b.id_last_msg DESC',
 			array(
-				'blank_string'   => '',
-				'current_member' => $user_info['id'],
-				'select_boards'  => $boards
+				'blank_string'    => '',
+				'current_member'  => $user_info['id'],
+				'selected_boards' => $selected_boards
 			)
 		);
 
 		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
 		$teaser_size  = !empty($modSettings['lp_teaser_size']) ? (int) $modSettings['lp_teaser_size'] : 0;
 
-		$selected_boards = [];
+		$boards = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$board_name  = parse_bbc($row['name'], false, '', $context['description_allowed_tags']);
 			$description = parse_bbc($row['description'], false, '', $context['description_allowed_tags']);
@@ -287,7 +291,7 @@ class Subs
 
 			$description = strip_tags($description);
 
-			$selected_boards[$row['id_board']] = array(
+			$boards[$row['id_board']] = array(
 				'id'          => $row['id_board'],
 				'name'        => !empty($subject_size) ? shorten_subject($board_name, $subject_size) : $board_name,
 				'description' => !empty($teaser_size) ? shorten_subject($description, $teaser_size) : $description,
@@ -300,9 +304,11 @@ class Subs
 			);
 
 			if (!empty($row['last_updated'])) {
-				$selected_boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
-				$selected_boards[$row['id_board']]['last_updated'] = Helpers::getFriendlyTime($row['last_updated']);
+				$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
+				$boards[$row['id_board']]['last_updated'] = Helpers::getFriendlyTime($row['last_updated']);
 			}
+
+			self::runAddons('boardsAsArticlesResult', array(&$boards, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
