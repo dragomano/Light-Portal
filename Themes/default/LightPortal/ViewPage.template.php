@@ -247,11 +247,16 @@ function show_single_comment($comment, $i = 0)
 		</legend>
 		<div class="content" itemprop="text">', $comment['message'], '</div>';
 
-	if ((!$context['user']['is_guest'] && $comment['author_id'] == $context['user']['id']) || $context['user']['is_admin']) {
+	if (!$context['user']['is_guest']) {
 		echo '
 		<div class="floatright">
-			<span class="button reply_button"> ', $txt['reply'], '</span>
-			<span class="button remove_button"> ', $txt['remove'], '</span>
+			<span class="button reply_button"> ', $txt['reply'], '</span>';
+
+		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
+			echo '
+			<span class="button remove_button"> ', $txt['remove'], '</span>';
+
+		echo '
 		</div>';
 	}
 
