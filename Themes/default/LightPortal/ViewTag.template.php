@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Output page tags
+ *
+ * Вывод тегов страниц
+ *
+ * @return void
+ */
 function template_show_tags()
 {
 	global $context, $txt, $scripturl;
@@ -12,7 +19,6 @@ function template_show_tags()
 	if (empty($context['lp_tags'])) {
 		echo '
 	<div class="information">', $txt['lp_no_tags'], '</div>';
-
 		return;
 	}
 
@@ -34,7 +40,7 @@ function template_show_tags()
 		echo '
 		<tr class="windowbg">
 			<td class="keyword centertext">
-				<a href="', $scripturl, '?action=portal;sa=tags;key=', $tag['keyword'], '">', $tag['keyword'], '</a>
+				<a href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($tag['keyword']), '">', $tag['keyword'], '</a>
 			</td>
 			<td class="frequency centertext">
 				', $tag['frequency'], '

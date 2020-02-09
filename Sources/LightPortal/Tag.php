@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -38,7 +38,7 @@ class Tag
 		$keyword = $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES);
 
 		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $keyword);
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . $keyword;
+		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($keyword);
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(

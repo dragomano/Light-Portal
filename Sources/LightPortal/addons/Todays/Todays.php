@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class Todays
 {
 	/**
+	 * What is displayed (birthdays|holidays|events|calendar)
+	 *
 	 * Что отображаем (birthdays|holidays|events|calendar)
 	 *
 	 * @var string
@@ -29,6 +31,8 @@ class Todays
 	private static $type = 'calendar';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -44,6 +48,8 @@ class Todays
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -62,6 +68,8 @@ class Todays
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -98,7 +106,9 @@ class Todays
 	}
 
 	/**
-	 * Получаем список того, что запрашиваем
+	 * Get the list of the content we need
+	 *
+	 * Получаем список нужного нам контента
 	 *
 	 * @param string $type
 	 * @param string $output_method
@@ -115,6 +125,8 @@ class Todays
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

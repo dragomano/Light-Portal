@@ -18,8 +18,10 @@ Transform your forum into a portal: the main page, separate additional
 * Standalone mode.
 * Blocks with multilingual titles and FontAwesome icons.
 * Article system: portal pages, forum topics, or boards.
+* Comments for pages.
+* Open Graph markup for pages and comments.
 * Available panels: header, left and right sidebars, center (top and bottom), footer.
-* Manage blocks in Admin: Drag-n-drop of blocks, easy updating of the priority.
+* Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
 * Pages with support for various content.
 * Using Flexbox to output blocks.
 * Caching.
@@ -32,6 +34,8 @@ Transform your forum into a portal: the main page, separate additional
 * Автономный режим.
 * Блоки с многоязычными заголовками и иконками FontAwesome.
 * Статьи на главной: отображение тем, разделов или страниц портала.
+* Комментарии для статей.
+* Разметка Open Graph для страниц и комментариев.
 * Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
 * Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
 * Страницы с поддержкой различного контента.

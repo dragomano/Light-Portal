@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class TagList
 {
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -43,7 +45,7 @@ class TagList
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {
 				echo '
-			<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', $tag['keyword'], '">', $tag['keyword'], ' (', $tag['frequency'], ')</a>';
+			<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($tag['keyword']), '">', $tag['keyword'], ' (', $tag['frequency'], ')</a>';
 			}
 		} else
 			echo $txt['lp_no_tags'];

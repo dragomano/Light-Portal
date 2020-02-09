@@ -26,7 +26,13 @@ $tables[] = array(
 		array(
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 30,
+			'size' => 60,
+			'null' => true
+		),
+		array(
+			'name' => 'icon_type',
+			'type' => 'varchar',
+			'size' => 10,
 			'null' => true
 		),
 		array(
@@ -133,6 +139,56 @@ $tables[] = array(
 		 array(
 			'type'    => 'primary',
 			'columns' => array('block_id', 'lang')
+		 )
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_comments',
+	'columns' => array(
+		array(
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 11,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name'     => 'parent_id',
+			'type'     => 'int',
+			'size'     => 11,
+			'unsigned' => true,
+			'default'  => 0
+		),
+		array(
+			'name'     => 'page_id',
+			'type'     => 'int',
+			'size'     => 11,
+			'unsigned' => true
+		),
+		array(
+			'name'     => 'author_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true
+		),
+		array(
+			'name' => 'message',
+			'type' => 'text',
+			'null' => false
+		),
+		array(
+			'name'     => 'created_at',
+			'type'     => 'int',
+			'size'     => 10,
+			'default'  => 0,
+			'unsigned' => true
+		)
+	),
+	'indexes' => array(
+		 array(
+			'type'    => 'primary',
+			'columns' => array('id', 'page_id')
 		 )
 	)
 );

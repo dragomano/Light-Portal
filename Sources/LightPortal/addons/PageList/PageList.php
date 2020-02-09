@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class PageList
 {
 	/**
+	 * The sort method of pages
+	 *
 	 * Способ сортировки страниц (см. $txt['lp_page_list_addon_sort_set'])
 	 *
 	 * @var string
@@ -29,6 +31,8 @@ class PageList
 	private static $sort = 'page_id';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -44,6 +48,8 @@ class PageList
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -62,6 +68,8 @@ class PageList
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -98,6 +106,8 @@ class PageList
 	}
 
 	/**
+	 * Get the list of active pages
+	 *
 	 * Получаем список активных страниц
 	 *
 	 * @param string $sort_type
@@ -105,19 +115,22 @@ class PageList
 	 */
 	public static function getPageList($sort_type)
 	{
-		global $smcFunc;
+		global $smcFunc, $modSettings;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at, COALESCE(mem.real_name, 0) AS author_name
+				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, 0) AS author_name, COUNT(com.id) AS num_comments
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-			WHERE p.alias != {string:alias}
-				AND p.status = {int:status}
+				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)
+			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']) ? '
+				AND p.alias != {string:alias}' : '') . '
+			GROUP BY p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at, mem.real_name
 			ORDER BY {raw:sort} DESC',
 			array(
-				'alias'  => '/',
 				'status' => 1,
+				'alias'  => '/',
 				'sort'   => $sort_type
 			)
 		);
@@ -125,15 +138,16 @@ class PageList
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$pages[] = array(
-				'id'         => $row['page_id'],
-				'author_id'  => $row['author_id'],
-				'author'     => $row['author_name'],
-				'title'      => $row['title'],
-				'alias'      => $row['alias'],
-				'num_views'  => $row['num_views'],
-				'created_at' => Helpers::getFriendlyTime($row['created_at']),
-				'updated_at' => Helpers::getFriendlyTime($row['updated_at']),
-				'can_show'   => Helpers::canShowItem($row['permissions'])
+				'id'           => $row['page_id'],
+				'author_id'    => $row['author_id'],
+				'author'       => $row['author_name'],
+				'title'        => $row['title'],
+				'alias'        => $row['alias'],
+				'num_views'    => $row['num_views'],
+				'num_comments' => $row['num_comments'],
+				'created_at'   => Helpers::getFriendlyTime($row['created_at']),
+				'updated_at'   => Helpers::getFriendlyTime($row['updated_at']),
+				'can_show'     => Helpers::canShowItem($row['permissions'])
 			);
 		}
 
@@ -147,6 +161,8 @@ class PageList
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -161,7 +177,13 @@ class PageList
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::useCache('page_list_addon_b' . $block_id . '_u' . $context['user']['id'] . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
+		$page_list = Helpers::useCache(
+			'page_list_addon_b' . $block_id . '_u' . $context['user']['id'] . '_sort_' . $parameters['sort'],
+			'getPageList',
+			__CLASS__,
+			$cache_time,
+			$parameters['sort']
+		);
 
 		ob_start();
 
@@ -172,7 +194,12 @@ class PageList
 			foreach ($page_list as $page) {
 				echo '
 				<li>
-					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', $page['created_at'], ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']), ')
+					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', $page['created_at'], ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+
+				if (!empty($page['num_comments']))
+					echo ', ', Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
+
+				echo ')
 				</li>';
 			}
 

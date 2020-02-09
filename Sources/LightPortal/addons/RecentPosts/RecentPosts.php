@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class RecentPosts
 {
 	/**
+	 * You cannot select a class for the content of this block
+	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
 	 *
 	 * @var bool
@@ -29,6 +31,8 @@ class RecentPosts
 	private static $no_content_class = true;
 
 	/**
+	 * The maximum number of posts to output
+	 *
 	 * Максимальное количество сообщений для вывода
 	 *
 	 * @var int
@@ -36,13 +40,17 @@ class RecentPosts
 	private static $num_posts = 10;
 
 	/**
-	 * Тип отображаемой ссылки (link | preview)
+	 * The link type (link|preview)
+	 *
+	 * Тип отображаемой ссылки (link|preview)
 	 *
 	 * @var string
 	 */
 	private static $type = 'link';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -60,6 +68,8 @@ class RecentPosts
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -79,6 +89,8 @@ class RecentPosts
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -125,6 +137,8 @@ class RecentPosts
 	}
 
 	/**
+	 * Get the recent posts of the forum
+	 *
 	 * Получаем последние сообщения форума
 	 *
 	 * @param int $num_posts
@@ -139,6 +153,8 @@ class RecentPosts
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

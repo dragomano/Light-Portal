@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class ThemeSwitcher
 {
 	/**
+	 * Get the list of active themes
+	 *
 	 * Получаем список активных шаблонов форума
 	 *
 	 * @return array
@@ -54,6 +56,8 @@ class ThemeSwitcher
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

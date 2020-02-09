@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -69,7 +69,7 @@ class Integration
 		global $sourcedir;
 
 		$lp_constants = [
-			'LP_VERSION' => '0.9.4',
+			'LP_VERSION' => '1.0 beta 1',
 			'LP_NAME'    => 'Light Portal',
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
@@ -126,7 +126,7 @@ class Integration
 		if (!empty($modSettings['lp_standalone'])) {
 			Subs::unsetUnusedActions($actions);
 
-			if (empty($actions[$_REQUEST['action']]) || !empty($context['current_board']))
+			if (empty($actions[$_REQUEST['action']]))
 				redirectexit();
 		}
 	}
@@ -171,10 +171,12 @@ class Integration
 			return;
 
 		if (empty($_REQUEST['action']))
-			$current_action = !empty($modSettings['lp_standalone']) ? 'home' : 'portal';
+			$current_action = 'portal';
+
+		$excluded_actions = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
 
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
-			$current_action = !empty($modSettings['lp_standalone']) ? 'forum' : 'home';
+			$current_action = !empty($modSettings['lp_standalone']) ? (in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
 	}
 
 	/**
@@ -281,10 +283,10 @@ class Integration
 		// Standalone mode
 		// Автономный режим
 		if (!empty($modSettings['lp_standalone'])) {
-			$buttons['home']['title']   = $txt['lp_portal'];
-			$buttons['home']['href']    = $scripturl;
-			$buttons['home']['icon']    = 'home';
-			$buttons['home']['is_last'] = $context['right_to_left'];
+			$buttons['portal']['title']   = $txt['lp_portal'];
+			$buttons['portal']['href']    = $scripturl;
+			$buttons['portal']['icon']    = 'home';
+			$buttons['portal']['is_last'] = $context['right_to_left'];
 
 			$buttons = array_merge(
 				array_slice($buttons, 0, 2, true),
@@ -386,14 +388,20 @@ class Integration
 	 */
 	public static function whosOnline($actions)
 	{
-		global $modSettings, $txt, $scripturl;
+		global $txt, $scripturl;
 
 		$result = '';
-		if (empty($modSettings['lp_frontpage_disable'])) {
-			if (empty($actions['action']))
-				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
 
-			if (!empty($actions['action']) && $actions['action'] == 'portal')
+		if (empty($actions['action']))
+			$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
+
+		if (!empty($actions['action']) && $actions['action'] == 'portal') {
+			if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags') {
+				if (!empty($_REQUEST['key']))
+					$result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key']);
+				else
+					$result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
+			} else
 				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
 		}
 

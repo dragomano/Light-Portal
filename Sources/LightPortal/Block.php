@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -53,7 +53,7 @@ class Block
 					Subs::parseContent($data['content'], $data['type']);
 
 				$context['lp_blocks'][$data['placement']][$item] = $data;
-				$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
+				$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
 				$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][$context['user']['language']];
 			}
 		}
@@ -113,7 +113,7 @@ class Block
 		global $smcFunc, $context, $user_info;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
 			ORDER BY b.placement DESC, b.priority',
@@ -124,7 +124,7 @@ class Block
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($context['lp_current_blocks'][$row['placement']][$row['block_id']]))
 				$context['lp_current_blocks'][$row['placement']][$row['block_id']] = array(
-					'icon'        => Helpers::getIcon($row['icon']),
+					'icon'        => Helpers::getIcon($row['icon'], $row['icon_type']),
 					'type'        => $row['type'],
 					'priority'    => $row['priority'],
 					'permissions' => $row['permissions'],
@@ -188,6 +188,7 @@ class Block
 				'id' => $item
 			)
 		);
+
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_block_titles
 			WHERE block_id = {int:id}',
@@ -195,6 +196,7 @@ class Block
 				'id' => $item
 			)
 		);
+
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}
@@ -412,6 +414,7 @@ class Block
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_SANITIZE_STRING,
+				'icon_type'     => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
 				'placement'     => FILTER_SANITIZE_STRING,
@@ -448,6 +451,7 @@ class Block
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
+			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
@@ -537,10 +541,32 @@ class Block
 			'attributes' => array(
 				'id'        => 'icon',
 				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon'],
-				'style'     => 'width: 100%'
+				'value'     => $context['lp_block']['icon']
 			)
 		);
+
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'icon_type'
+			),
+			'options' => array()
+		);
+
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
+					'value'    => $type,
+					'selected' => $type == $context['lp_block']['icon_type']
+				);
+			} else {
+				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+					'value'    => $type,
+					'selected' => $type == $context['lp_block']['icon_type']
+				);
+			}
+		}
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['placement']['input'] = array(
@@ -793,7 +819,8 @@ class Block
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
 				array(
-					'icon'          => 'string-30',
+					'icon'          => 'string-60',
+					'icon_type'     => 'string-10',
 					'type'          => 'string',
 					'content'       => 'string-' . $max_length,
 					'placement'     => 'string-10',
@@ -807,6 +834,7 @@ class Block
 				),
 				array(
 					$context['lp_block']['icon'],
+					$context['lp_block']['icon_type'],
 					$context['lp_block']['type'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
@@ -868,11 +896,12 @@ class Block
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
 				array(
 					'block_id'      => $item,
 					'icon'          => $context['lp_block']['icon'],
+					'icon_type'     => $context['lp_block']['icon_type'],
 					'type'          => $context['lp_block']['type'],
 					'content'       => $context['lp_block']['content'],
 					'placement'     => $context['lp_block']['placement'],
@@ -951,7 +980,7 @@ class Block
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
@@ -973,6 +1002,7 @@ class Block
 				$data = array(
 					'id'            => $row['block_id'],
 					'icon'          => $row['icon'],
+					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
 					'content'       => $row['content'],
 					'placement'     => $row['placement'],

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class RecentAttachments
 {
 	/**
+	 * The maximum number of attachments to output
+	 *
 	 * Максимальное количество вложений для вывода
 	 *
 	 * @var int
@@ -29,6 +31,8 @@ class RecentAttachments
 	private static $num_attachments = 5;
 
 	/**
+	 * Attachment extensions to display
+	 *
 	 * Расширения вложений, которые нужно отображать
 	 *
 	 * @var string
@@ -36,6 +40,8 @@ class RecentAttachments
 	private static $extensions = '';
 
 	/**
+	 * The attachment list direction (horizontal|vertical)
+	 *
 	 * Направление списка вложений (horizontal|vertical)
 	 *
 	 * @var string
@@ -43,6 +49,8 @@ class RecentAttachments
 	private static $direction = 'horizontal';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -60,6 +68,8 @@ class RecentAttachments
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -80,6 +90,8 @@ class RecentAttachments
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -138,6 +150,8 @@ class RecentAttachments
 	}
 
 	/**
+	 * Get the list of recent attachments
+	 *
 	 * Получаем список последних вложений
 	 *
 	 * @param array $params
@@ -155,6 +169,8 @@ class RecentAttachments
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

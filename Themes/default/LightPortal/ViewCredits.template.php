@@ -1,7 +1,12 @@
 <?php
 
-// The portal credits template
-// Шаблон просмотра копирайтов используемых компонентов портала
+/**
+ * The portal credits template
+ *
+ * Шаблон просмотра копирайтов используемых компонентов портала
+ *
+ * @return void
+ */
 function template_portal_credits()
 {
 	global $txt, $context;

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -61,6 +61,28 @@ class Helpers
 			return array_map('self::cleanBbcode', $data);
 
 		return preg_replace('~\[[^]]+]~', '', $data);
+	}
+
+	/**
+	 * Get the block icon
+	 *
+	 * Получаем иконку блока
+	 *
+	 * @param string $icon
+	 * @param string $type
+	 * @return string
+	 */
+	public static function getIcon($icon = null, $type = null)
+	{
+		global $context;
+
+		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
+		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
+
+		if (!empty($icon))
+			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+
+		return '';
 	}
 
 	/**	 * Get a title for preview block
@@ -265,26 +287,6 @@ class Helpers
 
 		if (empty($txt['lp_block_types'][$type]))
 			$context['lp_missing_block_types'][$type] = sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_')));
-	}
-
-	/**
-	 * Get the block icon
-	 *
-	 * Получаем иконку блока
-	 *
-	 * @param string $icon
-	 * @return string
-	 */
-	public static function getIcon($icon = null)
-	{
-		global $context;
-
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
-
-		if (!empty($icon))
-			return '<i class="fas fa-' . $icon . '"></i> ';
-		else
-			return '';
 	}
 
 	/**

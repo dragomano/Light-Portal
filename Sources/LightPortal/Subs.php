@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -19,6 +19,98 @@ if (!defined('SMF'))
 
 class Subs
 {
+	/**
+	 * Load used CSS
+	 *
+	 * Подключаем используемые таблицы стилей
+	 *
+	 * @return void
+	 */
+	public static function loadCssFiles()
+	{
+		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true));
+		loadCssFile('light_portal/flexboxgrid.min.css');
+		loadCssFile('light_portal/light_portal.css');
+	}
+
+	/**
+	 *
+	 * Prepare information about current blocks of the portal
+	 *
+	 * Собираем информацию о текущих блоках портала
+	 *
+	 * @return void
+	 */
+	public static function loadBlocks()
+	{
+		global $context;
+
+		$context['lp_all_title_classes']   = self::getTitleClasses();
+		$context['lp_all_content_classes'] = self::getContentClasses();
+
+		$context['lp_active_blocks']    = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
+		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Page');
+	}
+
+	/**
+	 * Get information about all active blocks of the portal
+	 *
+	 * Получаем информацию обо всех активных блоках портала
+	 *
+	 * @return array
+	 */
+	public static function getActiveBLocks()
+	{
+		global $smcFunc;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				bt.lang, bt.title, bp.name, bp.value
+			FROM {db_prefix}lp_blocks AS b
+				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
+				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
+			WHERE b.status = {int:status}
+			ORDER BY b.placement, b.priority',
+			array(
+				'type'   => 'block',
+				'status' => 1
+			)
+		);
+
+		$active_blocks = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			censorText($row['content']);
+
+			if (!isset($active_blocks[$row['block_id']]))
+				$active_blocks[$row['block_id']] = array(
+					'id'            => $row['block_id'],
+					'icon'          => $row['icon'],
+					'icon_type'     => $row['icon_type'],
+					'type'          => $row['type'],
+					'content'       => $row['content'],
+					'placement'     => $row['placement'],
+					'priority'      => $row['priority'],
+					'permissions'   => $row['permissions'],
+					'areas'         => explode(',', $row['areas']),
+					'title_class'   => $row['title_class'],
+					'title_style'   => $row['title_style'],
+					'content_class' => $row['content_class'],
+					'content_style' => $row['content_style'],
+					'can_show'      => Helpers::canShowItem($row['permissions'])
+				);
+
+			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
+
+			if (!empty($row['name']))
+				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $active_blocks;
+	}
+
 	/**
 	 * Form an array of articles
 	 *
@@ -44,11 +136,11 @@ class Subs
 
 		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $function, __CLASS__);
 
-		$total_items = count($articles);
-		$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
+		$total_items           = count($articles);
+		$limit                 = $modSettings['lp_num_items_per_page'] ?? 10;
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], $total_items, $limit);
-		$context['start'] = &$_REQUEST['start'];
-		$start = (int) $_REQUEST['start'];
+		$context['start']      = &$_REQUEST['start'];
+		$start                 = (int) $_REQUEST['start'];
 
 		$context['lp_frontpage_articles'] = array_slice($articles, $start, $limit);
 
@@ -317,99 +409,6 @@ class Subs
 	}
 
 	/**
-	 *
-	 * Prepare information about current blocks of the portal
-	 *
-	 * Собираем информацию о текущих блоках портала
-	 *
-	 * @return void
-	 */
-	public static function loadBlocks()
-	{
-		global $context;
-
-		$context['lp_all_title_classes']   = self::getTitleClasses();
-		$context['lp_all_content_classes'] = self::getContentClasses();
-
-		$context['lp_active_blocks']    = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
-		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Page');
-	}
-
-	/**
-	 * Get information about all active blocks of the portal
-	 *
-	 * Получаем информацию обо всех активных блоках портала
-	 *
-	 * @return array
-	 */
-	public static function getActiveBLocks()
-	{
-		global $smcFunc;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT
-				b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-				bt.lang, bt.title, bp.name, bp.value
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
-				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
-			WHERE b.status = {int:status}
-			ORDER BY b.placement, b.priority',
-			array(
-				'type'   => 'block',
-				'status' => 1
-			)
-		);
-
-		$active_blocks = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			censorText($row['content']);
-
-			if (!isset($active_blocks[$row['block_id']]))
-				$active_blocks[$row['block_id']] = array(
-					'id'            => $row['block_id'],
-					'icon'          => $row['icon'],
-					'type'          => $row['type'],
-					'content'       => $row['content'],
-					'placement'     => $row['placement'],
-					'priority'      => $row['priority'],
-					'permissions'   => $row['permissions'],
-					'areas'         => explode(',', $row['areas']),
-					'title_class'   => $row['title_class'],
-					'title_style'   => $row['title_style'],
-					'content_class' => $row['content_class'],
-					'content_style' => $row['content_style'],
-					'can_show'      => Helpers::canShowItem($row['permissions'])
-				);
-
-			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
-
-			if (!empty($row['name']))
-				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-		}
-
-		$smcFunc['db_free_result']($request);
-
-		return $active_blocks;
-	}
-
-	/**
-	 * Load used CSS
-	 *
-	 * Подключаем используемые таблицы стилей
-	 *
-	 * @return void
-	 */
-	public static function loadCssFiles()
-	{
-		//loadCssFile('https://cdn.jsdelivr.net/npm/flexboxgrid@6/dist/flexboxgrid.min.css', array('external' => true));
-		//loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/fontawesome.min.css', array('external' => true));
-		loadCssFile('light_portal/flexboxgrid.min.css');
-		loadCssFile('light_portal/fontawesome.min.css');
-		loadCssFile('light_portal/light_portal.css');
-	}
-
-	/**
 	 * Remove unnecessary areas for standalone mode
 	 *
 	 * Удаляем ненужные в автономном режиме области
@@ -421,7 +420,9 @@ class Subs
 	{
 		global $modSettings, $context;
 
-		$excluded_actions = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
+		$excluded_actions   = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
+		$excluded_actions[] = 'portal';
+
 		foreach ($data as $action => $dump) {
 			if (!in_array($action, $excluded_actions))
 				unset($data[$action]);
@@ -548,7 +549,7 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $hook ('init', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
+	 * @param string $hook ('init', 'frontpageAssets', 'topicsAsArticles', 'topicsAsArticlesResult', 'pagesAsArticlesResult', 'boardsAsArticlesResult', 'comments', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
 	 * @param array $vars (extra variables for changing)
 	 * @return void
 	 */

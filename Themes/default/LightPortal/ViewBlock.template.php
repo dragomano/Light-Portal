@@ -1,7 +1,12 @@
 <?php
 
-// The output of blocks BEFORE content
-// Вывод блоков ДО контента
+/**
+ * The output of blocks BEFORE content
+ *
+ * Вывод блоков ДО контента
+ *
+ * @return void
+ */
 function template_portal_above()
 {
 	global $context;
@@ -68,8 +73,13 @@ function template_portal_above()
 						<div class="col-xs noup">';
 }
 
-// The output of blocks AFTER content
-// Вывод блоков ПОСЛЕ контента
+/**
+ * The output of blocks AFTER content
+ *
+ * Вывод блоков ПОСЛЕ контента
+ *
+ * @return void
+ */
 function template_portal_below()
 {
 	global $context;
@@ -135,8 +145,14 @@ function template_portal_below()
 	</div>';
 }
 
-// Output the title and content of the block
-// Вывод заголовка и содержимого блока
+/**
+ * Output the title and content of the block
+ *
+ * Вывод заголовка и содержимого блока
+ *
+ * @param array $block
+ * @return void
+ */
 function lp_show_block($block)
 {
 	global $context, $scripturl, $txt;

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class BoardNews
 {
 	/**
+	 * Board id by default
+	 *
 	 * Идентификатор раздела по умолчанию
 	 *
 	 * @var int
@@ -29,6 +31,8 @@ class BoardNews
 	private static $board_id = 0;
 
 	/**
+	 * The maximum number of posts to output
+	 *
 	 * Максимальное количество сообщений для вывода
 	 *
 	 * @var int
@@ -36,6 +40,8 @@ class BoardNews
 	private static $num_posts = 5;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -52,6 +58,8 @@ class BoardNews
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -71,6 +79,8 @@ class BoardNews
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -135,6 +145,7 @@ class BoardNews
 	}
 
 	/**
+	 * Get the news list of boards
 	 * Получаем список новостей раздела
 	 *
 	 * @param array $params
@@ -151,6 +162,8 @@ class BoardNews
 	}
 
 	/**
+	 * Form the content block
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

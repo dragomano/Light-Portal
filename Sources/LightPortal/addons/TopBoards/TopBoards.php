@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class TopBoards
 {
 	/**
+	 * The maximum number of boards to output
+	 *
 	 * Максимальное количество разделов для вывода
 	 *
 	 * @var int
@@ -29,13 +31,17 @@ class TopBoards
 	private static $num_boards = 10;
 
 	/**
-	 * Отображать только цифры, или нет
+	 * Display only numbers (true|false)
+	 *
+	 * Отображать только цифры (true|false)
 	 *
 	 * @var bool
 	 */
 	private static $show_numbers_only = false;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -52,6 +58,8 @@ class TopBoards
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -71,6 +79,8 @@ class TopBoards
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -103,6 +113,8 @@ class TopBoards
 	}
 
 	/**
+	 * Get the list of popular boards
+	 *
 	 * Получаем список популярных разделов
 	 *
 	 * @param int $num_boards
@@ -117,6 +129,8 @@ class TopBoards
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

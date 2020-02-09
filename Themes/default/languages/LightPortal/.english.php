@@ -24,12 +24,15 @@ $txt['lp_frontpage_layout_set']                = array('1 column', '2 columns', 
 $txt['lp_show_images_in_articles']             = 'Show images that found in articles';
 $txt['lp_subject_size']                        = 'The max size of article titles (in symbols)';
 $txt['lp_teaser_size']                         = 'The max size of article teasers (in symbols)';
-$txt['lp_num_per_page']                        = 'Maximum number of items (for pagination)';
+$txt['lp_num_items_per_page']                  = 'Number of items per page (for pagination)';
 $txt['lp_standalone']                          = 'Standalone mode';
 $txt['lp_standalone_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
 $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_show_tags_on_page']                   = 'Display keywords at the top of the page';
+$txt['lp_show_comment_block']                  = 'Dispaly comments block';
+$txt['lp_show_comment_block_set']              = array('None', 'default' => 'Integrated (default)');
+$txt['lp_num_comments_per_page']               = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in the admin area';
 $txt['lp_open_graph']                          = 'Open Graph';
@@ -61,12 +64,13 @@ $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Content';
-$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">More icons</a></span>';
+$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">List of icons</a></span>';
 $txt['lp_block_type']                    = 'Block type';
 $txt['lp_block_priority']                = 'Priority';
+$txt['lp_block_icon_type']               = 'Icon type';
+$txt['lp_block_icon_type_set']           = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');
 $txt['lp_block_placement']               = 'Placement';
-
-$txt['lp_block_placement_set'] = array(
+$txt['lp_block_placement_set']           = array(
 	'header' => 'Header',
 	'top'    => 'Center (top)',
 	'left'   => 'Left side',
@@ -107,12 +111,13 @@ $txt['lp_pages_manage']                 = 'Manage pages';
 $txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
-$txt['lp_pages_add_tab_description']    = 'Page <strong>alias</strong> is used in the address bar and can only contain Latin characters and numbers!<br>The main page always has an alias equal to "/".';
+$txt['lp_pages_add_tab_description']    = 'Fill the page title and alias. After that, you can change its type, use preview and save.';
 $txt['lp_pages_edit_title']             = 'Editing page';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Additional pages';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
+$txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
@@ -121,7 +126,8 @@ $txt['lp_permissions']                  = array('Show to admins', 'Show to guest
 $txt['lp_no_items']                     = 'There is nothing yet. Let\'s add?';
 
 $txt['lp_page_options'] = array(
-	'show_author_and_date' => 'Show the author and creation date'
+	'show_author_and_date' => 'Show the author and creation date',
+	'allow_comments'       => 'Allow comments'
 );
 
 // Tags
@@ -131,6 +137,10 @@ $txt['lp_no_selected_tag']  = 'The specified tag was not found.';
 $txt['lp_no_tags']          = 'There is no tags yet.';
 $txt['lp_keyword_column']   = 'Keyword';
 $txt['lp_frequency_column'] = 'Frequency';
+
+// Comments
+$txt['lp_comments']            = 'Comments';
+$txt['lp_comment_placeholder'] = 'Enter the comment text...';
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
@@ -147,6 +157,8 @@ $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
 $txt['lp_who_viewing_page']      = 'Viewing <a href="%1$s">the portal page</a>.';
+$txt['lp_who_viewing_tags']      = 'Viewing <a href="%1$s">the portal page tags</a>.';
+$txt['lp_who_viewing_the_tag']   = 'Viewing the page list with <a href="%1$s" class="bbc_link">%2$s</a> tag.';
 
 // Permissions
 $txt['permissiongroup_light_portal']                 = LP_NAME;

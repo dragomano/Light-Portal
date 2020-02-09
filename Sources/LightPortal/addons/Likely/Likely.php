@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,6 +20,8 @@ if (!defined('SMF'))
 class Likely
 {
 	/**
+	 * Button size (small|big)
+	 *
 	 * Размер кнопок (small|big)
 	 *
 	 * @var string
@@ -27,6 +29,8 @@ class Likely
 	private static $size = 'small';
 
 	/**
+	 * Button skin (normal|light)
+	 *
 	 * Скин кнопок (normal|light)
 	 *
 	 * @var string
@@ -34,6 +38,8 @@ class Likely
 	private static $skin = 'normal';
 
 	/**
+	 * List of displayed buttons
+	 *
 	 * Список отображаемых кнопок
 	 *
 	 * @var string
@@ -41,6 +47,8 @@ class Likely
 	private static $buttons = 'facebook,twitter,vkontakte,pinterest,odnoklassniki,telegram,linkedin,whatsapp';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -58,6 +66,8 @@ class Likely
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -78,6 +88,8 @@ class Likely
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -174,6 +186,8 @@ class Likely
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -218,6 +232,8 @@ class Likely
 	}
 
 	/**
+	 * Adding the addon copyright
+	 *
 	 * Добавляем копирайты плагина
 	 *
 	 * @param array $links

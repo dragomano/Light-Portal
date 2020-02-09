@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,7 +22,9 @@ if (!defined('SMF'))
 class UserInfo
 {
 	/**
-	 * Получаем список популярных тем
+	 * Get the current user info
+	 *
+	 * Получаем информацию о пользователе
 	 *
 	 * @return array
 	 */
@@ -37,6 +39,8 @@ class UserInfo
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

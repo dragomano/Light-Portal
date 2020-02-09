@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,6 +20,8 @@ if (!defined('SMF'))
 class Trumbowyg
 {
 	/**
+	 * Adding your own editor for 'html' content
+	 *
 	 * Добавляем свой редактор для контента 'html'
 	 *
 	 * @param array $object
@@ -73,6 +75,8 @@ class Trumbowyg
 	}
 
 	/**
+	 * Adding the addon copyright
+	 *
 	 * Добавляем копирайты плагина
 	 *
 	 * @param array $links

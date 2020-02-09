@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class RandomTopics
 {
 	/**
+	 * You cannot select a class for the content of this block
+	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
 	 *
 	 * @var bool
@@ -29,6 +31,8 @@ class RandomTopics
 	private static $no_content_class = true;
 
 	/**
+	 * The maximum number of random topics to output
+	 *
 	 * Максимальное количество случайных тем для вывода
 	 *
 	 * @var int
@@ -36,6 +40,8 @@ class RandomTopics
 	private static $num_topics = 10;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -52,6 +58,8 @@ class RandomTopics
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -70,6 +78,8 @@ class RandomTopics
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -93,6 +103,8 @@ class RandomTopics
 	}
 
 	/**
+	 * Get the list of random topics
+	 *
 	 * Получаем список случайных тем
 	 *
 	 * @param int $num_topics
@@ -229,6 +241,8 @@ class RandomTopics
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\YandexTranslate;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,6 +20,8 @@ if (!defined('SMF'))
 class YandexTranslate
 {
 	/**
+	 * You cannot select a class for the content of this block
+	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
 	 *
 	 * @var bool
@@ -27,6 +29,8 @@ class YandexTranslate
 	private static $no_content_class = true;
 
 	/**
+	 * The widget color theme (light|dark)
+	 *
 	 * Цветовая тема виджета (light|dark)
 	 *
 	 * @var string
@@ -34,6 +38,8 @@ class YandexTranslate
 	private static $widget_theme = 'light';
 
 	/**
+	 * Automatic translation (true|false)
+	 *
 	 * Автоматический перевод (если выключен, то требуется нажатие на кнопку «Перевести»)
 	 *
 	 * @var bool
@@ -41,6 +47,8 @@ class YandexTranslate
 	private static $auto_mode = false;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -58,6 +66,8 @@ class YandexTranslate
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -77,6 +87,8 @@ class YandexTranslate
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -135,6 +147,8 @@ class YandexTranslate
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

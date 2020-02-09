@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class BoardList
 {
 	/**
+	 * You cannot select a class for the content of this block
+	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
 	 *
 	 * @var bool
@@ -29,6 +31,8 @@ class BoardList
 	private static $no_content_class = true;
 
 	/**
+	 * Default class for category headers
+	 *
 	 * Класс (по умолчанию) для оформления заголовков категорий
 	 *
 	 * @var string
@@ -36,6 +40,8 @@ class BoardList
 	private static $category_class = 'div.title_bar > h4.titlebg';
 
 	/**
+	 * Default class for areas with board lists
+	 *
 	 * Класс (по умолчанию) для оформления блока со списком разделов
 	 *
 	 * @var string
@@ -43,6 +49,8 @@ class BoardList
 	private static $board_class = 'div.roundframe.noup';
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -60,6 +68,8 @@ class BoardList
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -79,6 +89,8 @@ class BoardList
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -138,6 +150,8 @@ class BoardList
 	}
 
 	/**
+	 * Get the board list
+	 *
 	 * Получаем список разделов, с учётом прав доступа и списка игнора
 	 *
 	 * @return array
@@ -158,6 +172,8 @@ class BoardList
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

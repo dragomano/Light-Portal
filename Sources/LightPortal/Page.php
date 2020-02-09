@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,13 +20,13 @@ if (!defined('SMF'))
 class Page
 {
 	/**
-	 * The page name must begin with a Latin letter and consist of lowercase Latin letters and numbers
+	 * The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore
 	 *
-	 * Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв и цифр
+	 * Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания
 	 *
 	 * @var string
 	 */
-	private static $alias_pattern = '^[a-z][a-z0-9]+$';
+	private static $alias_pattern = '^[a-z][a-z0-9_]+$';
 
 	/**
 	 * Display the page by its alias
@@ -42,8 +42,7 @@ class Page
 
 		isAllowedTo('light_portal_view');
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags')
-			Tag::show();
+		self::pageAreaActions();
 
 		$alias = explode(';', $alias)[0];
 
@@ -59,7 +58,8 @@ class Page
 			Block::display();
 
 		if ($alias === '/') {
-			$context['page_title'] = $modSettings['lp_frontpage_title_' . $context['user']['language']] ?? $txt['lp_portal'];
+			$context['page_title']    = $modSettings['lp_frontpage_title_' . $context['user']['language']] ?? $txt['lp_portal'];
+			$context['canonical_url'] = $scripturl;
 		} else {
 			$context['page_title']    = $context['lp_page']['title'];
 			$context['canonical_url'] = $scripturl . '?page=' . $alias;
@@ -69,11 +69,12 @@ class Page
 			'name' => $context['page_title']
 		);
 
-		loadTemplate('LightPortal/ViewPage');
+		self::prepareComments($alias);
 
 		if (!empty($modSettings['lp_frontpage_mode']) && empty($_GET['page'])) {
-			$limit = !empty($modSettings['lp_num_per_page']) ? (int) $modSettings['lp_num_per_page'] : 10;
 			self::calculateNumColumns();
+
+			loadTemplate('LightPortal/ViewFrontPage');
 
 			if ($modSettings['lp_frontpage_mode'] == 1) {
 				Subs::prepareArticles('topics');
@@ -86,6 +87,7 @@ class Page
 				$context['sub_template'] = 'show_boards_as_articles';
 			}
 		} else {
+			loadTemplate('LightPortal/ViewPage');
 			$context['sub_template'] = 'show_page';
 			self::updateNumViews();
 		}
@@ -96,6 +98,73 @@ class Page
 			elseif ($_REQUEST['page'] === '/')
 				redirectexit();
 		}
+	}
+
+	/**
+	 * Various actions on portal pages
+	 *
+	 * Различные действия на страницах портала
+	 *
+	 * @return void
+	 */
+	private static function pageAreaActions()
+	{
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags')
+			Tag::show();
+
+		if (isset($_REQUEST['new_comment']))
+			Comment::add();
+
+		if (isset($_REQUEST['del_comment']))
+			Comment::remove();
+	}
+
+	/**
+	 * Prepare comments to output
+	 *
+	 * Подготавливаем комментарии для отображения
+	 *
+	 * @param string $alias
+	 * @return void
+	 */
+	private static function prepareComments($alias)
+	{
+		global $modSettings, $context, $txt;
+
+		if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
+			return;
+
+		Subs::runAddons('comments');
+
+		if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block']))
+			return;
+
+		$comments = Helpers::useCache(
+			'page_' . ($alias == '/' ? 'main' : $alias) . '_comments',
+			'getAll',
+			'\Bugo\LightPortal\Comment',
+			3600,
+			$context['lp_page']['id']
+		);
+
+		$total_comments     = count($comments);
+		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
+
+		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
+		$comment_tree   = Comment::getCommentTree($comments);
+		$total_comments = count($comment_tree);
+
+		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
+		$context['start']      = &$_REQUEST['start'];
+		$start                 = (int) $_REQUEST['start'];
+
+		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+
+		$context['page_info'] = array(
+			'current_page' => $_REQUEST['start'] / $limit + 1,
+			'num_pages'    => floor(($total_comments - 1) / $limit) + 1,
+			'next_page'    => $_REQUEST['start'] + $limit < $total_comments ? $context['canonical_url'] . ';start=' . ($_REQUEST['start'] + $limit) : ''
+		);
 	}
 
 	/**
@@ -259,8 +328,8 @@ class Page
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
 							if (strpos($settings['name'], 'Lunarfall') !== false) {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools settings" title="' . $txt['edit'] . '"></span></a>' . '
-							<span class="fas fa-trash-alt unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>' . '
+							<span class="fas fa-trash del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
 							} else {
 								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
 							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
@@ -413,6 +482,7 @@ class Page
 				'id' => $item
 			)
 		);
+
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}
@@ -420,6 +490,14 @@ class Page
 			array(
 				'id'   => $item,
 				'type' => 'page'
+			)
+		);
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE page_id = {int:id}',
+			array(
+				'id' => $item
 			)
 		);
 	}
@@ -540,7 +618,8 @@ class Page
 	private static function getOptions()
 	{
 		$options = [
-			'show_author_and_date' => true
+			'show_author_and_date' => true,
+			'allow_comments'       => false
 		];
 
 		Subs::runAddons('pageOptions', array(&$options));
@@ -575,7 +654,7 @@ class Page
 
 			Subs::runAddons('validatePageData', array(&$args));
 
-			$parameters = array_merge(array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN), array_diff($args, $source_args));
+			$parameters = array_merge(array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN), array_diff($args, $source_args));
 
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
@@ -669,7 +748,7 @@ class Page
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt;
+		global $context, $txt, $modSettings;
 
 		checkSubmitOnce('register');
 
@@ -703,6 +782,7 @@ class Page
 		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
 		$context['posting_fields']['alias']['input'] = array(
 			'type' => 'text',
+			'after' => $txt['lp_page_alias_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['alias'],
@@ -800,7 +880,23 @@ class Page
 			)
 		);
 
+		if (!empty($modSettings['lp_show_comment_block'])) {
+			$context['posting_fields']['allow_comments']['label']['text'] = $txt['lp_page_options']['allow_comments'];
+			$context['posting_fields']['allow_comments']['input'] = array(
+				'type' => 'checkbox',
+				'attributes' => array(
+					'id' => 'allow_comments',
+					'checked' => !empty($context['lp_page']['options']['allow_comments'])
+				)
+			);
+		}
+
 		Subs::runAddons('preparePageFields');
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if (!empty($data['input']['after']))
+				$context['posting_fields'][$item]['input']['after'] = '<div class="information alternative smalltext">' . $data['input']['after'] . '</div>';
+		}
 
 		loadTemplate('Post');
 	}
@@ -1031,7 +1127,7 @@ class Page
 	{
 		global $smcFunc, $modSettings;
 
-		[$item, $useAlias] = $params;
+		[$item, $isAlias] = $params;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -1040,7 +1136,7 @@ class Page
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
-			WHERE ' . ($useAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}',
+			WHERE ' . ($isAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}',
 			array(
 				'type' => 'page',
 				'item' => $item
@@ -1165,7 +1261,7 @@ class Page
 		if (empty($context['lp_page']['id']))
 			return;
 
-		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id'])	{
+		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id']) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1

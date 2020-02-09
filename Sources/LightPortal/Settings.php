@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -143,10 +143,12 @@ class Settings
 			$add_settings['lp_subject_size'] = 22;
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 100;
-		if (!isset($modSettings['lp_num_per_page']))
-			$add_settings['lp_num_per_page'] = 10;
+		if (!isset($modSettings['lp_num_items_per_page']))
+			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_standalone_excluded_actions']))
-			$add_settings['lp_standalone_excluded_actions'] = 'home,admin,profile,pm,signup,logout';
+			$add_settings['lp_standalone_excluded_actions'] = 'forum,admin,profile,pm,signup,logout';
+		if (!isset($modSettings['lp_num_comments_per_page']))
+			$add_settings['lp_num_comments_per_page'] = 10;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -160,6 +162,15 @@ class Settings
 
 		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']);
 
+		$extra_settings = [];
+
+		// The mod authors can easily add their own settings
+		// Авторы модов модут легко добавлять собственные настройки
+		Subs::runAddons('addSettings', array(&$extra_settings));
+
+		if (!empty($extra_settings))
+			$extra_settings = array_merge(array(array('title', 'lp_extra_settings')), $extra_settings);
+
 		$config_vars = array_merge(
 			$config_vars,
 			array(
@@ -170,14 +181,19 @@ class Settings
 				array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 				array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 				array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-				array('int', 'lp_num_per_page', 'disabled' => $frontpage_disabled),
+				array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
 				'',
 				array('check', 'lp_standalone', 'subtext' => $txt['lp_standalone_help'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
 				array('text', 'lp_standalone_excluded_actions', 80, 'subtext' => $txt['lp_standalone_excluded_actions_subtext']),
 				'',
 				array('check', 'lp_show_tags_on_page'),
+				array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
+				array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
-				array('check', 'lp_hide_blocks_in_admin_section'),
+				array('check', 'lp_hide_blocks_in_admin_section')
+			),
+			$extra_settings,
+			array(
 				array('title', 'lp_open_graph'),
 				array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 				array('text', 'lp_page_itemprop_address', 80),
@@ -188,15 +204,6 @@ class Settings
 				array('permissions', 'light_portal_manage_own_pages')
 			)
 		);
-
-		$extra_settings = [];
-
-		// The mod authors can easily add their own settings
-		// Авторы модов модут легко добавлять собственные настройки
-		Subs::runAddons('addSettings', array(&$extra_settings));
-
-		if (!empty($extra_settings))
-			$config_vars = array_merge($config_vars, array(array('title', 'lp_extra_settings')), $extra_settings);
 
 		if ($return_config)
 			return $config_vars;
@@ -317,8 +324,11 @@ class Settings
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		$data = curl_exec($ch);
 		curl_close($ch);
-		$data = json_decode($data);
 
+		if (empty($data))
+			return LP_VERSION;
+
+		$data = json_decode($data);
 		return str_replace('v', '', $data->tag_name);
 	}
 }

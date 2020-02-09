@@ -1,7 +1,12 @@
 <?php
 
-// The management page section template
-// Шаблон раздела управления страницами
+/**
+ * The management page section template (top)
+ *
+ * Шаблон раздела управления страницами (верх)
+ *
+ * @return void
+ */
 function template_manage_pages_above()
 {
 	global $modSettings, $context, $txt, $user_info, $settings, $scripturl;
@@ -71,6 +76,13 @@ function template_manage_pages_above()
 	</table>';
 }
 
+/**
+ * The management page section template (bottom)
+ *
+ * Шаблон раздела управления страницами (низ)
+ *
+ * @return void
+ */
 function template_manage_pages_below()
 {
 	global $txt;
@@ -106,8 +118,13 @@ function template_manage_pages_below()
 	</script>';
 }
 
-// Page creation/editing template
-// Шаблон создания/редактирования страницы
+/**
+ * Page creation/editing template
+ *
+ * Шаблон создания/редактирования страницы
+ *
+ * @return void
+ */
 function template_page_post()
 {
 	global $context, $txt;

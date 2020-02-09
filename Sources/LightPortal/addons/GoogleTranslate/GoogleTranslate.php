@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\GoogleTranslate;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,6 +20,8 @@ if (!defined('SMF'))
 class GoogleTranslate
 {
 	/**
+	 * You cannot select a class for the content of this block
+	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
 	 *
 	 * @var bool
@@ -27,6 +29,8 @@ class GoogleTranslate
 	private static $no_content_class = true;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -40,6 +44,8 @@ class GoogleTranslate
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content

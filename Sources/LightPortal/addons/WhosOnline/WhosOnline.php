@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,8 @@ if (!defined('SMF'))
 class WhosOnline
 {
 	/**
+	 * Online list update interval, in seconds
+	 *
 	 * Интервал обновления списка онлайн, в секундах
 	 *
 	 * @var int
@@ -29,6 +31,8 @@ class WhosOnline
 	private static $update_interval = 600;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -44,6 +48,8 @@ class WhosOnline
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -62,6 +68,8 @@ class WhosOnline
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -85,7 +93,9 @@ class WhosOnline
 	}
 
 	/**
-	 * Получаем список популярных разделов
+	 * Get the list of online members
+	 *
+	 * Получаем список пользователей онлайн
 	 *
 	 * @return void
 	 */
@@ -98,6 +108,8 @@ class WhosOnline
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -109,12 +121,17 @@ class WhosOnline
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt, $user_info, $settings;
+		global $user_info, $txt, $settings;
 
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helpers::useCache('whos_online_addon_b' . $block_id . '_u' . $context['user']['id'], 'getWhosOnline', __CLASS__, (empty($cache_time) ? 0 : $parameters['update_interval']));
+		$whos_online = Helpers::useCache(
+			'whos_online_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getWhosOnline',
+			__CLASS__,
+			(empty($cache_time) ? 0 : $parameters['update_interval'])
+		);
 
 		if (!empty($whos_online)) {
 			ob_start();

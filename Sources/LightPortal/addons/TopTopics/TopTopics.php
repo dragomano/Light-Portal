@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -22,13 +22,17 @@ if (!defined('SMF'))
 class TopTopics
 {
 	/**
-	 * Тип расчёта популярности (replies | views)
+	 * Type of popularity calculation (replies|views)
+	 *
+	 * Тип расчёта популярности (replies|views)
 	 *
 	 * @var string
 	 */
 	private static $type = 'replies';
 
 	/**
+	 * The maximum number of topics to output
+	 *
 	 * Максимальное количество тем для вывода
 	 *
 	 * @var int
@@ -36,13 +40,17 @@ class TopTopics
 	private static $num_topics = 10;
 
 	/**
-	 * Отображать только цифры, или нет
+	 * Display only numbers (true|false)
+	 *
+	 * Отображать только цифры (true|false)
 	 *
 	 * @var bool
 	 */
 	private static $show_numbers_only = false;
 
 	/**
+	 * Adding the block options
+	 *
 	 * Добавляем параметры блока
 	 *
 	 * @param array $options
@@ -60,6 +68,8 @@ class TopTopics
 	}
 
 	/**
+	 * Validate options
+	 *
 	 * Валидируем параметры
 	 *
 	 * @param array $args
@@ -80,6 +90,8 @@ class TopTopics
 	}
 
 	/**
+	 * Adding fields specifically for this block
+	 *
 	 * Добавляем поля конкретно для этого блока
 	 *
 	 * @return void
@@ -135,6 +147,8 @@ class TopTopics
 	}
 
 	/**
+	 * Get the list of popular topics
+	 *
 	 * Получаем список популярных тем
 	 *
 	 * @param array $params
@@ -151,6 +165,8 @@ class TopTopics
 	}
 
 	/**
+	 * Form the block content
+	 *
 	 * Формируем контент блока
 	 *
 	 * @param string $content
@@ -167,7 +183,13 @@ class TopTopics
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::useCache('top_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopTopics', __CLASS__, $cache_time, array($parameters['popularity_type'], $parameters['num_topics']));
+		$top_topics = Helpers::useCache(
+			'top_topics_addon_b' . $block_id . '_u' . $context['user']['id'],
+			'getTopTopics',
+			__CLASS__,
+			$cache_time,
+			array($parameters['popularity_type'], $parameters['num_topics'])
+		);
 
 		if (!empty($top_topics)) {
 			ob_start();

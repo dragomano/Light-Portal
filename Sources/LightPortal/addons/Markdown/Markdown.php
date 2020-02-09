@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Markdown;
  * @copyright 2019-2020 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD
  *
- * @version 0.9.4
+ * @version 1.0
  */
 
 if (!defined('SMF'))
@@ -20,6 +20,8 @@ if (!defined('SMF'))
 class Markdown
 {
 	/**
+	 * Parse 'md' content
+	 *
 	 * Парсим контент типа 'md'
 	 *
 	 * @param string $content
@@ -33,6 +35,8 @@ class Markdown
 	}
 
 	/**
+	 * Parse Markdown content
+	 *
 	 * Парсим Markdown-контент
 	 *
 	 * @param string $text
@@ -47,6 +51,8 @@ class Markdown
 	}
 
 	/**
+	 * Adding the addon copyright
+	 *
 	 * Добавляем копирайты плагина
 	 *
 	 * @param array $links

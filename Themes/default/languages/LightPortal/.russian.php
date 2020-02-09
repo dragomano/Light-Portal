@@ -24,12 +24,15 @@ $txt['lp_frontpage_layout_set']                = array('1 колонка', '2 к
 $txt['lp_show_images_in_articles']             = 'Показывать изображения, найденные в статьях';
 $txt['lp_subject_size']                        = 'Размер заголовка статей (в символах)';
 $txt['lp_teaser_size']                         = 'Размер тизера статей (в символах)';
-$txt['lp_num_per_page']                        = 'Максимальное количество элементов (для пагинации)';
+$txt['lp_num_items_per_page']                  = 'Количество элементов на странице (для пагинации)';
 $txt['lp_standalone']                          = 'Автономный режим';
 $txt['lp_standalone_help']                     = 'Будет отключено всё, кроме страниц портала и игнорируемых областей.';
 $txt['lp_standalone_excluded_actions']         = 'Игнорируемые области';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Укажите области, которые должны оставаться доступными в автономном режиме.';
 $txt['lp_show_tags_on_page']                   = 'Отображать ключевые слова в верхней части страницы';
+$txt['lp_show_comment_block']                  = 'Отображать блок комментариев';
+$txt['lp_show_comment_block_set']              = array('Нет', 'default' => 'Встроенный (по умолчанию)');
+$txt['lp_num_comments_per_page']               = 'Количество родительских комментариев на странице';
 $txt['lp_page_editor_type_default']            = 'Тип редактора страниц по умолчанию';
 $txt['lp_hide_blocks_in_admin_section']        = 'Скрывать активные блоки в админке';
 $txt['lp_open_graph']                          = 'Open Graph';
@@ -61,12 +64,13 @@ $txt['lp_blocks_add_instruction']        = 'Выберите нужный бло
 $txt['lp_blocks_edit_title']             = 'Редактирование блока';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Содержимое';
-$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free/solid" target="_blank" rel="noopener">Больше иконок</a></span>';
+$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">Список иконок</a></span>';
 $txt['lp_block_type']                    = 'Тип блока';
 $txt['lp_block_priority']                = 'Приоритет';
+$txt['lp_block_icon_type']               = 'Тип иконки';
+$txt['lp_block_icon_type_set']           = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');
 $txt['lp_block_placement']               = 'Расположение';
-
-$txt['lp_block_placement_set'] = array(
+$txt['lp_block_placement_set']           = array(
 	'header' => 'Шапка',
 	'top'    => 'Центральная часть (верх)',
 	'left'   => 'Левая панель',
@@ -107,12 +111,13 @@ $txt['lp_pages_manage']                 = 'Управление страница
 $txt['lp_pages_manage_tab_description'] = 'Здесь перечислены все страницы портала. Для добавления новой страницы воспользуйтесь соответствующей кнопкой.';
 $txt['lp_pages_add']                    = 'Добавить страницу';
 $txt['lp_pages_add_title']              = 'Добавление страницы';
-$txt['lp_pages_add_tab_description']    = '<strong>Алиас</strong> страницы используется в адресной строке и может содержать только латинские символы и цифры!<br>У главной страницы алиас всегда равен "/".';
+$txt['lp_pages_add_tab_description']    = 'Заполните заголовок и алиас страницы. После этого можно будет сменить её тип, использовать предварительный просмотр и сохранение.';
 $txt['lp_pages_edit_title']             = 'Редактирование страницы';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Дополнительные страницы';
 $txt['lp_page_types']                   = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Алиас';
+$txt['lp_page_alias_subtext']           = 'Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания.';
 $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Тип страницы';
 $txt['lp_page_description']             = 'Описание';
@@ -121,7 +126,8 @@ $txt['lp_permissions']                  = array('Показывать админ
 $txt['lp_no_items']                     = 'Пока ничего нет. Давайте добавим?';
 
 $txt['lp_page_options'] = array(
-	'show_author_and_date' => 'Показывать автора и дату создания'
+	'show_author_and_date' => 'Показывать автора и дату создания',
+	'allow_comments'       => 'Разрешить комментарии'
 );
 
 // Tags
@@ -131,6 +137,10 @@ $txt['lp_no_selected_tag']  = 'Указанный тег не найден.';
 $txt['lp_no_tags']          = 'Тегов пока нет.';
 $txt['lp_keyword_column']   = 'Ключевое слово';
 $txt['lp_frequency_column'] = 'Частотность';
+
+// Comments
+$txt['lp_comments']            = 'Комментарии';
+$txt['lp_comment_placeholder'] = 'Введите текст комментария...';
 
 // Errors
 $txt['lp_page_not_found']             = 'Страница не найдена!';
@@ -147,6 +157,8 @@ $txt['lp_addon_not_installed']        = 'Плагин %1$s не установл
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Просматривает <a href="%1$s">главную страницу портала</a>.';
 $txt['lp_who_viewing_page']      = 'Просматривает <a href="%1$s">страницу портала</a>.';
+$txt['lp_who_viewing_tags']      = 'Просматривает <a href="%1$s">теги страниц портала</a>.';
+$txt['lp_who_viewing_the_tag']   = 'Просматривает список страниц с тегом <a href="%1$s" class="bbc_link">%2$s</a>.';
 
 // Permissions
 $txt['permissiongroup_light_portal']                 = LP_NAME;

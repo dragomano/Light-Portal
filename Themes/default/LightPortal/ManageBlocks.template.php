@@ -1,7 +1,12 @@
 <?php
 
-// Block management section template
-// Шаблон раздела управления блоками
+/**
+ * Block management section template
+ *
+ * Шаблон раздела управления блоками
+ *
+ * @return void
+ */
 function template_manage_blocks()
 {
 	global $settings, $txt;
@@ -74,8 +79,13 @@ function template_manage_blocks()
 	</script>';
 }
 
-// Displaying a table with blocks
-// Отображение таблицы с блоками
+/**
+ * Displaying a table with blocks
+ *
+ * Отображение таблицы с блоками
+ *
+ * @return void
+ */
 function show_block_table()
 {
 	global $context, $txt, $scripturl, $settings;
@@ -159,8 +169,8 @@ function show_block_table()
 
 				if (strpos($settings['name'], 'Lunarfall') !== false) {
 					echo '
-					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools settings" title="', $txt['edit'], '"></span></a>
-					<span class="fas fa-trash-alt unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
+					<span class="fas fa-trash del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 				} else {
 					echo '
 					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
@@ -185,8 +195,13 @@ function show_block_table()
 	}
 }
 
-// The page for adding blocks
-// Страница добавления блоков
+/**
+ * The page for adding blocks
+ *
+ * Страница добавления блоков
+ *
+ * @return void
+ */
 function template_block_add()
 {
 	global $txt, $context, $settings;
@@ -234,8 +249,13 @@ function template_block_add()
 	</div>';
 }
 
-// Block creation/editing template
-// Шаблон создания/редактирования блока
+/**
+ * Block creation/editing template
+ *
+ * Шаблон создания/редактирования блока
+ *
+ * @return void
+ */
 function template_block_post()
 {
 	global $context, $txt;
@@ -308,10 +328,13 @@ function template_block_post()
 	</form>
 	<script>
 		jQuery(document).ready(function($) {
-			$("#icon").on("change", function() {
-				let icon = $("#icon").val();
-				$("#block_icon").html(\'<i class="fas fa-\' + icon + \'"><\/i>\');
-			});
+			change_icon = function() {
+				let icon = $("#icon").val(),
+					type = $("#icon_type input:checked").val();
+				$("#block_icon").html(\'<i class="\' + type + \' fa-\' + icon + \'"><\/i>\');
+			}
+			$("#icon").on("change", change_icon);
+			$("#icon_type input").on("change", change_icon);
 		});
 	</script>';
 }
