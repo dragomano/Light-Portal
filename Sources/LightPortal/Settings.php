@@ -125,7 +125,7 @@ class Settings
 			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $db_engine, $db_version)
 		);
 
-		if (LP_VERSION < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
+		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
 			$message = '</p><div class="noticebox">' . sprintf($txt['lp_new_version_is_available'], 'https://github.com/dragomano/Light-Portal/releases') . '</div><p>';
 			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
 		}
