@@ -161,13 +161,13 @@ class RandomTopics
 				)
 			);
 
-			$ids = [];
+			$topic_ids = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request))
-				$ids[] = $row['id_topic'];
+				$topic_ids[] = $row['id_topic'];
 
 			$smcFunc['db_free_result']($request);
 
-			if (empty($ids))
+			if (empty($topic_ids))
 				return self::getRandomTopics($num_topics - 1);
 
 			$request = $smcFunc['db_query']('', '
@@ -181,11 +181,11 @@ class RandomTopics
 					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = mf.id_member)' . (!$user_info['is_guest'] ? '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})' : '') . '
-				WHERE t.id_topic IN ({array_int:ids})' . (!empty($modSettings['allow_ignore_boards']) ? '
+				WHERE t.id_topic IN ({array_int:topic_ids})' . (!empty($modSettings['allow_ignore_boards']) ? '
 					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : ''),
 				array(
 					'current_member' => $user_info['id'],
-					'ids'            => $ids
+					'topic_ids'      => $topic_ids
 				)
 			);
 		} else {

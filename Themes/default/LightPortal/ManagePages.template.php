@@ -59,7 +59,7 @@ function template_manage_pages_above()
 					', (!empty($modSettings['lp_frontpage_title_' . $user_info['language']]) ? $modSettings['lp_frontpage_title_' . $user_info['language']] : $context['lp_main_page']['title']), '
 				</td>
 				<td class="actions centertext" style="cursor: pointer">
-					', empty($context['lp_main_page']['status']) ? ('<span class="toggle_status off" data-id="1" title="' . $txt['lp_action_on'] . '"></span>') : ('<span class="toggle_status on" data-id="1" title="' . $txt['lp_action_off'] . '"></span>');
+					<span class="toggle_status ', empty($context['lp_main_page']['status']) ? 'off' : 'on', '" data-id="1" title="', $txt['lp_action_' . (empty($context['lp_main_page']['status']) ? 'on' : 'off')], '"></span>';
 
 	if (strpos($settings['name'], 'Lunarfall') !== false) {
 		echo '

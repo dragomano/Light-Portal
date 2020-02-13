@@ -108,7 +108,7 @@ class RecentTopics
 	 * Получаем последние темы форума
 	 *
 	 * @param int $num_topics
-	 * @return void
+	 * @return array
 	 */
 	public static function getRecentTopics($num_topics)
 	{

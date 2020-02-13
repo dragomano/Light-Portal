@@ -39,6 +39,8 @@ class Integration
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
+		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
+		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
 		add_integration_function('integrate_credits', __CLASS__ . '::credits', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
 	}
@@ -66,11 +68,14 @@ class Integration
 	 */
 	public static function userInfo()
 	{
-		global $sourcedir;
+		global $user_info, $sourcedir;
+
+		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 beta 1',
+			'LP_VERSION' => '1.0 beta 2',
 			'LP_NAME'    => 'Light Portal',
+			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
 
@@ -239,10 +244,10 @@ class Integration
 						'show'  => $context['allow_light_portal_manage_blocks']
 					),
 					'portal_pages' => array(
-						'title'   => $txt['lp_pages'],
-						'href'    => $scripturl . '?action=admin;area=lp_pages',
-						'amt'     => $context['lp_active_pages_num'],
-						'show'    => $context['allow_light_portal_manage_own_pages']
+						'title' => $txt['lp_pages'],
+						'href'  => $scripturl . '?action=admin;area=lp_pages',
+						'amt'   => $context['lp_active_pages_num'],
+						'show'  => $context['allow_light_portal_manage_own_pages']
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
@@ -311,6 +316,8 @@ class Integration
 			$context['canonical_url'] = $scripturl;
 		if ($context['current_action'] == 'forum')
 			$context['canonical_url'] = $scripturl . '?action=forum';
+
+		$context['lp_load_page_stats'] = LP_DEBUG || isset($_GET['debug']) ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getUsageMemory()) : false;
 	}
 
 	/**
@@ -350,6 +357,74 @@ class Integration
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
+	}
+
+	/**
+	 * Adding the "Light Portal" section to the notification settings in user profile
+	 *
+	 * Добавляем раздел «Light Portal» в настройки уведомлений в профиле
+	 *
+	 * @param array $alert_types
+	 * @return void
+	 */
+	public static function alertTypes(&$alert_types)
+	{
+		global $modSettings;
+
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
+			$alert_types['light_portal'] = array(
+				'page_comment'       => array('alert' => 'yes', 'email' => 'never', 'permission' => array('name' => 'light_portal_view', 'is_board' => false)),
+				'page_comment_reply' => array('alert' => 'yes', 'email' => 'never', 'permission' => array('name' => 'light_portal_view', 'is_board' => false))
+			);
+	}
+
+	/**
+	 * Adding a notification about new comments
+	 *
+	 * Добавляем оповещение о новых комментариях
+	 *
+	 * @param array $alerts
+	 * @return void
+	 */
+	public static function fetchAlerts(&$alerts)
+	{
+		global $user_info, $memberContext, $txt, $scripturl;
+
+		if (empty($alerts))
+			return;
+
+		foreach ($alerts as $id => $alert) {
+			if ($alert['content_action'] == 'page_comment' || $alert['content_action'] == 'page_comment_reply') {
+				if ($alert['sender_id'] != $user_info['id']) {
+					if (!empty($memberContext[$alert['sender_id']]))
+						$alerts[$id]['sender'] = &$memberContext[$alert['sender_id']];
+
+					$string = 'alert_' . $alert['content_type'] . '_' . $alert['content_action'];
+
+					if (isset($txt[$string])) {
+						$extra   = $alerts[$id]['extra'];
+						$search  = array('{member_link}', '{comment_link}', '{comment_title}');
+						$replace = array(
+							!empty($alert['sender_id']) ? ('<a href="' . $scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>') : $alert['sender_name'],
+							$alert['extra']['content_link'],
+							$alert['extra']['content_subject']
+						);
+
+						foreach ($extra as $k => $v) {
+							$search[]  = '{' . $k . '}';
+							$replace[] = $v;
+						}
+
+						$alerts[$id]['text'] = str_replace($search, $replace, $txt[$string]);
+					}
+				} else {
+					unset($alerts[$id]);
+				}
+			}
+		}
+
+		if (!empty($user_info['alerts']))
+			$_SESSION['lp_update_comments'] = true;
 	}
 
 	/**

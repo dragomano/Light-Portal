@@ -75,9 +75,9 @@ class ThemeSwitcher
 
 		$available_themes = Helpers::useCache('themeswitcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
-		ob_start();
-
 		if (!empty($available_themes)) {
+			ob_start();
+
 			echo '
 			<div class="themeswitcher centertext">
 				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
@@ -93,21 +93,19 @@ class ThemeSwitcher
 					function lp_block_', $block_id, '_themeswitcher_change() {
 						let lp_block_', $block_id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $block_id, '_themeswitcher").value;
 						let search = window.location.search.split(";");
-						let arr = search.filter(function(item) {
-							return !item.startsWith("theme=");
+						let search_args = search.filter(function (item) {
+							return !item.startsWith("theme=")
 						});
-						search = arr.join(";");
-						if (search != "") {
-							search = search.replace("?", "") + ";";
-						}
-						window.location = smf_prepareScriptUrl(smf_scripturl) + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
+						search = search_args.join(";");
+						search = search != "" ? search + ";" : "?";
+						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
 					}
 				</script>';
 
 			echo '
 			</div>';
-		}
 
-		$content = ob_get_clean();
+			$content = ob_get_clean();
+		}
 	}
 }

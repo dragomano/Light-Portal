@@ -142,7 +142,7 @@ class RecentPosts
 	 * Получаем последние сообщения форума
 	 *
 	 * @param int $num_posts
-	 * @return void
+	 * @return array
 	 */
 	public static function getRecentPosts($num_posts)
 	{

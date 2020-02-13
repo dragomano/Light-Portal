@@ -194,52 +194,110 @@ class Helpers
 	 *
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
 	 *
-	 * @param integer $a — Unix time
+	 * @param int $timestamp — Unix time
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $a)
+	public static function getFriendlyTime(int $timestamp)
 	{
 		global $txt, $smcFunc;
 
-		$time = time();
-		$tm   = date('H:i', $a);
-		$d    = date('d', $a);
-		$m    = date('m', $a);
-		$y    = date('Y', $a);
-		$sec  = $time - $a;
-		$last = round(($sec) / 60);
+		$current_time = time();
+
+		$tm = date('H:i', $timestamp);
+		$d  = date('j', $timestamp);
+		$m  = date('m', $timestamp);
+		$y  = date('Y', $timestamp);
+
+		// Difference between current time and $timestamp
+		$time_difference = $current_time - $timestamp;
 
 		// Future time?
-		if ($a > $time) {
-			$days = ($a - $time) / 60 / 60 / 24;
+		if ($time_difference < 0) {
+			// like "Tomorrow at ..."
+			if ($d.$m.$y == date('jmY', strtotime('+1 day')))
+				return $txt['lp_tomorrow'] . $tm;
 
-			if ($days > 1)
-				return sprintf($txt['lp_remained'], self::getCorrectDeclension((int) floor($days), $txt['lp_days_set']));
+			$days = floor(($timestamp - $current_time) / 60 / 60 / 24);
+			// like "In 15 days"
+			if ($days > 1) {
+				if ($days < 8)
+					return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($days, $txt['lp_days_set']));
 
-			$minutes = ($a - $time) / 60 / 60;
+				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
+					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+				elseif ($y == date('Y', $current_time))
+					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+				else
+					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
+			}
 
+			$hours = ($timestamp - $current_time) / 60 / 60;
+			// like "In 2 hours"
+			if ($hours > 1)
+				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($hours, $txt['lp_hours_set']));
+
+			$minutes = ($timestamp - $current_time) / 60;
+			// like "In 10 minutes"
 			if ($minutes > 1)
-				return sprintf($txt['lp_remained'], self::getCorrectDeclension($minutes, $txt['lp_minutes_set']));
-			else
-				return sprintf($txt['lp_remained'], self::getCorrectDeclension($minutes * 60, $txt['lp_seconds_set']));
+				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($minutes, $txt['lp_minutes_set']));
+
+			// like "In minute"
+			if ($minutes == 1)
+				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
+
+			// like "In 30 seconds"
+			return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
-		if ($last == 0)
-			return self::getCorrectDeclension($sec, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
-		elseif ($last == 1)
+		// Less than an hour
+		$last_minutes = round(($time_difference) / 60);
+
+		// like "n seconds ago"
+		if ($last_minutes == 0) {
+			if (empty($time_difference))
+				return $txt['lp_just_now'];
+
+			return self::getCorrectDeclension($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+		// like "Minute ago"
+		} elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
-		elseif ($last < 55)
-			return self::getCorrectDeclension((int) $last, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
-		elseif ($d.$m.$y == date('dmY', $time))
+		// like "n minutes ago"
+		elseif ($last_minutes < 55)
+			return self::getCorrectDeclension((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+		// like "Today at ..."
+		elseif ($d.$m.$y == date('jmY', $current_time))
 			return $txt['today'] . $tm;
-		elseif ($d.$m.$y == date('dmY', strtotime('-1 day')))
+		// like "Yesterday at ..."
+		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
 			return $txt['yesterday'] . $tm;
-		elseif ($y == date('Y', $time))
-			return $d . ' ' . $txt['months'][date('n', $a)] . ', ' . $tm;
-		elseif ($tm == '00:00' || $y < date('Y', $time))
-			return $d . ' ' . $txt['months'][date('n', $a)] . ' ' . $y;
+		// like "Tuesday, 20 February, 2020" (current month)
+		elseif ($m == date('m', $current_time))
+			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+		// like "20 February, 2020" (current year)
+		elseif ($y == date('Y', $current_time))
+			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+		// like "20 February, 2019" (last year)
 		else
-			return timeformat($a);
+			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
+	}
+
+	/**
+	 * Get a string with the day and month in European or American format
+	 *
+	 * Получаем запись дня и месяца в европейском или американском формате
+	 *
+	 * @param int $day
+	 * @param string $month
+	 * @return string
+	 */
+	public static function getDateFormat(int $day, string $month)
+	{
+		global $txt;
+
+		if (in_array($txt['lang_dictionary'], ['en']))
+			return $month . ' ' . $day;
+
+		return $day . ' ' . $month;
 	}
 
 	/**

@@ -59,9 +59,9 @@ class FacebookComments
 	}
 
 	/**
-	 * Adding Facebook comment block
+	 * Adding comment block
 	 *
-	 * Добавляем блок комментариев Facebook
+	 * Добавляем блок комментариев
 	 *
 	 * @return void
 	 */
@@ -71,9 +71,9 @@ class FacebookComments
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'facebook') {
 			$context['lp_facebook_comment_block'] = '
-		<div id="fb-root"></div>
-		<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $txt['lang_locale'] . '/sdk.js#xfbml=1&version=v6.0"></script>
-		<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($modSettings['lp_facebook_addon_color_scheme'] ?? static::$color_scheme) . '"></div>';
+				<div id="fb-root"></div>
+				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $txt['lang_locale'] . '/sdk.js#xfbml=1&version=v6.0"></script>
+				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($modSettings['lp_facebook_addon_color_scheme'] ?? static::$color_scheme) . '"></div>';
 		}
 	}
 }

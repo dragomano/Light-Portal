@@ -56,8 +56,8 @@ function template_show_topics_as_articles()
 
 			if (!empty($topic['preview']))
 				echo '
-				<div class="article_content title_bar">
-					<p class="titlebg">', $topic['preview'], '</p>
+				<div class="article_content post">
+					<p class="inner">', $topic['preview'], '</p>
 				</div>';
 
 			echo '
@@ -134,8 +134,8 @@ function template_show_pages_as_articles()
 
 				if (!empty($page['description']))
 					echo '
-				<div class="article_content title_bar page_', $page['type'], '">
-					<p class="titlebg">', $page['description'], '</p>
+				<div class="article_content post page_', $page['type'], '">
+					<p class="inner">', $page['description'], '</p>
 				</div>';
 
 				echo '
@@ -220,8 +220,8 @@ function template_show_boards_as_articles()
 
 			if (!empty($board['description']))
 				echo '
-				<div class="article_content title_bar">
-					<p class="titlebg">', $board['description'], '</p>
+				<div class="article_content post">
+					<p class="inner">', $board['description'], '</p>
 				</div>';
 
 			echo '

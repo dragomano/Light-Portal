@@ -30,7 +30,7 @@ $txt['lp_standalone_help']                     = 'Everything except portal pages
 $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_show_tags_on_page']                   = 'Display keywords at the top of the page';
-$txt['lp_show_comment_block']                  = 'Dispaly comments block';
+$txt['lp_show_comment_block']                  = 'Display comments block';
 $txt['lp_show_comment_block_set']              = array('None', 'default' => 'Integrated (default)');
 $txt['lp_num_comments_per_page']               = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
@@ -140,7 +140,13 @@ $txt['lp_frequency_column'] = 'Frequency';
 
 // Comments
 $txt['lp_comments']            = 'Comments';
-$txt['lp_comment_placeholder'] = 'Enter the comment text...';
+$txt['lp_comment_placeholder'] = 'Leave a comment...';
+
+$txt['alert_group_light_portal']           = LP_NAME;
+$txt['alert_page_comment']                 = 'When my page gets a comment';
+$txt['alert_new_comment_page_comment']     = '{member_link} left a comment <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_page_comment_reply']           = 'When my comment gets a reply';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your comment <a href="{comment_link}">{comment_title}</a>';
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
@@ -175,9 +181,12 @@ $txt['cannot_light_portal_view_page']                = 'Sorry, you are not allow
 
 // Time units
 $txt['lp_days_set']       = array('day','days');
+$txt['lp_hours_set']      = array('hour','hours');
 $txt['lp_minutes_set']    = array('minute','minutes');
 $txt['lp_seconds_set']    = array('second','seconds');
-$txt['lp_remained']       = '%1$s left';
+$txt['lp_tomorrow']       = '<strong>Tomorrow</strong> at ';
+$txt['lp_just_now']       = 'Just now';
+$txt['lp_time_label_in']  = 'In %1$s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
@@ -196,3 +205,6 @@ $txt['lp_buddies_set'] = array('buddy', 'buddies');
 // Copyrights
 $txt['lp_credits']         = 'Credits';
 $txt['lp_used_components'] = 'The portal components';
+
+// Script execution time and memory usage
+$txt['lp_load_page_stats'] = 'Loaded for %1$.3f seconds. Memory used: %2$d ' . $txt['megabyte'] . '.';

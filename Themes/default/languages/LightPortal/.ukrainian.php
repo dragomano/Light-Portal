@@ -142,6 +142,12 @@ $txt['lp_frequency_column'] = 'Частотність';
 $txt['lp_comments']            = 'Коментарi';
 $txt['lp_comment_placeholder'] = 'Введіть текст коментаря...';
 
+$txt['alert_group_light_portal']           = LP_NAME;
+$txt['alert_page_comment']                 = 'При розміщенні нового коментаря до моєї сторінки';
+$txt['alert_new_comment_page_comment']     = '{member_link} залишив(а) коментар <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_page_comment_reply']           = 'При отриманні відповіді на мій коментар';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} відповів (а) на ваш коментар <a href="{comment_link}">{comment_title}</a>';
+
 // Errors
 $txt['lp_page_not_found']             = 'Сторінку не знайдено!';
 $txt['lp_block_not_found']            = 'Блок не знайдений!';
@@ -175,9 +181,12 @@ $txt['cannot_light_portal_view_page']                = 'Вибачте, вам �
 
 // Time units
 $txt['lp_days_set']       = array('день','дня','днів');
+$txt['lp_hours_set']      = array('година','години','годин');
 $txt['lp_minutes_set']    = array('хвилину','хвилини','хвилин');
 $txt['lp_seconds_set']    = array('секунду','секунды','секунд');
-$txt['lp_remained']       = 'Залишилося %1$s';
+$txt['lp_tomorrow']       = '<strong>Завтра</strong> в ';
+$txt['lp_just_now']       = 'Щойно';
+$txt['lp_time_label_in']  = 'Через %1$s';
 $txt['lp_time_label_ago'] = ' тому';
 
 // Social units
@@ -186,6 +195,7 @@ $txt['lp_replies_set']  = array('відповідь', 'відповіді', 'в�
 $txt['lp_views_set']    = array('перегляд', 'перегляду', 'переглядів');
 $txt['lp_comments_set'] = array('коментар', 'коментарі', 'коментарів');
 
+// Other units
 $txt['lp_users_set']   = array('користувач', 'користувача', 'користувачів');
 $txt['lp_guests_set']  = array('гість', 'гостя', 'гостей');
 $txt['lp_spiders_set'] = array('павук', 'павука', 'павуків');
@@ -195,3 +205,6 @@ $txt['lp_buddies_set'] = array('друг', 'друга', 'друзів');
 // Copyrights
 $txt['lp_credits']         = 'Копірайти';
 $txt['lp_used_components'] = 'Компоненти порталу';
+
+// Script execution time and memory usage
+$txt['lp_load_page_stats'] = 'Завантажено за %1$.3f сек. З\'їдено пам\'яті: %2$d ' . $txt['megabyte'] . '.';

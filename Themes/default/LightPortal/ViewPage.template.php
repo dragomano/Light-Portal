@@ -13,7 +13,7 @@ function template_show_page()
 
 	echo '
 	<section itemscope itemtype="http://schema.org/Article">
-		<div id="display_head" class="roundframe">
+		<div id="display_head" class="windowbg">
 			<h2 class="display_title" itemprop="headline">
 				<span id="top_subject">', $context['page_title'], $context['lp_page']['can_edit'] ? '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '"><span class="fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '</span>
 			</h2>';
@@ -23,7 +23,7 @@ function template_show_page()
 			<p>
 				<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' (<meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' . (isset($txt['modified_time']) ? $txt['modified_time'] . ': ' : '') . $context['lp_page']['updated'] . ')' : '', '
+					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '"><i class="fas fa-user-edit" aria-hidden="true"></i> ' . $context['lp_page']['updated'] : '', '
 				</time>
 			</p>';
 	}
@@ -39,7 +39,7 @@ function template_show_page()
 				<meta itemprop="telephone" content="', !empty($modSettings['lp_page_itemprop_phone']) ? $modSettings['lp_page_itemprop_phone'] : '', '">
 			</span>
 		</div>
-		<article class="windowbg" itemprop="articleBody">
+		<article class="roundframe" itemprop="articleBody">
 			<h3 style="display: none;">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 
 	if (!empty($context['lp_page']['keywords']) && !empty($modSettings['lp_show_tags_on_page'])) {
@@ -78,7 +78,7 @@ function template_show_page()
  */
 function show_comment_block()
 {
-	global $context, $modSettings, $txt, $options;
+	global $context, $modSettings, $txt, $settings, $options;
 
 	if (empty($context['lp_page']['options']['allow_comments']) || empty($modSettings['lp_show_comment_block']))
 		return;
@@ -92,136 +92,80 @@ function show_comment_block()
 		return;
 
 	echo '
-	<aside class="comments">
-		<div class="cat_bar"', empty($options['collapse_header_page_comments']) ? '' : ' style="border-radius: 6px;"', '>
-			<h3 class="catbg">
-				<span id="page_comments_toggle" class="fa toggle_down floatright fa-lg" style="display: none;"></span>
-				<a id="page_comments_link">', $txt['lp_comments'], '</a>
-			</h3>
-		</div>
-		<div id="page_comments" class="roundframe noup"', empty($options['collapse_header_page_comments']) ? '' : ' style="display: none;"', '>';
+		<aside class="comments">
+			<div class="cat_bar">
+				<h3 class="catbg">
+					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>
+					<a id="page_comments_link">', $txt['lp_comments'], '</a>
+				</h3>
+			</div>
+			<div id="page_comments"', empty($options['collapse_header_page_comments']) ? '' : ' style="display: none;"', '>';
 
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
-			<div class="centertext">', $context['page_index'], '</div>';
+				<div class="centertext">
+					<div class="pagesection">
+						<div class="pagelinks">', $context['page_index'], '</div>
+					</div>
+				</div>';
 
 	$i = 0;
 	if (!empty($context['lp_page']['comments'])) {
+		echo '
+				<ul class="comment_list row">';
+
 		foreach ($context['lp_page']['comments'] as $comment)
 			show_single_comment($comment, $i++);
+
+		echo '
+				</ul>';
 	}
 
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
-			<div class="centertext">
-				<div class="pagesection">
-					<div class="pagelinks">', $context['page_index'], '</div>
-				</div>
-			</div>';
+				<div class="centertext">
+					<div class="pagesection">
+						<div class="pagelinks">', $context['page_index'], '</div>
+					</div>
+				</div>';
 
-	if (!$context['user']['is_guest'])
+	if ($context['user']['is_logged'])
 		echo '
-			<form id="comment_form" class="descbox" action="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', 'new_comment" method="post" accept-charset="', $context['character_set'], '">
-				<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
-				<input type="hidden" name="parent_id" value="0">
-				<input type="hidden" name="i" value="0">
-				<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
-				<input type="hidden" name="start" value="', (int) $_REQUEST['start'], '">
-				<button type="submit" class="button" name="comment" disabled>', $txt['post'], '</button>
-			</form>';
+				<form id="comment_form" class="roundframe sceditor-container descbox" action="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', 'new_comment" method="post" accept-charset="', $context['character_set'], '">
+					<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+					<input type="hidden" name="parent_id" value="0">
+					<input type="hidden" name="counter" value="0">
+					<input type="hidden" name="level" value="1">
+					<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
+					<input type="hidden" name="page_title" value="', $context['lp_page']['title'], '">
+					<input type="hidden" name="page_url" value="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', '">
+					<input type="hidden" name="start" value="', (int) $_REQUEST['start'], '">
+					<button type="submit" class="button" name="comment" disabled>', $txt['post'], '</button>
+				</form>';
 
 	echo '
-		</div>
-	</aside>
-	<script>';
+			</div>
+		</aside>';
 
-	if (!$context['user']['is_guest'])
+	if ($context['user']['is_logged'])
 		echo '
-		jQuery(document).ready(function($) {
-			$("fieldset span.reply_button").on("click", function() {
-				let parent_id = $(this).parents("fieldset").attr("data-id"),
-					i = $(this).parents("fieldset").attr("data-i");
-				$("#comment_form").children("input[name=parent_id]").val(parent_id);
-				$("#comment_form").children("input[name=i]").val(i);
-				$("textarea.content").focus();
-			});
-			let work = "', $context['canonical_url'], ';del_comment";
-			$("fieldset span.remove_button").on("click", function() {
-				if (!confirm("', $txt['quickmod_confirm'], '"))
-					return false;
-				let item = $(this).parents("fieldset").attr("data-id");
-				if (item) {
-					$.post(work, {del_comment: item});
-					$(this).closest("fieldset").slideUp();
-				}
-			});
-			$("#comment_form").on("keyup", function (e) {
-				if ($(e.target).attr("name")) {
-					if ($("#message").val() != "") {
-						$("button[name=comment]").prop("disabled", false);
-					} else {
-						$("button[name=comment]").prop("disabled", true);
-					}
-				}
-			});
-			$("#comment_form").on("submit", (function (e) {
-				$.ajax({
-					type: $(this).attr("method"),
-					url: $(this).attr("action"),
-					data: $(this).serialize(),
-					dataType: "json",
-					success: function (data) {
-						$("#comment_form")[0].reset();
-						let comment = data.comment;
-						if (data.parent != 0) {
-							$("fieldset[data-id=" + data.parent + "]").append(comment).slideDown();
-						} else {
-							$(comment).insertBefore("#comment_form").slideDown();
-						}
-						window.location.href = "', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', 'start=" + data.start + "#comment" + data.item;
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						console.log(errorThrown);
-						alert(', JavaScriptEscape($txt['error_occured']), ');
-					}
-				});
-				e.preventDefault();
-			}));
-		});';
+		<script>
+			let canonical_url = "', $context['canonical_url'], '",
+				confirm_text = ', JavaScriptEscape($txt['quickmod_confirm']), ',
+				comment_redirect_url = canonical_url + "', $context['lp_page']['alias'] == '/' ? '?' : ';', '";
+		</script>
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
 
 	echo '
-		let oPageCommentsToggle = new smc_Toggle({
-			bToggleEnabled: true,
-			bCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
-			aSwappableContainers: [
-				\'page_comments\'
-			],
-			aSwapImages: [
-				{
-					sId: \'page_comments_toggle\',
-					altExpanded: ', JavaScriptEscape($txt['hide']), ',
-					altCollapsed: ', JavaScriptEscape($txt['show']), '
-				}
-			],
-			aSwapLinks: [
-				{
-					sId: \'page_comments_link\',
-					msgExpanded: ', JavaScriptEscape($txt['lp_comments']), ',
-					msgCollapsed: ', JavaScriptEscape($txt['lp_comments']), '
-				}
-			],
-			oThemeOptions: {
-				bUseThemeSettings: ', $context['user']['is_guest'] ? 'false' : 'true', ',
-				sOptionName: \'collapse_header_page_comments\',
-				sSessionId: smf_session_id,
-				sSessionVar: smf_session_var,
-			},
-			oCookieOptions: {
-				bUseCookie: ', $context['user']['is_guest'] ? 'true' : 'false', ',
-				sCookieName: \'upshrinkPC\'
-			}
-		});
-	</script>';
+		<script>
+			let is_currently_collapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
+				toggle_alt_expanded_title = ', JavaScriptEscape($txt['hide']), ',
+				toggle_alt_collapsed_title = ', JavaScriptEscape($txt['show']), ',
+				toggle_msg_block_title = ', JavaScriptEscape($txt['lp_comments']), ',
+				use_theme_settings = ', $context['user']['is_guest'] ? 'false' : 'true', ',
+				use_cookie = ', $context['user']['is_guest'] ? 'true' : 'false', ';
+		</script>
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments_toggle.js"></script>';
 }
 
 /**
@@ -231,40 +175,61 @@ function show_comment_block()
  *
  * @param array $comment
  * @param int $i
+ * @param int $level
  * @return void
  */
-function show_single_comment($comment, $i = 0)
+function show_single_comment($comment, $i = 0, $level = 1)
 {
 	global $context, $txt;
 
 	echo '
-	<fieldset id="comment', $comment['id'], '" class="generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-i="', $i, '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment">
-		<legend>
-			<span class="generic_list_wrapper">
-				<span itemprop="creator">', $comment['author_name'], '</span>,
-				<span class="comment_date" itemprop="datePublished" content="' , $comment['created_at'], '"><a href="#comment', $comment['id'], '">' , $comment['created'], '</a></span>
-			</span>
-		</legend>
-		<div class="content" itemprop="text">', $comment['message'], '</div>';
+	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
+		<div class="comment_avatar">
+			', $comment['avatar'];
 
-	if (!$context['user']['is_guest']) {
+	if (!empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['author_id'])
 		echo '
-		<div class="floatright">
-			<span class="button reply_button"> ', $txt['reply'], '</span>';
+			<span class="new_posts">', $txt['author'], '</span>';
 
+	echo '
+		</div>
+		<div class="comment_wrapper">
+			<div class="comment_body">
+				<div class="generic_list_wrapper popover_title">
+					<span class="bold_text" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>', $comment['author_name'], '</span>
+					<span class="comment_date floatright" itemprop="datePublished" content="' , $comment['created_at'], '">', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a></span>
+				</div>
+				<div class="content bg ', $i % 2 == 0 ? 'odd' : 'even', '" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 4em"' : '', '>', $comment['message'], '</div>';
+
+	if ($context['user']['is_logged'] && $level < 5) {
+		echo '
+				<div class="content bg ', $i % 2 == 0 ? 'odd' : 'even', ' smalltext" style="overflow: auto">
+					<span class="button reply_button">', $txt['reply'], '</span>';
+
+		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-			<span class="button remove_button"> ', $txt['remove'], '</span>';
+					<span class="button remove_button floatright">', $txt['remove'], '</span>';
 
 		echo '
-		</div>';
-	}
-
-	if (!empty($comment['childs'])) {
-		foreach ($comment['childs'] as $children_comment)
-			show_single_comment($children_comment, $i + 1);
+				</div>';
 	}
 
 	echo '
-	</fieldset>';
+			</div>';
+
+	if (!empty($comment['childs'])) {
+		echo '
+			<ul class="comment_list row">';
+
+		foreach ($comment['childs'] as $children_comment)
+			show_single_comment($children_comment, $i + 1, $level + 1);
+
+		echo '
+			</ul>';
+	}
+
+	echo '
+		</div>
+	</li>';
 }

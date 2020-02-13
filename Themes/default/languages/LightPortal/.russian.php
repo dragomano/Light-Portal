@@ -142,6 +142,12 @@ $txt['lp_frequency_column'] = 'Частотность';
 $txt['lp_comments']            = 'Комментарии';
 $txt['lp_comment_placeholder'] = 'Введите текст комментария...';
 
+$txt['alert_group_light_portal']           = LP_NAME;
+$txt['alert_page_comment']                 = 'При размещении нового комментария к моей странице';
+$txt['alert_new_comment_page_comment']     = '{member_link} оставил(а) комментарий <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_page_comment_reply']           = 'При получении ответа на мой комментарий';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} ответил(а) на ваш комментарий <a href="{comment_link}">{comment_title}</a>';
+
 // Errors
 $txt['lp_page_not_found']             = 'Страница не найдена!';
 $txt['lp_block_not_found']            = 'Блок не найден!';
@@ -175,9 +181,12 @@ $txt['cannot_light_portal_view_page']                = 'Извините, вам
 
 // Time units
 $txt['lp_days_set']       = array('день','дня','дней');
+$txt['lp_hours_set']      = array('час','часа','часов');
 $txt['lp_minutes_set']    = array('минуту','минуты','минут');
 $txt['lp_seconds_set']    = array('секунду','секунды','секунд');
-$txt['lp_remained']       = 'Осталось %1$s';
+$txt['lp_tomorrow']       = '<strong>Завтра</strong> в ';
+$txt['lp_just_now']       = 'Только что';
+$txt['lp_time_label_in']  = 'Через %1$s';
 $txt['lp_time_label_ago'] = ' назад';
 
 // Social units
@@ -196,3 +205,6 @@ $txt['lp_buddies_set'] = array('друг', 'друга', 'друзей');
 // Copyrights
 $txt['lp_credits']         = 'Копирайты';
 $txt['lp_used_components'] = 'Компоненты портала';
+
+// Script execution time and memory usage
+$txt['lp_load_page_stats'] = 'Загружено за %1$.3f сек. Скушано памяти: %2$d ' . $txt['megabyte'] . '.';

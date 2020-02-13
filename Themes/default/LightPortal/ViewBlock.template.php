@@ -125,6 +125,13 @@ function template_portal_below()
 	echo '
 		</div>';
 
+	// Script execution time and memory usage
+	if (!empty($context['lp_load_page_stats']) && !empty($context['user']['is_admin']))
+		echo '
+		<div class="row">
+			<div class="col-xs-12 centertext smalltext">', $context['lp_load_page_stats'], '</div>
+		</div>';
+
 	// Footer | Подвал
 	if (!empty($context['lp_blocks']['footer'])) {
 		echo '

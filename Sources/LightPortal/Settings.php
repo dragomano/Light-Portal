@@ -216,7 +216,7 @@ class Settings
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
 
-			Page::toggleStatus(1, isset($_POST['lp_frontpage_disable']) ? 0 : 1);
+			ManagePages::toggleStatus(1, isset($_POST['lp_frontpage_disable']) ? 0 : 1);
 
 			clean_cache();
 			redirectexit('action=admin;area=lp_settings');
@@ -251,9 +251,9 @@ class Settings
 		isAllowedTo('light_portal_manage_blocks');
 
 		$subActions = array(
-			'main' => 'Block::manage',
-			'add'  => 'Block::add',
-			'edit' => 'Block::edit'
+			'main' => 'ManageBlocks::main',
+			'add'  => 'ManageBlocks::add',
+			'edit' => 'ManageBlocks::edit'
 		);
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -271,9 +271,9 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => 'Page::manage',
-			'add'  => 'Page::add',
-			'edit' => 'Page::edit'
+			'main' => 'ManagePages::main',
+			'add'  => 'ManagePages::add',
+			'edit' => 'ManagePages::edit'
 		);
 
 		self::loadGeneralSettingParameters($subActions, 'main');

@@ -30,10 +30,12 @@ class UserInfo
 	 */
 	public static function getUserInfo()
 	{
-		global $user_info, $memberContext;
+		global $memberContext, $user_info;
 
-		loadMemberData($user_info['id']);
-		loadMemberContext($user_info['id'], true);
+		if (!isset($memberContext[$user_info['id']])) {
+			loadMemberData($user_info['id']);
+			loadMemberContext($user_info['id'], true);
+		}
 
 		return $memberContext[$user_info['id']];
 	}

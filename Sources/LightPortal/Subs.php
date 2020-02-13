@@ -20,9 +20,9 @@ if (!defined('SMF'))
 class Subs
 {
 	/**
-	 * Load used CSS
+	 * Load used styles and scripts
 	 *
-	 * Подключаем используемые таблицы стилей
+	 * Подключаем используемые таблицы стилей и скрипты
 	 *
 	 * @return void
 	 */
@@ -49,7 +49,7 @@ class Subs
 		$context['lp_all_content_classes'] = self::getContentClasses();
 
 		$context['lp_active_blocks']    = Helpers::useCache('active_blocks_u' . $context['user']['id'], 'getActiveBlocks', __CLASS__);
-		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Page');
+		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\ManagePages');
 	}
 
 	/**
@@ -704,15 +704,14 @@ class Subs
 	public static function getContentClasses()
 	{
 		return [
-			'div.roundframe.noup' => '<div class="roundframe noup"%2$s>%1$s</div>',
-			'div.roundframe'      => '<div class="roundframe"%2$s>%1$s</div>',
-			'div.windowbg'        => '<div class="windowbg"%2$s>%1$s</div>',
-			'div.information'     => '<div class="information"%2$s>%1$s</div>',
-			'div.errorbox'        => '<div class="errorbox"%2$s>%1$s</div>',
-			'div.noticebox'       => '<div class="noticebox"%2$s>%1$s</div>',
-			'div.infobox'         => '<div class="infobox"%2$s>%1$s</div>',
-			'div.descbox'         => '<div class="descbox"%2$s>%1$s</div>',
-			'_'                   => '%1$s' // Empty class == w\o div
+			'div.roundframe'  => '<div class="roundframe noup"%2$s>%1$s</div>',
+			'div.windowbg'    => '<div class="windowbg noup"%2$s>%1$s</div>',
+			'div.information' => '<div class="information"%2$s>%1$s</div>',
+			'div.errorbox'    => '<div class="errorbox"%2$s>%1$s</div>',
+			'div.noticebox'   => '<div class="noticebox"%2$s>%1$s</div>',
+			'div.infobox'     => '<div class="infobox"%2$s>%1$s</div>',
+			'div.descbox'     => '<div class="descbox"%2$s>%1$s</div>',
+			'_'               => '%1$s' // Empty class == w\o div
 		];
 	}
 
@@ -754,7 +753,7 @@ class Subs
 		);
 		$links[] = array(
 			'title' => 'Font Awesome Free',
-			'link' => 'https://fontawesome.com/cheatsheet/free/solid',
+			'link' => 'https://fontawesome.com/cheatsheet/free',
 			'license' => array(
 				'name' => 'the Font Awesome Free License',
 				'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
