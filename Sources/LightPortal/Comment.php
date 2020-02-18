@@ -244,7 +244,7 @@ class Comment
 	 * @param int $page_id
 	 * @return array
 	 */
-	public static function getAll($page_id = null)
+	public static function getAll(int $page_id = 0)
 	{
 		global $smcFunc, $memberContext;
 

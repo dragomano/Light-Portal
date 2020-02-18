@@ -145,8 +145,8 @@ class PageList
 				'alias'        => $row['alias'],
 				'num_views'    => $row['num_views'],
 				'num_comments' => $row['num_comments'],
-				'created_at'   => Helpers::getFriendlyTime($row['created_at']),
-				'updated_at'   => Helpers::getFriendlyTime($row['updated_at']),
+				'created_at'   => $row['created_at'],
+				'updated_at'   => $row['updated_at'],
 				'can_show'     => Helpers::canShowItem($row['permissions'])
 			);
 		}
@@ -194,7 +194,7 @@ class PageList
 			foreach ($page_list as $page) {
 				echo '
 				<li>
-					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', $page['created_at'], ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ', Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);

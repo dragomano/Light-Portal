@@ -147,7 +147,7 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAllPagesWithSelectedTag($start, $items_per_page, $sort)
+	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
 		global $smcFunc, $modSettings;
 

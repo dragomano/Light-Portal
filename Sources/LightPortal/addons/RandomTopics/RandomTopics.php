@@ -228,7 +228,7 @@ class RandomTopics
 
 			$topics[] = array(
 				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
-				'time'   => Helpers::getFriendlyTime($row['poster_time']),
+				'time'   => $row['poster_time'],
 				'link'   => '<a href="' . $scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
 				'is_new' => empty($row['is_read']),
 				'icon'   => '<img class="centericon" src="' . $settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
@@ -270,7 +270,7 @@ class RandomTopics
 				<li class="windowbg">
 					', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
 					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', $topic['time'], '</span>
+					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
 				</li>';
 			}
 

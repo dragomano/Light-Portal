@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
 	});
 	let work = canonical_url + ";del_comment";
 	$("#page_comments").on("click", "span.remove_button", function() {
-		if (!confirm(confirm_text))
+		if (!confirm(smf_you_sure))
 			return false;
 		let item = $(this).parents("li").attr("data-id");
 		if (item) {

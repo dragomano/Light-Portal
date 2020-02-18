@@ -27,7 +27,7 @@ class Block
 	 * @param string $area
 	 * @return void
 	 */
-	public static function display($area = 'portal')
+	public static function display(string $area = 'portal')
 	{
 		global $context, $modSettings;
 
@@ -43,19 +43,20 @@ class Block
 			return;
 
 		foreach ($blocks as $item => $data) {
-			if ($data['can_show']) {
-				if (empty($data['title'][$context['user']['language']]))
-					$data['title_class'] = '';
+			if ($data['can_show'] === false)
+				continue;
 
-				if (empty($data['content']))
-					Subs::prepareContent($data['content'], $data['type'], $data['id'], 3600);
-				else
-					Subs::parseContent($data['content'], $data['type']);
+			if (empty($data['title'][$context['user']['language']]))
+				$data['title_class'] = '';
 
-				$context['lp_blocks'][$data['placement']][$item] = $data;
-				$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
-				$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][$context['user']['language']];
-			}
+			if (empty($data['content']))
+				Subs::prepareContent($data['content'], $data['type'], $data['id'], 3600);
+			else
+				Subs::parseContent($data['content'], $data['type']);
+
+			$context['lp_blocks'][$data['placement']][$item] = $data;
+			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
+			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][$context['user']['language']];
 		}
 
 		loadTemplate('LightPortal/ViewBlock');

@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>1.0 beta 2</version>
+	<version>1.0 beta 3</version>
 	<type>modification</type>
 
 	<install for="2.1.*">
@@ -25,6 +25,7 @@
 		<remove-dir name="$themedir/css/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
 		<remove-dir name="$languagedir/LightPortal" />
+		<remove-file name="$themedir/images/lp_default_image.jpg" />
 		<redirect url="?action=admin;area=packages;sa=browse" timeout="1000" />
 	</uninstall>
 

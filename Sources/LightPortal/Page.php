@@ -27,7 +27,7 @@ class Page
 	 * @param string $alias
 	 * @return void
 	 */
-	public static function show($alias = '/')
+	public static function show(string $alias = '/')
 	{
 		global $context, $modSettings, $txt, $scripturl;
 
@@ -38,6 +38,9 @@ class Page
 		$alias = explode(';', $alias)[0];
 
 		$context['lp_page'] = self::getData($alias);
+
+		if (empty($context['lp_page']))
+			fatal_lang_error('lp_page_not_found', false, null, 404);
 
 		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
 			fatal_lang_error('cannot_light_portal_view_page', false);
@@ -118,7 +121,7 @@ class Page
 	 * @param string $alias
 	 * @return void
 	 */
-	private static function prepareComments($alias)
+	private static function prepareComments(string $alias)
 	{
 		global $modSettings, $context, $txt;
 
@@ -214,7 +217,7 @@ class Page
 	 * @param array $params
 	 * @return void
 	 */
-	public static function getFromDB($params)
+	public static function getFromDB(array $params)
 	{
 		global $smcFunc, $modSettings;
 
@@ -233,9 +236,6 @@ class Page
 				'item' => $item
 			)
 		);
-
-		if ($smcFunc['db_num_rows']($request) == 0)
-			fatal_lang_error('lp_page_not_found', false, null, 404);
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['content']);
@@ -278,7 +278,7 @@ class Page
 
 		$smcFunc['db_free_result']($request);
 
-		return $data;
+		return $data ?? [];
 	}
 
 	/**
@@ -290,7 +290,7 @@ class Page
 	 * @param bool $isAlias
 	 * @return array
 	 */
-	public static function getData($item, $isAlias = true)
+	public static function getData($item, bool $isAlias = true)
 	{
 		global $user_info;
 

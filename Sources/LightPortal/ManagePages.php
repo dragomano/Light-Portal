@@ -161,7 +161,7 @@ class ManagePages
 							<span class="fas fa-trash del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
 							} else {
 								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
-							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" data-alias="' . $entry['alias'] . '" title="' . $txt['remove'] . '"></span>';
 							}
 
 							return $actions;
@@ -175,6 +175,13 @@ class ManagePages
 				'href' => $scripturl . '?action=admin;area=lp_pages'
 			)
 		);
+
+		$listOptions['title'] = '
+			<span class="floatright">
+				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '">
+					<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>
+				</a>
+			</span>' . $listOptions['title'];
 
 		require_once($sourcedir . '/Subs-List.php');
 		createList($listOptions);
@@ -193,7 +200,7 @@ class ManagePages
 	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAll($start, $items_per_page, $sort)
+	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
 		global $smcFunc, $user_info;
 
@@ -299,9 +306,10 @@ class ManagePages
 	{
 		global $smcFunc;
 
-		$item = filter_input(INPUT_POST, 'del_page', FILTER_VALIDATE_INT);
+		$item  = filter_input(INPUT_POST, 'del_page_id', FILTER_VALIDATE_INT);
+		$alias = filter_input(INPUT_POST, 'del_page_alias', FILTER_SANITIZE_STRING);
 
-		if (empty($item))
+		if (empty($item) || $alias == '/')
 			return;
 
 		$smcFunc['db_query']('', '
@@ -340,7 +348,7 @@ class ManagePages
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus($item, $status)
+	public static function toggleStatus(int $item, int $status)
 	{
 		global $smcFunc;
 
@@ -404,8 +412,7 @@ class ManagePages
 
 		loadTemplate('LightPortal/ManagePages');
 
-		$item = !empty($_REQUEST['page_id']) ? (int) $_REQUEST['page_id'] : null;
-		$item = $item ?: (!empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null);
+		$item = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
 
 		if (empty($item))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
@@ -469,7 +476,6 @@ class ManagePages
 
 		if (isset($_POST['save']) || isset($_POST['preview'])) {
 			$args = array(
-				'page_id'     => FILTER_VALIDATE_INT,
 				'title'       => FILTER_SANITIZE_STRING,
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
@@ -489,6 +495,7 @@ class ManagePages
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
+			$post_data['id'] = (int) $_GET['id'];
 
 			self::findErrors($post_data);
 		}
@@ -498,7 +505,7 @@ class ManagePages
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
 		$context['lp_page'] = array(
-			'id'          => $post_data['page_id'] ?? $context['lp_current_page']['id'] ?? 0,
+			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
 			'title'       => $post_data['title'] ?? $context['lp_current_page']['title'] ?? '',
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
@@ -530,7 +537,7 @@ class ManagePages
 	 * @param array $data
 	 * @return void
 	 */
-	private static function findErrors($data)
+	private static function findErrors(array $data)
 	{
 		global $context, $txt;
 
@@ -804,7 +811,7 @@ class ManagePages
 	 * @param int $item
 	 * @return void
 	 */
-	public static function setData($item = null)
+	public static function setData(int $item = 0)
 	{
 		global $context, $smcFunc, $db_type;
 
@@ -952,7 +959,7 @@ class ManagePages
 	 * @param array $data
 	 * @return bool
 	 */
-	private static function isUnique($data)
+	private static function isUnique(array $data)
 	{
 		global $smcFunc;
 
@@ -963,7 +970,7 @@ class ManagePages
 				AND page_id != {int:item}',
 			array(
 				'alias' => $data['alias'],
-				'item'  => $data['page_id']
+				'item'  => $data['id']
 			)
 		);
 

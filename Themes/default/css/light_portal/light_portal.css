@@ -19,13 +19,14 @@
 	margin-bottom: 5px;
 }
 
-#lp_layout h3, #lp_layout h4 {
+#lp_layout h3,
+#lp_layout h4 {
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
 }
 
-#lp_layout h3:hover, #lp_layout h4:hover {
+#lp_layout h3:hover,
+#lp_layout h4:hover {
 	white-space: normal;
 }
 
@@ -137,7 +138,9 @@ aside.comments {
 	margin-left: 0 !important;
 }
 
-.priority span, .actions span, #page_comments_toggle {
+.priority span,
+.actions span,
+#page_comments_toggle {
 	cursor: pointer;
 }
 
@@ -145,7 +148,10 @@ aside.comments {
 	width: 8%;
 }
 
-.lp_current_blocks th.type, .lp_current_blocks th.areas, .lp_current_blocks th.priority, .lp_current_blocks th.actions {
+.lp_current_blocks th.type,
+.lp_current_blocks th.areas,
+.lp_current_blocks th.priority,
+.lp_current_blocks th.actions {
 	width: 14%;
 }
 
@@ -153,6 +159,7 @@ aside.comments {
 	display: flex;
 	flex-direction: column;
 	box-sizing: content-box;
+	padding: 8px 10px;
 }
 
 .article_link {
@@ -163,7 +170,6 @@ aside.comments {
 	display: block;
 	height: auto;
 	max-width: 100%;
-	margin: 0 auto;
 	border-radius: 5px;
 }
 
@@ -171,7 +177,8 @@ aside.comments {
 	flex: 1 1 auto;
 }
 
-.author_and_category, .date_and_views {
+.author_and_category,
+.date_and_views {
 	align-items: center;
 	justify-content: space-between;
 	display: flex;
@@ -196,20 +203,30 @@ aside.comments {
 }
 
 @media (max-width: 980px) {
-	#postpage #post_header dt, #postpage #post_header dd, #postblock #post_header dt, #postblock #post_header dd {
+	#postpage #post_header dt,
+	#postpage #post_header dd,
+	#postblock #post_header dt,
+	#postblock #post_header dd {
 		width: auto;
 		float: none;
 	}
 }
 
 @media (max-width: 600px) {
-	.lp_current_blocks th.type, .lp_current_blocks td.type, .lp_current_blocks th.areas, .lp_current_blocks td.areas {
+	.lp_current_blocks th.type,
+	.lp_current_blocks td.type,
+	.lp_current_blocks th.areas,
+	.lp_current_blocks td.areas {
 		display: none;
 	}
-	.table_grid th.num_views, .table_grid td.num_views, .table_grid th.type, .table_grid td.type {
+	.table_grid th.num_views,
+	.table_grid td.num_views,
+	.table_grid th.type,
+	.table_grid td.type {
 		display: none;
 	}
-	#postpage .button, #postblock .button {
+	#postpage .button,
+	#postblock .button {
 		float: none !important;
 		width: 100%;
 		margin-left: 0 !important;
@@ -233,16 +250,19 @@ aside.comments {
 }
 
 @media (max-width: 480px) {
-	.lp_current_blocks th.icon, .lp_current_blocks td.icon {
+	.lp_current_blocks th.icon,
+	.lp_current_blocks td.icon {
 		display: none;
 	}
-	.table_grid th.date, .table_grid td.date {
+	.table_grid th.date,
+	.table_grid td.date {
 		display: none;
 	}
 }
 
 @media (max-width: 1120px) and (min-width: 1024px) {
-	.block_user_info span.floatleft, .block_user_info span.floatright {
+	.block_user_info span.floatleft,
+	.block_user_info span.floatright {
 		float: none;
 		margin: 0 auto;
 		display: block;
@@ -262,7 +282,10 @@ aside.comments {
 }
 
 /* Recent Posts, Recent Topics, Random Topics, Recent Comments */
-.recent_posts li, .recent_topics li, .random_topics li, .recent_comments li {
+.recent_posts li,
+.recent_topics li,
+.random_topics li,
+.recent_comments li {
 	margin: 4px 0 0 0;
 	padding: 6px 12px;
 }
@@ -279,12 +302,14 @@ dl.top_posters dt img {
 }
 
 /* Markdown */
-.page_md .bbc_code, .block_md .bbc_code {
+.page_md .bbc_code,
+.block_md .bbc_code {
 	overflow: auto !important;
 	white-space: pre;
 }
 
-.page_md .task-list-item, .block_md .task-list-item {
+.page_md .task-list-item,
+.block_md .task-list-item {
 	list-style: none;
 	margin-left: -20px;
 }

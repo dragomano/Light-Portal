@@ -70,7 +70,8 @@ function template_portal_above()
 
 	echo '
 					<div class="row">
-						<div class="col-xs noup">';
+						<div class="col-xs noup">
+							<main>';
 }
 
 /**
@@ -85,6 +86,7 @@ function template_portal_below()
 	global $context;
 
 	echo '
+							</main>
 						</div>
 					</div>';
 
@@ -125,7 +127,7 @@ function template_portal_below()
 	echo '
 		</div>';
 
-	// Script execution time and memory usage
+	// Script execution time and memory usage | Время выполнения скрипта и объём использованной памяти
 	if (!empty($context['lp_load_page_stats']) && !empty($context['user']['is_admin']))
 		echo '
 		<div class="row">
@@ -165,7 +167,7 @@ function lp_show_block($block)
 	global $context, $scripturl, $txt;
 
 	echo '
-	<div id="block_', $block['id'], '" class="block_', $block['type'], '">';
+	<aside id="block_', $block['id'], '" class="block_', $block['type'], '">';
 
 	if (!empty($block['title_style']))
 		$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
@@ -191,5 +193,5 @@ function lp_show_block($block)
 		echo $block['content'];
 
 	echo '
-	</div>';
+	</aside>';
 }

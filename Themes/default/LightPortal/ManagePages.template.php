@@ -9,7 +9,10 @@
  */
 function template_manage_pages_above()
 {
-	global $modSettings, $context, $txt, $user_info, $settings, $scripturl;
+	global $context, $modSettings, $txt, $user_info, $settings, $scripturl;
+
+	if (empty($context['lp_main_page']))
+		return;
 
 	if (!empty($modSettings['lp_frontpage_disable']))
 		$context['lp_main_page']['status'] = false;
@@ -85,37 +88,10 @@ function template_manage_pages_above()
  */
 function template_manage_pages_below()
 {
-	global $txt;
+	global $settings;
 
 	echo '
-	<script>
-		let work = smf_scripturl + "?action=admin;area=lp_pages;actions";
-		jQuery(document).ready(function($) {
-			$(".del_page").on("click", function() {
-				if (!confirm("' . $txt['quickmod_confirm'] . '"))
-					return false;
-				let item = $(this).attr("data-id");
-				if (item) {
-					$.post(work, {del_page: item});
-					$(this).closest("tr").css("display", "none");
-				}
-			});
-			$(".toggle_status").on("click", function() {
-				let item = $(this).attr("data-id"),
-					status = $(this).attr("class");
-				if (item) {
-					$.post(work, {toggle_status: status, item: item});
-					if ($(this).hasClass("on")) {
-						$(this).removeClass("on");
-						$(this).addClass("off");
-					} else {
-						$(this).removeClass("off");
-						$(this).addClass("on");
-					}
-				}
-			});
-		});
-	</script>';
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_pages.js"></script>';
 }
 
 /**
@@ -173,7 +149,6 @@ function template_page_post()
 	echo '
 			<br class="clear">
 			<div class="centertext">
-				<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
 				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>

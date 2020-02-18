@@ -52,7 +52,8 @@ function template_show_page()
 		}
 
 		echo '
-			</div><hr>';
+			</div>
+			<hr>';
 	}
 
 	if (!empty($settings['og_image']))
@@ -151,7 +152,6 @@ function show_comment_block()
 		echo '
 		<script>
 			let canonical_url = "', $context['canonical_url'], '",
-				confirm_text = ', JavaScriptEscape($txt['quickmod_confirm']), ',
 				comment_redirect_url = canonical_url + "', $context['lp_page']['alias'] == '/' ? '?' : ';', '";
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';

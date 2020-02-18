@@ -119,7 +119,7 @@ class Subs
 	 * @param string $source (pages|topics|boards)
 	 * @return void
 	 */
-	public static function prepareArticles($source = 'pages')
+	public static function prepareArticles(string $source = 'pages')
 	{
 		global $user_info, $modSettings, $context, $scripturl;
 
@@ -219,7 +219,7 @@ class Subs
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$body = parse_bbc($row['body'], false);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
-				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png'));
+				$image = $first_post_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.jpg'));
 			}
 
 			$row['body'] = preg_replace('~\[spoiler\].*?\[\/spoiler\]~Usi', '', $row['body']);
@@ -293,7 +293,7 @@ class Subs
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
-				$image = $first_post_image ? array_pop($value) : ($settings['default_images_url'] . '/lp_default_image.png');
+				$image = $first_post_image ? array_pop($value) : ($settings['default_images_url'] . '/lp_default_image.jpg');
 			}
 
 			if (!empty($teaser_size) && !empty($row['description']))
@@ -378,7 +378,7 @@ class Subs
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
 				$board_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $description, $value);
-				$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.png" width="100%'));
+				$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : ($settings['default_images_url'] . '/lp_default_image.jpg'));
 			}
 
 			$description = strip_tags($description);
@@ -416,7 +416,7 @@ class Subs
 	 * @param array $data
 	 * @return void
 	 */
-	public static function unsetUnusedActions(&$data)
+	public static function unsetUnusedActions(array &$data)
 	{
 		global $modSettings, $context;
 
@@ -452,7 +452,7 @@ class Subs
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type = 'bbc', $block_id = 0, $cache_time = 0)
+	public static function prepareContent(string &$content, string $type = 'bbc', int $block_id = 0, int $cache_time = 0)
 	{
 		global $context;
 
@@ -473,7 +473,7 @@ class Subs
 	 * @param string $type
 	 * @return void
 	 */
-	public static function parseContent(&$content, $type = 'bbc')
+	public static function parseContent(string &$content, string $type = 'bbc')
 	{
 		global $context;
 
@@ -510,13 +510,13 @@ class Subs
 	 * @param string $path
 	 * @return array
 	 */
-	private static function getNestedDirs($path)
+	private static function getNestedDirs(string $path)
 	{
 		$dirs = glob(rtrim($path, "/") . "/*", GLOB_ONLYDIR) or array();
 
 		$nested_dirs = [];
-		foreach ($dirs as $path)
-			$nested_dirs[] = $path;
+		foreach ($dirs as $dir_path)
+			$nested_dirs[] = $dir_path;
 
 		return $nested_dirs;
 	}
@@ -553,7 +553,7 @@ class Subs
 	 * @param array $vars (extra variables for changing)
 	 * @return void
 	 */
-	public static function runAddons($hook = 'init', $vars = [])
+	public static function runAddons(string $hook = 'init', array $vars = [])
 	{
 		$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
 
@@ -579,7 +579,7 @@ class Subs
 	 * @param string $addon
 	 * @return void
 	 */
-	public static function loadAddonLanguage($addon)
+	public static function loadAddonLanguage(string $addon)
 	{
 		global $txt;
 
@@ -630,7 +630,7 @@ class Subs
 	 * @param string $content
 	 * @return void
 	 */
-	public static function createBbcEditor($content = '')
+	public static function createBbcEditor(string $content = '')
 	{
 		global $sourcedir, $context;
 
@@ -726,7 +726,7 @@ class Subs
 	{
 		global $scripturl;
 
-		return '<a class="bbc_link" href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">BSD 3-Clause</a> License';
+		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">BSD 3-Clause</a> License';
 	}
 
 	/**

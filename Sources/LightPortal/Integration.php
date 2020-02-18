@@ -34,8 +34,6 @@ class Integration
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
-		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
@@ -43,6 +41,8 @@ class Integration
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
 		add_integration_function('integrate_credits', __CLASS__ . '::credits', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
+		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
 	}
 
 	/**
@@ -53,7 +53,7 @@ class Integration
 	 * @param array $classMap
 	 * @return void
 	 */
-	public static function autoload(&$classMap)
+	public static function autoload(array &$classMap)
 	{
 		$classMap['Bugo\\LightPortal\\'] = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
@@ -73,7 +73,7 @@ class Integration
 		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 beta 2',
+			'LP_VERSION' => '1.0 beta 3',
 			'LP_NAME'    => 'Light Portal',
 			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
@@ -112,7 +112,7 @@ class Integration
 	 * @param array $actions
 	 * @return void
 	 */
-	public static function actions(&$actions)
+	public static function actions(array &$actions)
 	{
 		global $modSettings, $context;
 
@@ -168,7 +168,7 @@ class Integration
 	 * @param string $current_action
 	 * @return void
 	 */
-	public static function currentAction(&$current_action)
+	public static function currentAction(string &$current_action)
 	{
 		global $modSettings, $context;
 
@@ -192,7 +192,7 @@ class Integration
 	 * @param array $buttons
 	 * @return void
 	 */
-	public static function menuButtons(&$buttons)
+	public static function menuButtons(array &$buttons)
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
@@ -310,10 +310,6 @@ class Integration
 			Subs::unsetUnusedActions($buttons);
 		}
 
-		// Correct canonical urls
-		// Правильные канонические адреса
-		if ($context['current_action'] == 'portal' && empty($_REQUEST['sa']) || (empty($context['current_action']) && empty($_REQUEST['page'])))
-			$context['canonical_url'] = $scripturl;
 		if ($context['current_action'] == 'forum')
 			$context['canonical_url'] = $scripturl . '?action=forum';
 
@@ -350,7 +346,7 @@ class Integration
 	 * @param array $leftPermissionGroups
 	 * @return void
 	 */
-	public static function loadPermissions(&$permissionGroups, &$permissionList, &$leftPermissionGroups)
+	public static function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
@@ -367,7 +363,7 @@ class Integration
 	 * @param array $alert_types
 	 * @return void
 	 */
-	public static function alertTypes(&$alert_types)
+	public static function alertTypes(array &$alert_types)
 	{
 		global $modSettings;
 
@@ -386,7 +382,7 @@ class Integration
 	 * @param array $alerts
 	 * @return void
 	 */
-	public static function fetchAlerts(&$alerts)
+	public static function fetchAlerts(array &$alerts)
 	{
 		global $user_info, $memberContext, $txt, $scripturl;
 
@@ -461,7 +457,7 @@ class Integration
 	 * @param array $actions
 	 * @return string
 	 */
-	public static function whosOnline($actions)
+	public static function whosOnline(array $actions)
 	{
 		global $txt, $scripturl;
 

@@ -94,7 +94,7 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	private static function postActions()
+	public static function postActions()
 	{
 		if (!isset($_REQUEST['actions']))
 			return;
@@ -165,7 +165,7 @@ class ManageBlocks
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus($item, $status)
+	public static function toggleStatus(int $item, int $status)
 	{
 		global $smcFunc;
 
@@ -247,9 +247,9 @@ class ManageBlocks
 
 		loadTemplate('LightPortal/ManageBlocks');
 
-		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
 		$context['page_area_title'] = $txt['lp_blocks_add_title'];
-		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=add';
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -365,7 +365,6 @@ class ManageBlocks
 				'icon_type'     => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
-				'placement'     => FILTER_SANITIZE_STRING,
 				'priority'      => FILTER_VALIDATE_INT,
 				'permissions'   => FILTER_VALIDATE_INT,
 				'areas'         => FILTER_SANITIZE_STRING,
@@ -436,7 +435,7 @@ class ManageBlocks
 	 * @param array $data
 	 * @return void
 	 */
-	private static function findErrors($data)
+	private static function findErrors(array $data)
 	{
 		global $context, $txt;
 
@@ -721,7 +720,7 @@ class ManageBlocks
 	 * @param string $placement
 	 * @return int
 	 */
-	private static function calculatePriority($placement)
+	private static function calculatePriority(string $placement)
 	{
 		global $smcFunc;
 
@@ -751,7 +750,7 @@ class ManageBlocks
 	 * @param int $item
 	 * @return void
 	 */
-	public static function setData($item = null)
+	public static function setData(int $item = 0)
 	{
 		global $context, $smcFunc;
 
@@ -823,6 +822,7 @@ class ManageBlocks
 			if (!empty($context['lp_block']['options']['parameters'])) {
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
+					$value = is_array($value) ? implode(',', $value) : $value;
 					$parameters[] = array(
 						'item_id' => $item,
 						'name'    => $param_name,
@@ -887,6 +887,7 @@ class ManageBlocks
 			if (!empty($context['lp_block']['options']['parameters'])) {
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
+					$value = is_array($value) ? implode(',', $value) : $value;
 					$parameters[] = array(
 						'item_id' => $item,
 						'name'    => $param_name,
@@ -916,10 +917,10 @@ class ManageBlocks
 	 *
 	 * Получаем поля блока
 	 *
-	 * @param mixed $item
+	 * @param int $item
 	 * @return array
 	 */
-	public static function getData($item)
+	public static function getData(int $item)
 	{
 		global $smcFunc;
 

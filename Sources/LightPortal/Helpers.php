@@ -108,7 +108,7 @@ class Helpers
 	 * @param string $direction
 	 * @return string
 	 */
-	private static function getFloatSpan($text, $direction = 'left')
+	private static function getFloatSpan(string $text, string $direction = 'left')
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}
@@ -218,26 +218,29 @@ class Helpers
 				return $txt['lp_tomorrow'] . $tm;
 
 			$days = floor(($timestamp - $current_time) / 60 / 60 / 24);
-			// like "In 15 days"
+			// like "In n days"
 			if ($days > 1) {
 				if ($days < 8)
 					return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($days, $txt['lp_days_set']));
 
+				// Future date in current month
 				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
 					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+				// Future date in current year
 				elseif ($y == date('Y', $current_time))
 					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+				// Other future date
 				else
 					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
 			}
 
 			$hours = ($timestamp - $current_time) / 60 / 60;
-			// like "In 2 hours"
+			// like "In n hours"
 			if ($hours > 1)
 				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($hours, $txt['lp_hours_set']));
 
 			$minutes = ($timestamp - $current_time) / 60;
-			// like "In 10 minutes"
+			// like "In n minutes"
 			if ($minutes > 1)
 				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($minutes, $txt['lp_minutes_set']));
 
@@ -245,7 +248,7 @@ class Helpers
 			if ($minutes == 1)
 				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
 
-			// like "In 30 seconds"
+			// like "In n seconds"
 			return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
@@ -262,7 +265,7 @@ class Helpers
 		} elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
-		elseif ($last_minutes < 55)
+		elseif ($last_minutes <= 59)
 			return self::getCorrectDeclension((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $current_time))
@@ -270,13 +273,13 @@ class Helpers
 		// like "Yesterday at ..."
 		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
 			return $txt['yesterday'] . $tm;
-		// like "Tuesday, 20 February, 2020" (current month)
+		// like "Tuesday, 20 February 2020" (current month)
 		elseif ($m == date('m', $current_time))
 			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
-		// like "20 February, 2020" (current year)
+		// like "20 February 2020" (current year)
 		elseif ($y == date('Y', $current_time))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
-		// like "20 February, 2019" (last year)
+		// like "20 February 2019" (last year)
 		else
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
 	}
@@ -294,7 +297,7 @@ class Helpers
 	{
 		global $txt;
 
-		if (in_array($txt['lang_dictionary'], ['en']))
+		if ($txt['lang_locale'] == 'en_US')
 			return $month . ' ' . $day;
 
 		return $day . ' ' . $month;
@@ -305,30 +308,30 @@ class Helpers
 	 *
 	 * Используем кэш
 	 *
-	 * @param string $data
+	 * @param string $key
 	 * @param string $getData
 	 * @param string $class
 	 * @param int $time (in seconds)
-	 * @param array $vars
+	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache($data, $getData, $class = 'self', $time = 3600, $vars = [])
+	public static function useCache(string $key, string $getData, string $class = 'self', int $time = 3600, $vars = [])
 	{
-		if (($$data = cache_get_data('light_portal_' . $data, $time)) == null) {
-			$$data = null;
+		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {
+			$$key = null;
 
 			if (method_exists($class, $getData)) {
 				if ($class == 'self')
-					$$data = self::$getData($vars);
+					$$key = self::$getData($vars);
 				else
-					$$data = $class::$getData($vars);
+					$$key = $class::$getData($vars);
 			} elseif (function_exists($getData)) {
-				$$data = $getData($vars);}
+				$$key = $getData($vars);}
 
-			cache_put_data('light_portal_' . $data, $$data, $time);
+			cache_put_data('light_portal_' . $key, $$key, $time);
 		}
 
-		return $$data;
+		return $$key;
 	}
 
 	/**
@@ -339,7 +342,7 @@ class Helpers
 	 * @param string $type
 	 * @return void
 	 */
-	public static function findMissingBlockTypes($type)
+	public static function findMissingBlockTypes(string $type)
 	{
 		global $txt, $context;
 
@@ -355,7 +358,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canShowItem($permissions)
+	public static function canShowItem(int $permissions)
 	{
 		global $user_info;
 

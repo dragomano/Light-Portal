@@ -29,9 +29,9 @@ class Trumbowyg
 	 */
 	public static function prepareEditor($object)
 	{
-		global $txt, $editortxt;
+		global $txt, $editortxt, $settings;
 
-		if ($object['type'] == 'html') {
+		if ($object['type'] == 'html' || (!empty($object['options']['content']) && $object['options']['content'] === 'html')) {
 			loadLanguage('Editor');
 
 			loadCssFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', array('external' => true));
@@ -43,6 +43,8 @@ class Trumbowyg
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js', array('external' => true));
+			loadCssFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js', array('external' => true));
 			addInlineJavaScript('
 		$("#content").trumbowyg({
 			lang: "' . $txt['lang_dictionary'] . '",
@@ -69,8 +71,12 @@ class Trumbowyg
 			],
 			semantic: true,
 			urlProtocol: true,
+			resetCss: true,
+			urlProtocol: true,
+			removeformatPasted: true,
 			imageWidthModalEdit: true
-		});', true);
+		});' . (strpos($settings['name'], 'Lunarfall') !== false  ? '
+		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 		}
 	}
 

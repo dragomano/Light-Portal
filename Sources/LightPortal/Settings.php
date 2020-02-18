@@ -27,7 +27,7 @@ class Settings
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public static function adminAreas(&$admin_areas)
+	public static function adminAreas(array &$admin_areas)
 	{
 		global $sourcedir, $txt, $context;
 
@@ -99,7 +99,7 @@ class Settings
 	 * @param array $settings_search
 	 * @return void
 	 */
-	public static function adminSearch(&$language_files, &$include_files, &$settings_search)
+	public static function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
 		$settings_search[] = array(__CLASS__ . '::settingArea', 'area=lp_settings');
 	}
@@ -112,7 +112,7 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function settingArea($return_config = false)
+	public static function settingArea(bool $return_config = false)
 	{
 		global $sourcedir, $txt, $scripturl, $context, $modSettings;
 
@@ -288,7 +288,7 @@ class Settings
 	 * @param string $defaultAction
 	 * @return void
 	 */
-	private static function loadGeneralSettingParameters($subActions = [], $defaultAction = null)
+	private static function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
 	{
 		global $sourcedir, $context;
 
