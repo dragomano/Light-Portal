@@ -133,11 +133,6 @@ class Page
 		if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;
 
-		if (isset($_SESSION['lp_update_comments'])) {
-			Helpers::useCache('page_' . $alias . '_comments');
-			unset($_SESSION['lp_update_comments']);
-		}
-
 		$comments = Helpers::useCache(
 			'page_' . ($alias == '/' ? 'main' : $alias) . '_comments',
 			'getAll',

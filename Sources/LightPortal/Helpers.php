@@ -315,12 +315,12 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache(string $key, string $getData = '', string $class = 'self', int $time = 3600, $vars = [])
+	public static function useCache(string $key, string $getData = null, string $class = 'self', int $time = 3600, $vars = [])
 	{
 		if (empty($key))
 			return;
 
-		if (empty($getData))
+		if (is_null($getData))
 			cache_put_data('light_portal_' . $key, null);
 
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {

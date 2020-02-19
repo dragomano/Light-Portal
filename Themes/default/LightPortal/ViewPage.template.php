@@ -139,6 +139,7 @@ function show_comment_block()
 					<input type="hidden" name="level" value="1">
 					<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
 					<input type="hidden" name="page_title" value="', $context['lp_page']['title'], '">
+					<input type="hidden" name="page_alias" value="', $context['lp_page']['alias'], '">
 					<input type="hidden" name="page_url" value="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', '">
 					<input type="hidden" name="start" value="', (int) $_REQUEST['start'], '">
 					<button type="submit" class="button" name="comment" disabled>', $txt['post'], '</button>
@@ -151,8 +152,7 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			let canonical_url = "', $context['canonical_url'], '",
-				comment_redirect_url = canonical_url + "', $context['lp_page']['alias'] == '/' ? '?' : ';', '";
+			let comment_redirect_url = "', $context['canonical_url'], '" + "', $context['lp_page']['alias'] == '/' ? '?' : ';', '";
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
 
@@ -183,7 +183,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	global $context, $txt;
 
 	echo '
-	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
+	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-alias="', $context['lp_page']['alias'] ?? $comment['alias'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
 		<div class="comment_avatar">
 			', $comment['avatar'];
 

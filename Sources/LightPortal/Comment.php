@@ -36,6 +36,7 @@ class Comment
 			'level'      => FILTER_VALIDATE_INT,
 			'page_id'    => FILTER_VALIDATE_INT,
 			'page_title' => FILTER_SANITIZE_STRING,
+			'page_alias' => FILTER_SANITIZE_STRING,
 			'page_url'   => FILTER_SANITIZE_STRING,
 			'message'    => FILTER_SANITIZE_STRING,
 			'start'      => FILTER_VALIDATE_INT
@@ -48,6 +49,7 @@ class Comment
 		$level      = $data['level'];
 		$page_id    = $data['page_id'];
 		$page_title = $data['page_title'];
+		$page_alias = $data['page_alias'];
 		$page_url   = $data['page_url'];
 		$message    = $data['message'];
 		$start      = $data['start'];
@@ -84,6 +86,7 @@ class Comment
 
 			show_single_comment([
 				'id'          => $item,
+				'alias'       => $page_alias,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => self::getUserAvatar(),
@@ -100,6 +103,7 @@ class Comment
 				'comment'  => $comment,
 				'created'  => $time,
 				'title'    => $txt['response_prefix'] . $page_title,
+				'alias'    => $page_alias,
 				'page_url' => $page_url,
 				'start'    => $start
 			);
@@ -109,7 +113,7 @@ class Comment
 			else
 				self::makeNotify('new_reply', 'page_comment_reply', $result);
 
-			$_SESSION['lp_update_comments'] = true;
+			Helpers::useCache('page_' . ($page_alias == '/' ? 'main' : $page_alias) . '_comments');
 		}
 
 		exit(json_encode($result));
@@ -212,8 +216,9 @@ class Comment
 	{
 		global $smcFunc;
 
-		$item = filter_input(INPUT_POST, 'del_comment', FILTER_VALIDATE_INT);
-
+		$item  = filter_input(INPUT_POST, 'del_comment', FILTER_VALIDATE_INT);
+		$alias = filter_input(INPUT_POST, 'alias', FILTER_SANITIZE_STRING);
+file_put_contents('1.txt', $alias);
 		if (empty($item))
 			return;
 
@@ -233,7 +238,7 @@ class Comment
 			)
 		);
 
-		$_SESSION['lp_update_comments'] = true;
+		Helpers::useCache('page_' . ($alias == '/' ? 'main' : $alias) . '_comments');
 	}
 
 	/**

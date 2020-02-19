@@ -183,7 +183,7 @@ class ManageBlocks
 			loadTemplate('LightPortal/ManageBlocks');
 
 			ob_start();
-			show_block_entry();
+			show_block_entry($context['lp_block']['id'], $context['lp_block']);
 			$new_block = ob_get_clean();
 
 			$result = [
@@ -949,7 +949,7 @@ class ManageBlocks
 			}
 		}
 
-		if ($_POST['clone'])
+		if (!empty($_POST['clone']))
 			return $item;
 
 		clean_cache();
