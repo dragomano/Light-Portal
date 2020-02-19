@@ -81,7 +81,7 @@ function show_block_table()
 
 			foreach ($blocks as $id => $data) {
 				echo '
-			<tr class="windowbg">
+			<tr id="lp_block_', $id, '" class="windowbg">
 				<td class="icon centertext">
 					', $data['icon'], '
 				</td>
@@ -105,6 +105,9 @@ function show_block_table()
 				else
 					echo '
 					<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
+
+				echo '
+					<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
 
 				if (strpos($settings['name'], 'Lunarfall') !== false) {
 					echo '
@@ -132,6 +135,64 @@ function show_block_table()
 		</tbody>
 	</table>';
 	}
+}
+
+/**
+ * Adding a row with block parameters to the common table
+ *
+ * Добавление строчки с параметрами блока в общую таблицу
+ *
+ * @return void
+ */
+function show_block_entry()
+{
+	global $context, $txt, $settings, $scripturl;
+
+	if (empty($context['lp_block']))
+		return;
+
+	echo '
+	<tr id="lp_block_', $context['lp_block']['id'], '" class="windowbg">
+		<td class="icon centertext">
+			', $context['lp_block']['icon'], '
+		</td>
+		<td class="title centertext">
+			', $context['lp_block']['title'][$context['user']['language']], '
+		</td>
+		<td class="type centertext">
+			', $txt['lp_block_types'][$context['lp_block']['type']] ?? $context['lp_missing_block_types'][$context['lp_block']['type']], '
+		</td>
+		<td class="areas centertext">
+			', $context['lp_block']['areas'], '
+		</td>
+		<td class="priority centertext">
+			', $context['lp_block']['priority'], ' <span class="handle main_icons select_here" data-key="', $context['lp_block']['id'], '" title="', $txt['lp_action_move'], '"></span>
+		</td>
+		<td class="actions centertext">';
+
+		if (empty($context['lp_block']['status']))
+			echo '
+			<span class="toggle_status off" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_on'], '"></span>';
+		else
+			echo '
+			<span class="toggle_status on" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_off'], '"></span>';
+
+		echo '
+			<span class="main_icons reports" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_clone'], '"></span>';
+
+		if (strpos($settings['name'], 'Lunarfall') !== false) {
+			echo '
+			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $context['lp_block']['id'], '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
+			<span class="fas fa-trash del_block" data-id="', $context['lp_block']['id'], '" title="', $txt['remove'], '"></span>';
+		} else {
+			echo '
+			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $context['lp_block']['id'], '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
+			<span class="main_icons unread_button del_block" data-id="', $context['lp_block']['id'], '" title="', $txt['remove'], '"></span>';
+		}
+
+		echo '
+		</td>
+	</tr>';
 }
 
 /**

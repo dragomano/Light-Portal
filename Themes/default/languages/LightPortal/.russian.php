@@ -46,12 +46,13 @@ $txt['groups_light_portal_manage_own_pages']   = 'Кто может управл
 $txt['lp_extra_settings']                      = 'Дополнительные настройки';
 
 // Actions
-$txt['lp_title']       = 'Заголовок';
-$txt['lp_actions']     = 'Действия';
-$txt['lp_action_on']   = 'Включить';
-$txt['lp_action_off']  = 'Отключить';
-$txt['lp_action_move'] = 'Переместить';
-$txt['lp_read_more']   = 'Читать далее...';
+$txt['lp_title']        = 'Заголовок';
+$txt['lp_actions']      = 'Действия';
+$txt['lp_action_on']    = 'Включить';
+$txt['lp_action_off']   = 'Отключить';
+$txt['lp_action_clone'] = 'Клонировать';
+$txt['lp_action_move']  = 'Переместить';
+$txt['lp_read_more']    = 'Читать далее...';
 
 // Blocks
 $txt['lp_blocks']                        = 'Блоки';

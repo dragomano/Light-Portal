@@ -46,12 +46,13 @@ $txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
 $txt['lp_extra_settings']                      = 'Extra settings';
 
 // Actions
-$txt['lp_title']       = 'Title';
-$txt['lp_actions']     = 'Actions';
-$txt['lp_action_on']   = 'Enable';
-$txt['lp_action_off']  = 'Disable';
-$txt['lp_action_move'] = 'Move';
-$txt['lp_read_more']   = 'Read more...';
+$txt['lp_title']        = 'Title';
+$txt['lp_actions']      = 'Actions';
+$txt['lp_action_on']    = 'Enable';
+$txt['lp_action_off']   = 'Disable';
+$txt['lp_action_clone'] = 'Clone';
+$txt['lp_action_move']  = 'Move';
+$txt['lp_read_more']    = 'Read more...';
 
 // Blocks
 $txt['lp_blocks']                        = 'Blocks';

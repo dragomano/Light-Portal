@@ -100,6 +100,7 @@ class ManageBlocks
 			return;
 
 		self::remove();
+		self::clone();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
@@ -109,7 +110,6 @@ class ManageBlocks
 		}
 
 		self::updatePriority();
-
 		clean_cache();
 	}
 
@@ -154,6 +154,45 @@ class ManageBlocks
 				'type' => 'block'
 			)
 		);
+	}
+
+	/**
+	 * Cloning a block
+	 *
+	 * Клонирование блока
+	 *
+	 * @return void
+	 */
+	private static function clone()
+	{
+		global $context;
+
+		$item = filter_input(INPUT_POST, 'clone_block', FILTER_VALIDATE_INT);
+
+		if (empty($item))
+			return;
+
+		$_POST['clone']    = true;
+		$result['success'] = false;
+
+		$context['lp_block']         = self::getData($item);
+		$context['lp_block']['id']   = self::setData();
+		$context['lp_block']['icon'] = Helpers::getIcon();
+
+		if (!empty($context['lp_block']['id'])) {
+			loadTemplate('LightPortal/ManageBlocks');
+
+			ob_start();
+			show_block_entry();
+			$new_block = ob_get_clean();
+
+			$result = [
+				'success' => true,
+				'block'   => $new_block
+			];
+		}
+
+		exit(json_encode($result));
 	}
 
 	/**
@@ -754,7 +793,7 @@ class ManageBlocks
 	{
 		global $context, $smcFunc;
 
-		if (!empty($context['post_errors']) || !isset($_POST['save']))
+		if (!empty($context['post_errors']) || (!isset($_POST['save']) && !isset($_POST['clone'])))
 			return;
 
 		checkSubmitOnce('check');
@@ -773,6 +812,7 @@ class ManageBlocks
 					'placement'     => 'string-10',
 					'priority'      => 'int',
 					'permissions'   => 'int',
+					'status'        => 'int',
 					'areas'         => 'string',
 					'title_class'   => 'string',
 					'title_style'   => 'string',
@@ -787,6 +827,7 @@ class ManageBlocks
 					$context['lp_block']['placement'],
 					$context['lp_block']['priority'] ?: $priority ?: 0,
 					$context['lp_block']['permissions'],
+					$context['lp_block']['status'],
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
 					$context['lp_block']['title_style'],
@@ -907,6 +948,9 @@ class ManageBlocks
 				);
 			}
 		}
+
+		if ($_POST['clone'])
+			return $item;
 
 		clean_cache();
 		redirectexit('action=admin;area=lp_blocks;sa=main');
