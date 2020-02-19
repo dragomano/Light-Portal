@@ -95,7 +95,7 @@ function show_block_table()
 					', $data['areas'], '
 				</td>
 				<td class="priority centertext">
-					', $data['priority'], ' <span class="handle main_icons select_here" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
+					', $data['priority'], ' <span class="handle ', (strpos($settings['name'], 'Lunarfall') !== false ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 				</td>
 				<td class="actions centertext">';
 
@@ -106,15 +106,14 @@ function show_block_table()
 					echo '
 					<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
 
-				echo '
-					<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
-
 				if (strpos($settings['name'], 'Lunarfall') !== false) {
 					echo '
+					<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
 					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
 					<span class="fas fa-trash del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 				} else {
 					echo '
+					<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
 					<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
 					<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 				}
@@ -166,7 +165,7 @@ function show_block_entry()
 			', $context['lp_block']['areas'], '
 		</td>
 		<td class="priority centertext">
-			', $context['lp_block']['priority'], ' <span class="handle main_icons select_here" data-key="', $context['lp_block']['id'], '" title="', $txt['lp_action_move'], '"></span>
+			', $context['lp_block']['priority'], ' <span class="handle ', (strpos($settings['name'], 'Lunarfall') !== false ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $context['lp_block']['id'], '" title="', $txt['lp_action_move'], '"></span>
 		</td>
 		<td class="actions centertext">';
 
@@ -177,15 +176,14 @@ function show_block_entry()
 			echo '
 			<span class="toggle_status on" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_off'], '"></span>';
 
-		echo '
-			<span class="main_icons reports" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_clone'], '"></span>';
-
 		if (strpos($settings['name'], 'Lunarfall') !== false) {
 			echo '
+			<span class="fas fa-clone reports" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_clone'], '"></span>
 			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $context['lp_block']['id'], '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
 			<span class="fas fa-trash del_block" data-id="', $context['lp_block']['id'], '" title="', $txt['remove'], '"></span>';
 		} else {
 			echo '
+			<span class="main_icons reports" data-id="', $context['lp_block']['id'], '" title="', $txt['lp_action_clone'], '"></span>
 			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $context['lp_block']['id'], '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
 			<span class="main_icons unread_button del_block" data-id="', $context['lp_block']['id'], '" title="', $txt['remove'], '"></span>';
 		}

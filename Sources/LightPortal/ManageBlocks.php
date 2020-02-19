@@ -827,7 +827,7 @@ class ManageBlocks
 					$context['lp_block']['placement'],
 					$context['lp_block']['priority'] ?: $priority ?: 0,
 					$context['lp_block']['permissions'],
-					$context['lp_block']['status'],
+					$context['lp_block']['status'] ?: 1,
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
 					$context['lp_block']['title_style'],

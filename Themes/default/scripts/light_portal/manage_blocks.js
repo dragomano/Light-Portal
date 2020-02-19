@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
 			}
 		});
 	});
-	$(".actions .toggle_status").on("click", function() {
+	$(".lp_current_blocks").on("click", ".actions .toggle_status", function() {
 		let item = $(this).attr("data-id"),
 			status = $(this).attr("class");
 		if (item) {
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
 			}
 		}
 	});
-	$(".actions .reports").on("click", function() {
+	$(".lp_current_blocks").on("click", ".actions .reports", function() {
 		let item = $(this).attr("data-id");
 		if (item) {
 			$.ajax({
@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
 			});
 		}
 	});
-	$(".actions .del_block").on("click", function() {
+	$(".lp_current_blocks").on("click", ".actions .del_block", function() {
 		if (!confirm(smf_you_sure))
 			return false;
 		let item = $(this).attr("data-id");
