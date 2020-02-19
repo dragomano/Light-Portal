@@ -113,7 +113,7 @@ class Comment
 			else
 				self::makeNotify('new_reply', 'page_comment_reply', $result);
 
-			Helpers::useCache('page_' . ($page_alias == '/' ? 'main' : $page_alias) . '_comments');
+			Helpers::useCache('page_' . ($page_alias == '/' ? 'main' : $page_alias) . '_comments', null);
 		}
 
 		exit(json_encode($result));
@@ -238,7 +238,7 @@ file_put_contents('1.txt', $alias);
 			)
 		);
 
-		Helpers::useCache('page_' . ($alias == '/' ? 'main' : $alias) . '_comments');
+		Helpers::useCache('page_' . ($alias == '/' ? 'main' : $alias) . '_comments', null);
 	}
 
 	/**

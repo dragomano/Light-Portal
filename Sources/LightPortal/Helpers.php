@@ -309,13 +309,13 @@ class Helpers
 	 * Используем кэш
 	 *
 	 * @param string $key
-	 * @param string $getData
+	 * @param string|null $getData
 	 * @param string $class
 	 * @param int $time (in seconds)
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache(string $key, string $getData = null, string $class = 'self', int $time = 3600, $vars = [])
+	public static function useCache(string $key, ?string $getData, string $class = 'self', int $time = 3600, $vars = [])
 	{
 		if (empty($key))
 			return;
