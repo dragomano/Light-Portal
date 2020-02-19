@@ -240,7 +240,7 @@ class AdsBlock
 		 *
 		 * Вывод рекламы после последнего сообщения
 		 */
-		if ($output['id'] == $context['topic_last_message']) {
+		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == $context['topic_last_message']) {
 			ob_start();
 
 			foreach ($context['lp_ads_blocks']['after_last_post'] as $block)

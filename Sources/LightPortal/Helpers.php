@@ -96,7 +96,7 @@ class Helpers
 	{
 		global $context, $txt;
 
-		return self::getFloatSpan((!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right');
+		return self::getFloatSpan((!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right') . '<br>';
 	}
 
 	/**
@@ -273,10 +273,10 @@ class Helpers
 		// like "Yesterday at ..."
 		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
 			return $txt['yesterday'] . $tm;
-		// like "Tuesday, 20 February 2020" (current month)
+		// like "Tuesday, 20 February, H:m" (current month)
 		elseif ($m == date('m', $current_time))
 			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
-		// like "20 February 2020" (current year)
+		// like "20 February, H:m" (current year)
 		elseif ($y == date('Y', $current_time))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
 		// like "20 February 2019" (last year)
@@ -315,8 +315,14 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache(string $key, string $getData, string $class = 'self', int $time = 3600, $vars = [])
+	public static function useCache(string $key, string $getData = '', string $class = 'self', int $time = 3600, $vars = [])
 	{
+		if (empty($key))
+			return;
+
+		if (empty($getData))
+			cache_put_data('light_portal_' . $key, null);
+
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {
 			$$key = null;
 
@@ -326,7 +332,8 @@ class Helpers
 				else
 					$$key = $class::$getData($vars);
 			} elseif (function_exists($getData)) {
-				$$key = $getData($vars);}
+				$$key = $getData($vars);
+			}
 
 			cache_put_data('light_portal_' . $key, $$key, $time);
 		}

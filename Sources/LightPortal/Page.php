@@ -134,7 +134,7 @@ class Page
 			return;
 
 		if (isset($_SESSION['lp_update_comments'])) {
-			clean_cache();
+			Helpers::useCache('page_' . $alias . '_comments');
 			unset($_SESSION['lp_update_comments']);
 		}
 

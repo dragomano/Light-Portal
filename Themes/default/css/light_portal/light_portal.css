@@ -247,6 +247,9 @@ aside.comments {
 	#lp_layout .post_button_container + .padding {
 		padding: 0;
 	}
+	#lp_layout input[type="radio"] {
+		width: auto;
+	}
 }
 
 @media (max-width: 480px) {
