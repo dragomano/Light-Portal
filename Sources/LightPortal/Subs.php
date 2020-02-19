@@ -690,6 +690,9 @@ class Subs
 			'div.sub_bar > h3.subbg'        => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
 			'div.sub_bar > h4.subbg'        => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
 			'div.errorbox > h3'             => '<div class="errorbox"><h3>%1$s</h3></div>',
+			'div.noticebox > h3'            => '<div class="noticebox"><h3>%1$s</h3></div>',
+			'div.infobox > h3'              => '<div class="infobox"><h3>%1$s</h3></div>',
+			'div.descbox > h3'              => '<div class="descbox"><h3>%1$s</h3></div>',
 			'div.generic_list_wrapper > h3' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>'
 		];
 	}
