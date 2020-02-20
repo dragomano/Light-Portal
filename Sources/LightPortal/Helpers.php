@@ -211,6 +211,10 @@ class Helpers
 		// Difference between current time and $timestamp
 		$time_difference = $current_time - $timestamp;
 
+		// Just now?
+		if (empty($time_difference))
+			return $txt['lp_just_now'];
+
 		// Future time?
 		if ($time_difference < 0) {
 			// like "Tomorrow at ..."
@@ -220,52 +224,53 @@ class Helpers
 			$days = floor(($timestamp - $current_time) / 60 / 60 / 24);
 			// like "In n days"
 			if ($days > 1) {
-				if ($days < 8)
+				if ($days < 7)
 					return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($days, $txt['lp_days_set']));
 
 				// Future date in current month
 				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
-					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 				// Future date in current year
 				elseif ($y == date('Y', $current_time))
-					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+
 				// Other future date
-				else
-					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
+				return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 			}
 
 			$hours = ($timestamp - $current_time) / 60 / 60;
+			// like "In an hour"
+			if ($hours == 1)
+				return sprintf($txt['lp_time_label_in'], $txt['lp_hours_set'][0]);
+
 			// like "In n hours"
 			if ($hours > 1)
 				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($hours, $txt['lp_hours_set']));
 
 			$minutes = ($timestamp - $current_time) / 60;
-			// like "In n minutes"
-			if ($minutes > 1)
-				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($minutes, $txt['lp_minutes_set']));
-
-			// like "In minute"
+			// like "In a minute"
 			if ($minutes == 1)
 				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
+
+			// like "In n minutes"
+			if ($minutes > 1)
+				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(ceil($minutes), $txt['lp_minutes_set']));
 
 			// like "In n seconds"
 			return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
 		// Less than an hour
-		$last_minutes = round(($time_difference) / 60);
+		$last_minutes = round($time_difference / 60);
 
 		// like "n seconds ago"
-		if ($last_minutes == 0) {
-			if (empty($time_difference))
-				return $txt['lp_just_now'];
-
+		if ($time_difference < 60)
 			return self::getCorrectDeclension($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
-		// like "Minute ago"
-		} elseif ($last_minutes == 1)
+		// like "A minute ago"
+		elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
-		elseif ($last_minutes <= 59)
+		elseif ($last_minutes < 60)
 			return self::getCorrectDeclension((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $current_time))
@@ -274,14 +279,14 @@ class Helpers
 		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
 			return $txt['yesterday'] . $tm;
 		// like "Tuesday, 20 February, H:m" (current month)
-		elseif ($m == date('m', $current_time))
-			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
+		elseif ($m == date('m', $current_time) && $y == date('Y', $current_time))
+			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 		// like "20 February, H:m" (current year)
 		elseif ($y == date('Y', $current_time))
-			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ', ' . $tm;
-		// like "20 February 2019" (last year)
-		else
-			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)]) . ' ' . $y;
+			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+
+		// like "20 February, 2019" (last year)
+		return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 	}
 
 	/**
@@ -291,16 +296,17 @@ class Helpers
 	 *
 	 * @param int $day
 	 * @param string $month
+	 * @param string $postfix
 	 * @return string
 	 */
-	public static function getDateFormat(int $day, string $month)
+	public static function getDateFormat(int $day, string $month, string $postfix)
 	{
 		global $txt;
 
 		if ($txt['lang_locale'] == 'en_US')
-			return $month . ' ' . $day;
+			return $month . ' ' . $day . ', ' . $postfix;
 
-		return $day . ' ' . $month;
+		return $day . ' ' . $month . (strpos($postfix, ":") === false ? ' ' : ', ') . $postfix;
 	}
 
 	/**

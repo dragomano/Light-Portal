@@ -182,8 +182,8 @@ $txt['cannot_light_portal_view_page']                = 'Sorry, you are not allow
 
 // Time units
 $txt['lp_days_set']       = array('day','days');
-$txt['lp_hours_set']      = array('hour','hours');
-$txt['lp_minutes_set']    = array('minute','minutes');
+$txt['lp_hours_set']      = array('an hour','hours');
+$txt['lp_minutes_set']    = array('a minute','minutes');
 $txt['lp_seconds_set']    = array('second','seconds');
 $txt['lp_tomorrow']       = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now']       = 'Just now';
