@@ -28,7 +28,7 @@ class TopicRatingBar
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public static function topicsAsArticles(&$custom_columns, &$custom_tables)
+	public static function frontpageTopics(&$custom_columns, &$custom_tables)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
@@ -46,7 +46,7 @@ class TopicRatingBar
 	 * @param array $row
 	 * @return void
 	 */
-	public static function topicsAsArticlesResult(&$topics, $row)
+	public static function frontpageTopicsOutput(&$topics, $row)
 	{
 		global $modSettings;
 

@@ -27,7 +27,7 @@ class Optimus
 	 * @param array $custom_columns
 	 * @return void
 	 */
-	public static function topicsAsArticles(&$custom_columns)
+	public static function frontpageTopics(&$custom_columns)
 	{
 		global $modSettings;
 
@@ -46,7 +46,7 @@ class Optimus
 	 * @param array $row
 	 * @return void
 	 */
-	public static function topicsAsArticlesResult(&$topics, $row)
+	public static function frontpageTopicsOutput(&$topics, $row)
 	{
 		global $modSettings;
 

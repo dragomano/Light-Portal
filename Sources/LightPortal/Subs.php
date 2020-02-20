@@ -136,6 +136,17 @@ class Subs
 
 		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $function, __CLASS__);
 
+		$articles = array_map(function ($article) {
+			if (isset($article['time']))
+				$article['time'] = Helpers::getFriendlyTime($article['time']);
+			if (isset($article['created_at']))
+				$article['created_at'] = Helpers::getFriendlyTime($article['created_at']);
+			if (isset($article['last_updated']))
+				$article['last_updated'] = Helpers::getFriendlyTime($article['last_updated']);
+
+			return $article;
+		}, $articles);
+
 		$total_items           = count($articles);
 		$limit                 = $modSettings['lp_num_items_per_page'] ?? 10;
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], $total_items, $limit);
@@ -162,7 +173,7 @@ class Subs
 	 */
 	public static function getTopicsFromSelectedBoards()
 	{
-		global $modSettings, $smcFunc, $user_info, $scripturl, $settings;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $settings;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
@@ -172,9 +183,15 @@ class Subs
 		$custom_columns    = [];
 		$custom_tables     = [];
 		$custom_wheres     = [];
-		$custom_parameters = [];
+		$custom_parameters = [
+			'current_member'    => $user_info['id'],
+			'is_approved'       => 1,
+			'id_poll'           => 0,
+			'id_redirect_topic' => 0,
+			'selected_boards'   => $selected_boards
+		];
 
-		self::runAddons('topicsAsArticles', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		self::runAddons('frontpageTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -196,13 +213,7 @@ class Subs
 				AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 				' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 			ORDER BY t.id_last_msg DESC',
-			array_merge(array(
-				'current_member'    => $user_info['id'],
-				'is_approved'       => 1,
-				'id_poll'           => 0,
-				'id_redirect_topic' => 0,
-				'selected_boards'   => $selected_boards
-			), $custom_parameters)
+			$custom_parameters
 		);
 
 		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
@@ -236,7 +247,7 @@ class Subs
 				'poster_id'   => $row['id_member'],
 				'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
 				'poster_name' => $row['poster_name'],
-				'time'        => Helpers::getFriendlyTime($row['poster_time']),
+				'time'        => $row['poster_time'],
 				'subject'     => !empty($subject_size) ? shorten_subject($row['subject'], $subject_size) : $row['subject'],
 				'preview'     => $row['body'],
 				'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
@@ -249,7 +260,7 @@ class Subs
 				'image'       => $image
 			);
 
-			self::runAddons('topicsAsArticlesResult', array(&$topics, $row));
+			self::runAddons('frontpageTopicsOutput', array(&$topics, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -268,19 +279,29 @@ class Subs
 	{
 		global $smcFunc, $modSettings, $settings, $scripturl, $user_info;
 
+		$custom_columns    = [];
+		$custom_tables     = [];
+		$custom_wheres     = [];
+		$custom_parameters = [
+			'alias'  => '/',
+			'status' => 1
+		];
+
+		self::runAddons('frontpagePages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.title, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(created_at, updated_at) AS date, mem.real_name AS author_name
+				GREATEST(created_at, updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
+				' . implode(', ', $custom_columns) : '') . '
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (!empty($custom_tables) ? '
+				' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 			WHERE p.alias != {string:alias}
-				AND p.status = {int:status}
+				AND p.status = {int:status}' . (!empty($custom_wheres) ? '
+				' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 			ORDER BY date DESC',
-			array(
-				'alias'  => '/',
-				'status' => 1
-			)
+			$custom_parameters
 		);
 
 		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
@@ -309,7 +330,7 @@ class Subs
 				'description' => $row['description'],
 				'type'        => $row['type'],
 				'num_views'   => $row['num_views'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'created_at'  => $row['date'],
 				'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 				'link'        => $scripturl . '?page=' . $row['alias'],
 				'image'       => $image,
@@ -317,7 +338,7 @@ class Subs
 				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage') && $row['author_id'] == $user_info['id'])
 			);
 
-			self::runAddons('pagesAsArticlesResult', array(&$pages, $row));
+			self::runAddons('frontpagePagesOutput', array(&$pages, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -338,32 +359,42 @@ class Subs
 	 */
 	public static function getSelectedBoards()
 	{
-		global $modSettings, $smcFunc, $user_info, $context, $settings, $scripturl;
+		global $modSettings, $user_info, $smcFunc, $context, $settings, $scripturl;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return [];
 
+		$custom_columns    = [];
+		$custom_tables     = [];
+		$custom_wheres     = [];
+		$custom_parameters = [
+			'blank_string'    => '',
+			'current_member'  => $user_info['id'],
+			'selected_boards' => $selected_boards
+		];
+
+		self::runAddons('frontpageBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 				GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
-				(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . '
+				(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
+				' . implode(', ', $custom_columns) : '') . '
 			FROM {db_prefix}boards AS b
 				LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)
 				LEFT JOIN {db_prefix}messages AS m ON (m.id_msg = b.id_last_msg)' . ($user_info['is_guest'] ? '' : '
 				LEFT JOIN {db_prefix}log_boards AS lb ON (lb.id_board = b.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
 				LEFT JOIN {db_prefix}topics AS t ON (t.id_topic = m.id_topic)
-				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . '
+				LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = t.id_first_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
+				' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 			WHERE b.id_board IN ({array_int:selected_boards})
-				AND {query_see_board}
+				AND {query_see_board}' . (!empty($custom_wheres) ? '
+				' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 			ORDER BY b.id_last_msg DESC',
-			array(
-				'blank_string'    => '',
-				'current_member'  => $user_info['id'],
-				'selected_boards' => $selected_boards
-			)
+			$custom_parameters
 		);
 
 		$subject_size = !empty($modSettings['lp_subject_size']) ? (int) $modSettings['lp_subject_size'] : 0;
@@ -397,15 +428,15 @@ class Subs
 
 			if (!empty($row['last_updated'])) {
 				$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
-				$boards[$row['id_board']]['last_updated'] = Helpers::getFriendlyTime($row['last_updated']);
+				$boards[$row['id_board']]['last_updated'] = $row['last_updated'];
 			}
 
-			self::runAddons('boardsAsArticlesResult', array(&$boards, $row));
+			self::runAddons('frontpageBoardsOutput', array(&$boards, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
 
-		return $selected_boards;
+		return $boards;
 	}
 
 	/**
@@ -549,7 +580,7 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $hook ('init', 'frontpageAssets', 'topicsAsArticles', 'topicsAsArticlesResult', 'pagesAsArticlesResult', 'boardsAsArticlesResult', 'comments', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
+	 * @param string $hook ('init', 'frontpageAssets', 'frontpageTopics', 'frontpageTopicsOutput', 'frontpagePages', 'frontpagePagesOutput', 'frontpageBoards', 'frontpageBoardsOutput', 'comments', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
 	 * @param array $vars (extra variables for changing)
 	 * @return void
 	 */
