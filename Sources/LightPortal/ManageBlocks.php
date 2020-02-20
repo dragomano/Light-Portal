@@ -100,7 +100,7 @@ class ManageBlocks
 			return;
 
 		self::remove();
-		self::clone();
+		self::cloneBlock();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
@@ -163,7 +163,7 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	private static function clone()
+	private static function cloneBlock()
 	{
 		global $context;
 
