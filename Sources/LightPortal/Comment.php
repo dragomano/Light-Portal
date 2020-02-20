@@ -216,25 +216,17 @@ class Comment
 	{
 		global $smcFunc;
 
-		$item  = filter_input(INPUT_POST, 'del_comment', FILTER_VALIDATE_INT);
+		$items = filter_input(INPUT_POST, 'items', FILTER_VALIDATE_INT, array('flags'  => FILTER_REQUIRE_ARRAY));
 		$alias = filter_input(INPUT_POST, 'alias', FILTER_SANITIZE_STRING);
-file_put_contents('1.txt', $alias);
-		if (empty($item))
+
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
-			WHERE id = {int:id}',
+			WHERE id IN ({array_int:items})',
 			array(
-				'id' => $item
-			)
-		);
-
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE parent_id = {int:id}',
-			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 

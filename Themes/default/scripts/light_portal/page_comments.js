@@ -14,8 +14,12 @@ jQuery(document).ready(function($) {
 			return false;
 		let item = $(this).parents("li").attr("data-id"),
 			alias = $(this).parents("li").attr("data-alias");
-		if (item) {
-			$.post(work, {del_comment: item, alias: alias});
+		if (item && alias) {
+			let items = [item];
+			$($(this).parents("li")).find('li').each(function() {
+				items.push($(this).attr("data-id"));
+			});
+			$.post(work, {items: items, alias: alias});
 			$(this).closest("li").slideUp();
 		}
 	});
