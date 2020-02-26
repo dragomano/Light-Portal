@@ -1,9 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\YandexTranslate;
+namespace Bugo\LightPortal\Addons\Translator;
 
 /**
- * YandexTranslate
+ * Translator
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Addons\YandexTranslate;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class YandexTranslate
+class Translator
 {
 	/**
 	 * You cannot select a class for the content of this block
@@ -27,6 +27,15 @@ class YandexTranslate
 	 * @var bool
 	 */
 	private static $no_content_class = true;
+
+	/**
+	 * Used translation engine (google|yandex)
+	 *
+	 * Используемый движок для перевода (google|yandex)
+	 *
+	 * @var string
+	 */
+	private static $engine = 'google';
 
 	/**
 	 * The widget color theme (light|dark)
@@ -56,9 +65,10 @@ class YandexTranslate
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['yandex_translate'] = array(
+		$options['translator'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
+				'engine'       => static::$engine,
 				'widget_theme' => static::$widget_theme,
 				'auto_mode'    => static::$auto_mode
 			)
@@ -77,10 +87,11 @@ class YandexTranslate
 	{
 		global $context;
 
-		if ($context['current_block']['type'] !== 'yandex_translate')
+		if ($context['current_block']['type'] !== 'translator')
 			return;
 
 		$args['parameters'] = array(
+			'engine'       => FILTER_SANITIZE_STRING,
 			'widget_theme' => FILTER_SANITIZE_STRING,
 			'auto_mode'    => FILTER_VALIDATE_BOOLEAN
 		);
@@ -97,10 +108,35 @@ class YandexTranslate
 	{
 		global $context, $txt;
 
-		if ($context['lp_block']['type'] !== 'yandex_translate')
+		if ($context['lp_block']['type'] !== 'translator')
 			return;
 
-		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_yandex_translate_addon_widget_theme'];
+		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator_addon_engine'];
+		$context['posting_fields']['engine']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'id' => 'engine'
+			)
+		);
+
+		foreach ($txt['lp_translator_addon_engine_set'] as $key => $value) {
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['engine']['input']['options'][$value]['attributes'] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
+				);
+			} else {
+				$context['posting_fields']['engine']['input']['options'][$value] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
+				);
+			}
+		}
+
+		if ($context['lp_block']['options']['parameters']['engine'] == 'google')
+			return;
+
+		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator_addon_widget_theme'];
 		$context['posting_fields']['widget_theme']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -136,7 +172,7 @@ class YandexTranslate
 			);
 		}
 
-		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_yandex_translate_addon_auto_mode'];
+		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator_addon_auto_mode'];
 		$context['posting_fields']['auto_mode']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -162,14 +198,29 @@ class YandexTranslate
 	{
 		global $language;
 
-		if ($type !== 'yandex_translate')
+		if ($type !== 'translator')
 			return;
 
 		ob_start();
 
-		echo '
+		if ($parameters['engine'] == 'yandex') {
+			echo '
 		<div id="ytWidget" class="centertext noup"></div>
 		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget&amp;pageLang=', substr($language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		} else {
+			echo '
+		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+		<div class="centertext noup">
+			<div id="google_translate_element"></div>
+			<script>
+				function googleTranslateElementInit() {
+					new google.translate.TranslateElement({
+						pageLanguage: "', substr($language, 0, 2), '"
+					}, "google_translate_element");
+				}
+			</script>
+		</div>';
+		}
 
 		$content = ob_get_clean();
 	}

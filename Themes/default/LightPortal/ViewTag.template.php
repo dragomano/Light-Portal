@@ -40,7 +40,7 @@ function template_show_tags()
 		echo '
 		<tr class="windowbg">
 			<td class="keyword centertext">
-				<a href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($tag['keyword']), '">', $tag['keyword'], '</a>
+				<a href="', $tag['link'], '">', $tag['keyword'], '</a>
 			</td>
 			<td class="frequency centertext">
 				', $tag['frequency'], '

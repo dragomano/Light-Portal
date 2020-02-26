@@ -39,8 +39,8 @@ class Integration
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
-		add_integration_function('integrate_credits', __CLASS__ . '::credits', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
+		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
 	}
@@ -73,7 +73,7 @@ class Integration
 		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 beta 3',
+			'LP_VERSION' => '1.0 rc1',
 			'LP_NAME'    => 'Light Portal',
 			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
@@ -114,19 +114,13 @@ class Integration
 	 */
 	public static function actions(array &$actions)
 	{
-		global $modSettings, $context;
-
-		if (!empty($modSettings['lp_frontpage_disable']))
-			return;
-
-		// Fix for Pretty URLs
-		if (!empty($context['pretty']['action_array'])) {
-			if (!in_array('portal', array_values($context['pretty']['action_array'])))
-				$context['pretty']['action_array'][] = 'portal';
-		}
+		global $context, $modSettings;
 
 		$actions['portal'] = array('LightPortal/Page.php', array(__NAMESPACE__ . '\Page', 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
+
+		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
+			Tag::show();
 
 		if (!empty($modSettings['lp_standalone'])) {
 			Subs::unsetUnusedActions($actions);
@@ -137,9 +131,9 @@ class Integration
 	}
 
 	/**
-	 * Access the page or call the default method
+	 * Access the portal page or call the default method
 	 *
-	 * Обращаемся к странице или вызываем метод по умолчанию
+	 * Обращаемся к странице портала или вызываем метод по умолчанию
 	 *
 	 * @return void
 	 */
@@ -147,13 +141,11 @@ class Integration
 	{
 		global $modSettings, $sourcedir;
 
-		if (!empty($_GET['page'])) {
-			$alias = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING);
-			return Page::show($alias);
-		}
+		if (!empty($_GET['page']))
+			return Page::show((string) $_GET['page']);
 
-		if (empty($modSettings['lp_frontpage_disable']))
-			return Page::show();
+		if (!empty($modSettings['lp_frontpage_mode']))
+			return FrontPage::show();
 
 		require_once($sourcedir . '/BoardIndex.php');
 		$action = 'BoardIndex';
@@ -172,7 +164,7 @@ class Integration
 	{
 		global $modSettings, $context;
 
-		if (!empty($modSettings['lp_frontpage_disable']))
+		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
 		if (empty($_REQUEST['action']))
@@ -255,11 +247,11 @@ class Integration
 		}
 
 		if (!empty($context['current_action']))
-			Block::display($context['current_action']);
-		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (!empty($modSettings['lp_frontpage_disable']) && empty($context['current_action']) && empty($_GET['page'])))
-			Block::display('forum');
+			Block::show($context['current_action']);
+		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (empty($modSettings['lp_frontpage_mode']) && empty($context['current_action']) && empty($_GET['page'])))
+			Block::show('forum');
 
-		if (!empty($modSettings['lp_frontpage_disable']))
+		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
 		// Display "Portal" item in Main Menu
@@ -424,32 +416,6 @@ class Integration
 	}
 
 	/**
-	 * The mod credits for action=credits
-	 *
-	 * Отображаем копирайты на странице action=credits
-	 *
-	 * @return void
-	 */
-	public static function credits()
-	{
-		global $context, $txt;
-
-		$context['credits_modifications'][] = Subs::getCredits();
-
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
-			Subs::getComponentCredits();
-
-			loadTemplate('LightPortal/ViewCredits');
-
-			$context['sub_template']   = 'portal_credits';
-			$context['robot_no_index'] = true;
-			$context['page_title']     = LP_NAME . ' - ' . $txt['lp_credits'];
-
-			obExit();
-		}
-	}
-
-	/**
 	 * Display current actions of members (on portal area)
 	 *
 	 * Показываем, кто что делает на портале
@@ -462,7 +428,6 @@ class Integration
 		global $txt, $scripturl;
 
 		$result = '';
-
 		if (empty($actions['action']))
 			$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
 

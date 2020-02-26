@@ -94,7 +94,7 @@ class ThemeSwitcher
 						let lp_block_', $block_id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $block_id, '_themeswitcher").value;
 						let search = window.location.search.split(";");
 						let search_args = search.filter(function (item) {
-							return !item.startsWith("theme=")
+							return !item.startsWith("theme=") && !item.startsWith("?theme=")
 						});
 						search = search_args.join(";");
 						search = search != "" ? search + ";" : "?";

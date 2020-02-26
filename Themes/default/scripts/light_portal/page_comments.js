@@ -2,33 +2,34 @@ jQuery(document).ready(function($) {
 	$("#page_comments").on("click", "span.reply_button", function() {
 		let parent_id = $(this).parents("li").attr("data-id"),
 			counter = $(this).parents("li").attr("data-counter"),
-			level = $(this).parents("li").attr("data-level");
+			level = $(this).parents("li").attr("data-level"),
+			start = $(this).parents("li").attr("data-start");
 		$("#comment_form").children("input[name=parent_id]").val(parent_id);
 		$("#comment_form").children("input[name=counter]").val(counter);
 		$("#comment_form").children("input[name=level]").val(level);
-		$("textarea.content").focus();
+		if (parent_id != 0)
+			$("#comment_form").children("input[name=start]").val(start);
+		$("#message").focus();
 	});
-	let work = comment_redirect_url + "del_comment";
 	$("#page_comments").on("click", "span.remove_button", function() {
 		if (!confirm(smf_you_sure))
 			return false;
-		let item = $(this).parents("li").attr("data-id"),
-			alias = $(this).parents("li").attr("data-alias");
-		if (item && alias) {
+		let item = $(this).parents("li").attr("data-id");
+		if (item) {
 			let items = [item];
-			$($(this).parents("li")).find('li').each(function() {
+			$("li[data-id=" + item + "]").find('li').each(function() {
 				items.push($(this).attr("data-id"));
 			});
-			$.post(work, {items: items, alias: alias});
+			$.post(comment_remove_url, {items: items});
 			$(this).closest("li").slideUp();
 		}
 	});
-	$("#page_comments").on("click", ".popover_title .bold_text", function (e) {
+	$("#page_comments").on("click", ".title .bold_text", function (e) {
 		let commentTextarea = $("#message").val(),
 			position = $("#message")[0].selectionStart,
 			nickname = e.target.innerText + ", "
 		$("#message").val(commentTextarea.substring(0, position) + nickname + commentTextarea.substring(position));
-		$("#message").focus();
+		$("span.reply_button").click();
 	});
 	$("#comment_form").on("focus", "#message", function () {
 		$("#message").css("height", "auto");
@@ -38,6 +39,10 @@ jQuery(document).ready(function($) {
 		if ($(e.target).attr("name")) {
 			if ($("#message").val() != "") {
 				$("button[name=comment]").prop("disabled", false);
+				let counter = $(".comment_list li[data-level=1]").last().attr("data-counter"),
+					start = $(".comment_list li[data-level=1]").last().attr("data-start"),
+					start2 = Number.parseInt(counter) + 1 >= num_comments_per_page ? Number.parseInt(start) + num_comments_per_page : start;
+				$("#comment_form").children("input[name=start]").val(start2);
 			} else {
 				$("button[name=comment]").prop("disabled", true);
 			}
@@ -69,7 +74,6 @@ jQuery(document).ready(function($) {
 				$("#message").css("height", "30px");
 				$("button[name=comment]").css("display", "none");
 				$("input[name=parent_id]").val(0);
-				//window.location.href = comment_redirect_url + "start=" + data.start + "#comment" + data.item;
 				window.location.hash = "#comment" + data.item;
 			}
 		});

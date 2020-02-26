@@ -161,31 +161,33 @@ class TopPages
 		[$popularity_type, $num_pages] = $params;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, 0) AS author_name, COUNT(com.id) AS num_comments
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)
-			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']) ? '
-				AND p.alias != {string:alias}' : '') . '
-			GROUP BY p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at, mem.real_name
-			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'p.num_views') . ' DESC
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
+			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) ? '
+				AND p.page_id != {int:page_id}' : '') . '
+			ORDER BY p.' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'status' => 1,
-				'alias'  => '/',
-				'limit'  => $num_pages
+				'type'    => 'page',
+				'status'  => 1,
+				'page_id' => $modSettings['lp_frontpage_id'] ?: null,
+				'limit'   => $num_pages
 			)
 		);
 
-		$pages = array();
+		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$pages[] = array(
-				'num_comments' => $row['num_comments'],
-				'num_views'    => $row['num_views'],
-				'link'         => '<a href="' . $scripturl . '?page=' . $row['alias'] . '">' . $row['title'] . '</a>'
-			);
+			if (!isset($pages[$row['page_id']]))
+				$pages[$row['page_id']] = array(
+					'num_comments' => $row['num_comments'],
+					'num_views'    => $row['num_views'],
+					'href'         => $scripturl . '?page=' . $row['alias'],
+					'can_show'     => Helpers::canShowItem($row['permissions'])
+				);
+
+			if (!empty($row['lang']))
+				$pages[$row['page_id']]['title'][$row['lang']] = $row['title'];
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -226,16 +228,18 @@ class TopPages
 			echo '
 			<dl class="stats">';
 
-			$max = $top_pages[0]['num_' . $parameters['popularity_type']];
+			$max = reset($top_pages)['num_' . $parameters['popularity_type']];
 
 			foreach ($top_pages as $page) {
-				if ($page['num_' . $parameters['popularity_type']] < 1)
+				if ($page['num_' . $parameters['popularity_type']] < 1 || $page['can_show'] === false || empty($title = Helpers::getLocalizedTitle($page)))
 					continue;
 
 				$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
 
 				echo '
-				<dt>', $page['link'], '</dt>
+				<dt>
+					<a href="', $page['href'], '">', $title, '</a>
+				</dt>
 				<dd class="statsbar generic_bar righttext">
 					<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 					<span>', $parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>

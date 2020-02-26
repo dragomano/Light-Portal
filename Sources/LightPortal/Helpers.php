@@ -315,30 +315,30 @@ class Helpers
 	 * Используем кэш
 	 *
 	 * @param string $key
-	 * @param string|null $getData
+	 * @param string|null $funcName
 	 * @param string $class
 	 * @param int $time (in seconds)
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache(string $key, ?string $getData, string $class = 'self', int $time = 3600, $vars = [])
+	public static function useCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, $vars = [])
 	{
 		if (empty($key))
 			return;
 
-		if (is_null($getData))
+		if (is_null($funcName))
 			cache_put_data('light_portal_' . $key, null);
 
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {
 			$$key = null;
 
-			if (method_exists($class, $getData)) {
+			if (method_exists($class, $funcName)) {
 				if ($class == 'self')
-					$$key = self::$getData($vars);
+					$$key = self::$funcName($vars);
 				else
-					$$key = $class::$getData($vars);
-			} elseif (function_exists($getData)) {
-				$$key = $getData($vars);
+					$$key = $class::$funcName($vars);
+			} elseif (function_exists($funcName)) {
+				$$key = $funcName($vars);
 			}
 
 			cache_put_data('light_portal_' . $key, $$key, $time);
@@ -385,5 +385,39 @@ class Helpers
 			default:
 				return true;
 		}
+	}
+
+	/**
+	 * Check if the page with id = $id set as the portal frontpage
+	 *
+	 * Проверяет, установлена ли страница с id = $id как главная страница
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public static function isFrontpage(int $id)
+	{
+		global $modSettings;
+
+		if (empty($id))
+			return false;
+
+		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) && $modSettings['lp_frontpage_id'] == $id;
+	}
+
+	/**
+	 * Get a localized object title, according to the user's language
+	 *
+	 * Получаем локализованный заголовок объекта, в соответствии с языком пользователя
+	 *
+	 * @param array $object
+	 * @return string
+	 */
+	public static function getLocalizedTitle(array $object)
+	{
+		if (empty($object) || !isset($object['title']))
+			return '';
+
+		return $object['title'][Helpers::getUserLanguage()] ?? $object['title']['english'] ?? '';
 	}
 }

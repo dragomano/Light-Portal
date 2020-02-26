@@ -25,9 +25,13 @@ function template_show_topics_as_articles()
 			</div>
 			<div class="roundframe noup', $topic['css_class'], '">';
 
-			if (!empty($topic['image']))
+			if (!empty($topic['image'])) {
 				echo '
 				<img class="article_image" src="', $topic['image'], '" alt="', $topic['subject'], '">';
+			} elseif (!empty($topic['image_placeholder'])) {
+				echo '
+				<span class="', $topic['image_placeholder'], ' centertext"></span>';
+			}
 
 			echo '
 				<div class="article_info">
@@ -100,14 +104,18 @@ function template_show_pages_as_articles()
 			<div class="cat_bar">
 				<h3 class="catbg">
 					', $page['is_new'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '', '<a href="', $page['link'], '">', $page['title'], '</a>', '
-					', $page['can_edit'] ? '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '"><span class="fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '
+					', $page['can_edit'] ? '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '"><span class="fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '
 				</h3>
 			</div>
 			<div class="roundframe noup">';
 
-				if (!empty($page['image']))
+				if (!empty($page['image'])) {
 					echo '
 				<img class="article_image" src="', $page['image'], '" alt="', $page['title'], '">';
+				} elseif (!empty($page['image_placeholder'])) {
+					echo '
+				<span class="', $page['image_placeholder'], ' centertext"></span>';
+				}
 
 				echo '
 				<div class="article_info">
@@ -182,9 +190,13 @@ function template_show_boards_as_articles()
 			</div>
 			<div class="roundframe noup">';
 
-			if (!empty($board['image']))
+			if (!empty($board['image'])) {
 				echo '
 				<img class="article_image" src="', $board['image'], '" alt="', $board['name'], '">';
+			} elseif (!empty($board['image_placeholder'])) {
+				echo '
+				<span class="', $board['image_placeholder'], ' centertext"></span>';
+			}
 
 			echo '
 				<div class="article_info">

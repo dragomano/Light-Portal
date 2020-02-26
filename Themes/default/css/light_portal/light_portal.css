@@ -84,35 +84,6 @@ aside.comments {
 	padding-left: 80px;
 }
 
-.comment_body {
-	position: relative;
-	width: 100%;
-	max-width: 100%;
-	z-index: 0;
-	margin-left: 0px!important;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-}
-
-.popover_title {
-	padding: 8px 14px;
-	margin: 0;
-	border-radius: 5px 5px 0 0;
-	border: none;
-	border-bottom: 1px solid #ddd;
-}
-
-.comment_date {
-	color: gray;
-}
-
-.comment_body .content {
-	padding: 9px 14px;
-}
-
-.comment_body .content:last-child {
-	border-radius: 0 0 5px 5px;
-}
-
 #comment_form textarea {
 	width: 100%;
 	height: 30px;
@@ -142,6 +113,59 @@ aside.comments {
 .actions span,
 #page_comments_toggle {
 	cursor: pointer;
+}
+
+.entry {
+	display: block;
+	position: relative;
+	padding: 0 12px 8px;
+	border: 1px solid #ddd;
+	border-radius: 7px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+.entry .title {
+	display: block;
+	font-size: .9em;
+	margin: -1px -13px -11px;
+	line-height: 20px;
+	text-align: justify;
+}
+
+.entry .title:after {
+	display: inline-block;
+	content: '';
+	width: 100%;
+	height: 0;
+	visibility: hidden;
+	overflow: hidden;
+}
+
+.entry .content {
+	padding: 0 14px;
+}
+
+.entry .smalltext {
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px dashed #bfbfbf;
+}
+
+.title .bold_text {
+	border: 1px solid #ddd;
+	border-radius: 7px 0;
+	display: inline-block;
+	vertical-align: top;
+	padding: 6px 11px;
+}
+
+.title .comment_date {
+	border: 1px solid #ddd;
+	border-radius: 0 7px;
+	display: inline-block;
+	vertical-align: top;
+	padding: 6px 11px;
+	color: gray;
 }
 
 .lp_current_blocks th.icon {

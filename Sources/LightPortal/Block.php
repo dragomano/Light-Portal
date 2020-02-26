@@ -19,6 +19,9 @@ if (!defined('SMF'))
 
 class Block
 {
+	public const STATUS_ACTIVE = 1;
+	public const STATUS_INACTIVE = 0;
+
 	/**
 	 * Display blocks in their designated areas
 	 *
@@ -27,7 +30,7 @@ class Block
 	 * @param string $area
 	 * @return void
 	 */
-	public static function display(string $area = 'portal')
+	public static function show(string $area = 'portal')
 	{
 		global $context, $modSettings;
 
@@ -36,17 +39,17 @@ class Block
 
 		$blocks = array_filter($context['lp_active_blocks'], function($block) use ($area) {
 			$block['areas'] = array_flip($block['areas']);
-			return isset($block['areas']['all']) || isset($block['areas'][$area]) || isset($block['areas']['page=' . filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING)]);
+			return isset($block['areas']['all']) || isset($block['areas'][$area]) || !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]);
 		});
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))
 			return;
 
 		foreach ($blocks as $item => $data) {
-			if ($data['can_show'] === false)
+			if (Helpers::canShowItem($data['can_show']) === false)
 				continue;
 
-			if (empty($data['title'][$context['user']['language']]))
+			if (empty($data['title'][Helpers::getUserLanguage()]))
 				$data['title_class'] = '';
 
 			if (empty($data['content']))
@@ -56,7 +59,7 @@ class Block
 
 			$context['lp_blocks'][$data['placement']][$item] = $data;
 			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
-			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][$context['user']['language']];
+			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][Helpers::getUserLanguage()];
 		}
 
 		loadTemplate('LightPortal/ViewBlock');

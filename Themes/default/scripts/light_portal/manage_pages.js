@@ -3,10 +3,9 @@ jQuery(document).ready(function($) {
 	$(".del_page").on("click", function() {
 		if (!confirm(smf_you_sure))
 			return false;
-		let item = $(this).attr("data-id"),
-			item_alias = $(this).attr("data-alias");
-		if (item && item_alias != "/") {
-			$.post(work, {del_page_id: item, del_page_alias: item_alias});
+		let item = $(this).attr("data-id");
+		if (item) {
+			$.post(work, {del_page_id: item});
 			$(this).closest("tr").slideUp();
 		}
 	});

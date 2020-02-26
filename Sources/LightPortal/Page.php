@@ -19,6 +19,9 @@ if (!defined('SMF'))
 
 class Page
 {
+	public const STATUS_ACTIVE = 1;
+	public const STATUS_INACTIVE = 0;
+
 	/**
 	 * Display the page by its alias
 	 *
@@ -27,17 +30,19 @@ class Page
 	 * @param string $alias
 	 * @return void
 	 */
-	public static function show(string $alias = '/')
+	public static function show(string $alias = '')
 	{
-		global $context, $modSettings, $txt, $scripturl;
+		global $modSettings, $context, $txt, $scripturl;
 
 		isAllowedTo('light_portal_view');
 
-		self::relatedActions();
-
-		$alias = explode(';', $alias)[0];
-
-		$context['lp_page'] = self::getData($alias);
+		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id'])) {
+			$context['lp_page'] = self::getData($modSettings['lp_frontpage_id']);
+		} else {
+			$alias = explode(';', $alias)[0];
+			$context['lp_page'] = self::getDataByAlias($alias);
+			Block::show();
+		}
 
 		if (empty($context['lp_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
@@ -45,72 +50,58 @@ class Page
 		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
+		if (empty($context['lp_page']['status']))
+			fatal_lang_error('lp_page_not_activated', false);
+
 		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
-		Subs::setMeta();
 
-		if (empty($context['current_action']))
-			Block::display();
-
-		if ($alias === '/') {
-			$context['page_title']    = $modSettings['lp_frontpage_title_' . $context['user']['language']] ?? $txt['lp_portal'];
-			$context['canonical_url'] = $scripturl;
+		if (empty($alias)) {
+			$context['page_title']          = Helpers::getLocalizedTitle($context['lp_page']) ?? $txt['lp_portal'];
+			$context['canonical_url']       = $scripturl;
+			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
 		} else {
-			$context['page_title']    = $context['lp_page']['title'];
-			$context['canonical_url'] = $scripturl . '?page=' . $alias;
+			$context['page_title']          = Helpers::getLocalizedTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
+			$context['canonical_url']       = $scripturl . '?page=' . $alias;
+			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 		}
 
 		$context['linktree'][] = array(
 			'name' => $context['page_title']
 		);
 
-		self::prepareComments($alias);
+		loadTemplate('LightPortal/ViewPage');
+		$context['sub_template'] = 'show_page';
 
-		if (!empty($modSettings['lp_frontpage_mode']) && empty($_GET['page'])) {
-			self::calculateNumColumns();
+		self::setMeta();
+		self::prepareComments();
+		self::updateNumViews();
 
-			loadTemplate('LightPortal/ViewFrontPage');
-
-			if ($modSettings['lp_frontpage_mode'] == 1) {
-				Subs::prepareArticles('topics');
-				$context['sub_template'] = 'show_topics_as_articles';
-			} elseif ($modSettings['lp_frontpage_mode'] == 2) {
-				Subs::prepareArticles();
-				$context['sub_template'] = 'show_pages_as_articles';
-			} else {
-				Subs::prepareArticles('boards');
-				$context['sub_template'] = 'show_boards_as_articles';
-			}
-		} else {
-			loadTemplate('LightPortal/ViewPage');
-			$context['sub_template'] = 'show_page';
-			self::updateNumViews();
-		}
-
-		if (isset($_REQUEST['page'])) {
-			if ($_REQUEST['page'] !== $alias)
-				redirectexit('page=' . $alias);
-			elseif ($_REQUEST['page'] === '/')
-				redirectexit();
-		}
+		if (!empty($_REQUEST['page']) && (empty($alias) || Helpers::isFrontpage($context['lp_page']['id'])))
+			redirectexit();
 	}
 
 	/**
-	 * Various actions on portal pages
+	 * Creating meta data for SEO
 	 *
-	 * Различные действия на страницах портала
+	 * Формируем мета-данные для SEO
 	 *
 	 * @return void
 	 */
-	private static function relatedActions()
+	private static function setMeta()
 	{
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags')
-			Tag::show();
+		global $context, $modSettings, $settings;
 
-		if (isset($_REQUEST['new_comment']))
-			Comment::add();
+		if (empty($context['lp_page']))
+			return;
 
-		if (isset($_REQUEST['del_comment']))
-			Comment::remove();
+		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
+		$context['meta_description']  = $context['lp_page']['description'];
+		$context['optimus_og_type']['article']['published_time'] = date('c', $context['lp_page']['created_at']);
+		$context['optimus_og_type']['article']['modified_time']  = !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null;
+		$context['optimus_og_type']['article']['author'] = $context['lp_page']['author'];
+
+		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
+			$settings['og_image'] = $context['lp_page']['image'];
 	}
 
 	/**
@@ -118,12 +109,11 @@ class Page
 	 *
 	 * Подготавливаем комментарии для отображения
 	 *
-	 * @param string $alias
 	 * @return void
 	 */
-	private static function prepareComments(string $alias)
+	private static function prepareComments()
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $context;
 
 		if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 			return;
@@ -133,75 +123,7 @@ class Page
 		if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;
 
-		$comments = Helpers::useCache(
-			'page_' . ($alias == '/' ? 'main' : $alias) . '_comments',
-			'getAll',
-			'\Bugo\LightPortal\Comment',
-			3600,
-			$context['lp_page']['id']
-		);
-
-		$comments = array_map(
-			function ($comment) {
-				$date = date('Y-m-d', $comment['created_at']);
-				$comment['created'] = Helpers::getFriendlyTime($comment['created_at']);
-				$comment['created_at'] = $date;
-
-				return $comment;
-			},
-			$comments
-		);
-
-		$total_comments     = count($comments);
-		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
-
-		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
-		$comment_tree   = Comment::getCommentTree($comments);
-		$total_comments = count($comment_tree);
-
-		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
-		$context['start']      = &$_REQUEST['start'];
-		$start                 = (int) $_REQUEST['start'];
-
-		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
-
-		$context['page_info'] = array(
-			'current_page' => $_REQUEST['start'] / $limit + 1,
-			'num_pages'    => floor(($total_comments - 1) / $limit) + 1,
-			'next_page'    => $_REQUEST['start'] + $limit < $total_comments ? $context['canonical_url'] . ';start=' . ($_REQUEST['start'] + $limit) : ''
-		);
-	}
-
-	/**
-	 * Calculate the number columns for the frontpage layout
-	 *
-	 * Подсчитываем количество колонок для макета главной страницы
-	 *
-	 * @return void
-	 */
-	private static function calculateNumColumns()
-	{
-		global $modSettings, $context;
-
-		$num_columns = 12;
-
-		if (!empty($modSettings['lp_frontpage_layout'])) {
-			switch ($modSettings['lp_frontpage_layout']) {
-				case '1':
-					$num_columns = 12 / 2;
-					break;
-				case '2':
-					$num_columns = 12 / 3;
-					break;
-				case '3':
-					$num_columns = 12 / 4;
-					break;
-				default:
-					$num_columns = 12 / 6;
-			}
-		}
-
-		$context['lp_frontpage_layout'] = $num_columns;
+		(new Comment($context['lp_page']['alias']))->prepare();
 	}
 
 	/**
@@ -212,23 +134,28 @@ class Page
 	 * @param array $params
 	 * @return void
 	 */
-	public static function getFromDB(array $params)
+	public static function getDataFromDB(array $params)
 	{
 		global $smcFunc, $modSettings;
 
-		[$item, $isAlias] = $params;
+		if (empty($params))
+			return [];
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.description, p.keywords, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				mem.real_name AS author_name, pp.name, pp.value
+				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
+				mem.real_name AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
-			WHERE ' . ($isAlias ? 'p.alias = {string' : 'p.page_id = {int') . ':item}',
-			array(
-				'type' => 'page',
-				'item' => $item
+				LEFT JOIN {db_prefix}lp_tags AS t ON (t.page_id = p.page_id)
+			WHERE p.' . (!empty($params['alias']) ? 'alias = {string:alias}' : 'page_id = {int:item}'),
+			array_merge(
+				$params,
+				array(
+					'type' => 'page'
+				)
 			)
 		);
 
@@ -253,10 +180,8 @@ class Page
 					'id'          => $row['page_id'],
 					'author_id'   => $row['author_id'],
 					'author'      => $row['author_name'],
-					'title'       => $row['title'],
 					'alias'       => $row['alias'],
 					'description' => $row['description'],
-					'keywords'    => $row['keywords'],
 					'content'     => $row['content'],
 					'type'        => $row['type'],
 					'permissions' => $row['permissions'],
@@ -266,6 +191,12 @@ class Page
 					'updated_at'  => $row['updated_at'],
 					'image'       => $og_image
 				);
+
+			if (!empty($row['lang']))
+				$data['title'][$row['lang']] = $row['title'];
+
+			if (!empty($row['keyword']))
+				$data['keywords'][] = $row['keyword'];
 
 			if (!empty($row['name']))
 				$data['options'][$row['name']] = $row['value'];
@@ -277,31 +208,63 @@ class Page
 	}
 
 	/**
+	 * Get the page fields by its alias
+	 *
+	 * Получаем поля страницы по её алиасу
+	 *
+	 * @param string $alias
+	 * @return array
+	 */
+	public static function getDataByAlias(string $alias)
+	{
+		if (empty($alias))
+			return [];
+
+		$data = Helpers::useCache('page_' . $alias, 'getDataFromDB', __CLASS__, 3600, array('alias' => $alias));
+		self::prepareData($data);
+
+		return $data;
+	}
+
+	/**
 	 * Get the page fields
 	 *
 	 * Получаем поля страницы
 	 *
-	 * @param mixed $item
-	 * @param bool $isAlias
+	 * @param int $item
 	 * @return array
 	 */
-	public static function getData($item, bool $isAlias = true)
+	public static function getData(int $item)
+	{
+		if (empty($item))
+			return [];
+
+		$data = Helpers::useCache('page_' . $item, 'getDataFromDB', __CLASS__, 3600, array('item' => $item));
+		self::prepareData($data);
+
+		return $data;
+	}
+
+	/**
+	 * Additional processing of page data
+	 *
+	 * Дополнительная обработка данных страницы
+	 *
+	 * @param array|null $data
+	 * @return void
+	 */
+	private static function prepareData(?array &$data)
 	{
 		global $user_info;
 
-		if (empty($item))
+		if (empty($data))
 			return;
 
-		$data = Helpers::useCache('page_' . ($item == '/' ? 'main' : $item), 'getFromDB', __CLASS__, 3600, array($item, $isAlias));
-
-		if (!empty($data)) {
-			$data['created']  = Helpers::getFriendlyTime($data['created_at']);
-			$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
-			$data['can_show'] = Helpers::canShowItem($data['permissions']);
-			$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
-		}
-
-		return $data;
+		$data['created']  = Helpers::getFriendlyTime($data['created_at']);
+		$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
+		$data['can_show'] = Helpers::canShowItem($data['permissions']);
+		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
+		$data['keywords'] = !empty($data['keywords']) ? array_unique($data['keywords']) : [];
 	}
 
 	/**

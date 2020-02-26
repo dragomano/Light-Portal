@@ -137,6 +137,10 @@ class Settings
 		// Initial settings
 		// Устанавливаем первоначальные настройки
 		$add_settings = [];
+		if (!isset($modSettings['lp_frontpage_title']))
+			$add_settings['lp_frontpage_title'] = $context['forum_name'];
+		if (!isset($modSettings['lp_frontpage_id']))
+			$add_settings['lp_frontpage_id'] = 1;
 		if (!isset($modSettings['lp_frontpage_layout']))
 			$add_settings['lp_frontpage_layout'] = 2;
 		if (!isset($modSettings['lp_subject_size']))
@@ -152,30 +156,30 @@ class Settings
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
-		Subs::getForumLanguages();
+		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']);
 
-		$config_vars = [];
-		foreach ($context['languages'] as $lang) {
-			$txt['lp_frontpage_title_' . $lang['filename']] = $txt['lp_frontpage_title'] . ' [<strong>' . $lang['filename'] . '</strong>]';
-			$config_vars[] = array('text', 'lp_frontpage_title_' . $lang['filename'], 80, 'disabled' => !empty($modSettings['lp_frontpage_disable']));
+		$active_pages = FrontPage::getActivePages();
+		if (!empty($active_pages)) {
+			$active_pages = array_map(function ($page) {
+				return $page['id'] = $page['title'][Helpers::getUserLanguage()] ?? $page['title']['english'];
+			}, $active_pages);
+		} else {
+			$active_pages = array($txt['no']);
 		}
-
-		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']);
-
-		$extra_settings = [];
 
 		// The mod authors can easily add their own settings
 		// Авторы модов модут легко добавлять собственные настройки
+		$extra_settings = [];
 		Subs::runAddons('addSettings', array(&$extra_settings));
 
 		if (!empty($extra_settings))
 			$extra_settings = array_merge(array(array('title', 'lp_extra_settings')), $extra_settings);
 
 		$config_vars = array_merge(
-			$config_vars,
 			array(
-				array('check', 'lp_frontpage_disable', 'disabled' => !empty($modSettings['lp_standalone'])),
-				array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
+				array('string', 'lp_frontpage_title', 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
+				array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
+				array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
 				array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 				array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 				array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
@@ -183,7 +187,7 @@ class Settings
 				array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 				array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
 				'',
-				array('check', 'lp_standalone', 'subtext' => $txt['lp_standalone_help'], 'disabled' => !empty($modSettings['lp_frontpage_disable'])),
+				array('check', 'lp_standalone', 'subtext' => $txt['lp_standalone_help'], 'disabled' => $frontpage_disabled),
 				array('text', 'lp_standalone_excluded_actions', 80, 'subtext' => $txt['lp_standalone_excluded_actions_subtext']),
 				'',
 				array('check', 'lp_show_tags_on_page'),
@@ -215,8 +219,6 @@ class Settings
 
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
-
-			ManagePages::toggleStatus(1, isset($_POST['lp_frontpage_disable']) ? 0 : 1);
 
 			clean_cache();
 			redirectexit('action=admin;area=lp_settings');

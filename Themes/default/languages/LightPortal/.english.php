@@ -15,9 +15,9 @@ $txt['lp_settings']                            = 'Portal settings';
 $txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
 $txt['lp_new_version_is_available']            = '<a href="%1$s" target="_blank" rel="noopener">A new version</a> is available!';
 $txt['lp_frontpage_title']                     = 'The frontpage title';
-$txt['lp_frontpage_disable']                   = 'Disable the frontpage';
-$txt['lp_frontpage_mode']                      = 'What is should be displayed as the frontpage';
-$txt['lp_frontpage_mode_set']                  = array('The portal main page', 'All topics from selected boards', 'All pages (except the first)', 'Boards with descriptions');
+$txt['lp_frontpage_mode']                      = 'The portal frontpage';
+$txt['lp_frontpage_mode_set']                  = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
+$txt['lp_frontpage_id']                        = 'Portal page to display as the main page';
 $txt['lp_frontpage_boards']                    = 'Boards as sources of articles for the frontpage';
 $txt['lp_frontpage_layout']                    = 'Number of columns for displaying articles';
 $txt['lp_frontpage_layout_set']                = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
@@ -107,7 +107,6 @@ $txt['lp_block_types_descriptions'] = array(
 
 // Pages
 $txt['lp_pages']                        = 'Pages';
-$txt['lp_pages_main']                   = 'The main page';
 $txt['lp_pages_manage']                 = 'Manage pages';
 $txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
 $txt['lp_pages_add']                    = 'Add page';
@@ -115,7 +114,7 @@ $txt['lp_pages_add_title']              = 'Adding page';
 $txt['lp_pages_add_tab_description']    = 'Fill the page title and alias. After that, you can change its type, use preview and save.';
 $txt['lp_pages_edit_title']             = 'Editing page';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
-$txt['lp_extra_pages']                  = 'Additional pages';
+$txt['lp_extra_pages']                  = 'Portal pages';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
 $txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
@@ -151,6 +150,7 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
+$txt['lp_page_not_activated']         = 'The requested page is disabled!';
 $txt['lp_block_not_found']            = 'Block not found!';
 $txt['lp_post_error_no_title']        = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias']        = 'The <strong>alias</strong> field was not filled out. It is required.';

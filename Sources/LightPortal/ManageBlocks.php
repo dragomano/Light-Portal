@@ -61,9 +61,11 @@ class ManageBlocks
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
 			ORDER BY b.placement DESC, b.priority',
-			array()
+			array(
+				'type' => 'block'
+			)
 		);
 
 		$current_blocks = [];
@@ -100,17 +102,18 @@ class ManageBlocks
 			return;
 
 		self::remove();
-		self::cloneBlock();
+		self::makeCopy();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
 			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
 
-			self::toggleStatus($item, $status == 'off' ? 1 : 0);
+			self::toggleStatus($item, $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}
 
 		self::updatePriority();
 		clean_cache();
+		exit;
 	}
 
 	/**
@@ -138,10 +141,12 @@ class ManageBlocks
 		);
 
 		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_block_titles
-			WHERE block_id = {int:id}',
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id = {int:id}
+				AND type = {string:type}',
 			array(
-				'id' => $item
+				'id'   => $item,
+				'type' => 'block'
 			)
 		);
 
@@ -163,7 +168,7 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	private static function cloneBlock()
+	private static function makeCopy()
 	{
 		global $context;
 
@@ -204,11 +209,11 @@ class ManageBlocks
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus(int $item, int $status)
+	public static function toggleStatus(int $item, int $status = 0)
 	{
 		global $smcFunc;
 
-		if (empty($item) || !isset($status))
+		if (empty($item))
 			return;
 
 		$smcFunc['db_query']('', '
@@ -349,8 +354,7 @@ class ManageBlocks
 
 		self::validateData();
 
-		$lang = Helpers::getUserLanguage();
-		$block_title = $context['lp_block']['title'][$lang] ?? '';
+		$block_title = $context['lp_block']['title'][Helpers::getUserLanguage()] ?? '';
 		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
@@ -508,7 +512,7 @@ class ManageBlocks
 		$context['posting_fields']['subject'] = ['no'];
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . ' [<strong>' . $lang['filename'] . '</strong>]';
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -543,13 +547,13 @@ class ManageBlocks
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
 			if (!defined('JQUERY_VERSION')) {
 				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_block']['icon_type']
+					'value'   => $type,
+					'checked' => $type == $context['lp_block']['icon_type']
 				);
 			} else {
 				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_block']['icon_type']
+					'value'   => $type,
+					'checked' => $type == $context['lp_block']['icon_type']
 				);
 			}
 		}
@@ -735,8 +739,7 @@ class ManageBlocks
 
 		checkSubmitOnce('free');
 
-		$lang = Helpers::getUserLanguage();
-		$context['preview_title']   = Helpers::cleanBbcode($context['lp_block']['title'][$lang]);
+		$context['preview_title']   = Helpers::cleanBbcode($context['lp_block']['title'][Helpers::getUserLanguage()]);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
 		censorText($context['preview_title']);
@@ -825,9 +828,9 @@ class ManageBlocks
 					$context['lp_block']['type'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
-					$context['lp_block']['priority'] ?: $priority ?: 0,
+					$context['lp_block']['priority'] ?? $priority ?? 0,
 					$context['lp_block']['permissions'],
-					$context['lp_block']['status'] ?: 1,
+					$context['lp_block']['status'] ?? Block::STATUS_ACTIVE,
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
 					$context['lp_block']['title_style'],
@@ -842,21 +845,23 @@ class ManageBlocks
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
 					$titles[] = array(
-						'block_id' => $item,
-						'lang'     => $lang,
-						'title'    => $title
+						'item_id' => $item,
+						'type'    => 'block',
+						'lang'    => $lang,
+						'title'   => $title
 					);
 				}
 
 				$smcFunc['db_insert']('',
-					'{db_prefix}lp_block_titles',
+					'{db_prefix}lp_titles',
 					array(
-						'block_id' => 'int',
-						'lang'     => 'string',
-						'title'    => 'string'
+						'item_id' => 'int',
+						'type'    => 'string',
+						'lang'    => 'string',
+						'title'   => 'string'
 					),
 					$titles,
-					array('block_id', 'lang')
+					array('item_id', 'type', 'lang')
 				);
 			}
 
@@ -866,6 +871,7 @@ class ManageBlocks
 					$value = is_array($value) ? implode(',', $value) : $value;
 					$parameters[] = array(
 						'item_id' => $item,
+						'type'    => 'block',
 						'name'    => $param_name,
 						'value'   => $value
 					);
@@ -875,11 +881,12 @@ class ManageBlocks
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
+						'type'    => 'string',
 						'name'    => 'string',
 						'value'   => 'string'
 					),
 					$parameters,
-					array('item_id', 'name')
+					array('item_id', 'type', 'name')
 				);
 			}
 		} else {
@@ -907,21 +914,23 @@ class ManageBlocks
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
 					$titles[] = array(
-						'block_id' => $item,
-						'lang'     => $lang,
-						'title'    => $title
+						'item_id' => $item,
+						'type'    => 'block',
+						'lang'    => $lang,
+						'title'   => $title
 					);
 				}
 
 				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_block_titles',
+					'{db_prefix}lp_titles',
 					array(
-						'block_id' => 'int',
-						'lang'     => 'string',
-						'title'    => 'string'
+						'item_id' => 'int',
+						'type'    => 'string',
+						'lang'    => 'string',
+						'title'   => 'string'
 					),
 					$titles,
-					array('block_id', 'lang')
+					array('item_id', 'type', 'lang')
 				);
 			}
 
@@ -931,6 +940,7 @@ class ManageBlocks
 					$value = is_array($value) ? implode(',', $value) : $value;
 					$parameters[] = array(
 						'item_id' => $item,
+						'type'    => 'block',
 						'name'    => $param_name,
 						'value'   => $value
 					);
@@ -940,11 +950,12 @@ class ManageBlocks
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
+						'type'    => 'string',
 						'name'    => 'string',
 						'value'   => 'string'
 					),
 					$parameters,
-					array('item_id', 'name')
+					array('item_id', 'type', 'name')
 				);
 			}
 		}
@@ -976,7 +987,7 @@ class ManageBlocks
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_block_titles AS bt ON (bt.block_id = b.block_id)
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
 			WHERE b.block_id = {int:item}',
 			array(

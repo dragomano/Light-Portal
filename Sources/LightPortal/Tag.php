@@ -84,13 +84,13 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . '?page=' . $entry['alias'] . '">' . $entry['title'] . '</a>';
+							return '<a href="' . (Helpers::isFrontpage($entry['id']) ? $scripturl : '?page=' . $entry['alias']) . '">' . Helpers::getLocalizedTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'p.title DESC',
-						'reverse' => 'p.title'
+						'default' => 'pt.title DESC',
+						'reverse' => 'pt.title'
 					)
 				),
 				'author' => array(
@@ -100,7 +100,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . '?action=profile;u=' . $entry['author_id'] . '">' . $entry['author_name'] . '</a>';
+							return empty($entry['author_id']) ? $entry['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $entry['author_id'] . '">' . $entry['author_name'] . '</a>';
 						},
 						'class' => 'centertext'
 					),
@@ -149,45 +149,46 @@ class Tag
 	 */
 	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $modSettings;
+		global $smcFunc, $txt;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.keywords, p.permissions, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
-			FROM {db_prefix}lp_pages AS p
+				p.page_id, p.author_id, p.alias, p.permissions, p.num_views,
+				GREATEST(p.created_at, p.updated_at) AS date, t.value, pt.lang, pt.title, COALESCE(mem.real_name, {string:guest}) AS author_name
+			FROM {db_prefix}lp_tags AS t
+				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = t.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) ? '
-				AND p.alias != {string:alias}' : '') . '
+			WHERE t.value = {string:key}
+				AND p.status = {int:status}
 			ORDER BY ' . $sort . ', p.page_id
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
-				'status' => 1,
-				'alias'  => '/'
+				'guest'  => $txt['guest'],
+				'type'   => 'page',
+				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
+				'status' => Page::STATUS_ACTIVE
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[] = array(
-				'id'          => $row['page_id'],
-				'title'       => $row['title'],
-				'alias'       => $row['alias'],
-				'keywords'    => explode(', ', $row['keywords']),
-				'num_views'   => $row['num_views'],
-				'author_id'   => $row['author_id'],
-				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
-				'can_show'    => Helpers::canShowItem($row['permissions'])
-			);
+			if (Helpers::canShowItem($row['permissions'])) {
+				$items[$row['page_id']] = array(
+					'id'          => $row['page_id'],
+					'alias'       => $row['alias'],
+					'num_views'   => $row['num_views'],
+					'author_id'   => $row['author_id'],
+					'author_name' => $row['author_name'],
+					'created_at'  => Helpers::getFriendlyTime($row['date'])
+				);
+
+				if (!empty($row['lang']))
+					$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
+			}
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		$keyword = $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES);
-		$items = array_filter($items, function ($page) use ($keyword) {
-			return $page['can_show'] && in_array($keyword, $page['keywords']);
-		});
 
 		return $items;
 	}
@@ -201,33 +202,27 @@ class Tag
 	 */
 	public static function getTotalQuantityPagesWithSelectedTag()
 	{
-		global $smcFunc, $modSettings;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT keywords, permissions
-			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) ? '
-				AND alias != {string:alias}' : ''),
+			SELECT t.page_id, t.value, p.permissions
+			FROM {db_prefix}lp_tags AS t
+				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+			WHERE t.value = {string:key}
+				AND p.status = {int:status}',
 			array(
-				'status' => 1,
-				'alias'  => '/'
+				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
+				'status' => Page::STATUS_ACTIVE
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[] = array(
-				'keywords' => explode(', ', $row['keywords']),
-				'can_show' => Helpers::canShowItem($row['permissions'])
-			);
+			if (Helpers::canShowItem($row['permissions']))
+				$items[$row['page_id']] = $row['value'];
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		$keyword = $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES);
-		$items = array_filter($items, function ($page) use ($keyword) {
-			return $page['can_show'] && in_array($keyword, $page['keywords']);
-		});
 
 		return count($items);
 	}
@@ -251,7 +246,7 @@ class Tag
 			'name' => $context['page_title']
 		);
 
-		$context['lp_tags'] = self::getAllTags();
+		$context['lp_tags'] = self::getAll();
 		$context['sub_template'] = 'show_tags';
 
 		obExit();
@@ -264,47 +259,39 @@ class Tag
 	 *
 	 * @return array
 	 */
-	public static function getAllTags()
+	public static function getAll()
 	{
-		global $smcFunc, $modSettings;
+		global $smcFunc, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT keywords, permissions
-			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) ? '
-				AND alias != {string:alias}' : ''),
+			SELECT t.value, p.permissions
+			FROM {db_prefix}lp_tags AS t
+				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+			WHERE t.value IS NOT NULL
+				AND p.status = {int:status}
+			ORDER BY t.value',
 			array(
-				'status' => 1,
-				'alias'  => '/'
+				'status' => Page::STATUS_ACTIVE
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$keywords = explode(', ', $row['keywords']);
-			$can_show = Helpers::canShowItem($row['permissions']);
+			if (Helpers::canShowItem($row['permissions'])) {
+				if (!isset($items[$row['value']]))
+					$i = 1;
+				else
+					$i++;
 
-			if (!empty($keywords) && $can_show) {
-				foreach ($keywords as $key) {
-					if (empty($key))
-						continue;
-
-					if (!isset($items[$key]))
-						$i = 1;
-					else
-						$i++;
-
-					$items[$key] = array(
-						'keyword'   => $key,
-						'frequency' => $i
-					);
-				}
+				$items[$row['value']] = array(
+					'keyword'   => $row['value'],
+					'link'      => $scripturl . '?action=portal;sa=tags;key=' . urlencode($row['value']),
+					'frequency' => $i
+				);
 			}
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		asort($items);
 
 		return $items;
 	}

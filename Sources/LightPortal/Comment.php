@@ -20,13 +20,86 @@ if (!defined('SMF'))
 class Comment
 {
 	/**
+	 * Page alias
+	 *
+	 * @var string
+	 */
+	private $alias;
+
+	/**
+	 * Comment construct
+	 *
+	 * @param string $alias
+	 */
+	public function __construct(string $alias = '')
+	{
+		$this->alias = $alias;
+	}
+
+	/**
+	 * Process comments
+	 *
+	 * Обрабатываем комментарии
+	 *
+	 * @return void
+	 */
+	public function prepare()
+	{
+		global $context, $txt, $modSettings;
+
+		if (empty($this->alias))
+			return;
+
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment') {
+			$this->add();
+		}
+
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment') {
+			$this->remove();
+		}
+
+		$comments = Helpers::useCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, 3600, $context['lp_page']['id']);
+		$comments = array_map(
+			function ($comment) {
+				$date = date('Y-m-d', $comment['created_at']);
+				$comment['created'] = Helpers::getFriendlyTime($comment['created_at']);
+				$comment['created_at'] = $date;
+
+				return $comment;
+			},
+			$comments
+		);
+
+		$total_comments     = count($comments);
+		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
+
+		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
+		$comment_tree   = $this->getTree($comments);
+		$total_comments = count($comment_tree);
+
+		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
+		$context['start']      = &$_REQUEST['start'];
+		$start                 = (int) $_REQUEST['start'];
+
+		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+
+		$context['page_info'] = array(
+			'current_page' => $_REQUEST['start'] / $limit + 1,
+			'num_pages'    => floor(($total_comments - 1) / $limit) + 1,
+			'next_page'    => $_REQUEST['start'] + $limit < $total_comments ? $context['canonical_url'] . ';start=' . ($_REQUEST['start'] + $limit) : ''
+		);
+
+		$context['page_info']['start'] = $context['page_info']['num_pages'] * $limit - $limit;
+	}
+
+	/**
 	 * Adding a comment
 	 *
 	 * Добавление комментария
 	 *
 	 * @return void
 	 */
-	public static function add()
+	private function add()
 	{
 		global $smcFunc, $user_info, $txt;
 
@@ -73,13 +146,22 @@ class Comment
 				$message,
 				$time = time()
 			),
-			array('id'),
+			array('id', 'page_id'),
 			1
 		);
 
 		$result['error'] = true;
 
 		if (!empty($item)) {
+			$smcFunc['db_query']('', '
+				UPDATE {db_prefix}lp_pages
+				SET num_comments = num_comments + 1
+				WHERE page_id = {int:item}',
+				array(
+					'item' => $page_id
+				)
+			);
+
 			loadTemplate('LightPortal/ViewPage');
 
 			ob_start();
@@ -89,7 +171,7 @@ class Comment
 				'alias'       => $page_alias,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => self::getUserAvatar(),
+				'avatar'      => $this->getUserAvatar(),
 				'message'     => $message,
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time)
@@ -109,11 +191,11 @@ class Comment
 			);
 
 			if (empty($parent))
-				self::makeNotify('new_comment', 'page_comment', $result);
+				$this->makeNotify('new_comment', 'page_comment', $result);
 			else
-				self::makeNotify('new_reply', 'page_comment_reply', $result);
+				$this->makeNotify('new_reply', 'page_comment_reply', $result);
 
-			Helpers::useCache('page_' . ($page_alias == '/' ? 'main' : $page_alias) . '_comments', null);
+			Helpers::useCache('page_' . $page_alias . '_comments', null);
 		}
 
 		exit(json_encode($result));
@@ -126,9 +208,9 @@ class Comment
 	 *
 	 * @return string
 	 */
-	public static function getUserAvatar()
+	private function getUserAvatar()
 	{
-		global $modSettings, $user_info, $scripturl, $smcFunc;
+		global $modSettings, $user_info, $smcFunc, $scripturl;
 
 		if (!empty($user_avatar))
 			return;
@@ -150,7 +232,7 @@ class Comment
 			$user_avatar['href'] = $modSettings['avatar_url'] . '/default.png';
 
 		if (!empty($user_avatar))
-			$user_avatar['image'] = '<img src="' . $user_avatar['href'] . '" alt="" class="avatar">';
+			$user_avatar['image'] = '<img src="' . $user_avatar['href'] . '" alt="' . $user_info['name'] . '" class="avatar">';
 
 		return $user_avatar['image'];
 	}
@@ -162,14 +244,14 @@ class Comment
 	 *
 	 * @param string $type
 	 * @param string $action
-	 * @param array $commentOptions
+	 * @param array $options
 	 * @return void
 	 */
-	private static function makeNotify(string $type, string $action, array $commentOptions = [])
+	private function makeNotify(string $type, string $action, array $options = [])
 	{
 		global $smcFunc, $user_info;
 
-		if (empty($commentOptions))
+		if (empty($options))
 			return;
 
 		$smcFunc['db_insert']('insert',
@@ -185,16 +267,16 @@ class Comment
 				'\Bugo\LightPortal\Notify',
 				$smcFunc['json_encode'](
 					array(
-						'time'           => $commentOptions['created'],
+						'time'           => $options['created'],
 						'member_id'	     => $user_info['id'],
 						'member_name'    => $user_info['name'],
 						'content_type'   => $type,
-						'content_id'     => $commentOptions['item'],
+						'content_id'     => $options['item'],
 						'content_action' => $action,
 						'extra'          => json_encode(
 							array(
-								'content_subject' => $commentOptions['title'],
-								'content_link'    => $commentOptions['page_url'] . "start=" . $commentOptions['start'] . '#comment' . $commentOptions['item']
+								'content_subject' => $options['title'],
+								'content_link'    => $options['page_url'] . "start=" . $options['start'] . '#comment' . $options['item']
 							)
 						)
 					)
@@ -206,18 +288,17 @@ class Comment
 	}
 
 	/**
-	 * Deleting a comment
+	 * Deleting a comment (and all childs)
 	 *
 	 * Удаление комментария (и всех дочерних)
 	 *
 	 * @return void
 	 */
-	public static function remove()
+	private function remove()
 	{
 		global $smcFunc;
 
 		$items = filter_input(INPUT_POST, 'items', FILTER_VALIDATE_INT, array('flags'  => FILTER_REQUIRE_ARRAY));
-		$alias = filter_input(INPUT_POST, 'alias', FILTER_SANITIZE_STRING);
 
 		if (empty($items))
 			return;
@@ -230,7 +311,19 @@ class Comment
 			)
 		);
 
-		Helpers::useCache('page_' . ($alias == '/' ? 'main' : $alias) . '_comments', null);
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_pages
+			SET num_comments = num_comments - {int:num_items}
+			WHERE alias = {string:alias}',
+			array(
+				'num_items' => count($items),
+				'alias'     => $this->alias
+			)
+		);
+
+		Helpers::useCache('page_' . $this->alias . '_comments', null);
+
+		exit;
 	}
 
 	/**
@@ -289,7 +382,7 @@ class Comment
 	 * @param array $data
 	 * @return array
 	 */
-	public static function getCommentTree(array $data)
+	private function getTree(array $data)
 	{
 		$tree = [];
 

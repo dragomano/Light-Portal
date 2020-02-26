@@ -114,36 +114,6 @@ $tables[] = array(
 );
 
 $tables[] = array(
-	'name' => 'lp_block_titles',
-	'columns' => array(
-		array(
-			'name'     => 'block_id',
-			'type'     => 'int',
-			'size'     => 11,
-			'unsigned' => true
-		),
-		array(
-			'name' => 'lang',
-			'type' => 'varchar',
-			'size' => 60,
-			'null' => false
-		),
-		array(
-			'name' => 'title',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		)
-	),
-	'indexes' => array(
-		 array(
-			'type'    => 'primary',
-			'columns' => array('block_id', 'lang')
-		 )
-	)
-);
-
-$tables[] = array(
 	'name' => 'lp_comments',
 	'columns' => array(
 		array(
@@ -211,12 +181,6 @@ $tables[] = array(
 			'default'  => 0
 		),
 		array(
-			'name' => 'title',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		),
-		array(
 			'name' => 'alias',
 			'type' => 'varchar',
 			'size' => 255,
@@ -224,12 +188,6 @@ $tables[] = array(
 		),
 		array(
 			'name' => 'description',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		),
-		array(
-			'name' => 'keywords',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => true
@@ -268,6 +226,13 @@ $tables[] = array(
 			'unsigned' => true
 		),
 		array(
+			'name'     => 'num_comments',
+			'type'     => 'int',
+			'size'     => 10,
+			'default'  => 0,
+			'unsigned' => true
+		),
+		array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
@@ -292,7 +257,6 @@ $tables[] = array(
 		'columns' => array(
 			'page_id'     => 'int',
 			'author_id'   => 'int',
-			'title'       => 'string-255',
 			'alias'       => 'string-255',
 			'content'     => 'string',
 			'type'        => 'string',
@@ -300,7 +264,7 @@ $tables[] = array(
 			'created_at'  => 'int'
 		),
 		'values' => array(
-			array(1, $user_info['id'], $mbname, '/', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>
+			array(1, $user_info['id'], 'home', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>
 			<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>
 			<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>', 'html', 3, time())
 		),
@@ -339,7 +303,7 @@ $tables[] = array(
 	'indexes' => array(
 		 array(
 			'type'    => 'primary',
-			'columns' => array('item_id', 'name')
+			'columns' => array('item_id', 'type', 'name')
 		)
 	),
 	'default' => array(
@@ -352,7 +316,80 @@ $tables[] = array(
 		'values' => array(
 			array(1, 'page', 'show_author_and_date', 0)
 		),
-		'keys' => array('item_id', 'name')
+		'keys' => array('item_id', 'type', 'name')
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_tags',
+	'columns' => array(
+		array(
+			'name'     => 'page_id',
+			'type'     => 'int',
+			'size'     => 11,
+			'unsigned' => true
+		),
+		array(
+			'name' => 'value',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		)
+	),
+	'indexes' => array(
+		 array(
+			'type'    => 'primary',
+			'columns' => array('page_id', 'value')
+		 )
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_titles',
+	'columns' => array(
+		array(
+			'name'     => 'item_id',
+			'type'     => 'int',
+			'size'     => 11,
+			'unsigned' => true
+		),
+		array(
+			'name'    => 'type',
+			'type'    => 'varchar',
+			'size'    => 10,
+			'default' => 'block',
+			'null'    => false
+		),
+		array(
+			'name' => 'lang',
+			'type' => 'varchar',
+			'size' => 60,
+			'null' => false
+		),
+		array(
+			'name' => 'title',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		)
+	),
+	'indexes' => array(
+		 array(
+			'type'    => 'primary',
+			'columns' => array('item_id', 'type', 'lang')
+		)
+	),
+	'default' => array(
+		'columns' => array(
+			'item_id' => 'int',
+			'type'    => 'string-10',
+			'lang'    => 'string-60',
+			'title'   => 'string-255'
+		),
+		'values' => array(
+			array(1, 'page', 'english', $mbname)
+		),
+		'keys' => array('item_id', 'type', 'lang')
 	)
 );
 

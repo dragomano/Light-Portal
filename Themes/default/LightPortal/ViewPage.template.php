@@ -23,7 +23,7 @@ function template_show_page()
 			<p>
 				<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '"><i class="fas fa-user-edit" aria-hidden="true"></i> ' . $context['lp_page']['updated'] : '', '
+					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
 				</time>
 			</p>';
 	}
@@ -46,7 +46,7 @@ function template_show_page()
 		echo '
 			<div class="smalltext">';
 
-		foreach (explode(', ', $context['lp_page']['keywords']) as $keyword) {
+		foreach ($context['lp_page']['keywords'] as $keyword) {
 			echo '
 				<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($keyword), '">', $keyword, '</a>';
 		}
@@ -95,8 +95,13 @@ function show_comment_block()
 	echo '
 		<aside class="comments">
 			<div class="cat_bar">
-				<h3 class="catbg">
-					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>
+				<h3 class="catbg">';
+
+	if (!empty($context['lp_page']['comments']))
+		echo '
+					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>';
+
+	echo '
 					<a id="page_comments_link">', $txt['lp_comments'], '</a>
 				</h3>
 			</div>
@@ -132,16 +137,16 @@ function show_comment_block()
 
 	if ($context['user']['is_logged'])
 		echo '
-				<form id="comment_form" class="roundframe sceditor-container descbox" action="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', 'new_comment" method="post" accept-charset="', $context['character_set'], '">
+				<form id="comment_form" class="roundframe sceditor-container descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
 					<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
 					<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
-					<input type="hidden" name="page_title" value="', $context['lp_page']['title'], '">
+					<input type="hidden" name="page_title" value="', $context['page_title'], '">
 					<input type="hidden" name="page_alias" value="', $context['lp_page']['alias'], '">
-					<input type="hidden" name="page_url" value="', $context['canonical_url'], $context['lp_page']['alias'] == '/' ? '?' : ';', '">
-					<input type="hidden" name="start" value="', (int) $_REQUEST['start'], '">
+					<input type="hidden" name="page_url" value="', $context['lp_current_page_url'], '">
+					<input type="hidden" name="start" value="', $context['page_info']['start'], '">
 					<button type="submit" class="button" name="comment" disabled>', $txt['post'], '</button>
 				</form>';
 
@@ -152,7 +157,8 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			let comment_redirect_url = "', $context['canonical_url'], '" + "', $context['lp_page']['alias'] == '/' ? '?' : ';', '";
+			let comment_remove_url = "', $context['lp_current_page_url'], 'sa=del_comment",
+				num_comments_per_page = ', !empty($modSettings['lp_num_comments_per_page']) ? $modSettings['lp_num_comments_per_page'] : 10, ';
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
 
@@ -183,7 +189,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	global $context, $txt;
 
 	echo '
-	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-alias="', $context['lp_page']['alias'] ?? $comment['alias'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
+	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
 		<div class="comment_avatar">
 			', $comment['avatar'];
 
@@ -194,16 +200,18 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	echo '
 		</div>
 		<div class="comment_wrapper">
-			<div class="comment_body">
-				<div class="generic_list_wrapper popover_title">
-					<span class="bold_text" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>', $comment['author_name'], '</span>
-					<span class="comment_date floatright" itemprop="datePublished" content="' , $comment['created_at'], '">', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a></span>
+			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', '">
+				<div class="title">
+					<span class="bold_text bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>', $comment['author_name'], '</span>
+					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
+						<span itemprop="datePublished" content="' , $comment['created_at'], '">', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a></span>
+					</div>
 				</div>
-				<div class="content bg ', $i % 2 == 0 ? 'odd' : 'even', '" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 4em"' : '', '>', $comment['message'], '</div>';
+				<div class="content" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 3em"' : '', '>', $comment['message'], '</div>';
 
 	if ($context['user']['is_logged'] && $level < 5) {
 		echo '
-				<div class="content bg ', $i % 2 == 0 ? 'odd' : 'even', ' smalltext" style="overflow: auto">
+				<div class="smalltext">
 					<span class="button reply_button">', $txt['reply'], '</span>';
 
 		// Only comment author or admin can remove comments

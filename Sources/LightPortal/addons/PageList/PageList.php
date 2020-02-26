@@ -115,47 +115,47 @@ class PageList
 	 */
 	public static function getPageList($sort_type)
 	{
-		global $smcFunc, $modSettings;
+		global $smcFunc, $modSettings, $txt;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, 0) AS author_name, COUNT(com.id) AS num_comments
+				p.page_id, p.author_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)
-			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) || !empty($modSettings['lp_frontpage_disable']) ? '
-				AND p.alias != {string:alias}' : '') . '
-			GROUP BY p.page_id, p.author_id, p.title, p.alias, p.type, p.permissions, p.num_views, p.created_at, p.updated_at, mem.real_name
+			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) ? '
+				AND p.page_id != {int:page_id}' : '') . '
 			ORDER BY {raw:sort} DESC',
 			array(
-				'status' => 1,
-				'alias'  => '/',
-				'sort'   => $sort_type
+				'guest'   => $txt['guest'],
+				'type'    => 'page',
+				'status'  => 1,
+				'page_id' => $modSettings['lp_frontpage_id'] ?: null,
+				'sort'    => $sort_type
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$pages[] = array(
-				'id'           => $row['page_id'],
-				'author_id'    => $row['author_id'],
-				'author'       => $row['author_name'],
-				'title'        => $row['title'],
-				'alias'        => $row['alias'],
-				'num_views'    => $row['num_views'],
-				'num_comments' => $row['num_comments'],
-				'created_at'   => $row['created_at'],
-				'updated_at'   => $row['updated_at'],
-				'can_show'     => Helpers::canShowItem($row['permissions'])
-			);
+			if (!isset($pages[$row['page_id']]))
+				$pages[$row['page_id']] = array(
+					'id'           => $row['page_id'],
+					'author_id'    => $row['author_id'],
+					'author_name'  => $row['author_name'],
+					'alias'        => $row['alias'],
+					'num_views'    => $row['num_views'],
+					'num_comments' => $row['num_comments'],
+					'created_at'   => $row['created_at'],
+					'updated_at'   => $row['updated_at'],
+					'can_show'     => Helpers::canShowItem($row['permissions'])
+				);
+
+			if (!empty($row['lang']))
+				$pages[$row['page_id']]['title'][$row['lang']] = $row['title'];
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		$pages = array_filter($pages, function ($item) {
-			return $item['can_show'] == true;
-		});
 
 		return $pages;
 	}
@@ -192,9 +192,12 @@ class PageList
 			<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
+				if ($page['can_show'] === false || empty($title = Helpers::getLocalizedTitle($page)))
+					continue;
+
 				echo '
 				<li>
-					<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $txt['guest'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+					<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ', Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
