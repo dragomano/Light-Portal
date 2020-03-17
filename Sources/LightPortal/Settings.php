@@ -361,6 +361,7 @@ class Settings
 			$pages = array_map(function ($page) {
 				return $page['id'] = Helpers::getPublicTitle($page);
 			}, $pages);
+			$pages = array_filter($pages);
 		} else {
 			$pages = array($txt['no']);
 		}

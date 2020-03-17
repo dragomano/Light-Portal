@@ -128,7 +128,8 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return $entry['status'] ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . Helpers::getPublicTitle($entry) . '</a>') : Helpers::getPublicTitle($entry);
+							$title = Helpers::getPublicTitle($entry);
+							return $entry['status'] && !empty($title) ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
 						},
 						'class' => 'centertext'
 					),
@@ -216,17 +217,18 @@ class ManagePages
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['page_id']] = array(
-				'id'          => $row['page_id'],
-				'alias'       => $row['alias'],
-				'type'        => $row['type'],
-				'status'      => $row['status'],
-				'num_views'   => $row['num_views'],
-				'author_id'   => $row['author_id'],
-				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
-				'is_front'    => Helpers::isFrontpage($row['page_id'])
-			);
+			if (!isset($items[$row['page_id']]))
+				$items[$row['page_id']] = array(
+					'id'          => $row['page_id'],
+					'alias'       => $row['alias'],
+					'type'        => $row['type'],
+					'status'      => $row['status'],
+					'num_views'   => $row['num_views'],
+					'author_id'   => $row['author_id'],
+					'author_name' => $row['author_name'],
+					'created_at'  => Helpers::getFriendlyTime($row['date']),
+					'is_front'    => Helpers::isFrontpage($row['page_id'])
+				);
 
 			if (!empty($row['lang']))
 				$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
@@ -555,7 +557,7 @@ class ManagePages
 
 		$post_errors = [];
 
-		if (empty($data['title_' . Helpers::getUserLanguage()]))
+		if (empty($data['title_english']) || empty($data['title_' . Helpers::getUserLanguage()]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -605,7 +607,7 @@ class ManagePages
 					'id'        => 'title_' . $lang['filename'],
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => $lang['filename'] == Helpers::getUserLanguage(),
+					'required'  => in_array($lang['filename'], array('english', Helpers::getUserLanguage())),
 					'style'     => 'width: 100%'
 				)
 			);

@@ -316,22 +316,23 @@ class FrontPage
 			if (!empty($teaser_size) && !empty($row['description']))
 				$row['description'] = shorten_subject($row['description'], $teaser_size - 3);
 
-			$pages[$row['page_id']] = array(
-				'id'          => $row['page_id'],
-				'author_id'   => $row['author_id'],
-				'author_link' => $scripturl . '?action=profile;u=' . $row['author_id'],
-				'author_name' => $row['author_name'],
-				'alias'       => $row['alias'],
-				'description' => $row['description'],
-				'type'        => $row['type'],
-				'num_views'   => $row['num_views'],
-				'created_at'  => $row['date'],
-				'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-				'link'        => $scripturl . '?page=' . $row['alias'],
-				'image'       => $image,
-				'can_show'    => Helpers::canShowItem($row['permissions']),
-				'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
-			);
+			if (!isset($pages[$row['page_id']]))
+				$pages[$row['page_id']] = array(
+					'id'          => $row['page_id'],
+					'author_id'   => $row['author_id'],
+					'author_link' => $scripturl . '?action=profile;u=' . $row['author_id'],
+					'author_name' => $row['author_name'],
+					'alias'       => $row['alias'],
+					'description' => $row['description'],
+					'type'        => $row['type'],
+					'num_views'   => $row['num_views'],
+					'created_at'  => $row['date'],
+					'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+					'link'        => $scripturl . '?page=' . $row['alias'],
+					'image'       => $image,
+					'can_show'    => Helpers::canShowItem($row['permissions']),
+					'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+				);
 
 			if (!empty($row['lang']))
 				$pages[$row['page_id']]['title'][$row['lang']] = !empty($subject_size) ? shorten_subject($row['title'], $subject_size) : $row['title'];
