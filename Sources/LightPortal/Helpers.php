@@ -406,18 +406,24 @@ class Helpers
 	}
 
 	/**
-	 * Get a localized object title, according to the user's language
+	 * Get a public object title, according to the user's language, or the forum's language
 	 *
-	 * Получаем локализованный заголовок объекта, в соответствии с языком пользователя
+	 * Получаем публичный заголовок объекта, в соответствии с языком пользователя или форума
 	 *
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getLocalizedTitle(array $object)
+	public static function getPublicTitle(array $object)
 	{
+		global $language;
+
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		return $object['title'][Helpers::getUserLanguage()] ?? $object['title']['english'] ?? '';
+		$lang1 = $object['title'][Helpers::getUserLanguage()] ?? null;
+		$lang2 = $object['title']['english'] ?? null;
+		$lang3 = $object['title'][$language] ?? null;
+
+		return $lang1 ?: $lang2 ?: $lang3 ?: '';
 	}
 }

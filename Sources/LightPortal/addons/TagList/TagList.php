@@ -180,7 +180,7 @@ class TagList
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {
 				echo '
-			<a class="button" href="', $tag['link'], '">', $tag['keyword'], ' (', $tag['frequency'], ')</a>';
+			<a class="button" href="', $tag['link'], '">', $tag['keyword'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
 		} else
 			echo $txt['lp_no_tags'];

@@ -7,6 +7,12 @@
 	vertical-align: middle;
 }
 
+.block_bbc .videocontainer,
+.block_html .videocontainer,
+.block_md .videocontainer {
+	margin: 0 auto;
+}
+
 #lp_blocks .item {
 	cursor: pointer;
 }
@@ -53,6 +59,12 @@ section #display_head {
 
 section #display_head span {
 	margin: 0;
+}
+
+#display_jump_to {
+	text-align: right;
+	clear: both;
+	float: none;
 }
 
 aside.comments {
@@ -315,6 +327,16 @@ aside.comments {
 .recent_comments li {
 	margin: 4px 0 0 0;
 	padding: 6px 12px;
+}
+
+.recent_posts .poster_avatar {
+	float: left;
+	padding: 3px 11px 0 0;
+}
+
+.recent_posts .avatar {
+	width: 40px;
+	height: 40px;
 }
 
 /* Top Posters */

@@ -272,16 +272,20 @@ class AdsBlock
 
 		$blocks = array_filter($context['lp_blocks']['ads'], function($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
-				if (!in_array($context['current_board'], explode(',', $block['parameters']['ads_boards'])))
+				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
+				if (!array_key_exists($context['current_board'], $boards))
 					return false;
 			}
 
 			if (!empty($block['parameters']['ads_topics']) && !empty($context['current_topic'])) {
-				if (!in_array($context['current_topic'], explode(',', $block['parameters']['ads_topics'])))
+				$topics = array_flip(explode(',', $block['parameters']['ads_topics']));
+				if (!array_key_exists($context['current_topic'], $topics))
 					return false;
 			}
 
-			return !empty($block['parameters']['ads_placement']) && in_array($position, explode(',', $block['parameters']['ads_placement']));
+			$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+
+			return !empty($block['parameters']['ads_placement']) && array_key_exists($position, $placements);
 		});
 
 		return $blocks;

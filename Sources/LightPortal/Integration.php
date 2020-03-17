@@ -73,7 +73,7 @@ class Integration
 		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 rc1',
+			'LP_VERSION' => '1.0 rc2',
 			'LP_NAME'    => 'Light Portal',
 			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
@@ -340,6 +340,11 @@ class Integration
 	 */
 	public static function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
+		global $context;
+
+		$context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
+		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
+
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');

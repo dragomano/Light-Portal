@@ -7,8 +7,7 @@ jQuery(document).ready(function($) {
 		$("#comment_form").children("input[name=parent_id]").val(parent_id);
 		$("#comment_form").children("input[name=counter]").val(counter);
 		$("#comment_form").children("input[name=level]").val(level);
-		if (parent_id != 0)
-			$("#comment_form").children("input[name=start]").val(start);
+		$("#comment_form").children("input[name=start]").val(start);
 		$("#message").focus();
 	});
 	$("#page_comments").on("click", "span.remove_button", function() {
@@ -39,10 +38,6 @@ jQuery(document).ready(function($) {
 		if ($(e.target).attr("name")) {
 			if ($("#message").val() != "") {
 				$("button[name=comment]").prop("disabled", false);
-				let counter = $(".comment_list li[data-level=1]").last().attr("data-counter"),
-					start = $(".comment_list li[data-level=1]").last().attr("data-start"),
-					start2 = Number.parseInt(counter) + 1 >= num_comments_per_page ? Number.parseInt(start) + num_comments_per_page : start;
-				$("#comment_form").children("input[name=start]").val(start2);
 			} else {
 				$("button[name=comment]").prop("disabled", true);
 			}
@@ -74,6 +69,7 @@ jQuery(document).ready(function($) {
 				$("#message").css("height", "30px");
 				$("button[name=comment]").css("display", "none");
 				$("input[name=parent_id]").val(0);
+				$("input[name=start").val(page_info_start);
 				window.location.hash = "#comment" + data.item;
 			}
 		});

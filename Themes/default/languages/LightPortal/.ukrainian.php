@@ -13,7 +13,7 @@ $txt['lp_forum']  = 'Форум';
 // Settings
 $txt['lp_settings']                            = 'Налаштування порталу';
 $txt['lp_php_mysql_info']                      = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']            = 'Доступна <a href="%1$s" target="_blank" rel="noopener">нова версія</a>!';
+$txt['lp_new_version_is_available']            = 'Доступна нова версія!';
 $txt['lp_frontpage_title']                     = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode']                      = 'Перша сторінка порталу';
 $txt['lp_frontpage_mode_set']                  = array('Відключивши', 'Зазначена сторінка', 'Всі теми з обраних розділів', 'Всі активні сторінки порталу', 'Вибрані розділи');
@@ -43,6 +43,8 @@ $txt['lp_page_itemprop_phone']                 = 'Телефон вашої ор
 $txt['groups_light_portal_view']               = 'Хто може переглядати елементи порталу';
 $txt['groups_light_portal_manage_blocks']      = 'Хто може керувати блоками';
 $txt['groups_light_portal_manage_own_pages']   = 'Хто може керувати своїми сторінками';
+$txt['lp_manage_blocks_warning']               = 'Увага: деякі блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
+$txt['lp_manage_own_pages_warning']            = 'Увага: деякі сторінки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
 $txt['lp_extra_settings']                      = 'Додаткові налаштування';
 
 // Actions
@@ -65,7 +67,7 @@ $txt['lp_blocks_add_instruction']        = 'Оберіть потрібний б
 $txt['lp_blocks_edit_title']             = 'Редагування блоку';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Вміст';
-$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">Список іконок</a></span>';
+$txt['lp_block_icon_cheatsheet']         = 'Список іконок';
 $txt['lp_block_type']                    = 'Тип блоку';
 $txt['lp_block_priority']                = 'Пріоритет';
 $txt['lp_block_icon_type']               = 'Тип іконки';

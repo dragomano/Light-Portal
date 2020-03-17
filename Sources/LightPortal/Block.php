@@ -46,7 +46,7 @@ class Block
 			return;
 
 		foreach ($blocks as $item => $data) {
-			if (Helpers::canShowItem($data['can_show']) === false)
+			if (Helpers::canShowItem($data['permissions']) === false)
 				continue;
 
 			if (empty($data['title'][Helpers::getUserLanguage()]))

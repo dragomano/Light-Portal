@@ -158,7 +158,7 @@ function show_comment_block()
 		echo '
 		<script>
 			let comment_remove_url = "', $context['lp_current_page_url'], 'sa=del_comment",
-				num_comments_per_page = ', !empty($modSettings['lp_num_comments_per_page']) ? $modSettings['lp_num_comments_per_page'] : 10, ';
+				page_info_start = ', $context['page_info']['start'], ';
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
 

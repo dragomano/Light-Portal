@@ -212,10 +212,7 @@ class Comment
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl;
 
-		if (!empty($user_avatar))
-			return;
-
-		$user_avatar = array();
+		$user_avatar = [];
 
 		if (($modSettings['gravatarEnabled'] && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
 			if (!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && strlen($user_info['avatar']['url']) > 11)

@@ -128,7 +128,7 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return $entry['status'] ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . Helpers::getLocalizedTitle($entry) . '</a>') : Helpers::getLocalizedTitle($entry);
+							return $entry['status'] ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . Helpers::getPublicTitle($entry) . '</a>') : Helpers::getPublicTitle($entry);
 						},
 						'class' => 'centertext'
 					),
@@ -434,6 +434,9 @@ class ManagePages
 		);
 
 		$context['lp_current_page'] = Page::getData($item);
+
+		if (empty($context['lp_current_page']))
+			fatal_lang_error('lp_page_not_found', false, null, 404);
 
 		if ($context['lp_current_page']['can_edit'] === false)
 			fatal_lang_error('lp_page_not_editable', false);

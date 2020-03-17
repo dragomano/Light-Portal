@@ -114,7 +114,7 @@ class Settings
 	 */
 	public static function settingArea(bool $return_config = false)
 	{
-		global $sourcedir, $txt, $scripturl, $context, $modSettings;
+		global $sourcedir, $context, $txt, $scripturl, $modSettings;
 
 		require_once($sourcedir . '/ManageServer.php');
 
@@ -125,14 +125,14 @@ class Settings
 			'description' => sprintf($txt['lp_php_mysql_info'], LP_VERSION, phpversion(), $db_engine, $db_version)
 		);
 
-		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
-			$message = '</p><div class="noticebox">' . sprintf($txt['lp_new_version_is_available'], 'https://github.com/dragomano/Light-Portal/releases') . '</div><p>';
-			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
-		}
+		self::checkNewVersion();
 
 		$context['page_title']     = $txt['lp_settings'];
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
+
+		$context['permissions_excluded']['light_portal_manage_blocks'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 
 		// Initial settings
 		// Устанавливаем первоначальные настройки
@@ -158,14 +158,7 @@ class Settings
 
 		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']);
 
-		$active_pages = FrontPage::getActivePages();
-		if (!empty($active_pages)) {
-			$active_pages = array_map(function ($page) {
-				return $page['id'] = $page['title'][Helpers::getUserLanguage()] ?? $page['title']['english'];
-			}, $active_pages);
-		} else {
-			$active_pages = array($txt['no']);
-		}
+		$active_pages = self::getActivePages();
 
 		// The mod authors can easily add their own settings
 		// Авторы модов модут легко добавлять собственные настройки
@@ -204,8 +197,8 @@ class Settings
 				array('text', 'lp_page_itemprop_phone', 80),
 				array('title', 'edit_permissions'),
 				array('permissions', 'light_portal_view'),
-				array('permissions', 'light_portal_manage_blocks'),
-				array('permissions', 'light_portal_manage_own_pages')
+				array('permissions', 'light_portal_manage_blocks', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_blocks_warning'] . '</div>'),
+				array('permissions', 'light_portal_manage_own_pages', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_own_pages_warning'] . '</div>')
 			)
 		);
 
@@ -307,6 +300,26 @@ class Settings
 	}
 
 	/**
+	 * Check new version status
+	 *
+	 * Проверяем наличие новой версии
+	 *
+	 * @return void
+	 */
+	private static function checkNewVersion()
+	{
+		global $txt, $context;
+
+		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
+			$message = '</p>
+			<div class="noticebox">
+				<a href="https://github.com/dragomano/Light-Portal/releases" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
+			</div><p>';
+			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
+		}
+	}
+
+	/**
 	 * Get the number of the last version
 	 *
 	 * Получаем номер последней версии LP
@@ -332,5 +345,26 @@ class Settings
 
 		$data = json_decode($data);
 		return str_replace('v', '', $data->tag_name);
+	}
+
+	/**
+	 * Get active pages to set the frontpage
+	 *
+	 * Получаем список активных страниц, для назначения главной
+	 *
+	 * @return array
+	 */
+	private static function getActivePages()
+	{
+		$pages = FrontPage::getActivePages();
+		if (!empty($pages)) {
+			$pages = array_map(function ($page) {
+				return $page['id'] = Helpers::getPublicTitle($page);
+			}, $pages);
+		} else {
+			$pages = array($txt['no']);
+		}
+
+		return $pages;
 	}
 }

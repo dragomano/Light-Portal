@@ -84,7 +84,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . (Helpers::isFrontpage($entry['id']) ? $scripturl : '?page=' . $entry['alias']) . '">' . Helpers::getLocalizedTitle($entry) . '</a>';
+							return '<a href="' . (Helpers::isFrontpage($entry['id']) ? $scripturl : '?page=' . $entry['alias']) . '">' . Helpers::getPublicTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					),
@@ -153,8 +153,8 @@ class Tag
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.permissions, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, t.value, pt.lang, pt.title, COALESCE(mem.real_name, {string:guest}) AS author_name
+				p.page_id, p.alias, p.permissions, p.num_views,
+				GREATEST(p.created_at, p.updated_at) AS date, t.value, pt.lang, pt.title, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = t.page_id AND pt.type = {string:type})
@@ -164,7 +164,7 @@ class Tag
 			ORDER BY ' . $sort . ', p.page_id
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
-				'guest'  => $txt['guest'],
+				'guest'  => $txt['guest_title'],
 				'type'   => 'page',
 				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
 				'status' => Page::STATUS_ACTIVE

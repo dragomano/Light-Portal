@@ -20,6 +20,13 @@ if (!defined('SMF'))
 class FrontPage
 {
 	/**
+	 * Number of columns (layout)
+	 *
+	 * @var int
+	 */
+	private static $num_columns = 12;
+
+	/**
 	 * Default image for articles
 	 *
 	 * @var string
@@ -35,7 +42,7 @@ class FrontPage
 	 */
 	public static function show()
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $context, $scripturl, $txt;
 
 		isAllowedTo('light_portal_view');
 
@@ -55,6 +62,7 @@ class FrontPage
 		}
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
+		$context['canonical_url']       = $scripturl;
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -75,21 +83,21 @@ class FrontPage
 	{
 		global $modSettings;
 
-		$num_columns = 12;
+		$num_columns = self::$num_columns;
 
 		if (!empty($modSettings['lp_frontpage_layout'])) {
 			switch ($modSettings['lp_frontpage_layout']) {
 				case '1':
-					$num_columns = 12 / 2;
+					$num_columns /= 2;
 					break;
 				case '2':
-					$num_columns = 12 / 3;
+					$num_columns /= 3;
 					break;
 				case '3':
-					$num_columns = 12 / 4;
+					$num_columns /= 4;
 					break;
 				default:
-					$num_columns = 12 / 6;
+					$num_columns /= 6;
 			}
 		}
 
@@ -120,7 +128,6 @@ class FrontPage
 		}
 
 		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $function, __CLASS__);
-
 		$articles = array_map(function ($article) {
 			if (isset($article['time']))
 				$article['time'] = Helpers::getFriendlyTime($article['time']);
@@ -129,7 +136,7 @@ class FrontPage
 			if (isset($article['last_updated']))
 				$article['last_updated'] = Helpers::getFriendlyTime($article['last_updated']);
 			if (isset($article['title']))
-				$article['title'] = Helpers::getLocalizedTitle($article);
+				$article['title'] = Helpers::getPublicTitle($article);
 			if (empty($article['image']))
 				$article['image_placeholder'] = self::$default_image;
 

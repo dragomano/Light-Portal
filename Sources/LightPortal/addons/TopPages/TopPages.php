@@ -161,29 +161,30 @@ class TopPages
 		[$popularity_type, $num_pages] = $params;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title
+			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
-			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) ? '
-				AND p.page_id != {int:page_id}' : '') . '
+			WHERE p.status = {int:status}
 			ORDER BY p.' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
 				'type'    => 'page',
 				'status'  => 1,
-				'page_id' => $modSettings['lp_frontpage_id'] ?: null,
 				'limit'   => $num_pages
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (Helpers::isFrontpage($row['page_id']))
+				continue;
+
 			if (!isset($pages[$row['page_id']]))
 				$pages[$row['page_id']] = array(
 					'num_comments' => $row['num_comments'],
 					'num_views'    => $row['num_views'],
 					'href'         => $scripturl . '?page=' . $row['alias'],
-					'can_show'     => Helpers::canShowItem($row['permissions'])
+					'permissions'  => $row['permissions']
 				);
 
 			if (!empty($row['lang']))
@@ -209,13 +210,13 @@ class TopPages
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $txt;
 
 		if ($type !== 'top_pages')
 			return;
 
 		$top_pages = Helpers::useCache(
-			'top_pages_addon_b' . $block_id . '_u' . $context['user']['id'] . '_' . $parameters['popularity_type'],
+			'top_pages_addon_b' . $block_id . '_' . $parameters['popularity_type'],
 			'getTopPages',
 			__CLASS__,
 			$cache_time,
@@ -231,7 +232,7 @@ class TopPages
 			$max = reset($top_pages)['num_' . $parameters['popularity_type']];
 
 			foreach ($top_pages as $page) {
-				if ($page['num_' . $parameters['popularity_type']] < 1 || $page['can_show'] === false || empty($title = Helpers::getLocalizedTitle($page)))
+				if ($page['num_' . $parameters['popularity_type']] < 1 || Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
 					continue;
 
 				$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

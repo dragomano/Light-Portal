@@ -113,31 +113,32 @@ class PageList
 	 * @param string $sort_type
 	 * @return array
 	 */
-	public static function getPageList($sort_type)
+	public static function getPageList(string $sort_type = 'page_id')
 	{
-		global $smcFunc, $modSettings, $txt;
+		global $smcFunc, $txt;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title
+				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-			WHERE p.status = {int:status}' . (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) ? '
-				AND p.page_id != {int:page_id}' : '') . '
+			WHERE p.status = {int:status}
 			ORDER BY {raw:sort} DESC',
 			array(
-				'guest'   => $txt['guest'],
+				'guest'   => $txt['guest_title'],
 				'type'    => 'page',
 				'status'  => 1,
-				'page_id' => $modSettings['lp_frontpage_id'] ?: null,
 				'sort'    => $sort_type
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (Helpers::isFrontpage($row['page_id']))
+				continue;
+
 			if (!isset($pages[$row['page_id']]))
 				$pages[$row['page_id']] = array(
 					'id'           => $row['page_id'],
@@ -148,7 +149,7 @@ class PageList
 					'num_comments' => $row['num_comments'],
 					'created_at'   => $row['created_at'],
 					'updated_at'   => $row['updated_at'],
-					'can_show'     => Helpers::canShowItem($row['permissions'])
+					'permissions'  => $row['permissions']
 				);
 
 			if (!empty($row['lang']))
@@ -172,18 +173,12 @@ class PageList
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt, $scripturl;
+		global $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::useCache(
-			'page_list_addon_b' . $block_id . '_u' . $context['user']['id'] . '_sort_' . $parameters['sort'],
-			'getPageList',
-			__CLASS__,
-			$cache_time,
-			$parameters['sort']
-		);
+		$page_list = Helpers::useCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
 
 		ob_start();
 
@@ -192,7 +187,7 @@ class PageList
 			<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if ($page['can_show'] === false || empty($title = Helpers::getLocalizedTitle($page)))
+				if (Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
 					continue;
 
 				echo '

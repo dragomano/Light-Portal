@@ -97,7 +97,7 @@ class Subs
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
 					'content_style' => $row['content_style'],
-					'can_show'      => $row['permissions']
+					'permissions'   => $row['permissions']
 				);
 
 			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
@@ -125,22 +125,23 @@ class Subs
 
 		$excluded_actions   = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
 		$excluded_actions[] = 'portal';
+		$excluded_actions   = array_flip($excluded_actions);
 
 		foreach ($data as $action => $dump) {
-			if (!in_array($action, $excluded_actions))
+			if (!array_key_exists($action, $excluded_actions))
 				unset($data[$action]);
 		}
 
-		if (!in_array('search', $excluded_actions))
+		if (!array_key_exists('search', $excluded_actions))
 			$context['allow_search'] = false;
 
-		if (!in_array('moderate', $excluded_actions))
+		if (!array_key_exists('moderate', $excluded_actions))
 			$context['allow_moderation_center'] = false;
 
-		if (!in_array('calendar', $excluded_actions))
+		if (!array_key_exists('calendar', $excluded_actions))
 			$context['allow_calendar'] = false;
 
-		if (!in_array('mlist', $excluded_actions))
+		if (!array_key_exists('mlist', $excluded_actions))
 			$context['allow_memberlist'] = false;
 	}
 
@@ -252,8 +253,8 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $hook ('init', 'frontpageAssets', 'frontpageTopics', 'frontpageTopicsOutput', 'frontpagePages', 'frontpagePagesOutput', 'frontpageBoards', 'frontpageBoardsOutput', 'comments', 'blockOptions', 'pageOptions', 'prepareEditor', 'validateBlockData', 'validatePageData', 'prepareBlockFields', 'preparePageFields', 'parseContent', 'prepareContent', 'addSettings', 'credits')
-	 * @param array $vars (extra variables for changing)
+	 * @param string $hook (https://github.com/dragomano/Light-Portal/wiki/Available-hooks)
+	 * @param array $vars (extra variables)
 	 * @return void
 	 */
 	public static function runAddons(string $hook = 'init', array $vars = [])
@@ -264,13 +265,12 @@ class Subs
 			return;
 
 		foreach ($light_portal_addons as $addon) {
-			$class    = __NAMESPACE__ . '\Addons\\' . $addon;
-			$function = $class . '::' . $hook;
+			$class = __NAMESPACE__ . '\Addons\\' . $addon;
 
 			self::loadAddonLanguage($addon);
 
-			if (method_exists($class, $hook))
-				call_user_func_array($function, $vars);
+			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))
+				call_user_func_array($callable_name, $vars);
 		}
 	}
 

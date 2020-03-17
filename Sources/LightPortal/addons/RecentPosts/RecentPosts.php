@@ -49,6 +49,15 @@ class RecentPosts
 	private static $type = 'link';
 
 	/**
+	 * Display user avatars (true|false)
+	 *
+	 * Отображать аватарки (true|false)
+	 *
+	 * @var bool
+	 */
+	private static $show_avatars = false;
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока
@@ -61,8 +70,9 @@ class RecentPosts
 		$options['recent_posts'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
-				'num_posts' => static::$num_posts,
-				'link_type' => static::$type
+				'num_posts'    => static::$num_posts,
+				'link_type'    => static::$type,
+				'show_avatars' => static::$show_avatars
 			)
 		);
 	}
@@ -83,8 +93,9 @@ class RecentPosts
 			return;
 
 		$args['parameters'] = array(
-			'num_posts' => FILTER_VALIDATE_INT,
-			'link_type' => FILTER_SANITIZE_STRING
+			'num_posts'    => FILTER_VALIDATE_INT,
+			'link_type'    => FILTER_SANITIZE_STRING,
+			'show_avatars' => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -134,6 +145,15 @@ class RecentPosts
 				);
 			}
 		}
+
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id' => 'show_avatars',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+			)
+		);
 	}
 
 	/**
@@ -141,15 +161,36 @@ class RecentPosts
 	 *
 	 * Получаем последние сообщения форума
 	 *
-	 * @param int $num_posts
+	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getRecentPosts($num_posts)
+	public static function getRecentPosts($parameters)
 	{
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
-		return ssi_recentPosts($num_posts, null, null, 'array');
+		$posts = ssi_recentPosts($parameters['num_posts'], null, null, 'array');
+
+		if (!empty($posts) && !empty($parameters['show_avatars'])) {
+			$posters = array_map(function ($item) {
+				return $item['poster']['id'];
+			}, $posts);
+
+			loadMemberData(array_unique($posters));
+
+			$posts = array_map(function ($item) {
+				global $memberContext;
+
+				if (!isset($memberContext[$item['poster']['id']]))
+					loadMemberContext($item['poster']['id']);
+
+				$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
+
+				return $item;
+			}, $posts);
+		}
+
+		return $posts;
 	}
 
 	/**
@@ -171,7 +212,7 @@ class RecentPosts
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::useCache('recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRecentPosts', __CLASS__, $cache_time, $parameters['num_posts']);
+		$recent_posts = Helpers::useCache('recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRecentPosts', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($recent_posts)) {
 			ob_start();
@@ -183,10 +224,18 @@ class RecentPosts
 				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
 
 				echo '
-				<li class="windowbg">
+				<li class="windowbg">';
+
+				if (!empty($parameters['show_avatars']))
+					echo '
+					<span class="poster_avatar">', $post['poster']['avatar'], '</span>';
+
+				echo '
 					', ($post['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span> ' : ''), $post[$parameters['link_type']], '
-					<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>
-					<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
+					<br>
+					<span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>
+					<br class="clear">
+					<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
 				</li>';
 			}
 

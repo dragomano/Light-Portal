@@ -56,11 +56,11 @@ class Page
 		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
-			$context['page_title']          = Helpers::getLocalizedTitle($context['lp_page']) ?? $txt['lp_portal'];
+			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_portal'];
 			$context['canonical_url']       = $scripturl;
 			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
 		} else {
-			$context['page_title']          = Helpers::getLocalizedTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
+			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
 			$context['canonical_url']       = $scripturl . '?page=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 		}
@@ -136,7 +136,7 @@ class Page
 	 */
 	public static function getDataFromDB(array $params)
 	{
-		global $smcFunc, $modSettings;
+		global $smcFunc, $txt, $modSettings;
 
 		if (empty($params))
 			return [];
@@ -144,7 +144,7 @@ class Page
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				mem.real_name AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
@@ -154,7 +154,8 @@ class Page
 			array_merge(
 				$params,
 				array(
-					'type' => 'page'
+					'guest' => $txt['guest_title'],
+					'type'  => 'page'
 				)
 			)
 		);

@@ -13,7 +13,7 @@ $txt['lp_forum']  = 'Forum';
 // Settings
 $txt['lp_settings']                            = 'Portal settings';
 $txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']            = '<a href="%1$s" target="_blank" rel="noopener">A new version</a> is available!';
+$txt['lp_new_version_is_available']            = 'A new version is available!';
 $txt['lp_frontpage_title']                     = 'The frontpage title';
 $txt['lp_frontpage_mode']                      = 'The portal frontpage';
 $txt['lp_frontpage_mode_set']                  = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
@@ -43,6 +43,8 @@ $txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']      = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
+$txt['lp_manage_blocks_warning']               = 'Note: some blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+$txt['lp_manage_own_pages_warning']            = 'Note: some pages may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 $txt['lp_extra_settings']                      = 'Extra settings';
 
 // Actions
@@ -65,7 +67,7 @@ $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_content']                 = 'Content';
-$txt['lp_block_icon_cheatsheet']         = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">List of icons</a></span>';
+$txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';
 $txt['lp_block_priority']                = 'Priority';
 $txt['lp_block_icon_type']               = 'Icon type';
