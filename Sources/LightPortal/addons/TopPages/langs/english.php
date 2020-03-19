@@ -7,3 +7,5 @@ $txt['lp_top_pages_addon_type']              = 'Calculation of the popularity';
 $txt['lp_top_pages_addon_type_set']          = array('comments' => 'By comments', 'views' => 'By views');
 $txt['lp_top_pages_addon_num_pages']         = 'Number of pages to display';
 $txt['lp_top_pages_addon_show_numbers_only'] = 'Only display numbers';
+
+$txt['lp_top_pages_addon_no_items'] = 'There are no available pages.';

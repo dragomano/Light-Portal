@@ -223,9 +223,9 @@ class TopPages
 			array($parameters['popularity_type'], $parameters['num_pages'])
 		);
 
-		if (!empty($top_pages)) {
-			ob_start();
+		ob_start();
 
+		if (!empty($top_pages)) {
 			echo '
 			<dl class="stats">';
 
@@ -249,8 +249,9 @@ class TopPages
 
 			echo '
 			</dl>';
+		} else
+			echo $txt['lp_top_pages_addon_no_items'];
 
-			$content = ob_get_clean();
-		}
+		$content = ob_get_clean();
 	}
 }

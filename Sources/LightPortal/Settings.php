@@ -356,6 +356,8 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
+		global $txt;
+
 		$pages = FrontPage::getActivePages();
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {

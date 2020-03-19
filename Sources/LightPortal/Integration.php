@@ -116,7 +116,7 @@ class Integration
 	{
 		global $context, $modSettings;
 
-		$actions['portal'] = array('LightPortal/Page.php', array(__NAMESPACE__ . '\Page', 'show'));
+		$actions['portal'] = array('LightPortal/FrontPage.php', array(__NAMESPACE__ . '\FrontPage', 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
 		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')

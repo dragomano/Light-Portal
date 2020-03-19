@@ -59,15 +59,17 @@ class Page
 			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_portal'];
 			$context['canonical_url']       = $scripturl;
 			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
+			$context['linktree'][] = array(
+				'name' => $txt['lp_portal']
+			);
 		} else {
 			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
 			$context['canonical_url']       = $scripturl . '?page=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
+			$context['linktree'][] = array(
+				'name' => $context['page_title']
+			);
 		}
-
-		$context['linktree'][] = array(
-			'name' => $context['page_title']
-		);
 
 		loadTemplate('LightPortal/ViewPage');
 		$context['sub_template'] = 'show_page';

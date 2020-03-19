@@ -49,7 +49,7 @@ class Subs
 		$context['lp_all_content_classes'] = self::getContentClasses();
 
 		$context['lp_active_blocks']    = Helpers::useCache('active_blocks', 'getActiveBlocks', __CLASS__);
-		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\ManagePages');
+		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getActivePageQuantity', __CLASS__);
 	}
 
 	/**
@@ -109,6 +109,34 @@ class Subs
 		$smcFunc['db_free_result']($request);
 
 		return $active_blocks;
+	}
+
+	/**
+	 * Get the total number of active pages
+	 *
+	 * Подсчитываем общее количество активных страниц
+	 *
+	 * @return int
+	 */
+	public static function getActivePageQuantity()
+	{
+		global $smcFunc, $user_info;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT COUNT(page_id)
+			FROM {db_prefix}lp_pages
+			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
+				AND author_id = {int:user_id}'),
+			array(
+				'status'  => Page::STATUS_ACTIVE,
+				'user_id' => $user_info['id']
+			)
+		);
+
+		list ($num_pages) = $smcFunc['db_fetch_row']($request);
+		$smcFunc['db_free_result']($request);
+
+		return $num_pages;
 	}
 
 	/**
