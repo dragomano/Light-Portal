@@ -173,7 +173,10 @@ class Tag
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions'])) {
+			if (Helpers::canShowItem($row['permissions']) === false)
+				continue;
+
+			if (!isset($items[$row['page_id']]))
 				$items[$row['page_id']] = array(
 					'id'          => $row['page_id'],
 					'alias'       => $row['alias'],
@@ -183,9 +186,8 @@ class Tag
 					'created_at'  => Helpers::getFriendlyTime($row['date'])
 				);
 
-				if (!empty($row['lang']))
-					$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
-			}
+			if (!empty($row['lang']))
+				$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
 		}
 
 		$smcFunc['db_free_result']($request);
