@@ -49,7 +49,7 @@ class Block
 			if (Helpers::canShowItem($data['permissions']) === false)
 				continue;
 
-			if (empty($data['title'][Helpers::getUserLanguage()]))
+			if (empty(Helpers::getPublicTitle($data)))
 				$data['title_class'] = '';
 
 			if (empty($data['content']))
@@ -59,7 +59,7 @@ class Block
 
 			$context['lp_blocks'][$data['placement']][$item] = $data;
 			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
-			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $context['lp_blocks'][$data['placement']][$item]['title'][Helpers::getUserLanguage()];
+			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . Helpers::getPublicTitle($context['lp_blocks'][$data['placement']][$item]);
 		}
 
 		loadTemplate('LightPortal/ViewBlock');

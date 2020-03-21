@@ -406,9 +406,9 @@ class Helpers
 	}
 
 	/**
-	 * Get a public object title, according to the user's language, or the forum's language
+	 * Get a public object title, according to the user's language, or the forum's language, or in English
 	 *
-	 * Получаем публичный заголовок объекта, в соответствии с языком пользователя или форума
+	 * Получаем публичный заголовок объекта, в соответствии с языком пользователя или форума, или на английском
 	 *
 	 * @param array $object
 	 * @return string
@@ -421,8 +421,8 @@ class Helpers
 			return '';
 
 		$lang1 = $object['title'][Helpers::getUserLanguage()] ?? null;
-		$lang2 = $object['title']['english'] ?? null;
-		$lang3 = $object['title'][$language] ?? null;
+		$lang2 = $object['title'][$language] ?? null;
+		$lang3 = $object['title']['english'] ?? null;
 
 		return $lang1 ?: $lang2 ?: $lang3 ?: '';
 	}

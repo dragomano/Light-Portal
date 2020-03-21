@@ -151,21 +151,21 @@ class Tag
 	{
 		global $smcFunc, $txt;
 
+		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.alias, p.permissions, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, t.value, pt.lang, pt.title, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
+				GREATEST(p.created_at, p.updated_at) AS date, t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = t.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
-			ORDER BY ' . $sort . ', p.page_id
+			ORDER BY p.page_id, ' . $sort . '
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
 				'guest'  => $txt['guest_title'],
-				'type'   => 'page',
 				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
 				'status' => Page::STATUS_ACTIVE
 			)
@@ -176,18 +176,15 @@ class Tag
 			if (Helpers::canShowItem($row['permissions']) === false)
 				continue;
 
-			if (!isset($items[$row['page_id']]))
-				$items[$row['page_id']] = array(
-					'id'          => $row['page_id'],
-					'alias'       => $row['alias'],
-					'num_views'   => $row['num_views'],
-					'author_id'   => $row['author_id'],
-					'author_name' => $row['author_name'],
-					'created_at'  => Helpers::getFriendlyTime($row['date'])
-				);
-
-			if (!empty($row['lang']))
-				$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
+			$items[$row['page_id']] = array(
+				'id'          => $row['page_id'],
+				'alias'       => $row['alias'],
+				'num_views'   => $row['num_views'],
+				'author_id'   => $row['author_id'],
+				'author_name' => $row['author_name'],
+				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'title'       => $titles[$row['page_id']] ?? []
+			);
 		}
 
 		$smcFunc['db_free_result']($request);

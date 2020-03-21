@@ -424,4 +424,36 @@ class Subs
 			'_'               => '%1$s' // Empty class == w\o div
 		];
 	}
+
+	/**
+	 * Get array of titles for page/block object type
+	 *
+	 * Получаем массив всех заголовков для объекта типа page/block
+	 *
+	 * @param string $type
+	 * @return array
+	 */
+	public static function getAllTitles(string $type = 'page')
+	{
+		global $smcFunc;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT item_id, lang, title
+			FROM {db_prefix}lp_titles
+			WHERE type = {string:type}',
+			array(
+				'type' => $type
+			)
+		);
+
+		$titles = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (!empty($row['lang']))
+				$titles[$row['item_id']][$row['lang']] = $row['title'];
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $titles;
+	}
 }

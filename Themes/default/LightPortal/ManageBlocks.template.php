@@ -106,7 +106,7 @@ function show_block_table()
  */
 function show_block_entry($id, $data)
 {
-	global $context, $txt, $settings, $scripturl;
+	global $context, $language, $txt, $settings, $scripturl;
 
 	if (empty($id) || empty($data))
 		return;
@@ -117,7 +117,7 @@ function show_block_entry($id, $data)
 			', $data['icon'], '
 		</td>
 		<td class="title centertext">
-			', $data['title'][$context['user']['language']], '
+			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
 		</td>
 		<td class="type centertext">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '

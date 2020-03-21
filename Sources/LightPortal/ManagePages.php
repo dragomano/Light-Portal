@@ -149,7 +149,7 @@ class ManagePages
 							global $settings;
 
 							$actions = (empty($entry['status']) ? '
-							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
+							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
 							if (strpos($settings['name'], 'Lunarfall') !== false) {
 								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>' . '
@@ -161,8 +161,7 @@ class ManagePages
 
 							return $actions;
 						},
-						'class' => 'centertext',
-						'style' => 'cursor: pointer'
+						'class' => 'centertext'
 					)
 				)
 			),
@@ -199,42 +198,41 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
+		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, pt.lang, pt.title, mem.real_name AS author_name
+				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
 			WHERE p.author_id = {int:user_id}') . '
-			ORDER BY ' . $sort . ', p.page_id
+			ORDER BY p.page_id, ' . $sort . '
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
-				'type'    => 'page',
 				'user_id' => $user_info['id']
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($items[$row['page_id']]))
-				$items[$row['page_id']] = array(
-					'id'          => $row['page_id'],
-					'alias'       => $row['alias'],
-					'type'        => $row['type'],
-					'status'      => $row['status'],
-					'num_views'   => $row['num_views'],
-					'author_id'   => $row['author_id'],
-					'author_name' => $row['author_name'],
-					'created_at'  => Helpers::getFriendlyTime($row['date']),
-					'is_front'    => Helpers::isFrontpage($row['page_id'])
-				);
-
-			if (!empty($row['lang']))
-				$items[$row['page_id']]['title'][$row['lang']] = $row['title'];
+			$items[$row['page_id']] = array(
+				'id'          => $row['page_id'],
+				'alias'       => $row['alias'],
+				'type'        => $row['type'],
+				'status'      => $row['status'],
+				'num_views'   => $row['num_views'],
+				'author_id'   => $row['author_id'],
+				'author_name' => $row['author_name'],
+				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'is_front'    => Helpers::isFrontpage($row['page_id']),
+				'title'       => $titles[$row['page_id']] ?? []
+			);
 		}
 
 		$smcFunc['db_free_result']($request);
+
+
 
 		return $items;
 	}
@@ -593,7 +591,7 @@ class ManagePages
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $txt, $language, $modSettings;
 
 		checkSubmitOnce('register');
 
@@ -607,7 +605,7 @@ class ManagePages
 					'id'        => 'title_' . $lang['filename'],
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], array('english', Helpers::getUserLanguage())),
+					'required'  => in_array($lang['filename'], array('english', $language)),
 					'style'     => 'width: 100%'
 				)
 			);
