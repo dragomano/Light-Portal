@@ -116,6 +116,8 @@ class Settings
 	{
 		global $sourcedir, $context, $txt, $scripturl, $modSettings;
 
+		loadTemplate('LightPortal/ManagePages');
+
 		require_once($sourcedir . '/ManageServer.php');
 
 		[$db_engine, $db_version] = self::getDbInfo();
@@ -133,6 +135,8 @@ class Settings
 
 		$context['permissions_excluded']['light_portal_manage_blocks'] = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
+
+		$txt['lp_manage_permissions'] = '<aside class="errorbox">' . $txt['lp_manage_permissions'] . '</aside>';
 
 		// Initial settings
 		// Устанавливаем первоначальные настройки
@@ -196,9 +200,10 @@ class Settings
 				array('text', 'lp_page_itemprop_address', 80),
 				array('text', 'lp_page_itemprop_phone', 80),
 				array('title', 'edit_permissions'),
+				array('desc', 'lp_manage_permissions'),
 				array('permissions', 'light_portal_view'),
-				array('permissions', 'light_portal_manage_blocks', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_blocks_warning'] . '</div>'),
-				array('permissions', 'light_portal_manage_own_pages', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_own_pages_warning'] . '</div>')
+				array('permissions', 'light_portal_manage_blocks'),
+				array('permissions', 'light_portal_manage_own_pages')
 			)
 		);
 
@@ -308,14 +313,13 @@ class Settings
 	 */
 	private static function checkNewVersion()
 	{
-		global $txt, $context;
+		global $context, $txt;
 
 		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
-			$message = '</p>
+			$context['settings_insert_above'] = '
 			<div class="noticebox">
-				<a href="https://github.com/dragomano/Light-Portal/releases" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
-			</div><p>';
-			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
+				<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
+			</div>';
 		}
 	}
 

@@ -399,7 +399,7 @@ class ManageBlocks
 	 */
 	private static function validateData()
 	{
-		global $context, $txt;
+		global $context, $user_info;
 
 		if (isset($_POST['save']) || isset($_POST['preview'])) {
 			$args = array(
@@ -446,7 +446,7 @@ class ManageBlocks
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
-			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? 0,
+			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',

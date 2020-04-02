@@ -41,8 +41,9 @@ class Page
 		} else {
 			$alias = explode(';', $alias)[0];
 			$context['lp_page'] = self::getDataByAlias($alias);
-			Block::show();
 		}
+
+		Block::show();
 
 		if (empty($context['lp_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);

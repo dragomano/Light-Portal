@@ -485,7 +485,7 @@ class ManagePages
 	 */
 	private static function validateData()
 	{
-		global $context, $modSettings;
+		global $context, $modSettings, $user_info;
 
 		if (isset($_POST['save']) || isset($_POST['preview'])) {
 			$args = array(
@@ -524,7 +524,7 @@ class ManagePages
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
 			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
-			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? 0,
+			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
 			'options'     => $options
 		);
 

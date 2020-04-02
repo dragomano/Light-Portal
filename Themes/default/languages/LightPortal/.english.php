@@ -43,8 +43,7 @@ $txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']      = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
-$txt['lp_manage_blocks_warning']               = 'Note: some blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
-$txt['lp_manage_own_pages_warning']            = 'Note: some pages may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+$txt['lp_manage_permissions']                  = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 $txt['lp_extra_settings']                      = 'Extra settings';
 
 // Actions

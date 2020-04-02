@@ -43,8 +43,7 @@ $txt['lp_page_itemprop_phone']                 = 'Телефон вашої ор
 $txt['groups_light_portal_view']               = 'Хто може переглядати елементи порталу';
 $txt['groups_light_portal_manage_blocks']      = 'Хто може керувати блоками';
 $txt['groups_light_portal_manage_own_pages']   = 'Хто може керувати своїми сторінками';
-$txt['lp_manage_blocks_warning']               = 'Увага: деякі блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
-$txt['lp_manage_own_pages_warning']            = 'Увага: деякі сторінки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
+$txt['lp_manage_permissions']                  = 'Увага: деякі сторінки i блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
 $txt['lp_extra_settings']                      = 'Додаткові налаштування';
 
 // Actions

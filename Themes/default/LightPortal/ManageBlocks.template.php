@@ -180,7 +180,7 @@ function template_block_add()
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div>
 						<div class="item roundframe" data-type="', $type, '">
-							<h4>', $title, '</h4>
+							<strong>', $title, '</strong><hr>
 							<p>', $txt['lp_block_types_descriptions'][$type], '</p>
 						</div>
 					</div>
