@@ -9,7 +9,7 @@
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
 * **Tested on:** PHP 7.3.16 / MySQL 5.7.25 / MariaDB 10.4.12 / PostgreSQL 9.6.17
 * **Hooks only:** Yes
-* **Languages:** English, Russian, Ukrainian
+* **Languages:** English, Polish, Russian, Ukrainian
 
 ## Description
 Transform your forum into a portal: the main page, separate additional pages, and blocks, as well as the article system. Support for BBC, HTML and PHP content. Nothing extra.
