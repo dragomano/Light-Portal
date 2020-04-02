@@ -44,8 +44,7 @@ $txt['lp_page_itemprop_phone']                 = 'Numer telefonu';
 $txt['groups_light_portal_view']               = 'Kto może widzieć portal';
 $txt['groups_light_portal_manage_blocks']      = 'Kto może zarządzać blokami';
 $txt['groups_light_portal_manage_own_pages']   = 'Kto może zarządzać stronami';
-$txt['lp_manage_blocks_warning']               = 'Uwaga: niektóre bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_manage_own_pages_warning']            = 'Uwaga: niektóre strony mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
+$txt['lp_manage_permissions']                  = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 $txt['lp_extra_settings']                      = 'Dodatkowe ustawienia';
 
 // Actions
