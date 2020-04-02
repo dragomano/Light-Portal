@@ -46,8 +46,6 @@ class FrontPage
 
 		isAllowedTo('light_portal_view');
 
-		Block::show();
-
 		if ($modSettings['lp_frontpage_mode'] == 1) {
 			return Page::show();
 		} elseif ($modSettings['lp_frontpage_mode'] == 2) {
@@ -60,6 +58,9 @@ class FrontPage
 			self::prepareArticles('boards');
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
+
+		if ($context['current_action'] !== 'portal')
+			Block::show();
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
