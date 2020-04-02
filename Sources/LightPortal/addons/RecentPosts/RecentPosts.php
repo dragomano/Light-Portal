@@ -179,12 +179,16 @@ class RecentPosts
 			loadMemberData(array_unique($posters));
 
 			$posts = array_map(function ($item) {
-				global $memberContext;
+				global $memberContext, $modSettings;
 
-				if (!isset($memberContext[$item['poster']['id']]))
-					loadMemberContext($item['poster']['id']);
+				if (!empty($item['poster']['id'])) {
+					if (!isset($memberContext[$item['poster']['id']]))
+						loadMemberContext($item['poster']['id']);
 
-				$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
+					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
+				} else {
+					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
+				}
 
 				return $item;
 			}, $posts);
