@@ -132,10 +132,6 @@ class ManagePages
 							return $entry['status'] && !empty($title) ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
 						},
 						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'pt.title DESC',
-						'reverse' => 'pt.title'
 					)
 				),
 				'actions' => array(
@@ -201,13 +197,11 @@ class ManagePages
 		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
 		$request = $smcFunc['db_query']('', '
-			SELECT
-				p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
 			WHERE p.author_id = {int:user_id}') . '
-			ORDER BY p.page_id, ' . $sort . '
+			ORDER BY ' . $sort . '
 			LIMIT ' . $start . ', ' . $items_per_page,
 			array(
 				'user_id' => $user_info['id']
@@ -224,15 +218,13 @@ class ManagePages
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'created_at'  => Helpers::getFriendlyTime($row['created_at']),
 				'is_front'    => Helpers::isFrontpage($row['page_id']),
 				'title'       => $titles[$row['page_id']] ?? []
 			);
 		}
 
 		$smcFunc['db_free_result']($request);
-
-
 
 		return $items;
 	}
@@ -1046,5 +1038,409 @@ class ManagePages
 		$smcFunc['db_free_result']($request);
 
 		return (bool) $count;
+	}
+
+	/**
+	 * Page export
+	 *
+	 * Экспорт страниц
+	 *
+	 * @return void
+	 */
+	public static function export()
+	{
+		global $context, $txt, $scripturl, $sourcedir;
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_export'];
+		$context['page_area_title'] = $txt['lp_pages_export'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=export';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_pages_export_tab_description']
+		);
+
+		Subs::runExport(self::getXmlFile());
+
+		$listOptions = array(
+			'id' => 'pages',
+			'items_per_page' => 10,
+			'title' => $txt['lp_pages_export'],
+			'no_items_label' => $txt['lp_no_items'],
+			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
+			'default_sort_col' => 'id',
+			'get_items' => array(
+				'function' => __CLASS__ . '::getAll'
+			),
+			'get_count' => array(
+				'function' => __CLASS__ . '::getTotalQuantity'
+			),
+			'columns' => array(
+				'id' => array(
+					'header' => array(
+						'value' => '#'
+					),
+					'data' => array(
+						'db'    => 'id',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.page_id DESC',
+						'reverse' => 'p.page_id'
+					)
+				),
+				'alias' => array(
+					'header' => array(
+						'value' => $txt['lp_page_alias']
+					),
+					'data' => array(
+						'db'    => 'alias',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.alias DESC',
+						'reverse' => 'p.alias'
+					)
+				),
+				'title' => array(
+					'header' => array(
+						'value' => $txt['lp_title']
+					),
+					'data' => array(
+						'function' => function ($entry) use ($scripturl)
+						{
+							$title = Helpers::getPublicTitle($entry);
+							return $entry['status'] && !empty($title) ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
+						},
+						'class' => 'centertext'
+					)
+				),
+				'actions' => array(
+					'header' => array(
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>',
+						'style' => 'width: 14%'
+					),
+					'data' => array(
+						'function' => function ($entry)
+						{
+							return '<input type="checkbox" value="' . $entry['id'] . '" name="items[]" checked>';
+						},
+						'class' => 'centertext'
+					)
+				)
+			),
+			'form' => array(
+				'href' => $scripturl . '?action=admin;area=lp_pages;sa=export'
+			),
+			'additional_rows' => array(
+				array(
+					'position' => 'bottom_of_list',
+					'value'    => '<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">'
+				)
+			)
+		);
+
+		require_once($sourcedir . '/Subs-List.php');
+		createList($listOptions);
+
+		$context['sub_template'] = 'show_list';
+		$context['default_list'] = 'pages';
+	}
+
+	/**
+	 * Creating data in XML format
+	 *
+	 * Формируем данные в XML-формате
+	 *
+	 * @return array
+	 */
+	private static function getDataForXml()
+	{
+		global $smcFunc;
+
+		if (empty($_POST['items']))
+			return;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.start, com.created_at AS com_created_at
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_tags AS t ON (t.page_id = p.page_id)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)
+			WHERE p.page_id IN ({array_int:pages})',
+			array(
+				'type'  => 'page',
+				'pages' => $_POST['items']
+			)
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (!isset($items[$row['page_id']]))
+				$items[$row['page_id']] = array(
+					'page_id'      => $row['page_id'],
+					'author_id'    => $row['author_id'],
+					'alias'        => $row['alias'],
+					'description'  => $row['description'],
+					'content'      => $row['content'],
+					'type'         => $row['type'],
+					'permissions'  => $row['permissions'],
+					'status'       => $row['status'],
+					'num_views'    => $row['num_views'],
+					'num_comments' => $row['num_comments'],
+					'created_at'   => $row['created_at'],
+					'updated_at'   => $row['updated_at']
+				);
+
+			if (!empty($row['lang']))
+				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
+
+			if (!empty($row['name']))
+				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
+
+			if (!empty($row['keyword']))
+				$items[$row['page_id']]['keywords'][] = $row['keyword'];
+
+			if (!empty($row['message'])) {
+				$items[$row['page_id']]['comments'][$row['id']] = array(
+					'id'         => $row['id'],
+					'parent_id'  => $row['parent_id'],
+					'author_id'  => $row['com_author_id'],
+					'message'    => $row['message'],
+					'start'      => $row['start'],
+					'created_at' => $row['com_created_at']
+				);
+			}
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $items;
+	}
+
+	/**
+	 * Get filename with XML data
+	 *
+	 * Получаем имя файла с XML-данными
+	 *
+	 * @return string
+	 */
+	private static function getXmlFile()
+	{
+		$items = self::getDataForXml();
+
+		if (empty($items))
+			return '';
+
+		$xml = new \DomDocument('1.0', 'utf-8');
+		$root = $xml->appendChild($xml->createElement('light_portal'));
+
+		$xml->formatOutput = true;
+
+		$xmlElements = $root->appendChild($xml->createElement('pages'));
+		foreach ($items as $item) {
+			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+			foreach ($item as $key => $val) {
+				$xmlName = $xmlElement->appendChild(in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at']) ? $xml->createAttribute($key) : $xml->createElement($key));
+
+				if (in_array($key, ['titles', 'params'])) {
+					foreach ($item[$key] as $k => $v) {
+						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
+						$xmlTitle->appendChild($xml->createTextNode($v));
+					}
+				} elseif ($key == 'keywords' && !empty($val)) {
+					$xmlName->appendChild($xml->createTextNode(implode(', ', array_unique($val))));
+				} elseif ($key == 'comments') {
+					foreach ($item[$key] as $k => $comment) {
+						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
+						foreach ($comment as $label => $text) {
+							$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
+							$xmlCommentElem->appendChild($xml->createTextNode($text));
+						}
+					}
+				} else {
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
+		$xml->save($file);
+
+		return $file;
+	}
+
+	/**
+	 * Page import
+	 *
+	 * Импорт страниц
+	 *
+	 * @return void
+	 */
+	public static function import()
+	{
+		global $context, $txt, $scripturl;
+
+		loadTemplate('LightPortal/ManageImport');
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_import'];
+		$context['page_area_title'] = $txt['lp_pages_import'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=import';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_pages_import_tab_description']
+		);
+
+		$context['sub_template'] = 'manage_import';
+
+		self::runImport();
+	}
+
+	/**
+	 * Import from an XML file
+	 *
+	 * Импорт из XML-файла
+	 *
+	 * @return void
+	 */
+	private static function runImport()
+	{
+		global $boarddir, $smcFunc;
+
+		if (empty($_FILES['import_file']))
+			return;
+
+		$file = $_FILES['import_file'];
+
+		if ($file['type'] !== 'text/xml')
+			return;
+
+		$xml = simplexml_load_file($file['tmp_name']);
+
+		if ($xml === false)
+			return;
+
+		$items = $titles = $params = $keywords = $comments = [];
+
+		foreach ($xml as $element) {
+			foreach ($element->item as $item) {
+				$items[] = [
+					'page_id'      => $page_id = intval($item['page_id']),
+					'author_id'    => intval($item['author_id']),
+					'alias'        => $item->alias,
+					'description'  => $item->description,
+					'content'      => $item->content,
+					'type'         => $item->type,
+					'permissions'  => intval($item['permissions']),
+					'status'       => intval($item['status']),
+					'num_views'    => intval($item['num_views']),
+					'num_comments' => intval($item['num_comments']),
+					'created_at'   => intval($item['created_at']),
+					'updated_at'   => intval($item['updated_at'])
+				];
+
+				if (!empty($item->titles)) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $page_id,
+								'type'    => 'page',
+								'lang'    => $k,
+								'title'   => $v
+							];
+						}
+					}
+				}
+
+				if (!empty($item->params)) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $page_id,
+								'type'    => 'page',
+								'name'    => $k,
+								'value'   => $v
+							];
+						}
+					}
+				}
+
+				if (!empty($item->keywords)) {
+					foreach (explode(', ', $item->keywords) as $value) {
+						$keywords[] = [
+							'page_id' => $page_id,
+							'value'   => $value
+						];
+					}
+				}
+
+				if (!empty($item->comments)) {
+					foreach ($item->comments as $comment) {
+						foreach ($comment as $k => $v) {
+							$comments[] = [
+								'id'         => $v['id'],
+								'parent_id'  => $v['parent_id'],
+								'page_id'    => $page_id,
+								'author_id'  => $v['author_id'],
+								'message'    => $v->message,
+								'start'      => $v['start'],
+								'created_at' => $v['created_at']
+							];
+						}
+					}
+				}
+			}
+		}
+
+		if (!empty($items)) {
+			$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
+				VALUES ";
+
+			$sql .= Subs::getValues($items);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($titles)) {
+			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
+				VALUES ";
+
+			$sql .= Subs::getValues($titles);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($params)) {
+			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
+				VALUES ";
+
+			$sql .= Subs::getValues($params);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($keywords)) {
+			$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
+				VALUES ";
+
+			$sql .= Subs::getValues($keywords);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($comments)) {
+			$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `start`, `created_at`)
+				VALUES ";
+
+			$sql .= Subs::getValues($comments);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		clean_cache();
 	}
 }

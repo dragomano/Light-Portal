@@ -1031,4 +1031,266 @@ class ManageBlocks
 
 		return $data;
 	}
+
+	/**
+	 * Block export
+	 *
+	 * Экспорт блоков
+	 *
+	 * @return void
+	 */
+	public static function export()
+	{
+		global $context, $txt, $scripturl;
+
+		loadTemplate('LightPortal/ManageImport');
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
+		$context['page_area_title'] = $txt['lp_blocks_export'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=export';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_blocks_export_tab_description']
+		);
+
+		Subs::runExport(self::getXmlFile());
+
+		$context['lp_current_blocks'] = self::getAll();
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+
+		$context['sub_template'] = 'manage_export_blocks';
+	}
+
+	/**
+	 * Creating data in XML format
+	 *
+	 * Формируем данные в XML-формате
+	 *
+	 * @return string
+	 */
+	private static function getDataForXml()
+	{
+		global $smcFunc;
+
+		if (empty($_POST['items']))
+			return;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				pt.lang, pt.title, pp.name, pp.value
+			FROM {db_prefix}lp_blocks AS b
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = b.block_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = b.block_id AND pp.type = {string:type})
+			WHERE b.block_id IN ({array_int:blocks})',
+			array(
+				'type'  => 'block',
+				'blocks' => $_POST['items']
+			)
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (!isset($items[$row['block_id']]))
+				$items[$row['block_id']] = array(
+					'block_id'      => $row['block_id'],
+					'icon'          => $row['icon'],
+					'icon_type'     => $row['icon_type'],
+					'type'          => $row['type'],
+					'content'       => $row['content'],
+					'placement'     => $row['placement'],
+					'priority'      => $row['priority'],
+					'permissions'   => $row['permissions'],
+					'status'        => $row['status'],
+					'areas'         => $row['areas'],
+					'title_class'   => $row['title_class'],
+					'title_style'   => $row['title_style'],
+					'content_class' => $row['content_class'],
+					'content_style' => $row['content_style']
+				);
+
+			if (!empty($row['lang']))
+				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+
+			if (!empty($row['name']))
+				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $items;
+	}
+
+	/**
+	 * Get filename with XML data
+	 *
+	 * Получаем имя файла с XML-данными
+	 *
+	 * @return string
+	 */
+	private static function getXmlFile()
+	{
+		$items = self::getDataForXml();
+
+		if (empty($items))
+			return '';
+
+		$xml = new \DomDocument('1.0', 'utf-8');
+		$root = $xml->appendChild($xml->createElement('light_portal'));
+
+		$xml->formatOutput = true;
+
+		$xmlElements = $root->appendChild($xml->createElement('blocks'));
+		foreach ($items as $item) {
+			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+			foreach ($item as $key => $val) {
+				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+
+				if (in_array($key, ['titles', 'params'])) {
+					foreach ($item[$key] as $k => $v) {
+						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
+						$xmlTitle->appendChild($xml->createTextNode($v));
+					}
+				} else {
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
+		$xml->save($file);
+
+		return $file;
+	}
+
+	/**
+	 * Block import
+	 *
+	 * Импорт блоков
+	 *
+	 * @return void
+	 */
+	public static function import()
+	{
+		global $context, $txt, $scripturl;
+
+		loadTemplate('LightPortal/ManageImport');
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_import'];
+		$context['page_area_title'] = $txt['lp_blocks_import'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=import';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_blocks_import_tab_description']
+		);
+
+		$context['sub_template'] = 'manage_import';
+
+		self::runImport();
+	}
+
+	/**
+	 * Import from an XML file
+	 *
+	 * Импорт из XML-файла
+	 *
+	 * @return void
+	 */
+	private static function runImport()
+	{
+		global $boarddir, $smcFunc;
+
+		if (empty($_FILES['import_file']))
+			return;
+
+		$file = $_FILES['import_file'];
+
+		if ($file['type'] !== 'text/xml')
+			return;
+
+		$xml = simplexml_load_file($file['tmp_name']);
+
+		if ($xml === false)
+			return;
+
+		$items = $titles = $params = [];
+
+		foreach ($xml as $element) {
+			foreach ($element->item as $item) {
+				$items[] = [
+					'block_id'      => $block_id = intval($item['block_id']),
+					'icon'          => $item->icon,
+					'icon_type'     => $item->icon_type,
+					'type'          => $item->type,
+					'content'       => $item->content,
+					'placement'     => $item->placement,
+					'priority'      => intval($item['priority']),
+					'permissions'   => intval($item['permissions']),
+					'status'        => intval($item['status']),
+					'areas'         => $item->areas,
+					'title_class'   => $item->title_class,
+					'title_style'   => $item->title_style,
+					'content_class' => $item->content_class,
+					'content_style' => $item->content_style
+				];
+
+				if (!empty($item->titles)) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'lang'    => $k,
+								'title'   => $v
+							];
+						}
+					}
+				}
+
+				if (!empty($item->params)) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'name'    => $k,
+								'value'   => $v
+							];
+						}
+					}
+				}
+			}
+		}
+
+		if (!empty($items)) {
+			$sql = "REPLACE INTO {db_prefix}lp_blocks (`block_id`, `icon`, `icon_type`, `type`, `content`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `title_style`, `content_class`, `content_style`)
+				VALUES ";
+
+			$sql .= Subs::getValues($items);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($titles)) {
+			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
+				VALUES ";
+
+			$sql .= Subs::getValues($titles);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($params)) {
+			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
+				VALUES ";
+
+			$sql .= Subs::getValues($params);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		clean_cache();
+	}
 }

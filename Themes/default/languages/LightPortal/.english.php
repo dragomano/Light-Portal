@@ -45,6 +45,7 @@ $txt['groups_light_portal_manage_blocks']      = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
 $txt['lp_manage_permissions']                  = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 $txt['lp_extra_settings']                      = 'Extra settings';
+$txt['lp_no_items']                            = 'There is no items to show.';
 
 // Actions
 $txt['lp_title']        = 'Title';
@@ -124,12 +125,23 @@ $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
 $txt['lp_permissions']                  = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
-$txt['lp_no_items']                     = 'There is nothing yet. Let\'s add?';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
 	'allow_comments'       => 'Allow comments'
 );
+
+// Import and Export
+$txt['lp_pages_export']                  = 'Page export';
+$txt['lp_pages_import']                  = 'Page import';
+$txt['lp_pages_export_tab_description']  = 'Here you can export the pages you need to create a backup or import them to another forum.';
+$txt['lp_pages_import_tab_description']  = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_blocks_export']                 = 'Block export';
+$txt['lp_blocks_import']                 = 'Block import';
+$txt['lp_blocks_export_tab_description'] = 'Here you can export the blocks you need to create a backup or import them to another forum.';
+$txt['lp_blocks_import_tab_description'] = 'Here you can import previously saved portal blocks from a backup.';
+$txt['lp_export_run']                    = 'Run export';
+$txt['lp_import_run']                    = 'Run import';
 
 // Tags
 $txt['lp_all_page_tags']    = 'All portal page tags';

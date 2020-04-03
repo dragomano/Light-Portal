@@ -199,11 +199,11 @@ class Page
 			if (!empty($row['lang']))
 				$data['title'][$row['lang']] = $row['title'];
 
-			if (!empty($row['keyword']))
-				$data['keywords'][] = $row['keyword'];
-
 			if (!empty($row['name']))
 				$data['options'][$row['name']] = $row['value'];
+
+			if (!empty($row['keyword']))
+				$data['keywords'][] = $row['keyword'];
 		}
 
 		$smcFunc['db_free_result']($request);

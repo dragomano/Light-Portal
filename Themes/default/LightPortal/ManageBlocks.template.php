@@ -35,12 +35,9 @@ function show_block_table()
 		<h3 class="catbg">', $txt['lp_blocks'], '</h3>
 	</div>
 	<div class="information">', $txt['lp_no_items'], '</div>';
-
-		return;
-	}
-
-	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
-		echo '
+	} else {
+		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+			echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
@@ -53,8 +50,8 @@ function show_block_table()
 	</div>
 	<table class="lp_current_blocks table_grid">';
 
-		if (is_array($blocks)) {
-			echo '
+			if (is_array($blocks)) {
+				echo '
 		<thead>
 			<tr class="title_bar">
 				<th scope="col" class="icon">
@@ -79,19 +76,20 @@ function show_block_table()
 		</thead>
 		<tbody data-placement="', $placement, '">';
 
-			foreach ($blocks as $id => $data)
-				show_block_entry($id, $data);
-		} else {
-			echo '
+				foreach ($blocks as $id => $data)
+					show_block_entry($id, $data);
+			} else {
+				echo '
 		<tbody data-placement="', $placement, '">
 			<tr class="windowbg centertext">
 				<td>', $txt['lp_no_items'], '</td>
 			</tr>';
-		}
+			}
 
-		echo '
+			echo '
 		</tbody>
 	</table>';
+		}
 	}
 }
 

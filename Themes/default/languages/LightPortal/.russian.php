@@ -45,6 +45,7 @@ $txt['groups_light_portal_manage_blocks']      = 'Кто может управл
 $txt['groups_light_portal_manage_own_pages']   = 'Кто может управлять своими страницами';
 $txt['lp_manage_permissions']                  = 'Внимание: некоторые страницы и блоки могут содержать опасный HTML/PHP контент, поэтому не предоставляйте это право всем подряд!';
 $txt['lp_extra_settings']                      = 'Дополнительные настройки';
+$txt['lp_no_items']                            = 'Нет элементов для отображения.';
 
 // Actions
 $txt['lp_title']        = 'Заголовок';
@@ -124,12 +125,23 @@ $txt['lp_page_type']                    = 'Тип страницы';
 $txt['lp_page_description']             = 'Описание';
 $txt['lp_page_keywords']                = 'Ключевые слова';
 $txt['lp_permissions']                  = array('Показывать админам', 'Показывать гостям', 'Показывать пользователям', 'Показывать всем');
-$txt['lp_no_items']                     = 'Пока ничего нет. Давайте добавим?';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показывать автора и дату создания',
 	'allow_comments'       => 'Разрешить комментарии'
 );
+
+// Import and Export
+$txt['lp_pages_export']                  = 'Экспорт страниц';
+$txt['lp_pages_import']                  = 'Импорт страниц';
+$txt['lp_pages_export_tab_description']  = 'Здесь можно экспортировать нужные страницы для создания резервной копии или для импорта на другом форуме.';
+$txt['lp_pages_import_tab_description']  = 'Здесь можно импортировать из резервной копии сохраненные ранее страницы портала.';
+$txt['lp_blocks_export']                 = 'Экспорт блоков';
+$txt['lp_blocks_import']                 = 'Импорт блоков';
+$txt['lp_blocks_export_tab_description'] = 'Здесь можно экспортировать нужные блоки для создания резервной копии или для импорта на другом форуме.';
+$txt['lp_blocks_import_tab_description'] = 'Здесь можно импортировать из резервной копии сохраненные ранее блоки портала.';
+$txt['lp_export_run']                    = 'Экспортировать';
+$txt['lp_import_run']                    = 'Импортировать';
 
 // Tags
 $txt['lp_all_page_tags']    = 'Все теги страниц портала';

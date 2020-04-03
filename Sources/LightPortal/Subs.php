@@ -456,4 +456,68 @@ class Subs
 
 		return $titles;
 	}
+
+	/**
+	 * Make export
+	 *
+	 * Экспортируем
+	 *
+	 * @param string $file
+	 * @return void
+	 */
+	public static function runExport(string $file)
+	{
+		if (empty($file))
+			return;
+
+		if (file_exists($file)) {
+			if (ob_get_level())
+				ob_end_clean();
+
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename=' . basename($file));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+
+			if ($fd = fopen($file, 'rb')) {
+				while (!feof($fd))
+					print fread($fd, 1024);
+
+				fclose($fd);
+			}
+
+			unlink($file);
+		}
+
+		exit;
+	}
+
+	/**
+	 * Getting a part of an SQL expression like "(value1, value2, value3)"
+	 *
+	 * Получаем часть SQL-выражения вида "(value1, value2, value3)"
+	 *
+	 * @param array $items
+	 * @return string
+	 */
+	public static function getValues(array $items)
+	{
+		if (empty($items))
+			return '';
+
+		$cnt = count($items);
+		$result = '';
+		for ($i = 0; $i < $cnt; $i++) {
+			if ($i > 0)
+				$result .= ', ';
+
+			$result .= "('" . implode("', '", $items[$i]) . "')";
+		}
+
+		return $result;
+	}
 }

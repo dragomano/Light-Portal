@@ -66,7 +66,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
 								'main' => array($txt['lp_blocks_manage']),
-								'add' => array($txt['lp_blocks_add'])
+								'add'  => array($txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
@@ -78,8 +78,8 @@ class Settings
 							'amt' => $context['lp_active_pages_num'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main' => array($txt['lp_pages_manage']),
-								'add' => array($txt['lp_pages_add'])
+								'main'   => array($txt['lp_pages_manage']),
+								'add'    => array($txt['lp_pages_add'])
 							)
 						)
 					)
@@ -87,6 +87,18 @@ class Settings
 			),
 			array_slice($admin_areas, $counter, count($admin_areas), true)
 		);
+
+		if (allowedTo('admin_forum')) {
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
+				'export' => array($txt['lp_blocks_export']),
+				'import' => array($txt['lp_blocks_import'])
+			);
+
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += array(
+				'export' => array($txt['lp_pages_export']),
+				'import' => array($txt['lp_pages_import'])
+			);
+		}
 	}
 
 	/**
@@ -256,6 +268,11 @@ class Settings
 			'edit' => 'ManageBlocks::edit'
 		);
 
+		if (allowedTo('admin_forum')) {
+			$subActions['export'] = 'ManageBlocks::export';
+			$subActions['import'] = 'ManageBlocks::import';
+		}
+
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
 
@@ -271,10 +288,15 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => 'ManagePages::main',
-			'add'  => 'ManagePages::add',
-			'edit' => 'ManagePages::edit'
+			'main'   => 'ManagePages::main',
+			'add'    => 'ManagePages::add',
+			'edit'   => 'ManagePages::edit'
 		);
+
+		if (allowedTo('admin_forum')) {
+			$subActions['export'] = 'ManagePages::export';
+			$subActions['import'] = 'ManagePages::import';
+		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
