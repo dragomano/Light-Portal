@@ -71,16 +71,18 @@ class UserInfo
 				echo '
 				<li style="margin: 1em">', $userData['avatar']['image'], '</li>';
 
+			$fa = Helpers::isFontAwesomeEnabled();
+
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>
 				<li>
 					<hr>
 					<span class="floatleft">
-						<i class="fas fa-user"></i> <a href="', $userData['href'], '">', $txt['profile'], '</a>
+						', $fa ? '<i class="fas fa-user"></i>' : '<span class="main_icons members"></span>', ' <a href="', $userData['href'], '">', $txt['profile'], '</a>
 					</span>
 					<span class="floatright">
-						<i class="fas fa-sign-out-alt"></i> <a href="', $scripturl, '?action=logout;', $context['session_var'], '=', $context['session_id'], '">', $txt['logout'], '</a>
+					', $fa ? '<i class="fas fa-sign-out-alt"></i>' : '<span class="main_icons logout"></span>', ' <a href="', $scripturl, '?action=logout;', $context['session_var'], '=', $context['session_id'], '">', $txt['logout'], '</a>
 					</span>
 				</li>
 			</ul>';

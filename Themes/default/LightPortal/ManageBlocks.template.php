@@ -27,7 +27,7 @@ function template_manage_blocks()
  */
 function show_block_table()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt, $scripturl, $modSettings;
 
 	if (empty($context['lp_current_blocks'])) {
 		echo '
@@ -42,7 +42,7 @@ function show_block_table()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '">
-					<i class="fas fa-plus" title="', $txt['lp_blocks_add'], '"></i>
+					', ($context['lp_fontawesome_set_enabled'] ? ('<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>') : ('<span class="main_icons post_moderation_allow" title="' . $txt['lp_blocks_add'] . '"></span>')), '
 				</a>
 			</span>
 			', $txt['lp_block_placement_set'][$placement], '
@@ -53,10 +53,15 @@ function show_block_table()
 			if (is_array($blocks)) {
 				echo '
 		<thead>
-			<tr class="title_bar">
+			<tr class="title_bar">';
+
+				if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
+					echo '
 				<th scope="col" class="icon">
 					', $txt['custom_profile_icon'], '
-				</th>
+				</th>';
+
+				echo '
 				<th scope="col" class="title">
 					', $txt['lp_title'], '
 				</th>
@@ -104,16 +109,21 @@ function show_block_table()
  */
 function show_block_entry($id, $data)
 {
-	global $context, $language, $txt, $settings, $scripturl;
+	global $modSettings, $context, $language, $txt, $settings, $scripturl;
 
 	if (empty($id) || empty($data))
 		return;
 
 	echo '
-	<tr id="lp_block_', $id, '" class="windowbg">
+	<tr id="lp_block_', $id, '" class="windowbg">';
+
+	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
+		echo '
 		<td class="icon centertext">
 			', $data['icon'], '
-		</td>
+		</td>';
+
+	echo '
 		<td class="title centertext">
 			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
 		</td>
@@ -124,7 +134,7 @@ function show_block_entry($id, $data)
 			', $data['areas'], '
 		</td>
 		<td class="priority centertext">
-			', $data['priority'], ' <span class="handle ', (strpos($settings['name'], 'Lunarfall') !== false ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
 		<td class="actions centertext">';
 
@@ -135,7 +145,7 @@ function show_block_entry($id, $data)
 			echo '
 			<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
 
-		if (strpos($settings['name'], 'Lunarfall') !== false) {
+		if ($context['lp_fontawesome_enabled']) {
 			echo '
 			<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
 			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
@@ -242,7 +252,12 @@ function template_block_post()
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['page_area_title'], '</h3>
 	</div>
-	<div class="information">', $txt['lp_block_types'][$context['lp_block']['type']], '</div>';
+	<div class="information">
+		', $txt['lp_block_types'][$context['lp_block']['type']], '
+	</div>
+	<div class="infobox">',
+		$txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+	</div>';
 	}
 
 	if (!empty($context['post_errors'])) {
@@ -282,16 +297,5 @@ function template_block_post()
 				<button type="submit" class="button" name="save">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>
-	<script>
-		jQuery(document).ready(function($) {
-			change_icon = function() {
-				let icon = $("#icon").val(),
-					type = $("#icon_type input:checked").val();
-				$("#block_icon").html(\'<i class="\' + type + \' fa-\' + icon + \'"><\/i>\');
-			}
-			$("#icon").on("change", change_icon);
-			$("#icon_type input").on("change", change_icon);
-		});
-	</script>';
+	</form>';
 }

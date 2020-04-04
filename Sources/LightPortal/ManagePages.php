@@ -48,6 +48,8 @@ class ManagePages
 			'description' => $txt['lp_pages_manage_tab_description']
 		);
 
+		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
+
 		loadJavaScriptFile('light_portal/manage_pages.js');
 
 		self::postActions();
@@ -140,14 +142,14 @@ class ManagePages
 						'style' => 'width: 14%'
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $scripturl)
+						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
 							global $settings;
 
 							$actions = (empty($entry['status']) ? '
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
-							if (strpos($settings['name'], 'Lunarfall') !== false) {
+							if ($context['lp_fontawesome_enabled']) {
 								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>' . '
 							<span class="fas fa-trash del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
 							} else {
@@ -169,7 +171,7 @@ class ManagePages
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '">
-					<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>
+					' . (Helpers::isFontAwesomeEnabled() ? ('<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>') : ('<span class="main_icons post_moderation_allow" title="' . $txt['lp_pages_add'] . '"></span>')) . '
 				</a>
 			</span>' . $listOptions['title'];
 
@@ -706,7 +708,7 @@ class ManagePages
 			)
 		);
 
-		if (!empty($modSettings['lp_show_comment_block'])) {
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
 			$context['posting_fields']['allow_comments']['label']['text'] = $txt['lp_page_options']['allow_comments'];
 			$context['posting_fields']['allow_comments']['input'] = array(
 				'type' => 'checkbox',

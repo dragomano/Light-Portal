@@ -79,7 +79,7 @@ section #display_head span {
 aside.comments {
 	margin-top: 1em
 }
-aside.errorbox {
+p.errorbox.permissions {
 	margin: 0;
 }
 
@@ -210,8 +210,8 @@ aside.errorbox {
 	padding: 8px 10px;
 }
 
-.article_link {
-	margin-top: 10px;
+.article_content .inner {
+	min-height: auto;
 }
 
 .article_image {

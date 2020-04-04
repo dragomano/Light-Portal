@@ -148,7 +148,7 @@ class Settings
 		$context['permissions_excluded']['light_portal_manage_blocks'] = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 
-		$txt['lp_manage_permissions'] = '<aside class="errorbox">' . $txt['lp_manage_permissions'] . '</aside>';
+		$txt['lp_manage_permissions'] = '<p class="errorbox permissions">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings
 		// Устанавливаем первоначальные настройки
@@ -203,7 +203,8 @@ class Settings
 				array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 				array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
-				array('check', 'lp_hide_blocks_in_admin_section')
+				array('check', 'lp_hide_blocks_in_admin_section'),
+				array('select', 'lp_use_block_icons', $txt['lp_use_block_icons_set'])
 			),
 			$extra_settings,
 			array(

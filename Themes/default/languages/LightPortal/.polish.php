@@ -4,8 +4,7 @@
  * .polish language file
  *
  * @package Light Portal
- * @author Bugo https://dragomano.ru/mods/light-portal
- * @translation Adrek https://adrek.pl
+ * @author Adrek https://adrek.pl
  */
 
 $txt['lp_portal'] = 'Portal';

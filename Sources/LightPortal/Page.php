@@ -72,6 +72,8 @@ class Page
 			);
 		}
 
+		$context['lp_fontawesome_enabled'] = Helpers::isFontAwesomeEnabled();
+
 		loadTemplate('LightPortal/ViewPage');
 		$context['sub_template'] = 'show_page';
 
@@ -97,11 +99,13 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
-		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
-		$context['meta_description']  = $context['lp_page']['description'];
-		$context['optimus_og_type']['article']['published_time'] = date('c', $context['lp_page']['created_at']);
-		$context['optimus_og_type']['article']['modified_time']  = !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null;
-		$context['optimus_og_type']['article']['author'] = $context['lp_page']['author'];
+		$modSettings['meta_keywords']          = implode(', ', $context['lp_page']['keywords']);
+		$context['meta_description']           = $context['lp_page']['description'];
+		$context['optimus_og_type']['article'] = array(
+			'published_time' => date('c', $context['lp_page']['created_at']),
+			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null,
+			'author'         => $context['lp_page']['author']
+		);
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
 			$settings['og_image'] = $context['lp_page']['image'];
@@ -119,6 +123,9 @@ class Page
 		global $modSettings, $context;
 
 		if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
+			return;
+
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
 			return;
 
 		Subs::runAddons('comments');

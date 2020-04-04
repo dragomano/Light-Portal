@@ -28,7 +28,11 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
-		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true));
+		global $modSettings;
+
+		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'fontawesome')
+			loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+
 		loadCssFile('light_portal/flexboxgrid.min.css');
 		loadCssFile('light_portal/light_portal.css');
 	}
@@ -283,7 +287,7 @@ class Subs
 	 *
 	 * @param string $hook (https://github.com/dragomano/Light-Portal/wiki/Available-hooks)
 	 * @param array $vars (extra variables)
-	 * @return void
+	 * @return mixed
 	 */
 	public static function runAddons(string $hook = 'init', array $vars = [])
 	{
@@ -292,14 +296,17 @@ class Subs
 		if (empty($light_portal_addons))
 			return;
 
+		$results = [];
 		foreach ($light_portal_addons as $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon;
 
 			self::loadAddonLanguage($addon);
 
 			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))
-				call_user_func_array($callable_name, $vars);
+				$results[$hook] = call_user_func_array($callable_name, $vars);
 		}
+
+		return $results[$hook] ?? null;
 	}
 
 	/**

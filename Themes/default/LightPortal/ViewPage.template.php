@@ -15,15 +15,34 @@ function template_show_page()
 	<section itemscope itemtype="http://schema.org/Article">
 		<div id="display_head" class="windowbg">
 			<h2 class="display_title" itemprop="headline">
-				<span id="top_subject">', $context['page_title'], $context['lp_page']['can_edit'] ? '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '"><span class="fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '</span>
+				<span id="top_subject">', $context['page_title'];
+
+	if ($context['lp_page']['can_edit']) {
+		echo '
+					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '">';
+
+		if ($context['lp_fontawesome_enabled']) {
+			echo '
+						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>';
+		} else {
+			echo '
+						<span class="main_icons quick_edit_button" title="' . $txt['edit'] . '"></span>';
+		}
+
+		echo '
+					</a>';
+	}
+
+	echo '
+				</span>
 			</h2>';
 
 	if (!empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
 			<p>
-				<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
+				<span class="floatleft">', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-user" aria-hidden="true"></i>' : '<span class="main_icons members"></span>', ' <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
+					', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-clock" aria-hidden="true"></i> ' : '<span class="main_icons history"></span> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
 				</time>
 			</p>';
 	}
@@ -79,9 +98,12 @@ function template_show_page()
  */
 function show_comment_block()
 {
-	global $context, $modSettings, $txt, $settings, $options;
+	global $context, $modSettings, $options, $txt, $settings;
 
 	if (empty($context['lp_page']['options']['allow_comments']) || empty($modSettings['lp_show_comment_block']))
+		return;
+
+	if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
 		return;
 
 	if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
