@@ -142,8 +142,9 @@ $txt['lp_blocks_export']                 = 'Экспорт блоков';
 $txt['lp_blocks_import']                 = 'Импорт блоков';
 $txt['lp_blocks_export_tab_description'] = 'Здесь можно экспортировать нужные блоки для создания резервной копии или для импорта на другом форуме.';
 $txt['lp_blocks_import_tab_description'] = 'Здесь можно импортировать из резервной копии сохраненные ранее блоки портала.';
-$txt['lp_export_run']                    = 'Экспортировать';
+$txt['lp_export_run']                    = 'Экспортировать выделенные';
 $txt['lp_import_run']                    = 'Импортировать';
+$txt['lp_export_all']                    = 'Экспортировать все';
 
 // Tags
 $txt['lp_all_page_tags']    = 'Все теги страниц портала';

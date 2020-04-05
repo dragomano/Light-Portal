@@ -142,8 +142,9 @@ $txt['lp_blocks_export']                 = 'Block export';
 $txt['lp_blocks_import']                 = 'Block import';
 $txt['lp_blocks_export_tab_description'] = 'Here you can export the blocks you need to create a backup or import them to another forum.';
 $txt['lp_blocks_import_tab_description'] = 'Here you can import previously saved portal blocks from a backup.';
-$txt['lp_export_run']                    = 'Run export';
+$txt['lp_export_run']                    = 'Export selection';
 $txt['lp_import_run']                    = 'Run import';
+$txt['lp_export_all']                    = 'Export all';
 
 // Tags
 $txt['lp_all_page_tags']    = 'All portal page tags';

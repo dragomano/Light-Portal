@@ -29,6 +29,15 @@ class ManagePages
 	private static $alias_pattern = '^[a-z][a-z0-9_]+$';
 
 	/**
+	 * Number pages within tables
+	 *
+	 * Количество страниц в таблицах
+	 *
+	 * @var int
+	 */
+	private static $num_pages = 20;
+
+	/**
 	 * Manage pages
 	 *
 	 * Управление страницами
@@ -57,7 +66,7 @@ class ManagePages
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => 30,
+			'items_per_page' => self::$num_pages,
 			'title' => $txt['lp_extra_pages'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages',
@@ -132,7 +141,7 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' noticebox" style="display: block" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
+							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
 						}
 					)
 				),
@@ -183,14 +192,13 @@ class ManagePages
 				array(
 					'position' => 'below_table_data',
 					'value' => '
-				<div class="floatright">
-					<select name="page_actions">
-						<option value="delete">' . $txt['remove'] . '</option>
-						<option value="action_on">' . $txt['lp_action_on'] . '</option>
-						<option value="action_off">' . $txt['lp_action_off'] . '</option>
-					</select>
-					<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">
-				</div>'
+						<select name="page_actions">
+							<option value="delete">' . $txt['remove'] . '</option>
+							<option value="action_on">' . $txt['lp_action_on'] . '</option>
+							<option value="action_off">' . $txt['lp_action_off'] . '</option>
+						</select>
+						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
+					'class' => 'floatright'
 				)
 			)
 		);
@@ -1125,7 +1133,7 @@ class ManagePages
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => 10,
+			'items_per_page' => self::$num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
@@ -1171,9 +1179,9 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return $entry['status'] && !empty($title) ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
-						},
-						'class' => 'centertext'
+
+							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
+						}
 					)
 				),
 				'actions' => array(
@@ -1184,7 +1192,7 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry)
 						{
-							return '<input type="checkbox" value="' . $entry['id'] . '" name="items[]" checked>';
+							return '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>';
 						},
 						'class' => 'centertext'
 					)
@@ -1195,8 +1203,11 @@ class ManagePages
 			),
 			'additional_rows' => array(
 				array(
-					'position' => 'bottom_of_list',
-					'value'    => '<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">'
+					'position' => 'below_table_data',
+					'value' => '
+						<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
+						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">',
+					'class' => 'floatright'
 				)
 			)
 		);
@@ -1219,22 +1230,24 @@ class ManagePages
 	{
 		global $smcFunc;
 
-		if (empty($_POST['items']))
+		if (empty($_POST['pages']) && !isset($_POST['export_all']))
 			return;
+
+		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.start, com.created_at AS com_created_at
+				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
 				LEFT JOIN {db_prefix}lp_tags AS t ON (t.page_id = p.page_id)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)
-			WHERE p.page_id IN ({array_int:pages})',
+				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)' . (!empty($pages) ? '
+			WHERE p.page_id IN ({array_int:pages})' : ''),
 			array(
 				'type'  => 'page',
-				'pages' => $_POST['items']
+				'pages' => $pages
 			)
 		);
 
@@ -1271,7 +1284,6 @@ class ManagePages
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
 					'message'    => $row['message'],
-					'start'      => $row['start'],
 					'created_at' => $row['com_created_at']
 				);
 			}
@@ -1448,7 +1460,6 @@ class ManagePages
 								'page_id'    => $page_id,
 								'author_id'  => $v['author_id'],
 								'message'    => $v->message,
-								'start'      => $v['start'],
 								'created_at' => $v['created_at']
 							];
 						}
@@ -1494,7 +1505,7 @@ class ManagePages
 		}
 
 		if (!empty($comments)) {
-			$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `start`, `created_at`)
+			$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)
 				VALUES ";
 
 			$sql .= Subs::getValues($comments);
