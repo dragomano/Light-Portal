@@ -226,18 +226,21 @@ class TopPages
 		ob_start();
 
 		if (!empty($top_pages)) {
-			echo '
-			<dl class="stats">';
-
 			$max = reset($top_pages)['num_' . $parameters['popularity_type']];
 
-			foreach ($top_pages as $page) {
-				if ($page['num_' . $parameters['popularity_type']] < 1 || Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
-					continue;
-
-				$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
-
+			if (empty($max))
+				echo $txt['lp_top_pages_addon_no_items'];
+			else {
 				echo '
+			<dl class="stats">';
+
+				foreach ($top_pages as $page) {
+					if ($page['num_' . $parameters['popularity_type']] < 1 || Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
+						continue;
+
+					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
+
+					echo '
 				<dt>
 					<a href="', $page['href'], '">', $title, '</a>
 				</dt>
@@ -245,10 +248,11 @@ class TopPages
 					<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 					<span>', $parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>
 				</dd>';
-			}
+				}
 
-			echo '
+				echo '
 			</dl>';
+			}
 		} else
 			echo $txt['lp_top_pages_addon_no_items'];
 
