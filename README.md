@@ -23,6 +23,7 @@ Transform your forum into a portal: the main page, separate additional
 * Open Graph markup for pages and comments.
 * Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
 * Pages with support for various content.
+* Import and export of pages and blocks.
 * Support for addons.
 * Standalone mode.
 * Caching.
@@ -39,6 +40,7 @@ Transform your forum into a portal: the main page, separate additional
 * Разметка Open Graph для страниц и комментариев.
 * Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
 * Страницы с поддержкой различного контента.
+* Импорт и экспорт страниц и блоков.
 * Поддержка плагинов.
 * Автономный режим.
 * Кэширование.

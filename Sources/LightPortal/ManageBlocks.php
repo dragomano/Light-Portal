@@ -484,7 +484,7 @@ class ManageBlocks
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
-			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'fontawesome' ? 'fas' : Subs::runAddons('getDefaultIconType')),
+			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? Subs::runAddons('getDefaultIconType') ?? '',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
@@ -1088,7 +1088,7 @@ class ManageBlocks
 	{
 		global $context, $txt, $scripturl;
 
-		loadTemplate('LightPortal/ManageImport');
+		loadTemplate('LightPortal/ManageExport');
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
 		$context['page_area_title'] = $txt['lp_blocks_export'];

@@ -338,7 +338,9 @@ class Settings
 	{
 		global $context, $txt;
 
-		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
+		// Check every 3 days
+		// Проверяем раз в 3 дня
+		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
