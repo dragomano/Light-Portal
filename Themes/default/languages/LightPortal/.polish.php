@@ -31,7 +31,7 @@ $txt['lp_standalone_excluded_actions']         = 'Ignorowane akcje';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
 $txt['lp_show_tags_on_page']                   = 'Wyświetlaj słowa kluczowe na górze strony';
 $txt['lp_show_comment_block']                  = 'Wyświetlaj blok komentarzy';
-$txt['lp_show_comment_block_set']              = array('Brak', 'default' => 'Zintegrowany (domyślny)');
+$txt['lp_show_comment_block_set']              = array('none' => 'Brak', 'default' => 'Zintegrowany');
 $txt['lp_num_comments_per_page']               = 'Ilość komentarzy na stronę';
 $txt['lp_page_editor_type_default']            = 'Rodzaj domyślnego edytora ';
 $txt['lp_hide_blocks_in_admin_section']        = 'Ukryj aktywne bloki w centrum administracji';

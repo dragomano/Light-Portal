@@ -52,11 +52,12 @@ class ManagePages
 
 		loadJavaScriptFile('light_portal/manage_pages.js');
 
-		self::postActions();
+		self::doActions();
+		self::massActions();
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => 10,
+			'items_per_page' => 30,
 			'title' => $txt['lp_extra_pages'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages',
@@ -131,9 +132,8 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return $entry['status'] && !empty($title) ? ('<a class="button' . ($entry['is_front'] ? ' active" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
-						},
-						'class' => 'centertext'
+							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' noticebox" style="display: block" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '" style="float: none">' . $title . '</a>') : $title;
+						}
 					)
 				),
 				'actions' => array(
@@ -161,10 +161,37 @@ class ManagePages
 						},
 						'class' => 'centertext'
 					)
+				),
+				'mass' => array(
+					'header' => array(
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
+					),
+					'data' => array(
+						'function' => function ($entry)
+						{
+							return '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">';
+						},
+						'class' => 'centertext'
+					)
 				)
 			),
 			'form' => array(
-				'href' => $scripturl . '?action=admin;area=lp_pages'
+				'href' => $scripturl . '?action=admin;area=lp_pages',
+				'name' => 'pages'
+			),
+			'additional_rows' => array(
+				array(
+					'position' => 'below_table_data',
+					'value' => '
+				<div class="floatright">
+					<select name="page_actions">
+						<option value="delete">' . $txt['remove'] . '</option>
+						<option value="action_on">' . $txt['lp_action_on'] . '</option>
+						<option value="action_off">' . $txt['lp_action_off'] . '</option>
+					</select>
+					<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">
+				</div>'
+				)
 			)
 		);
 
@@ -264,17 +291,19 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function postActions()
+	private static function doActions()
 	{
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		self::remove();
+		$item = filter_input(INPUT_POST, 'del_page_id', FILTER_VALIDATE_INT);
+		if (!empty($item))
+			self::remove([$item]);
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
 			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
-			self::toggleStatus($item, $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
+			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
 
 		clean_cache();
@@ -282,91 +311,121 @@ class ManagePages
 	}
 
 	/**
-	 * Deleting a page
+	 * Removing pages
 	 *
-	 * Удаление страницы
+	 * Удаление страниц
 	 *
+	 * @param array $items
 	 * @return void
 	 */
-	private static function remove()
+	private static function remove(array $items)
 	{
 		global $smcFunc;
 
-		$item  = filter_input(INPUT_POST, 'del_page_id', FILTER_VALIDATE_INT);
-
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_pages
-			WHERE page_id = {int:id}',
+			WHERE page_id IN ({array_int:items})',
 			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'page'
+				'items' => $items,
+				'type'  => 'page'
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'page'
+				'items' => $items,
+				'type'  => 'page'
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
-			WHERE page_id = {int:id}',
+			WHERE page_id IN ({array_int:items})',
 			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_tags
-			WHERE page_id = {int:id}',
+			WHERE page_id IN ({array_int:items})',
 			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 	}
 
 	/**
-	 * Changing the page status
+	 * Pages status changing
 	 *
-	 * Смена статуса страницы
+	 * Смена статуса страниц
 	 *
-	 * @param int $item
+	 * @param array $items
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus(int $item, int $status = 0)
+	public static function toggleStatus(array $items, int $status = 0)
 	{
 		global $smcFunc;
 
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET status = {int:status}
-			WHERE page_id = {int:id}',
+			WHERE page_id IN ({array_int:items})',
 			array(
 				'status' => $status,
-				'id'     => $item
+				'items'  => $items
 			)
 		);
+	}
+
+	/**
+	 * Mass actions with pages
+	 *
+	 * Массовые действия со страницами
+	 *
+	 * @return void
+	 */
+	public static function massActions()
+	{
+		if (!isset($_POST['mass_actions']) || empty($_POST['items']))
+			return;
+
+		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, array('options' => array('default' => 'action=admin;area=lp_pages')));
+
+		$items = $_POST['items'];
+		switch (filter_input(INPUT_POST, 'page_actions')) {
+			case 'delete':
+				self::remove($items);
+				break;
+			case 'action_on':
+				self::toggleStatus($items, Page::STATUS_ACTIVE);
+				break;
+			case 'action_off':
+				self::toggleStatus($items);
+				break;
+		}
+
+		clean_cache();
+		redirectexit($redirect);
 	}
 
 	/**

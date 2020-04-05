@@ -39,7 +39,7 @@ class ManageBlocks
 			'description' => $txt['lp_blocks_manage_tab_description']
 		);
 
-		self::postActions();
+		self::doActions();
 
 		$context['lp_current_blocks']          = self::getAll();
 		$context['lp_current_blocks']          = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
@@ -98,19 +98,23 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	public static function postActions()
+	public static function doActions()
 	{
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		self::remove();
+		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
+
+		if (!empty($item))
+			self::remove([$item]);
+
 		self::makeCopy();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
 			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
 
-			self::toggleStatus($item, $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
+			self::toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}
 
 		self::updatePriority();
@@ -119,46 +123,45 @@ class ManageBlocks
 	}
 
 	/**
-	 * Deleting a block
+	 * Block deleting
 	 *
-	 * Удаление блока
+	 * Удаление блоков
 	 *
+	 * @param array $items
 	 * @return void
 	 */
-	private static function remove()
+	private static function remove(array $items)
 	{
 		global $smcFunc;
 
-		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
-
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id = {int:id}',
+			WHERE block_id IN ({array_int:items})',
 			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'block'
+				'items' => $items,
+				'type'  => 'block'
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'block'
+				'items' => $items,
+				'type'  => 'block'
 			)
 		);
 	}
@@ -207,24 +210,24 @@ class ManageBlocks
 	 *
 	 * Смена статуса блока
 	 *
-	 * @param int $item
+	 * @param array $items
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus(int $item, int $status = 0)
+	public static function toggleStatus(array $items, int $status = 0)
 	{
 		global $smcFunc;
 
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
-			WHERE block_id = {int:id}',
+			WHERE block_id IN ({array_int:items})',
 			array(
 				'status' => $status,
-				'id'     => $item
+				'items'  => $items
 			)
 		);
 	}
