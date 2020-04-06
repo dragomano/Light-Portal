@@ -35,6 +35,8 @@ $txt['lp_show_comment_block_set']              = array('none' => 'Brak', 'defaul
 $txt['lp_num_comments_per_page']               = 'Ilość komentarzy na stronę';
 $txt['lp_page_editor_type_default']            = 'Rodzaj domyślnego edytora ';
 $txt['lp_hide_blocks_in_admin_section']        = 'Ukryj aktywne bloki w centrum administracji';
+$txt['lp_use_block_icons']                     = 'Ikony tytułów bloków';
+$txt['lp_use_block_icons_set']                 = array('none' => 'Brak', 'fontawesome' => 'Font Awesome');
 $txt['lp_open_graph']                          = 'Open Graph';
 $txt['lp_page_og_image']                       = 'Użyj obrazu z treści';
 $txt['lp_page_og_image_set']                   = array('Brak', 'Pierwszy', 'Ostatni');
@@ -45,6 +47,7 @@ $txt['groups_light_portal_manage_blocks']      = 'Kto może zarządzać blokami'
 $txt['groups_light_portal_manage_own_pages']   = 'Kto może zarządzać stronami';
 $txt['lp_manage_permissions']                  = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 $txt['lp_extra_settings']                      = 'Dodatkowe ustawienia';
+$txt['lp_no_items']                            = 'Nic nie zostało dodane.';
 
 // Actions
 $txt['lp_title']        = 'Tytuł';
@@ -124,12 +127,24 @@ $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
 $txt['lp_permissions']                  = array('Wyświetl dla administratorów', 'Wyświetl dla gości', 'Wyświetl dla użytkowników', 'Wyświetl wszystkim');
-$txt['lp_no_items']                     = 'Nic nie dodano.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
 	'allow_comments'       => 'Włącz komentarze'
 );
+
+// Import and Export
+$txt['lp_pages_export']                  = 'Eksport stron';
+$txt['lp_pages_import']                  = 'Import stron';
+$txt['lp_pages_export_tab_description']  = 'W tym miejscu możesz eksportować strony w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_pages_import_tab_description']  = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe stron.';
+$txt['lp_blocks_export']                 = 'Eksport bloków';
+$txt['lp_blocks_import']                 = 'Import bloków';
+$txt['lp_blocks_export_tab_description'] = 'W tym miejscu możesz eksportować bloki w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_blocks_import_tab_description'] = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe bloków.';
+$txt['lp_export_run']                    = 'Wybór eksportu';
+$txt['lp_import_run']                    = 'Importuj';
+$txt['lp_export_all']                    = 'Eksportuj wszystko';
 
 // Tags
 $txt['lp_all_page_tags']    = 'Wszystkie tagi stron portalu';
