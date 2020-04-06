@@ -25,7 +25,6 @@
 		<remove-dir name="$themedir/css/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
 		<remove-dir name="$languagedir/LightPortal" />
-		<remove-file name="$themedir/images/lp_default_image.jpg" />
 		<redirect url="?action=admin;area=packages;sa=browse" timeout="1000" />
 	</uninstall>
 

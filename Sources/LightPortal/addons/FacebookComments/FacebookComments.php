@@ -55,7 +55,9 @@ class FacebookComments
 		if (!isset($modSettings['lp_facebook_addon_color_scheme']))
 			$modSettings['lp_facebook_addon_color_scheme'] = static::$color_scheme;
 
-		$settings[] = array('select', 'lp_facebook_addon_color_scheme', $txt['lp_facebook_addon_color_scheme_set']);
+		$disabled = empty($modSettings['lp_show_comment_block']) || (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'facebook');
+
+		$settings[] = array('select', 'lp_facebook_addon_color_scheme', $txt['lp_facebook_addon_color_scheme_set'], 'disabled' => $disabled);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Page creation/editing template
+ * The page creation/editing template
  *
  * Шаблон создания/редактирования страницы
  *

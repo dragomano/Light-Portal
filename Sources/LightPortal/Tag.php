@@ -87,10 +87,6 @@ class Tag
 							return '<a href="' . (Helpers::isFrontpage($entry['id']) ? $scripturl : '?page=' . $entry['alias']) . '">' . Helpers::getPublicTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'pt.title DESC',
-						'reverse' => 'pt.title'
 					)
 				),
 				'author' => array(

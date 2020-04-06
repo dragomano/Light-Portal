@@ -161,7 +161,7 @@ class RecentAttachments
 	{
 		global $boarddir;
 
-		[$num_attachments, $extensions] = $params;
+		extract($params);
 		$extensions = !empty($extensions) ? explode(',', $extensions) : [];
 
 		require_once($boarddir . '/SSI.php');
@@ -192,7 +192,7 @@ class RecentAttachments
 			'getRecentAttachments',
 			__CLASS__,
 			$cache_time,
-			array($parameters['num_attachments'], $parameters['extensions'])
+			$parameters
 		);
 
 		if (!empty($recent_attachments)) {

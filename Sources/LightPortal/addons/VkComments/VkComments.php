@@ -66,9 +66,11 @@ class VkComments
 		if (!isset($modSettings['lp_vk_addon_auto_publish']))
 			$modSettings['lp_vk_addon_auto_publish'] = static::$auto_publish;
 
-		$settings[] = array('text', 'lp_vk_addon_api_id', 'subtext' => $txt['lp_vk_addon_api_id_subtext']);
-		$settings[] = array('check', 'lp_vk_addon_allow_attachments');
-		$settings[] = array('check', 'lp_vk_addon_auto_publish');
+		$disabled = empty($modSettings['lp_show_comment_block']) || (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'vk');
+
+		$settings[] = array('text', 'lp_vk_addon_api_id', 'subtext' => $txt['lp_vk_addon_api_id_subtext'], 'disabled' => $disabled);
+		$settings[] = array('check', 'lp_vk_addon_allow_attachments', 'disabled' => $disabled);
+		$settings[] = array('check', 'lp_vk_addon_auto_publish', 'disabled' => $disabled);
 	}
 
 	/**

@@ -25,8 +25,8 @@
 	margin-bottom: 5px;
 }
 
-#lp_layout h3,
-#lp_layout h4 {
+.lp_frontpage_articles h3,
+.lp_frontpage_articles h4 {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
@@ -49,11 +49,21 @@
 	width: 100%;
 }
 
+#lp_layout .post_button_container .button:not(:first-child) {
+	margin-left: 0 !important;
+}
+
 #lp_layout #post_confirm_buttons {
 	padding: 12px 0 0 0 !important;
 }
 
+#lp_layout aside > div > h3, #lp_layout aside > div > h4 {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 section #display_head {
+	margin-top: 0.1em;
 	margin-bottom: 0;
 }
 
@@ -69,6 +79,9 @@ section #display_head span {
 
 aside.comments {
 	margin-top: 1em
+}
+p.errorbox.permissions {
+	margin: 0;
 }
 
 .comments .cat_bar {
@@ -198,8 +211,8 @@ aside.comments {
 	padding: 8px 10px;
 }
 
-.article_link {
-	margin-top: 10px;
+.article_content .inner {
+	min-height: auto;
 }
 
 .article_image {

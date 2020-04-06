@@ -27,11 +27,11 @@ class FrontPage
 	private static $num_columns = 12;
 
 	/**
-	 * Default image for articles
+	 * Placeholder image for articles
 	 *
 	 * @var string
 	 */
-	private static $default_image = 'far fa-image fa-7x';
+	private static $placeholder_image = '<i class="far fa-image fa-7x"></i>';
 
 	/**
 	 * Show articles on the portal frontpage
@@ -42,11 +42,11 @@ class FrontPage
 	 */
 	public static function show()
 	{
-		global $modSettings, $context, $scripturl, $txt;
+		global $context, $modSettings, $scripturl, $txt;
 
 		isAllowedTo('light_portal_view');
 
-		Block::show();
+		$context['lp_fontawesome_enabled'] = Helpers::isFontAwesomeEnabled();
 
 		if ($modSettings['lp_frontpage_mode'] == 1) {
 			return Page::show();
@@ -60,6 +60,9 @@ class FrontPage
 			self::prepareArticles('boards');
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
+
+		if ($context['current_action'] !== 'portal')
+			Block::show();
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
@@ -128,7 +131,7 @@ class FrontPage
 		}
 
 		$articles = Helpers::useCache('frontpage_' . $source . '_u' . $user_info['id'], $function, __CLASS__);
-		$articles = array_map(function ($article) {
+		$articles = array_map(function ($article) use ($modSettings, $context) {
 			if (isset($article['time']))
 				$article['time'] = Helpers::getFriendlyTime($article['time']);
 			if (isset($article['created_at']))
@@ -137,8 +140,8 @@ class FrontPage
 				$article['last_updated'] = Helpers::getFriendlyTime($article['last_updated']);
 			if (isset($article['title']))
 				$article['title'] = Helpers::getPublicTitle($article);
-			if (empty($article['image']))
-				$article['image_placeholder'] = self::$default_image;
+			if (empty($article['image']) && !empty($modSettings['lp_show_images_in_articles']))
+				$article['image_placeholder'] = Subs::runAddons('getFrontpagePlaceholderImage') ?: ($context['lp_fontawesome_enabled'] ? self::$placeholder_image : '');
 
 			return $article;
 		}, $articles);
@@ -187,7 +190,7 @@ class FrontPage
 			'selected_boards'   => $selected_boards
 		];
 
-		Subs::runAddons('frontpageTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -256,7 +259,7 @@ class FrontPage
 				'image'       => $image
 			);
 
-			Subs::runAddons('frontpageTopicsOutput', array(&$topics, $row));
+			Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -283,7 +286,7 @@ class FrontPage
 			'status' => Page::STATUS_ACTIVE
 		];
 
-		Subs::runAddons('frontpagePages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -337,7 +340,7 @@ class FrontPage
 			if (!empty($row['lang']))
 				$pages[$row['page_id']]['title'][$row['lang']] = !empty($subject_size) ? shorten_subject($row['title'], $subject_size) : $row['title'];
 
-			Subs::runAddons('frontpagePagesOutput', array(&$pages, $row));
+			Subs::runAddons('frontPagesOutput', array(&$pages, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -370,7 +373,7 @@ class FrontPage
 			'selected_boards' => $selected_boards
 		];
 
-		Subs::runAddons('frontpageBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -426,7 +429,7 @@ class FrontPage
 				$boards[$row['id_board']]['last_updated'] = $row['last_updated'];
 			}
 
-			Subs::runAddons('frontpageBoardsOutput', array(&$boards, $row));
+			Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
 		}
 
 		$smcFunc['db_free_result']($request);

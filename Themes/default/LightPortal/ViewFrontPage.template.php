@@ -30,7 +30,7 @@ function template_show_topics_as_articles()
 				<img class="article_image" src="', $topic['image'], '" alt="', $topic['subject'], '">';
 			} elseif (!empty($topic['image_placeholder'])) {
 				echo '
-				<span class="', $topic['image_placeholder'], ' centertext"></span>';
+				<span class="centertext">', $topic['image_placeholder'], '</span>';
 			}
 
 			echo '
@@ -53,7 +53,7 @@ function template_show_topics_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $topic['time'], '</div>
 						<div class="floatright">
-							<i class="fas fa-eye"></i> ', $topic['num_views'], '
+							', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-eye"></i> ' : '<span class="main_icons stats"></span> ', $topic['num_views'], '
 						</div>
 					</div>
 				</div>';
@@ -103,8 +103,25 @@ function template_show_pages_as_articles()
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], '">
 			<div class="cat_bar">
 				<h3 class="catbg">
-					', $page['is_new'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '', '<a href="', $page['link'], '">', $page['title'], '</a>', '
-					', $page['can_edit'] ? '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '"><span class="fas fa-edit" title="' . $txt['edit'] . '"></span></a>' : '', '
+					', $page['is_new'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '', '<a href="', $page['link'], '">', $page['title'], '</a>';
+
+				if ($page['can_edit']) {
+					echo '
+					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '">';
+
+					if ($context['lp_fontawesome_enabled']) {
+						echo '
+						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>';
+					} else {
+						echo '
+						<span class="main_icons quick_edit_button" title="' . $txt['edit'] . '"></span>';
+					}
+
+					echo '
+					</a>';
+				}
+
+				echo '
 				</h3>
 			</div>
 			<div class="roundframe noup">';
@@ -114,7 +131,7 @@ function template_show_pages_as_articles()
 				<img class="article_image" src="', $page['image'], '" alt="', $page['title'], '">';
 				} elseif (!empty($page['image_placeholder'])) {
 					echo '
-				<span class="', $page['image_placeholder'], ' centertext"></span>';
+				<span class="centertext">', $page['image_placeholder'], '</span>';
 				}
 
 				echo '
@@ -135,7 +152,7 @@ function template_show_pages_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $page['created_at'], '</div>
 						<div class="floatright">
-							<i class="fas fa-eye"></i> ', $page['num_views'], '
+						', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-eye"></i> ' : '<span class="main_icons stats"></span> ', $page['num_views'], '
 						</div>
 					</div>
 				</div>';
@@ -195,7 +212,7 @@ function template_show_boards_as_articles()
 				<img class="article_image" src="', $board['image'], '" alt="', $board['name'], '">';
 			} elseif (!empty($board['image_placeholder'])) {
 				echo '
-				<span class="', $board['image_placeholder'], ' centertext"></span>';
+				<span class="centertext">', $board['image_placeholder'], '</span>';
 			}
 
 			echo '
@@ -222,7 +239,7 @@ function template_show_boards_as_articles()
 						', $txt['redirect_board'];
 			} else {
 				echo '
-						<i class="fas fa-comment"></i> ', $board['num_posts'];
+						', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-comment"></i> ' : '<span class="main_icons personal_message"></span> ', $board['num_posts'];
 			}
 
 			echo '

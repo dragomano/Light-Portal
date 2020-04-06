@@ -68,21 +68,67 @@ class Helpers
 	 *
 	 * Получаем иконку блока
 	 *
-	 * @param string $icon
-	 * @param string $type
+	 * @param null|string $icon
+	 * @param null|string $type
 	 * @return string
 	 */
 	public static function getIcon($icon = null, $type = null)
 	{
-		global $context;
+		global $modSettings, $context;
+
+		if (empty($modSettings['lp_use_block_icons']))
+			return '';
+
+		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'none')
+			return '';
 
 		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
 		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
 
-		if (!empty($icon))
-			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+		if (!empty($icon)) {
+			if ($modSettings['lp_use_block_icons'] == 'fontawesome') {
+				return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+			} else {
+				return Subs::runAddons('getIcon', array($icon, $type));
+			}
+		}
 
 		return '';
+	}
+
+	/**
+	 * Checking whether FontAwesome is enabled
+	 *
+	 * Проверяем, включен ли FontAwesome
+	 *
+	 * @return bool
+	 */
+	public static function isFontAwesomeEnabled()
+	{
+		global $modSettings;
+
+		return self::doesCurrentThemeContainFontAwesome() || (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'fontawesome');
+	}
+
+	/**
+	 * Checking whether the current theme contains a set of FontAwesome icons
+	 *
+	 * Проверяем, содержит ли текущая тема набор иконок FontAwesome
+	 *
+	 * @return bool
+	 */
+	public static function doesCurrentThemeContainFontAwesome()
+	{
+		global $settings;
+
+		$supported_themes = [
+			'Badem',
+			'Endless',
+			'Lunarfall',
+			'Wide'
+		];
+
+		return in_array(explode('_', $settings['name'])[0], $supported_themes);
 	}
 
 	/**	 * Get a title for preview block

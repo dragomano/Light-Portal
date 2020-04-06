@@ -58,10 +58,13 @@ class EasyMDE
 	 */
 	public static function prepareEditor($object)
 	{
-		global $txt, $editortxt;
+		global $modSettings, $txt, $editortxt;
 
 		if ($object['type'] == 'md') {
 			loadLanguage('Editor');
+
+			if (empty($modSettings['lp_use_block_icons']) || (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'fontawesome'))
+				loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 
 			loadCssFile('https://unpkg.com/easymde/dist/easymde.min.css', array('external' => true));
 			addInlineCss('

@@ -251,6 +251,8 @@ class Integration
 		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (empty($modSettings['lp_frontpage_mode']) && empty($context['current_action']) && empty($_GET['page'])))
 			Block::show('forum');
 
+		$context['lp_load_page_stats'] = LP_DEBUG || isset($_GET['debug']) ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getUsageMemory()) : false;
+
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
@@ -304,8 +306,6 @@ class Integration
 
 		if ($context['current_action'] == 'forum')
 			$context['canonical_url'] = $scripturl . '?action=forum';
-
-		$context['lp_load_page_stats'] = LP_DEBUG || isset($_GET['debug']) ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getUsageMemory()) : false;
 	}
 
 	/**

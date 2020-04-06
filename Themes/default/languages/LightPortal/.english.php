@@ -31,10 +31,12 @@ $txt['lp_standalone_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
 $txt['lp_show_tags_on_page']                   = 'Display keywords at the top of the page';
 $txt['lp_show_comment_block']                  = 'Display comments block';
-$txt['lp_show_comment_block_set']              = array('None', 'default' => 'Integrated (default)');
+$txt['lp_show_comment_block_set']              = array('none' => 'None', 'default' => 'Integrated');
 $txt['lp_num_comments_per_page']               = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']            = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in the admin area';
+$txt['lp_use_block_icons']                     = 'Allow icons for block titles';
+$txt['lp_use_block_icons_set']                 = array('none' => 'None', 'fontawesome' => 'Font Awesome');
 $txt['lp_open_graph']                          = 'Open Graph';
 $txt['lp_page_og_image']                       = 'Use an image from the page content';
 $txt['lp_page_og_image_set']                   = array('None', 'First found', 'Last found');
@@ -43,9 +45,9 @@ $txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
 $txt['groups_light_portal_view']               = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']      = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
-$txt['lp_manage_blocks_warning']               = 'Note: some blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
-$txt['lp_manage_own_pages_warning']            = 'Note: some pages may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+$txt['lp_manage_permissions']                  = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 $txt['lp_extra_settings']                      = 'Extra settings';
+$txt['lp_no_items']                            = 'There is no items to show.';
 
 // Actions
 $txt['lp_title']        = 'Title';
@@ -125,12 +127,24 @@ $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
 $txt['lp_permissions']                  = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
-$txt['lp_no_items']                     = 'There is nothing yet. Let\'s add?';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
 	'allow_comments'       => 'Allow comments'
 );
+
+// Import and Export
+$txt['lp_pages_export']                  = 'Page export';
+$txt['lp_pages_import']                  = 'Page import';
+$txt['lp_pages_export_tab_description']  = 'Here you can export the pages you need to create a backup or import them to another forum.';
+$txt['lp_pages_import_tab_description']  = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_blocks_export']                 = 'Block export';
+$txt['lp_blocks_import']                 = 'Block import';
+$txt['lp_blocks_export_tab_description'] = 'Here you can export the blocks you need to create a backup or import them to another forum.';
+$txt['lp_blocks_import_tab_description'] = 'Here you can import previously saved portal blocks from a backup.';
+$txt['lp_export_run']                    = 'Export selection';
+$txt['lp_import_run']                    = 'Run import';
+$txt['lp_export_all']                    = 'Export all';
 
 // Tags
 $txt['lp_all_page_tags']    = 'All portal page tags';

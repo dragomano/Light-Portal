@@ -7,9 +7,9 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [BSD 3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
-* **Tested on:** PHP 7.3.15 / MySQL 5.7.25 / MariaDB 10.4.12 / PostgreSQL 9.6.17
+* **Tested on:** PHP 7.3.16 / MySQL 5.7.25 / MariaDB 10.4.12 / PostgreSQL 9.6.17
 * **Hooks only:** Yes
-* **Languages:** English, Russian, Ukrainian
+* **Languages:** English, Polish, Russian, Ukrainian
 
 ## Description
 Transform your forum into a portal: the main page, separate additional pages, and blocks, as well as the article system. Support for BBC, HTML and PHP content. Nothing extra.
@@ -23,6 +23,7 @@ Transform your forum into a portal: the main page, separate additional
 * Open Graph markup for pages and comments.
 * Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
 * Pages with support for various content.
+* Import and export of pages and blocks.
 * Support for addons.
 * Standalone mode.
 * Caching.
@@ -39,6 +40,7 @@ Transform your forum into a portal: the main page, separate additional
 * Разметка Open Graph для страниц и комментариев.
 * Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
 * Страницы с поддержкой различного контента.
+* Импорт и экспорт страниц и блоков.
 * Поддержка плагинов.
 * Автономный режим.
 * Кэширование.

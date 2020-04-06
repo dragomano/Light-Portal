@@ -39,10 +39,12 @@ class ManageBlocks
 			'description' => $txt['lp_blocks_manage_tab_description']
 		);
 
-		self::postActions();
+		self::doActions();
 
-		$context['lp_current_blocks'] = self::getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_current_blocks']          = self::getAll();
+		$context['lp_current_blocks']          = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_fontawesome_enabled']     = Helpers::doesCurrentThemeContainFontAwesome();
+		$context['lp_fontawesome_set_enabled'] = Helpers::isFontAwesomeEnabled();
 
 		$context['sub_template'] = 'manage_blocks';
 	}
@@ -96,19 +98,23 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	public static function postActions()
+	public static function doActions()
 	{
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		self::remove();
+		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
+
+		if (!empty($item))
+			self::remove([$item]);
+
 		self::makeCopy();
 
 		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
 			$item   = (int) $_POST['item'];
 			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
 
-			self::toggleStatus($item, $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
+			self::toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}
 
 		self::updatePriority();
@@ -117,46 +123,45 @@ class ManageBlocks
 	}
 
 	/**
-	 * Deleting a block
+	 * Block deleting
 	 *
-	 * Удаление блока
+	 * Удаление блоков
 	 *
+	 * @param array $items
 	 * @return void
 	 */
-	private static function remove()
+	private static function remove(array $items)
 	{
 		global $smcFunc;
 
-		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
-
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id = {int:id}',
+			WHERE block_id IN ({array_int:items})',
 			array(
-				'id' => $item
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'block'
+				'items' => $items,
+				'type'  => 'block'
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
-			WHERE item_id = {int:id}
+			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
-				'id'   => $item,
-				'type' => 'block'
+				'items' => $items,
+				'type'  => 'block'
 			)
 		);
 	}
@@ -205,24 +210,24 @@ class ManageBlocks
 	 *
 	 * Смена статуса блока
 	 *
-	 * @param int $item
+	 * @param array $items
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus(int $item, int $status = 0)
+	public static function toggleStatus(array $items, int $status = 0)
 	{
 		global $smcFunc;
 
-		if (empty($item))
+		if (empty($items))
 			return;
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
-			WHERE block_id = {int:id}',
+			WHERE block_id IN ({array_int:items})',
 			array(
 				'status' => $status,
-				'id'     => $item
+				'items'  => $items
 			)
 		);
 	}
@@ -314,6 +319,7 @@ class ManageBlocks
 
 		$context['sub_template'] = 'block_post';
 
+		self::addScripts();
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
@@ -358,6 +364,7 @@ class ManageBlocks
 		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
+		self::addScripts();
 		self::prepareFormFields();
 		self::prepareEditor();
 		self::showPreview();
@@ -391,6 +398,42 @@ class ManageBlocks
 	}
 
 	/**
+	 * Add js scripts, if necessary
+	 *
+	 * Добавляем js скрипты, если нужно
+	 *
+	 * @return void
+	 */
+	private static function addScripts()
+	{
+		global $modSettings, $context;
+
+		if (empty($modSettings['lp_use_block_icons']))
+			return;
+
+		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'none')
+			return;
+
+		if ($modSettings['lp_use_block_icons'] == 'fontawesome')
+			$icon_preview_html = "'<i class=\"' + type + ' fa-' + icon + '\"></i>'";
+		else
+			$icon_preview_html = Subs::runAddons('getIconPreviewHtml');
+
+		$context['insert_after_template'] .= '
+		<script>
+			jQuery(document).ready(function($) {
+				change_icon = function() {
+					let icon = $("#icon").val(),
+						type = $("#icon_type input:checked").val();
+					$("#block_icon").html(' . $icon_preview_html . ');
+				}
+				$("#icon").on("change", change_icon);
+				$("#icon_type input").on("change", change_icon);
+			});
+		</script>';
+	}
+
+	/**
 	 * Validating the sent data
 	 *
 	 * Валидируем отправляемые данные
@@ -399,7 +442,7 @@ class ManageBlocks
 	 */
 	private static function validateData()
 	{
-		global $context, $txt;
+		global $context, $modSettings, $user_info;
 
 		if (isset($_POST['save']) || isset($_POST['preview'])) {
 			$args = array(
@@ -441,12 +484,12 @@ class ManageBlocks
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
-			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
+			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? Subs::runAddons('getDefaultIconType') ?? '',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
-			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? 0,
+			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',
@@ -505,7 +548,7 @@ class ManageBlocks
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt;
+		global $context, $txt, $modSettings;
 
 		checkSubmitOnce('register');
 
@@ -523,38 +566,40 @@ class ManageBlocks
 			);
 		}
 
-		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
-		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
-			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon']
-			)
-		);
+		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none') {
+			$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+			$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
+			$context['posting_fields']['icon']['input'] = array(
+				'type' => 'text',
+				'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
+				'attributes' => array(
+					'id'        => 'icon',
+					'maxlength' => 30,
+					'value'     => $context['lp_block']['icon']
+				)
+			);
 
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id' => 'icon_type'
-			),
-			'options' => array()
-		);
+			$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+			$context['posting_fields']['icon_type']['input'] = array(
+				'type' => 'radio_select',
+				'attributes' => array(
+					'id' => 'icon_type'
+				),
+				'options' => array()
+			);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (!defined('JQUERY_VERSION')) {
-				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
-			} else {
-				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
+			foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+				if (!defined('JQUERY_VERSION')) {
+					$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
+						'value'   => $type,
+						'checked' => $type == $context['lp_block']['icon_type']
+					);
+				} else {
+					$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+						'value'   => $type,
+						'checked' => $type == $context['lp_block']['icon_type']
+					);
+				}
 			}
 		}
 
@@ -1030,5 +1075,267 @@ class ManageBlocks
 		$smcFunc['db_free_result']($request);
 
 		return $data;
+	}
+
+	/**
+	 * Block export
+	 *
+	 * Экспорт блоков
+	 *
+	 * @return void
+	 */
+	public static function export()
+	{
+		global $context, $txt, $scripturl;
+
+		loadTemplate('LightPortal/ManageExport');
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
+		$context['page_area_title'] = $txt['lp_blocks_export'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=export';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_blocks_export_tab_description']
+		);
+
+		Subs::runExport(self::getXmlFile());
+
+		$context['lp_current_blocks'] = self::getAll();
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+
+		$context['sub_template'] = 'manage_export_blocks';
+	}
+
+	/**
+	 * Creating data in XML format
+	 *
+	 * Формируем данные в XML-формате
+	 *
+	 * @return string
+	 */
+	private static function getDataForXml()
+	{
+		global $smcFunc;
+
+		if (empty($_POST['items']))
+			return;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				pt.lang, pt.title, pp.name, pp.value
+			FROM {db_prefix}lp_blocks AS b
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = b.block_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = b.block_id AND pp.type = {string:type})
+			WHERE b.block_id IN ({array_int:blocks})',
+			array(
+				'type'  => 'block',
+				'blocks' => $_POST['items']
+			)
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (!isset($items[$row['block_id']]))
+				$items[$row['block_id']] = array(
+					'block_id'      => $row['block_id'],
+					'icon'          => $row['icon'],
+					'icon_type'     => $row['icon_type'],
+					'type'          => $row['type'],
+					'content'       => $row['content'],
+					'placement'     => $row['placement'],
+					'priority'      => $row['priority'],
+					'permissions'   => $row['permissions'],
+					'status'        => $row['status'],
+					'areas'         => $row['areas'],
+					'title_class'   => $row['title_class'],
+					'title_style'   => $row['title_style'],
+					'content_class' => $row['content_class'],
+					'content_style' => $row['content_style']
+				);
+
+			if (!empty($row['lang']))
+				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+
+			if (!empty($row['name']))
+				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		return $items;
+	}
+
+	/**
+	 * Get filename with XML data
+	 *
+	 * Получаем имя файла с XML-данными
+	 *
+	 * @return string
+	 */
+	private static function getXmlFile()
+	{
+		$items = self::getDataForXml();
+
+		if (empty($items))
+			return '';
+
+		$xml = new \DomDocument('1.0', 'utf-8');
+		$root = $xml->appendChild($xml->createElement('light_portal'));
+
+		$xml->formatOutput = true;
+
+		$xmlElements = $root->appendChild($xml->createElement('blocks'));
+		foreach ($items as $item) {
+			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+			foreach ($item as $key => $val) {
+				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+
+				if (in_array($key, ['titles', 'params'])) {
+					foreach ($item[$key] as $k => $v) {
+						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
+						$xmlTitle->appendChild($xml->createTextNode($v));
+					}
+				} else {
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
+		$xml->save($file);
+
+		return $file;
+	}
+
+	/**
+	 * Block import
+	 *
+	 * Импорт блоков
+	 *
+	 * @return void
+	 */
+	public static function import()
+	{
+		global $context, $txt, $scripturl;
+
+		loadTemplate('LightPortal/ManageImport');
+
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_import'];
+		$context['page_area_title'] = $txt['lp_blocks_import'];
+		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=import';
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => $txt['lp_blocks_import_tab_description']
+		);
+
+		$context['sub_template'] = 'manage_import';
+
+		self::runImport();
+	}
+
+	/**
+	 * Import from an XML file
+	 *
+	 * Импорт из XML-файла
+	 *
+	 * @return void
+	 */
+	private static function runImport()
+	{
+		global $boarddir, $smcFunc;
+
+		if (empty($_FILES['import_file']))
+			return;
+
+		$file = $_FILES['import_file'];
+
+		if ($file['type'] !== 'text/xml')
+			return;
+
+		$xml = simplexml_load_file($file['tmp_name']);
+
+		if ($xml === false)
+			return;
+
+		$items = $titles = $params = [];
+
+		foreach ($xml as $element) {
+			foreach ($element->item as $item) {
+				$items[] = [
+					'block_id'      => $block_id = intval($item['block_id']),
+					'icon'          => $item->icon,
+					'icon_type'     => $item->icon_type,
+					'type'          => $item->type,
+					'content'       => $item->content,
+					'placement'     => $item->placement,
+					'priority'      => intval($item['priority']),
+					'permissions'   => intval($item['permissions']),
+					'status'        => intval($item['status']),
+					'areas'         => $item->areas,
+					'title_class'   => $item->title_class,
+					'title_style'   => $item->title_style,
+					'content_class' => $item->content_class,
+					'content_style' => $item->content_style
+				];
+
+				if (!empty($item->titles)) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'lang'    => $k,
+								'title'   => $v
+							];
+						}
+					}
+				}
+
+				if (!empty($item->params)) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'name'    => $k,
+								'value'   => $v
+							];
+						}
+					}
+				}
+			}
+		}
+
+		if (!empty($items)) {
+			$sql = "REPLACE INTO {db_prefix}lp_blocks (`block_id`, `icon`, `icon_type`, `type`, `content`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `title_style`, `content_class`, `content_style`)
+				VALUES ";
+
+			$sql .= Subs::getValues($items);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($titles)) {
+			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
+				VALUES ";
+
+			$sql .= Subs::getValues($titles);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		if (!empty($params)) {
+			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
+				VALUES ";
+
+			$sql .= Subs::getValues($params);
+
+			$smcFunc['db_query']('', $sql);
+		}
+
+		clean_cache();
 	}
 }

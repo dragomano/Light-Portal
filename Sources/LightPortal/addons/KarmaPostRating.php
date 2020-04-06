@@ -30,7 +30,7 @@ class KarmaPostRating
 	 * @param array $custom_parameters
 	 * @return void
 	 */
-	public static function frontpageTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
+	public static function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
 	{
 		global $modSettings, $context;
 
@@ -54,7 +54,7 @@ class KarmaPostRating
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontpageTopicsOutput(&$topics, $row)
+	public static function frontTopicsOutput(&$topics, $row)
 	{
 		global $modSettings;
 

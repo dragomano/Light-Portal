@@ -8,4 +8,4 @@ $txt['lp_top_pages_addon_type_set']          = array('comments' => 'По кол�
 $txt['lp_top_pages_addon_num_pages']         = 'Количество страниц для отображения';
 $txt['lp_top_pages_addon_show_numbers_only'] = 'Отображать только цифры';
 
-$txt['lp_top_pages_addon_no_items'] = 'Доступных страниц нет.';
+$txt['lp_top_pages_addon_no_items'] = 'Популярных страниц нет.';

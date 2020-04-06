@@ -66,7 +66,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
 								'main' => array($txt['lp_blocks_manage']),
-								'add' => array($txt['lp_blocks_add'])
+								'add'  => array($txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
@@ -78,8 +78,8 @@ class Settings
 							'amt' => $context['lp_active_pages_num'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main' => array($txt['lp_pages_manage']),
-								'add' => array($txt['lp_pages_add'])
+								'main'   => array($txt['lp_pages_manage']),
+								'add'    => array($txt['lp_pages_add'])
 							)
 						)
 					)
@@ -87,6 +87,18 @@ class Settings
 			),
 			array_slice($admin_areas, $counter, count($admin_areas), true)
 		);
+
+		if (allowedTo('admin_forum')) {
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
+				'export' => array($txt['lp_blocks_export']),
+				'import' => array($txt['lp_blocks_import'])
+			);
+
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += array(
+				'export' => array($txt['lp_pages_export']),
+				'import' => array($txt['lp_pages_import'])
+			);
+		}
 	}
 
 	/**
@@ -116,6 +128,8 @@ class Settings
 	{
 		global $sourcedir, $context, $txt, $scripturl, $modSettings;
 
+		loadTemplate('LightPortal/ManagePages');
+
 		require_once($sourcedir . '/ManageServer.php');
 
 		[$db_engine, $db_version] = self::getDbInfo();
@@ -131,8 +145,10 @@ class Settings
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
 
-		$context['permissions_excluded']['light_portal_manage_blocks'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
+
+		$txt['lp_manage_permissions'] = '<p class="errorbox permissions">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings
 		// Устанавливаем первоначальные настройки
@@ -158,7 +174,7 @@ class Settings
 
 		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']);
 
-		$active_pages = self::getActivePages();
+		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
 
 		// The mod authors can easily add their own settings
 		// Авторы модов модут легко добавлять собственные настройки
@@ -187,7 +203,8 @@ class Settings
 				array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 				array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
-				array('check', 'lp_hide_blocks_in_admin_section')
+				array('check', 'lp_hide_blocks_in_admin_section'),
+				array('select', 'lp_use_block_icons', $txt['lp_use_block_icons_set'])
 			),
 			$extra_settings,
 			array(
@@ -196,9 +213,10 @@ class Settings
 				array('text', 'lp_page_itemprop_address', 80),
 				array('text', 'lp_page_itemprop_phone', 80),
 				array('title', 'edit_permissions'),
+				array('desc', 'lp_manage_permissions'),
 				array('permissions', 'light_portal_view'),
-				array('permissions', 'light_portal_manage_blocks', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_blocks_warning'] . '</div>'),
-				array('permissions', 'light_portal_manage_own_pages', 'subtext' => '<div class="errorbox">' . $txt['lp_manage_own_pages_warning'] . '</div>')
+				array('permissions', 'light_portal_manage_blocks'),
+				array('permissions', 'light_portal_manage_own_pages')
 			)
 		);
 
@@ -251,6 +269,11 @@ class Settings
 			'edit' => 'ManageBlocks::edit'
 		);
 
+		if (allowedTo('admin_forum')) {
+			$subActions['export'] = 'ManageBlocks::export';
+			$subActions['import'] = 'ManageBlocks::import';
+		}
+
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
 
@@ -266,10 +289,15 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => 'ManagePages::main',
-			'add'  => 'ManagePages::add',
-			'edit' => 'ManagePages::edit'
+			'main'   => 'ManagePages::main',
+			'add'    => 'ManagePages::add',
+			'edit'   => 'ManagePages::edit'
 		);
+
+		if (allowedTo('admin_forum')) {
+			$subActions['export'] = 'ManagePages::export';
+			$subActions['import'] = 'ManagePages::import';
+		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -308,14 +336,15 @@ class Settings
 	 */
 	private static function checkNewVersion()
 	{
-		global $txt, $context;
+		global $context, $txt;
 
-		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__)) {
-			$message = '</p>
+		// Check every 3 days
+		// Проверяем раз в 3 дня
+		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
+			$context['settings_insert_above'] = '
 			<div class="noticebox">
-				<a href="https://github.com/dragomano/Light-Portal/releases" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
-			</div><p>';
-			$context[$context['admin_menu_name']]['tab_data']['description'] .= $message;
+				<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
+			</div>';
 		}
 	}
 
@@ -356,16 +385,13 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
-		global $txt;
-
-		$pages = FrontPage::getActivePages();
+		$pages = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
-				return $page['id'] = Helpers::getPublicTitle($page);
+				global $language;
+
+				return $page['id'] = $page[Helpers::getUserLanguage()] ?: $page[$language];
 			}, $pages);
-			$pages = array_filter($pages);
-		} else {
-			$pages = array($txt['no']);
 		}
 
 		return $pages;

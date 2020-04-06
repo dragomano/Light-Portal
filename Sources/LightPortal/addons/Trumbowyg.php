@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * Trumbowyg
  *
@@ -75,7 +77,7 @@ class Trumbowyg
 			urlProtocol: true,
 			removeformatPasted: true,
 			imageWidthModalEdit: true
-		});' . (strpos($settings['name'], 'Lunarfall') !== false  ? '
+		});' . (Helpers::doesCurrentThemeContainFontAwesome()  ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 		}
 	}
