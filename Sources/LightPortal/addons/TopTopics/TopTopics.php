@@ -158,7 +158,7 @@ class TopTopics
 	{
 		global $boarddir;
 
-		[$popularity_type, $num_topics] = $params;
+		extract($params);
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_topTopics($popularity_type, $num_topics, 'array');
@@ -188,7 +188,7 @@ class TopTopics
 			'getTopTopics',
 			__CLASS__,
 			$cache_time,
-			array($parameters['popularity_type'], $parameters['num_topics'])
+			$parameters
 		);
 
 		if (!empty($top_topics)) {

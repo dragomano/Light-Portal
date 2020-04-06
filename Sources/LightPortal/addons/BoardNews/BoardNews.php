@@ -155,7 +155,7 @@ class BoardNews
 	{
 		global $boarddir;
 
-		[$board_id, $num_posts] = $params;
+		extract($params);
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_boardNews($board_id, $num_posts, null, null, 'array');
@@ -185,7 +185,7 @@ class BoardNews
 			'getBoardNews',
 			__CLASS__,
 			$cache_time,
-			array($parameters['board_id'], $parameters['num_posts'])
+			$parameters
 		);
 
 		if (!empty($board_news)) {

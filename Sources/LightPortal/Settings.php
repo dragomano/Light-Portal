@@ -145,7 +145,7 @@ class Settings
 		$context['settings_title'] = $txt['settings'];
 		$context['post_url']       = $scripturl . '?action=admin;area=lp_settings;save';
 
-		$context['permissions_excluded']['light_portal_manage_blocks'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox permissions">' . $txt['lp_manage_permissions'] . '</p>';
@@ -174,7 +174,7 @@ class Settings
 
 		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']);
 
-		$active_pages = self::getActivePages();
+		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
 
 		// The mod authors can easily add their own settings
 		// Авторы модов модут легко добавлять собственные настройки
@@ -385,16 +385,13 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
-		global $txt;
-
-		$pages = FrontPage::getActivePages();
+		$pages = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
-				return $page['id'] = Helpers::getPublicTitle($page);
+				global $language;
+
+				return $page['id'] = $page[Helpers::getUserLanguage()] ?: $page[$language];
 			}, $pages);
-			$pages = array_filter($pages);
-		} else {
-			$pages = array($txt['no']);
 		}
 
 		return $pages;

@@ -190,7 +190,7 @@ class FrontPage
 			'selected_boards'   => $selected_boards
 		];
 
-		Subs::runAddons('frontpageTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -259,7 +259,7 @@ class FrontPage
 				'image'       => $image
 			);
 
-			Subs::runAddons('frontpageTopicsOutput', array(&$topics, $row));
+			Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -286,7 +286,7 @@ class FrontPage
 			'status' => Page::STATUS_ACTIVE
 		];
 
-		Subs::runAddons('frontpagePages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -340,7 +340,7 @@ class FrontPage
 			if (!empty($row['lang']))
 				$pages[$row['page_id']]['title'][$row['lang']] = !empty($subject_size) ? shorten_subject($row['title'], $subject_size) : $row['title'];
 
-			Subs::runAddons('frontpagePagesOutput', array(&$pages, $row));
+			Subs::runAddons('frontPagesOutput', array(&$pages, $row));
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -373,7 +373,7 @@ class FrontPage
 			'selected_boards' => $selected_boards
 		];
 
-		Subs::runAddons('frontpageBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+		Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -429,7 +429,7 @@ class FrontPage
 				$boards[$row['id_board']]['last_updated'] = $row['last_updated'];
 			}
 
-			Subs::runAddons('frontpageBoardsOutput', array(&$boards, $row));
+			Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
 		}
 
 		$smcFunc['db_free_result']($request);

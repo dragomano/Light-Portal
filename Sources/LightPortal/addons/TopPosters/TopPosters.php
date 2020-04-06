@@ -144,7 +144,7 @@ class TopPosters
 	{
 		global $smcFunc, $scripturl, $modSettings;
 
-		[$num_posters, $show_avatars] = $params;
+		extract($params);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
@@ -196,7 +196,7 @@ class TopPosters
 			'getTopPosters',
 			__CLASS__,
 			$cache_time,
-			array($parameters['num_posters'], (bool) $parameters['show_avatars'])
+			$parameters
 		);
 
 		if (!empty($top_posters)) {

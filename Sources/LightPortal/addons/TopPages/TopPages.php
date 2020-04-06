@@ -158,7 +158,7 @@ class TopPages
 	{
 		global $smcFunc, $modSettings, $scripturl;
 
-		[$popularity_type, $num_pages] = $params;
+		extract($params);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
@@ -220,7 +220,7 @@ class TopPages
 			'getTopPages',
 			__CLASS__,
 			$cache_time,
-			array($parameters['popularity_type'], $parameters['num_pages'])
+			$parameters
 		);
 
 		ob_start();
