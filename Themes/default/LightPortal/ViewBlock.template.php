@@ -128,7 +128,7 @@ function template_portal_below()
 		</div>';
 
 	// Script execution time and memory usage | Время выполнения скрипта и объём использованной памяти
-	if (!empty($context['lp_load_page_stats']) && !empty($context['user']['is_admin']))
+	if (!empty($context['lp_load_page_stats']))
 		echo '
 		<div class="row">
 			<div class="col-xs-12 centertext smalltext">', $context['lp_load_page_stats'], '</div>

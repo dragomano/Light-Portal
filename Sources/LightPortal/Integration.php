@@ -92,12 +92,14 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $context, $txt;
+		global $context, $txt, $modSettings;
 
 		if (!defined('LP_NAME') || !empty($context['uninstalling']))
 			return;
 
 		loadLanguage('LightPortal/');
+
+		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? array() : explode(',', $modSettings['lp_enabled_plugins']);
 
 		Subs::runAddons();
 		Subs::loadBlocks();
@@ -122,7 +124,7 @@ class Integration
 		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
 			Tag::show();
 
-		if (!empty($modSettings['lp_standalone'])) {
+		if (!empty($modSettings['lp_standalone_mode'])) {
 			Subs::unsetUnusedActions($actions);
 
 			if (empty($actions[$_REQUEST['action']]))
@@ -170,10 +172,10 @@ class Integration
 		if (empty($_REQUEST['action']))
 			$current_action = 'portal';
 
-		$excluded_actions = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
+		$excluded_actions = !empty($modSettings['lp_standalone_mode_excluded_actions']) ? explode(',', $modSettings['lp_standalone_mode_excluded_actions']) : [];
 
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
-			$current_action = !empty($modSettings['lp_standalone']) ? (in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
+			$current_action = !empty($modSettings['lp_standalone_mode']) ? (in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
 	}
 
 	/**
@@ -281,7 +283,7 @@ class Integration
 
 		// Standalone mode
 		// Автономный режим
-		if (!empty($modSettings['lp_standalone'])) {
+		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
 			$buttons['portal']['href']    = $scripturl;
 			$buttons['portal']['icon']    = 'home';

@@ -9,7 +9,7 @@
  */
 function template_page_post()
 {
-	global $context, $txt;
+	global $context, $txt, $settings;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '
@@ -62,28 +62,5 @@ function template_page_post()
 			</div>
 		</div>
 	</form>
-	<script>
-		jQuery(document).ready(function($) {
-			$("#postpage").on("change", function (e) {
-				if ($(e.target).attr("name")) {
-					if ($("#title").val() != "" && $("#alias").val() != "") {
-						$("#type").prop("disabled", false);
-						$("button[name=preview]").prop("disabled", false);
-						$("button[name=save]").prop("disabled", false);
-					} else {
-						$("#type").prop("disabled", true);
-						$("button[name=preview]").prop("disabled", true);
-						$("button[name=save]").prop("disabled", true);
-					}
-				}
-			});
-			$("#type").on("change", function() {
-				ajax_indicator(true);
-				if ($("#content").val() == "") {
-					$("#content").val(" ");
-				}
-				$("button[name=preview]").click();
-			});
-		});
-	</script>';
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_post.js"></script>';
 }
