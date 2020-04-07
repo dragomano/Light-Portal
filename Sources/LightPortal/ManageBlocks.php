@@ -41,10 +41,8 @@ class ManageBlocks
 
 		self::doActions();
 
-		$context['lp_current_blocks']          = self::getAll();
-		$context['lp_current_blocks']          = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
-		$context['lp_fontawesome_enabled']     = Helpers::doesCurrentThemeContainFontAwesome();
-		$context['lp_fontawesome_set_enabled'] = Helpers::isFontAwesomeEnabled();
+		$context['lp_current_blocks'] = self::getAll();
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_blocks';
 	}
@@ -319,7 +317,6 @@ class ManageBlocks
 
 		$context['sub_template'] = 'block_post';
 
-		self::addScripts();
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
@@ -364,7 +361,6 @@ class ManageBlocks
 		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
-		self::addScripts();
 		self::prepareFormFields();
 		self::prepareEditor();
 		self::showPreview();
@@ -395,42 +391,6 @@ class ManageBlocks
 		Subs::runAddons('blockOptions', array(&$options));
 
 		return $options;
-	}
-
-	/**
-	 * Add js scripts, if necessary
-	 *
-	 * Добавляем js скрипты, если нужно
-	 *
-	 * @return void
-	 */
-	private static function addScripts()
-	{
-		global $modSettings, $context;
-
-		if (empty($modSettings['lp_use_block_icons']))
-			return;
-
-		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'none')
-			return;
-
-		if ($modSettings['lp_use_block_icons'] == 'fontawesome')
-			$icon_preview_html = "'<i class=\"' + type + ' fa-' + icon + '\"></i>'";
-		else
-			$icon_preview_html = Subs::runAddons('getIconPreviewHtml');
-
-		$context['insert_after_template'] .= '
-		<script>
-			jQuery(document).ready(function($) {
-				change_icon = function() {
-					let icon = $("#icon").val(),
-						type = $("#icon_type input:checked").val();
-					$("#block_icon").html(' . $icon_preview_html . ');
-				}
-				$("#icon").on("change", change_icon);
-				$("#icon_type input").on("change", change_icon);
-			});
-		</script>';
 	}
 
 	/**
@@ -484,7 +444,7 @@ class ManageBlocks
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
-			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? Subs::runAddons('getDefaultIconType') ?? '',
+			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
@@ -566,40 +526,38 @@ class ManageBlocks
 			);
 		}
 
-		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none') {
-			$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-			$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
-			$context['posting_fields']['icon']['input'] = array(
-				'type' => 'text',
-				'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
-				'attributes' => array(
-					'id'        => 'icon',
-					'maxlength' => 30,
-					'value'     => $context['lp_block']['icon']
-				)
-			);
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
+		$context['posting_fields']['icon']['input'] = array(
+			'type' => 'text',
+			'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
+			'attributes' => array(
+				'id'        => 'icon',
+				'maxlength' => 30,
+				'value'     => $context['lp_block']['icon']
+			)
+		);
 
-			$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-			$context['posting_fields']['icon_type']['input'] = array(
-				'type' => 'radio_select',
-				'attributes' => array(
-					'id' => 'icon_type'
-				),
-				'options' => array()
-			);
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'icon_type'
+			),
+			'options' => array()
+		);
 
-			foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-				if (!defined('JQUERY_VERSION')) {
-					$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-						'value'   => $type,
-						'checked' => $type == $context['lp_block']['icon_type']
-					);
-				} else {
-					$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-						'value'   => $type,
-						'checked' => $type == $context['lp_block']['icon_type']
-					);
-				}
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			if (!defined('JQUERY_VERSION')) {
+				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
+					'value'   => $type,
+					'checked' => $type == $context['lp_block']['icon_type']
+				);
+			} else {
+				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+					'value'   => $type,
+					'checked' => $type == $context['lp_block']['icon_type']
+				);
 			}
 		}
 

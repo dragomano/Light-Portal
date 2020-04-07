@@ -53,7 +53,7 @@ function template_show_topics_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $topic['time'], '</div>
 						<div class="floatright">
-							', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-eye"></i> ' : '<span class="main_icons stats"></span> ', $topic['num_views'], '
+							<i class="fas fa-eye"></i> ', $topic['num_views'], '
 						</div>
 					</div>
 				</div>';
@@ -107,17 +107,8 @@ function template_show_pages_as_articles()
 
 				if ($page['can_edit']) {
 					echo '
-					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '">';
-
-					if ($context['lp_fontawesome_enabled']) {
-						echo '
-						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>';
-					} else {
-						echo '
-						<span class="main_icons quick_edit_button" title="' . $txt['edit'] . '"></span>';
-					}
-
-					echo '
+					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '">
+						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>
 					</a>';
 				}
 
@@ -152,7 +143,7 @@ function template_show_pages_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $page['created_at'], '</div>
 						<div class="floatright">
-						', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-eye"></i> ' : '<span class="main_icons stats"></span> ', $page['num_views'], '
+							<i class="fas fa-eye"></i> ', $page['num_views'], '
 						</div>
 					</div>
 				</div>';
@@ -236,10 +227,10 @@ function template_show_boards_as_articles()
 
 			if ($board['is_redirect']) {
 				echo '
-						', $txt['redirect_board'];
+							', $txt['redirect_board'];
 			} else {
 				echo '
-						', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-comment"></i> ' : '<span class="main_icons personal_message"></span> ', $board['num_posts'];
+							<i class="fas fa-comment"></i> ', $board['num_posts'];
 			}
 
 			echo '

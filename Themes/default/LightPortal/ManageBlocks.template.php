@@ -42,10 +42,10 @@ function show_block_table()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '">
-					', ($context['lp_fontawesome_set_enabled'] ? ('<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>') : ('<span class="main_icons post_moderation_allow" title="' . $txt['lp_blocks_add'] . '"></span>')), '
+					<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
-			', $txt['lp_block_placement_set'][$placement], '
+			', $txt['lp_block_placement_set'][$placement], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
 	<table class="lp_current_blocks table_grid">';
@@ -297,5 +297,16 @@ function template_block_post()
 				<button type="submit" class="button" name="save">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>';
+	</form>
+	<script>
+		jQuery(document).ready(function($) {
+			change_icon = function() {
+				let icon = $("#icon").val(),
+					type = $("#icon_type input:checked").val();
+				$("#block_icon").html("<i class=\"" + type + " fa-" + icon + "\"></i>");
+			}
+			$("#icon").on("change", change_icon);
+			$("#icon_type input").on("change", change_icon);
+		});
+	</script>';
 }

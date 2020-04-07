@@ -57,8 +57,6 @@ class ManagePages
 			'description' => $txt['lp_pages_manage_tab_description']
 		);
 
-		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
-
 		loadJavaScriptFile('light_portal/manage_pages.js');
 
 		self::doActions();
@@ -206,13 +204,16 @@ class ManagePages
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '">
-					' . (Helpers::isFontAwesomeEnabled() ? ('<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>') : ('<span class="main_icons post_moderation_allow" title="' . $txt['lp_pages_add'] . '"></span>')) . '
+					<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>
 				</a>
 			</span>' . $listOptions['title'];
+
+
 
 		require_once($sourcedir . '/Subs-List.php');
 		createList($listOptions);
 
+		$context['pages']['title'] .= ' (' . $context['pages']['total_num_items'] . ')';
 		$context['sub_template'] = 'show_list';
 		$context['default_list'] = 'pages';
 	}

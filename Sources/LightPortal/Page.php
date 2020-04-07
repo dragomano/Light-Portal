@@ -72,8 +72,6 @@ class Page
 			);
 		}
 
-		$context['lp_fontawesome_enabled'] = Helpers::isFontAwesomeEnabled();
-
 		loadTemplate('LightPortal/ViewPage');
 		$context['sub_template'] = 'show_page';
 

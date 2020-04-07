@@ -74,40 +74,15 @@ class Helpers
 	 */
 	public static function getIcon($icon = null, $type = null)
 	{
-		global $modSettings, $context;
-
-		if (empty($modSettings['lp_use_block_icons']))
-			return '';
-
-		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'none')
-			return '';
+		global $context;
 
 		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
 		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
 
-		if (!empty($icon)) {
-			if ($modSettings['lp_use_block_icons'] == 'fontawesome') {
-				return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
-			} else {
-				return Subs::runAddons('getIcon', array($icon, $type));
-			}
-		}
+		if (!empty($icon))
+			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
 
 		return '';
-	}
-
-	/**
-	 * Checking whether FontAwesome is enabled
-	 *
-	 * Проверяем, включен ли FontAwesome
-	 *
-	 * @return bool
-	 */
-	public static function isFontAwesomeEnabled()
-	{
-		global $modSettings;
-
-		return self::doesCurrentThemeContainFontAwesome() || (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'fontawesome');
 	}
 
 	/**

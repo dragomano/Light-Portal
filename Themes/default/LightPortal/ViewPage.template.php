@@ -19,17 +19,8 @@ function template_show_page()
 
 	if ($context['lp_page']['can_edit']) {
 		echo '
-					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '">';
-
-		if ($context['lp_fontawesome_enabled']) {
-			echo '
-						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>';
-		} else {
-			echo '
-						<span class="main_icons quick_edit_button" title="' . $txt['edit'] . '"></span>';
-		}
-
-		echo '
+					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '">
+						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>
 					</a>';
 	}
 
@@ -40,9 +31,9 @@ function template_show_page()
 	if (!empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
 			<p>
-				<span class="floatleft">', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-user" aria-hidden="true"></i>' : '<span class="main_icons members"></span>', ' <span itemprop="author">', $context['lp_page']['author'], '</span></span>
+				<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-					', $context['lp_fontawesome_enabled'] ? '<i class="fas fa-clock" aria-hidden="true"></i> ' : '<span class="main_icons history"></span> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
+					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
 				</time>
 			</p>';
 	}
@@ -119,12 +110,14 @@ function show_comment_block()
 			<div class="cat_bar">
 				<h3 class="catbg">';
 
-	if (!empty($context['lp_page']['comments']))
+	if (!empty($context['lp_page']['comments'])) {
 		echo '
-					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>';
+					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>
+					<a id="page_comments_link">', $txt['lp_comments'], '</a>';
+	} else
+		echo $txt['lp_comments'];
 
 	echo '
-					<a id="page_comments_link">', $txt['lp_comments'], '</a>
 				</h3>
 			</div>
 			<div id="page_comments"', empty($options['collapse_header_page_comments']) ? '' : ' style="display: none;"', '>';
