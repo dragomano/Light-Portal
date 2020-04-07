@@ -22,6 +22,20 @@ if (!defined('SMF'))
 class Trumbowyg
 {
 	/**
+	 * Adding some text variables
+	 *
+	 * Добавляем некоторые текстовые переменные
+	 *
+	 * @return void
+	 */
+	public static function init()
+	{
+		global $txt;
+
+		$txt['lp_trumbowyg_type'] = 'editor';
+	}
+
+	/**
 	 * Adding your own editor for 'html' content
 	 *
 	 * Добавляем свой редактор для контента 'html'

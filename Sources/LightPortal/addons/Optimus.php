@@ -20,6 +20,20 @@ if (!defined('SMF'))
 class Optimus
 {
 	/**
+	 * Adding some text variables
+	 *
+	 * Добавляем некоторые текстовые переменные
+	 *
+	 * @return void
+	 */
+	public static function init()
+	{
+		global $txt;
+
+		$txt['lp_optimus_type'] = 'article';
+	}
+
+	/**
 	 * Select optimus_description column for the frontpage topics
 	 *
 	 * Выбираем столбец optimus_description при выборке тем-статей

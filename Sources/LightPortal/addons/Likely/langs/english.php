@@ -17,3 +17,6 @@ $txt['lp_likely_addon_buttons_set']     = array(
 	'linkedin'      => 'Share',
 	'whatsapp'      => 'Send'
 );
+
+// Do not translate and do not include into other language files
+$txt['lp_likely_type'] = 'block';

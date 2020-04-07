@@ -20,6 +20,20 @@ if (!defined('SMF'))
 class KarmaPostRating
 {
 	/**
+	 * Adding some text variables
+	 *
+	 * Добавляем некоторые текстовые переменные
+	 *
+	 * @return void
+	 */
+	public static function init()
+	{
+		global $txt;
+
+		$txt['lp_karma_post_rating_type'] = 'article';
+	}
+
+	/**
 	 * Select rating column from kpr_ratings table for the frontpage topics
 	 *
 	 * Выбираем столбец rating из таблицы kpr_ratings при выборке тем-статей

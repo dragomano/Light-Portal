@@ -233,6 +233,29 @@ p.errorbox.permissions {
 	display: flex;
 }
 
+.features .floatleft {
+	width: 80%;
+}
+
+.lp_plugin_toggle,
+.lp_plugin_settings {
+	cursor: pointer;
+}
+
+.lp_plugin_settings {
+	position: relative;
+	top: -3px;
+	vertical-align: baseline !important;
+}
+
+.form_settings input[type="text"] {
+	width: 100%;
+}
+
+.footer .infobox, .footer .errorbox {
+	display: none;
+}
+
 @media (max-width: 1200px) and (min-width: 1022px) {
 	.article_info div {
 		text-align: center;

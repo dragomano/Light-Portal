@@ -6,3 +6,6 @@ $txt['lp_block_types_descriptions']['top_posters'] = 'Displays a list of top pos
 $txt['lp_top_posters_addon_show_avatars']      = 'Display user avatars';
 $txt['lp_top_posters_addon_num_posters']       = 'Number of posters to display';
 $txt['lp_top_posters_addon_show_numbers_only'] = 'Only display numbers';
+
+// Do not translate and do not include into other language files
+$txt['lp_top_posters_type'] = 'block';

@@ -8,7 +8,7 @@ elseif(!defined('SMF'))
 if (version_compare(PHP_VERSION, '7.2', '<'))
 	die('This mod needs PHP 7.2 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
-global $user_info, $mbname;
+global $user_info, $mbname, $modSettings;
 
 if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
@@ -402,6 +402,9 @@ foreach($tables as $table) {
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
+
+if (!isset($modSettings['lp_enabled_plugins']))
+	updateSettings(array('lp_enabled_plugins' => 'Trumbowyg'));
 
 if (SMF == 'SSI')
 	echo 'Database changes are complete! Please wait...';

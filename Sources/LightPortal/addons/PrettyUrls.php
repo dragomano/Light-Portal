@@ -20,14 +20,18 @@ if (!defined('SMF'))
 class PrettyUrls
 {
 	/**
-	 * Run necessary hooks
+	 * Adding the necessary text variables and run hooks
 	 *
-	 * Запускаем необходимые хуки
+	 * Добавляем необходимые текстовые переменные и запускаем хуки
 	 *
 	 * @return void
 	 */
 	public static function init()
 	{
+		global $txt;
+
+		$txt['lp_pretty_urls_type'] = 'compat';
+
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 	}
 

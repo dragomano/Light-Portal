@@ -20,6 +20,20 @@ if (!defined('SMF'))
 class Markdown
 {
 	/**
+	 * Adding some text variables
+	 *
+	 * Добавляем некоторые текстовые переменные
+	 *
+	 * @return void
+	 */
+	public static function init()
+	{
+		global $txt;
+
+		$txt['lp_markdown_type'] = 'parser';
+	}
+
+	/**
 	 * Parse 'md' content
 	 *
 	 * Парсим контент типа 'md'

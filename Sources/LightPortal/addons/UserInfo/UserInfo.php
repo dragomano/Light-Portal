@@ -67,11 +67,12 @@ class UserInfo
 			<ul class="centertext">
 				<li>', $txt['hello_member'], ' <strong>', $userData['name_color'], '</strong></li>';
 
-			if (!empty($userData['avatar']))
+			if (!empty($userData['avatar'])) {
 				echo '
 				<li style="margin: 1em">', $userData['avatar']['image'], '</li>';
+			}
 
-			$fa = Helpers::isFontAwesomeEnabled();
+			$fa = false;
 
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>

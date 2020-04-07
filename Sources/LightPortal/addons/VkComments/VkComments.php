@@ -61,16 +61,14 @@ class VkComments
 	{
 		global $modSettings, $txt;
 
-		if (!isset($modSettings['lp_vk_addon_allow_attachments']))
-			$modSettings['lp_vk_addon_allow_attachments'] = static::$allow_attachments;
-		if (!isset($modSettings['lp_vk_addon_auto_publish']))
-			$modSettings['lp_vk_addon_auto_publish'] = static::$auto_publish;
+		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
+			$modSettings['lp_vk_comments_addon_allow_attachments'] = static::$allow_attachments;
+		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
+			$modSettings['lp_vk_comments_addon_auto_publish'] = static::$auto_publish;
 
-		$disabled = empty($modSettings['lp_show_comment_block']) || (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'vk');
-
-		$settings[] = array('text', 'lp_vk_addon_api_id', 'subtext' => $txt['lp_vk_addon_api_id_subtext'], 'disabled' => $disabled);
-		$settings[] = array('check', 'lp_vk_addon_allow_attachments', 'disabled' => $disabled);
-		$settings[] = array('check', 'lp_vk_addon_auto_publish', 'disabled' => $disabled);
+		$settings[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
+		$settings[] = array('check', 'lp_vk_comments_addon_allow_attachments');
+		$settings[] = array('check', 'lp_vk_comments_addon_auto_publish');
 	}
 
 	/**
@@ -84,16 +82,16 @@ class VkComments
 	{
 		global $modSettings, $context;
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_addon_api_id'])) {
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
 			$num_comments      = $modSettings['lp_num_comments_per_page'] ?? 10;
-			$allow_attachments = $modSettings['lp_vk_addon_allow_attachments'] ?? static::$allow_attachments;
-			$auto_publish      = $modSettings['lp_vk_addon_auto_publish'] ?? static::$auto_publish;
+			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? static::$allow_attachments;
+			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? static::$auto_publish;
 
 			$context['lp_vk_comment_block'] = '
 				<script src="https://vk.com/js/api/openapi.js?167"></script>
 				<script>
 					VK.init({
-						apiId: ' . $modSettings['lp_vk_addon_api_id'] . ',
+						apiId: ' . $modSettings['lp_vk_comments_addon_api_id'] . ',
 						onlyWidgets: true
 					});
 				</script>

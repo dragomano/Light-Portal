@@ -20,6 +20,20 @@ if (!defined('SMF'))
 class TopicRatingBar
 {
 	/**
+	 * Adding some text variables
+	 *
+	 * Добавляем некоторые текстовые переменные
+	 *
+	 * @return void
+	 */
+	public static function init()
+	{
+		global $txt;
+
+		$txt['lp_topic_rating_bar_type'] = 'article';
+	}
+
+	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics
 	 *
 	 * Выбираем столбцы total_votes и total_value из таблицы topic_ratings при выборке тем-статей

@@ -52,12 +52,10 @@ class FacebookComments
 	{
 		global $modSettings, $txt;
 
-		if (!isset($modSettings['lp_facebook_addon_color_scheme']))
-			$modSettings['lp_facebook_addon_color_scheme'] = static::$color_scheme;
+		if (!isset($modSettings['lp_facebook_comments_addon_color_scheme']))
+			$modSettings['lp_facebook_comments_addon_color_scheme'] = static::$color_scheme;
 
-		$disabled = empty($modSettings['lp_show_comment_block']) || (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'facebook');
-
-		$settings[] = array('select', 'lp_facebook_addon_color_scheme', $txt['lp_facebook_addon_color_scheme_set'], 'disabled' => $disabled);
+		$settings[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
 	}
 
 	/**
@@ -75,7 +73,7 @@ class FacebookComments
 			$context['lp_facebook_comment_block'] = '
 				<div id="fb-root"></div>
 				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $txt['lang_locale'] . '/sdk.js#xfbml=1&version=v6.0"></script>
-				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($modSettings['lp_facebook_addon_color_scheme'] ?? static::$color_scheme) . '"></div>';
+				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($modSettings['lp_facebook_comments_addon_color_scheme'] ?? static::$color_scheme) . '"></div>';
 		}
 	}
 }

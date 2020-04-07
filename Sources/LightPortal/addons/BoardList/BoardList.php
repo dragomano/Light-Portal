@@ -58,7 +58,7 @@ class BoardList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['boardlist'] = array(
+		$options['board_list'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
 				'category_class' => static::$category_class,
@@ -79,7 +79,7 @@ class BoardList
 	{
 		global $context;
 
-		if ($context['current_block']['type'] !== 'boardlist')
+		if ($context['current_block']['type'] !== 'board_list')
 			return;
 
 		$args['parameters'] = array(
@@ -99,10 +99,10 @@ class BoardList
 	{
 		global $context, $txt;
 
-		if ($context['lp_block']['type'] !== 'boardlist')
+		if ($context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$context['posting_fields']['category_class']['label']['text'] = $txt['lp_boardlist_addon_category_class'];
+		$context['posting_fields']['category_class']['label']['text'] = $txt['lp_board_list_addon_category_class'];
 		$context['posting_fields']['category_class']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -125,7 +125,7 @@ class BoardList
 			}
 		}
 
-		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_boardlist_addon_board_class'];
+		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_board_list_addon_board_class'];
 		$context['posting_fields']['board_class']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -187,10 +187,10 @@ class BoardList
 	{
 		global $context, $scripturl;
 
-		if ($type !== 'boardlist')
+		if ($type !== 'board_list')
 			return;
 
-		$context['lp_boardlist'] = Helpers::useCache('boardlist_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
+		$context['lp_boardlist'] = Helpers::useCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
 
 		if ($parameters['board_class'] == '_')
 			$parameters['board_class'] = '';

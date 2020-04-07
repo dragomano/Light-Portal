@@ -28,11 +28,7 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
-		global $modSettings;
-
-		if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] == 'fontawesome')
-			loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
-
+		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCssFile('light_portal/flexboxgrid.min.css');
 		loadCssFile('light_portal/light_portal.css');
 	}
@@ -51,6 +47,7 @@ class Subs
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
+		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
 
 		$context['lp_active_blocks']    = Helpers::useCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getActivePageQuantity', __CLASS__);
@@ -116,9 +113,9 @@ class Subs
 	}
 
 	/**
-	 * Get the total number of active pages
+	 * Get the total number of active pages of the current user
 	 *
-	 * Подсчитываем общее количество активных страниц
+	 * Подсчитываем общее количество активных страниц текущего пользователя
 	 *
 	 * @return int
 	 */
@@ -155,7 +152,7 @@ class Subs
 	{
 		global $modSettings, $context;
 
-		$excluded_actions   = !empty($modSettings['lp_standalone_excluded_actions']) ? explode(',', $modSettings['lp_standalone_excluded_actions']) : [];
+		$excluded_actions   = !empty($modSettings['lp_standalone_mode_excluded_actions']) ? explode(',', $modSettings['lp_standalone_mode_excluded_actions']) : [];
 		$excluded_actions[] = 'portal';
 		$excluded_actions   = array_flip($excluded_actions);
 
@@ -285,13 +282,17 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $hook (https://github.com/dragomano/Light-Portal/wiki/Available-hooks)
+	 * @param string $hook (see https://github.com/dragomano/Light-Portal/wiki/Available-hooks)
 	 * @param array $vars (extra variables)
+	 * @param array $plugins
 	 * @return mixed
 	 */
-	public static function runAddons(string $hook = 'init', array $vars = [])
+	public static function runAddons(string $hook = 'init', array $vars = [], array $plugins = [])
 	{
-		$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
+		global $context;
+
+		//$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
+		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
 		if (empty($light_portal_addons))
 			return;
@@ -299,7 +300,6 @@ class Subs
 		$results = [];
 		foreach ($light_portal_addons as $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon;
-
 			self::loadAddonLanguage($addon);
 
 			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))

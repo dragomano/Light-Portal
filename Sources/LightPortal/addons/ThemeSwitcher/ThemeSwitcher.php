@@ -70,10 +70,10 @@ class ThemeSwitcher
 	{
 		global $settings;
 
-		if ($type !== 'themeswitcher')
+		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::useCache('themeswitcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::useCache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
 		if (!empty($available_themes)) {
 			ob_start();
