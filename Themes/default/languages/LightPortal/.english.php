@@ -11,43 +11,57 @@ $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
 // Settings
-$txt['lp_settings']                            = 'Portal settings';
-$txt['lp_php_mysql_info']                      = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']            = 'A new version is available!';
-$txt['lp_frontpage_title']                     = 'The frontpage title';
-$txt['lp_frontpage_mode']                      = 'The portal frontpage';
-$txt['lp_frontpage_mode_set']                  = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
-$txt['lp_frontpage_id']                        = 'Portal page to display as the main page';
-$txt['lp_frontpage_boards']                    = 'Boards as sources of articles for the frontpage';
-$txt['lp_frontpage_layout']                    = 'Number of columns for displaying articles';
-$txt['lp_frontpage_layout_set']                = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
-$txt['lp_show_images_in_articles']             = 'Show images that found in articles';
-$txt['lp_subject_size']                        = 'The max size of article titles (in symbols)';
-$txt['lp_teaser_size']                         = 'The max size of article teasers (in symbols)';
-$txt['lp_num_items_per_page']                  = 'Number of items per page (for pagination)';
-$txt['lp_standalone']                          = 'Standalone mode';
-$txt['lp_standalone_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
-$txt['lp_standalone_excluded_actions']         = 'Ignored actions';
-$txt['lp_standalone_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
-$txt['lp_show_tags_on_page']                   = 'Display keywords at the top of the page';
-$txt['lp_show_comment_block']                  = 'Display comments block';
-$txt['lp_show_comment_block_set']              = array('none' => 'None', 'default' => 'Integrated');
-$txt['lp_num_comments_per_page']               = 'Number of parent comments per page';
-$txt['lp_page_editor_type_default']            = 'The type of page editor by default';
-$txt['lp_hide_blocks_in_admin_section']        = 'Hide active blocks in the admin area';
-$txt['lp_use_block_icons']                     = 'Allow icons for block titles';
-$txt['lp_use_block_icons_set']                 = array('none' => 'None', 'fontawesome' => 'Font Awesome');
-$txt['lp_open_graph']                          = 'Open Graph';
-$txt['lp_page_og_image']                       = 'Use an image from the page content';
-$txt['lp_page_og_image_set']                   = array('None', 'First found', 'Last found');
-$txt['lp_page_itemprop_address']               = 'Address of your organization';
-$txt['lp_page_itemprop_phone']                 = 'Phone of your organization';
-$txt['groups_light_portal_view']               = 'Who can view the portal elements';
-$txt['groups_light_portal_manage_blocks']      = 'Who can manage blocks';
-$txt['groups_light_portal_manage_own_pages']   = 'Who can manage own pages';
-$txt['lp_manage_permissions']                  = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
-$txt['lp_extra_settings']                      = 'Extra settings';
-$txt['lp_no_items']                            = 'There is no items to show.';
+$txt['lp_settings']                                 = 'Portal settings';
+$txt['lp_base']                                     = 'Settings for the frontpage and articles';
+$txt['lp_base_info']                                = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
+$txt['lp_new_version_is_available']                 = 'A new version is available!';
+$txt['lp_frontpage_title']                          = 'The frontpage title';
+$txt['lp_frontpage_mode']                           = 'The portal frontpage';
+$txt['lp_frontpage_mode_set']                       = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
+$txt['lp_frontpage_id']                             = 'Portal page to display as the main page';
+$txt['lp_frontpage_boards']                         = 'Boards as sources of articles for the frontpage';
+$txt['lp_frontpage_layout']                         = 'Number of columns for displaying articles';
+$txt['lp_frontpage_layout_set']                     = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
+$txt['lp_show_images_in_articles']                  = 'Show images that found in articles';
+$txt['lp_subject_size']                             = 'The max size of article titles (in symbols)';
+$txt['lp_teaser_size']                              = 'The max size of article teasers (in symbols)';
+$txt['lp_num_items_per_page']                       = 'Number of items per page (for pagination)';
+$txt['lp_standalone_mode']                          = 'Standalone mode';
+$txt['lp_standalone_mode_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
+$txt['lp_standalone_mode_excluded_actions']         = 'Ignored actions';
+$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
+$txt['lp_show_tags_on_page']                        = 'Display keywords at the top of the page';
+$txt['lp_show_comment_block']                       = 'Display comments block';
+$txt['lp_show_comment_block_set']                   = array('none' => 'None', 'default' => 'Integrated');
+$txt['lp_num_comments_per_page']                    = 'Number of parent comments per page';
+$txt['lp_page_editor_type_default']                 = 'The type of page editor by default';
+$txt['lp_hide_blocks_in_admin_section']             = 'Hide active blocks in the admin area';
+$txt['lp_open_graph']                               = 'Open Graph';
+$txt['lp_page_og_image']                            = 'Use an image from the page content';
+$txt['lp_page_og_image_set']                        = array('None', 'First found', 'Last found');
+$txt['lp_page_itemprop_address']                    = 'Address of your organization';
+$txt['lp_page_itemprop_phone']                      = 'Phone of your organization';
+$txt['groups_light_portal_view']                    = 'Who can view the portal elements';
+$txt['groups_light_portal_manage_blocks']           = 'Who can manage blocks';
+$txt['groups_light_portal_manage_own_pages']        = 'Who can manage own pages';
+$txt['lp_manage_permissions']                       = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+$txt['lp_no_items']                                 = 'There is no items to show.';
+
+$txt['lp_extra']      = 'Pages and blocks';
+$txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
+
+// Plugins
+$txt['lp_plugins']             = 'Plugins';
+$txt['lp_plugins_desc']        = 'You can enable or disable any of the plugins. And some of them are also customized!';
+$txt['lp_plugins_info']        = 'The installed portal plugins are listed here.';
+$txt['lp_plugins_hooks_types'] = array(
+	'block'   => 'Block',
+	'editor'  => 'Editor',
+	'comment' => 'Comment widget',
+	'parser'  => 'Content parser',
+	'article' => 'Processing articles',
+	'compat'  => 'Adding compatibility'
+);
 
 // Actions
 $txt['lp_title']        = 'Title';

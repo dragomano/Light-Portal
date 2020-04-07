@@ -11,40 +11,57 @@ $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
 // Settings
-$txt['lp_settings']                            = 'Ustawienia portalu';
-$txt['lp_php_mysql_info']                      = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']            = 'Dostępna jest nowa wersja!';
-$txt['lp_frontpage_title']                     = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']                      = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']                  = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
-$txt['lp_frontpage_id']                        = 'Strona główna portalu';
-$txt['lp_frontpage_boards']                    = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_layout']                    = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']                = array('1', '2', '3', '4', '6');
-$txt['lp_show_images_in_articles']             = 'Wyświetlaj obrazy z artykułów';
-$txt['lp_subject_size']                        = 'Długość tytułów artykułów';
-$txt['lp_teaser_size']                         = 'Długość podglądu artykułów';
-$txt['lp_num_items_per_page']                  = 'Ilość artykułów na stronę';
-$txt['lp_standalone']                          = 'Tryb portalu';
-$txt['lp_standalone_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
-$txt['lp_standalone_excluded_actions']         = 'Ignorowane akcje';
-$txt['lp_standalone_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
-$txt['lp_show_tags_on_page']                   = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_comment_block']                  = 'Wyświetlaj blok komentarzy';
-$txt['lp_show_comment_block_set']              = array('none' => 'Brak', 'default' => 'Zintegrowany');
-$txt['lp_num_comments_per_page']               = 'Ilość komentarzy na stronę';
-$txt['lp_page_editor_type_default']            = 'Rodzaj domyślnego edytora ';
-$txt['lp_hide_blocks_in_admin_section']        = 'Ukryj aktywne bloki w centrum administracji';
-$txt['lp_open_graph']                          = 'Open Graph';
-$txt['lp_page_og_image']                       = 'Użyj obrazu z treści';
-$txt['lp_page_og_image_set']                   = array('Brak', 'Pierwszy', 'Ostatni');
-$txt['lp_page_itemprop_address']               = 'Adres Twojej organizacji';
-$txt['lp_page_itemprop_phone']                 = 'Numer telefonu';
-$txt['groups_light_portal_view']               = 'Kto może widzieć portal';
-$txt['groups_light_portal_manage_blocks']      = 'Kto może zarządzać blokami';
-$txt['groups_light_portal_manage_own_pages']   = 'Kto może zarządzać stronami';
-$txt['lp_manage_permissions']                  = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_extra_settings']                      = 'Dodatkowe ustawienia';
+$txt['lp_settings']                                 = 'Ustawienia portalu';
+
+$txt['lp_base_info']                                = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
+$txt['lp_new_version_is_available']                 = 'Dostępna jest nowa wersja!';
+$txt['lp_frontpage_title']                          = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']                           = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set']                       = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
+$txt['lp_frontpage_id']                             = 'Strona główna portalu';
+$txt['lp_frontpage_boards']                         = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_layout']                         = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_layout_set']                     = array('1', '2', '3', '4', '6');
+$txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_subject_size']                             = 'Długość tytułów artykułów';
+$txt['lp_teaser_size']                              = 'Długość podglądu artykułów';
+$txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
+$txt['lp_standalone_mode']                          = 'Tryb portalu';
+$txt['lp_standalone_mode_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
+$txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
+$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
+$txt['lp_show_tags_on_page']                        = 'Wyświetlaj słowa kluczowe na górze strony';
+$txt['lp_show_comment_block']                       = 'Wyświetlaj blok komentarzy';
+$txt['lp_show_comment_block_set']                   = array('none' => 'Brak', 'default' => 'Zintegrowany');
+$txt['lp_num_comments_per_page']                    = 'Ilość komentarzy na stronę';
+$txt['lp_page_editor_type_default']                 = 'Rodzaj domyślnego edytora ';
+$txt['lp_hide_blocks_in_admin_section']             = 'Ukryj aktywne bloki w centrum administracji';
+$txt['lp_open_graph']                               = 'Open Graph';
+$txt['lp_page_og_image']                            = 'Użyj obrazu z treści';
+$txt['lp_page_og_image_set']                        = array('Brak', 'Pierwszy', 'Ostatni');
+$txt['lp_page_itemprop_address']                    = 'Adres Twojej organizacji';
+$txt['lp_page_itemprop_phone']                      = 'Numer telefonu';
+$txt['groups_light_portal_view']                    = 'Kto może widzieć portal';
+$txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blokami';
+$txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
+$txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
+$txt['lp_no_items']                                 = 'Nic nie zostało dodane.';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Actions
 $txt['lp_title']        = 'Tytuł';
@@ -124,12 +141,24 @@ $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
 $txt['lp_permissions']                  = array('Wyświetl dla administratorów', 'Wyświetl dla gości', 'Wyświetl dla użytkowników', 'Wyświetl wszystkim');
-$txt['lp_no_items']                     = 'Nic nie dodano.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
 	'allow_comments'       => 'Włącz komentarze'
 );
+
+// Import and Export
+$txt['lp_pages_export']                  = 'Eksport stron';
+$txt['lp_pages_import']                  = 'Import stron';
+$txt['lp_pages_export_tab_description']  = 'W tym miejscu możesz eksportować strony w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_pages_import_tab_description']  = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe stron.';
+$txt['lp_blocks_export']                 = 'Eksport bloków';
+$txt['lp_blocks_import']                 = 'Import bloków';
+$txt['lp_blocks_export_tab_description'] = 'W tym miejscu możesz eksportować bloki w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_blocks_import_tab_description'] = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe bloków.';
+$txt['lp_export_run']                    = 'Wybór eksportu';
+$txt['lp_import_run']                    = 'Importuj';
+$txt['lp_export_all']                    = 'Eksportuj wszystko';
 
 // Tags
 $txt['lp_all_page_tags']    = 'Wszystkie tagi stron portalu';
