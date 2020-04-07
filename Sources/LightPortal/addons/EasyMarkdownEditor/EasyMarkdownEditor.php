@@ -1,9 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EasyMDE;
+namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
 /**
- * EasyMDE
+ * EasyMarkdownEditor
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Addons\EasyMDE;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class EasyMDE
+class EasyMarkdownEditor
 {
 	/**
 	 * Adding the new content type
@@ -58,13 +58,10 @@ class EasyMDE
 	 */
 	public static function prepareEditor($object)
 	{
-		global $modSettings, $txt, $editortxt;
+		global $txt, $editortxt;
 
 		if ($object['type'] == 'md') {
 			loadLanguage('Editor');
-
-			if (empty($modSettings['lp_use_block_icons']) || (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'fontawesome'))
-				loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 
 			loadCssFile('https://unpkg.com/easymde/dist/easymde.min.css', array('external' => true));
 			addInlineCss('
