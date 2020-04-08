@@ -342,7 +342,8 @@ class Settings
 		}
 
 		// Включаем/выключаем плагины
-		if ($plug = filter_input(INPUT_POST, 'toggle_plugin', FILTER_SANITIZE_STRING)) {
+		if (isset($_POST['toggle_plugin'])) {
+			$plug = (int) $_POST['toggle_plugin'];
 			if (in_array($context['lp_plugins'][$plug], $context['lp_enabled_plugins'])) {
 				$key = array_search($context['lp_plugins'][$plug], $context['lp_enabled_plugins']);
 				unset($context['lp_enabled_plugins'][$key]);
