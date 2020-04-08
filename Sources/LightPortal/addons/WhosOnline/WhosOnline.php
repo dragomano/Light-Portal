@@ -130,7 +130,7 @@ class WhosOnline
 			'whos_online_addon_b' . $block_id . '_u' . $user_info['id'],
 			'getWhosOnline',
 			__CLASS__,
-			(empty($cache_time) ? 0 : $parameters['update_interval'])
+			$parameters['update_interval'] ?? $cache_time
 		);
 
 		if (!empty($whos_online)) {

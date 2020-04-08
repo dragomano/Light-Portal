@@ -58,6 +58,15 @@ class RecentPosts
 	private static $show_avatars = false;
 
 	/**
+	 * Online list update interval, in seconds
+	 *
+	 * Интервал обновления списка онлайн, в секундах
+	 *
+	 * @var int
+	 */
+	private static $update_interval = 600;
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока
@@ -70,9 +79,10 @@ class RecentPosts
 		$options['recent_posts'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
-				'num_posts'    => static::$num_posts,
-				'link_type'    => static::$type,
-				'show_avatars' => static::$show_avatars
+				'num_posts'       => static::$num_posts,
+				'link_type'       => static::$type,
+				'show_avatars'    => static::$show_avatars,
+				'update_interval' => static::$update_interval
 			)
 		);
 	}
@@ -93,9 +103,10 @@ class RecentPosts
 			return;
 
 		$args['parameters'] = array(
-			'num_posts'    => FILTER_VALIDATE_INT,
-			'link_type'    => FILTER_SANITIZE_STRING,
-			'show_avatars' => FILTER_VALIDATE_BOOLEAN
+			'num_posts'       => FILTER_VALIDATE_INT,
+			'link_type'       => FILTER_SANITIZE_STRING,
+			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
+			'update_interval' => FILTER_VALIDATE_INT
 		);
 	}
 
@@ -146,12 +157,22 @@ class RecentPosts
 			}
 		}
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_posts_addon_show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id' => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+			)
+		);
+
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_posts_addon_update_interval'];
+		$context['posting_fields']['update_interval']['input'] = array(
+			'type' => 'number',
+			'attributes' => array(
+				'id' => 'update_interval',
+				'min' => 0,
+				'value' => $context['lp_block']['options']['parameters']['update_interval']
 			)
 		);
 	}
@@ -216,7 +237,13 @@ class RecentPosts
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::useCache('recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRecentPosts', __CLASS__, $cache_time, $parameters);
+		$recent_posts = Helpers::useCache(
+			'recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'],
+			'getRecentPosts',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time,
+			$parameters
+		);
 
 		if (!empty($recent_posts)) {
 			ob_start();

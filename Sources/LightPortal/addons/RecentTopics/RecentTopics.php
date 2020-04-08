@@ -40,6 +40,15 @@ class RecentTopics
 	private static $num_topics = 10;
 
 	/**
+	 * Online list update interval, in seconds
+	 *
+	 * Интервал обновления списка онлайн, в секундах
+	 *
+	 * @var int
+	 */
+	private static $update_interval = 600;
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока
@@ -52,7 +61,8 @@ class RecentTopics
 		$options['recent_topics'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
-				'num_topics' => static::$num_topics
+				'num_topics'      => static::$num_topics,
+				'update_interval' => static::$update_interval
 			)
 		);
 	}
@@ -73,7 +83,8 @@ class RecentTopics
 			return;
 
 		$args['parameters'] = array(
-			'num_topics' => FILTER_VALIDATE_INT
+			'num_topics'      => FILTER_VALIDATE_INT,
+			'update_interval' => FILTER_VALIDATE_INT
 		);
 	}
 
@@ -98,6 +109,16 @@ class RecentTopics
 				'id' => 'num_topics',
 				'min' => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
+			)
+		);
+
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics_addon_update_interval'];
+		$context['posting_fields']['update_interval']['input'] = array(
+			'type' => 'number',
+			'attributes' => array(
+				'id' => 'update_interval',
+				'min' => 0,
+				'value' => $context['lp_block']['options']['parameters']['update_interval']
 			)
 		);
 	}
@@ -137,7 +158,13 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::useCache('recent_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRecentTopics', __CLASS__, $cache_time, $parameters['num_topics']);
+		$recent_topics = Helpers::useCache(
+			'recent_topics_addon_b' . $block_id . '_u' . $context['user']['id'],
+			'getRecentTopics',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time,
+			$parameters['num_topics']
+		);
 
 		if (!empty($recent_topics)) {
 			ob_start();
