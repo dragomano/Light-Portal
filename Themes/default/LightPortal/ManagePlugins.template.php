@@ -9,7 +9,7 @@
  */
 function template_plugin_settings()
 {
-	global $txt, $context, $settings;
+	global $context, $txt, $settings;
 
 	echo '
 	<div class="cat_bar">
@@ -18,43 +18,29 @@ function template_plugin_settings()
 	<p class="information">', $txt['lp_plugins_desc'], '</p>';
 
 	// This is a magic! Пошла магия!
-	foreach ($context['lp_plugins'] as $id => $plugin) {
-		$toggle = in_array($plugin, $context['lp_enabled_plugins']) ? 'on' : 'off';
-		$plugin = explode("\\", $plugin)[0];
-		$plugin_snake_name = get_lp_snake_name($plugin);
-		$options = [];
-
-		foreach ($context['lp_plugin_settings'] as $plugin_settings) {
-			$plugin_id   = explode('_addon_', substr($plugin_settings[1], 3))[0];
-			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
-			if ($plugin_name == $plugin)
-				$options[] = $plugin_settings;
-		}
-
+	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '">
 			<div class="floatleft">
-				<h4>', $plugin, '</h4>
+				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
-					<strong class="new_posts">
-						', !empty($txt['lp_' . $plugin_snake_name . '_type']) ? get_lp_plugin_types($txt['lp_' . $plugin_snake_name . '_type']) : $txt['not_applicable'], '
-					</strong>
+					<strong class="new_posts">', $plugin['types'], '</strong>
 				</div>
 			</div>
 			<div class="floatright">';
 
-		if (!empty($options)) {
+		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin_snake_name, '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '">';
 		}
 
 		echo '
-				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $toggle, '" data-toggle="', $toggle, '"></i>
+				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '"></i>
 			</div>';
 
-		if (!empty($options))
-			show_lp_plugin_settings($plugin_snake_name, $options);
+		if (!empty($plugin['settings']))
+			show_lp_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
 		</div>
@@ -63,65 +49,6 @@ function template_plugin_settings()
 
 	echo '
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_plugins.js"></script>';
-}
-
-/**
- * Getting a string converted to snake_case
- *
- * Получаем строку, преобразованную в snake_case
- *
- * @param string $str
- * @param string $glue
- * @return string
- */
-function get_lp_snake_name($str, $glue = '_')
-{
-	$counter  = 0;
-	$uc_chars = '';
-	$new_str  = array();
-	$str_len  = strlen($str);
-
-	for ($x = 0; $x < $str_len; ++$x) {
-		$ascii_val = ord($str[$x]);
-
-		if ($ascii_val >= 65 && $ascii_val <= 90)
-			$uc_chars .= $str[$x];
-	}
-
-	$tok = strtok($str, $uc_chars);
-
-	while ($tok !== false) {
-		$new_char  = chr(ord($uc_chars[$counter]) + 32);
-		$new_str[] = $new_char . $tok;
-		$tok       = strtok($uc_chars);
-
-		++$counter;
-	}
-
-	return implode($new_str, $glue);
-}
-
-/**
- * Get all types of the plugin
- *
- * Получаем все типы плагина
- *
- * @param array|string $data
- * @return string
- */
-function get_lp_plugin_types($data)
-{
-	global $txt;
-
-	if (is_array($data)) {
-		$all_types = [];
-		foreach ($data as $type)
-			$all_types[] = $txt['lp_plugins_hooks_types'][$type];
-
-		return implode(' + ', $all_types);
-	}
-
-	return $txt['lp_plugins_hooks_types'][$data];
 }
 
 /**
@@ -206,8 +133,8 @@ function show_lp_plugin_settings($plugin_name, $settings)
 			</form>
 		</div>
 		<div class="footer">
-			<span class="infobox floatleft">Настройки успешно сохранены!</span>
-			<span class="errorbox floatleft">Ошибка при сохранении!</span>
+			<span class="infobox floatleft">', $txt['settings_saved'], '</span>
+			<span class="errorbox floatleft">', $txt['json_unknown'], '</span>
 			<button type="button" class="close_settings button">', $txt['find_close'], '</button>
 			<button form="', $plugin_name, '_form" type="submit" class="button">', $txt['save'], '</button>
 		</div>

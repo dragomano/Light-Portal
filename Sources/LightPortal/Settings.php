@@ -324,7 +324,15 @@ class Settings
 		Subs::runAddons('init', [], $context['lp_plugins']);
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
-		$context['lp_plugin_settings'] = $config_vars;
+		$context['all_lp_plugins'] = array_map(function ($item) use ($context, $config_vars) {
+			return [
+				'name'       => $name = explode("\\", $item)[0],
+				'snake_name' => $snake_name = self::getSnakeName($name),
+				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
+				'types'      => self::getPluginTypes($snake_name),
+				'settings'   => self::getPluginSettings($config_vars, $name)
+			];
+		}, $context['lp_plugins']);
 
 		$context['sub_template'] = 'plugin_settings';
 
@@ -332,9 +340,9 @@ class Settings
 			checkSession();
 
 			$plugin_options = [];
-			foreach ($context['lp_plugin_settings'] as $id => $data) {
-				if (isset($_POST[$data[1]]))
-					$plugin_options[$data[1]] = $data[0] == 'check' || $data[0] == 'int' ? (int) $_POST[$data[1]] : $_POST[$data[1]];
+			foreach ($config_vars as $id => $var) {
+				if (isset($_POST[$var[1]]))
+					$plugin_options[$var[1]] = $var[0] == 'check' || $var[0] == 'int' ? (int) $_POST[$var[1]] : $_POST[$var[1]];
 			}
 
 			if (!empty($plugin_options))
@@ -343,18 +351,108 @@ class Settings
 
 		// Включаем/выключаем плагины
 		if (isset($_POST['toggle_plugin'])) {
-			$plug = (int) $_POST['toggle_plugin'];
-			if (in_array($context['lp_plugins'][$plug], $context['lp_enabled_plugins'])) {
-				$key = array_search($context['lp_plugins'][$plug], $context['lp_enabled_plugins']);
+			$plugin_id = (int) $_POST['toggle_plugin'];
+			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
+				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
 				unset($context['lp_enabled_plugins'][$key]);
 			} else {
-				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plug];
+				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
 			}
 
 			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
 		}
 
 		prepareDBSettingContext($config_vars);
+	}
+
+	/**
+	 * Getting a string converted to snake_case
+	 *
+	 * Получаем строку, преобразованную в snake_case
+	 *
+	 * @param string $str
+	 * @param string $glue
+	 * @return string
+	 */
+	private static function getSnakeName($str, $glue = '_')
+	{
+		$counter  = 0;
+		$uc_chars = '';
+		$new_str  = array();
+		$str_len  = strlen($str);
+
+		for ($x = 0; $x < $str_len; ++$x) {
+			$ascii_val = ord($str[$x]);
+
+			if ($ascii_val >= 65 && $ascii_val <= 90)
+				$uc_chars .= $str[$x];
+		}
+
+		$tok = strtok($str, $uc_chars);
+
+		while ($tok !== false) {
+			$new_char  = chr(ord($uc_chars[$counter]) + 32);
+			$new_str[] = $new_char . $tok;
+			$tok       = strtok($uc_chars);
+
+			++$counter;
+		}
+
+		return implode($new_str, $glue);
+	}
+
+	/**
+	 * Get all types of the plugin
+	 *
+	 * Получаем все типы плагина
+	 *
+	 * @param string $snake_name
+	 * @return string
+	 */
+	private static function getPluginTypes($snake_name)
+	{
+		global $txt;
+
+		if (empty($snake_name))
+			return $txt['not_applicable'];
+
+		$data = $txt['lp_' . $snake_name . '_type'];
+
+		if (empty($data))
+			return $txt['not_applicable'];
+
+		if (is_array($data)) {
+			$all_types = [];
+			foreach ($data as $type)
+				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
+
+			return implode(' + ', $all_types);
+		}
+
+		return $txt['lp_plugins_hooks_types'][$data];
+	}
+
+	/**
+	 * Undocumented function
+	 *
+	 * @param array $config_vars
+	 * @param string $name
+	 * @return array
+	 */
+	private static function getPluginSettings($config_vars, $name = '')
+	{
+		if (empty($config_vars))
+			return [];
+
+		$settings = [];
+		foreach ($config_vars as $var) {
+			$plugin_id   = explode('_addon_', substr($var[1], 3))[0];
+			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
+			if ($plugin_name == $name)
+				$settings[] = $var;
+		}
+
+		return $settings;
 	}
 
 	/**
