@@ -20,6 +20,15 @@ if (!defined('SMF'))
 class FacebookComments
 {
 	/**
+	 * Specifying the addon type (if 'block', you do not need to specify it)
+	 *
+	 * Указываем тип аддона (если 'block', то можно не указывать)
+	 *
+	 * @var string
+	 */
+	public static $addon_type = 'comment';
+
+	/**
 	 * Widget color scheme (light|dark)
 	 *
 	 * Цветовая схема виджета (light|dark)

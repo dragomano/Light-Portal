@@ -20,18 +20,13 @@ if (!defined('SMF'))
 class Markdown
 {
 	/**
-	 * Adding some text variables
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем некоторые текстовые переменные
+	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @return void
+	 * @var string
 	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_markdown_type'] = 'parser';
-	}
+	public static $addon_type = 'parser';
 
 	/**
 	 * Parse 'md' content

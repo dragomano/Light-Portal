@@ -296,8 +296,7 @@ class Settings
 	 *
 	 * Выводим список и настройки плагинов
 	 *
-	 * @param bool $return_config
-	 * @return array|void
+	 * @return void
 	 */
 	public static function plugins()
 	{
@@ -321,13 +320,12 @@ class Settings
 		// The mod authors can easily add their own settings
 		// Авторы модов модут легко добавлять собственные настройки
 		$config_vars = [];
-		Subs::runAddons('init', [], $context['lp_plugins']);
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($context, $config_vars) {
 			return [
 				'name'       => $name = explode("\\", $item)[0],
-				'snake_name' => $snake_name = self::getSnakeName($name),
+				'snake_name' => $snake_name = Helpers::getSnakeName($name),
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => self::getPluginTypes($snake_name),
 				'settings'   => self::getPluginSettings($config_vars, $name)
@@ -366,42 +364,6 @@ class Settings
 	}
 
 	/**
-	 * Getting a string converted to snake_case
-	 *
-	 * Получаем строку, преобразованную в snake_case
-	 *
-	 * @param string $str
-	 * @param string $glue
-	 * @return string
-	 */
-	private static function getSnakeName($str, $glue = '_')
-	{
-		$counter  = 0;
-		$uc_chars = '';
-		$new_str  = array();
-		$str_len  = strlen($str);
-
-		for ($x = 0; $x < $str_len; ++$x) {
-			$ascii_val = ord($str[$x]);
-
-			if ($ascii_val >= 65 && $ascii_val <= 90)
-				$uc_chars .= $str[$x];
-		}
-
-		$tok = strtok($str, $uc_chars);
-
-		while ($tok !== false) {
-			$new_char  = chr(ord($uc_chars[$counter]) + 32);
-			$new_str[] = $new_char . $tok;
-			$tok       = strtok($uc_chars);
-
-			++$counter;
-		}
-
-		return implode($new_str, $glue);
-	}
-
-	/**
 	 * Get all types of the plugin
 	 *
 	 * Получаем все типы плагина
@@ -416,7 +378,7 @@ class Settings
 		if (empty($snake_name))
 			return $txt['not_applicable'];
 
-		$data = $txt['lp_' . $snake_name . '_type'];
+		$data = $txt['lp_' . $snake_name . '_type'] ?? '';
 
 		if (empty($data))
 			return $txt['not_applicable'];

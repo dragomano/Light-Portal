@@ -5,6 +5,3 @@ $txt['lp_block_types_descriptions']['board_news'] = 'Displays the latest posts f
 
 $txt['lp_board_news_addon_board_id']  = 'Board as source of news';
 $txt['lp_board_news_addon_num_posts'] = 'Number of posts to display';
-
-// Do not translate and do not include into other language files
-$txt['lp_board_news_type'] = 'block';

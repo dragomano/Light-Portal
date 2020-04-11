@@ -20,18 +20,13 @@ if (!defined('SMF'))
 class TopicRatingBar
 {
 	/**
-	 * Adding some text variables
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем некоторые текстовые переменные
+	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @return void
+	 * @var array
 	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_topic_rating_bar_type'] = 'article';
-	}
+	public static $addon_type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics

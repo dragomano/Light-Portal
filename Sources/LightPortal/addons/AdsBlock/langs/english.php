@@ -24,6 +24,3 @@ $txt['lp_ads_block_addon_placement_set'] = array(
 	'after_every_last_post'   => 'After each last message on the page',
 	'after_last_post'         => 'After the last message'
 );
-
-// Do not translate and do not include into other language files
-$txt['lp_ads_block_type'] = 'block';

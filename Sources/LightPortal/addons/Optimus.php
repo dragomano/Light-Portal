@@ -20,18 +20,13 @@ if (!defined('SMF'))
 class Optimus
 {
 	/**
-	 * Adding some text variables
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем некоторые текстовые переменные
+	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @return void
+	 * @var array
 	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_optimus_type'] = 'article';
-	}
+	public static $addon_type = 'article';
 
 	/**
 	 * Select optimus_description column for the frontpage topics

@@ -347,7 +347,7 @@ class Helpers
 		if (empty($key))
 			return;
 
-		if (is_null($funcName))
+		if ($funcName === null)
 			cache_put_data('light_portal_' . $key, null);
 
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {
@@ -446,5 +446,41 @@ class Helpers
 		$lang3 = $object['title']['english'] ?? null;
 
 		return $lang1 ?: $lang2 ?: $lang3 ?: '';
+	}
+
+	/**
+	 * Getting a string converted to snake_case
+	 *
+	 * Получаем строку, преобразованную в snake_case
+	 *
+	 * @param string $str
+	 * @param string $glue
+	 * @return string
+	 */
+	public static function getSnakeName($str, $glue = '_')
+	{
+		$counter  = 0;
+		$uc_chars = '';
+		$new_str  = array();
+		$str_len  = strlen($str);
+
+		for ($x = 0; $x < $str_len; ++$x) {
+			$ascii_val = ord($str[$x]);
+
+			if ($ascii_val >= 65 && $ascii_val <= 90)
+				$uc_chars .= $str[$x];
+		}
+
+		$tok = strtok($str, $uc_chars);
+
+		while ($tok !== false) {
+			$new_char  = chr(ord($uc_chars[$counter]) + 32);
+			$new_str[] = $new_char . $tok;
+			$tok       = strtok($uc_chars);
+
+			++$counter;
+		}
+
+		return implode($new_str, $glue);
 	}
 }

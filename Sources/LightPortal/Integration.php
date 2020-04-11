@@ -73,7 +73,7 @@ class Integration
 		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 rc2',
+			'LP_VERSION' => '1.0 rc3',
 			'LP_NAME'    => 'Light Portal',
 			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'

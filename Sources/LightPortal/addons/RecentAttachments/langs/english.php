@@ -8,6 +8,3 @@ $txt['lp_recent_attachments_addon_extensions']         = 'The extensions of atta
 $txt['lp_recent_attachments_addon_extensions_subtext'] = 'Enter the required extensions, separated by commas. For example: <strong>jpg,png</strong>';
 $txt['lp_recent_attachments_addon_direction']          = 'List direction';
 $txt['lp_recent_attachments_addon_direction_set']      = array('horizontal' => 'Horizontal', 'vertical' => 'Vertical');
-
-// Do not translate and do not include into other language files
-$txt['lp_recent_attachments_type'] = 'block';

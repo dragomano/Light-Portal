@@ -20,18 +20,13 @@ if (!defined('SMF'))
 class KarmaPostRating
 {
 	/**
-	 * Adding some text variables
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем некоторые текстовые переменные
+	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @return void
+	 * @var array
 	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_karma_post_rating_type'] = 'article';
-	}
+	public static $addon_type = 'article';
 
 	/**
 	 * Select rating column from kpr_ratings table for the frontpage topics

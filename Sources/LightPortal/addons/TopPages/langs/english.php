@@ -9,6 +9,3 @@ $txt['lp_top_pages_addon_num_pages']         = 'Number of pages to display';
 $txt['lp_top_pages_addon_show_numbers_only'] = 'Only display numbers';
 
 $txt['lp_top_pages_addon_no_items'] = 'There are no popular pages.';
-
-// Do not translate and do not include into other language files
-$txt['lp_top_pages_type'] = 'block';

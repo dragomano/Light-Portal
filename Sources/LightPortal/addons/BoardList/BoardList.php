@@ -213,14 +213,15 @@ class BoardList
 					echo '
 					<li>';
 
-					if ($board['child_level'])
+					if ($board['child_level']) {
 						echo '
 						<ul class="smalltext" style="padding-left: 10px">
 							<li>', $context['current_board'] == $board['id'] ? '<strong>' : '', '&raquo; <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '', '</li>
 						</ul>';
-					else
+					} else {
 						echo '
 						', $context['current_board'] == $board['id'] ? '<strong>' : '', '<a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '';
+					}
 
 					echo '
 					</li>';

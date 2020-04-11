@@ -591,7 +591,7 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && is_null($post_data[$option]))
+			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data[$option] === null)
 				$post_data[$option] = 0;
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
@@ -1155,8 +1155,8 @@ class ManagePages
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'p.page_id DESC',
-						'reverse' => 'p.page_id'
+						'default' => 'p.page_id',
+						'reverse' => 'p.page_id DESC'
 					)
 				),
 				'alias' => array(

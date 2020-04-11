@@ -5,9 +5,6 @@ $txt['lp_block_types_descriptions']['tag_list'] = 'Displays a list of tags of th
 
 $txt['lp_tag_list_addon_source']     = 'Tag source';
 $txt['lp_tag_list_addon_source_set'] = array(
-    'lp_tags'  => 'Portal page tags',
-    'keywords' => 'Topic keywords'
+	'lp_tags'  => 'Portal page tags',
+	'keywords' => 'Topic keywords'
 );
-
-// Do not translate and do not include into other language files
-$txt['lp_tag_list_type'] = 'block';

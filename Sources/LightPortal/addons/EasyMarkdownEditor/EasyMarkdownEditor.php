@@ -20,6 +20,15 @@ if (!defined('SMF'))
 class EasyMarkdownEditor
 {
 	/**
+	 * Specifying the addon type (if 'block', you do not need to specify it)
+	 *
+	 * Указываем тип аддона (если 'block', то можно не указывать)
+	 *
+	 * @var array
+	 */
+	public static $addon_type = array('block', 'editor');
+
+	/**
 	 * Adding the new content type
 	 *
 	 * Добавляем новый тип контента

@@ -22,18 +22,13 @@ if (!defined('SMF'))
 class Trumbowyg
 {
 	/**
-	 * Adding some text variables
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем некоторые текстовые переменные
+	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @return void
+	 * @var array
 	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_trumbowyg_type'] = 'editor';
-	}
+	public static $addon_type = 'editor';
 
 	/**
 	 * Adding your own editor for 'html' content

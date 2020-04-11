@@ -6,6 +6,3 @@ $txt['lp_vk_comments_addon_comments_per_page']     = 'VKontakte comments per pag
 $txt['lp_vk_comments_addon_comments_per_page_set'] = array(0 => 5, 1 => 10, 2 => 15, 3 => 20);
 $txt['lp_vk_comments_addon_allow_attachments']     = 'Allow attachments for VKontakte comments';
 $txt['lp_vk_comments_addon_auto_publish']          = 'Post comments on VKontakte user\'s page';
-
-// Do not translate and do not include into other language files
-$txt['lp_vk_comments_type'] = 'comment';

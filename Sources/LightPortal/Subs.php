@@ -289,18 +289,22 @@ class Subs
 	 */
 	public static function runAddons(string $hook = 'init', array $vars = [], array $plugins = [])
 	{
-		global $context;
+		global $context, $txt;
 
-		//$light_portal_addons = Helpers::useCache('addons', 'getAddons', __CLASS__);
 		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
 		if (empty($light_portal_addons))
 			return;
 
 		$results = [];
-		foreach ($light_portal_addons as $addon) {
+		foreach ($light_portal_addons as $id => $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon;
 			self::loadAddonLanguage($addon);
+
+			if (!isset($addon_snake_name[$id])) {
+				$addon_snake_name[$id] = Helpers::getSnakeName(explode("\\", $addon)[0]);
+				$txt['lp_' . $addon_snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class::$addon_type : 'block';
+			}
 
 			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))
 				$results[$hook] = call_user_func_array($callable_name, $vars);
@@ -465,9 +469,9 @@ class Subs
 	}
 
 	/**
-	 * Make export
+	 * Get an export file via the user browser
 	 *
-	 * Экспортируем
+	 * Получаем экспортируемый файл через браузер
 	 *
 	 * @param string $file
 	 * @return void
@@ -516,8 +520,8 @@ class Subs
 		if (empty($items))
 			return '';
 
-		$cnt = count($items);
 		$result = '';
+		$cnt = count($items);
 		for ($i = 0; $i < $cnt; $i++) {
 			if ($i > 0)
 				$result .= ', ';

@@ -7,6 +7,3 @@ $txt['lp_translator_addon_engine']       = 'Used engine';
 $txt['lp_translator_addon_engine_set']   = array('google' => 'Google.Translator', 'yandex' => 'Yandex.Translator');
 $txt['lp_translator_addon_widget_theme'] = 'Widget theme';
 $txt['lp_translator_addon_auto_mode']    = 'Automatic translation';
-
-// Do not translate and do not include into other language files
-$txt['lp_translator_type'] = 'block';

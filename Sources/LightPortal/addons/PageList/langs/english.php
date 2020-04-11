@@ -16,7 +16,3 @@ $txt['lp_page_list_addon_sort_set'] = array(
 );
 
 $txt['lp_page_list_addon_no_items'] = 'There are no available pages.';
-
-// Do not translate and do not include into other language files
-$txt['lp_page_list_type']       = 'block';
-$txt['lp_page_list_used_hooks'] = 'blockOptions, validateBlockData, prepareBlockFields, prepareContent';

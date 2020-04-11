@@ -20,18 +20,23 @@ if (!defined('SMF'))
 class PrettyUrls
 {
 	/**
-	 * Adding the necessary text variables and run hooks
+	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
-	 * Добавляем необходимые текстовые переменные и запускаем хуки
+	 * Указываем тип аддона (если 'block', то можно не указывать)
+	 *
+	 * @var array
+	 */
+	public static $addon_type = 'compat';
+
+	/**
+	 * Run necessary hooks
+	 *
+	 * Запускаем нужные хуки
 	 *
 	 * @return void
 	 */
 	public static function init()
 	{
-		global $txt;
-
-		$txt['lp_pretty_urls_type'] = 'compat';
-
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 	}
 
