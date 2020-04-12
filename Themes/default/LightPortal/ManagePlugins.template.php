@@ -134,7 +134,7 @@ function show_lp_plugin_settings($plugin_name, $settings)
 		</div>
 		<div class="footer">
 			<span class="infobox floatleft">', $txt['settings_saved'], '</span>
-			<span class="errorbox floatleft">', $txt['json_unknown'], '</span>
+			<span class="errorbox floatleft">', $txt['error_occured'], '</span>
 			<button type="button" class="close_settings button">', $txt['find_close'], '</button>
 			<button form="', $plugin_name, '_form" type="submit" class="button">', $txt['save'], '</button>
 		</div>

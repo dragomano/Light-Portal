@@ -67,7 +67,7 @@ class FrontPage
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
-		$context['page_title'] = !empty($modSettings['lp_frontpage_title']) ? $modSettings['lp_frontpage_title'] : ($context['forum_name'] . ' - ' . $txt['lp_portal']);
+		$context['page_title'] = $modSettings['lp_frontpage_title'] ?: ($context['forum_name'] . ' - ' . $txt['lp_portal']);
 		$context['linktree'][] = array(
 			'name' => $txt['lp_portal']
 		);
@@ -168,11 +168,11 @@ class FrontPage
 	 *
 	 * Получаем темы из выбранных разделов
 	 *
-	 * @param $start
-	 * @param $limit
+	 * @param int $start
+	 * @param int $limit
 	 * @return array
 	 */
-	public static function getTopicsFromSelectedBoards($start, $limit)
+	public static function getTopicsFromSelectedBoards(int $start, int $limit)
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl;
 
@@ -347,11 +347,11 @@ class FrontPage
 	 *
 	 * Получаем активные страницы
 	 *
-	 * @param $start
-	 * @param $limit
+	 * @param int $start
+	 * @param int $limit
 	 * @return array
 	 */
-	public static function getActivePages($start, $limit)
+	public static function getActivePages(int $start, int $limit)
 	{
 		global $smcFunc, $modSettings, $scripturl, $user_info;
 
@@ -459,11 +459,11 @@ class FrontPage
 	 *
 	 * Получаем выбранные разделы
 	 *
-	 * @param $start
-	 * @param $limit
+	 * @param int $start
+	 * @param int $limit
 	 * @return array
 	 */
-	public static function getSelectedBoards($start, $limit)
+	public static function getSelectedBoards(int $start, int $limit)
 	{
 		global $modSettings, $user_info, $smcFunc, $context, $scripturl;
 

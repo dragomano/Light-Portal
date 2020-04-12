@@ -26,7 +26,7 @@ $txt['lp_show_images_in_articles']                  = 'Show images that found in
 $txt['lp_subject_size']                             = 'The max size of article titles (in symbols)';
 $txt['lp_teaser_size']                              = 'The max size of article teasers (in symbols)';
 $txt['lp_num_items_per_page']                       = 'Number of items per page (for pagination)';
-$txt['lp_standalone_mode']                          = 'Standalone mode';
+$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_mode_help']                     = 'Everything except portal pages and ignored areas will be disabled.';
 $txt['lp_standalone_mode_excluded_actions']         = 'Ignored actions';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';

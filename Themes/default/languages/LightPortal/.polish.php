@@ -26,7 +26,7 @@ $txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z arty
 $txt['lp_subject_size']                             = 'Długość tytułów artykułów';
 $txt['lp_teaser_size']                              = 'Długość podglądu artykułów';
 $txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
-$txt['lp_standalone_mode']                          = 'Tryb portalu';
+$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
 $txt['lp_standalone_mode_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
 $txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';

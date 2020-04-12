@@ -26,7 +26,7 @@ $txt['lp_show_images_in_articles']                  = 'Показувати зо
 $txt['lp_subject_size']                             = 'Розмір заголовка статей (у символах)';
 $txt['lp_teaser_size']                              = 'Розмір тизера статей (у символах)';
 $txt['lp_num_items_per_page']                       = 'Кількість елементів на сторінці (для пагінації)';
-$txt['lp_standalone_mode']                          = 'Автономний режим';
+$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Автономний режим';
 $txt['lp_standalone_mode_help']                     = 'Буде відключено все, крім сторінок порталу та областей, що ігноруються';
 $txt['lp_standalone_mode_excluded_actions']         = 'Області, що ігноруються';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Вкажіть області, які повинні залишатися доступними в автономному режимі.';

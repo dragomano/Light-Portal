@@ -198,26 +198,24 @@ class Settings
 
 		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
 
-		$config_vars = array_merge(
-			array(
-				array('string', 'lp_frontpage_title', 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
-				array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
-				array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
-				array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
-				array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
-				array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
-				array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-				array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-				array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
-				array('title', 'lp_standalone_mode_title'),
-				array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_help'], 'disabled' => $frontpage_disabled),
-				array('text', 'lp_standalone_mode_excluded_actions', 80, 'subtext' => $txt['lp_standalone_mode_excluded_actions_subtext']),
-				array('title', 'edit_permissions'),
-				array('desc', 'lp_manage_permissions'),
-				array('permissions', 'light_portal_view'),
-				array('permissions', 'light_portal_manage_blocks'),
-				array('permissions', 'light_portal_manage_own_pages')
-			)
+		$config_vars = array(
+			array('text', 'lp_frontpage_title', 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
+			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
+			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
+			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
+			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
+			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
+			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
+			array('title', 'lp_standalone_mode_title'),
+			array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_help'], 'disabled' => $frontpage_disabled),
+			array('text', 'lp_standalone_mode_excluded_actions', 80, 'subtext' => $txt['lp_standalone_mode_excluded_actions_subtext']),
+			array('title', 'edit_permissions'),
+			array('desc', 'lp_manage_permissions'),
+			array('permissions', 'light_portal_view'),
+			array('permissions', 'light_portal_manage_blocks'),
+			array('permissions', 'light_portal_manage_own_pages')
 		);
 
 		if ($return_config)
@@ -260,18 +258,16 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
-		$config_vars = array_merge(
-			array(
-				array('check', 'lp_show_tags_on_page'),
-				array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-				array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
-				array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
-				array('check', 'lp_hide_blocks_in_admin_section'),
-				array('title', 'lp_open_graph'),
-				array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
-				array('text', 'lp_page_itemprop_address', 80),
-				array('text', 'lp_page_itemprop_phone', 80)
-			)
+		$config_vars = array(
+			array('check', 'lp_show_tags_on_page'),
+			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
+			array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
+			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
+			array('check', 'lp_hide_blocks_in_admin_section'),
+			array('title', 'lp_open_graph'),
+			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
+			array('text', 'lp_page_itemprop_address', 80),
+			array('text', 'lp_page_itemprop_phone', 80)
 		);
 
 		if ($return_config)
