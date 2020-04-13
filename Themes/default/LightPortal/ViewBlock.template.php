@@ -20,10 +20,7 @@ function template_portal_above()
 		<div class="row">
 			<div class="col-xs-12">';
 
-		foreach ($context['lp_blocks']['header'] as $id => $block) {
-			if ($block['placement'] == 'header')
-				lp_show_block($block);
-		}
+		lp_show_blocks('header');
 
 		echo '
 			</div>
@@ -38,10 +35,7 @@ function template_portal_above()
 		echo '
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
 
-		foreach ($context['lp_blocks']['left'] as $id => $block) {
-			if ($block['placement'] == 'left')
-				lp_show_block($block);
-		}
+		lp_show_blocks('left');
 
 		echo '
 			</div>';
@@ -58,10 +52,7 @@ function template_portal_above()
 					<div class="row">
 						<div class="col-xs">';
 
-		foreach ($context['lp_blocks']['top'] as $id => $block) {
-			if ($block['placement'] == 'top')
-				lp_show_block($block);
-		}
+		lp_show_blocks('top');
 
 		echo '
 						</div>
@@ -96,10 +87,7 @@ function template_portal_below()
 					<div class="row">
 						<div class="col-xs">';
 
-		foreach ($context['lp_blocks']['bottom'] as $id => $block) {
-			if ($block['placement'] == 'bottom')
-				lp_show_block($block);
-		}
+		lp_show_blocks('bottom');
 
 		echo '
 						</div>
@@ -115,10 +103,7 @@ function template_portal_below()
 		echo '
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
 
-		foreach ($context['lp_blocks']['right'] as $id => $block) {
-			if ($block['placement'] == 'right')
-				lp_show_block($block);
-		}
+		lp_show_blocks('right');
 
 		echo '
 			</div>';
@@ -127,23 +112,13 @@ function template_portal_below()
 	echo '
 		</div>';
 
-	// Script execution time and memory usage | Время выполнения скрипта и объём использованной памяти
-	if (!empty($context['lp_load_page_stats']))
-		echo '
-		<div class="row">
-			<div class="col-xs-12 centertext smalltext">', $context['lp_load_page_stats'], '</div>
-		</div>';
-
 	// Footer | Подвал
 	if (!empty($context['lp_blocks']['footer'])) {
 		echo '
 		<div class="row">
 			<div class="col-xs-12">';
 
-		foreach ($context['lp_blocks']['footer'] as $id => $block) {
-			if ($block['placement'] == 'footer')
-				lp_show_block($block);
-		}
+		lp_show_blocks('footer');
 
 		echo '
 			</div>
@@ -155,43 +130,48 @@ function template_portal_below()
 }
 
 /**
- * Output the title and content of the block
+ * Output all blocks by placement
  *
- * Вывод заголовка и содержимого блока
+ * Вывод всех блоков по размещению
  *
- * @param array $block
+ * @param string $placement
  * @return void
  */
-function lp_show_block($block)
+function lp_show_blocks($placement = '')
 {
 	global $context, $scripturl, $txt;
 
-	echo '
+	if (empty($placement))
+		return;
+
+	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+		echo '
 	<aside id="block_', $block['id'], '" class="block_', $block['type'], '">';
 
-	if (!empty($block['title_style']))
-		$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
+		if (!empty($block['title_style']))
+			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
 
-	if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
-		$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
+		if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
+			$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
 
-	if (!empty($block['title_class']))
-		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
-	else
-		echo $block['title'];
+		if (!empty($block['title_class']))
+			echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
+		else
+			echo $block['title'];
 
-	if (empty($block['title_class']))
-		$block['content_style'] = 'border-radius: 7px;' . $block['content_style'];
+		if (empty($block['title_class']))
+			$block['content_style'] = 'border-radius: 7px;' . $block['content_style'];
 
-	$style = '';
-	if (!empty($block['content_style']))
-		$style = ' style="' . $block['content_style'] . '"';
+		$style = '';
+		if (!empty($block['content_style']))
+			$style = ' style="' . $block['content_style'] . '"';
 
-	if (!empty($block['content_class']))
-		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
-	else
-		echo $block['content'];
+		if (!empty($block['content_class']))
+			echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
+		else
+			echo $block['content'];
 
-	echo '
+		echo '
 	</aside>';
+	}
 }

@@ -196,8 +196,7 @@ class Integration
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
 
-		// Display "Portal settings" in Main Menu => Admin
-		// Отображение пункта "Настройки портала"
+		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
 		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
 			$buttons['admin']['show'] = true;
 			$counter = 0;
@@ -253,13 +252,15 @@ class Integration
 		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (empty($modSettings['lp_frontpage_mode']) && empty($context['current_action']) && empty($_GET['page'])))
 			Block::show('forum');
 
+		// Script execution time and memory usage | Время выполнения скрипта и объём использованной памяти
 		$context['lp_load_page_stats'] = LP_DEBUG || isset($_GET['debug']) ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getUsageMemory()) : false;
+		if (!empty($context['lp_load_page_stats']))
+			$context['insert_after_template'] .= '<div class="centertext descbox smalltext">' . $context['lp_load_page_stats'] . '</div>';
 
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		// Display "Portal" item in Main Menu
-		// Отображение пункта "Портал"
+		// Display "Portal" item in Main Menu | Отображение пункта "Портал"
 		$buttons = array_merge(
 			array_slice($buttons, 0, 0, true),
 			array(
@@ -281,8 +282,7 @@ class Integration
 		$buttons['home']['icon']    = 'im_on';
 		$buttons['home']['is_last'] = false;
 
-		// Standalone mode
-		// Автономный режим
+		// Standalone mode | Автономный режим
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
 			$buttons['portal']['href']    = $scripturl;
