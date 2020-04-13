@@ -140,6 +140,7 @@ $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Тип сторінки';
 $txt['lp_page_description']             = 'Опис';
 $txt['lp_page_keywords']                = 'Ключові слова';
+$txt['lp_page_keywords_after']          = 'Використовуйте кому для розділення';
 $txt['lp_permissions']                  = array('Показувати адмінам', 'Показувати гостям', 'Показувати користувачам', 'Показувати всім');
 
 $txt['lp_page_options'] = array(

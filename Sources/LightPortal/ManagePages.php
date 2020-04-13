@@ -240,9 +240,11 @@ class ManagePages
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
 			WHERE p.author_id = {int:user_id}') . '
 			ORDER BY ' . $sort . '
-			LIMIT ' . $start . ', ' . $items_per_page,
+			LIMIT {int:start}, {int:limit}',
 			array(
-				'user_id' => $user_info['id']
+				'user_id' => $user_info['id'],
+				'start'   => $start,
+				'limit'   => $items_per_page
 			)
 		);
 
@@ -722,6 +724,7 @@ class ManagePages
 		);
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
+		$context['posting_fields']['keywords']['label']['after'] = '<br><span class="smalltext">' . $txt['lp_page_keywords_after'] . '</span>';
 		$context['posting_fields']['keywords']['input'] = array(
 			'type' => 'textarea',
 			'attributes' => array(
@@ -856,7 +859,10 @@ class ManagePages
 
 		$keywords = !empty($context['lp_page']['keywords']) ? explode(',', $context['lp_page']['keywords']) : [];
 		$context['lp_page']['keywords'] = array_map(function ($item) {
-			return trim($item);
+			$code_match = array('-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '=');
+			$new_item = str_replace($code_match, '', $item);
+
+			return trim($new_item);
 		}, $keywords);
 	}
 
@@ -1034,6 +1040,14 @@ class ManagePages
 					array('item_id', 'type', 'name')
 				);
 			}
+
+			$smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_tags
+				WHERE page_id = {int:page_id}',
+				array(
+					'page_id' => $item
+				)
+			);
 
 			if (!empty($context['lp_page']['keywords'])) {
 				$keywords = [];

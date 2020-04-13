@@ -28,17 +28,14 @@ class Tag
 	 */
 	public static function show()
 	{
-		global $smcFunc, $context, $txt, $scripturl, $sourcedir;
-
-		loadTemplate('LightPortal/ViewTag');
+		global $smcFunc, $context, $txt, $scripturl, $modSettings, $sourcedir;
 
 		if (empty($_GET['key']))
 			self::showAll();
 
-		$keyword = $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES);
-
-		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $keyword);
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($keyword);
+		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim($_GET['key']), ENT_QUOTES);
+		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $context['lp_keyword']);
+		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($context['lp_keyword']);
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -51,8 +48,8 @@ class Tag
 		);
 
 		$listOptions = array(
-			'id' => 'pages',
-			'items_per_page' => 50,
+			'id' => 'tags',
+			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
 			'no_items_label' => $txt['lp_no_selected_tag'],
 			'base_href' => $context['canonical_url'],
@@ -84,7 +81,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . (Helpers::isFrontpage($entry['id']) ? $scripturl : '?page=' . $entry['alias']) . '">' . Helpers::getPublicTitle($entry) . '</a>';
+							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['id']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					)
@@ -128,7 +125,7 @@ class Tag
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'tags';
 
 		obExit();
 	}
@@ -145,7 +142,7 @@ class Tag
 	 */
 	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $txt;
+		global $smcFunc, $txt, $context;
 
 		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
@@ -158,12 +155,15 @@ class Tag
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
-			ORDER BY p.page_id, ' . $sort . '
-			LIMIT ' . $start . ', ' . $items_per_page,
+			ORDER BY {raw:sort}
+			LIMIT {int:start}, {int:limit}',
 			array(
 				'guest'  => $txt['guest_title'],
-				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
-				'status' => Page::STATUS_ACTIVE
+				'key'    => $context['lp_keyword'],
+				'status' => Page::STATUS_ACTIVE,
+				'sort'   => $sort,
+				'start'  => $start,
+				'limit'  => $items_per_page
 			)
 		);
 
@@ -197,7 +197,7 @@ class Tag
 	 */
 	public static function getTotalQuantityPagesWithSelectedTag()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value, p.permissions
@@ -206,7 +206,7 @@ class Tag
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}',
 			array(
-				'key'    => $smcFunc['htmlspecialchars']($_GET['key'], ENT_QUOTES),
+				'key'    => $context['lp_keyword'],
 				'status' => Page::STATUS_ACTIVE
 			)
 		);
@@ -231,7 +231,7 @@ class Tag
 	 */
 	public static function showAll()
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings, $sourcedir;
 
 		$context['page_title']     = $txt['lp_all_page_tags'];
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags';
@@ -241,8 +241,56 @@ class Tag
 			'name' => $context['page_title']
 		);
 
-		$context['lp_tags'] = self::getAll();
-		$context['sub_template'] = 'show_tags';
+		$listOptions = array(
+			'id' => 'tags',
+			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
+			'title' => $context['page_title'],
+			'no_items_label' => $txt['lp_no_tags'],
+			'base_href' => $context['canonical_url'],
+			'default_sort_col' => 'value',
+			'get_items' => array(
+				'function' => __CLASS__ . '::getAll'
+			),
+			'get_count' => array(
+				'function' => __CLASS__ . '::getTotalQuantity'
+			),
+			'columns' => array(
+				'value' => array(
+					'header' => array(
+						'value' => $txt['lp_keyword_column']
+					),
+					'data' => array(
+						'function' => function ($entry)
+						{
+							return '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>';
+						},
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 't.value DESC',
+						'reverse' => 't.value'
+					)
+				),
+				'frequency' => array(
+					'header' => array(
+						'value' => $txt['lp_frequency_column']
+					),
+					'data' => array(
+						'db'    => 'frequency',
+						'class' => 'centertext'
+					)
+				)
+			),
+			'form' => array(
+				'href' => $context['canonical_url']
+			)
+		);
+
+		require_once($sourcedir . '/Subs-List.php');
+		createList($listOptions);
+
+		$context['sub_template'] = 'show_list';
+		$context['default_list'] = 'tags';
 
 		obExit();
 	}
@@ -252,9 +300,12 @@ class Tag
 	 *
 	 * Получаем список всех тегов
 	 *
+	 * @param int $start
+	 * @param int $items_per_page
+	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAll()
+	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
 		global $smcFunc, $scripturl;
 
@@ -264,7 +315,59 @@ class Tag
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
-			ORDER BY t.value',
+			ORDER BY {raw:sort}
+			LIMIT {int:start}, {int:limit}',
+			array(
+				'status' => Page::STATUS_ACTIVE,
+				'sort'   => $sort,
+				'start'  => $start,
+				'limit'  => $items_per_page
+			)
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (Helpers::canShowItem($row['permissions']) === false)
+				continue;
+
+			if (!isset($items[$row['value']]))
+				$i = 1;
+			else
+				$i++;
+
+			$items[$row['value']] = array(
+				'value'     => $row['value'],
+				'link'      => $scripturl . '?action=portal;sa=tags;key=' . urlencode(trim($row['value'])),
+				'frequency' => $i
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+
+		uasort($items, function ($a, $b) {
+			return $a['frequency'] < $b['frequency'];
+		});
+
+		return $items;
+	}
+
+	/**
+	 * Get the total number of pages with tags
+	 *
+	 * Подсчитываем общее количество страниц тегами
+	 *
+	 * @return int
+	 */
+	public static function getTotalQuantity()
+	{
+		global $smcFunc;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT t.page_id, t.value, p.permissions
+			FROM {db_prefix}lp_tags AS t
+				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+			WHERE t.value IS NOT NULL
+				AND p.status = {int:status}',
 			array(
 				'status' => Page::STATUS_ACTIVE
 			)
@@ -272,22 +375,12 @@ class Tag
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions'])) {
-				if (!isset($items[$row['value']]))
-					$i = 1;
-				else
-					$i++;
-
-				$items[$row['value']] = array(
-					'keyword'   => $row['value'],
-					'link'      => $scripturl . '?action=portal;sa=tags;key=' . urlencode($row['value']),
-					'frequency' => $i
-				);
-			}
+			if (Helpers::canShowItem($row['permissions']))
+				$items[$row['value']] = $row['page_id'];
 		}
 
 		$smcFunc['db_free_result']($request);
 
-		return $items;
+		return count($items);
 	}
 }

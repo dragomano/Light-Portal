@@ -140,6 +140,7 @@ $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Тип страницы';
 $txt['lp_page_description']             = 'Описание';
 $txt['lp_page_keywords']                = 'Ключевые слова';
+$txt['lp_page_keywords_after']          = 'Используйте запятую для разделения';
 $txt['lp_permissions']                  = array('Показывать админам', 'Показывать гостям', 'Показывать пользователям', 'Показывать всем');
 
 $txt['lp_page_options'] = array(

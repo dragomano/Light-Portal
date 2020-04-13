@@ -140,6 +140,7 @@ $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
+$txt['lp_page_keywords_after']          = 'Use a comma to separate';
 $txt['lp_permissions']                  = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
 
 $txt['lp_page_options'] = array(

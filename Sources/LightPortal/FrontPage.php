@@ -190,7 +190,9 @@ class FrontPage
 				'is_approved'       => 1,
 				'id_poll'           => 0,
 				'id_redirect_topic' => 0,
-				'selected_boards'   => $selected_boards
+				'selected_boards'   => $selected_boards,
+				'start'             => $start,
+				'limit'             => $limit
 			];
 
 			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
@@ -214,7 +216,7 @@ class FrontPage
 					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 				ORDER BY t.id_last_msg DESC
-				LIMIT ' . $start . ', ' . $limit,
+				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
 
@@ -363,7 +365,9 @@ class FrontPage
 			$custom_wheres     = [];
 			$custom_parameters = [
 				'type'   => 'page',
-				'status' => Page::STATUS_ACTIVE
+				'status' => Page::STATUS_ACTIVE,
+				'start'  => $start,
+				'limit'  => $limit
 			];
 
 			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
@@ -379,7 +383,7 @@ class FrontPage
 				WHERE p.status = {int:status}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 				ORDER BY date DESC
-				LIMIT ' . $start . ', ' . $limit,
+				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
 
@@ -479,7 +483,9 @@ class FrontPage
 			$custom_parameters = [
 				'blank_string'    => '',
 				'current_member'  => $user_info['id'],
-				'selected_boards' => $selected_boards
+				'selected_boards' => $selected_boards,
+				'start'           => $start,
+				'limit'           => $limit
 			];
 
 			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
@@ -500,7 +506,7 @@ class FrontPage
 					AND {query_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 				ORDER BY b.id_last_msg DESC
-				LIMIT ' . $start . ', ' . $limit,
+				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
 
