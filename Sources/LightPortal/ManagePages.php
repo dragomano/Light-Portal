@@ -48,6 +48,7 @@ class ManagePages
 	{
 		global $context, $txt, $scripturl, $sourcedir;
 
+		loadLanguage('Packages');
 		loadTemplate('LightPortal/ManagePages');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_manage'];
@@ -104,7 +105,7 @@ class ManagePages
 				),
 				'type' => array(
 					'header' => array(
-						'value' => $txt['lp_page_type']
+						'value' => $txt['package_install_type']
 					),
 					'data' => array(
 						'function' => function ($entry) use ($txt)
@@ -145,8 +146,7 @@ class ManagePages
 				),
 				'actions' => array(
 					'header' => array(
-						'value' => $txt['lp_actions'],
-						'style' => 'width: 14%'
+						'value' => $txt['lp_actions']
 					),
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
@@ -1201,8 +1201,7 @@ class ManagePages
 				),
 				'actions' => array(
 					'header' => array(
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>',
-						'style' => 'width: 14%'
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					),
 					'data' => array(
 						'function' => function ($entry)

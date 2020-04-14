@@ -214,6 +214,12 @@ class Integration
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
 						'show'  => true,
 						'sub_buttons' => array(
+							'plugins' => array(
+								'title' => $txt['lp_plugins'],
+								'href'  => $scripturl . '?action=admin;area=lp_settings;sa=plugins',
+								'amt'   => count($context['lp_enabled_plugins']),
+								'show'  => true
+							),
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
