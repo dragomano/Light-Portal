@@ -25,7 +25,10 @@ function template_plugin_settings()
 			<div class="floatleft">
 				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
-					<strong class="new_posts">', $plugin['types'], '</strong>
+					<p>
+						<strong class="new_posts">', $plugin['types'], '</strong>
+						', $plugin['desc'], '
+					</p>
 				</div>
 			</div>
 			<div class="floatright">';

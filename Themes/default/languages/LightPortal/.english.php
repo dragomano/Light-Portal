@@ -60,7 +60,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'comment' => 'Comment widget',
 	'parser'  => 'Content parser',
 	'article' => 'Processing articles',
-	'compat'  => 'Adding compatibility'
+	'other'   => 'Other'
 );
 
 // Actions

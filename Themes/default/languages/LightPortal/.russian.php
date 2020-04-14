@@ -60,7 +60,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'comment' => 'Виджет комментариев',
 	'parser'  => 'Парсер контента',
 	'article' => 'Обработка статей',
-	'compat'  => 'Добавление совместимости'
+	'other'   => 'Разное'
 );
 
 // Actions

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Addons;
+namespace Bugo\LightPortal\Addons\Trumbowyg;
 
 use Bugo\LightPortal\Helpers;
 

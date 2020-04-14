@@ -318,10 +318,11 @@ class Settings
 		$config_vars = [];
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
-		$context['all_lp_plugins'] = array_map(function ($item) use ($context, $config_vars) {
+		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
 			return [
 				'name'       => $name = explode("\\", $item)[0],
 				'snake_name' => $snake_name = Helpers::getSnakeName($name),
+				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => self::getPluginTypes($snake_name),
 				'settings'   => self::getPluginSettings($config_vars, $name)

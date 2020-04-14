@@ -60,7 +60,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'comment' => 'Віджет коментарів',
 	'parser'  => 'Парсер контента',
 	'article' => 'Обробка статей',
-	'compat'  => 'Додавання сумісності'
+	'other'   => 'Різне'
 );
 
 // Actions

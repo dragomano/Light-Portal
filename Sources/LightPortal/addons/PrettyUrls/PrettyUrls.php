@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Addons;
+namespace Bugo\LightPortal\Addons\PrettyUrls;
 
 /**
  * PrettyUrls
@@ -26,7 +26,7 @@ class PrettyUrls
 	 *
 	 * @var array
 	 */
-	public static $addon_type = 'compat';
+	public static $addon_type = 'other';
 
 	/**
 	 * Run necessary hooks
