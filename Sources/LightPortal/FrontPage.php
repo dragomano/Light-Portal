@@ -374,7 +374,7 @@ class FrontPage
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views,
+					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views, p.num_comments,
 					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
@@ -399,20 +399,21 @@ class FrontPage
 
 				if (!isset($pages[$row['page_id']]))
 					$pages[$row['page_id']] = array(
-						'id'          => $row['page_id'],
-						'author_id'   => $row['author_id'],
-						'author_link' => $scripturl . '?action=profile;u=' . $row['author_id'],
-						'author_name' => $row['author_name'],
-						'alias'       => $row['alias'],
-						'description' => self::getShortenDescription($row['description']),
-						'type'        => $row['type'],
-						'num_views'   => $row['num_views'],
-						'created_at'  => $row['date'],
-						'is_new'      => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-						'link'        => $scripturl . '?page=' . $row['alias'],
-						'image'       => $image,
-						'can_show'    => Helpers::canShowItem($row['permissions']),
-						'can_edit'    => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+						'id'           => $row['page_id'],
+						'author_id'    => $row['author_id'],
+						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
+						'author_name'  => $row['author_name'],
+						'alias'        => $row['alias'],
+						'description'  => self::getShortenDescription($row['description']),
+						'type'         => $row['type'],
+						'num_views'    => $row['num_views'],
+						'num_comments' => $row['num_comments'],
+						'created_at'   => $row['date'],
+						'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+						'link'         => $scripturl . '?page=' . $row['alias'],
+						'image'        => $image,
+						'can_show'     => Helpers::canShowItem($row['permissions']),
+						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
 				$pages[$row['page_id']]['title'] = self::getShortenSubject($titles[$row['page_id']]);

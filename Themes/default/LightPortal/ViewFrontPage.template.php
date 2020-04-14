@@ -54,6 +54,7 @@ function template_show_topics_as_articles()
 						<div class="floatleft">', $topic['time'], '</div>
 						<div class="floatright">
 							<i class="fas fa-eye"></i> ', $topic['num_views'], '
+							<i class="fas fa-comment"></i> ', $topic['num_replies'], '
 						</div>
 					</div>
 				</div>';
@@ -144,6 +145,7 @@ function template_show_pages_as_articles()
 						<div class="floatleft">', $page['created_at'], '</div>
 						<div class="floatright">
 							<i class="fas fa-eye"></i> ', $page['num_views'], '
+							<i class="fas fa-comment"></i> ', $page['num_comments'], '
 						</div>
 					</div>
 				</div>';
