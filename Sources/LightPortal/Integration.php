@@ -258,10 +258,7 @@ class Integration
 		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (empty($modSettings['lp_frontpage_mode']) && empty($context['current_action']) && empty($_GET['page'])))
 			Block::show('forum');
 
-		// Script execution time and memory usage | Время выполнения скрипта и объём использованной памяти
-		$context['lp_load_page_stats'] = LP_DEBUG || isset($_GET['debug']) ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getUsageMemory()) : false;
-		if (!empty($context['lp_load_page_stats']))
-			$context['insert_after_template'] .= '<div class="centertext clear descbox smalltext">' . $context['lp_load_page_stats'] . '</div>';
+		Subs::showDebugInfo();
 
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;

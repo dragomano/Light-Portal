@@ -109,6 +109,8 @@ class Subs
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $active_blocks;
 	}
 
@@ -136,6 +138,8 @@ class Subs
 
 		list ($num_pages) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $num_pages;
 	}
@@ -465,6 +469,8 @@ class Subs
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $titles;
 	}
 
@@ -530,5 +536,34 @@ class Subs
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Show script execution time and num queries
+	 *
+	 * Отображаем время выполнения скрипта и количество запросов к базе
+	 *
+	 * @return void
+	 */
+	public static function showDebugInfo()
+	{
+		global $context, $txt;
+
+		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getNumQueries()) : false;
+
+		if (!empty($context['lp_load_page_stats']))	{
+			loadTemplate('LightPortal/ViewDebug');
+
+			$key = array_search('portal', $context['template_layers']);
+			if (empty($key)) {
+				$context['template_layers'][] = 'debug';
+			} else {
+				$context['template_layers'] = array_merge(
+					array_slice($context['template_layers'], 0, $key, true),
+					array('debug'),
+					array_slice($context['template_layers'], $key, null, true)
+				);
+			}
+		}
 	}
 }

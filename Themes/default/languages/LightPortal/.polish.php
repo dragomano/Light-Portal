@@ -238,5 +238,5 @@ $txt['lp_buddies_set'] = array('znajomy', 'znajomych');
 $txt['lp_credits']         = 'Autorzy';
 $txt['lp_used_components'] = 'Składniki portalu';
 
-// Script execution time and memory usage
-$txt['lp_load_page_stats'] = 'Załadowano w %1$.3f sekund. Wykorzystana pamięć: %2$d ' . $txt['megabyte'] . '.';
+// Debug info
+$txt['lp_load_page_stats'] = 'Załadowano w %1$.3f sekund. Zapytania do bazy danych: %2$d.';

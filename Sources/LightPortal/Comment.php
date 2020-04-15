@@ -368,6 +368,8 @@ class Comment
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $comments;
 	}
 

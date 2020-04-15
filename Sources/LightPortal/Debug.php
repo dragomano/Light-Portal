@@ -29,13 +29,13 @@ class Debug
 	private static $time_start = .0;
 
 	/**
-	 * Initial amount of allocated memory
+	 * Initial amount of queries
 	 *
-	 * Первоначальный объём выделенной памяти
+	 * Первоначальное количество запросов
 	 *
 	 * @var int
 	 */
-	private static $memory_value = 0;
+	private static $num_queries = 0;
 
 	/**
 	 * Start of execution time, the initial amount of memory
@@ -46,8 +46,8 @@ class Debug
 	 */
 	public static function start()
 	{
-		self::$time_start   = microtime(true);
-		self::$memory_value = memory_get_usage(true);
+		self::$time_start  = microtime(true);
+		self::$num_queries = 0;
 	}
 
 	/**
@@ -63,14 +63,30 @@ class Debug
 	}
 
 	/**
-	 * Get the amount of memory allocated to the script, in megabytes
+	 * Get the number of requests to the database
 	 *
-	 * Получаем объем памяти, выделенной скрипту, в мегабайтах
+	 * Получаем количество запросов к базе данных
 	 *
-	 * @return int
+	 * @return void
 	 */
-	public static function getUsageMemory()
+	public static function getNumQueries()
 	{
-		return (memory_get_usage(true) - self::$memory_value) / 1024 / 1024;
+		return self::$num_queries;
+	}
+
+	/**
+	 * Update the number of database requests
+	 *
+	 * Обновляем количество запросов к базе данных
+	 *
+	 * @param int $num
+	 * @return void
+	 */
+	public static function updateNumQueries(int $num = 1)
+	{
+		if (empty($num))
+			return;
+
+		self::$num_queries += $num;
 	}
 }

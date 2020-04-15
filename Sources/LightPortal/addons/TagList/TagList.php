@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TagList;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Debug, Helpers};
 
 /**
  * TagList
@@ -138,6 +138,8 @@ class TagList
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $keywords;
 	}

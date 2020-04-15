@@ -238,5 +238,5 @@ $txt['lp_buddies_set'] = array('друг', 'друга', 'друзів');
 $txt['lp_credits']         = 'Копірайти';
 $txt['lp_used_components'] = 'Компоненти порталу';
 
-// Script execution time and memory usage
-$txt['lp_load_page_stats'] = 'Завантажено за %1$.3f сек. Пам\'ять: %2$d ' . $txt['megabyte'] . '.';
+// Debug info
+$txt['lp_load_page_stats'] = 'Завантажено за %1$.3f сек. Запитів до бази: %2$d.';

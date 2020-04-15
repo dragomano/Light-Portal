@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Debug, Helpers};
 
 /**
  * RandomTopics
@@ -167,6 +167,8 @@ class RandomTopics
 
 			$smcFunc['db_free_result']($request);
 
+			Debug::updateNumQueries();
+
 			if (empty($topic_ids))
 				return self::getRandomTopics($num_topics - 1);
 
@@ -236,6 +238,8 @@ class RandomTopics
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $topics;
 	}

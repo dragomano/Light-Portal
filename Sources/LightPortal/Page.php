@@ -213,6 +213,8 @@ class Page
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $data ?? [];
 	}
 
@@ -299,6 +301,8 @@ class Page
 					'item' => $context['lp_page']['id']
 				)
 			);
+
+			Debug::updateNumQueries();
 
 			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
 		}

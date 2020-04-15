@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\PageList;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Debug, Helpers};
 
 /**
  * PageList
@@ -157,6 +157,8 @@ class PageList
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $pages;
 	}

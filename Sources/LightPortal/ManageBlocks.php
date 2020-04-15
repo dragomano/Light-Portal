@@ -86,6 +86,8 @@ class ManageBlocks
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $current_blocks;
 	}
 
@@ -784,6 +786,8 @@ class ManageBlocks
 		list ($priority) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $priority;
 	}
 
@@ -844,6 +848,8 @@ class ManageBlocks
 				1
 			);
 
+			Debug::updateNumQueries();
+
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
@@ -866,6 +872,8 @@ class ManageBlocks
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
@@ -891,6 +899,8 @@ class ManageBlocks
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				Debug::updateNumQueries();
 			}
 		} else {
 			$smcFunc['db_query']('', '
@@ -913,6 +923,8 @@ class ManageBlocks
 				)
 			);
 
+			Debug::updateNumQueries();
+
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
@@ -935,6 +947,8 @@ class ManageBlocks
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
@@ -960,6 +974,8 @@ class ManageBlocks
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				Debug::updateNumQueries();
 			}
 		}
 
@@ -1031,6 +1047,8 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $data;
 	}
@@ -1121,6 +1139,8 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $items;
 	}
@@ -1274,6 +1294,8 @@ class ManageBlocks
 			$sql .= Subs::getValues($items);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($titles)) {
@@ -1283,6 +1305,8 @@ class ManageBlocks
 			$sql .= Subs::getValues($titles);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($params)) {
@@ -1292,6 +1316,8 @@ class ManageBlocks
 			$sql .= Subs::getValues($params);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		clean_cache();

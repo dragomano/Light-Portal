@@ -185,6 +185,8 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $items;
 	}
 
@@ -218,6 +220,8 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return count($items);
 	}
@@ -344,6 +348,8 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
 		});
@@ -380,6 +386,8 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return count($items);
 	}

@@ -238,5 +238,5 @@ $txt['lp_buddies_set'] = array('buddy', 'buddies');
 $txt['lp_credits']         = 'Credits';
 $txt['lp_used_components'] = 'The portal components';
 
-// Script execution time and memory usage
-$txt['lp_load_page_stats'] = 'Loaded for %1$.3f seconds. Memory used: %2$d ' . $txt['megabyte'] . '.';
+// Debug info
+$txt['lp_load_page_stats'] = 'Loaded for %1$.3f seconds. Queries to DB: %2$d.';

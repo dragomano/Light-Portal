@@ -146,7 +146,8 @@ class ManagePages
 				),
 				'actions' => array(
 					'header' => array(
-						'value' => $txt['lp_actions']
+						'value' => $txt['lp_actions'],
+						'style' => 'width: 8%'
 					),
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
@@ -184,7 +185,7 @@ class ManagePages
 			),
 			'form' => array(
 				'href' => $scripturl . '?action=admin;area=lp_pages',
-				'name' => 'pages'
+				'name' => 'manage_pages'
 			),
 			'additional_rows' => array(
 				array(
@@ -195,7 +196,7 @@ class ManagePages
 							<option value="action_on">' . $txt['lp_action_on'] . '</option>
 							<option value="action_off">' . $txt['lp_action_off'] . '</option>
 						</select>
-						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
+						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
 				)
 			)
@@ -266,6 +267,8 @@ class ManagePages
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $items;
 	}
 
@@ -291,6 +294,8 @@ class ManagePages
 
 		list ($num_entries) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $num_entries;
 	}
@@ -379,6 +384,8 @@ class ManagePages
 				'items' => $items
 			)
 		);
+
+		Debug::updateNumQueries(5);
 	}
 
 	/**
@@ -406,6 +413,8 @@ class ManagePages
 				'items'  => $items
 			)
 		);
+
+		Debug::updateNumQueries();
 	}
 
 	/**
@@ -910,6 +919,8 @@ class ManagePages
 				1
 			);
 
+			Debug::updateNumQueries();
+
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -932,6 +943,8 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -956,6 +969,8 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
@@ -976,6 +991,8 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
+
+				Debug::updateNumQueries();
 			}
 		} else {
 			$smcFunc['db_query']('', '
@@ -992,6 +1009,8 @@ class ManagePages
 					'updated_at'  => time()
 				)
 			);
+
+			Debug::updateNumQueries();
 
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
@@ -1015,6 +1034,8 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -1039,6 +1060,8 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				Debug::updateNumQueries();
 			}
 
 			$smcFunc['db_query']('', '
@@ -1048,6 +1071,8 @@ class ManagePages
 					'page_id' => $item
 				)
 			);
+
+			Debug::updateNumQueries();
 
 			if (!empty($context['lp_page']['keywords'])) {
 				$keywords = [];
@@ -1067,6 +1092,8 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
+
+				Debug::updateNumQueries();
 			}
 		}
 
@@ -1120,6 +1147,8 @@ class ManagePages
 
 		list ($count) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return (bool) $count;
 	}
@@ -1305,6 +1334,8 @@ class ManagePages
 
 		$smcFunc['db_free_result']($request);
 
+		Debug::updateNumQueries();
+
 		return $items;
 	}
 
@@ -1489,6 +1520,8 @@ class ManagePages
 			$sql .= Subs::getValues($items);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($titles)) {
@@ -1498,6 +1531,8 @@ class ManagePages
 			$sql .= Subs::getValues($titles);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($params)) {
@@ -1507,6 +1542,8 @@ class ManagePages
 			$sql .= Subs::getValues($params);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($keywords)) {
@@ -1516,6 +1553,8 @@ class ManagePages
 			$sql .= Subs::getValues($keywords);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		if (!empty($comments)) {
@@ -1525,6 +1564,8 @@ class ManagePages
 			$sql .= Subs::getValues($comments);
 
 			$smcFunc['db_query']('', $sql);
+
+			Debug::updateNumQueries();
 		}
 
 		clean_cache();

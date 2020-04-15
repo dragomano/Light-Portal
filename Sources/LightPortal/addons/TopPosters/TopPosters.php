@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Debug, Helpers};
 
 /**
  * TopPosters
@@ -168,6 +168,8 @@ class TopPosters
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $posters;
 	}

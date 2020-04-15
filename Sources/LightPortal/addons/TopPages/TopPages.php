@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Debug, Helpers};
 
 /**
  * TopPages
@@ -192,6 +192,8 @@ class TopPages
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		Debug::updateNumQueries();
 
 		return $pages;
 	}

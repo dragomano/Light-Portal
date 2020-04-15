@@ -267,6 +267,8 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
+			Debug::updateNumQueries();
+
 			if (!empty($messages) && !empty($modSettings['lp_show_images_in_articles'])) {
 				$request = $smcFunc['db_query']('', '
 					SELECT a.id_attach, a.id_msg, t.id_topic
@@ -290,6 +292,8 @@ class FrontPage
 					$attachments[$row['id_topic']][] = $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
 
 				$smcFunc['db_free_result']($request);
+
+				Debug::updateNumQueries();
 
 				foreach ($attachments as $id_topic => $data)
 					$topics[$id_topic]['image'] = $data[0];
@@ -337,6 +341,8 @@ class FrontPage
 
 			list ($num_topics) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
+
+			Debug::updateNumQueries();
 
 			cache_put_data('light_portal_fronttopics_total', $num_topics, 3600);
 		}
@@ -423,6 +429,8 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
+			Debug::updateNumQueries();
+
 			cache_put_data('light_portal_frontpages_' . $start . '_' . $limit, $pages, 3600);
 		}
 
@@ -452,6 +460,8 @@ class FrontPage
 
 			list ($num_pages) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
+
+			Debug::updateNumQueries();
 
 			cache_put_data('light_portal_frontpages_total', $num_pages, 3600);
 		}
@@ -547,6 +557,8 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
+			Debug::updateNumQueries();
+
 			cache_put_data('light_portal_frontboards_' . $start . '_' . $limit, $boards, 3600);
 		}
 
@@ -583,6 +595,8 @@ class FrontPage
 
 			list ($num_boards) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
+
+			Debug::updateNumQueries();
 
 			cache_put_data('light_portal_frontboards_total', $num_boards, 3600);
 		}
