@@ -65,7 +65,7 @@ function template_manage_export_blocks()
 		echo '
 			</tbody>
 		</table>
-		<div class="additional_row">
+		<div class="additional_row floatright">
 			<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
 		</div>
 	</form>';
