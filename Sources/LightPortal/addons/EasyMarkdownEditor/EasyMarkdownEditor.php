@@ -78,10 +78,10 @@ class EasyMarkdownEditor
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . $txt['lp_easymde_addon_lines'] . '"
+			content: "' . $txt['lp_easy_markdown_editor_addon_lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . $txt['lp_easymde_addon_words'] . '"
+			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
 		}');
 			loadJavaScriptFile('https://unpkg.com/easymde/dist/easymde.min.js', array('external' => true));
 			addInlineJavaScript('
@@ -171,7 +171,7 @@ class EasyMarkdownEditor
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . $txt['lp_easymde_addon_tasks'] . '"
+					title: "' . $txt['lp_easy_markdown_editor_addon_tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
@@ -190,7 +190,7 @@ class EasyMarkdownEditor
 					name: "side-by-side",
 					action: EasyMDE.toggleSideBySide,
 					className: "fas fa-columns no-disable no-mobile",
-					title: "' . $txt['lp_easymde_addon_toggle'] . '"
+					title: "' . $txt['lp_easy_markdown_editor_addon_toggle'] . '"
 				},
 				{
 					name: "fullscreen",
@@ -203,7 +203,7 @@ class EasyMarkdownEditor
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . $txt['lp_easymde_addon_guide'] . '"
+					title: "' . $txt['lp_easy_markdown_editor_addon_guide'] . '"
 				}
 			]
 		});', true);

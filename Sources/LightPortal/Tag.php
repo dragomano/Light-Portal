@@ -66,12 +66,12 @@ class Tag
 						'value' => $txt['date']
 					),
 					'data' => array(
-						'db'    => 'created_at',
+						'db'    => 'date',
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'p.created_at DESC',
-						'reverse' => 'p.created_at'
+						'default' => 'p.created_at DESC, p.updated_at DESC',
+						'reverse' => 'p.created_at, p.updated_at'
 					)
 				),
 				'title' => array(
@@ -148,8 +148,8 @@ class Tag
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.alias, p.permissions, p.num_views,
-				GREATEST(p.created_at, p.updated_at) AS date, t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
+				p.page_id, p.alias, p.permissions, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
+				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
@@ -178,7 +178,7 @@ class Tag
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'date'        => Helpers::getFriendlyTime($row['date']),
 				'title'       => $titles[$row['page_id']] ?? []
 			);
 		}
