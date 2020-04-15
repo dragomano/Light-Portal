@@ -64,7 +64,7 @@ class Subs
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
@@ -109,8 +109,6 @@ class Subs
 
 		$smcFunc['db_free_result']($request);
 
-		Debug::updateNumQueries();
-
 		return $active_blocks;
 	}
 
@@ -125,7 +123,7 @@ class Subs
 	{
 		global $smcFunc, $user_info;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
@@ -138,8 +136,6 @@ class Subs
 
 		list ($num_pages) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $num_pages;
 	}
@@ -452,7 +448,7 @@ class Subs
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}',
@@ -468,8 +464,6 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $titles;
 	}

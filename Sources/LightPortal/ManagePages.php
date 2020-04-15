@@ -235,7 +235,7 @@ class ManagePages
 
 		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
@@ -267,8 +267,6 @@ class ManagePages
 
 		$smcFunc['db_free_result']($request);
 
-		Debug::updateNumQueries();
-
 		return $items;
 	}
 
@@ -283,7 +281,7 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
 			WHERE author_id = {int:user_id}'),
@@ -294,8 +292,6 @@ class ManagePages
 
 		list ($num_entries) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $num_entries;
 	}
@@ -336,12 +332,10 @@ class ManagePages
 	 */
 	private static function remove(array $items)
 	{
-		global $smcFunc;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -349,7 +343,7 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -359,7 +353,7 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -369,7 +363,7 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -377,15 +371,13 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_tags
 			WHERE page_id IN ({array_int:items})',
 			array(
 				'items' => $items
 			)
 		);
-
-		Debug::updateNumQueries(5);
 	}
 
 	/**
@@ -399,12 +391,10 @@ class ManagePages
 	 */
 	public static function toggleStatus(array $items, int $status = 0)
 	{
-		global $smcFunc;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
+		Helpers::dbUpdate('
 			UPDATE {db_prefix}lp_pages
 			SET status = {int:status}
 			WHERE page_id IN ({array_int:items})',
@@ -413,8 +403,6 @@ class ManagePages
 				'items'  => $items
 			)
 		);
-
-		Debug::updateNumQueries();
 	}
 
 	/**
@@ -885,7 +873,7 @@ class ManagePages
 	 */
 	public static function setData(int $item = 0)
 	{
-		global $context, $smcFunc, $db_type, $modSettings;
+		global $context, $db_type, $modSettings;
 
 		if (!empty($context['post_errors']) || !isset($_POST['save']))
 			return;
@@ -895,7 +883,7 @@ class ManagePages
 		self::prepareKeywords();
 
 		if (empty($item)) {
-			$item = $smcFunc['db_insert']('',
+			$item = Helpers::dbInsert('',
 				'{db_prefix}lp_pages',
 				array_merge(array(
 					'author_id'   => 'int',
@@ -919,8 +907,6 @@ class ManagePages
 				1
 			);
 
-			Debug::updateNumQueries();
-
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -932,7 +918,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']('',
+				Helpers::dbInsert('',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -943,8 +929,6 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
-
-				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -958,7 +942,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']('',
+				Helpers::dbInsert('',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -969,8 +953,6 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
-
-				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
@@ -982,7 +964,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']('',
+				Helpers::dbInsert('',
 					'{db_prefix}lp_tags',
 					array(
 						'page_id' => 'int',
@@ -991,11 +973,9 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
-
-				Debug::updateNumQueries();
 			}
 		} else {
-			$smcFunc['db_query']('', '
+			Helpers::dbUpdate('
 				UPDATE {db_prefix}lp_pages
 				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
@@ -1010,8 +990,6 @@ class ManagePages
 				)
 			);
 
-			Debug::updateNumQueries();
-
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -1023,7 +1001,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
+				Helpers::dbInsert('replace',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -1034,8 +1012,6 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
-
-				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -1049,7 +1025,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
+				Helpers::dbInsert('replace',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -1060,19 +1036,15 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
-
-				Debug::updateNumQueries();
 			}
 
-			$smcFunc['db_query']('', '
+			Helpers::dbRemove('
 				DELETE FROM {db_prefix}lp_tags
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id' => $item
 				)
 			);
-
-			Debug::updateNumQueries();
 
 			if (!empty($context['lp_page']['keywords'])) {
 				$keywords = [];
@@ -1083,7 +1055,7 @@ class ManagePages
 					);
 				}
 
-				$smcFunc['db_insert']($db_type == 'postgresql' ? 'ignore' : 'replace',
+				Helpers::dbInsert($db_type == 'postgresql' ? 'ignore' : 'replace',
 					'{db_prefix}lp_tags',
 					array(
 						'page_id' => 'int',
@@ -1092,8 +1064,6 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
-
-				Debug::updateNumQueries();
 			}
 		}
 
@@ -1112,9 +1082,7 @@ class ManagePages
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))',
-			array()
-		);
+		$request = Helpers::dbQuery('SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
 
 		list ($value) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
@@ -1134,7 +1102,7 @@ class ManagePages
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -1147,8 +1115,6 @@ class ManagePages
 
 		list ($count) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return (bool) $count;
 	}
@@ -1278,7 +1244,7 @@ class ManagePages
 
 		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -1333,8 +1299,6 @@ class ManagePages
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $items;
 	}
@@ -1427,7 +1391,7 @@ class ManagePages
 	 */
 	private static function runImport()
 	{
-		global $boarddir, $smcFunc;
+		global $boarddir;
 
 		if (empty($_FILES['import_file']))
 			return;
@@ -1519,9 +1483,7 @@ class ManagePages
 
 			$sql .= Subs::getValues($items);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($titles)) {
@@ -1530,9 +1492,7 @@ class ManagePages
 
 			$sql .= Subs::getValues($titles);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($params)) {
@@ -1541,9 +1501,7 @@ class ManagePages
 
 			$sql .= Subs::getValues($params);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($keywords)) {
@@ -1552,9 +1510,7 @@ class ManagePages
 
 			$sql .= Subs::getValues($keywords);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($comments)) {
@@ -1563,9 +1519,7 @@ class ManagePages
 
 			$sql .= Subs::getValues($comments);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		clean_cache();

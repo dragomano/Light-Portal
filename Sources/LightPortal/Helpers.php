@@ -457,7 +457,7 @@ class Helpers
 	 * @param string $glue
 	 * @return string
 	 */
-	public static function getSnakeName($str, $glue = '_')
+	public static function getSnakeName(string $str, string $glue = '_')
 	{
 		$counter  = 0;
 		$uc_chars = '';
@@ -482,5 +482,94 @@ class Helpers
 		}
 
 		return implode($new_str, $glue);
+	}
+
+	/**
+	 * Wrapper for $smcFunc ['db_query']
+	 *
+	 * Обёртка для $smcFunc['db_query']
+	 *
+	 * @param string $sql
+	 * @param array $params
+	 * @return void
+	 */
+	public static function dbQuery(string $sql = '', array $params = [])
+	{
+		global $smcFunc;
+
+		if (empty($sql))
+			return;
+
+		$result = $smcFunc['db_query']('', $sql, $params);
+
+		Debug::updateNumQueries();
+
+		return $result;
+	}
+
+	/**
+	 * Wrapper for $smcFunc ['db_insert']
+	 *
+	 * Обёртка для $smcFunc['db_insert']
+	 *
+	 * @param string $method
+	 * @param string $table
+	 * @param array $columns
+	 * @param array $data
+	 * @param array $keys
+	 * @param int $returnmode
+	 * @return mixed
+	 */
+	public static function dbInsert(string $method = 'insert', string $table, array $columns, array $data, array $keys, int $returnmode = 0)
+	{
+		global $smcFunc;
+
+		$result = $smcFunc['db_insert']($method, $table, $columns, $data, $keys, $returnmode);
+
+		Debug::updateNumQueries();
+
+		return $result;
+	}
+
+	/**
+	 * Wrapper for self::dbQuery
+	 *
+	 * Обёртка для self::dbQuery
+	 *
+	 * @param string $sql
+	 * @param array $params
+	 * @return mixed
+	 */
+	public static function dbSelect(string $sql = '', array $params = [])
+	{
+		return self::dbQuery($sql, $params);
+	}
+
+	/**
+	 * Wrapper for self::dbQuery
+	 *
+	 * Обёртка для self::dbQuery
+	 *
+	 * @param string $sql
+	 * @param array $params
+	 * @return void
+	 */
+	public static function dbUpdate(string $sql = '', array $params = [])
+	{
+		return self::dbQuery($sql, $params);
+	}
+
+	/**
+	 * Wrapper for self::dbQuery
+	 *
+	 * Обёртка для self::dbQuery
+	 *
+	 * @param string $sql
+	 * @param array $params
+	 * @return void
+	 */
+	public static function dbRemove(string $sql = '', array $params = [])
+	{
+		return self::dbQuery($sql, $params);
 	}
 }

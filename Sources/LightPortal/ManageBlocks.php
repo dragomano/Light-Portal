@@ -58,7 +58,7 @@ class ManageBlocks
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
@@ -85,8 +85,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $current_blocks;
 	}
@@ -132,12 +130,10 @@ class ManageBlocks
 	 */
 	private static function remove(array $items)
 	{
-		global $smcFunc;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_blocks
 			WHERE block_id IN ({array_int:items})',
 			array(
@@ -145,7 +141,7 @@ class ManageBlocks
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -155,7 +151,7 @@ class ManageBlocks
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -216,12 +212,10 @@ class ManageBlocks
 	 */
 	public static function toggleStatus(array $items, int $status = 0)
 	{
-		global $smcFunc;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
+		Helpers::dbUpdate('
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
 			WHERE block_id IN ({array_int:items})',
@@ -241,8 +235,6 @@ class ManageBlocks
 	 */
 	private static function updatePriority()
 	{
-		global $smcFunc;
-
 		if (!isset($_POST['update_priority']))
 			return;
 
@@ -256,7 +248,7 @@ class ManageBlocks
 			return;
 
 		if (!empty($blocks) && is_array($blocks)) {
-			$smcFunc['db_query']('', '
+			Helpers::dbUpdate('
 				UPDATE {db_prefix}lp_blocks
 				SET priority = CASE ' . $conditions . '
 					ELSE priority
@@ -270,7 +262,7 @@ class ManageBlocks
 			if (!empty($_POST['update_placement'])) {
 				$placement = (string) $_POST['update_placement'];
 
-				$smcFunc['db_query']('', '
+				Helpers::dbUpdate('
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
 					WHERE block_id IN ({array_int:blocks})',
@@ -774,7 +766,7 @@ class ManageBlocks
 		if (empty($placement))
 			return 0;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',
@@ -785,8 +777,6 @@ class ManageBlocks
 
 		list ($priority) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $priority;
 	}
@@ -812,7 +802,7 @@ class ManageBlocks
 			$max_length = Helpers::getMaxMessageLength();
 			$priority   = self::calculatePriority($context['lp_block']['placement']);
 
-			$item = $smcFunc['db_insert']('',
+			$item = Helpers::dbInsert('',
 				'{db_prefix}lp_blocks',
 				array(
 					'icon'          => 'string-60',
@@ -848,8 +838,6 @@ class ManageBlocks
 				1
 			);
 
-			Debug::updateNumQueries();
-
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
@@ -861,7 +849,7 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('',
+				Helpers::dbInsert('',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -872,8 +860,6 @@ class ManageBlocks
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
-
-				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
@@ -888,7 +874,7 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('',
+				Helpers::dbInsert('',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -899,11 +885,9 @@ class ManageBlocks
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
-
-				Debug::updateNumQueries();
 			}
 		} else {
-			$smcFunc['db_query']('', '
+			Helpers::dbUpdate('
 				UPDATE {db_prefix}lp_blocks
 				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
@@ -923,8 +907,6 @@ class ManageBlocks
 				)
 			);
 
-			Debug::updateNumQueries();
-
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
@@ -936,7 +918,7 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
+				Helpers::dbInsert('replace',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -947,8 +929,6 @@ class ManageBlocks
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
-
-				Debug::updateNumQueries();
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
@@ -963,7 +943,7 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
+				Helpers::dbInsert('replace',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -974,8 +954,6 @@ class ManageBlocks
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
-
-				Debug::updateNumQueries();
 			}
 		}
 
@@ -1001,7 +979,7 @@ class ManageBlocks
 		if (empty($item))
 			return;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
@@ -1047,8 +1025,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $data;
 	}
@@ -1097,7 +1073,7 @@ class ManageBlocks
 		if (empty($_POST['items']))
 			return;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				pt.lang, pt.title, pp.name, pp.value
@@ -1139,8 +1115,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $items;
 	}
@@ -1223,7 +1197,7 @@ class ManageBlocks
 	 */
 	private static function runImport()
 	{
-		global $boarddir, $smcFunc;
+		global $boarddir;
 
 		if (empty($_FILES['import_file']))
 			return;
@@ -1293,9 +1267,7 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($items);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($titles)) {
@@ -1304,9 +1276,7 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($titles);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		if (!empty($params)) {
@@ -1315,9 +1285,7 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($params);
 
-			$smcFunc['db_query']('', $sql);
-
-			Debug::updateNumQueries();
+			Helpers::dbQuery($sql);
 		}
 
 		clean_cache();

@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
-use Bugo\LightPortal\{Debug, Helpers};
+use Bugo\LightPortal\Helpers;
 
 /**
  * TopPages
@@ -156,11 +156,11 @@ class TopPages
 	 */
 	public static function getTopPages($params)
 	{
-		global $smcFunc, $modSettings, $scripturl;
+		global $smcFunc, $scripturl;
 
 		extract($params);
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
@@ -192,8 +192,6 @@ class TopPages
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $pages;
 	}

@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
-use Bugo\LightPortal\{Debug, Helpers};
+use Bugo\LightPortal\Helpers;
 
 /**
  * RandomTopics
@@ -118,7 +118,7 @@ class RandomTopics
 			return [];
 
 		if ($db_type == 'postgresql') {
-			$request = $smcFunc['db_query']('', '
+			$request = Helpers::dbQuery('
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -167,12 +167,10 @@ class RandomTopics
 
 			$smcFunc['db_free_result']($request);
 
-			Debug::updateNumQueries();
-
 			if (empty($topic_ids))
 				return self::getRandomTopics($num_topics - 1);
 
-			$request = $smcFunc['db_query']('', '
+			$request = Helpers::dbSelect('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -191,7 +189,7 @@ class RandomTopics
 				)
 			);
 		} else {
-			$request = $smcFunc['db_query']('', '
+			$request = Helpers::dbSelect('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -238,8 +236,6 @@ class RandomTopics
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $topics;
 	}

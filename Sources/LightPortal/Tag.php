@@ -146,7 +146,7 @@ class Tag
 
 		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				p.page_id, p.alias, p.permissions, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
 				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
@@ -185,8 +185,6 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
-		Debug::updateNumQueries();
-
 		return $items;
 	}
 
@@ -201,7 +199,7 @@ class Tag
 	{
 		global $smcFunc, $context;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -220,8 +218,6 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return count($items);
 	}
@@ -313,7 +309,7 @@ class Tag
 	{
 		global $smcFunc, $scripturl;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -348,8 +344,6 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
-		Debug::updateNumQueries();
-
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
 		});
@@ -368,7 +362,7 @@ class Tag
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -386,8 +380,6 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return count($items);
 	}

@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
-use Bugo\LightPortal\{Debug, Helpers};
+use Bugo\LightPortal\Helpers;
 
 /**
  * ThemeSwitcher
@@ -35,7 +35,7 @@ class ThemeSwitcher
 		if (empty($modSettings['knownThemes']))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT id_theme, value
 			FROM {db_prefix}themes
 			WHERE id_member = 0
@@ -51,8 +51,6 @@ class ThemeSwitcher
 			$available_themes[$row[0]] = $row[1];
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $available_themes;
 	}

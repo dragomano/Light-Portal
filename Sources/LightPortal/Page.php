@@ -149,7 +149,7 @@ class Page
 		if (empty($params))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
@@ -212,8 +212,6 @@ class Page
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $data ?? [];
 	}
@@ -293,7 +291,7 @@ class Page
 			return;
 
 		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id']) {
-			$smcFunc['db_query']('', '
+			Helpers::dbUpdate('
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
 				WHERE page_id = {int:item}',
@@ -301,8 +299,6 @@ class Page
 					'item' => $context['lp_page']['id']
 				)
 			);
-
-			Debug::updateNumQueries();
 
 			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
 		}

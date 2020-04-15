@@ -79,14 +79,10 @@ class Debug
 	 *
 	 * Обновляем количество запросов к базе данных
 	 *
-	 * @param int $num
 	 * @return void
 	 */
-	public static function updateNumQueries(int $num = 1)
+	public static function updateNumQueries()
 	{
-		if (empty($num))
-			return;
-
-		self::$num_queries += $num;
+		self::$num_queries++;
 	}
 }

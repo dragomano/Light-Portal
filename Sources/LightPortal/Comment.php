@@ -101,7 +101,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $txt;
+		global $user_info, $txt;
 
 		$args = array(
 			'parent_id'  => FILTER_VALIDATE_INT,
@@ -130,7 +130,7 @@ class Comment
 		if (empty($page_id) || empty($message))
 			return;
 
-		$item = $smcFunc['db_insert']('',
+		$item = Helpers::dbInsert('replace',
 			'{db_prefix}lp_comments',
 			array(
 				'parent_id'  => 'int',
@@ -153,7 +153,7 @@ class Comment
 		$result['error'] = true;
 
 		if (!empty($item)) {
-			$smcFunc['db_query']('', '
+			Helpers::dbUpdate('
 				UPDATE {db_prefix}lp_pages
 				SET num_comments = num_comments + 1
 				WHERE page_id = {int:item}',
@@ -251,7 +251,7 @@ class Comment
 		if (empty($options))
 			return;
 
-		$smcFunc['db_insert']('insert',
+		Helpers::dbInsert('',
 			'{db_prefix}background_tasks',
 			array(
 				'task_file'    => 'string',
@@ -293,14 +293,12 @@ class Comment
 	 */
 	private function remove()
 	{
-		global $smcFunc;
-
 		$items = filter_input(INPUT_POST, 'items', FILTER_VALIDATE_INT, array('flags'  => FILTER_REQUIRE_ARRAY));
 
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
+		Helpers::dbRemove('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			array(
@@ -308,7 +306,7 @@ class Comment
 			)
 		);
 
-		$smcFunc['db_query']('', '
+		Helpers::dbUpdate('
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}',
@@ -335,7 +333,7 @@ class Comment
 	{
 		global $smcFunc, $memberContext;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)' . (!empty($page_id) ? '
@@ -367,8 +365,6 @@ class Comment
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $comments;
 	}

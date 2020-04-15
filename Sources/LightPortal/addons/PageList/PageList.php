@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\PageList;
 
-use Bugo\LightPortal\{Debug, Helpers};
+use Bugo\LightPortal\Helpers;
 
 /**
  * PageList
@@ -117,7 +117,7 @@ class PageList
 	{
 		global $smcFunc, $txt;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT
 				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id, pt.lang, pt.title
@@ -157,8 +157,6 @@ class PageList
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $pages;
 	}

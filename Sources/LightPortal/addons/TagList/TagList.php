@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\TagList;
 
-use Bugo\LightPortal\{Debug, Helpers};
+use Bugo\LightPortal\Helpers;
 
 /**
  * TagList
@@ -119,7 +119,7 @@ class TagList
 	{
 		global $smcFunc, $scripturl;
 
-		$request = $smcFunc['db_query']('', '
+		$request = Helpers::dbSelect('
 			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
 			FROM {db_prefix}optimus_keywords AS ok
 				LEFT JOIN {db_prefix}optimus_log_keywords AS olk ON (olk.keyword_id = ok.id)
@@ -138,8 +138,6 @@ class TagList
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		Debug::updateNumQueries();
 
 		return $keywords;
 	}
