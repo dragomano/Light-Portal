@@ -211,19 +211,34 @@ p.errorbox.permissions {
 	padding: 8px 10px;
 }
 
+.article_content {
+	overflow: hidden;
+}
+
 .article_content .inner {
-	min-height: auto;
+	height: 70px;
+	overflow: hidden;
+	color: transparent;
+	-webkit-background-clip: text;
+	background-clip: text;
+	background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
 }
 
 .article_image {
+	flex: 1 1 60%;
+	display: flex;
+	justify-content: center;
+}
+
+.article_image img {
 	display: block;
 	height: auto;
 	max-width: 100%;
 	border-radius: 5px;
 }
 
-.article_info {
-	flex: 1 1 auto;
+.article_image i {
+	align-self: center;
 }
 
 .author_and_category,
@@ -254,16 +269,6 @@ p.errorbox.permissions {
 
 .footer .infobox, .footer .errorbox {
 	display: none;
-}
-
-@media (max-width: 1200px) and (min-width: 1022px) {
-	.article_info div {
-		text-align: center;
-		display: block;
-	}
-	.article_info .floatleft, .article_info .floatright {
-		float: none;
-	}
 }
 
 #postpage #post_header dt {
@@ -349,6 +354,16 @@ p.errorbox.permissions {
 		float: none;
 		margin: 0 auto;
 		display: block;
+	}
+}
+
+@media (max-width: 1200px) and (min-width: 1022px) {
+	.article_info div {
+		text-align: center;
+		display: block;
+	}
+	.article_info .floatleft, .article_info .floatright {
+		float: none;
 	}
 }
 

@@ -27,10 +27,14 @@ function template_show_topics_as_articles()
 
 			if (!empty($topic['image'])) {
 				echo '
-				<img class="article_image" src="', $topic['image'], '" alt="', $topic['subject'], '">';
+			<div class="article_image">
+				<img src="', $topic['image'], '" alt="', $topic['subject'], '">
+			</div>';
 			} elseif (!empty($topic['image_placeholder'])) {
 				echo '
-				<span class="centertext">', $topic['image_placeholder'], '</span>';
+			<div class="article_image">
+				', $topic['image_placeholder'], '
+			</div>';
 			}
 
 			echo '
@@ -38,10 +42,10 @@ function template_show_topics_as_articles()
 					<div class="author_and_category">
 						<div class="floatleft">';
 
-			if (!empty($topic['poster_id']))
+			if (!empty($topic['poster_id'])) {
 				echo '
 							<a href="' . $topic['poster_link'] . '" title="' . $txt['profile_of'] . ' ' . $topic['poster_name'] . '">' . $topic['poster_name'] . '</a>';
-			else
+			} else
 				echo $topic['poster_name'];
 
 			echo '
@@ -53,17 +57,24 @@ function template_show_topics_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $topic['time'], '</div>
 						<div class="floatright">
-							<i class="fas fa-eye"></i> ', $topic['num_views'], '
-							<i class="fas fa-comment"></i> ', $topic['num_replies'], '
+							<i class="fas fa-eye"></i> ', $topic['num_views'];
+
+			if (!empty($topic['num_replies'])) {
+				echo '
+							<i class="fas fa-comment"></i> ', $topic['num_replies'];
+			}
+
+			echo '
 						</div>
 					</div>
 				</div>';
 
-			if (!empty($topic['preview']))
+			if (!empty($topic['preview'])) {
 				echo '
 				<div class="article_content post">
 					<p class="inner">', $topic['preview'], '</p>
 				</div>';
+			}
 
 			echo '
 				<div class="article_link centertext">
@@ -120,10 +131,14 @@ function template_show_pages_as_articles()
 
 				if (!empty($page['image'])) {
 					echo '
-				<img class="article_image" src="', $page['image'], '" alt="', $page['title'], '">';
+				<div class="article_image">
+					<img src="', $page['image'], '" alt="', $page['title'], '">
+				</div>';
 				} elseif (!empty($page['image_placeholder'])) {
 					echo '
-				<span class="centertext">', $page['image_placeholder'], '</span>';
+				<div class="article_image">
+					', $page['image_placeholder'], '
+				</div>';
 				}
 
 				echo '
@@ -144,17 +159,24 @@ function template_show_pages_as_articles()
 					<div class="date_and_views smalltext">
 						<div class="floatleft">', $page['created_at'], '</div>
 						<div class="floatright">
-							<i class="fas fa-eye"></i> ', $page['num_views'], '
-							<i class="fas fa-comment"></i> ', $page['num_comments'], '
+							<i class="fas fa-eye"></i> ', $page['num_views'];
+
+				if (!empty($page['num_comments'])) {
+					echo '
+							<i class="fas fa-comment"></i> ', $page['num_comments'];
+				}
+
+				echo '
 						</div>
 					</div>
 				</div>';
 
-				if (!empty($page['description']))
+				if (!empty($page['description'])) {
 					echo '
 				<div class="article_content post page_', $page['type'], '">
 					<p class="inner">', $page['description'], '</p>
 				</div>';
+				}
 
 				echo '
 				<div class="article_link centertext">
@@ -202,10 +224,14 @@ function template_show_boards_as_articles()
 
 			if (!empty($board['image'])) {
 				echo '
-				<img class="article_image" src="', $board['image'], '" alt="', $board['name'], '">';
+			<div class="article_image">
+				<img src="', $board['image'], '" alt="', $board['name'], '">
+			</div>';
 			} elseif (!empty($board['image_placeholder'])) {
 				echo '
-				<span class="centertext">', $board['image_placeholder'], '</span>';
+			<div class="article_image">
+				', $board['image_placeholder'], '
+			</div>';
 			}
 
 			echo '
@@ -240,11 +266,12 @@ function template_show_boards_as_articles()
 					</div>
 				</div>';
 
-			if (!empty($board['description']))
+			if (!empty($board['description'])) {
 				echo '
 				<div class="article_content post">
 					<p class="inner">', $board['description'], '</p>
 				</div>';
+			}
 
 			echo '
 				<div class="article_link centertext">
