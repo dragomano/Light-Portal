@@ -41,7 +41,7 @@ class Settings
 		// ... and add a "Portal" section from the right
 		//... и добавляем справа раздел "Портал"
 		$admin_areas = array_merge(
-			array_slice($admin_areas, 0, $counter, true),
+			array_slice($admin_areas, 0, (int) $counter, true),
 			array(
 				'lp_portal' => array(
 					'title' => $txt['lp_portal'],
@@ -183,8 +183,6 @@ class Settings
 			$add_settings['lp_frontpage_layout'] = 2;
 		if (!isset($modSettings['lp_subject_size']))
 			$add_settings['lp_subject_size'] = 22;
-		if (!isset($modSettings['lp_teaser_size']))
-			$add_settings['lp_teaser_size'] = 100;
 		if (!isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_standalone_mode_excluded_actions']))
@@ -205,8 +203,8 @@ class Settings
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
+			array('text', 'lp_image_placeholder', 80, 'disabled' => $frontpage_disabled),
 			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_help'], 'disabled' => $frontpage_disabled),

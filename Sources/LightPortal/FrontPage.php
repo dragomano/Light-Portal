@@ -141,8 +141,10 @@ class FrontPage
 				$article['last_updated'] = Helpers::getFriendlyTime($article['last_updated']);
 			if (isset($article['title']))
 				$article['title'] = Helpers::getPublicTitle($article);
+			if (!empty($modSettings['lp_image_placeholder']))
+				$image = '<img src="' . $modSettings['lp_image_placeholder'] . '" alt="' . $article['title'] . '">';
 			if (empty($article['image']) && !empty($modSettings['lp_show_images_in_articles']))
-				$article['image_placeholder'] = Subs::runAddons('getFrontpagePlaceholderImage') ?: self::$placeholder_image;
+				$article['image_placeholder'] = Subs::runAddons('getFrontpagePlaceholderImage') ?: $image ?? self::$placeholder_image;
 
 			return $article;
 		}, $articles);
@@ -250,7 +252,7 @@ class FrontPage
 						'poster_name' => $row['poster_name'],
 						'time'        => $row['poster_time'],
 						'subject'     => self::getShortenSubject($row['subject']),
-						'preview'     => self::getShortenDescription($row['body']),
+						'preview'     => $row['body'],
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
 						'is_sticky'   => !empty($row['is_sticky']),
@@ -404,7 +406,7 @@ class FrontPage
 						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
 						'author_name'  => $row['author_name'],
 						'alias'        => $row['alias'],
-						'description'  => self::getShortenDescription($row['description']),
+						'description'  => $row['description'],
 						'type'         => $row['type'],
 						'num_views'    => $row['num_views'],
 						'num_comments' => $row['num_comments'],
@@ -528,7 +530,7 @@ class FrontPage
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => self::getShortenSubject($board_name),
-					'description' => self::getShortenDescription($description),
+					'description' => $description,
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
@@ -606,20 +608,5 @@ class FrontPage
 			return array_map('self::getShortenSubject', $object);
 
 		return !empty($modSettings['lp_subject_size']) ? shorten_subject($object, $modSettings['lp_subject_size']) : $object;
-	}
-
-	/**
-	 * Get shorten description
-	 *
-	 * Получаем короткое описание
-	 *
-	 * @param string $long_desc
-	 * @return string
-	 */
-	public static function getShortenDescription($long_desc)
-	{
-		global $modSettings;
-
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject($long_desc, $modSettings['lp_teaser_size']) : $long_desc;
 	}
 }

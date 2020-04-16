@@ -23,8 +23,8 @@ $txt['lp_frontpage_boards']                         = 'Розділи-джере
 $txt['lp_frontpage_layout']                         = 'Кількість колонок для виведення статей';
 $txt['lp_frontpage_layout_set']                     = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
 $txt['lp_show_images_in_articles']                  = 'Показувати зображення, знайдені в статтях';
+$txt['lp_image_placeholder']                        = 'URL-адреса картинки-заглушки за замовчуванням';
 $txt['lp_subject_size']                             = 'Розмір заголовка статей (у символах)';
-$txt['lp_teaser_size']                              = 'Розмір тизера статей (у символах)';
 $txt['lp_num_items_per_page']                       = 'Кількість елементів на сторінці (для пагінації)';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Автономний режим';
 $txt['lp_standalone_mode_help']                     = 'Буде відключено все, крім сторінок порталу та областей, що ігноруються';

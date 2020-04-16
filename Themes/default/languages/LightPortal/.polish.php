@@ -23,8 +23,8 @@ $txt['lp_frontpage_boards']                         = 'Działy artykułów stron
 $txt['lp_frontpage_layout']                         = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']                     = array('1', '2', '3', '4', '6');
 $txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z artykułów';
+
 $txt['lp_subject_size']                             = 'Długość tytułów artykułów';
-$txt['lp_teaser_size']                              = 'Długość podglądu artykułów';
 $txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
 $txt['lp_standalone_mode_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
