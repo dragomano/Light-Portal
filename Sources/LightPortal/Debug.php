@@ -67,7 +67,7 @@ class Debug
 	 *
 	 * Получаем количество запросов к базе данных
 	 *
-	 * @return void
+	 * @return int
 	 */
 	public static function getNumQueries()
 	{

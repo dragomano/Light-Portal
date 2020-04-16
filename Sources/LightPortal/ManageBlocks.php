@@ -396,7 +396,7 @@ class ManageBlocks
 	 */
 	private static function validateData()
 	{
-		global $context, $modSettings, $user_info;
+		global $context, $user_info;
 
 		if (isset($_POST['save']) || isset($_POST['preview'])) {
 			$args = array(
@@ -502,7 +502,7 @@ class ManageBlocks
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $txt;
 
 		checkSubmitOnce('register');
 
@@ -791,7 +791,7 @@ class ManageBlocks
 	 */
 	public static function setData(int $item = 0)
 	{
-		global $context, $smcFunc;
+		global $context;
 
 		if (!empty($context['post_errors']) || (!isset($_POST['save']) && !isset($_POST['clone'])))
 			return;
@@ -977,7 +977,7 @@ class ManageBlocks
 		global $smcFunc;
 
 		if (empty($item))
-			return;
+			return [];
 
 		$request = Helpers::dbSelect('
 			SELECT
@@ -1026,7 +1026,7 @@ class ManageBlocks
 
 		$smcFunc['db_free_result']($request);
 
-		return $data;
+		return $data ?? [];
 	}
 
 	/**
@@ -1064,14 +1064,14 @@ class ManageBlocks
 	 *
 	 * Формируем данные в XML-формате
 	 *
-	 * @return string
+	 * @return array
 	 */
 	private static function getDataForXml()
 	{
 		global $smcFunc;
 
 		if (empty($_POST['items']))
-			return;
+			return [];
 
 		$request = Helpers::dbSelect('
 			SELECT
@@ -1197,8 +1197,6 @@ class ManageBlocks
 	 */
 	private static function runImport()
 	{
-		global $boarddir;
-
 		if (empty($_FILES['import_file']))
 			return;
 

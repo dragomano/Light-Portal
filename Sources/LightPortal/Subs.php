@@ -294,7 +294,7 @@ class Subs
 		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
 		if (empty($light_portal_addons))
-			return;
+			return false;
 
 		$results = [];
 		foreach ($light_portal_addons as $id => $addon) {
@@ -553,7 +553,7 @@ class Subs
 				$context['template_layers'][] = 'debug';
 			} else {
 				$context['template_layers'] = array_merge(
-					array_slice($context['template_layers'], 0, $key, true),
+					array_slice($context['template_layers'], 0, (int) $key, true),
 					array('debug'),
 					array_slice($context['template_layers'], $key, null, true)
 				);

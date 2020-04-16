@@ -491,14 +491,14 @@ class Helpers
 	 *
 	 * @param string $sql
 	 * @param array $params
-	 * @return void
+	 * @return mixed
 	 */
 	public static function dbQuery(string $sql = '', array $params = [])
 	{
 		global $smcFunc;
 
 		if (empty($sql))
-			return;
+			return false;
 
 		$result = $smcFunc['db_query']('', $sql, $params);
 
@@ -520,7 +520,7 @@ class Helpers
 	 * @param int $returnmode
 	 * @return mixed
 	 */
-	public static function dbInsert(string $method = 'insert', string $table, array $columns, array $data, array $keys, int $returnmode = 0)
+	public static function dbInsert(string $method = 'insert', string $table = '', array $columns = [], array $data = [], array $keys = [], int $returnmode = 0)
 	{
 		global $smcFunc;
 

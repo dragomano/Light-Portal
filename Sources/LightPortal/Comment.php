@@ -130,7 +130,7 @@ class Comment
 		if (empty($page_id) || empty($message))
 			return;
 
-		$item = Helpers::dbInsert('replace',
+		$item = Helpers::dbInsert('',
 			'{db_prefix}lp_comments',
 			array(
 				'parent_id'  => 'int',

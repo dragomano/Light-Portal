@@ -152,8 +152,6 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							global $settings;
-
 							$actions = (empty($entry['status']) ? '
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
@@ -873,7 +871,7 @@ class ManagePages
 	 */
 	public static function setData(int $item = 0)
 	{
-		global $context, $db_type, $modSettings;
+		global $context, $db_type;
 
 		if (!empty($context['post_errors']) || !isset($_POST['save']))
 			return;
@@ -1233,14 +1231,14 @@ class ManagePages
 	 *
 	 * Формируем данные в XML-формате
 	 *
-	 * @return array
+	 * @return mixed
 	 */
 	private static function getDataForXml()
 	{
 		global $smcFunc;
 
 		if (empty($_POST['pages']) && !isset($_POST['export_all']))
-			return;
+			return false;
 
 		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
 
@@ -1391,8 +1389,6 @@ class ManagePages
 	 */
 	private static function runImport()
 	{
-		global $boarddir;
-
 		if (empty($_FILES['import_file']))
 			return;
 

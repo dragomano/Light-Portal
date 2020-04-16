@@ -57,10 +57,7 @@ class Optimus
 	 */
 	public static function frontTopicsOutput(&$topics, $row)
 	{
-		global $modSettings;
-
-		$teaser_size = !empty($modSettings['lp_teaser_size']) ? (int) $modSettings['lp_teaser_size'] : 0;
-		if (!empty($teaser_size) && !empty($row['optimus_description']))
-			$topics[$row['id_topic']]['preview'] = shorten_subject($row['optimus_description'], $teaser_size - 3);
+		if (!empty($row['optimus_description']))
+			$topics[$row['id_topic']]['preview'] = $row['optimus_description'];
 	}
 }

@@ -140,7 +140,7 @@ class Page
 	 * Получаем данные страницы из таблицы в базе данных
 	 *
 	 * @param array $params
-	 * @return void
+	 * @return array
 	 */
 	public static function getDataFromDB(array $params)
 	{
@@ -285,7 +285,7 @@ class Page
 	 */
 	private static function updateNumViews()
 	{
-		global $context, $smcFunc;
+		global $context;
 
 		if (empty($context['lp_page']['id']))
 			return;
