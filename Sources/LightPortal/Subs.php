@@ -383,8 +383,7 @@ class Subs
 
 		getLanguages();
 
-		// Only one language by default!
-		// Если на форуме отключен выбор языков, оставим только один (заданный по умолчанию)
+		// Only one language by default! | Если на форуме отключен выбор языков, оставим только один
 		if (empty($modSettings['userLanguage'])) {
 			$default_lang = $context['languages'][$language];
 			$context['languages'] = [];

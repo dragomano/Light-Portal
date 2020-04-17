@@ -405,6 +405,7 @@ class ManageBlocks
 				'icon_type'     => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
+				'placement'     => FILTER_SANITIZE_STRING,
 				'priority'      => FILTER_VALIDATE_INT,
 				'permissions'   => FILTER_VALIDATE_INT,
 				'areas'         => FILTER_SANITIZE_STRING,
@@ -454,7 +455,7 @@ class ManageBlocks
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
-				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data['parameters'][$option] === null)
+				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data['parameters']) && $post_data['parameters'][$option] === null)
 					$post_data['parameters'][$option] = 0;
 
 				$context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;

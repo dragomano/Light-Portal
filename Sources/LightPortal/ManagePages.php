@@ -588,7 +588,7 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data[$option] === null)
+			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null)
 				$post_data[$option] = 0;
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;

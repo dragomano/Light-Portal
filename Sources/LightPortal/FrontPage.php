@@ -237,7 +237,7 @@ class FrontPage
 						$image = $first_post_image ? array_pop($value) : null;
 					}
 
-					$row['body'] = preg_replace('~\[spoiler\].*?\[\/spoiler\]~Usi', '', $row['body']);
+					$row['body'] = preg_replace('~\[spoiler].*?\[/spoiler]~Usi', '', $row['body']);
 					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')));
 
 					$colorClass = '';

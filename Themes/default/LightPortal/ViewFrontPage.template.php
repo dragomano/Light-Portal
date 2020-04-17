@@ -142,12 +142,11 @@ function template_show_pages_as_articles()
 				}
 
 				echo '
-				<div class="article_info">
+				<div class="article_info"', empty($page['description']) ? ' style="flex: 1 1 auto;"' : '', '>
 					<div class="author_and_category">
-						<div class="floatleft">&nbsp;</div>
-						<div class="floatright">';
+						<div class="floatleft">';
 
-				if (!empty($page['author_id'])) {
+				if (!empty($page['author_name'])) {
 					echo '
 							<a href="' . $page['author_link'] . '" title="' . $txt['profile_of'] . ' ' . $page['author_name'] . '">' . $page['author_name'] . '</a>';
 				} else

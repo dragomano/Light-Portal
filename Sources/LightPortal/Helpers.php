@@ -345,7 +345,7 @@ class Helpers
 	public static function useCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, $vars = [])
 	{
 		if (empty($key))
-			return;
+			return false;
 
 		if ($funcName === null)
 			cache_put_data('light_portal_' . $key, null);

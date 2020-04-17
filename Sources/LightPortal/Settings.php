@@ -498,8 +498,7 @@ class Settings
 	{
 		global $context, $txt;
 
-		// Check every 3 days
-		// Проверяем раз в 3 дня
+		// Check every 3 days | Проверяем раз в 3 дня
 		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
