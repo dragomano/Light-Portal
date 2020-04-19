@@ -381,7 +381,7 @@ class Helpers
 		global $txt, $context;
 
 		if (empty($txt['lp_block_types'][$type]))
-			$context['lp_missing_block_types'][$type] = sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_')));
+			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
 	}
 
 	/**

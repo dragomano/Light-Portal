@@ -159,8 +159,6 @@ class TagList
 		if ($type !== 'tag_list')
 			return;
 
-		ob_start();
-
 		if ($parameters['source'] == 'lp_tags') {
 			$tag_list = Helpers::useCache(
 				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
@@ -176,6 +174,8 @@ class TagList
 				$cache_time
 			);
 		}
+
+		ob_start();
 
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {

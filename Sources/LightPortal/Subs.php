@@ -236,25 +236,6 @@ class Subs
 	}
 
 	/**
-	 * Get nested directories
-	 *
-	 * Получаем вложенные директории
-	 *
-	 * @param string $path
-	 * @return array
-	 */
-	private static function getNestedDirs(string $path)
-	{
-		$dirs = glob(rtrim($path, "/") . "/*", GLOB_ONLYDIR) or array();
-
-		$nested_dirs = [];
-		foreach ($dirs as $dir_path)
-			$nested_dirs[] = $dir_path;
-
-		return $nested_dirs;
-	}
-
-	/**
 	 * Get names of the current addons
 	 *
 	 * Получаем имена имеющихся аддонов
@@ -263,16 +244,14 @@ class Subs
 	 */
 	public static function getAddons()
 	{
-		$addons = [];
-		foreach (glob(LP_ADDONS . '/*.php') as $filename) {
-			$filename = basename($filename);
-			if ($filename !== 'index.php')
-				$addons[] = str_replace('.php', '', $filename);
-		}
+		if (!defined('LP_ADDONS'))
+			return [];
 
-		$dirs = self::getNestedDirs(LP_ADDONS);
+		$dirs = glob(rtrim(LP_ADDONS, "/") . "/*", GLOB_ONLYDIR) or array();
+
+		$addons = [];
 		foreach ($dirs as $dir)
-			$addons[] = basename($dir) . '\\' . basename($dir);
+			$addons[] = basename($dir);
 
 		return $addons;
 	}
@@ -298,11 +277,11 @@ class Subs
 
 		$results = [];
 		foreach ($light_portal_addons as $id => $addon) {
-			$class = __NAMESPACE__ . '\Addons\\' . $addon;
+			$class = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 			self::loadAddonLanguage($addon);
 
 			if (!isset($addon_snake_name[$id])) {
-				$addon_snake_name[$id] = Helpers::getSnakeName(explode("\\", $addon)[0]);
+				$addon_snake_name[$id] = Helpers::getSnakeName($addon);
 				$txt['lp_' . $addon_snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class::$addon_type : 'block';
 			}
 
@@ -321,11 +300,10 @@ class Subs
 	 * @param string $addon
 	 * @return void
 	 */
-	public static function loadAddonLanguage(string $addon)
+	public static function loadAddonLanguage(string $addon = '')
 	{
 		global $txt;
 
-		$addon    = explode("\\", $addon)[0];
 		$base_dir = LP_ADDONS . '/' . $addon . '/langs/';
 
 		$languages = array(
@@ -544,7 +522,7 @@ class Subs
 
 		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getNumQueries()) : false;
 
-		if (!empty($context['lp_load_page_stats']))	{
+		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
 			loadTemplate('LightPortal/ViewDebug');
 
 			$key = array_search('portal', $context['template_layers']);

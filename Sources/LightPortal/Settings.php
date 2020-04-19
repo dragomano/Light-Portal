@@ -34,12 +34,10 @@ class Settings
 		require_once($sourcedir . '/ManageSettings.php');
 		loadLanguage('ManageSettings');
 
-		// Looking for the "Forum" section..
-		// Ищем раздел "Форум"...
+		// Looking for the "Forum" section... | Ищем раздел "Форум"...
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
-		// ... and add a "Portal" section from the right
-		//... и добавляем справа раздел "Портал"
+		// ... and add a "Portal" section from the right | ... и добавляем справа раздел "Портал"
 		$admin_areas = array_merge(
 			array_slice($admin_areas, 0, (int) $counter, true),
 			array(
@@ -172,8 +170,7 @@ class Settings
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox permissions">' . $txt['lp_manage_permissions'] . '</p>';
 
-		// Initial settings
-		// Устанавливаем первоначальные настройки
+		// Initial settings | Первоначальные настройки
 		$add_settings = [];
 		if (!isset($modSettings['lp_frontpage_title']))
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
@@ -311,19 +308,18 @@ class Settings
 		$context['page_title'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=plugins;save';
 
-		// The mod authors can easily add their own settings
-		// Авторы модов модут легко добавлять собственные настройки
+		// The mod authors can easily add their own settings | Авторы модов модут легко добавлять собственные настройки
 		$config_vars = [];
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
 			return [
-				'name'       => $name = explode("\\", $item)[0],
-				'snake_name' => $snake_name = Helpers::getSnakeName($name),
+				'name'       => $item,
+				'snake_name' => $snake_name = Helpers::getSnakeName($item),
 				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => self::getPluginTypes($snake_name),
-				'settings'   => self::getPluginSettings($config_vars, $name)
+				'settings'   => self::getPluginSettings($config_vars, $item)
 			];
 		}, $context['lp_plugins']);
 
@@ -342,7 +338,7 @@ class Settings
 				updateSettings($plugin_options);
 		}
 
-		// Включаем/выключаем плагины
+		// Enable/disable plugins | Включаем/выключаем плагины
 		if (isset($_POST['toggle_plugin'])) {
 			$plugin_id = (int) $_POST['toggle_plugin'];
 			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {

@@ -43,7 +43,7 @@ class Optimus
 		if (!class_exists('\Bugo\Optimus\Subs') || empty($modSettings['optimus_allow_change_desc']))
 			return;
 
-		$custom_columns[] = 'COALESCE(t.optimus_description, 0) AS optimus_description';
+		$custom_columns[] = 'COALESCE(t.optimus_description, null) AS optimus_description';
 	}
 
 	/**

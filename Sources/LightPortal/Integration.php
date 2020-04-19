@@ -420,9 +420,6 @@ class Integration
 				}
 			}
 		}
-
-		if (!empty($user_info['alerts']))
-			$_SESSION['lp_update_comments'] = true;
 	}
 
 	/**
@@ -435,14 +432,14 @@ class Integration
 	 */
 	public static function whosOnline(array $actions)
 	{
-		global $txt, $scripturl;
+		global $txt, $scripturl, $context;
 
 		$result = '';
 		if (empty($actions['action']))
 			$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
 
 		if (!empty($actions['action']) && $actions['action'] == 'portal') {
-			if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'tags') {
+			if ($context['current_subaction'] == 'tags') {
 				if (!empty($_REQUEST['key']))
 					$result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key']);
 				else

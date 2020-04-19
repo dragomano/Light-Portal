@@ -15,8 +15,6 @@ function template_debug_below()
 {
 	global $context;
 
-	if (!empty($context['lp_load_page_stats'])) {
-		echo '
+	echo '
 	<div class="centertext clear noticebox smalltext" style="margin-top: 2px">' . $context['lp_load_page_stats'] . '</div>';
-	}
 }

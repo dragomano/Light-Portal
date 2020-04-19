@@ -404,7 +404,7 @@ foreach($tables as $table) {
 }
 
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'Trumbowyg\Trumbowyg'));
+	updateSettings(array('lp_enabled_plugins' => 'Trumbowyg'));
 
 if (SMF == 'SSI')
 	echo 'Database changes are complete! Please wait...';

@@ -252,7 +252,7 @@ class RandomTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt;
 
 		if ($type !== 'random_topics')
 			return;

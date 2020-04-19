@@ -143,9 +143,9 @@ class Todays
 		if ($type !== 'todays')
 			return;
 
-		ob_start();
-
 		$result = self::getTodays($parameters['widget_type'], 'array');
+
+		ob_start();
 
 		if ($parameters['widget_type'] == 'calendar') {
 			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))

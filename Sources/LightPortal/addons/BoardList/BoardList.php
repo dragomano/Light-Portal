@@ -192,14 +192,14 @@ class BoardList
 
 		$context['lp_boardlist'] = Helpers::useCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
 
-		if ($parameters['board_class'] == '_')
-			$parameters['board_class'] = '';
-		else
-			$parameters['board_class'] = strtr($parameters['board_class'], array('div.' => '', '.' => ' '));
-
-		$context['current_board'] = $context['current_board'] ?? 0;
-
 		if (!empty($context['lp_boardlist'])) {
+			if ($parameters['board_class'] == '_')
+				$parameters['board_class'] = '';
+			else
+				$parameters['board_class'] = strtr($parameters['board_class'], array('div.' => '', '.' => ' '));
+
+			$context['current_board'] = $context['current_board'] ?? 0;
+
 			ob_start();
 
 			foreach ($context['lp_boardlist'] as $category) {

@@ -205,18 +205,18 @@ class Translator
 
 		if ($parameters['engine'] == 'yandex') {
 			echo '
-		<div id="ytWidget" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget&amp;pageLang=', substr($language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		<div id="ytWidget', $block_id, '" class="centertext noup"></div>
+		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $block_id, '&amp;pageLang=', substr($language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		} else {
 			echo '
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 		<div class="centertext noup">
-			<div id="google_translate_element"></div>
+			<div id="google_translate_element', $block_id, '"></div>
 			<script>
 				function googleTranslateElementInit() {
 					new google.translate.TranslateElement({
 						pageLanguage: "', substr($language, 0, 2), '"
-					}, "google_translate_element");
+					}, "google_translate_element', $block_id, '");
 				}
 			</script>
 		</div>';
