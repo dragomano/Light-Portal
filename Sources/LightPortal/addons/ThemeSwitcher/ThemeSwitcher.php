@@ -35,7 +35,7 @@ class ThemeSwitcher
 		if (empty($modSettings['knownThemes']))
 			return [];
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT id_theme, value
 			FROM {db_prefix}themes
 			WHERE id_member = 0
@@ -73,7 +73,7 @@ class ThemeSwitcher
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::useCache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::getFromCache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
 		if (!empty($available_themes)) {
 			ob_start();

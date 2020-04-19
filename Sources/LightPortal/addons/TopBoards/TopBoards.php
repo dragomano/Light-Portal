@@ -147,7 +147,7 @@ class TopBoards
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::useCache('top_boards_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopBoards', __CLASS__, $cache_time, $parameters['num_boards']);
+		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopBoards', __CLASS__, $cache_time, $parameters['num_boards']);
 
 		if (!empty($top_boards)) {
 			ob_start();

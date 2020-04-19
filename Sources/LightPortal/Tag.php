@@ -144,9 +144,9 @@ class Tag
 	{
 		global $smcFunc, $txt, $context;
 
-		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				p.page_id, p.alias, p.permissions, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
 				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
@@ -199,7 +199,7 @@ class Tag
 	{
 		global $smcFunc, $context;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -309,7 +309,7 @@ class Tag
 	{
 		global $smcFunc, $scripturl;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -362,7 +362,7 @@ class Tag
 	{
 		global $smcFunc;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)

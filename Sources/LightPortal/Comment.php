@@ -58,7 +58,7 @@ class Comment
 			$this->remove();
 		}
 
-		$comments = Helpers::useCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, 3600, $context['lp_page']['id']);
+		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, 3600, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$date = date('Y-m-d', $comment['created_at']);
@@ -153,7 +153,7 @@ class Comment
 		$result['error'] = true;
 
 		if (!empty($item)) {
-			Helpers::dbUpdate('
+			Helpers::dbQuery('
 				UPDATE {db_prefix}lp_pages
 				SET num_comments = num_comments + 1
 				WHERE page_id = {int:item}',
@@ -195,7 +195,7 @@ class Comment
 			else
 				$this->makeNotify('new_reply', 'page_comment_reply', $result);
 
-			Helpers::useCache('page_' . $page_alias . '_comments', null);
+			Helpers::getFromCache('page_' . $page_alias . '_comments', null);
 		}
 
 		exit(json_encode($result));
@@ -215,7 +215,7 @@ class Comment
 		$user_avatar = [];
 
 		if (($modSettings['gravatarEnabled'] && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
-			if (!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url']{12}))
+			if (!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url'][12]))
 				$user_avatar['href'] = get_gravatar_url($smcFunc['substr']($user_info['avatar']['url'], 11));
 			else
 				$user_avatar['href'] = get_gravatar_url($user_info['email']);
@@ -298,7 +298,7 @@ class Comment
 		if (empty($items))
 			return;
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			array(
@@ -306,7 +306,7 @@ class Comment
 			)
 		);
 
-		Helpers::dbUpdate('
+		Helpers::dbQuery('
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}',
@@ -316,7 +316,7 @@ class Comment
 			)
 		);
 
-		Helpers::useCache('page_' . $this->alias . '_comments', null);
+		Helpers::getFromCache('page_' . $this->alias . '_comments', null);
 
 		exit;
 	}
@@ -333,7 +333,7 @@ class Comment
 	{
 		global $smcFunc, $memberContext;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)' . (!empty($page_id) ? '

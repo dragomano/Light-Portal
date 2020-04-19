@@ -231,9 +231,9 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
@@ -279,7 +279,7 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
 			WHERE author_id = {int:user_id}'),
@@ -333,7 +333,7 @@ class ManagePages
 		if (empty($items))
 			return;
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -341,7 +341,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -351,7 +351,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -361,7 +361,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -369,7 +369,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_tags
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -392,7 +392,7 @@ class ManagePages
 		if (empty($items))
 			return;
 
-		Helpers::dbUpdate('
+		Helpers::dbQuery('
 			UPDATE {db_prefix}lp_pages
 			SET status = {int:status}
 			WHERE page_id IN ({array_int:items})',
@@ -973,7 +973,7 @@ class ManagePages
 				);
 			}
 		} else {
-			Helpers::dbUpdate('
+			Helpers::dbQuery('
 				UPDATE {db_prefix}lp_pages
 				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
@@ -1036,7 +1036,7 @@ class ManagePages
 				);
 			}
 
-			Helpers::dbRemove('
+			Helpers::dbQuery('
 				DELETE FROM {db_prefix}lp_tags
 				WHERE page_id = {int:page_id}',
 				array(
@@ -1100,7 +1100,7 @@ class ManagePages
 	{
 		global $smcFunc;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -1242,7 +1242,7 @@ class ManagePages
 
 		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at

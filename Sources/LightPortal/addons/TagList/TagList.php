@@ -119,7 +119,7 @@ class TagList
 	{
 		global $smcFunc, $scripturl;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
 			FROM {db_prefix}optimus_keywords AS ok
 				LEFT JOIN {db_prefix}optimus_log_keywords AS olk ON (olk.keyword_id = ok.id)
@@ -160,14 +160,14 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::useCache(
+			$tag_list = Helpers::getFromCache(
 				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
 				'getAll',
 				'\Bugo\LightPortal\Tag',
 				$cache_time
 			);
 		} else {
-			$tag_list = Helpers::useCache(
+			$tag_list = Helpers::getFromCache(
 				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
 				'getAllTopicKeywords',
 				__CLASS__,

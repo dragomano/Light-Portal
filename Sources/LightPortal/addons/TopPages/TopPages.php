@@ -160,7 +160,7 @@ class TopPages
 
 		extract($params);
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
@@ -215,7 +215,7 @@ class TopPages
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::useCache(
+		$top_pages = Helpers::getFromCache(
 			'top_pages_addon_b' . $block_id . '_' . $parameters['popularity_type'],
 			'getTopPages',
 			__CLASS__,

@@ -183,7 +183,7 @@ class TopTopics
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::useCache(
+		$top_topics = Helpers::getFromCache(
 			'top_topics_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getTopTopics',
 			__CLASS__,

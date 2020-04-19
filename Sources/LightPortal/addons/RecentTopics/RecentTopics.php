@@ -158,7 +158,7 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::useCache(
+		$recent_topics = Helpers::getFromCache(
 			'recent_topics_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getRecentTopics',
 			__CLASS__,

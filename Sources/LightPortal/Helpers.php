@@ -331,9 +331,9 @@ class Helpers
 	}
 
 	/**
-	 * Using cache
+	 * Get needed data using cache
 	 *
-	 * Используем кэш
+	 * Получаем нужные данные, используя кэш
 	 *
 	 * @param string $key
 	 * @param string|null $funcName
@@ -342,7 +342,7 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function useCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, $vars = [])
+	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, $vars = [])
 	{
 		if (empty($key))
 			return false;
@@ -481,11 +481,11 @@ class Helpers
 			++$counter;
 		}
 
-		return implode($new_str, $glue);
+		return implode($glue, $new_str);
 	}
 
 	/**
-	 * Wrapper for $smcFunc ['db_query']
+	 * Wrapper for $smcFunc['db_query']
 	 *
 	 * Обёртка для $smcFunc['db_query']
 	 *
@@ -508,7 +508,7 @@ class Helpers
 	}
 
 	/**
-	 * Wrapper for $smcFunc ['db_insert']
+	 * Wrapper for $smcFunc['db_insert']
 	 *
 	 * Обёртка для $smcFunc['db_insert']
 	 *
@@ -529,47 +529,5 @@ class Helpers
 		Debug::updateNumQueries();
 
 		return $result;
-	}
-
-	/**
-	 * Wrapper for self::dbQuery
-	 *
-	 * Обёртка для self::dbQuery
-	 *
-	 * @param string $sql
-	 * @param array $params
-	 * @return mixed
-	 */
-	public static function dbSelect(string $sql = '', array $params = [])
-	{
-		return self::dbQuery($sql, $params);
-	}
-
-	/**
-	 * Wrapper for self::dbQuery
-	 *
-	 * Обёртка для self::dbQuery
-	 *
-	 * @param string $sql
-	 * @param array $params
-	 * @return void
-	 */
-	public static function dbUpdate(string $sql = '', array $params = [])
-	{
-		return self::dbQuery($sql, $params);
-	}
-
-	/**
-	 * Wrapper for self::dbQuery
-	 *
-	 * Обёртка для self::dbQuery
-	 *
-	 * @param string $sql
-	 * @param array $params
-	 * @return void
-	 */
-	public static function dbRemove(string $sql = '', array $params = [])
-	{
-		return self::dbQuery($sql, $params);
 	}
 }

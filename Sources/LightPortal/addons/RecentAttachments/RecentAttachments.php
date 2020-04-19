@@ -187,7 +187,7 @@ class RecentAttachments
 		if ($type !== 'recent_attachments')
 			return;
 
-		$recent_attachments = Helpers::useCache(
+		$recent_attachments = Helpers::getFromCache(
 			'recent_attachments_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getRecentAttachments',
 			__CLASS__,

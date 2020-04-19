@@ -126,7 +126,7 @@ class WhosOnline
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helpers::useCache(
+		$whos_online = Helpers::getFromCache(
 			'whos_online_addon_b' . $block_id . '_u' . $user_info['id'],
 			'getWhosOnline',
 			__CLASS__,

@@ -495,7 +495,7 @@ class Settings
 		global $context, $txt;
 
 		// Check every 3 days | Проверяем раз в 3 дня
-		if (str_replace(' ', '', LP_VERSION) < Helpers::useCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
+		if (str_replace(' ', '', LP_VERSION) < Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
@@ -540,7 +540,7 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
-		$pages = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
 				global $language;

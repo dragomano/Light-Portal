@@ -180,7 +180,7 @@ class BoardNews
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::useCache(
+		$board_news = Helpers::getFromCache(
 			'board_news_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getBoardNews',
 			__CLASS__,

@@ -117,7 +117,7 @@ class PageList
 	{
 		global $smcFunc, $txt;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id, pt.lang, pt.title
@@ -178,7 +178,7 @@ class PageList
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::useCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
+		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
 
 		ob_start();
 

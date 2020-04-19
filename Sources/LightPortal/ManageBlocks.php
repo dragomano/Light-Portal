@@ -58,7 +58,7 @@ class ManageBlocks
 	{
 		global $smcFunc;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
@@ -133,7 +133,7 @@ class ManageBlocks
 		if (empty($items))
 			return;
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_blocks
 			WHERE block_id IN ({array_int:items})',
 			array(
@@ -141,7 +141,7 @@ class ManageBlocks
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -151,7 +151,7 @@ class ManageBlocks
 			)
 		);
 
-		Helpers::dbRemove('
+		Helpers::dbQuery('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -215,7 +215,7 @@ class ManageBlocks
 		if (empty($items))
 			return;
 
-		Helpers::dbUpdate('
+		Helpers::dbQuery('
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
 			WHERE block_id IN ({array_int:items})',
@@ -248,7 +248,7 @@ class ManageBlocks
 			return;
 
 		if (!empty($blocks) && is_array($blocks)) {
-			Helpers::dbUpdate('
+			Helpers::dbQuery('
 				UPDATE {db_prefix}lp_blocks
 				SET priority = CASE ' . $conditions . '
 					ELSE priority
@@ -262,7 +262,7 @@ class ManageBlocks
 			if (!empty($_POST['update_placement'])) {
 				$placement = (string) $_POST['update_placement'];
 
-				Helpers::dbUpdate('
+				Helpers::dbQuery('
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
 					WHERE block_id IN ({array_int:blocks})',
@@ -767,7 +767,7 @@ class ManageBlocks
 		if (empty($placement))
 			return 0;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',
@@ -888,7 +888,7 @@ class ManageBlocks
 				);
 			}
 		} else {
-			Helpers::dbUpdate('
+			Helpers::dbQuery('
 				UPDATE {db_prefix}lp_blocks
 				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
@@ -980,7 +980,7 @@ class ManageBlocks
 		if (empty($item))
 			return [];
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
@@ -1074,7 +1074,7 @@ class ManageBlocks
 		if (empty($_POST['items']))
 			return [];
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				pt.lang, pt.title, pp.name, pp.value

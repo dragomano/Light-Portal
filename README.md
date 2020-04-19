@@ -12,7 +12,7 @@
 * **Languages:** English, Polish, Russian, Ukrainian
 
 ## Description
-Transform your forum into a portal: the main page, separate additional pages, and blocks, as well as the article system. Support for BBC, HTML and PHP content.
+Transform your forum into a portal: customize the main page, separate additional pages with tags, and blocks. Support for BBC, HTML, PHP, and Markdown content.
 
 ### Features:
 * Blocks with multilingual titles and FontAwesome icons.
@@ -29,7 +29,7 @@ Transform your forum into a portal: the main page, separate additional
 * Caching.
 
 ## Описание
-Преобразуйте форум в портал: главная страница, отдельные дополнительные страницы и блоки, статьи. Поддержка контента с ББ-кодом, HTML и PHP-тегами.
+Преобразуйте форум в портал: настройте главную страницу, отдельные дополнительные страницы с тегами, и блоки. Поддержка контента с ББ-кодом, HTML, PHP и Markdown.
 
 ### Особенности:
 * Блоки с многоязычными заголовками и иконками FontAwesome.

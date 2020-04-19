@@ -199,7 +199,7 @@ class FrontPage
 
 			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT
 					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
@@ -270,7 +270,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 
 			if (!empty($messages) && !empty($modSettings['lp_show_images_in_articles'])) {
-				$request = Helpers::dbSelect('
+				$request = Helpers::dbQuery('
 					SELECT a.id_attach, a.id_msg, t.id_topic
 					FROM {db_prefix}attachments AS a
 						LEFT JOIN {db_prefix}topics AS t ON (t.id_first_msg = a.id_msg)
@@ -320,7 +320,7 @@ class FrontPage
 			return 0;
 
 		if (($num_topics = cache_get_data('light_portal_fronttopics_total', 3600)) == null) {
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
 					LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
@@ -360,7 +360,7 @@ class FrontPage
 		global $smcFunc, $modSettings, $scripturl, $user_info;
 
 		if (($pages = cache_get_data('light_portal_frontpages_' . $start . '_' . $limit, 3600)) == null) {
-			$titles = Helpers::useCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
 
 			$custom_columns    = [];
 			$custom_tables     = [];
@@ -374,7 +374,7 @@ class FrontPage
 
 			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT
 					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views, p.num_comments,
 					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
@@ -443,7 +443,7 @@ class FrontPage
 		global $smcFunc;
 
 		if (($num_pages = cache_get_data('light_portal_frontpages_total', 3600)) == null) {
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}',
@@ -493,7 +493,7 @@ class FrontPage
 
 			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT
 					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 					GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
@@ -572,7 +572,7 @@ class FrontPage
 			return 0;
 
 		if (($num_boards = cache_get_data('light_portal_frontboards_total', 3600)) == null) {
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
 					LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)

@@ -237,7 +237,7 @@ class RecentPosts
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::useCache(
+		$recent_posts = Helpers::getFromCache(
 			'recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getRecentPosts',
 			__CLASS__,

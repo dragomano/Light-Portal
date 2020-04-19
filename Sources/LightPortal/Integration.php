@@ -73,7 +73,7 @@ class Integration
 		Debug::start();
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 rc3',
+			'LP_VERSION' => '1.0 rc4',
 			'LP_NAME'    => 'Light Portal',
 			'LP_DEBUG'   => $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
@@ -371,7 +371,7 @@ class Integration
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
 			$alert_types['light_portal'] = array(
-				'page_comment'       => array('alert' => 'yes', 'email' => 'never', 'permission' => array('name' => 'light_portal_view', 'is_board' => false)),
+				'page_comment'       => array('alert' => 'yes', 'email' => 'never', 'permission' => array('name' => 'light_portal_manage_own_pages', 'is_board' => false)),
 				'page_comment_reply' => array('alert' => 'yes', 'email' => 'never', 'permission' => array('name' => 'light_portal_view', 'is_board' => false))
 			);
 	}

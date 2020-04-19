@@ -49,8 +49,8 @@ class Subs
 		$context['lp_all_content_classes'] = self::getContentClasses();
 		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
 
-		$context['lp_active_blocks']    = Helpers::useCache('active_blocks', 'getActiveBlocks', __CLASS__);
-		$context['lp_active_pages_num'] = Helpers::useCache('active_pages_num_u' . $context['user']['id'], 'getActivePageQuantity', __CLASS__);
+		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
+		$context['lp_active_pages_num'] = Helpers::getFromCache('active_pages_num_u' . $context['user']['id'], 'getActivePageQuantity', __CLASS__);
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Subs
 	{
 		global $smcFunc;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
@@ -123,7 +123,7 @@ class Subs
 	{
 		global $smcFunc, $user_info;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
@@ -425,7 +425,7 @@ class Subs
 	{
 		global $smcFunc;
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}',

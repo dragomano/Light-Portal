@@ -190,7 +190,7 @@ class BoardList
 		if ($type !== 'board_list')
 			return;
 
-		$context['lp_boardlist'] = Helpers::useCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
+		$context['lp_boardlist'] = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
 
 		if (!empty($context['lp_boardlist'])) {
 			if ($parameters['board_class'] == '_')

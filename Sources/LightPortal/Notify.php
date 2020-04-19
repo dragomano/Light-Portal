@@ -25,7 +25,7 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir;
+		global $sourcedir, $smcFunc;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
@@ -65,7 +65,7 @@ class Notify extends \SMF_BackgroundTask
 			}
 
 			if (!empty($insert_rows)) {
-				Helpers::dbInsert('',
+				$smcFunc['db_insert']('',
 					'{db_prefix}user_alerts',
 					array(
 						'alert_time'        => 'int',

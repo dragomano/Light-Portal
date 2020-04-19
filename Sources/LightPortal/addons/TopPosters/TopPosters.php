@@ -146,7 +146,7 @@ class TopPosters
 
 		extract($params);
 
-		$request = Helpers::dbSelect('
+		$request = Helpers::dbQuery('
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
 			FROM {db_prefix}members AS mem' . ($show_avatars ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)' : '') . '
@@ -191,7 +191,7 @@ class TopPosters
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::useCache(
+		$top_posters = Helpers::getFromCache(
 			'top_posters_addon_b' . $block_id . '_u' . $context['user']['id'],
 			'getTopPosters',
 			__CLASS__,

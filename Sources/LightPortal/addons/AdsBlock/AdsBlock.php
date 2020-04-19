@@ -82,7 +82,7 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::useCache('ads_block_addon', 'getAdsBlocks', __CLASS__);
+		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getAdsBlocks', __CLASS__);
 	}
 
 	/**

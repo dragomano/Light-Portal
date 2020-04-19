@@ -170,7 +170,7 @@ class RandomTopics
 			if (empty($topic_ids))
 				return self::getRandomTopics($num_topics - 1);
 
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -189,7 +189,7 @@ class RandomTopics
 				)
 			);
 		} else {
-			$request = Helpers::dbSelect('
+			$request = Helpers::dbQuery('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -257,7 +257,7 @@ class RandomTopics
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::useCache('random_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRandomTopics', __CLASS__, $cache_time, $parameters['num_topics']);
+		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRandomTopics', __CLASS__, $cache_time, $parameters['num_topics']);
 
 		if (!empty($random_topics)) {
 			ob_start();
