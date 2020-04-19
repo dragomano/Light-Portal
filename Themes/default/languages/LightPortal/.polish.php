@@ -12,7 +12,7 @@ $txt['lp_forum']  = 'Forum';
 
 // Settings
 $txt['lp_settings']                                 = 'Ustawienia portalu';
-
+$txt['lp_base']                                     = 'Ustawienia strony głównej i artykułów';
 $txt['lp_base_info']                                = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
 $txt['lp_new_version_is_available']                 = 'Dostępna jest nowa wersja!';
 $txt['lp_frontpage_title']                          = 'Tytuł strony głównej';
@@ -21,9 +21,9 @@ $txt['lp_frontpage_mode_set']                       = array('Wyłącz', 'Wybrana
 $txt['lp_frontpage_id']                             = 'Strona główna portalu';
 $txt['lp_frontpage_boards']                         = 'Działy artykułów strony głównej';
 $txt['lp_frontpage_layout']                         = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']                     = array('1', '2', '3', '4', '6');
+$txt['lp_frontpage_layout_set']                     = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z artykułów';
-
+$txt['lp_image_placeholder']                        = 'Adres domyślnego obrazu';
 $txt['lp_subject_size']                             = 'Długość tytułów artykułów';
 $txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
@@ -47,21 +47,21 @@ $txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać str
 $txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 $txt['lp_no_items']                                 = 'Nic nie zostało dodane.';
 
+$txt['lp_extra']      = 'Strony i bloki';
+$txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Plugins
+$txt['lp_plugins']             = 'Wtyczki';
+$txt['lp_plugins_desc']        = 'Możesz włączyć lub wyłączyć dowolne wtyczki niektóre z nich są również edytowalne!';
+$txt['lp_plugins_info']        = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
+$txt['lp_plugins_hooks_types'] = array(
+	'block'   => 'Blok',
+	'editor'  => 'Edytor',
+	'comment' => 'Widget komentarzy',
+	'parser'  => 'Parser zawartości',
+	'article' => 'Przetwarzanie artykułów',
+	'other'   => 'Inne'
+);
 
 // Actions
 $txt['lp_title']        = 'Tytuł';
@@ -140,7 +140,7 @@ $txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
-
+$txt['lp_page_keywords_after']          = 'Oddzielone przecinkami';
 $txt['lp_permissions']                  = array('Wyświetl dla administratorów', 'Wyświetl dla gości', 'Wyświetl dla użytkowników', 'Wyświetl wszystkim');
 
 $txt['lp_page_options'] = array(
