@@ -226,10 +226,12 @@ class Page
 	 */
 	public static function getDataByAlias(string $alias)
 	{
+		global $modSettings;
+
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $alias, 'getDataFromDB', __CLASS__, 3600, array('alias' => $alias));
+		$data = Helpers::getFromCache('page_' . $alias, 'getDataFromDB', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, array('alias' => $alias));
 		self::prepareData($data);
 
 		return $data;
@@ -245,10 +247,12 @@ class Page
 	 */
 	public static function getData(int $item)
 	{
+		global $modSettings;
+
 		if (empty($item))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $item, 'getDataFromDB', __CLASS__, 3600, array('item' => $item));
+		$data = Helpers::getFromCache('page_' . $item, 'getDataFromDB', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, array('item' => $item));
 		self::prepareData($data);
 
 		return $data;

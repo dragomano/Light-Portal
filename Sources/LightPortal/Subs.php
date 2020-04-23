@@ -428,7 +428,8 @@ class Subs
 		$request = Helpers::dbQuery('
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
-			WHERE type = {string:type}',
+			WHERE type = {string:type}
+			ORDER BY lang, title',
 			array(
 				'type' => $type
 			)

@@ -68,14 +68,14 @@ class Integration
 	 */
 	public static function userInfo()
 	{
-		global $user_info, $sourcedir;
+		global $modSettings, $user_info, $sourcedir;
 
 		Debug::start();
 
 		$lp_constants = [
 			'LP_VERSION' => '1.0 rc4',
 			'LP_NAME'    => 'Light Portal',
-			'LP_DEBUG'   => $user_info['is_admin'],
+			'LP_DEBUG'   => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
 		];
 

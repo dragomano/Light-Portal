@@ -229,9 +229,9 @@ class ManagePages
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $user_info;
+		global $modSettings, $smcFunc, $user_info;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
 
 		$request = Helpers::dbQuery('
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name

@@ -80,8 +80,8 @@ class Settings
 							'amt' => $context['lp_active_pages_num'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main'   => array($txt['lp_pages_manage']),
-								'add'    => array($txt['lp_pages_add'])
+								'main' => array($txt['lp_pages_manage']),
+								'add'  => array($txt['lp_pages_add'])
 							)
 						)
 					)
@@ -149,7 +149,7 @@ class Settings
 	 */
 	public static function base(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings;
+		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings;
 
 		loadTemplate('LightPortal/ManagePages');
 
@@ -186,6 +186,8 @@ class Settings
 			$add_settings['lp_standalone_mode_excluded_actions'] = 'forum,admin,profile,pm,signup,logout';
 		if (!isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 10;
+		if (!isset($modSettings['lp_cache_update_interval']))
+			$add_settings['lp_cache_update_interval'] = 3600;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -200,17 +202,20 @@ class Settings
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_image_placeholder', 80, 'disabled' => $frontpage_disabled),
+			array('text', 'lp_image_placeholder', '80" placeholder="' . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
 			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
 			array('title', 'lp_standalone_mode_title'),
-			array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_help'], 'disabled' => $frontpage_disabled),
+			array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_subtext'], 'disabled' => $frontpage_disabled),
 			array('text', 'lp_standalone_mode_excluded_actions', 80, 'subtext' => $txt['lp_standalone_mode_excluded_actions_subtext']),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
 			array('permissions', 'light_portal_view'),
 			array('permissions', 'light_portal_manage_blocks'),
-			array('permissions', 'light_portal_manage_own_pages')
+			array('permissions', 'light_portal_manage_own_pages'),
+			array('title', 'lp_debug_and_caching'),
+			array('check', 'lp_show_debug_info'),
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
 		if ($return_config)
@@ -299,7 +304,7 @@ class Settings
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_plugins_info']
+			'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 		);
 
 		$context['lp_plugins'] = Subs::getAddons();
@@ -528,6 +533,7 @@ class Settings
 			return LP_VERSION;
 
 		$data = json_decode($data);
+
 		return str_replace('v', '', $data->tag_name);
 	}
 
@@ -540,7 +546,9 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
-		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		global $modSettings;
+
+		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
 				global $language;

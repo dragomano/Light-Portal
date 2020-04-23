@@ -142,9 +142,9 @@ class Tag
 	 */
 	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $txt, $context;
+		global $modSettings, $smcFunc, $txt, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
 
 		$request = Helpers::dbQuery('
 			SELECT

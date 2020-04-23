@@ -53,7 +53,7 @@ class Block
 				$data['title_class'] = '';
 
 			if (empty($data['content']))
-				Subs::prepareContent($data['content'], $data['type'], $data['id'], 3600);
+				Subs::prepareContent($data['content'], $data['type'], $data['id'], $modSettings['lp_cache_update_interval'] ?? 3600);
 			else
 				Subs::parseContent($data['content'], $data['type']);
 

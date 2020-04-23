@@ -10,11 +10,14 @@
 $txt['lp_portal'] = 'Портал';
 $txt['lp_forum']  = 'Форум';
 
+$txt['lp_new_version_is_available'] = 'Доступна новая версия!';
+$txt['lp_no_items']                 = 'Нет элементов для отображения.';
+
 // Settings
-$txt['lp_settings']                                 = 'Настройки портала';
-$txt['lp_base']                                     = 'Настройки главной страницы и статей';
-$txt['lp_base_info']                                = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']                 = 'Доступна новая версия!';
+$txt['lp_settings']  = 'Настройки портала';
+$txt['lp_base']      = 'Настройки главной страницы и статей';
+$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно на <a class="bbc_link" href="https://dragomano.ru/forum/?board=3.0">форуме dragomano.ru</a>.';
+
 $txt['lp_frontpage_title']                          = 'Заголовок главной страницы';
 $txt['lp_frontpage_mode']                           = 'Первая страница портала';
 $txt['lp_frontpage_mode_set']                       = array('Отключить', 'Указанная страница', 'Все темы из выбранных разделов', 'Все активные страницы портала', 'Выбранные разделы');
@@ -27,33 +30,38 @@ $txt['lp_image_placeholder']                        = 'URL-адрес карти
 $txt['lp_subject_size']                             = 'Размер заголовка статей (в символах)';
 $txt['lp_num_items_per_page']                       = 'Количество элементов на странице (для пагинации)';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Автономный режим';
-$txt['lp_standalone_mode_help']                     = 'Будет отключено всё, кроме страниц портала и игнорируемых областей.';
+$txt['lp_standalone_mode_subtext']                  = 'Будет отключено всё, кроме страниц портала и игнорируемых областей.';
 $txt['lp_standalone_mode_excluded_actions']         = 'Игнорируемые области';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Укажите области, которые должны оставаться доступными в автономном режиме.';
-$txt['lp_show_tags_on_page']                        = 'Отображать ключевые слова в верхней части страницы';
-$txt['lp_show_comment_block']                       = 'Отображать блок комментариев';
-$txt['lp_show_comment_block_set']                   = array('none' => 'Нет', 'default' => 'Встроенный');
-$txt['lp_num_comments_per_page']                    = 'Количество родительских комментариев на странице';
-$txt['lp_page_editor_type_default']                 = 'Тип редактора страниц по умолчанию';
-$txt['lp_hide_blocks_in_admin_section']             = 'Скрывать активные блоки в админке';
-$txt['lp_open_graph']                               = 'Open Graph';
-$txt['lp_page_og_image']                            = 'Использовать изображение из текста статьи';
-$txt['lp_page_og_image_set']                        = array('Нет', 'Первое найденное', 'Последнее найденное');
-$txt['lp_page_itemprop_address']                    = 'Адрес вашей организации';
-$txt['lp_page_itemprop_phone']                      = 'Телефон вашей организации';
 $txt['groups_light_portal_view']                    = 'Кто может просматривать элементы портала';
 $txt['groups_light_portal_manage_blocks']           = 'Кто может управлять блоками';
 $txt['groups_light_portal_manage_own_pages']        = 'Кто может управлять своими страницами';
 $txt['lp_manage_permissions']                       = 'Внимание: некоторые страницы и блоки могут содержать опасный HTML/PHP контент, поэтому не предоставляйте это право всем подряд!';
-$txt['lp_no_items']                                 = 'Нет элементов для отображения.';
+$txt['lp_debug_and_caching']                        = 'Отладка и кэширование';
+$txt['lp_show_debug_info']                          = 'Отображать время загрузки и количество запросов к таблицам портала';
+$txt['lp_show_debug_info_subtext']                  = 'Информация будет доступна только администраторам!';
+$txt['lp_cache_update_interval']                    = 'Интервал обновления кэша';
 
 $txt['lp_extra']      = 'Страницы и блоки';
 $txt['lp_extra_info'] = 'Здесь находятся общие настройки страниц и блоков.';
 
+$txt['lp_show_tags_on_page']            = 'Отображать ключевые слова в верхней части страницы';
+$txt['lp_show_comment_block']           = 'Отображать блок комментариев';
+$txt['lp_show_comment_block_set']       = array('none' => 'Нет', 'default' => 'Встроенный');
+$txt['lp_num_comments_per_page']        = 'Количество родительских комментариев на странице';
+$txt['lp_page_editor_type_default']     = 'Тип редактора страниц по умолчанию';
+$txt['lp_hide_blocks_in_admin_section'] = 'Скрывать активные блоки в админке';
+$txt['lp_open_graph']                   = 'Open Graph';
+$txt['lp_page_og_image']                = 'Использовать изображение из текста статьи';
+$txt['lp_page_og_image_set']            = array('Нет', 'Первое найденное', 'Последнее найденное');
+$txt['lp_page_itemprop_address']        = 'Адрес вашей организации';
+$txt['lp_page_itemprop_phone']          = 'Телефон вашей организации';
+
 // Plugins
-$txt['lp_plugins']             = 'Плагины';
-$txt['lp_plugins_desc']        = 'Любой из плагинов можно включить или выключить. А некоторые ещё и настроить!';
-$txt['lp_plugins_info']        = 'Здесь перечислены установленные плагины портала.';
+$txt['lp_plugins']      = 'Плагины';
+$txt['lp_plugins_desc'] = 'Любой из плагинов можно включить или выключить. А некоторые ещё и настроить!';
+$txt['lp_plugins_info'] = 'Здесь перечислены установленные плагины портала. Вы всегда можете создать новый, воспользовавшись <a href="%1$s" target="_blank" rel="noopener">инструкцией</a>.';
+
 $txt['lp_plugins_hooks_types'] = array(
 	'block'   => 'Блок',
 	'editor'  => 'Редактор',

@@ -10,11 +10,14 @@
 $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
+$txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
+$txt['lp_no_items']                 = 'Nic nie zostało dodane.';
+
 // Settings
-$txt['lp_settings']                                 = 'Ustawienia portalu';
-$txt['lp_base']                                     = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info']                                = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
-$txt['lp_new_version_is_available']                 = 'Dostępna jest nowa wersja!';
+$txt['lp_settings']  = 'Ustawienia portalu';
+$txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
+
 $txt['lp_frontpage_title']                          = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']                           = 'Strona główna portalu';
 $txt['lp_frontpage_mode_set']                       = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
@@ -30,30 +33,35 @@ $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_t
 $txt['lp_standalone_mode_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
 $txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
-$txt['lp_show_tags_on_page']                        = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_comment_block']                       = 'Wyświetlaj blok komentarzy';
-$txt['lp_show_comment_block_set']                   = array('none' => 'Brak', 'default' => 'Zintegrowany');
-$txt['lp_num_comments_per_page']                    = 'Ilość komentarzy na stronę';
-$txt['lp_page_editor_type_default']                 = 'Rodzaj domyślnego edytora ';
-$txt['lp_hide_blocks_in_admin_section']             = 'Ukryj aktywne bloki w centrum administracji';
-$txt['lp_open_graph']                               = 'Open Graph';
-$txt['lp_page_og_image']                            = 'Użyj obrazu z treści';
-$txt['lp_page_og_image_set']                        = array('Brak', 'Pierwszy', 'Ostatni');
-$txt['lp_page_itemprop_address']                    = 'Adres Twojej organizacji';
-$txt['lp_page_itemprop_phone']                      = 'Numer telefonu';
 $txt['groups_light_portal_view']                    = 'Kto może widzieć portal';
 $txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blokami';
 $txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
 $txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_no_items']                                 = 'Nic nie zostało dodane.';
+$txt['lp_debug_and_caching']                        = 'Debugging and caching';
+$txt['lp_show_debug_info']                          = 'Show the loading time and number of queries to the portal tables';
+$txt['lp_show_debug_info_subtext']                  = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval']                    = 'The cache update interval';
 
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
+$txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
+$txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
+$txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
+$txt['lp_num_comments_per_page']        = 'Ilość komentarzy na stronę';
+$txt['lp_page_editor_type_default']     = 'Rodzaj domyślnego edytora ';
+$txt['lp_hide_blocks_in_admin_section'] = 'Ukryj aktywne bloki w centrum administracji';
+$txt['lp_open_graph']                   = 'Open Graph';
+$txt['lp_page_og_image']                = 'Użyj obrazu z treści';
+$txt['lp_page_og_image_set']            = array('Brak', 'Pierwszy', 'Ostatni');
+$txt['lp_page_itemprop_address']        = 'Adres Twojej organizacji';
+$txt['lp_page_itemprop_phone']          = 'Numer telefonu';
+
 // Plugins
-$txt['lp_plugins']             = 'Wtyczki';
-$txt['lp_plugins_desc']        = 'Możesz włączyć lub wyłączyć dowolne wtyczki niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info']        = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
+$txt['lp_plugins']      = 'Wtyczki';
+$txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki niektóre z nich są również edytowalne!';
+$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
+
 $txt['lp_plugins_hooks_types'] = array(
 	'block'   => 'Blok',
 	'editor'  => 'Edytor',

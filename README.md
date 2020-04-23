@@ -2,7 +2,6 @@
 ![SMF 2.1](https://img.shields.io/badge/SMF-2.1-ed6033.svg?style=flat)
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![PHP](https://img.shields.io/badge/PHP-^7.2-blue.svg?style=flat)
-![Downloads](https://img.shields.io/github/downloads/dragomano/light-portal/total)
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [BSD 3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)

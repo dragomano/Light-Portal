@@ -45,7 +45,7 @@ class Comment
 	 */
 	public function prepare()
 	{
-		global $context, $txt, $modSettings;
+		global $modSettings, $context, $txt;
 
 		if (empty($this->alias))
 			return;
@@ -58,11 +58,11 @@ class Comment
 			$this->remove();
 		}
 
-		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, 3600, $context['lp_page']['id']);
+		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
-				$date = date('Y-m-d', $comment['created_at']);
-				$comment['created'] = Helpers::getFriendlyTime($comment['created_at']);
+				$date                  = date('Y-m-d', $comment['created_at']);
+				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
 				$comment['created_at'] = $date;
 
 				return $comment;
