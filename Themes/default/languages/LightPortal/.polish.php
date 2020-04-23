@@ -30,7 +30,7 @@ $txt['lp_image_placeholder']                        = 'Adres domyślnego obrazu'
 $txt['lp_subject_size']                             = 'Długość tytułów artykułów';
 $txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_mode_help']                     = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
+$txt['lp_standalone_mode_subtext']                  = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
 $txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
 $txt['groups_light_portal_view']                    = 'Kto może widzieć portal';
@@ -242,8 +242,7 @@ $txt['lp_spiders_set'] = array('bot', 'botów');
 $txt['lp_hidden_set']  = array('ukryty', 'ukrytych');
 $txt['lp_buddies_set'] = array('znajomy', 'znajomych');
 
-// Copyrights
-$txt['lp_credits']         = 'Autorzy';
+// Credits
 $txt['lp_used_components'] = 'Składniki portalu';
 
 // Debug info

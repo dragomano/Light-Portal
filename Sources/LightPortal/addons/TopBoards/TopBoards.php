@@ -96,8 +96,8 @@ class TopBoards
 		$context['posting_fields']['num_boards']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_boards',
-				'min' => 1,
+				'id'    => 'num_boards',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_boards']
 			)
 		);
@@ -106,7 +106,7 @@ class TopBoards
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_numbers_only',
+				'id'      => 'show_numbers_only',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);

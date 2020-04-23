@@ -30,7 +30,7 @@ $txt['lp_image_placeholder']                        = 'URL-адреса карт
 $txt['lp_subject_size']                             = 'Розмір заголовка статей (у символах)';
 $txt['lp_num_items_per_page']                       = 'Кількість елементів на сторінці (для пагінації)';
 $txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Автономний режим';
-$txt['lp_standalone_mode_help']                     = 'Буде відключено все, крім сторінок порталу та областей, що ігноруються';
+$txt['lp_standalone_mode_subtext']                  = 'Буде відключено все, крім сторінок порталу та областей, що ігноруються';
 $txt['lp_standalone_mode_excluded_actions']         = 'Області, що ігноруються';
 $txt['lp_standalone_mode_excluded_actions_subtext'] = 'Вкажіть області, які повинні залишатися доступними в автономному режимі.';
 $txt['groups_light_portal_view']                    = 'Хто може переглядати елементи порталу';
@@ -242,8 +242,7 @@ $txt['lp_spiders_set'] = array('павук', 'павука', 'павуків');
 $txt['lp_hidden_set']  = array('прихований', 'прихованих');
 $txt['lp_buddies_set'] = array('друг', 'друга', 'друзів');
 
-// Copyrights
-$txt['lp_credits']         = 'Копірайти';
+// Credits
 $txt['lp_used_components'] = 'Компоненти порталу';
 
 // Debug info

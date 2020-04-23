@@ -118,7 +118,7 @@ p.errorbox.permissions {
 	min-height: 0 !important;
 }
 
-#comment_form button {
+#comment_form [name="comment"] {
 	margin-top: 10px;
 	float: right;
 	display: none;
@@ -524,4 +524,9 @@ dl.top_posters dt img {
 .block_current_month .calendar_today span.day_text,
 .block_current_month .calendar_today {
 	font-weight: bold;
+}
+
+/* BoardList */
+.block_board_list ul {
+	padding-left: 10px;
 }

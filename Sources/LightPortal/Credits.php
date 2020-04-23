@@ -39,7 +39,7 @@ class Credits
 
 			$context['sub_template']   = 'portal_credits';
 			$context['robot_no_index'] = true;
-			$context['page_title']     = LP_NAME . ' - ' . $txt['lp_credits'];
+			$context['page_title']     = LP_NAME . ' - ' . $txt['lp_used_components'];
 
 			obExit();
 		}

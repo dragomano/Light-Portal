@@ -242,8 +242,7 @@ $txt['lp_spiders_set'] = array('паук', 'паука', 'пауков');
 $txt['lp_hidden_set']  = array('скрытый', 'скрытых');
 $txt['lp_buddies_set'] = array('друг', 'друга', 'друзей');
 
-// Copyrights
-$txt['lp_credits']         = 'Копирайты';
+// Credits
 $txt['lp_used_components'] = 'Компоненты портала';
 
 // Debug info
