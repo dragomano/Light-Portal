@@ -1423,6 +1423,8 @@ class ManagePages
 	 */
 	private static function runImport()
 	{
+		global $smcFunc, $context;
+
 		if (empty($_FILES['import_file']))
 			return;
 
@@ -1513,7 +1515,8 @@ class ManagePages
 
 			$sql .= Subs::getValues($items);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($titles)) {
@@ -1522,7 +1525,8 @@ class ManagePages
 
 			$sql .= Subs::getValues($titles);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($params)) {
@@ -1531,7 +1535,8 @@ class ManagePages
 
 			$sql .= Subs::getValues($params);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($keywords)) {
@@ -1540,7 +1545,8 @@ class ManagePages
 
 			$sql .= Subs::getValues($keywords);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($comments)) {
@@ -1549,7 +1555,8 @@ class ManagePages
 
 			$sql .= Subs::getValues($comments);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		clean_cache();

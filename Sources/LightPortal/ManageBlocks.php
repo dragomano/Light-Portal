@@ -1232,6 +1232,8 @@ class ManageBlocks
 	 */
 	private static function runImport()
 	{
+		global $smcFunc, $context;
+
 		if (empty($_FILES['import_file']))
 			return;
 
@@ -1300,7 +1302,8 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($items);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($titles)) {
@@ -1309,7 +1312,8 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($titles);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		if (!empty($params)) {
@@ -1318,7 +1322,8 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($params);
 
-			Helpers::dbQuery($sql);
+			$smcFunc['db_query']('', $sql);
+			$context['lp_num_queries']++;
 		}
 
 		clean_cache();

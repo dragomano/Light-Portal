@@ -70,8 +70,8 @@ class Integration
 	{
 		global $context, $modSettings, $user_info, $sourcedir;
 
-		$context['lp_load_time']   = microtime(true);
-		$context['lp_num_queries'] = 0;
+		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
+		$context['lp_num_queries'] = $context['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
 			'LP_VERSION'    => '1.0 rc4',
