@@ -37,10 +37,10 @@ $txt['groups_light_portal_view']                    = 'Kto może widzieć portal
 $txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blokami';
 $txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
 $txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_debug_and_caching']                        = 'Debugging and caching';
-$txt['lp_show_debug_info']                          = 'Show the loading time and number of the portal queries';
-$txt['lp_show_debug_info_subtext']                  = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval']                    = 'The cache update interval';
+$txt['lp_debug_and_caching']                        = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']                          = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_subtext']                  = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval']                    = 'Interwał aktualizacji pamięci podręcznej'
 
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
@@ -59,7 +59,7 @@ $txt['lp_page_itemprop_phone']          = 'Numer telefonu';
 
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
-$txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki niektóre z nich są również edytowalne!';
+$txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
 $txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
 
 $txt['lp_plugins_hooks_types'] = array(
@@ -233,7 +233,7 @@ $txt['lp_time_label_ago'] = ' temu';
 $txt['lp_posts_set']    = array('wiadomość', 'wiadomości');
 $txt['lp_replies_set']  = array('odpowiedź', 'odpowiedzi');
 $txt['lp_views_set']    = array('wyświetleń', 'wyświetlenia');
-$txt['lp_comments_set'] = array('komentarz', 'komentarzy');
+$txt['lp_comments_set'] = array('komentarz', 'komentarze', 'komentarzy');
 
 // Other units
 $txt['lp_users_set']   = array('użytkownik', 'użytkowników');
