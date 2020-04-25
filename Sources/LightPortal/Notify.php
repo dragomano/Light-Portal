@@ -25,7 +25,7 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir, $smcFunc;
+		global $sourcedir, $smcFunc, $context;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
@@ -81,6 +81,8 @@ class Notify extends \SMF_BackgroundTask
 					$insert_rows,
 					array('id_alert')
 				);
+
+				$context['lp_num_queries']++;
 
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}

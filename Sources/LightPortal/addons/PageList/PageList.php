@@ -115,9 +115,9 @@ class PageList
 	 */
 	public static function getPageList(string $sort_type = 'page_id')
 	{
-		global $smcFunc, $txt;
+		global $smcFunc, $txt, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id, pt.lang, pt.title
@@ -157,6 +157,8 @@ class PageList
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $pages;
 	}

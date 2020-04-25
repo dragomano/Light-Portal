@@ -142,11 +142,11 @@ class TopPosters
 	 */
 	public static function getTopPosters($params)
 	{
-		global $smcFunc, $scripturl, $modSettings;
+		global $smcFunc, $scripturl, $modSettings, $context;
 
 		extract($params);
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
 			FROM {db_prefix}members AS mem' . ($show_avatars ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)' : '') . '
@@ -168,6 +168,8 @@ class TopPosters
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context++;
 
 		return $posters;
 	}

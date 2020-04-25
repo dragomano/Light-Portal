@@ -142,11 +142,11 @@ class Tag
 	 */
 	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
-		global $modSettings, $smcFunc, $txt, $context;
+		global $smcFunc, $txt, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.alias, p.permissions, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
 				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
@@ -185,6 +185,8 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
+		$context['lp_num_queries']++;
+
 		return $items;
 	}
 
@@ -199,7 +201,7 @@ class Tag
 	{
 		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -218,6 +220,8 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return count($items);
 	}
@@ -307,9 +311,9 @@ class Tag
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $scripturl;
+		global $smcFunc, $scripturl, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -344,6 +348,8 @@ class Tag
 
 		$smcFunc['db_free_result']($request);
 
+		$context['lp_num_queries']++;
+
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
 		});
@@ -360,9 +366,9 @@ class Tag
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value, p.permissions
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
@@ -380,6 +386,8 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return count($items);
 	}

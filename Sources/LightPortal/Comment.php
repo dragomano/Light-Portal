@@ -45,7 +45,7 @@ class Comment
 	 */
 	public function prepare()
 	{
-		global $modSettings, $context, $txt;
+		global $context, $txt, $modSettings;
 
 		if (empty($this->alias))
 			return;
@@ -58,7 +58,7 @@ class Comment
 			$this->remove();
 		}
 
-		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, $context['lp_page']['id']);
+		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$date                  = date('Y-m-d', $comment['created_at']);
@@ -101,7 +101,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $user_info, $txt;
+		global $smcFunc, $user_info, $context, $txt;
 
 		$args = array(
 			'parent_id'  => FILTER_VALIDATE_INT,
@@ -130,7 +130,7 @@ class Comment
 		if (empty($page_id) || empty($message))
 			return;
 
-		$item = Helpers::dbInsert('',
+		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_comments',
 			array(
 				'parent_id'  => 'int',
@@ -150,10 +150,12 @@ class Comment
 			1
 		);
 
+		$context['lp_num_queries']++;
+
 		$result['error'] = true;
 
 		if (!empty($item)) {
-			Helpers::dbQuery('
+			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_comments = num_comments + 1
 				WHERE page_id = {int:item}',
@@ -161,6 +163,8 @@ class Comment
 					'item' => $page_id
 				)
 			);
+
+			$context['lp_num_queries']++;
 
 			loadTemplate('LightPortal/ViewPage');
 
@@ -246,12 +250,12 @@ class Comment
 	 */
 	private function makeNotify(string $type, string $action, array $options = [])
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc, $user_info, $context;
 
 		if (empty($options))
 			return;
 
-		Helpers::dbInsert('',
+		$smcFunc['db_insert']('',
 			'{db_prefix}background_tasks',
 			array(
 				'task_file'    => 'string',
@@ -282,6 +286,8 @@ class Comment
 			),
 			array('id_task')
 		);
+
+		$context['lp_num_queries']++;
 	}
 
 	/**
@@ -293,12 +299,14 @@ class Comment
 	 */
 	private function remove()
 	{
+		global $smcFunc, $context;
+
 		$items = filter_input(INPUT_POST, 'items', FILTER_VALIDATE_INT, array('flags'  => FILTER_REQUIRE_ARRAY));
 
 		if (empty($items))
 			return;
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			array(
@@ -306,7 +314,7 @@ class Comment
 			)
 		);
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}',
@@ -315,6 +323,8 @@ class Comment
 				'alias'     => $this->alias
 			)
 		);
+
+		$context['lp_num_queries'] += 2;
 
 		Helpers::getFromCache('page_' . $this->alias . '_comments', null);
 
@@ -331,9 +341,9 @@ class Comment
 	 */
 	public static function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext;
+		global $smcFunc, $memberContext, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)' . (!empty($page_id) ? '
@@ -365,6 +375,8 @@ class Comment
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $comments;
 	}

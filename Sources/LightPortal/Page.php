@@ -144,12 +144,12 @@ class Page
 	 */
 	public static function getDataFromDB(array $params)
 	{
-		global $smcFunc, $txt, $modSettings;
+		global $smcFunc, $txt, $modSettings, $context;
 
 		if (empty($params))
 			return [];
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
@@ -213,6 +213,8 @@ class Page
 
 		$smcFunc['db_free_result']($request);
 
+		$context['lp_num_queries']++;
+
 		return $data ?? [];
 	}
 
@@ -226,12 +228,10 @@ class Page
 	 */
 	public static function getDataByAlias(string $alias)
 	{
-		global $modSettings;
-
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $alias, 'getDataFromDB', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, array('alias' => $alias));
+		$data = Helpers::getFromCache('page_' . $alias, 'getDataFromDB', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
 		self::prepareData($data);
 
 		return $data;
@@ -247,12 +247,10 @@ class Page
 	 */
 	public static function getData(int $item)
 	{
-		global $modSettings;
-
 		if (empty($item))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $item, 'getDataFromDB', __CLASS__, $modSettings['lp_cache_update_interval'] ?? 3600, array('item' => $item));
+		$data = Helpers::getFromCache('page_' . $item, 'getDataFromDB', __CLASS__, LP_CACHE_TIME, array('item' => $item));
 		self::prepareData($data);
 
 		return $data;
@@ -289,13 +287,13 @@ class Page
 	 */
 	private static function updateNumViews()
 	{
-		global $context;
+		global $context, $smcFunc;
 
 		if (empty($context['lp_page']['id']))
 			return;
 
 		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id']) {
-			Helpers::dbQuery('
+			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
 				WHERE page_id = {int:item}',
@@ -305,6 +303,8 @@ class Page
 			);
 
 			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
+
+			$context['lp_num_queries']++;
 		}
 	}
 }

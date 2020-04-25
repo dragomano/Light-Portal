@@ -68,15 +68,17 @@ class Integration
 	 */
 	public static function userInfo()
 	{
-		global $modSettings, $user_info, $sourcedir;
+		global $context, $modSettings, $user_info, $sourcedir;
 
-		Debug::start();
+		$context['lp_load_time']   = microtime(true);
+		$context['lp_num_queries'] = 0;
 
 		$lp_constants = [
-			'LP_VERSION' => '1.0 rc4',
-			'LP_NAME'    => 'Light Portal',
-			'LP_DEBUG'   => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
-			'LP_ADDONS'  => $sourcedir . '/LightPortal/addons'
+			'LP_VERSION'    => '1.0 rc4',
+			'LP_NAME'       => 'Light Portal',
+			'LP_DEBUG'      => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
+			'LP_ADDONS'     => $sourcedir . '/LightPortal/addons',
+			'LP_CACHE_TIME' => $modSettings['lp_cache_update_interval'] ?? 3600
 		];
 
 		foreach ($lp_constants as $key => $value)

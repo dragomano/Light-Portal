@@ -156,11 +156,11 @@ class TopPages
 	 */
 	public static function getTopPages($params)
 	{
-		global $smcFunc, $scripturl;
+		global $smcFunc, $scripturl, $context;
 
 		extract($params);
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
@@ -192,6 +192,8 @@ class TopPages
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $pages;
 	}

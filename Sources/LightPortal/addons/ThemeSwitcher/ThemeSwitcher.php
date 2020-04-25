@@ -30,12 +30,12 @@ class ThemeSwitcher
 	 */
 	public static function getAvailableThemes()
 	{
-		global $modSettings, $smcFunc;
+		global $modSettings, $smcFunc, $context;
 
 		if (empty($modSettings['knownThemes']))
 			return [];
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT id_theme, value
 			FROM {db_prefix}themes
 			WHERE id_member = 0
@@ -51,6 +51,8 @@ class ThemeSwitcher
 			$available_themes[$row[0]] = $row[1];
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $available_themes;
 	}

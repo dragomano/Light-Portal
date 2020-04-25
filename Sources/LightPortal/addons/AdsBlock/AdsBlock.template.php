@@ -69,7 +69,7 @@ function template_ads_placement_topic_below()
  */
 function ads_block_form()
 {
-	global $scripturl, $context;
+	global $context, $scripturl;
 
 	$context['insert_after_template'] .= '
 	<form name="ads_block_add_form" action="' . $scripturl . '?action=admin;area=lp_blocks;sa=add" method="post" accept-charset="' . $context['character_set'] . '" style="display: none">

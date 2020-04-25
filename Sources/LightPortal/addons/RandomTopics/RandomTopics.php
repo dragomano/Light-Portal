@@ -118,7 +118,7 @@ class RandomTopics
 			return [];
 
 		if ($db_type == 'postgresql') {
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -167,10 +167,12 @@ class RandomTopics
 
 			$smcFunc['db_free_result']($request);
 
+			$context['lp_num_queries']++;
+
 			if (empty($topic_ids))
 				return self::getRandomTopics($num_topics - 1);
 
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -189,7 +191,7 @@ class RandomTopics
 				)
 			);
 		} else {
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
@@ -215,7 +217,7 @@ class RandomTopics
 			);
 		}
 
-		$icon_sources = array();
+		$icon_sources = [];
 		foreach ($context['stable_icons'] as $icon)
 			$icon_sources[$icon] = 'images_url';
 
@@ -236,6 +238,8 @@ class RandomTopics
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $topics;
 	}

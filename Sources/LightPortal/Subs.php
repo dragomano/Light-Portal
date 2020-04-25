@@ -62,9 +62,9 @@ class Subs
 	 */
 	public static function getActiveBLocks()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
@@ -109,6 +109,8 @@ class Subs
 
 		$smcFunc['db_free_result']($request);
 
+		$context['lp_num_queries']++;
+
 		return $active_blocks;
 	}
 
@@ -121,9 +123,9 @@ class Subs
 	 */
 	public static function getActivePageQuantity()
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc, $user_info, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
@@ -136,6 +138,8 @@ class Subs
 
 		list ($num_pages) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $num_pages;
 	}
@@ -423,9 +427,9 @@ class Subs
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
@@ -442,6 +446,8 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $titles;
 	}
@@ -521,7 +527,7 @@ class Subs
 	{
 		global $context, $txt;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], Debug::getScriptExecutionTime(), Debug::getNumQueries()) : false;
+		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $context['lp_num_queries']) : false;
 
 		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
 			loadTemplate('LightPortal/ViewDebug');

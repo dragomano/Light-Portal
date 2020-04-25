@@ -461,7 +461,7 @@ class Helpers
 	{
 		$counter  = 0;
 		$uc_chars = '';
-		$new_str  = array();
+		$new_str  = [];
 		$str_len  = strlen($str);
 
 		for ($x = 0; $x < $str_len; ++$x) {
@@ -482,52 +482,5 @@ class Helpers
 		}
 
 		return implode($glue, $new_str);
-	}
-
-	/**
-	 * Wrapper for $smcFunc['db_query']
-	 *
-	 * Обёртка для $smcFunc['db_query']
-	 *
-	 * @param string $sql
-	 * @param array $params
-	 * @return mixed
-	 */
-	public static function dbQuery(string $sql = '', array $params = [])
-	{
-		global $smcFunc;
-
-		if (empty($sql))
-			return false;
-
-		$result = $smcFunc['db_query']('', $sql, $params);
-
-		Debug::updateNumQueries();
-
-		return $result;
-	}
-
-	/**
-	 * Wrapper for $smcFunc['db_insert']
-	 *
-	 * Обёртка для $smcFunc['db_insert']
-	 *
-	 * @param string $method
-	 * @param string $table
-	 * @param array $columns
-	 * @param array $data
-	 * @param array $keys
-	 * @param int $returnmode
-	 * @return mixed
-	 */
-	public static function dbInsert(string $method = 'insert', string $table = '', array $columns = [], array $data = [], array $keys = [], int $returnmode = 0)
-	{
-		global $smcFunc;
-
-		$result = $smcFunc['db_insert']($method, $table, $columns, $data, $keys, $returnmode);
-
-		Debug::updateNumQueries();
-
-		return $result;
 	}
 }

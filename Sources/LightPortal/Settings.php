@@ -546,9 +546,7 @@ class Settings
 	 */
 	private static function getActivePages()
 	{
-		global $modSettings;
-
-		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
+		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
 				global $language;

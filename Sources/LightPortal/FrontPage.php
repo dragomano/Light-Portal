@@ -176,14 +176,14 @@ class FrontPage
 	 */
 	public static function getTopicsFromSelectedBoards(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $context;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return [];
 
-		if (($topics = cache_get_data('light_portal_fronttopics_' . $start . '_' . $limit, $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
+		if (($topics = cache_get_data('light_portal_fronttopics_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -199,7 +199,7 @@ class FrontPage
 
 			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				SELECT
 					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
@@ -269,8 +269,10 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
+			$context['lp_num_queries']++;
+
 			if (!empty($messages) && !empty($modSettings['lp_show_images_in_articles'])) {
-				$request = Helpers::dbQuery('
+				$request = $smcFunc['db_query']('', '
 					SELECT a.id_attach, a.id_msg, t.id_topic
 					FROM {db_prefix}attachments AS a
 						LEFT JOIN {db_prefix}topics AS t ON (t.id_first_msg = a.id_msg)
@@ -293,11 +295,13 @@ class FrontPage
 
 				$smcFunc['db_free_result']($request);
 
+				$context['lp_num_queries']++;
+
 				foreach ($attachments as $id_topic => $data)
 					$topics[$id_topic]['image'] = $data[0];
 			}
 
-			cache_put_data('light_portal_fronttopics_' . $start . '_' . $limit, $topics, $modSettings['lp_cache_update_interval'] ?? 3600);
+			cache_put_data('light_portal_fronttopics_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
 
 		return $topics;
@@ -312,15 +316,15 @@ class FrontPage
 	 */
 	public static function getTopicsFromSelectedBoardsQuantity()
 	{
-		global $modSettings, $smcFunc;
+		global $modSettings, $smcFunc, $context;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_topics = cache_get_data('light_portal_fronttopics_total', $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
-			$request = Helpers::dbQuery('
+		if (($num_topics = cache_get_data('light_portal_fronttopics_total', LP_CACHE_TIME)) == null) {
+			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
 					LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
@@ -340,7 +344,9 @@ class FrontPage
 			list ($num_topics) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 
-			cache_put_data('light_portal_fronttopics_total', $num_topics, $modSettings['lp_cache_update_interval'] ?? 3600);
+			$context['lp_num_queries']++;
+
+			cache_put_data('light_portal_fronttopics_total', $num_topics, LP_CACHE_TIME);
 		}
 
 		return $num_topics;
@@ -357,10 +363,10 @@ class FrontPage
 	 */
 	public static function getActivePages(int $start, int $limit)
 	{
-		global $modSettings, $smcFunc, $scripturl, $user_info;
+		global $smcFunc, $modSettings, $scripturl, $user_info, $context;
 
-		if (($pages = cache_get_data('light_portal_frontpages_' . $start . '_' . $limit, $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
-			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
+		if (($pages = cache_get_data('light_portal_frontpages_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns    = [];
 			$custom_tables     = [];
@@ -374,7 +380,7 @@ class FrontPage
 
 			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				SELECT
 					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views, p.num_comments,
 					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
@@ -425,7 +431,9 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
-			cache_put_data('light_portal_frontpages_' . $start . '_' . $limit, $pages, $modSettings['lp_cache_update_interval'] ?? 3600);
+			$context['lp_num_queries']++;
+
+			cache_put_data('light_portal_frontpages_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
 
 		return $pages;
@@ -440,10 +448,10 @@ class FrontPage
 	 */
 	public static function getActivePagesQuantity()
 	{
-		global $modSettings, $smcFunc;
+		global $smcFunc, $context;
 
-		if (($num_pages = cache_get_data('light_portal_frontpages_total', $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
-			$request = Helpers::dbQuery('
+		if (($num_pages = cache_get_data('light_portal_frontpages_total', LP_CACHE_TIME)) == null) {
+			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}',
@@ -455,7 +463,9 @@ class FrontPage
 			list ($num_pages) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 
-			cache_put_data('light_portal_frontpages_total', $num_pages, $modSettings['lp_cache_update_interval'] ?? 3600);
+			$context['lp_num_queries']++;
+
+			cache_put_data('light_portal_frontpages_total', $num_pages, LP_CACHE_TIME);
 		}
 
 		return $num_pages;
@@ -479,7 +489,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($boards = cache_get_data('light_portal_frontboards_' . $start . '_' . $limit, $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
+		if (($boards = cache_get_data('light_portal_frontboards_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -493,7 +503,7 @@ class FrontPage
 
 			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
-			$request = Helpers::dbQuery('
+			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 					GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
@@ -549,7 +559,9 @@ class FrontPage
 
 			$smcFunc['db_free_result']($request);
 
-			cache_put_data('light_portal_frontboards_' . $start . '_' . $limit, $boards, $modSettings['lp_cache_update_interval'] ?? 3600);
+			$context['lp_num_queries']++;
+
+			cache_put_data('light_portal_frontboards_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
 
 		return $boards;
@@ -564,15 +576,15 @@ class FrontPage
 	 */
 	public static function getSelectedBoardsQuantity()
 	{
-		global $modSettings, $smcFunc;
+		global $modSettings, $smcFunc, $context;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_boards = cache_get_data('light_portal_frontboards_total', $modSettings['lp_cache_update_interval'] ?? 3600)) == null) {
-			$request = Helpers::dbQuery('
+		if (($num_boards = cache_get_data('light_portal_frontboards_total', LP_CACHE_TIME)) == null) {
+			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
 					LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)
@@ -586,7 +598,9 @@ class FrontPage
 			list ($num_boards) = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 
-			cache_put_data('light_portal_frontboards_total', $num_boards, $modSettings['lp_cache_update_interval'] ?? 3600);
+			$context['lp_num_queries']++;
+
+			cache_put_data('light_portal_frontboards_total', $num_boards, LP_CACHE_TIME);
 		}
 
 		return $num_boards;

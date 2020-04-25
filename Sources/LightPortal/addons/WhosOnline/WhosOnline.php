@@ -139,7 +139,7 @@ class WhosOnline
 			echo '
 			', Helpers::getCorrectDeclension(comma_format($whos_online['num_guests']), $txt['lp_guests_set']), ', ', Helpers::getCorrectDeclension(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
 
-			$online_list = array();
+			$online_list = [];
 			if (!empty($user_info['buddies']))
 				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
 			if (!empty($whos_online['num_spiders']))

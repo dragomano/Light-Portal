@@ -229,11 +229,11 @@ class ManagePages
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $modSettings, $smcFunc, $user_info;
+		global $smcFunc, $user_info, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', $modSettings['lp_cache_update_interval'] ?? 3600, 'page');
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
@@ -265,6 +265,8 @@ class ManagePages
 
 		$smcFunc['db_free_result']($request);
 
+		$context['lp_num_queries']++;
+
 		return $items;
 	}
 
@@ -277,9 +279,9 @@ class ManagePages
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc, $user_info, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
 			WHERE author_id = {int:user_id}'),
@@ -290,6 +292,8 @@ class ManagePages
 
 		list ($num_entries) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $num_entries;
 	}
@@ -330,10 +334,12 @@ class ManagePages
 	 */
 	private static function remove(array $items)
 	{
+		global $smcFunc, $context;
+
 		if (empty($items))
 			return;
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -341,7 +347,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -351,7 +357,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
@@ -361,7 +367,7 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			array(
@@ -369,13 +375,15 @@ class ManagePages
 			)
 		);
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_tags
 			WHERE page_id IN ({array_int:items})',
 			array(
 				'items' => $items
 			)
 		);
+
+		$context['lp_num_queries'] += 5;
 	}
 
 	/**
@@ -389,10 +397,12 @@ class ManagePages
 	 */
 	public static function toggleStatus(array $items, int $status = 0)
 	{
+		global $smcFunc;
+
 		if (empty($items))
 			return;
 
-		Helpers::dbQuery('
+		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET status = {int:status}
 			WHERE page_id IN ({array_int:items})',
@@ -871,7 +881,7 @@ class ManagePages
 	 */
 	public static function setData(int $item = 0)
 	{
-		global $context, $db_type;
+		global $context, $smcFunc, $db_type;
 
 		if (!empty($context['post_errors']) || !isset($_POST['save']))
 			return;
@@ -881,7 +891,7 @@ class ManagePages
 		self::prepareKeywords();
 
 		if (empty($item)) {
-			$item = Helpers::dbInsert('',
+			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_pages',
 				array_merge(array(
 					'author_id'   => 'int',
@@ -905,6 +915,8 @@ class ManagePages
 				1
 			);
 
+			$context['lp_num_queries']++;
+
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -916,7 +928,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert('',
+				$smcFunc['db_insert']('',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -927,6 +939,8 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				$context['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -940,7 +954,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert('',
+				$smcFunc['db_insert']('',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -951,6 +965,8 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				$context['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
@@ -962,7 +978,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert('',
+				$smcFunc['db_insert']('',
 					'{db_prefix}lp_tags',
 					array(
 						'page_id' => 'int',
@@ -971,9 +987,11 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
+
+				$context['lp_num_queries']++;
 			}
 		} else {
-			Helpers::dbQuery('
+			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
@@ -988,6 +1006,8 @@ class ManagePages
 				)
 			);
 
+			$context['lp_num_queries']++;
+
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -999,7 +1019,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert('replace',
+				$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -1010,6 +1030,8 @@ class ManagePages
 					$titles,
 					array('item_id', 'type', 'lang')
 				);
+
+				$context['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['options'])) {
@@ -1023,7 +1045,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert('replace',
+				$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -1034,15 +1056,19 @@ class ManagePages
 					$parameters,
 					array('item_id', 'type', 'name')
 				);
+
+				$context['lp_num_queries']++;
 			}
 
-			Helpers::dbQuery('
+			$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_tags
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id' => $item
 				)
 			);
+
+			$context['lp_num_queries']++;
 
 			if (!empty($context['lp_page']['keywords'])) {
 				$keywords = [];
@@ -1053,7 +1079,7 @@ class ManagePages
 					);
 				}
 
-				Helpers::dbInsert($db_type == 'postgresql' ? 'ignore' : 'replace',
+				$smcFunc['db_insert']($db_type == 'postgresql' ? 'ignore' : 'replace',
 					'{db_prefix}lp_tags',
 					array(
 						'page_id' => 'int',
@@ -1062,6 +1088,8 @@ class ManagePages
 					$keywords,
 					array('page_id', 'value')
 				);
+
+				$context['lp_num_queries']++;
 			}
 		}
 
@@ -1078,12 +1106,14 @@ class ManagePages
 	 */
 	private static function getAutoIncrementValue()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
+		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
 
 		list ($value) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return (int) $value + 1;
 	}
@@ -1098,9 +1128,9 @@ class ManagePages
 	 */
 	private static function isUnique(array $data)
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -1113,6 +1143,8 @@ class ManagePages
 
 		list ($count) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return (bool) $count;
 	}
@@ -1235,14 +1267,14 @@ class ManagePages
 	 */
 	private static function getDataForXml()
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
 		if (empty($_POST['pages']) && !isset($_POST['export_all']))
 			return false;
 
 		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
 
-		$request = Helpers::dbQuery('
+		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -1297,6 +1329,8 @@ class ManagePages
 		}
 
 		$smcFunc['db_free_result']($request);
+
+		$context['lp_num_queries']++;
 
 		return $items;
 	}

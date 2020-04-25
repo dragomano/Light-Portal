@@ -214,7 +214,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 		$ol_start = 1;
 		if ($this->enhanced_ordered_list) {
 			if ($list_type == 'ul class=\"bbc_list\" style=\"list-style-type: decimal\"') {
-				$ol_start_array = array();
+				$ol_start_array = [];
 				$ol_start_check = preg_match("/$marker_ol_start_re/", $matches[4], $ol_start_array);
 				if ($ol_start_check){
 					$ol_start = $ol_start_array[0];

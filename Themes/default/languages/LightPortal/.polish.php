@@ -38,7 +38,7 @@ $txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blo
 $txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
 $txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 $txt['lp_debug_and_caching']                        = 'Debugging and caching';
-$txt['lp_show_debug_info']                          = 'Show the loading time and number of queries to the portal tables';
+$txt['lp_show_debug_info']                          = 'Show the loading time and number of the portal queries';
 $txt['lp_show_debug_info_subtext']                  = 'This information will be available to administrators only!';
 $txt['lp_cache_update_interval']                    = 'The cache update interval';
 
