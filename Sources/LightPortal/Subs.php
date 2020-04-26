@@ -50,7 +50,7 @@ class Subs
 		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
 
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
-		$context['lp_active_pages_num'] = Helpers::getFromCache('active_pages_num_u' . $context['user']['id'], 'getActivePageQuantity', __CLASS__);
+		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Subs
 	 *
 	 * @return int
 	 */
-	public static function getActivePageQuantity()
+	public static function getNumActivePages()
 	{
 		global $smcFunc, $user_info, $context;
 

@@ -37,7 +37,7 @@ class Page
 		isAllowedTo('light_portal_view');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id'])) {
-			$context['lp_page'] = self::getData($modSettings['lp_frontpage_id']);
+			$context['lp_page'] = self::getDataByItem($modSettings['lp_frontpage_id']);
 		} else {
 			$alias = explode(';', $alias)[0];
 			$context['lp_page'] = self::getDataByAlias($alias);
@@ -142,7 +142,7 @@ class Page
 	 * @param array $params
 	 * @return array
 	 */
-	public static function getDataFromDB(array $params)
+	public static function getData(array $params)
 	{
 		global $smcFunc, $txt, $modSettings, $context;
 
@@ -231,7 +231,7 @@ class Page
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $alias, 'getDataFromDB', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
+		$data = Helpers::getFromCache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
 		self::prepareData($data);
 
 		return $data;
@@ -245,12 +245,12 @@ class Page
 	 * @param int $item
 	 * @return array
 	 */
-	public static function getData(int $item)
+	public static function getDataByItem(int $item)
 	{
 		if (empty($item))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $item, 'getDataFromDB', __CLASS__, LP_CACHE_TIME, array('item' => $item));
+		$data = Helpers::getFromCache('page_' . $item, 'getData', __CLASS__, LP_CACHE_TIME, array('item' => $item));
 		self::prepareData($data);
 
 		return $data;

@@ -231,7 +231,7 @@ class Integration
 							'pages' => array(
 								'title'   => $txt['lp_pages'],
 								'href'    => $scripturl . '?action=admin;area=lp_pages',
-								'amt'     => $context['lp_active_pages_num'],
+								'amt'     => $context['lp_num_active_pages'],
 								'show'    => true,
 								'is_last' => true
 							)
@@ -247,7 +247,7 @@ class Integration
 					'portal_pages' => array(
 						'title' => $txt['lp_pages'],
 						'href'  => $scripturl . '?action=admin;area=lp_pages',
-						'amt'   => $context['lp_active_pages_num'],
+						'amt'   => $context['lp_num_active_pages'],
 						'show'  => $context['allow_light_portal_manage_own_pages']
 					)
 				),

@@ -77,7 +77,7 @@ class Settings
 								self::pageArea();
 							},
 							'icon' => 'posts',
-							'amt' => $context['lp_active_pages_num'],
+							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array($txt['lp_pages_manage']),

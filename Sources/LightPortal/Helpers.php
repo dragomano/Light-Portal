@@ -342,7 +342,7 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, $vars = [])
+	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
 	{
 		if (empty($key))
 			return false;
@@ -355,11 +355,11 @@ class Helpers
 
 			if (method_exists($class, $funcName)) {
 				if ($class == 'self')
-					$$key = self::$funcName($vars);
+					$$key = self::$funcName(...$vars);
 				else
-					$$key = $class::$funcName($vars);
+					$$key = $class::$funcName(...$vars);
 			} elseif (function_exists($funcName)) {
-				$$key = $funcName($vars);
+				$$key = $funcName(...$vars);
 			}
 
 			cache_put_data('light_portal_' . $key, $$key, $time);

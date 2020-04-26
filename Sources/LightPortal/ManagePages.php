@@ -502,7 +502,7 @@ class ManagePages
 			'description' => $txt['lp_pages_edit_tab_description']
 		);
 
-		$context['lp_current_page'] = Page::getData($item);
+		$context['lp_current_page'] = Page::getDataByItem($item);
 
 		if (empty($context['lp_current_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
