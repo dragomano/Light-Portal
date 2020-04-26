@@ -131,7 +131,7 @@ class TagList
 		$keywords = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$keywords[] = array(
-				'keyword'   => $row['name'],
+				'value'     => $row['name'],
 				'link'      => $scripturl . '?action=keywords;id=' . $row['id'],
 				'frequency' => $row['frequency']
 			);
@@ -162,11 +162,13 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
+			$num_tags = Helpers::getFromCache('num_tags_' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Tag');
 			$tag_list = Helpers::getFromCache(
 				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
 				'getAll',
 				'\Bugo\LightPortal\Tag',
-				$cache_time
+				$cache_time,
+				...array(0, $num_tags, 'value')
 			);
 		} else {
 			$tag_list = Helpers::getFromCache(
@@ -182,7 +184,7 @@ class TagList
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {
 				echo '
-			<a class="button" href="', $tag['link'], '">', $tag['keyword'], ' <span class="amt">', $tag['frequency'], '</span></a>';
+			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
 		} else
 			echo $txt['lp_no_tags'];
