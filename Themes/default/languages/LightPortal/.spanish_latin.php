@@ -203,7 +203,7 @@ $txt['lp_comments_set'] = array('comentario', 'comentarios');
 $txt['lp_users_set']   = array('usuario', 'usuarios');
 $txt['lp_guests_set']  = array('invitado', 'invitados');
 $txt['lp_spiders_set'] = array('araña', 'arañas');
-$txt['lp_hidden_set']  = array('oculto', 'oculto');
+$txt['lp_hidden_set']  = array('oculto', 'ocultos');
 $txt['lp_buddies_set'] = array('amigo', 'amigos');
 
 // Copyrights
