@@ -162,13 +162,12 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$num_tags = Helpers::getFromCache('num_tags_' . $context['user']['id'], 'getTotalQuantity', '\Bugo\LightPortal\Tag');
 			$tag_list = Helpers::getFromCache(
 				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
 				'getAll',
 				'\Bugo\LightPortal\Tag',
 				$cache_time,
-				...array(0, $num_tags, 'value')
+				...array(0, 0, 'value')
 			);
 		} else {
 			$tag_list = Helpers::getFromCache(

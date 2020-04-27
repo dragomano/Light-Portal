@@ -319,8 +319,8 @@ class Tag
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
+			ORDER BY {raw:sort}' . ($items_per_page ? '
+			LIMIT {int:start}, {int:limit}' : ''),
 			array(
 				'status' => Page::STATUS_ACTIVE,
 				'sort'   => $sort,
