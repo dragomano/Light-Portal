@@ -1,7 +1,7 @@
 <?php
 
 /**
- * .spanish latin language file Rev. 4
+ * .spanish latin language file Rev. 4.1
  * Spanish translation https://www.bombercode.net Copyright 2014-2020
  *
  * @package Light Portal
@@ -247,4 +247,4 @@ $txt['lp_buddies_set'] = array('amigo', 'amigos');
 $txt['lp_used_components'] = 'Los componentes del portal.';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'Cargado en %1$.3f segundos. Las consultas a la DB: %2$d.';
+$txt['lp_load_page_stats'] = 'Cargado en %1$.3f segundos. Consultas a la DB: %2$d.';
