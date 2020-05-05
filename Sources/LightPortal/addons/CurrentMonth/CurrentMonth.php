@@ -63,7 +63,11 @@ class CurrentMonth
 		$month = $today['month'];
 		$day   = $today['day'];
 
-		$start_object = checkdate($month, $day, $year) === true ? date_create(implode('-', array($year, $month, $day))) : date_create(implode('-', array($today['year'], $today['month'], $today['day'])));
+		$start_object = checkdate($month, $day, $year) === true ? date_create(implode('-', array($year, $month, $day))) : date_create(implode('-', array(
+			$today['year'],
+			$today['month'],
+			$today['day']
+		)));
 
 		$calendarOptions = array(
 			'start_day'          => !empty($options['calendar_start_day']) ? $options['calendar_start_day'] : 0,
@@ -86,16 +90,25 @@ class CurrentMonth
 	 * Отображаем календарную сетку текущего месяца
 	 *
 	 * @param array $data
-	 * @return void|bool Returns false if the grid doesn't exist.
+	 * @return void|bool Returns false if the grid doesn't exist
 	 */
 	private static function showCurrentMonthGrid($data)
 	{
-		global $context, $txt, $modSettings, $scripturl;
+		global $context, $txt, $scripturl, $modSettings;
 
 		if (empty($data))
 			return false;
 
 		$calendar_data = &$data;
+
+		if (empty($context['lp_active_blocks'][$data['block_id']]['title'][Helpers::getUserLanguage()])) {
+			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
+
+			if (allowedTo('light_portal_manage_blocks'))
+				$title = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $data['block_id'] . '">' . $title . '</a>';
+
+			echo sprintf($context['lp_all_title_classes'][$context['lp_active_blocks'][$data['block_id']]['title_class']], $title);
+		}
 
 		echo '
 				<table>';
@@ -188,6 +201,7 @@ class CurrentMonth
 		if (!empty($calendar_data)) {
 			ob_start();
 
+			$calendar_data['block_id'] = $block_id;
 			self::showCurrentMonthGrid($calendar_data);
 
 			$content = ob_get_clean();
