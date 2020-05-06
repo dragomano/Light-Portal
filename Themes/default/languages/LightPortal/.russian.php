@@ -4,7 +4,6 @@
  * .russian language file
  *
  * @package Light Portal
- * @author Bugo https://dragomano.ru/mods/light-portal
  */
 
 $txt['lp_portal'] = 'Портал';
@@ -51,7 +50,7 @@ $txt['lp_show_comment_block_set']       = array('none' => 'Нет', 'default' =>
 $txt['lp_num_comments_per_page']        = 'Количество родительских комментариев на странице';
 $txt['lp_page_editor_type_default']     = 'Тип редактора страниц по умолчанию';
 $txt['lp_hide_blocks_in_admin_section'] = 'Скрывать активные блоки в админке';
-$txt['lp_open_graph']                   = 'Open Graph';
+$txt['lp_open_graph']                   = 'Разметка Open Graph';
 $txt['lp_page_og_image']                = 'Использовать изображение из текста статьи';
 $txt['lp_page_og_image_set']            = array('Нет', 'Первое найденное', 'Последнее найденное');
 $txt['lp_page_itemprop_address']        = 'Адрес вашей организации';

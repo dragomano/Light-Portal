@@ -4,7 +4,6 @@
  * .english language file
  *
  * @package Light Portal
- * @author Bugo https://dragomano.ru/mods/light-portal
  */
 
 $txt['lp_portal'] = 'Portal';

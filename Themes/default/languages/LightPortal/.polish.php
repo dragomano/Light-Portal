@@ -1,10 +1,9 @@
 <?php
 
 /**
- * .polish language file
+ * Polish translation by Adrek (https://adrek.pl)
  *
  * @package Light Portal
- * @author Adrek https://adrek.pl
  */
 
 $txt['lp_portal'] = 'Portal';

@@ -31,7 +31,7 @@ class FrontPage
 	 *
 	 * @var string
 	 */
-	private static $placeholder_image = '<i class="far fa-image fa-7x"></i>';
+	private static $placeholder_image = '<i class="far fa-image fa-6x"></i>';
 
 	/**
 	 * Show articles on the portal frontpage
@@ -119,18 +119,19 @@ class FrontPage
 
 		switch ($source) {
 			case 'topics':
-				$function = 'getTopicsFromSelectedBoards';
+				$function = 'TopicsFromSelectedBoards';
 				break;
 			case 'boards':
-				$function = 'getSelectedBoards';
+				$function = 'SelectedBoards';
 				break;
 			default:
-				$function = 'getActivePages';
+				$function = 'ActivePages';
 		}
 
-		$start    = (int) $_REQUEST['start'];
-		$limit    = $modSettings['lp_num_items_per_page'] ?? 10;
-		$articles = self::$function($start, $limit);
+		$start       = (int) $_REQUEST['start'];
+		$limit       = $modSettings['lp_num_items_per_page'] ?? 10;
+		$getFunction = 'get' . $function;
+		$articles    = self::$getFunction($start, $limit);
 
 		$articles = array_map(function ($article) use ($modSettings, $context) {
 			if (isset($article['time']))
@@ -149,7 +150,7 @@ class FrontPage
 			return $article;
 		}, $articles);
 
-		$getTotalFunction = $function . 'Quantity';
+		$getTotalFunction = 'getTotal' . $function;
 
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], self::$getTotalFunction(), $limit);
 		$context['start']      = &$_REQUEST['start'];
@@ -314,7 +315,7 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getTopicsFromSelectedBoardsQuantity()
+	public static function getTotalTopicsFromSelectedBoards()
 	{
 		global $modSettings, $smcFunc, $context;
 
@@ -446,7 +447,7 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getActivePagesQuantity()
+	public static function getTotalActivePages()
 	{
 		global $smcFunc, $context;
 
@@ -574,7 +575,7 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getSelectedBoardsQuantity()
+	public static function getTotalSelectedBoards()
 	{
 		global $modSettings, $smcFunc, $context;
 

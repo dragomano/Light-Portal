@@ -196,7 +196,7 @@ class Settings
 		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
 
 		$config_vars = array(
-			array('text', 'lp_frontpage_title', 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
+			array('text', 'lp_frontpage_title', 80, 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
 			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
 			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
