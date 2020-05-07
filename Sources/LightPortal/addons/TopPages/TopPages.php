@@ -130,8 +130,8 @@ class TopPages
 		$context['posting_fields']['num_pages']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_pages',
-				'min' => 1,
+				'id'    => 'num_pages',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_pages']
 			)
 		);
@@ -140,7 +140,7 @@ class TopPages
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_numbers_only',
+				'id'      => 'show_numbers_only',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
@@ -160,17 +160,18 @@ class TopPages
 
 		extract($params);
 
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, pt.lang, pt.title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
-			WHERE p.status = {int:status}
-			ORDER BY p.' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			SELECT page_id, alias, type, permissions, num_views, num_comments
+			FROM {db_prefix}lp_pages
+			WHERE status = {int:status}
+			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'type'    => 'page',
-				'status'  => 1,
-				'limit'   => $num_pages
+				'type'   => 'page',
+				'status' => 1,
+				'limit'  => $num_pages
 			)
 		);
 
@@ -179,16 +180,13 @@ class TopPages
 			if (Helpers::isFrontpage($row['page_id']))
 				continue;
 
-			if (!isset($pages[$row['page_id']]))
-				$pages[$row['page_id']] = array(
-					'num_comments' => $row['num_comments'],
-					'num_views'    => $row['num_views'],
-					'href'         => $scripturl . '?page=' . $row['alias'],
-					'permissions'  => $row['permissions']
-				);
-
-			if (!empty($row['lang']))
-				$pages[$row['page_id']]['title'][$row['lang']] = $row['title'];
+			$pages[$row['page_id']] = array(
+				'title'        => $titles[$row['page_id']] ?? [],
+				'num_comments' => $row['num_comments'],
+				'num_views'    => $row['num_views'],
+				'href'         => $scripturl . '?page=' . $row['alias'],
+				'permissions'  => $row['permissions']
+			);
 		}
 
 		$smcFunc['db_free_result']($request);

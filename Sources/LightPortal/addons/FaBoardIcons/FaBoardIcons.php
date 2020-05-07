@@ -38,6 +38,11 @@ class FaBoardIcons
 	 */
 	public static function frontBoards(&$custom_columns)
 	{
+		global $sourcedir;
+
+		if (!is_file($sourcedir . '/FA-BoardIcons.php'))
+			return;
+
 		$custom_columns[] = 'b.fabi_icon, b.fabi_color';
 	}
 

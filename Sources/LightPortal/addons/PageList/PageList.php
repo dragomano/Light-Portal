@@ -31,6 +31,15 @@ class PageList
 	private static $sort = 'page_id';
 
 	/**
+	 * The maximum number of pages to output
+	 *
+	 * Максимальное количество страниц для вывода
+	 *
+	 * @var int
+	 */
+	private static $num_pages = 10;
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока
@@ -42,7 +51,8 @@ class PageList
 	{
 		$options['page_list'] = array(
 			'parameters' => array(
-				'sort' => static::$sort
+				'sort'      => static::$sort,
+				'num_pages' => static::$num_pages
 			)
 		);
 	}
@@ -63,7 +73,8 @@ class PageList
 			return;
 
 		$args['parameters'] = array(
-			'sort' => FILTER_SANITIZE_STRING
+			'sort'      => FILTER_SANITIZE_STRING,
+			'num_pages' => FILTER_VALIDATE_INT
 		);
 	}
 
@@ -103,6 +114,17 @@ class PageList
 				);
 			}
 		}
+
+		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list_addon_num_pages'];
+		$context['posting_fields']['num_pages']['input'] = array(
+			'type' => 'number',
+			'after' => $txt['lp_page_list_addon_num_pages_subtext'],
+			'attributes' => array(
+				'id'    => 'num_pages',
+				'min'   => 0,
+				'value' => $context['lp_block']['options']['parameters']['num_pages']
+			)
+		);
 	}
 
 	/**
@@ -110,27 +132,32 @@ class PageList
 	 *
 	 * Получаем список активных страниц
 	 *
-	 * @param string $sort_type
+	 * @param array $params
 	 * @return array
 	 */
-	public static function getPageList(string $sort_type = 'page_id')
+	public static function getPageList(array $params)
 	{
 		global $smcFunc, $txt, $context;
+
+		extract($params);
+
+		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id, pt.lang, pt.title
+				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.status = {int:status}
-			ORDER BY {raw:sort} DESC',
+			ORDER BY {raw:sort} DESC' . (!empty($num_pages) ? '
+			LIMIT {int:limit}' : ''),
 			array(
-				'guest'   => $txt['guest_title'],
-				'type'    => 'page',
-				'status'  => 1,
-				'sort'    => $sort_type
+				'guest'  => $txt['guest_title'],
+				'type'   => 'page',
+				'status' => 1,
+				'sort'   => $sort,
+				'limit'  => $num_pages
 			)
 		);
 
@@ -139,21 +166,18 @@ class PageList
 			if (Helpers::isFrontpage($row['page_id']))
 				continue;
 
-			if (!isset($pages[$row['page_id']]))
-				$pages[$row['page_id']] = array(
-					'id'           => $row['page_id'],
-					'author_id'    => $row['author_id'],
-					'author_name'  => $row['author_name'],
-					'alias'        => $row['alias'],
-					'num_views'    => $row['num_views'],
-					'num_comments' => $row['num_comments'],
-					'created_at'   => $row['created_at'],
-					'updated_at'   => $row['updated_at'],
-					'permissions'  => $row['permissions']
-				);
-
-			if (!empty($row['lang']))
-				$pages[$row['page_id']]['title'][$row['lang']] = $row['title'];
+			$pages[$row['page_id']] = array(
+				'id'           => $row['page_id'],
+				'title'        => $titles[$row['page_id']] ?? [],
+				'author_id'    => $row['author_id'],
+				'author_name'  => $row['author_name'],
+				'alias'        => $row['alias'],
+				'num_views'    => $row['num_views'],
+				'num_comments' => $row['num_comments'],
+				'created_at'   => $row['created_at'],
+				'updated_at'   => $row['updated_at'],
+				'permissions'  => $row['permissions']
+			);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -180,7 +204,7 @@ class PageList
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters['sort']);
+		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 
