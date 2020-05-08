@@ -189,7 +189,7 @@ class Settings
 		if (!isset($modSettings['lp_standalone_mode_disabled_actions']))
 			$add_settings['lp_standalone_mode_disabled_actions'] = 'home,mlist,calendar';
 		if (!isset($modSettings['lp_num_comments_per_page']))
-			$add_settings['lp_num_comments_per_page'] = 10;
+			$add_settings['lp_num_comments_per_page'] = 12;
 		if (!isset($modSettings['lp_cache_update_interval']))
 			$add_settings['lp_cache_update_interval'] = 3600;
 		if (!empty($add_settings))

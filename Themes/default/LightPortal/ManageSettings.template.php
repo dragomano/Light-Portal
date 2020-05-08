@@ -9,7 +9,10 @@
  */
 function template_callback_portal_layout_preview()
 {
-	global $context, $modSettings, $txt;
+	global $modSettings, $context, $txt;
+
+	if (empty($modSettings['lp_frontpage_mode']))
+		return;
 
 	$num_rows = $context['lp_frontpage_layout'];
 	$num_cols = ceil($modSettings['lp_num_items_per_page'] / $num_rows);
@@ -30,7 +33,7 @@ function template_callback_portal_layout_preview()
 			$k++;
 
 			echo '
-				<td>', $k - 1 > $modSettings['lp_num_items_per_page'] ? '' : '<div class="title_bar"><h3 class="titlebg">', $txt['lp_article'], '</h3></div>', '</td>';
+				<td>', $k - 1 > $modSettings['lp_num_items_per_page'] ? '' : ('<div class="title_bar"><h3 class="titlebg">' . $txt['lp_article'] . '</h3></div>'), '</td>';
 		}
 
 		echo '

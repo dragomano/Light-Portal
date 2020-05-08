@@ -144,7 +144,7 @@ class Integration
 		if (!empty($_GET['page']))
 			return Page::show((string) $_GET['page']);
 
-		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
+		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
 			require_once($sourcedir . '/BoardIndex.php');
 			$action = 'BoardIndex';
 			return $action();

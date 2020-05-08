@@ -211,10 +211,6 @@ p.errorbox.permissions {
 	padding: 8px 10px;
 }
 
-/* .article_info {
-	flex: 1 1 auto;
-} */
-
 .article_content {
 	overflow: hidden;
 	flex: 1 1 auto;
