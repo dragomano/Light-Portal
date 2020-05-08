@@ -714,7 +714,7 @@ class ManageBlocks
 
 		foreach ($context['posting_fields'] as $item => $data) {
 			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="information alternative smalltext">' . $data['input']['after'] . '</div>';
+				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
 		loadTemplate('Post');

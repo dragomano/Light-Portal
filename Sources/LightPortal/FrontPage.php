@@ -80,7 +80,7 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	private static function getNumColumns()
+	public static function getNumColumns()
 	{
 		global $modSettings;
 
@@ -253,9 +253,10 @@ class FrontPage
 						'poster_name' => $row['poster_name'],
 						'time'        => $row['poster_time'],
 						'subject'     => self::getShortenSubject($row['subject']),
-						'preview'     => $row['body'],
+						'preview'     => self::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
-						'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
+						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
+						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'],
 						'num_views'   => $row['num_views'],
@@ -413,7 +414,7 @@ class FrontPage
 						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
 						'author_name'  => $row['author_name'],
 						'alias'        => $row['alias'],
-						'description'  => $row['description'],
+						'description'  => self::getTeaser($row['description'] ?: strip_tags($row['content'])),
 						'type'         => $row['type'],
 						'num_views'    => $row['num_views'],
 						'num_comments' => $row['num_comments'],
@@ -541,7 +542,7 @@ class FrontPage
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => self::getShortenSubject($board_name),
-					'description' => $description,
+					'description' => self::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
@@ -608,7 +609,7 @@ class FrontPage
 	}
 
 	/**
-	 * Get shorten title|titles
+	 * Get the shorten title|titles
 	 *
 	 * Получаем короткий заголовок или заголовки
 	 *
@@ -623,5 +624,20 @@ class FrontPage
 			return array_map('self::getShortenSubject', $object);
 
 		return !empty($modSettings['lp_subject_size']) ? shorten_subject($object, $modSettings['lp_subject_size']) : $object;
+	}
+
+	/**
+	 * Get the article teaser
+	 *
+	 * Получаем тизер статьи
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	public static function getTeaser($text)
+	{
+		global $modSettings;
+
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject($text, $modSettings['lp_teaser_size']) : $text;
 	}
 }

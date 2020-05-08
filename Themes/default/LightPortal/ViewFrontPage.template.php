@@ -44,14 +44,14 @@ function template_show_topics_as_articles()
 
 			if (!empty($topic['poster_id'])) {
 				echo '
-							<a href="' . $topic['poster_link'] . '" title="' . $txt['profile_of'] . ' ' . $topic['poster_name'] . '">' . $topic['poster_name'] . '</a>';
+							<a href="', $topic['poster_link'], '" title="', $txt['profile_of'], ' ', $topic['poster_name'], '">', $topic['poster_name'], '</a>';
 			} else
 				echo $topic['poster_name'];
 
 			echo '
 						</div>
 						<div class="floatright">
-						', $topic['board'], '
+							<a href="', $topic['board_link'], '">', $topic['board_name'], '</a>
 						</div>
 					</div>
 					<div class="date_and_views smalltext">

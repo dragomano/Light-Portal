@@ -10,36 +10,49 @@ $txt['lp_portal'] = 'Портал';
 $txt['lp_forum']  = 'Форум';
 
 $txt['lp_new_version_is_available'] = 'Доступна новая версия!';
-$txt['lp_no_items']                 = 'Нет элементов для отображения.';
+
+$txt['lp_article']  = 'Статья';
+$txt['lp_no_items'] = 'Нет элементов для отображения.';
 
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
 $txt['lp_base']      = 'Настройки главной страницы и статей';
 $txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно на <a class="bbc_link" href="https://dragomano.ru/forum/?board=3.0">форуме dragomano.ru</a>.';
 
-$txt['lp_frontpage_title']                          = 'Заголовок главной страницы';
-$txt['lp_frontpage_mode']                           = 'Первая страница портала';
-$txt['lp_frontpage_mode_set']                       = array('Отключить', 'Указанная страница', 'Все темы из выбранных разделов', 'Все активные страницы портала', 'Выбранные разделы');
-$txt['lp_frontpage_id']                             = 'Страница портала для отображения в качестве главной';
-$txt['lp_frontpage_boards']                         = 'Разделы-источники статей для первой страницы';
-$txt['lp_frontpage_layout']                         = 'Количество колонок для вывода статей';
-$txt['lp_frontpage_layout_set']                     = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
-$txt['lp_show_images_in_articles']                  = 'Показывать изображения, найденные в статьях';
-$txt['lp_image_placeholder']                        = 'URL-адрес картинки-заглушки по умолчанию';
-$txt['lp_subject_size']                             = 'Размер заголовка статей (в символах)';
-$txt['lp_num_items_per_page']                       = 'Количество элементов на странице (для пагинации)';
-$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Автономный режим';
-$txt['lp_standalone_mode_subtext']                  = 'Будет отключено всё, кроме страниц портала и игнорируемых областей.';
-$txt['lp_standalone_mode_excluded_actions']         = 'Игнорируемые области';
-$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Укажите области, которые должны оставаться доступными в автономном режиме.';
-$txt['groups_light_portal_view']                    = 'Кто может просматривать элементы портала';
-$txt['groups_light_portal_manage_blocks']           = 'Кто может управлять блоками';
-$txt['groups_light_portal_manage_own_pages']        = 'Кто может управлять своими страницами';
-$txt['lp_manage_permissions']                       = 'Внимание: некоторые страницы и блоки могут содержать опасный HTML/PHP контент, поэтому не предоставляйте это право всем подряд!';
-$txt['lp_debug_and_caching']                        = 'Отладка и кэширование';
-$txt['lp_show_debug_info']                          = 'Отображать время загрузки и количество запросов портала';
-$txt['lp_show_debug_info_subtext']                  = 'Информация будет доступна только администраторам!';
-$txt['lp_cache_update_interval']                    = 'Интервал обновления кэша';
+$txt['lp_frontpage_title']         = 'Заголовок главной страницы';
+$txt['lp_frontpage_mode']          = 'Первая страница портала';
+$txt['lp_frontpage_mode_set']      = array('Отключить', 'Указанная страница', 'Все темы из выбранных разделов', 'Все активные страницы портала', 'Выбранные разделы');
+$txt['lp_frontpage_id']            = 'Страница портала для отображения в качестве главной';
+$txt['lp_frontpage_boards']        = 'Разделы-источники статей для первой страницы';
+$txt['lp_frontpage_layout']        = 'Количество колонок для вывода статей';
+$txt['lp_frontpage_layout_set']    = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
+$txt['lp_show_images_in_articles'] = 'Показывать изображения, найденные в статьях';
+$txt['lp_image_placeholder']       = 'URL-адрес картинки-заглушки по умолчанию';
+$txt['lp_subject_size']            = 'Размер заголовка статей (в символах)';
+$txt['lp_teaser_size']             = 'Размер тизера статей (в символах)';
+$txt['lp_num_items_per_page']      = 'Количество элементов на странице (для пагинации)';
+
+$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Автономный режим';
+$txt['lp_standalone_url']      = 'URL-адрес главной страницы портала в автономном режиме';
+$txt['lp_standalone_url_help'] = 'Можно указать свой URL-адрес для отображения в качестве главной страницы портала (например, <strong>https://yourforum/portal.php</strong>).<br>В этом случае главная страница форума останется доступной по адресу <strong>https://yourforum/index.php</strong>.<br><br>Чтобы вывести главную страницу портала, в файле <em>portal.php</em> должен быть примерно такой код:<br><pre><code class="bbc_code">
+require(dirname(__FILE__) . \'/SSI.php\');
+<br>
+Bugo\LightPortal\FrontPage::show();
+<br>
+obExit(true);</code></pre><br>
+Отключите параметр «<strong>Использовать локальное хранение куки</strong>», если файл <em>portal.php</em> находится вне директории форума (Обслуживание => Настройки сервера => Куки и сессии).';
+$txt['lp_standalone_mode_disabled_actions']         = 'Отключаемые области';
+$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Укажите области, которые должны быть ОТКЛЮЧЕНЫ в автономном режиме.';
+
+$txt['groups_light_portal_view']             = 'Кто может просматривать элементы портала';
+$txt['groups_light_portal_manage_blocks']    = 'Кто может управлять блоками';
+$txt['groups_light_portal_manage_own_pages'] = 'Кто может управлять своими страницами';
+$txt['lp_manage_permissions']                = 'Внимание: некоторые страницы и блоки могут содержать опасный HTML/PHP контент, поэтому не предоставляйте это право всем подряд!';
+
+$txt['lp_debug_and_caching']       = 'Отладка и кэширование';
+$txt['lp_show_debug_info']         = 'Отображать время загрузки и количество запросов портала';
+$txt['lp_show_debug_info_subtext'] = 'Информация будет доступна только администраторам!';
+$txt['lp_cache_update_interval']   = 'Интервал обновления кэша';
 
 $txt['lp_extra']      = 'Страницы и блоки';
 $txt['lp_extra_info'] = 'Здесь находятся общие настройки страниц и блоков.';

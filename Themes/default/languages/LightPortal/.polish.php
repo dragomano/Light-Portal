@@ -10,36 +10,49 @@ $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
 $txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
-$txt['lp_no_items']                 = 'Nic nie zostało dodane.';
+
+$txt['lp_article']  = 'Article';
+$txt['lp_no_items'] = 'Nic nie zostało dodane.';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
 
-$txt['lp_frontpage_title']                          = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']                           = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']                       = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
-$txt['lp_frontpage_id']                             = 'Strona główna portalu';
-$txt['lp_frontpage_boards']                         = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_layout']                         = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']                     = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
-$txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z artykułów';
-$txt['lp_image_placeholder']                        = 'Adres domyślnego obrazu';
-$txt['lp_subject_size']                             = 'Długość tytułów artykułów';
-$txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
-$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_mode_subtext']                  = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
-$txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
-$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
-$txt['groups_light_portal_view']                    = 'Kto może widzieć portal';
-$txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blokami';
-$txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
-$txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_debug_and_caching']                        = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']                          = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_subtext']                  = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval']                    = 'Interwał aktualizacji pamięci podręcznej'
+$txt['lp_frontpage_title']         = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']          = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set']      = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
+$txt['lp_frontpage_id']            = 'Strona główna portalu';
+$txt['lp_frontpage_boards']        = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_layout']        = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_layout_set']    = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
+$txt['lp_show_images_in_articles'] = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_image_placeholder']       = 'Adres domyślnego obrazu';
+$txt['lp_subject_size']            = 'Długość tytułów artykułów';
+$txt['lp_teaser_size']             = 'Długość podglądu artykułów';
+$txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
+
+$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']      = 'The frontpage URL in standalone mode';
+$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
+require(dirname(__FILE__) . \'/SSI.php\');
+<br>
+Bugo\LightPortal\FrontPage::show();
+<br>
+obExit(true);</code></pre><br>
+Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
+$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
+
+$txt['groups_light_portal_view']             = 'Kto może widzieć portal';
+$txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
+$txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
+$txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
+
+$txt['lp_debug_and_caching']       = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']         = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_subtext'] = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval']   = 'Interwał aktualizacji pamięci podręcznej';
 
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';

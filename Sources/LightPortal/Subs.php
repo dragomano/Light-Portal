@@ -145,36 +145,35 @@ class Subs
 	}
 
 	/**
-	 * Remove unnecessary areas for standalone mode
+	 * Remove unnecessary areas for the standalone mode
 	 *
 	 * Удаляем ненужные в автономном режиме области
 	 *
 	 * @param array $data
 	 * @return void
 	 */
-	public static function unsetUnusedActions(array &$data)
+	public static function unsetNotUsedActions(array &$data)
 	{
 		global $modSettings, $context;
 
-		$excluded_actions   = !empty($modSettings['lp_standalone_mode_excluded_actions']) ? explode(',', $modSettings['lp_standalone_mode_excluded_actions']) : [];
-		$excluded_actions[] = 'portal';
-		$excluded_actions   = array_flip($excluded_actions);
+		$excluded_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$excluded_actions = array_flip($excluded_actions);
 
 		foreach ($data as $action => $dump) {
-			if (!array_key_exists($action, $excluded_actions))
+			if (array_key_exists($action, $excluded_actions))
 				unset($data[$action]);
 		}
 
-		if (!array_key_exists('search', $excluded_actions))
+		if (array_key_exists('search', $excluded_actions))
 			$context['allow_search'] = false;
 
-		if (!array_key_exists('moderate', $excluded_actions))
+		if (array_key_exists('moderate', $excluded_actions))
 			$context['allow_moderation_center'] = false;
 
-		if (!array_key_exists('calendar', $excluded_actions))
+		if (array_key_exists('calendar', $excluded_actions))
 			$context['allow_calendar'] = false;
 
-		if (!array_key_exists('mlist', $excluded_actions))
+		if (array_key_exists('mlist', $excluded_actions))
 			$context['allow_memberlist'] = false;
 	}
 
@@ -265,7 +264,9 @@ class Subs
 	 *
 	 * Подключаем аддоны
 	 *
-	 * @param string $hook (see https://github.com/dragomano/Light-Portal/wiki/Available-hooks)
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
+	 *
+	 * @param string $hook
 	 * @param array $vars (extra variables)
 	 * @param array $plugins
 	 * @return mixed
