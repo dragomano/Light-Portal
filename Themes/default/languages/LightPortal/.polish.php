@@ -33,7 +33,7 @@ $txt['lp_teaser_size']             = 'Długość podglądu artykułów';
 $txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_url']      = 'Adres strony w trybie portalu osobnym';
+$txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
 $txt['lp_standalone_url_help'] = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
