@@ -20,7 +20,7 @@ function template_callback_portal_layout_preview()
 	echo '
 	<dt style="width: 0"></dt>
 	<dd style="width: 100%">
-		<table class="table_grid centertext">
+		<table class="table_grid centertext" style="margin: 0 auto; width: 50%">
 			<caption>', $txt['preview'], '</caption>
 			<tbody>';
 
