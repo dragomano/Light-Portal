@@ -59,6 +59,10 @@ class FrontPage
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
 
+		// Custom style
+		//$context['lp_all_categories'] = self::getListSelectedBoards();
+		//$context['sub_template']      = 'show_topics_as_custom_style';
+
 		if ($context['current_action'] !== 'portal')
 			Block::show();
 
@@ -606,6 +610,29 @@ class FrontPage
 		}
 
 		return $num_boards;
+	}
+
+	/**
+	 * Get the list of categories with boards, considering the selected boards in the portal settings
+	 *
+	 * Получаем список всех категорий с разделами, учитывая отмеченные разделы в настройках портала
+	 *
+	 * @return array
+	 */
+	public static function getListSelectedBoards()
+	{
+		global $sourcedir, $modSettings;
+
+		require_once($sourcedir . '/Subs-MessageIndex.php');
+
+		$boardListOptions = array(
+			'ignore_boards'   => true,
+			'use_permissions' => true,
+			'not_redirection' => true,
+			'included_boards' => !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : []
+		);
+
+		return getBoardList($boardListOptions);
 	}
 
 	/**
