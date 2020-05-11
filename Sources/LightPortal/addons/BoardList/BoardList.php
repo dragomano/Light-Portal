@@ -135,15 +135,18 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
+			$value = $key;
+			$key   = $key == '_' ? $txt['no'] : $key;
+
 			if (!defined('JQUERY_VERSION')) {
 				$context['posting_fields']['board_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['board_class']
+					'value'    => $value,
+					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
 				);
 			} else {
 				$context['posting_fields']['board_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['board_class']
+					'value'    => $value,
+					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
 				);
 			}
 		}
