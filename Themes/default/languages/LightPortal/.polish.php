@@ -11,13 +11,13 @@ $txt['lp_forum']  = 'Forum';
 
 $txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
 
-$txt['lp_article']  = 'Article';
+$txt['lp_article']  = 'Artykuł';
 $txt['lp_no_items'] = 'Nic nie zostało dodane.';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
 
 $txt['lp_frontpage_title']         = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']          = 'Strona główna portalu';
@@ -33,16 +33,16 @@ $txt['lp_teaser_size']             = 'Długość podglądu artykułów';
 $txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_url']      = 'The frontpage URL in standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
+$txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help'] = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
 Bugo\LightPortal\FrontPage::show();
 <br>
 obExit(true);</code></pre><br>
-Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
-$txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
-$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
+Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" jeśli plik <em>portal.php</em> jest zlokalizowany poza katalogiem forum (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
+$txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
+$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
 
 $txt['groups_light_portal_view']             = 'Kto może widzieć portal';
 $txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
