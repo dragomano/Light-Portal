@@ -23,7 +23,7 @@ jQuery(document).ready(function($) {
 			$(this).closest("li").slideUp();
 		}
 	});
-	$("#page_comments").on("click", ".title .bold_text", function (e) {
+	$("#page_comments").on("click", ".title > span", function (e) {
 		let commentTextarea = $("#message").val(),
 			position = $("#message")[0].selectionStart,
 			nickname = e.target.innerText + ", "

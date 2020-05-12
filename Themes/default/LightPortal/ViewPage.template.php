@@ -217,9 +217,13 @@ function show_single_comment($comment, $i = 0, $level = 1)
 		<div class="comment_wrapper">
 			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', '">
 				<div class="title">
-					<span class="bold_text bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>', $comment['author_name'], '</span>
+					<span class="bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>
+						', $comment['author_name'], '
+					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
-						<span itemprop="datePublished" content="' , $comment['created_at'], '">', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a></span>
+						<span itemprop="datePublished" content="' , $comment['created_at'], '">
+							', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a>
+						</span>
 					</div>
 				</div>
 				<div class="content" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 3em"' : '', '>', $comment['message'], '</div>';
