@@ -120,7 +120,7 @@ $txt['lp_block_placement_set']           = array(
 
 $txt['lp_block_areas']         = 'Області';
 $txt['lp_block_areas_subtext'] = 'Вкажіть одну або кілька областей (через кому) для відображення в них блоку:<br>
-<ul>
+<ul class="bbc_list">
 	<li><strong>all</strong> — відображати всюди</li>
 	<li><strong>forum</strong> — відображати лише на форумі</li>
 	<li><strong>portal</strong> — відображати лише на порталі (включно зі сторінками)</li>

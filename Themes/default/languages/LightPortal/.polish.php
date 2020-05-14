@@ -120,7 +120,7 @@ $txt['lp_block_placement_set']           = array(
 
 $txt['lp_block_areas']         = 'Akcje';
 $txt['lp_block_areas_subtext'] = 'Wybierz jedną lub kilka akcji do wyświetlania bloku (oddziel akcje przecinkami):<br>
-<ul>
+<ul class="bbc_list">
 	<li><strong>all</strong> — wyświetl wszędzie</li>
 	<li><strong>forum</strong> — wyświetl tylko na forum</li>
 	<li><strong>portal</strong> — wyświetl tylko na portalu (włącznie ze stronami)</li>
