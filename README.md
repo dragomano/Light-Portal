@@ -6,12 +6,16 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [BSD 3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
-* **Tested on:** PHP 7.3.17 / MySQL 5.7.25 / MariaDB 10.4.12 / PostgreSQL 9.6.17
+* **Tested on:** PHP 7.2.29 / MySQL 5.7.25 / MariaDB 10.4.12 / PostgreSQL 9.6.17
 * **Hooks only:** Yes
-* **Languages:** English, Polish, Russian, Ukrainian
+* **Languages:** English, Polish, Russian, Spanish, Ukrainian
 
 ## Description
-Transform your forum into a portal: customize the main page, separate additional pages with tags, and blocks. Support for BBC, HTML, PHP, and Markdown content.
+This modification will transform your forum into a portal:
+    * the frontpage,
+    * separate pages with keywords,
+    * blocks.
+The portal supports for BBC, HTML, PHP, and Markdown content withing pages and blocks.
 
 ### Features:
 * Blocks with multilingual titles and FontAwesome icons.
@@ -28,7 +32,11 @@ Transform your forum into a portal: customize the main page, separate 
 * Caching.
 
 ## Описание
-Преобразуйте форум в портал: настройте главную страницу, отдельные дополнительные страницы с тегами, и блоки. Поддержка контента с ББ-кодом, HTML, PHP и Markdown.
+Модификация преобразует ваш форум в портал:
+    * главная страница,
+    * отдельные страницы с ключевыми словами,
+    * блоки.
+Поддержка контента с форумными тегами, HTML, PHP и Markdown в страницах и блоках.
 
 ### Особенности:
 * Блоки с многоязычными заголовками и иконками FontAwesome.

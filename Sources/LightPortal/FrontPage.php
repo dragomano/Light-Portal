@@ -31,7 +31,7 @@ class FrontPage
 	 *
 	 * @var string
 	 */
-	private static $placeholder_image = '<i class="far fa-image fa-7x"></i>';
+	private static $placeholder_image = '<i class="far fa-image fa-6x"></i>';
 
 	/**
 	 * Show articles on the portal frontpage
@@ -59,6 +59,10 @@ class FrontPage
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
 
+		// Custom style
+		//$context['lp_all_categories'] = self::getListSelectedBoards();
+		//$context['sub_template']      = 'show_topics_as_custom_style';
+
 		if ($context['current_action'] !== 'portal')
 			Block::show();
 
@@ -80,7 +84,7 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	private static function getNumColumns()
+	public static function getNumColumns()
 	{
 		global $modSettings;
 
@@ -119,18 +123,19 @@ class FrontPage
 
 		switch ($source) {
 			case 'topics':
-				$function = 'getTopicsFromSelectedBoards';
+				$function = 'TopicsFromSelectedBoards';
 				break;
 			case 'boards':
-				$function = 'getSelectedBoards';
+				$function = 'SelectedBoards';
 				break;
 			default:
-				$function = 'getActivePages';
+				$function = 'ActivePages';
 		}
 
-		$start    = (int) $_REQUEST['start'];
-		$limit    = $modSettings['lp_num_items_per_page'] ?? 10;
-		$articles = self::$function($start, $limit);
+		$start       = (int) $_REQUEST['start'];
+		$limit       = $modSettings['lp_num_items_per_page'] ?? 10;
+		$getFunction = 'get' . $function;
+		$articles    = self::$getFunction($start, $limit);
 
 		$articles = array_map(function ($article) use ($modSettings, $context) {
 			if (isset($article['time']))
@@ -149,7 +154,7 @@ class FrontPage
 			return $article;
 		}, $articles);
 
-		$getTotalFunction = $function . 'Quantity';
+		$getTotalFunction = 'getTotal' . $function;
 
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], self::$getTotalFunction(), $limit);
 		$context['start']      = &$_REQUEST['start'];
@@ -183,7 +188,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($topics = cache_get_data('light_portal_fronttopics_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($topics = cache_get_data('light_portal_fronttopics_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -252,9 +257,10 @@ class FrontPage
 						'poster_name' => $row['poster_name'],
 						'time'        => $row['poster_time'],
 						'subject'     => self::getShortenSubject($row['subject']),
-						'preview'     => $row['body'],
+						'preview'     => self::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
-						'board'       => '<a href="' . $scripturl . '?board=' . $row['id_board'] . '.0">' . $row['name'] . '</a>',
+						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
+						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'],
 						'num_views'   => $row['num_views'],
@@ -301,7 +307,7 @@ class FrontPage
 					$topics[$id_topic]['image'] = $data[0];
 			}
 
-			cache_put_data('light_portal_fronttopics_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_fronttopics_' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
 
 		return $topics;
@@ -314,16 +320,16 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getTopicsFromSelectedBoardsQuantity()
+	public static function getTotalTopicsFromSelectedBoards()
 	{
-		global $modSettings, $smcFunc, $context;
+		global $modSettings, $user_info, $smcFunc, $context;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_topics = cache_get_data('light_portal_fronttopics_total', LP_CACHE_TIME)) == null) {
+		if (($num_topics = cache_get_data('light_portal_fronttopics_' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
@@ -346,7 +352,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_fronttopics_total', $num_topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_fronttopics_' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
 		}
 
 		return $num_topics;
@@ -363,9 +369,9 @@ class FrontPage
 	 */
 	public static function getActivePages(int $start, int $limit)
 	{
-		global $smcFunc, $modSettings, $scripturl, $user_info, $context;
+		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
 
-		if (($pages = cache_get_data('light_portal_frontpages_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($pages = cache_get_data('light_portal_frontpages_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns    = [];
@@ -397,6 +403,9 @@ class FrontPage
 
 			$pages = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				if (Helpers::canShowItem($row['permissions']) === false)
+					continue;
+
 				Subs::parseContent($row['content'], $row['type']);
 
 				$image = null;
@@ -412,7 +421,7 @@ class FrontPage
 						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
 						'author_name'  => $row['author_name'],
 						'alias'        => $row['alias'],
-						'description'  => $row['description'],
+						'description'  => self::getTeaser($row['description'] ?: strip_tags($row['content'])),
 						'type'         => $row['type'],
 						'num_views'    => $row['num_views'],
 						'num_comments' => $row['num_comments'],
@@ -420,7 +429,6 @@ class FrontPage
 						'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'link'         => $scripturl . '?page=' . $row['alias'],
 						'image'        => $image,
-						'can_show'     => Helpers::canShowItem($row['permissions']),
 						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
@@ -433,7 +441,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontpages_' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
 
 		return $pages;
@@ -446,11 +454,11 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getActivePagesQuantity()
+	public static function getTotalActivePages()
 	{
-		global $smcFunc, $context;
+		global $user_info, $smcFunc, $context;
 
-		if (($num_pages = cache_get_data('light_portal_frontpages_total', LP_CACHE_TIME)) == null) {
+		if (($num_pages = cache_get_data('light_portal_frontpages_' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -465,7 +473,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_total', $num_pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontpages_' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
 		}
 
 		return $num_pages;
@@ -489,7 +497,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($boards = cache_get_data('light_portal_frontboards_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($boards = cache_get_data('light_portal_frontboards_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -540,7 +548,7 @@ class FrontPage
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => self::getShortenSubject($board_name),
-					'description' => $description,
+					'description' => self::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
@@ -561,7 +569,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontboards_' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
 
 		return $boards;
@@ -574,16 +582,16 @@ class FrontPage
 	 *
 	 * @return int
 	 */
-	public static function getSelectedBoardsQuantity()
+	public static function getTotalSelectedBoards()
 	{
-		global $modSettings, $smcFunc, $context;
+		global $modSettings, $context, $smcFunc;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_boards = cache_get_data('light_portal_frontboards_total', LP_CACHE_TIME)) == null) {
+		if (($num_boards = cache_get_data('light_portal_frontboards_' . $context['user']['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
@@ -600,14 +608,37 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_total', $num_boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontboards_' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
 		}
 
 		return $num_boards;
 	}
 
 	/**
-	 * Get shorten title|titles
+	 * Get the list of categories with boards, considering the selected boards in the portal settings
+	 *
+	 * Получаем список всех категорий с разделами, учитывая отмеченные разделы в настройках портала
+	 *
+	 * @return array
+	 */
+	public static function getListSelectedBoards()
+	{
+		global $sourcedir, $modSettings;
+
+		require_once($sourcedir . '/Subs-MessageIndex.php');
+
+		$boardListOptions = array(
+			'ignore_boards'   => true,
+			'use_permissions' => true,
+			'not_redirection' => true,
+			'included_boards' => !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : []
+		);
+
+		return getBoardList($boardListOptions);
+	}
+
+	/**
+	 * Get the shorten title|titles
 	 *
 	 * Получаем короткий заголовок или заголовки
 	 *
@@ -621,6 +652,21 @@ class FrontPage
 		if (is_array($object))
 			return array_map('self::getShortenSubject', $object);
 
-		return !empty($modSettings['lp_subject_size']) ? shorten_subject($object, $modSettings['lp_subject_size']) : $object;
+		return !empty($modSettings['lp_subject_size']) ? shorten_subject(trim($object), $modSettings['lp_subject_size']) : trim($object);
+	}
+
+	/**
+	 * Get the article teaser
+	 *
+	 * Получаем тизер статьи
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	public static function getTeaser($text)
+	{
+		global $modSettings;
+
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 }

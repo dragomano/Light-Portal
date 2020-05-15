@@ -122,7 +122,7 @@ $txt['lp_block_placement_set'] = array(
 
 $txt['lp_block_areas'] = 'Acciones';
 $txt['lp_block_areas_subtext'] = 'Especifique una o más áreas (separadas por comas) para mostrar el bloque en:<br>
-<ul>
+<ul class="bbc_list">
 	<li><strong>all</strong> — mostrar en todas partes</li>
 	<li><strong>forum</strong> — mostrar solo en el área del foro</li>
 	<li><strong>portal</strong> — mostrar solo en el área del portal (incluidas las páginas)</li>

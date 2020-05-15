@@ -139,8 +139,8 @@ class Helpers
 	 *
 	 * Правильное склонение слов
 	 *
-	 * https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
-	 * http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
+	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
+	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
 	 *
 	 * @param int $num
 	 * @param array|string $str массив или строка с формами склонения (если в языке только одна форма склонения, см. rule #0)

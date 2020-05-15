@@ -229,9 +229,9 @@ function template_block_post()
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		if (!empty($context['lp_block']['title_style']))
-			$style = ' style="' . $context['lp_block']['title_style'] . '"';
+			$context['preview_title'] = '<span style="' . $context['lp_block']['title_style'] . '">' . $context['preview_title'] . '</span>';
 
-		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title'], $style ?? '', null);
+		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
 
 		$style = '';
 		if (!empty($context['lp_block']['content_style']))

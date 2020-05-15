@@ -126,12 +126,8 @@ class Integration
 		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
 			Tag::show();
 
-		if (!empty($modSettings['lp_standalone_mode'])) {
-			Subs::unsetUnusedActions($actions);
-
-			if (empty($actions[$_REQUEST['action']]))
-				redirectexit();
-		}
+		if (!empty($modSettings['lp_standalone_mode']))
+			Subs::unsetNotUsedActions($actions);
 	}
 
 	/**
@@ -148,12 +144,14 @@ class Integration
 		if (!empty($_GET['page']))
 			return Page::show((string) $_GET['page']);
 
+		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
+			require_once($sourcedir . '/BoardIndex.php');
+			$action = 'BoardIndex';
+			return $action();
+		}
+
 		if (!empty($modSettings['lp_frontpage_mode']))
 			return FrontPage::show();
-
-		require_once($sourcedir . '/BoardIndex.php');
-		$action = 'BoardIndex';
-		return $action();
 	}
 
 	/**
@@ -171,13 +169,16 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		if (empty($_REQUEST['action']))
+		if (empty($_REQUEST['action'])) {
 			$current_action = 'portal';
 
-		$excluded_actions = !empty($modSettings['lp_standalone_mode_excluded_actions']) ? explode(',', $modSettings['lp_standalone_mode_excluded_actions']) : [];
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $_SERVER['REQUEST_URL'] != $modSettings['lp_standalone_url'])
+				$current_action = 'forum';
+		}
 
+		$excluded_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
-			$current_action = !empty($modSettings['lp_standalone_mode']) ? (in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
+			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
 	}
 
 	/**
@@ -290,7 +291,7 @@ class Integration
 		// Standalone mode | Автономный режим
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
-			$buttons['portal']['href']    = $scripturl;
+			$buttons['portal']['href']    = $modSettings['lp_standalone_url'] ?: $scripturl;
 			$buttons['portal']['icon']    = 'home';
 			$buttons['portal']['is_last'] = $context['right_to_left'];
 
@@ -299,7 +300,7 @@ class Integration
 				array(
 					'forum' => array(
 						'title'       => $txt['lp_forum'],
-						'href'        => $scripturl . '?action=forum',
+						'href'        => !empty($modSettings['lp_standalone_url']) ? $scripturl : ($scripturl . '?action=forum'),
 						'icon'        => 'im_on',
 						'show'        => true,
 						'action_hook' => true
@@ -308,7 +309,7 @@ class Integration
 				array_slice($buttons, 2, null, true)
 			);
 
-			Subs::unsetUnusedActions($buttons);
+			Subs::unsetNotUsedActions($buttons);
 		}
 
 		if ($context['current_action'] == 'forum')

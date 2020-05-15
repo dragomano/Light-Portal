@@ -1,46 +1,58 @@
 <?php
 
 /**
- * .polish language file
+ * Polish translation by Adrek (https://adrek.pl)
  *
  * @package Light Portal
- * @author Adrek https://adrek.pl
  */
 
 $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
 $txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
-$txt['lp_no_items']                 = 'Nic nie zostało dodane.';
+
+$txt['lp_article']  = 'Artykuł';
+$txt['lp_no_items'] = 'Nic nie zostało dodane.';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
 
-$txt['lp_frontpage_title']                          = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']                           = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']                       = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
-$txt['lp_frontpage_id']                             = 'Strona główna portalu';
-$txt['lp_frontpage_boards']                         = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_layout']                         = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']                     = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
-$txt['lp_show_images_in_articles']                  = 'Wyświetlaj obrazy z artykułów';
-$txt['lp_image_placeholder']                        = 'Adres domyślnego obrazu';
-$txt['lp_subject_size']                             = 'Długość tytułów artykułów';
-$txt['lp_num_items_per_page']                       = 'Ilość artykułów na stronę';
-$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_mode_subtext']                  = 'Wszystko poza portalem i ignorowanymi akcjami będzie wyłączone.';
-$txt['lp_standalone_mode_excluded_actions']         = 'Ignorowane akcje';
-$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Wybierz akcje, które powinny być dostępne w trybie portalu.';
-$txt['groups_light_portal_view']                    = 'Kto może widzieć portal';
-$txt['groups_light_portal_manage_blocks']           = 'Kto może zarządzać blokami';
-$txt['groups_light_portal_manage_own_pages']        = 'Kto może zarządzać stronami';
-$txt['lp_manage_permissions']                       = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-$txt['lp_debug_and_caching']                        = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']                          = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_subtext']                  = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval']                    = 'Interwał aktualizacji pamięci podręcznej'
+$txt['lp_frontpage_title']         = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']          = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set']      = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
+$txt['lp_frontpage_id']            = 'Strona główna portalu';
+$txt['lp_frontpage_boards']        = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_layout']        = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_layout_set']    = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
+$txt['lp_show_images_in_articles'] = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_image_placeholder']       = 'Adres domyślnego obrazu';
+$txt['lp_subject_size']            = 'Długość tytułów artykułów';
+$txt['lp_teaser_size']             = 'Długość podglądu artykułów';
+$txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
+
+$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help'] = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
+require(dirname(__FILE__) . \'/SSI.php\');
+<br>
+Bugo\LightPortal\FrontPage::show();
+<br>
+obExit(true);</code></pre><br>
+Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" jeśli plik <em>portal.php</em> jest zlokalizowany poza katalogiem forum (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
+$txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
+$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
+
+$txt['groups_light_portal_view']             = 'Kto może widzieć portal';
+$txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
+$txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
+$txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
+
+$txt['lp_debug_and_caching']       = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']         = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_subtext'] = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval']   = 'Interwał aktualizacji pamięci podręcznej';
 
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
@@ -108,7 +120,7 @@ $txt['lp_block_placement_set']           = array(
 
 $txt['lp_block_areas']         = 'Akcje';
 $txt['lp_block_areas_subtext'] = 'Wybierz jedną lub kilka akcji do wyświetlania bloku (oddziel akcje przecinkami):<br>
-<ul>
+<ul class="bbc_list">
 	<li><strong>all</strong> — wyświetl wszędzie</li>
 	<li><strong>forum</strong> — wyświetl tylko na forum</li>
 	<li><strong>portal</strong> — wyświetl tylko na portalu (włącznie ze stronami)</li>

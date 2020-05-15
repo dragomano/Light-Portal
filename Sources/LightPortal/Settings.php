@@ -149,9 +149,9 @@ class Settings
 	 */
 	public static function base(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings;
+		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
 
-		loadTemplate('LightPortal/ManagePages');
+		loadTemplate('LightPortal/ManageSettings');
 
 		require_once($sourcedir . '/ManageServer.php');
 
@@ -165,10 +165,12 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=base;save';
 
+		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
+
 		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 
-		$txt['lp_manage_permissions'] = '<p class="errorbox permissions">' . $txt['lp_manage_permissions'] . '</p>';
+		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings | Первоначальные настройки
 		$add_settings = [];
@@ -176,16 +178,16 @@ class Settings
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_id']))
 			$add_settings['lp_frontpage_id'] = 1;
-		if (!isset($modSettings['lp_frontpage_layout']))
-			$add_settings['lp_frontpage_layout'] = 2;
 		if (!isset($modSettings['lp_subject_size']))
 			$add_settings['lp_subject_size'] = 22;
+		if (!isset($modSettings['lp_teaser_size']))
+			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
-		if (!isset($modSettings['lp_standalone_mode_excluded_actions']))
-			$add_settings['lp_standalone_mode_excluded_actions'] = 'forum,admin,profile,pm,signup,logout';
+		if (!isset($modSettings['lp_standalone_mode_disabled_actions']))
+			$add_settings['lp_standalone_mode_disabled_actions'] = 'home,mlist,calendar';
 		if (!isset($modSettings['lp_num_comments_per_page']))
-			$add_settings['lp_num_comments_per_page'] = 10;
+			$add_settings['lp_num_comments_per_page'] = 12;
 		if (!isset($modSettings['lp_cache_update_interval']))
 			$add_settings['lp_cache_update_interval'] = 3600;
 		if (!empty($add_settings))
@@ -196,18 +198,27 @@ class Settings
 		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
 
 		$config_vars = array(
-			array('text', 'lp_frontpage_title', 'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)),
+			array(
+				'text',
+				'lp_frontpage_title',
+				'80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal'],
+				'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)
+			),
 			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
 			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
-			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
 			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			'',
+			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
+			array('callback', 'portal_layout_preview'),
 			array('title', 'lp_standalone_mode_title'),
-			array('check', 'lp_standalone_mode', 'subtext' => $txt['lp_standalone_mode_subtext'], 'disabled' => $frontpage_disabled),
-			array('text', 'lp_standalone_mode_excluded_actions', 80, 'subtext' => $txt['lp_standalone_mode_excluded_actions_subtext']),
+			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
+			array('text', 'lp_standalone_url', '80" placeholder="' . $boardurl . '/portal.php', 'help' => 'lp_standalone_url_help'),
+			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext']),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
 			array('permissions', 'light_portal_view'),
@@ -225,6 +236,12 @@ class Settings
 
 		if (isset($_GET['save'])) {
 			checkSession();
+
+			if (!empty($_POST['lp_image_placeholder']))
+				$_POST['lp_image_placeholder'] = filter_var($_POST['lp_image_placeholder'], FILTER_VALIDATE_URL);
+
+			if (!empty($_POST['lp_standalone_url']))
+				$_POST['lp_standalone_url'] = filter_var($_POST['lp_standalone_url'], FILTER_VALIDATE_URL);
 
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);

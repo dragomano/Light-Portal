@@ -55,7 +55,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			$open = false;
 
 			foreach ($parts as $part) {
-				if ($part=="~~") {
+				if ($part == "~~") {
 					$text .= $open ? "</del>" : "<del>";
 					$open = !$open;
 				} else {
@@ -92,7 +92,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			$item = $this->doLists($this->outdent($item));
 			$item = $this->formParagraphs($item, false);
 			$token = substr($item, 0, 4);
-			if ($token=="[ ] " || $token=="[x] ") {
+			if ($token == "[ ] " || $token == "[x] ") {
 				$attr = " class=\"task-list-item\"";
 				$item = ($token=='[ ] ' ? "<input type=\"checkbox\" disabled=\"disabled\"> " : "<input type=\"checkbox\" disabled=\"disabled\" checked=\"checked\"> ").substr($item, 4);
 			}
@@ -123,7 +123,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 		$result = "<a class=\"bbc_link\" href=\"$url\"";
 		if (isset($title)) {
 			$title = $this->encodeAttribute($title);
-			$result .=  " title=\"$title\"";
+			$result .= " title=\"$title\"";
 		}
 		$result .= $attr;
 
@@ -181,7 +181,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 
 		if (isset($title)) {
 			$title = $this->encodeAttribute($title);
-			$result .=  " title=\"$title\"";
+			$result .= " title=\"$title\"";
 		}
 
 		$result .= $attr;
@@ -216,7 +216,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			if ($list_type == 'ul class=\"bbc_list\" style=\"list-style-type: decimal\"') {
 				$ol_start_array = [];
 				$ol_start_check = preg_match("/$marker_ol_start_re/", $matches[4], $ol_start_array);
-				if ($ol_start_check){
+				if ($ol_start_check) {
 					$ol_start = $ol_start_array[0];
 				}
 			}
@@ -228,7 +228,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 			$result = $this->hashBlock("<$list_type>\n" . $result . "</ul>");
 		}
 
-		return "\n". $result ."\n\n";
+		return "\n" . $result . "\n\n";
 	}
 
 	/**
@@ -245,7 +245,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 
 		$head      = preg_replace('/[|] *$/m', '', $head);
 		$underline = preg_replace('/[|] *$/m', '', $underline);
-		$content = preg_replace('/[|] *$/m', '', $content);
+		$content   = preg_replace('/[|] *$/m', '', $content);
 
 		$separators	= preg_split('/ *[|] */', $underline);
 		foreach ($separators as $n => $s) {
@@ -268,7 +268,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 		$text .= "<thead>\n";
 		$text .= "<tr class=\"title_bar\">\n";
 		foreach ($headers as $n => $header) {
-			$text .= "  <th$attr[$n]>" . $this->runSpanGamut(trim($header)) . "</th>\n";
+			$text .= "<th$attr[$n]>" . $this->runSpanGamut(trim($header)) . "</th>\n";
 		}
 		$text .= "</tr>\n";
 		$text .= "</thead>\n";
@@ -284,7 +284,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 
 			$text .= "<tr class=\"windowbg\">\n";
 			foreach ($row_cells as $n => $cell) {
-				$text .= "  <td$attr[$n]>" . $this->runSpanGamut(trim($cell)) . "</td>\n";
+				$text .= "<td$attr[$n]>" . $this->runSpanGamut(trim($cell)) . "</td>\n";
 			}
 			$text .= "</tr>\n";
 		}
@@ -346,7 +346,7 @@ class MarkdownSMF extends \Michelf\MarkdownExtra
 		$code_attr_str = $this->code_attr_on_pre ? '' : $attr_str;
 		$codeblock     = "<code$code_attr_str>$codeblock</code>";
 
-		return "\n\n".$this->hashBlock($codeblock)."\n\n";
+		return "\n\n" . $this->hashBlock($codeblock) . "\n\n";
 	}
 
 	/**

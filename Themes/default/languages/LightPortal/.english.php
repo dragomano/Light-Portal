@@ -4,43 +4,55 @@
  * .english language file
  *
  * @package Light Portal
- * @author Bugo https://dragomano.ru/mods/light-portal
  */
 
 $txt['lp_portal'] = 'Portal';
 $txt['lp_forum']  = 'Forum';
 
 $txt['lp_new_version_is_available'] = 'A new version is available!';
-$txt['lp_no_items']                 = 'There is no items to show.';
+
+$txt['lp_article']  = 'Article';
+$txt['lp_no_items'] = 'There is no items to show.';
 
 // Settings
 $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
 
-$txt['lp_frontpage_title']                          = 'The frontpage title';
-$txt['lp_frontpage_mode']                           = 'The portal frontpage';
-$txt['lp_frontpage_mode_set']                       = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
-$txt['lp_frontpage_id']                             = 'Portal page to display as the main page';
-$txt['lp_frontpage_boards']                         = 'Boards as sources of articles for the frontpage';
-$txt['lp_frontpage_layout']                         = 'Number of columns for displaying articles';
-$txt['lp_frontpage_layout_set']                     = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
-$txt['lp_show_images_in_articles']                  = 'Show images that found in articles';
-$txt['lp_image_placeholder']                        = 'URL of the default placeholder image';
-$txt['lp_subject_size']                             = 'The max size of article titles (in symbols)';
-$txt['lp_num_items_per_page']                       = 'Number of items per page (for pagination)';
-$txt['lp_standalone_mode']                          = $txt['lp_standalone_mode_title'] = 'Standalone mode';
-$txt['lp_standalone_mode_subtext']                  = 'Everything except portal pages and ignored areas will be disabled.';
-$txt['lp_standalone_mode_excluded_actions']         = 'Ignored actions';
-$txt['lp_standalone_mode_excluded_actions_subtext'] = 'Specify the areas that should remain available offline.';
-$txt['groups_light_portal_view']                    = 'Who can view the portal elements';
-$txt['groups_light_portal_manage_blocks']           = 'Who can manage blocks';
-$txt['groups_light_portal_manage_own_pages']        = 'Who can manage own pages';
-$txt['lp_manage_permissions']                       = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
-$txt['lp_debug_and_caching']                        = 'Debugging and caching';
-$txt['lp_show_debug_info']                          = 'Show the loading time and number of the portal queries';
-$txt['lp_show_debug_info_subtext']                  = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval']                    = 'The cache update interval';
+$txt['lp_frontpage_title']         = 'The frontpage title';
+$txt['lp_frontpage_mode']          = 'The portal frontpage';
+$txt['lp_frontpage_mode_set']      = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
+$txt['lp_frontpage_id']            = 'Portal page to display as the main page';
+$txt['lp_frontpage_boards']        = 'Boards as sources of articles for the frontpage';
+$txt['lp_frontpage_layout']        = 'Number of columns for displaying articles';
+$txt['lp_frontpage_layout_set']    = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
+$txt['lp_show_images_in_articles'] = 'Show images that found in articles';
+$txt['lp_image_placeholder']       = 'URL of the default placeholder image';
+$txt['lp_subject_size']            = 'The max size of article titles (in symbols)';
+$txt['lp_teaser_size']             = 'The max size of article teasers (in symbols)';
+$txt['lp_num_items_per_page']      = 'Number of items per page (for pagination)';
+
+$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Standalone mode';
+$txt['lp_standalone_url']      = 'The frontpage URL in the standalone mode';
+$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
+require(dirname(__FILE__) . \'/SSI.php\');
+<br>
+Bugo\LightPortal\FrontPage::show();
+<br>
+obExit(true);</code></pre><br>
+Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
+$txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
+
+$txt['groups_light_portal_view']             = 'Who can view the portal elements';
+$txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
+$txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
+$txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+
+$txt['lp_debug_and_caching']       = 'Debugging and caching';
+$txt['lp_show_debug_info']         = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info_subtext'] = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval']   = 'The cache update interval';
 
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
@@ -108,7 +120,7 @@ $txt['lp_block_placement_set']           = array(
 
 $txt['lp_block_areas']         = 'Actions';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
-<ul>
+<ul class="bbc_list">
 	<li><strong>all</strong> — display everywhere</li>
 	<li><strong>forum</strong> — display only on the forum area</li>
 	<li><strong>portal</strong> — display only on the portal area (including pages)</li>

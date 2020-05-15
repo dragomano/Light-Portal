@@ -53,7 +53,9 @@ class Markdown
 	 */
 	private static function getParsedMarkdown($text)
 	{
-		require_once(__DIR__ . '/Michelf/MarkdownExtra.inc.php');
+		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
+		require_once(__DIR__ . '/Michelf/Markdown.php');
+		require_once(__DIR__ . '/Michelf/MarkdownExtra.php');
 		require_once(__DIR__ . '/Michelf/MarkdownSMF.php');
 
 		return Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));

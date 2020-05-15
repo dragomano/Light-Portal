@@ -178,9 +178,9 @@ class Likely
 			'type' => 'textarea',
 			'after' => sprintf($txt['lp_likely_addon_buttons_subtext'], static::$buttons),
 			'attributes' => array(
-				'id' => 'buttons',
+				'id'        => 'buttons',
 				'maxlength' => 255,
-				'value' => $context['lp_block']['options']['parameters']['buttons']
+				'value'     => $context['lp_block']['options']['parameters']['buttons']
 			)
 		);
 	}
