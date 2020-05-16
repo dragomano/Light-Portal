@@ -123,7 +123,7 @@ class Subs
 	 */
 	public static function getNumActivePages()
 	{
-		global $smcFunc, $user_info, $context;
+		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
@@ -132,7 +132,7 @@ class Subs
 				AND author_id = {int:user_id}'),
 			array(
 				'status'  => Page::STATUS_ACTIVE,
-				'user_id' => $user_info['id']
+				'user_id' => $context['user']['id']
 			)
 		);
 
@@ -145,36 +145,38 @@ class Subs
 	}
 
 	/**
-	 * Remove unnecessary areas for the standalone mode
+	 * Remove unnecessary areas for the standalone mode and return the list of these areas
 	 *
-	 * Удаляем ненужные в автономном режиме области
+	 * Удаляем ненужные в автономном режиме области и возвращаем список этих областей
 	 *
 	 * @param array $data
-	 * @return void
+	 * @return array
 	 */
-	public static function unsetNotUsedActions(array &$data)
+	public static function unsetDisabledActions(array &$data)
 	{
 		global $modSettings, $context;
 
-		$excluded_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
-		$excluded_actions = array_flip($excluded_actions);
+		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions = array_flip($disabled_actions);
 
 		foreach ($data as $action => $dump) {
-			if (array_key_exists($action, $excluded_actions))
+			if (array_key_exists($action, $disabled_actions))
 				unset($data[$action]);
 		}
 
-		if (array_key_exists('search', $excluded_actions))
+		if (array_key_exists('search', $disabled_actions))
 			$context['allow_search'] = false;
 
-		if (array_key_exists('moderate', $excluded_actions))
+		if (array_key_exists('moderate', $disabled_actions))
 			$context['allow_moderation_center'] = false;
 
-		if (array_key_exists('calendar', $excluded_actions))
+		if (array_key_exists('calendar', $disabled_actions))
 			$context['allow_calendar'] = false;
 
-		if (array_key_exists('mlist', $excluded_actions))
+		if (array_key_exists('mlist', $disabled_actions))
 			$context['allow_memberlist'] = false;
+
+		return $disabled_actions;
 	}
 
 	/**
@@ -307,14 +309,11 @@ class Subs
 	 */
 	public static function loadAddonLanguage(string $addon = '')
 	{
-		global $txt;
+		global $user_info, $txt;
 
 		$base_dir = LP_ADDONS . '/' . $addon . '/langs/';
 
-		$languages = array(
-			'english',
-			Helpers::getUserLanguage()
-		);
+		$languages = array_merge(['english'], [$user_info['language']]);
 
 		foreach ($languages as $lang) {
 			$lang_file = $base_dir . $lang . '.php';

@@ -145,19 +145,21 @@ class PageList
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.alias, p.type, p.permissions, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				p.page_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.status = {int:status}
+				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort} DESC' . (!empty($num_pages) ? '
 			LIMIT {int:limit}' : ''),
 			array(
-				'guest'  => $txt['guest_title'],
-				'type'   => 'page',
-				'status' => 1,
-				'sort'   => $sort,
-				'limit'  => $num_pages
+				'guest'       => $txt['guest_title'],
+				'type'        => 'page',
+				'status'      => 1,
+				'permissions' => Helpers::getPermissions(),
+				'sort'        => $sort,
+				'limit'       => $num_pages
 			)
 		);
 
@@ -175,8 +177,7 @@ class PageList
 				'num_views'    => $row['num_views'],
 				'num_comments' => $row['num_comments'],
 				'created_at'   => $row['created_at'],
-				'updated_at'   => $row['updated_at'],
-				'permissions'  => $row['permissions']
+				'updated_at'   => $row['updated_at']
 			);
 		}
 
@@ -199,12 +200,18 @@ class PageList
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $scripturl, $txt;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'], 'getPageList', __CLASS__, $cache_time, $parameters);
+		$page_list = Helpers::getFromCache(
+			'page_list_addon_b' . $block_id . '_sort_' . $parameters['sort'] . '_u' . $user_info['id'],
+			'getPageList',
+			__CLASS__,
+			$cache_time,
+			$parameters
+		);
 
 		ob_start();
 
@@ -213,7 +220,7 @@ class PageList
 			<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if (Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
+				if (empty($title = Helpers::getPublicTitle($page)))
 					continue;
 
 				echo '

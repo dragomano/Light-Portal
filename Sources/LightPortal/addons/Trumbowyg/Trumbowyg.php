@@ -80,7 +80,9 @@ class Trumbowyg
 				["viewHTML", "removeformat"],
 				["fullscreen"]
 			],
-			semantic: true,
+			semantic: {
+				"div": "div"
+			},
 			urlProtocol: true,
 			resetCss: true,
 			urlProtocol: true,

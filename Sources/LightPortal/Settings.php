@@ -517,10 +517,10 @@ class Settings
 		global $context, $txt;
 
 		// Check every 3 days | Проверяем раз в 3 дня
-		if (str_replace(' ', '', LP_VERSION) < Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
+		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
-				<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $txt['lp_new_version_is_available'] . '</a>
+				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
 			</div>';
 		}
 	}
@@ -551,7 +551,10 @@ class Settings
 
 		$data = json_decode($data);
 
-		return str_replace('v', '', $data->tag_name);
+		if (LP_RELEASE_DATE < $data->published_at)
+			return $data->tag_name;
+
+		return LP_VERSION;
 	}
 
 	/**
@@ -566,9 +569,9 @@ class Settings
 		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 		if (!empty($pages)) {
 			$pages = array_map(function ($page) {
-				global $language;
+				global $user_info;
 
-				return $page['id'] = $page[Helpers::getUserLanguage()] ?: $page[$language];
+				return $page['id'] = $page[$user_info['language']];
 			}, $pages);
 		}
 

@@ -367,7 +367,7 @@ class ManageBlocks
 
 		self::validateData();
 
-		$block_title = $context['lp_block']['title'][Helpers::getUserLanguage()] ?? '';
+		$block_title = $context['lp_block']['title'][$context['user']['language']] ?? '';
 		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
@@ -674,15 +674,18 @@ class ManageBlocks
 			);
 
 			foreach ($context['lp_all_content_classes'] as $key => $data) {
+				$value = $key;
+				$key   = $key == '_' ? $txt['no'] : $key;
+
 				if (!defined('JQUERY_VERSION')) {
 					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
-						'value'    => $key,
-						'selected' => $key == $context['lp_block']['content_class']
+						'value'    => $value,
+						'selected' => $value == $context['lp_block']['content_class']
 					);
 				} else {
 					$context['posting_fields']['content_class']['input']['options'][$key] = array(
-						'value'    => $key,
-						'selected' => $key == $context['lp_block']['content_class']
+						'value'    => $value,
+						'selected' => $value == $context['lp_block']['content_class']
 					);
 				}
 			}
@@ -753,7 +756,7 @@ class ManageBlocks
 
 		checkSubmitOnce('free');
 
-		$context['preview_title']   = Helpers::cleanBbcode($context['lp_block']['title'][Helpers::getUserLanguage()]);
+		$context['preview_title']   = Helpers::cleanBbcode($context['lp_block']['title'][$context['user']['language']]);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
 		censorText($context['preview_title']);
@@ -1045,8 +1048,7 @@ class ManageBlocks
 					'title_class'   => $row['title_class'],
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
-					'content_style' => $row['content_style'],
-					'can_show'      => Helpers::canShowItem($row['permissions'])
+					'content_style' => $row['content_style']
 				);
 
 			$data['title'][$row['lang']] = $row['title'];

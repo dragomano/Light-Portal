@@ -394,7 +394,6 @@ $tables[] = array(
 );
 
 db_extend('packages');
-db_extend('extra');
 
 foreach($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], array(), 'ignore');
