@@ -163,15 +163,17 @@ class TopPages
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
-			SELECT page_id, alias, type, permissions, num_views, num_comments
+			SELECT page_id, alias, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
+				AND permissions IN ({array_int:permissions})
 			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'type'   => 'page',
-				'status' => 1,
-				'limit'  => $num_pages
+				'type'        => 'page',
+				'status'      => 1,
+				'permissions' => Helpers::getPermissions(),
+				'limit'       => $num_pages
 			)
 		);
 
@@ -184,8 +186,7 @@ class TopPages
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => $scripturl . '?page=' . $row['alias'],
-				'permissions'  => $row['permissions']
+				'href'         => $scripturl . '?page=' . $row['alias']
 			);
 		}
 
@@ -210,13 +211,13 @@ class TopPages
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $txt;
+		global $user_info, $txt;
 
 		if ($type !== 'top_pages')
 			return;
 
 		$top_pages = Helpers::getFromCache(
-			'top_pages_addon_b' . $block_id . '_' . $parameters['popularity_type'],
+			'top_pages_addon_b' . $block_id . '_' . $parameters['popularity_type'] . '_u' . $user_info['id'],
 			'getTopPages',
 			__CLASS__,
 			$cache_time,
@@ -235,7 +236,7 @@ class TopPages
 			<dl class="stats">';
 
 				foreach ($top_pages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || Helpers::canShowItem($page['permissions']) === false || empty($title = Helpers::getPublicTitle($page)))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getPublicTitle($page)))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

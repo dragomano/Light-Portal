@@ -148,30 +148,29 @@ class Tag
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.alias, p.permissions, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
+				p.page_id, p.alias, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
 				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
+				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array(
-				'guest'  => $txt['guest_title'],
-				'key'    => $context['lp_keyword'],
-				'status' => Page::STATUS_ACTIVE,
-				'sort'   => $sort,
-				'start'  => $start,
-				'limit'  => $items_per_page
+				'guest'       => $txt['guest_title'],
+				'key'         => $context['lp_keyword'],
+				'status'      => Page::STATUS_ACTIVE,
+				'permissions' => Helpers::getPermissions(),
+				'sort'        => $sort,
+				'start'       => $start,
+				'limit'       => $items_per_page
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions']) === false)
-				continue;
-
 			$items[$row['page_id']] = array(
 				'id'          => $row['page_id'],
 				'alias'       => $row['alias'],
@@ -202,22 +201,22 @@ class Tag
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value, p.permissions
+			SELECT t.page_id, t.value
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value = {string:key}
-				AND p.status = {int:status}',
+				AND p.status = {int:status}
+				AND p.permissions IN ({array_int:permissions})',
 			array(
-				'key'    => $context['lp_keyword'],
-				'status' => Page::STATUS_ACTIVE
+				'key'         => $context['lp_keyword'],
+				'status'      => Page::STATUS_ACTIVE,
+				'permissions' => Helpers::getPermissions()
 			)
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions']))
-				$items[$row['page_id']] = $row['value'];
-		}
+		while ($row = $smcFunc['db_fetch_assoc']($request))
+			$items[$row['page_id']] = $row['value'];
 
 		$smcFunc['db_free_result']($request);
 
@@ -314,26 +313,25 @@ class Tag
 		global $smcFunc, $scripturl, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.value, p.permissions
+			SELECT t.value
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
+				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
-				'status' => Page::STATUS_ACTIVE,
-				'sort'   => $sort,
-				'start'  => $start,
-				'limit'  => $items_per_page
+				'status'      => Page::STATUS_ACTIVE,
+				'permissions' => Helpers::getPermissions(),
+				'sort'        => $sort,
+				'start'       => $start,
+				'limit'       => $items_per_page
 			)
 		);
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions']) === false)
-				continue;
-
 			if (!isset($items[$row['value']]))
 				$i = 1;
 			else
@@ -369,21 +367,21 @@ class Tag
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value, p.permissions
+			SELECT t.page_id, t.value
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
-				AND p.status = {int:status}',
+				AND p.status = {int:status}
+				AND p.permissions IN ({array_int:permissions})',
 			array(
-				'status' => Page::STATUS_ACTIVE
+				'status'      => Page::STATUS_ACTIVE,
+				'permissions' => Helpers::getPermissions()
 			)
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::canShowItem($row['permissions']))
-				$items[$row['value']] = $row['page_id'];
-		}
+		while ($row = $smcFunc['db_fetch_assoc']($request))
+			$items[$row['value']] = $row['page_id'];
 
 		$smcFunc['db_free_result']($request);
 

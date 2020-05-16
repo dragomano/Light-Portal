@@ -101,7 +101,7 @@ class CurrentMonth
 
 		$calendar_data = &$data;
 
-		if (empty($context['lp_active_blocks'][$data['block_id']]['title'][Helpers::getUserLanguage()])) {
+		if (empty($context['lp_active_blocks'][$data['block_id']]['title'][$context['user']['language']])) {
 			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
 
 			if (allowedTo('light_portal_manage_blocks'))

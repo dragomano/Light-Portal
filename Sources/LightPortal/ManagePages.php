@@ -514,7 +514,7 @@ class ManagePages
 
 		self::validateData();
 
-		$page_title = $context['lp_page']['title'][Helpers::getUserLanguage()] ?? '';
+		$page_title = $context['lp_page']['title'][$context['user']['language']] ?? '';
 		$context['page_area_title'] = $txt['lp_pages_edit_title'] . (!empty($page_title) ? ' - ' . $page_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'];
 
@@ -624,7 +624,7 @@ class ManagePages
 
 		$post_errors = [];
 
-		if (empty($data['title_english']) || empty($data['title_' . Helpers::getUserLanguage()]))
+		if (empty($data['title_english']) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -699,7 +699,7 @@ class ManagePages
 			'type' => 'select',
 			'attributes' => array(
 				'id'       => 'type',
-				'disabled' => empty($context['lp_page']['title'][Helpers::getUserLanguage()]) && empty($context['lp_page']['alias'])
+				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias'])
 			),
 			'options' => array()
 		);
@@ -838,7 +838,7 @@ class ManagePages
 
 		checkSubmitOnce('free');
 
-		$context['preview_title']   = Helpers::cleanBbcode($context['lp_page']['title'][Helpers::getUserLanguage()]);
+		$context['preview_title']   = Helpers::cleanBbcode($context['lp_page']['title'][$context['user']['language']]);
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
 
 		if (!empty($context['preview_content']))

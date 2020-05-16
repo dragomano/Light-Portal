@@ -20,20 +20,6 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get language of the current user
-	 *
-	 * Получаем язык текущего пользователя
-	 *
-	 * @return string
-	 */
-	public static function getUserLanguage()
-	{
-		global $user_info, $language;
-
-		return $user_info['language'] ?: $language;
-	}
-
-	/**
 	 * Get the maximum possible length of the message, in accordance with the settings of the forum
 	 *
 	 * Получаем максимально возможную длину сообщения, в соответствии с настройками форума
@@ -102,6 +88,9 @@ class Helpers
 			'Lunarfall',
 			'Wide'
 		];
+
+		// Add possibility to change the list of FontAwesome themes by manual | Возможность изменить список поддерживающих FontAwesome тем вручную
+		Subs::runAddons('fontAwesomeThemes', array(&$supported_themes));
 
 		return in_array(explode('_', $settings['name'])[0], $supported_themes);
 	}
@@ -409,6 +398,27 @@ class Helpers
 	}
 
 	/**
+	 * Returns a valid set of access rights for the current user
+	 *
+	 * Возвращает допустимый набор прав доступа текущего пользователя
+	 *
+	 * @return int
+	 */
+	public static function getPermissions()
+	{
+		global $user_info;
+
+		if ($user_info['is_admin'] == 1)
+			return [0, 1, 2, 3];
+		elseif ($user_info['is_guest'] == 1)
+			return [1, 3];
+		elseif (!empty($user_info['id']))
+			return [1, 2, 3];
+
+		return [3];
+	}
+
+	/**
 	 * Check if the page with id = $id set as the portal frontpage
 	 *
 	 * Проверяет, установлена ли страница с id = $id как главная страница
@@ -436,12 +446,12 @@ class Helpers
 	 */
 	public static function getPublicTitle(array $object)
 	{
-		global $language;
+		global $user_info, $language;
 
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		$lang1 = $object['title'][Helpers::getUserLanguage()] ?? null;
+		$lang1 = $object['title'][$user_info['language']] ?? null;
 		$lang2 = $object['title'][$language] ?? null;
 		$lang3 = $object['title']['english'] ?? null;
 

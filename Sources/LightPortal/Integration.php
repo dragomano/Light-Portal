@@ -20,7 +20,7 @@ if (!defined('SMF'))
 class Integration
 {
 	/**
-	 * Used hooks
+	 * Add used hooks
 	 *
 	 * Подключаем используемые хуки
 	 *
@@ -74,11 +74,12 @@ class Integration
 		$context['lp_num_queries'] = $context['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
-			'LP_VERSION'    => '1.0 rc4',
-			'LP_NAME'       => 'Light Portal',
-			'LP_DEBUG'      => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
-			'LP_ADDONS'     => $sourcedir . '/LightPortal/addons',
-			'LP_CACHE_TIME' => $modSettings['lp_cache_update_interval'] ?? 3600
+			'LP_NAME'         => 'Light Portal',
+			'LP_VERSION'      => 'v1.0rc5',
+			'LP_RELEASE_DATE' => '2020-05-16',
+			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
+			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
+			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -94,10 +95,12 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $modSettings, $txt;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']))
+		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
+			$modSettings['minimize_files'] = 0;
 			return;
+		}
 
 		loadLanguage('LightPortal/');
 
@@ -126,8 +129,11 @@ class Integration
 		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
 			Tag::show();
 
-		if (!empty($modSettings['lp_standalone_mode']))
-			Subs::unsetNotUsedActions($actions);
+		if (!empty($modSettings['lp_standalone_mode'])) {
+			$disabled_actions = Subs::unsetDisabledActions($actions);
+			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $disabled_actions))
+				redirectexit();
+		}
 	}
 
 	/**
@@ -176,9 +182,9 @@ class Integration
 				$current_action = 'forum';
 		}
 
-		$excluded_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
-			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $excluded_actions) ? 'forum' : 'portal') : 'home';
+			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
 
 	/**
@@ -191,10 +197,12 @@ class Integration
 	 */
 	public static function menuButtons(array &$buttons)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $modSettings, $txt, $scripturl;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']))
+		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
+			$modSettings['minimize_files'] = 0;
 			return;
+		}
 
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
@@ -309,7 +317,7 @@ class Integration
 				array_slice($buttons, 2, null, true)
 			);
 
-			Subs::unsetNotUsedActions($buttons);
+			Subs::unsetDisabledActions($buttons);
 		}
 
 		if ($context['current_action'] == 'forum')

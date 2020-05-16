@@ -188,7 +188,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($topics = cache_get_data('light_portal_fronttopics_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($topics = cache_get_data('light_portal_fronttopics_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -307,7 +307,7 @@ class FrontPage
 					$topics[$id_topic]['image'] = $data[0];
 			}
 
-			cache_put_data('light_portal_fronttopics_' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_fronttopics_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
 
 		return $topics;
@@ -329,7 +329,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_topics = cache_get_data('light_portal_fronttopics_' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
+		if (($num_topics = cache_get_data('light_portal_fronttopics_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
@@ -352,7 +352,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_fronttopics_' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_fronttopics_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
 		}
 
 		return $num_topics;
@@ -371,30 +371,32 @@ class FrontPage
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
 
-		if (($pages = cache_get_data('light_portal_frontpages_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
 			$custom_parameters = [
-				'type'   => 'page',
-				'status' => Page::STATUS_ACTIVE,
-				'start'  => $start,
-				'limit'  => $limit
+				'type'        => 'page',
+				'status'      => Page::STATUS_ACTIVE,
+				'permissions' => Helpers::getPermissions(),
+				'start'       => $start,
+				'limit'       => $limit
 			];
 
 			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.permissions, p.status, p.num_views, p.num_comments,
+					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments,
 					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (!empty($custom_tables) ? '
 					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
-				WHERE p.status = {int:status}' . (!empty($custom_wheres) ? '
+				WHERE p.status = {int:status}
+					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
 				ORDER BY date DESC
 				LIMIT {int:start}, {int:limit}',
@@ -403,9 +405,6 @@ class FrontPage
 
 			$pages = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				if (Helpers::canShowItem($row['permissions']) === false)
-					continue;
-
 				Subs::parseContent($row['content'], $row['type']);
 
 				$image = null;
@@ -441,7 +440,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
 
 		return $pages;
@@ -458,13 +457,15 @@ class FrontPage
 	{
 		global $user_info, $smcFunc, $context;
 
-		if (($num_pages = cache_get_data('light_portal_frontpages_' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
+		if (($num_pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}',
+				WHERE status = {int:status}
+					AND permissions IN ({array_int:permissions})',
 				array(
-					'status' => Page::STATUS_ACTIVE
+					'status'      => Page::STATUS_ACTIVE,
+					'permissions' => Helpers::getPermissions()
 				)
 			);
 
@@ -473,7 +474,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontpages_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
 		}
 
 		return $num_pages;
@@ -497,7 +498,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($boards = cache_get_data('light_portal_frontboards_' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
+		if (($boards = cache_get_data('light_portal_frontboards_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) == null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -569,7 +570,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontboards_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
 
 		return $boards;
@@ -591,7 +592,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_boards = cache_get_data('light_portal_frontboards_' . $context['user']['id'] . '_total', LP_CACHE_TIME)) == null) {
+		if (($num_boards = cache_get_data('light_portal_frontboards_u' . $context['user']['id'] . '_total', LP_CACHE_TIME)) == null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
@@ -608,7 +609,7 @@ class FrontPage
 
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_frontboards_u' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
 		}
 
 		return $num_boards;
