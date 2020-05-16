@@ -1,11 +1,9 @@
 <?php
 
 /**
- * .spanish es language file Rev. 1.1
- * Spanish translation by Rock Lee https://www.bombercode.net
+ * Spanish translation by Rock Lee https://www.bombercode.net (Rev. 1.1)
  *
  * @package Light Portal
- * @author Bugo https://dragomano.ru/mods/light-portal
  */
 
 $txt['lp_portal'] = 'Portal';

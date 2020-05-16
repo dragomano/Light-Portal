@@ -1,7 +1,7 @@
 <?php
 
 /**
- * .spanish latin language file Rev. 4.3
+ * Spanish translation by Rock Lee https://www.bombercode.net (Rev. 4.3)
  *
  * @package Light Portal
  */
