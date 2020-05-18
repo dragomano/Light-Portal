@@ -230,10 +230,9 @@ class FrontPage
 			$topics = $messages = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
 				if (!isset($topics[$row['id_topic']])) {
+					Helpers::cleanBbcode($row['subject']);
 					censorText($row['subject']);
 					censorText($row['body']);
-
-					$row['subject'] = Helpers::cleanBbcode($row['subject']);
 
 					$image = null;
 					if (!empty($modSettings['lp_show_images_in_articles'])) {
