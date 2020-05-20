@@ -183,7 +183,6 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $items;
@@ -219,7 +218,6 @@ class Tag
 			$items[$row['page_id']] = $row['value'];
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return count($items);
@@ -345,7 +343,6 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		uasort($items, function ($a, $b) {
@@ -384,7 +381,6 @@ class Tag
 			$items[$row['value']] = $row['page_id'];
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return count($items);

@@ -47,7 +47,7 @@ class Subs
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
-		$context['lp_fontawesome_enabled'] = Helpers::doesCurrentThemeContainFontAwesome();
+		$context['lp_fontawesome_enabled'] = Helpers::doesThisThemeUseFontAwesome();
 
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
@@ -108,7 +108,6 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $active_blocks;
@@ -138,7 +137,6 @@ class Subs
 
 		list ($num_pages) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $num_pages;
@@ -446,7 +444,6 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $titles;

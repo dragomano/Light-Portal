@@ -88,7 +88,7 @@ class Trumbowyg
 			urlProtocol: true,
 			removeformatPasted: true,
 			imageWidthModalEdit: true
-		});' . (Helpers::doesCurrentThemeContainFontAwesome()  ? '
+		});' . (Helpers::doesThisThemeUseFontAwesome()  ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 		}
 	}

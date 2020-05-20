@@ -182,7 +182,6 @@ class PageList
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $pages;

@@ -51,7 +51,6 @@ class ThemeSwitcher
 			$available_themes[$row[0]] = $row[1];
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $available_themes;

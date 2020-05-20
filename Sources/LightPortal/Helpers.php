@@ -39,14 +39,11 @@ class Helpers
 	 * Убираем ББ-код из переданных данных
 	 *
 	 * @param array|string $data
-	 * @return array|string
+	 * @return void
 	 */
-	public static function cleanBbcode($data)
+	public static function cleanBbcode(&$data)
 	{
-		if (is_array($data))
-			return array_map('self::cleanBbcode', $data);
-
-		return preg_replace('~\[[^]]+]~', '', $data);
+		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
 
 	/**
@@ -78,7 +75,7 @@ class Helpers
 	 *
 	 * @return bool
 	 */
-	public static function doesCurrentThemeContainFontAwesome()
+	public static function doesThisThemeUseFontAwesome()
 	{
 		global $settings;
 
