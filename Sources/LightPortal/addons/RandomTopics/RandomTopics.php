@@ -166,7 +166,6 @@ class RandomTopics
 				$topic_ids[] = $row['id_topic'];
 
 			$smcFunc['db_free_result']($request);
-
 			$context['lp_num_queries']++;
 
 			if (empty($topic_ids))
@@ -238,7 +237,6 @@ class RandomTopics
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $topics;

@@ -43,12 +43,6 @@ class Helpers
 	 */
 	public static function cleanBbcode(&$data)
 	{
-		if (is_array($data)) {
-			foreach ($data as $key => $value) {
-				self::cleanBbcode($data[$key]);
-			}
-		}
-
 		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
 

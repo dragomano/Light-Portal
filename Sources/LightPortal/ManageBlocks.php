@@ -85,7 +85,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $current_blocks;
@@ -798,7 +797,6 @@ class ManageBlocks
 
 		list ($priority) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $priority;
@@ -1059,7 +1057,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -1151,7 +1148,6 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $items;

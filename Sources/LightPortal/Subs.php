@@ -108,7 +108,6 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $active_blocks;
@@ -138,7 +137,6 @@ class Subs
 
 		list ($num_pages) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $num_pages;
@@ -446,7 +444,6 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $titles;

@@ -264,7 +264,6 @@ class ManagePages
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $items;
@@ -292,7 +291,6 @@ class ManagePages
 
 		list ($num_entries) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $num_entries;
@@ -779,7 +777,7 @@ class ManagePages
 		$context['posting_fields']['show_author_and_date']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_author_and_date',
+				'id'      => 'show_author_and_date',
 				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
 			)
 		);
@@ -789,7 +787,7 @@ class ManagePages
 			$context['posting_fields']['allow_comments']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
-					'id' => 'allow_comments',
+					'id'      => 'allow_comments',
 					'checked' => !empty($context['lp_page']['options']['allow_comments'])
 				)
 			);
@@ -865,8 +863,8 @@ class ManagePages
 
 		$keywords = !empty($context['lp_page']['keywords']) ? explode(',', $context['lp_page']['keywords']) : [];
 		$context['lp_page']['keywords'] = array_map(function ($item) {
-			$code_match = array('-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '=');
-			$new_item = str_replace($code_match, '', $item);
+			$stop_chars = ['-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '='];
+			$new_item   = str_replace($stop_chars, '', $item);
 
 			return trim($new_item);
 		}, $keywords);
@@ -1113,7 +1111,6 @@ class ManagePages
 
 		list ($value) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return (int) $value + 1;
@@ -1144,7 +1141,6 @@ class ManagePages
 
 		list ($count) = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return (bool) $count;
@@ -1330,7 +1326,6 @@ class ManagePages
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $items;

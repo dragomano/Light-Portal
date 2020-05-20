@@ -212,7 +212,6 @@ class Page
 		}
 
 		$smcFunc['db_free_result']($request);
-
 		$context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -303,7 +302,6 @@ class Page
 			);
 
 			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
-
 			$context['lp_num_queries']++;
 		}
 	}
