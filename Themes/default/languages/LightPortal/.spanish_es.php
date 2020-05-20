@@ -85,7 +85,7 @@ $txt['lp_plugins_hooks_types'] = array(
 
 // Actions
 $txt['lp_title'] = 'Título';
-$txt['lp_actions'] = 'Acciones'; // Review later
+$txt['lp_actions'] = 'Acciones';
 $txt['lp_action_on'] = 'Activar';
 $txt['lp_action_off'] = 'Desactivar';
 $txt['lp_action_clone'] = 'Clonar';
@@ -97,7 +97,7 @@ $txt['lp_blocks'] = 'Bloques';
 $txt['lp_blocks_manage'] = 'Administrar bloques';
 $txt['lp_blocks_manage_tab_description'] = 'Todos los bloques del portal creados se enumeran aquí. Para agregar un bloque, use el botón correspondiente.';
 $txt['lp_blocks_add'] = 'Agregar bloque';
-$txt['lp_blocks_add_title'] = 'Adding block'; // Review later
+$txt['lp_blocks_add_title'] = 'Adición de bloque';
 $txt['lp_blocks_add_tab_description'] = 'Todavía no hay muchos bloques, pero existen los más universales ~ juega con ellos :)';
 $txt['lp_blocks_add_instruction'] = 'Seleccione el bloque deseado haciendo clic en él.';
 $txt['lp_blocks_edit_title'] = 'Edición de bloques';
@@ -107,7 +107,7 @@ $txt['lp_block_icon_cheatsheet'] = 'Lista de los iconos';
 $txt['lp_block_type'] = 'Tipo de bloque';
 $txt['lp_block_priority'] = 'Prioridad';
 $txt['lp_block_icon_type'] = 'Tipo de icono';
-$txt['lp_block_icon_type_set'] = array('fas' => 'Sólido', 'lejos' => 'Regular', 'fabuloso' => 'Marcas'); // Review later
+$txt['lp_block_icon_type_set'] = array('fas' => 'Sólido', 'far' => 'Regular', 'fab' => 'Marcas'); // Review later
 $txt['lp_block_placement'] = 'Colocación';
 $txt['lp_block_placement_set'] = array(
 	'header' => 'Encabezado',
