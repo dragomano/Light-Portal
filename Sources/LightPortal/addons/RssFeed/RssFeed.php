@@ -108,7 +108,7 @@ class RssFeed
 		$context['posting_fields']['show_text']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_text',
+				'id'      => 'show_text',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_text'])
 			)
 		);

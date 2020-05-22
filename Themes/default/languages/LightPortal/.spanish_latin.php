@@ -59,7 +59,7 @@ $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de pág
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
-$txt['lp_show_comment_block_set'] = array('ninguno' => 'Ninguno', 'por defecto' => 'Integrado');
+$txt['lp_show_comment_block_set'] = array('none' => 'Ninguno', 'default' => 'Integrado');
 $txt['lp_num_comments_per_page'] = 'Número de comentarios de los padres por página'; // Check meaning
 $txt['lp_page_editor_type_default'] = 'El tipo de editor de la página por defecto';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ocultar bloques activos en el área de administración';

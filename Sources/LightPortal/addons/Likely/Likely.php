@@ -58,8 +58,8 @@ class Likely
 	{
 		$options['likely'] = array(
 			'parameters' => array(
-				'skin'    => static::$skin,
 				'size'    => static::$size,
+				'skin'    => static::$skin,
 				'buttons' => static::$buttons
 			)
 		);

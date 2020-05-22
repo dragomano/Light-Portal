@@ -95,8 +95,8 @@ class RandomTopics
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_topics',
-				'min' => 1,
+				'id'    => 'num_topics',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
 			)
 		);
