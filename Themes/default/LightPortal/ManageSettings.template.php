@@ -45,3 +45,49 @@ function template_callback_portal_layout_preview()
 		</table>
 	</dd>';
 }
+
+/**
+ * Callback template for selecting the direction of blocks inside panels
+ *
+ * Callback-шаблон для выбора направления блоков внутри панелей
+ *
+ * @return void
+ */
+function template_callback_panel_direction()
+{
+	global $txt, $context, $modSettings;
+
+	echo '
+		<dt>
+			<a id="setting_lp_panel_direction"></a>
+			<span><label for="lp_panel_direction">', $txt['lp_panel_direction'], '</label></span>
+		</dt>
+		<dd>
+			<table class="table_grid centertext">
+				<tbody>';
+
+	foreach ($context['lp_panels'] as $key => $label) {
+		echo '
+					<tr class="windowbg">
+						<td>
+							<label for="lp_panel_direction_' . $key . '">', $label, '</label>
+						</td>
+						<td>
+							<select id="lp_panel_direction[' . $key . ']" name="lp_panel_direction[' . $key . ']">';
+
+		foreach ($txt['lp_panel_direction_set'] as $value => $direction) {
+			echo '
+								<option value="', $value, '"', !empty($modSettings['lp_panel_direction'][$key]) ? ' selected' : '', '>', $direction, '</option>';
+		}
+
+		echo '
+							</select>
+						</td>
+					</tr>';
+	}
+
+	echo '
+				</tbody>
+			</table>
+		</dd>';
+}

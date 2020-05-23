@@ -42,27 +42,26 @@ function template_portal_above()
 	}
 
 	echo '
-			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? '-12 col-sm-12 col-md-8 col-lg-8' : '', '">
-				<div class="box">';
+			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? '-12 col-sm-12 col-md-8 col-lg-8' : '', '">';
 
 	// Center (top) | Центр (верх)
 	if (!empty($context['lp_blocks']['top'])) {
 		echo '
 
-					<div class="row">
-						<div class="col-xs">';
+				<div class="row">
+					<div class="col-xs">';
 
 		lp_show_blocks('top');
 
 		echo '
-						</div>
-					</div>';
+					</div>
+				</div>';
 	}
 
 	echo '
-					<div class="row">
-						<div class="col-xs noup">
-							<main>';
+				<div class="row">
+					<div class="col-xs noup">
+						<main>';
 }
 
 /**
@@ -77,25 +76,24 @@ function template_portal_below()
 	global $context;
 
 	echo '
-							</main>
-						</div>
-					</div>';
+						</main>
+					</div>
+				</div>';
 
 	// Center (bottom) | Центр (низ)
 	if (!empty($context['lp_blocks']['bottom'])) {
 		echo '
-					<div class="row">
-						<div class="col-xs">';
+				<div class="row">
+					<div class="col-xs">';
 
 		lp_show_blocks('bottom');
 
 		echo '
-						</div>
-					</div>';
+					</div>
+				</div>';
 	}
 
 	echo '
-				</div>
 			</div>';
 
 	// Right Side | Правая панель
@@ -139,14 +137,19 @@ function template_portal_below()
  */
 function lp_show_blocks($placement = '')
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl;
 
 	if (empty($placement))
 		return;
 
+	if (!empty($context['lp_panel_direction'][$placement])) {
+		echo '
+		<div class="row">';
+	}
+
 	foreach ($context['lp_blocks'][$placement] as $id => $block) {
 		echo '
-	<aside id="block_', $block['id'], '" class="block_', $block['type'], '">';
+			<aside id="block_', $block['id'], '" class="block_', $block['type'], !empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '', '">';
 
 		if (!empty($block['title_style']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
@@ -172,6 +175,11 @@ function lp_show_blocks($placement = '')
 			echo $block['content'];
 
 		echo '
-	</aside>';
+			</aside>';
+	}
+
+	if (!empty($context['lp_panel_direction'][$placement])) {
+		echo '
+		</div>';
 	}
 }

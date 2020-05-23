@@ -63,6 +63,9 @@ $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => '
 $txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']     = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
+$txt['lp_panels']                       = 'Panels';
+$txt['lp_panel_direction']              = 'The direction of blocks in panels';
+$txt['lp_panel_direction_set']          = array('Vertical', 'Horizontal');
 $txt['lp_open_graph']                   = 'Open Graph';
 $txt['lp_page_og_image']                = 'Use an image from the page content';
 $txt['lp_page_og_image_set']            = array('None', 'First found', 'Last found');

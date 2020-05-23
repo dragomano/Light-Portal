@@ -265,6 +265,8 @@ class Settings
 	{
 		global $sourcedir, $context, $txt, $scripturl, $modSettings;
 
+		loadTemplate('LightPortal/ManageSettings');
+
 		require_once($sourcedir . '/ManageServer.php');
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
@@ -275,12 +277,19 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
+		$modSettings['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? unserialize($modSettings['lp_panel_direction']) : [];
+		$context['lp_panels'] = $txt['lp_block_placement_set'];
+
+		Subs::runAddons('addPanels');
+
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
+			array('title', 'lp_panels'),
+			array('callback', 'panel_direction'),
 			array('title', 'lp_open_graph'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
@@ -295,7 +304,10 @@ class Settings
 		if (isset($_GET['save'])) {
 			checkSession();
 
+			$_POST['lp_panel_direction'] = serialize($_POST['lp_panel_direction']);
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_panel_direction'];
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');

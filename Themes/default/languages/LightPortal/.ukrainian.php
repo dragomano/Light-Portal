@@ -63,6 +63,9 @@ $txt['lp_show_comment_block_set']       = array('none' => 'Ні', 'default' => '
 $txt['lp_num_comments_per_page']        = 'Кількість батьківських коментарів на сторінці';
 $txt['lp_page_editor_type_default']     = 'Тип редактора сторінок за замовчуванням';
 $txt['lp_hide_blocks_in_admin_section'] = 'Приховувати активні блоки в адмінці';
+$txt['lp_panels']                       = 'Панелі';
+$txt['lp_panel_direction']              = 'Напрямок блоків в панелях';
+$txt['lp_panel_direction_set']          = array('Вертикальне', 'Горизонтальне');
 $txt['lp_open_graph']                   = 'Open Graph';
 $txt['lp_page_og_image']                = 'Використовувати зображення з тексту статті';
 $txt['lp_page_og_image_set']            = array('Ні', 'Перше знайдене', 'Останнє знайдене');
