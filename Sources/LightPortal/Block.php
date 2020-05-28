@@ -39,7 +39,7 @@ class Block
 
 		$blocks = array_filter($context['lp_active_blocks'], function($block) use ($area) {
 			$block['areas'] = array_flip($block['areas']);
-			return isset($block['areas']['all']) || isset($block['areas'][$area]) || !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]);
+			return isset($block['areas']['all']) || isset($block['areas'][$area]) || !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]) || !empty($_GET['board']) && isset($block['areas']['board=' . (string) $_GET['board']]) || !empty($_GET['topic']) && isset($block['areas']['topic=' . (string) $_GET['topic']]);
 		});
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))

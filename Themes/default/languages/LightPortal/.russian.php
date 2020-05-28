@@ -125,7 +125,9 @@ $txt['lp_block_areas']         = 'Области';
 $txt['lp_block_areas_subtext'] = 'Укажите одну или несколько областей (через запятую) для отображения в них блока:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — отображать везде</li>
-	<li><strong>forum</strong> — отображать только на форуме</li>
+	<li><strong>forum</strong> — отображать только на форуме (включая разделы и темы)</li>
+	<li><strong>board=id</strong> — отображать в разделе с идентификатором <strong>id</strong> (включая все темы внутри раздела)</li>
+	<li><strong>topic=id</strong> — отображать в теме с идентификатором <strong>id</strong></li>
 	<li><strong>portal</strong> — отображать только на портале (включая страницы)</li>
 	<li><strong>custom_action</strong> — отображать в области <em>index.php?action</em>=<strong>custom_action</strong></li>
 	<li><strong>page=alias</strong> — отображать на странице <em>index.php?page</em>=<strong>alias</strong></li>

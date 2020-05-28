@@ -125,7 +125,9 @@ $txt['lp_block_areas']         = 'Actions';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — display everywhere</li>
-	<li><strong>forum</strong> — display only on the forum area</li>
+	<li><strong>forum</strong> — display only on the forum area (including boards and topics)</li>
+	<li><strong>board=id</strong> — display only inside the board with identificator #<strong>id</strong> (including all topics inside the board)</li>
+	<li><strong>topic=id</strong> — display only inside the topic with identificator #<strong>id</strong></li>
 	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
 	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
 	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
