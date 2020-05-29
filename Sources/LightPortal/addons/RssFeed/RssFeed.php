@@ -115,31 +115,60 @@ class RssFeed
 	}
 
 	/**
-	 * Get the file content by the specified $url
-	 *
-	 * Получаем содержимое файла по указанному $url
-	 *
-	 * @param string $url
-	 * @return void
-	 */
-	public static function getRssFromUrl($url)
-	{
-		return file_get_contents($url);
-	}
-
-	/**
 	 * Get the SimpleXML object
 	 *
 	 * Получаем объект SimpleXML
 	 *
-	 * @param string $file
+	 * @param string $url
 	 * @return mixed
 	 */
-	private static function getRssItems($file)
+	private static function getData($url)
 	{
-		$rss = simplexml_load_string($file);
+		$file = file_get_contents($url);
+		$rss  = simplexml_load_string($file);
 
 		return $rss ? $rss->channel->item : null;
+	}
+
+	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($parameters)
+	{
+		$rss_items = self::getData($parameters['url']);
+
+		if (empty($rss_items))
+			return '';
+
+		$html = '';
+
+		foreach ($rss_items as $item) {
+			$html .= '
+		<div class="windowbg">
+			<div class="block">
+				<span class="floatleft half_content">
+					<h5><a href="' . $item->link . '">' . $item->title . '</a></h5>
+					<em>' . Helpers::getFriendlyTime(strtotime($item->pubDate)) . '</em>
+				</span>
+			</div>';
+
+			if ($parameters['show_text']) {
+				$html .= '
+			<div class="list_posts double_height">
+				' . $item->description . '
+			</div>';
+			}
+
+			$html .= '
+		</div>';
+		}
+
+		return $html;
 	}
 
 	/**
@@ -159,33 +188,11 @@ class RssFeed
 		if ($type !== 'rss_feed')
 			return;
 
-		$rss_file = Helpers::getFromCache('rss_feed_addon_b' . $block_id, 'getRssFromUrl', __CLASS__, $cache_time, $parameters['url']);
-		$rss_feed = self::getRssItems($rss_file);
+		$rss_feed = Helpers::getFromCache('rss_feed_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($rss_feed)) {
 			ob_start();
-
-			foreach ($rss_feed as $item) {
-				echo '
-			<div class="windowbg">
-				<div class="block">
-					<span class="floatleft half_content">
-						<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-						<em>', Helpers::getFriendlyTime(strtotime($item->pubDate)), '</em>
-					</span>
-				</div>';
-
-				if ($parameters['show_text']) {
-					echo '
-				<div class="list_posts double_height">
-					', $item->description, '
-				</div>';
-				}
-
-				echo '
-			</div>';
-			}
-
+			echo $rss_feed;
 			$content = ob_get_clean();
 		}
 	}

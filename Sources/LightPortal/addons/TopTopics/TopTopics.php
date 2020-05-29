@@ -130,8 +130,8 @@ class TopTopics
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_topics',
-				'min' => 1,
+				'id'    => 'num_topics',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
 			)
 		);
@@ -140,7 +140,7 @@ class TopTopics
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_numbers_only',
+				'id'      => 'show_numbers_only',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
@@ -151,17 +151,59 @@ class TopTopics
 	 *
 	 * Получаем список популярных тем
 	 *
-	 * @param array $params
-	 * @return void
+	 * @param array $parameters
+	 * @return array
 	 */
-	public static function getTopTopics($params)
+	private static function getData($parameters)
 	{
 		global $boarddir;
 
-		extract($params);
+		extract($parameters);
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_topTopics($popularity_type, $num_topics, 'array');
+	}
+
+	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($parameters)
+	{
+		global $txt;
+
+		$top_topics = self::getData($parameters);
+
+		if (empty($top_topics))
+			return '';
+
+		$html = '
+		<dl class="stats">';
+
+		$max = $top_topics[0]['num_' . $parameters['popularity_type']];
+
+		foreach ($top_topics as $topic) {
+			if ($topic['num_' . $parameters['popularity_type']] < 1)
+				continue;
+
+			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+
+			$html .= '
+			<dt>' . $topic['link'] . '</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar' . (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
+				<span>' . ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])) . '</span>
+			</dd>';
+		}
+
+		$html .= '
+		</dl>';
+
+		return $html;
 	}
 
 	/**
@@ -178,44 +220,16 @@ class TopTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info;
 
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::getFromCache(
-			'top_topics_addon_b' . $block_id . '_u' . $context['user']['id'],
-			'getTopTopics',
-			__CLASS__,
-			$cache_time,
-			$parameters
-		);
+		$top_topics = Helpers::getFromCache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_topics)) {
 			ob_start();
-
-			echo '
-			<dl class="stats">';
-
-			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
-
-			foreach ($top_topics as $topic) {
-				if ($topic['num_' . $parameters['popularity_type']] < 1)
-					continue;
-
-				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
-
-				echo '
-				<dt>', $topic['link'], '</dt>
-				<dd class="statsbar generic_bar righttext">
-					<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set']), '</span>
-				</dd>';
-			}
-
-			echo '
-			</dl>';
-
+			echo $top_topics;
 			$content = ob_get_clean();
 		}
 	}

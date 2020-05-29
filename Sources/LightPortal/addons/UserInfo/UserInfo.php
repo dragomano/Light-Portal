@@ -28,7 +28,7 @@ class UserInfo
 	 *
 	 * @return array
 	 */
-	public static function getUserInfo()
+	public static function getData()
 	{
 		global $memberContext, $user_info;
 
@@ -61,7 +61,7 @@ class UserInfo
 		ob_start();
 
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::getFromCache('user_info_addon_u' . $context['user']['id'], 'getUserInfo', __CLASS__, $cache_time);
+			$userData = Helpers::getFromCache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 			echo '
 			<ul class="centertext">

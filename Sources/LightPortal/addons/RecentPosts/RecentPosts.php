@@ -128,8 +128,8 @@ class RecentPosts
 		$context['posting_fields']['num_posts']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_posts',
-				'min' => 1,
+				'id'    => 'num_posts',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_posts']
 			)
 		);
@@ -161,7 +161,7 @@ class RecentPosts
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_avatars',
+				'id'      => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
 			)
 		);
@@ -170,8 +170,8 @@ class RecentPosts
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'update_interval',
-				'min' => 0,
+				'id'    => 'update_interval',
+				'min'   => 0,
 				'value' => $context['lp_block']['options']['parameters']['update_interval']
 			)
 		);
@@ -185,7 +185,7 @@ class RecentPosts
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getRecentPosts($parameters)
+	private static function getData($parameters)
 	{
 		global $boarddir;
 
@@ -219,6 +219,51 @@ class RecentPosts
 	}
 
 	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($parameters)
+	{
+		global $txt;
+
+		$posts = self::getData($parameters);
+
+		if (empty($posts))
+			return '';
+
+		$html = '
+		<ul class="recent_posts noup">';
+
+		foreach ($posts as $post) {
+			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
+
+			$html .= '
+			<li class="windowbg">';
+
+			if (!empty($parameters['show_avatars']))
+				$html .= '
+				<span class="poster_avatar">' . $post['poster']['avatar'] . '</span>';
+
+			$html .= ($post['is_new'] ? '
+				<span class="new_posts">' . $txt['new'] . '</span> ' : '') . $post[$parameters['link_type']] . '
+				<br>
+				<span class="smalltext">' . $txt['by'] . ' ' . $post['poster']['link'] . '</span>
+				<br class="clear">
+				<span class="smalltext">' . Helpers::getFriendlyTime($post['timestamp']) . '</span>
+			</li>';
+		}
+
+		$html .= '
+		</ul>';
+
+		return $html;
+	}
+
+	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -232,47 +277,16 @@ class RecentPosts
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info;
 
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::getFromCache(
-			'recent_posts_addon_b' . $block_id . '_u' . $context['user']['id'],
-			'getRecentPosts',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
 
 		if (!empty($recent_posts)) {
 			ob_start();
-
-			echo '
-			<ul class="recent_posts noup">';
-
-			foreach ($recent_posts as $post) {
-				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
-
-				echo '
-				<li class="windowbg">';
-
-				if (!empty($parameters['show_avatars']))
-					echo '
-					<span class="poster_avatar">', $post['poster']['avatar'], '</span>';
-
-				echo '
-					', ($post['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span> ' : ''), $post[$parameters['link_type']], '
-					<br>
-					<span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>
-					<br class="clear">
-					<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
-				</li>';
-			}
-
-			echo '
-			</ul>';
-
+			echo $recent_posts;
 			$content = ob_get_clean();
 		}
 	}

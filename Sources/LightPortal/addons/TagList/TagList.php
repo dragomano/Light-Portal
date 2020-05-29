@@ -158,14 +158,14 @@ class TagList
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info, $txt;
 
 		if ($type !== 'tag_list')
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
 			$tag_list = Helpers::getFromCache(
-				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
+				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $user_info['id'],
 				'getAll',
 				'\Bugo\LightPortal\Tag',
 				$cache_time,
@@ -173,7 +173,7 @@ class TagList
 			);
 		} else {
 			$tag_list = Helpers::getFromCache(
-				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $context['user']['id'],
+				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $user_info['id'],
 				'getAllTopicKeywords',
 				__CLASS__,
 				$cache_time

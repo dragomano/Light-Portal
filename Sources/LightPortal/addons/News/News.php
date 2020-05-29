@@ -28,7 +28,7 @@ class News
 	 *
 	 * @return string
 	 */
-	public static function getNews()
+	public static function getData()
 	{
 		global $boarddir;
 
@@ -56,7 +56,7 @@ class News
 		if ($type !== 'news')
 			return;
 
-		$news = Helpers::getFromCache('news_addon_b' . $block_id, 'getNews', __CLASS__, $cache_time);
+		$news = Helpers::getFromCache('news_addon_b' . $block_id, 'getData', __CLASS__, $cache_time);
 
 		ob_start();
 		echo $news ?: $txt['lp_news_addon_no_items'];

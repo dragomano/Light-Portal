@@ -199,7 +199,7 @@ class Likely
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt, $modSettings, $settings;
+		global $txt, $modSettings, $settings;
 
 		if ($type !== 'likely')
 			return;

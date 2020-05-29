@@ -52,7 +52,7 @@ class CurrentMonth
 	 *
 	 * @return array
 	 */
-	public static function getCalendarData()
+	public static function getData()
 	{
 		global $sourcedir, $options, $modSettings;
 
@@ -191,12 +191,12 @@ class CurrentMonth
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
-		global $context;
+		global $user_info;
 
 		if ($type !== 'current_month')
 			return;
 
-		$calendar_data = Helpers::getFromCache('current_month_addon_u' . $context['user']['id'], 'getCalendarData', __CLASS__, $cache_time);
+		$calendar_data = Helpers::getFromCache('current_month_addon_u' . $user_info['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($calendar_data)) {
 			ob_start();

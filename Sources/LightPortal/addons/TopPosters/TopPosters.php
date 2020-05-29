@@ -107,7 +107,7 @@ class TopPosters
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_avatars',
+				'id'      => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
 			)
 		);
@@ -116,8 +116,8 @@ class TopPosters
 		$context['posting_fields']['num_posters']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_posters',
-				'min' => 1,
+				'id'    => 'num_posters',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_posters']
 			)
 		);
@@ -126,7 +126,7 @@ class TopPosters
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'show_numbers_only',
+				'id'      => 'show_numbers_only',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
@@ -137,14 +137,14 @@ class TopPosters
 	 *
 	 * Получаем список лучших пользователей
 	 *
-	 * @param array $params
+	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getTopPosters($params)
+	private static function getData($parameters)
 	{
 		global $smcFunc, $scripturl, $modSettings, $context;
 
-		extract($params);
+		extract($parameters);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
@@ -175,6 +175,54 @@ class TopPosters
 	}
 
 	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($parameters)
+	{
+		global $txt;
+
+		$top_posters = self::getData($parameters);
+
+		if (empty($top_posters))
+			return '';
+
+		$html = '
+		<dl class="top_posters stats">';
+
+		$max = $top_posters[0]['posts'];
+
+		foreach ($top_posters as $poster) {
+			$html .= '
+			<dt>';
+
+			if (!empty($poster['avatar'])) {
+				$html .= '
+				<img src="' . $poster['avatar'] . '" alt="*"> ';
+			}
+
+			$width = $poster['posts'] * 100 / $max;
+
+			$html .= '
+				' . $poster['link'] . '
+			</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar' . (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
+				<span>' . ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set'])) . '</span>
+			</dd>';
+		}
+
+		$html .= '
+		</dl>';
+
+		return $html;
+	}
+
+	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -188,50 +236,16 @@ class TopPosters
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::getFromCache(
-			'top_posters_addon_b' . $block_id . '_u' . $context['user']['id'],
-			'getTopPosters',
-			__CLASS__,
-			$cache_time,
-			$parameters
-		);
+		$top_posters = Helpers::getFromCache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_posters)) {
 			ob_start();
-
-			echo '
-			<dl class="top_posters stats">';
-
-			$max = $top_posters[0]['posts'];
-
-			foreach ($top_posters as $poster) {
-				echo '
-				<dt>';
-
-				if (!empty($poster['avatar'])) {
-					echo '
-					<img src="', $poster['avatar'], '" alt="*"> ';
-				}
-
-				$width = $poster['posts'] * 100 / $max;
-
-				echo '
-					', $poster['link'], '
-				</dt>
-				<dd class="statsbar generic_bar righttext">
-					<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set']), '</span>
-				</dd>';
-			}
-
-			echo '
-			</dl>';
-
+			echo $top_posters;
 			$content = ob_get_clean();
 		}
 	}

@@ -176,7 +176,7 @@ class Translator
 		$context['posting_fields']['auto_mode']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'auto_mode',
+				'id'      => 'auto_mode',
 				'checked' => !empty($context['lp_block']['options']['parameters']['auto_mode'])
 			)
 		);

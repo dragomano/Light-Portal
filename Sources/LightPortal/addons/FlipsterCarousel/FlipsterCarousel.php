@@ -188,6 +188,41 @@ class FlipsterCarousel
 	}
 
 	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param int $block_id
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($block_id, $parameters)
+	{
+		if (empty($parameters['images']))
+			return '';
+
+		$html = '
+		<div id="flipster_carousel_coverflow' . $block_id . '">
+			<ul>';
+
+		$images = explode(PHP_EOL, $parameters['images']);
+		foreach ($images as $data) {
+			$image = explode("|", $data);
+
+			$html .= '
+				<li' . (!empty($image[1]) ? (' data-flip-title="' . $image[1] . '"') : '') . (!empty($image[2]) ? (' data-flip-category="' . $image[2] . '"') : '') . '>
+					<img src="' . $image[0] . '" alt="' . (!empty($image[1]) ? $image[1] : '') . '">
+				</li>';
+		}
+
+		$html .= '
+			</ul>
+		</div>';
+
+		return $html;
+	}
+
+	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -206,7 +241,9 @@ class FlipsterCarousel
 		if ($type !== 'flipster_carousel')
 			return;
 
-		if (!empty($parameters['images'])) {
+		$flipster_html = Helpers::getFromCache('flipster_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+
+		if (!empty($flipster_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/jquery.flipster@1/dist/jquery.flipster.min.css', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/jquery.flipster@1/dist/jquery.flipster.min.js', array('external' => true));
 			addInlineJavaScript('
@@ -229,25 +266,7 @@ class FlipsterCarousel
 			});', true);
 
 			ob_start();
-
-			echo '
-			<div id="flipster_carousel_coverflow' . $block_id . '">
-				<ul>';
-
-			$images = explode(PHP_EOL, $parameters['images']);
-			foreach ($images as $data) {
-				$image = explode("|", $data);
-
-				echo '
-					<li', !empty($image[1]) ? (' data-flip-title="' . $image[1] . '"') : '', !empty($image[2]) ? (' data-flip-category="' . $image[2] . '"') : '', '>
-						<img src="', $image[0], '" alt="', !empty($image[1]) ? $image[1] : '', '">
-					</li>';
-			}
-
-			echo '
-				</ul>
-			</div>';
-
+			echo $flipster_html;
 			$content = ob_get_clean();
 		}
 	}

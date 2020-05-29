@@ -82,7 +82,7 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getAdsBlocks', __CLASS__);
+		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getData', __CLASS__);
 		$context['lp_blocks'] += $context['lp_ads_blocks'];
 	}
 
@@ -91,14 +91,14 @@ class AdsBlock
 	 *
 	 * Получаем все рекламные блоки
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public static function getAdsBlocks()
+	public static function getData()
 	{
 		global $txt;
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump)
-			$ads_blocks[$position] = self::getAdsBlocksByPosition($position);
+			$ads_blocks[$position] = self::getByPosition($position);
 
 		return $ads_blocks;
 	}
@@ -255,7 +255,7 @@ class AdsBlock
 	 * @param string $position
 	 * @return array
 	 */
-	private static function getAdsBlocksByPosition($position)
+	private static function getByPosition($position)
 	{
 		global $context;
 

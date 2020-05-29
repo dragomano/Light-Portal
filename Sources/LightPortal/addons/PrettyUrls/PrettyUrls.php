@@ -29,25 +29,13 @@ class PrettyUrls
 	public static $addon_type = 'other';
 
 	/**
-	 * Run necessary hooks
-	 *
-	 * Запускаем нужные хуки
-	 *
-	 * @return void
-	 */
-	public static function init()
-	{
-		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
-	}
-
-	/**
 	 * Give a hint to the PrettyUrls about action=portal
 	 *
 	 * Подсказываем PrettyUrls про action=portal
 	 *
 	 * @return void
 	 */
-	public static function actions()
+	public static function init()
 	{
 		global $context;
 

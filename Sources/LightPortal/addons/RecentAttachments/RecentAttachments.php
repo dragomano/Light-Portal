@@ -154,18 +154,63 @@ class RecentAttachments
 	 *
 	 * Получаем список последних вложений
 	 *
-	 * @param array $params
-	 * @return void
+	 * @param array $parameters
+	 * @return string
 	 */
-	public static function getRecentAttachments($params)
+	private static function getData($parameters)
 	{
 		global $boarddir;
 
-		extract($params);
+		extract($parameters);
 		$extensions = !empty($extensions) ? explode(',', $extensions) : [];
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_recentAttachments($num_attachments, $extensions, 'array');
+	}
+
+	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param int $block_id
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($block_id, $parameters)
+	{
+		global $settings;
+
+		$recent_attachments = self::getData($parameters);
+
+		$html = '';
+		if (!empty($recent_attachments)) {
+			$fancybox = class_exists('FancyBox');
+
+			$html .= '
+		<div class="recent_attachments' . ($direction == 'vertical' ? ' column_direction' : '') . '">';
+
+			foreach ($recent_attachments as $attach) {
+				if (!empty($attach['file']['image'])) {
+					$html .= '
+			<div class="item">
+				<a' . ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : '') . ' href="' . $attach['file']['href'] . ';image">' . $attach['file']['image']['thumb'] . '</a>
+			</div>';
+				} else {
+					$html .= '
+			<div class="item">
+				<a href="' . $attach['file']['href'] . '">
+					<img class="centericon" src="' . $settings['images_url'] . '/icons/clip.png" alt="' . $attach['file']['filename'] . '"> ' . $attach['file']['filename'] . '
+				</a> (' . $attach['file']['filesize'] . ')
+			</div>';
+				}
+			}
+
+			$html .= '
+		</div>';
+		}
+
+		return $html;
 	}
 
 	/**
@@ -182,46 +227,16 @@ class RecentAttachments
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $settings;
+		global $user_info;
 
 		if ($type !== 'recent_attachments')
 			return;
 
-		$recent_attachments = Helpers::getFromCache(
-			'recent_attachments_addon_b' . $block_id . '_u' . $context['user']['id'],
-			'getRecentAttachments',
-			__CLASS__,
-			$cache_time,
-			$parameters
-		);
+		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
-		if (!empty($recent_attachments)) {
-			$fancybox = class_exists('FancyBox');
-
+		if (!empty($attachment_list)) {
 			ob_start();
-
-			echo '
-			<div class="recent_attachments', $parameters['direction'] == 'vertical' ? ' column_direction' : '', '">';
-
-			foreach ($recent_attachments as $attach) {
-				if (!empty($attach['file']['image'])) {
-					echo '
-				<div class="item">
-					<a', $fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : '', ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
-				</div>';
-				} else {
-					echo '
-				<div class="item">
-					<a href="', $attach['file']['href'], '">
-						<img class="centericon" src="', $settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
-					</a> (', $attach['file']['filesize'], ')
-				</div>';
-				}
-			}
-
-			echo '
-			</div>';
-
+			echo $attachment_list;
 			$content = ob_get_clean();
 		}
 	}
