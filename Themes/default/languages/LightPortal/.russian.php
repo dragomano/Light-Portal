@@ -17,7 +17,7 @@ $txt['lp_no_items'] = 'Нет элементов для отображения.'
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
 $txt['lp_base']      = 'Настройки главной страницы и статей';
-$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно на <a class="bbc_link" href="https://dragomano.ru/forum/?board=3.0">форуме dragomano.ru</a>.';
+$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-группе</a>.';
 
 $txt['lp_frontpage_title']         = 'Заголовок главной страницы';
 $txt['lp_frontpage_mode']          = 'Первая страница портала';
