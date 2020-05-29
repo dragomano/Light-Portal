@@ -83,7 +83,7 @@ class AdsBlock
 			return;
 
 		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getData', __CLASS__);
-		$context['lp_blocks'] += $context['lp_ads_blocks'];
+		$context['lp_blocks']     = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
 	}
 
 	/**

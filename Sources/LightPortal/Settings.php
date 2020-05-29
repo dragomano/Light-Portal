@@ -217,8 +217,8 @@ class Settings
 			array('callback', 'portal_layout_preview'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_standalone_url', '80" placeholder="' . $boardurl . '/portal.php', 'help' => 'lp_standalone_url_help'),
-			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext']),
+			array('text', 'lp_standalone_url', '80" placeholder="' . $boardurl . '/portal.php', 'help' => 'lp_standalone_url_help', 'disabled' => empty($modSettings['lp_standalone_mode'])),
+			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'], 'disabled' => empty($modSettings['lp_standalone_mode'])),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
 			array('permissions', 'light_portal_view'),
@@ -236,6 +236,9 @@ class Settings
 
 		if (isset($_GET['save'])) {
 			checkSession();
+
+			if (empty($_POST['lp_frontpage_mode']))
+				$_POST['lp_standalone_url'] = 0;
 
 			if (!empty($_POST['lp_image_placeholder']))
 				$_POST['lp_image_placeholder'] = filter_var($_POST['lp_image_placeholder'], FILTER_VALIDATE_URL);
@@ -276,9 +279,7 @@ class Settings
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
-
-		$modSettings['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? unserialize($modSettings['lp_panel_direction']) : [];
-		$context['lp_panels'] = $txt['lp_block_placement_set'];
+		$context['lp_panels']  = $txt['lp_block_placement_set'];
 
 		Subs::runAddons('addPanels');
 
@@ -304,7 +305,7 @@ class Settings
 		if (isset($_GET['save'])) {
 			checkSession();
 
-			$_POST['lp_panel_direction'] = serialize($_POST['lp_panel_direction']);
+			$_POST['lp_panel_direction'] = json_encode($_POST['lp_panel_direction']);
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_panel_direction'];

@@ -63,9 +63,6 @@ class FrontPage
 		//$context['lp_all_categories'] = self::getListSelectedBoards();
 		//$context['sub_template']      = 'show_topics_as_custom_style';
 
-		if ($context['current_action'] !== 'portal')
-			Block::show();
-
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
 

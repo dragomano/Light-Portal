@@ -43,7 +43,7 @@ class Subs
 	 */
 	public static function loadBlocks()
 	{
-		global $context;
+		global $context, $modSettings;
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
@@ -51,6 +51,9 @@ class Subs
 
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
+
+		// Block direction in panels | Направление блоков в панелях
+		$context['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? json_decode($modSettings['lp_panel_direction'], true) : [];
 	}
 
 	/**
