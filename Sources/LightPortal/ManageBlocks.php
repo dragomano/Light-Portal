@@ -77,7 +77,7 @@ class ManageBlocks
 					'priority'    => $row['priority'],
 					'permissions' => $row['permissions'],
 					'status'      => $row['status'],
-					'areas'       => $row['areas']
+					'areas'       => str_replace(',', PHP_EOL, $row['areas'])
 				);
 
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
