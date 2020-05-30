@@ -1429,6 +1429,9 @@ class ManagePages
 		if ($file['type'] !== 'text/xml')
 			return;
 
+		// Might take some time.
+		@set_time_limit(600);
+
 		$xml = simplexml_load_file($file['tmp_name']);
 
 		if ($xml === false)

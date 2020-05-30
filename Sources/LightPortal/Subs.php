@@ -465,6 +465,9 @@ class Subs
 		if (empty($file))
 			return;
 
+		// Might take some time.
+		@set_time_limit(600);
+
 		if (file_exists($file)) {
 			if (ob_get_level())
 				ob_end_clean();
