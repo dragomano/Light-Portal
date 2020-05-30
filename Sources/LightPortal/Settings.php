@@ -208,7 +208,7 @@ class Settings
 			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_image_placeholder', '80" placeholder="' . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
+			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
 			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			'',
@@ -217,7 +217,13 @@ class Settings
 			array('callback', 'portal_layout_preview'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_standalone_url', '80" placeholder="' . $boardurl . '/portal.php', 'help' => 'lp_standalone_url_help', 'disabled' => empty($modSettings['lp_standalone_mode'])),
+			array(
+				'text',
+				'lp_standalone_url',
+				'80" placeholder="' . $txt['lp_example'] . $boardurl . '/portal.php',
+				'help' => 'lp_standalone_url_help',
+				'disabled' => empty($modSettings['lp_standalone_mode'])
+			),
 			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'], 'disabled' => empty($modSettings['lp_standalone_mode'])),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),

@@ -13,6 +13,7 @@ $txt['lp_new_version_is_available'] = 'A new version is available!';
 
 $txt['lp_article']  = 'Article';
 $txt['lp_no_items'] = 'There is no items to show.';
+$txt['lp_example']  = 'Example: ';
 
 // Settings
 $txt['lp_settings']  = 'Portal settings';

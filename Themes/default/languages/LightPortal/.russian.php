@@ -13,6 +13,7 @@ $txt['lp_new_version_is_available'] = 'Доступна новая версия!
 
 $txt['lp_article']  = 'Статья';
 $txt['lp_no_items'] = 'Нет элементов для отображения.';
+$txt['lp_example']  = 'Пример: ';
 
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
