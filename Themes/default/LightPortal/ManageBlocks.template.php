@@ -45,7 +45,7 @@ function show_block_table()
 					<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
-			', $txt['lp_block_placement_set'][$placement], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
+			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
 	<table class="lp_current_blocks table_grid">';

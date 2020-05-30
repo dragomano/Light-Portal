@@ -83,7 +83,12 @@ class AdsBlock
 			return;
 
 		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getData', __CLASS__);
-		$context['lp_blocks']     = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
+
+		if (!empty($context['lp_ads_blocks']))
+			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
+
+		if (!function_exists('lp_show_blocks'))
+			loadTemplate('LightPortal/ViewBlock');
 	}
 
 	/**

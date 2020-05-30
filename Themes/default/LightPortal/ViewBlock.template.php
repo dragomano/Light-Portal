@@ -139,7 +139,7 @@ function lp_show_blocks($placement = '')
 {
 	global $context, $scripturl;
 
-	if (empty($placement))
+	if (empty($placement) || empty($context['lp_blocks'][$placement]))
 		return;
 
 	if (!empty($context['lp_panel_direction'][$placement])) {
