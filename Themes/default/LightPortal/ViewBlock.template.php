@@ -154,8 +154,10 @@ function lp_show_blocks($placement = '')
 	}
 
 	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+		$class = 'block_' . $block['type'] . (!empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '') . (!empty($block['custom_class']) ? ' ' . $block['custom_class'] : '');
+
 		echo '
-			<aside id="block_', $block['id'], '" class="block_', $block['type'], !empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '', '">';
+			<aside id="block_', $block['id'], '" class="', $class, '">';
 
 		if (!empty($block['title_style']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';

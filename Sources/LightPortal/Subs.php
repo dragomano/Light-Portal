@@ -54,8 +54,8 @@ class Subs
 
 		// Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
-		$context['lp_left_panel_width']   = !empty($modSettings['lp_left_panel_width']) ? json_decode($modSettings['lp_left_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 3];
-		$context['lp_right_panel_width']  = !empty($modSettings['lp_right_panel_width']) ? json_decode($modSettings['lp_right_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 3];
+		$context['lp_left_panel_width']   = !empty($modSettings['lp_left_panel_width']) ? json_decode($modSettings['lp_left_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
+		$context['lp_right_panel_width']  = !empty($modSettings['lp_right_panel_width']) ? json_decode($modSettings['lp_right_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
 		$context['lp_footer_panel_width'] = !empty($modSettings['lp_footer_panel_width']) ? (int) $modSettings['lp_footer_panel_width'] : 12;
 
 		// Block direction in panels | Направление блоков в панелях
@@ -164,6 +164,7 @@ class Subs
 		global $modSettings, $context;
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 
 		foreach ($data as $action => $dump) {

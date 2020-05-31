@@ -188,6 +188,7 @@ class Integration
 		}
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions[] = 'home';
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
