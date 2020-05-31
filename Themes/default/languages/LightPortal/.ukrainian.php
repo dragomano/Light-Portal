@@ -55,6 +55,7 @@ $txt['lp_show_debug_info']         = 'Відображати час завант
 $txt['lp_show_debug_info_subtext'] = 'Інформація буде доступна тільки адміністраторам!';
 $txt['lp_cache_update_interval']   = 'Інтервал оновлення кешу';
 
+// Pages and blocks
 $txt['lp_extra']      = 'Сторінки і блоки';
 $txt['lp_extra_info'] = 'Тут знаходяться загальні налаштування сторінок і блоків.';
 
@@ -64,19 +65,26 @@ $txt['lp_show_comment_block_set']       = array('none' => 'Ні', 'default' => '
 $txt['lp_num_comments_per_page']        = 'Кількість батьківських коментарів на сторінці';
 $txt['lp_page_editor_type_default']     = 'Тип редактора сторінок за замовчуванням';
 $txt['lp_hide_blocks_in_admin_section'] = 'Приховувати активні блоки в адмінці';
-$txt['lp_panels']                       = 'Панелі';
-$txt['lp_panel_direction']              = 'Напрямок блоків в панелях';
-$txt['lp_panel_direction_set']          = array('Вертикальне', 'Горизонтальне');
-$txt['lp_open_graph']                   = 'Open Graph';
-$txt['lp_page_og_image']                = 'Використовувати зображення з тексту статті';
-$txt['lp_page_og_image_set']            = array('Ні', 'Перше знайдене', 'Останнє знайдене');
-$txt['lp_page_itemprop_address']        = 'Адреса вашої організації';
-$txt['lp_page_itemprop_phone']          = 'Телефон вашої організації';
+
+$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_page_og_image']         = 'Використовувати зображення з тексту статті';
+$txt['lp_page_og_image_set']     = array('Ні', 'Перше знайдене', 'Останнє знайдене');
+$txt['lp_page_itemprop_address'] = 'Адреса вашої організації';
+$txt['lp_page_itemprop_phone']   = 'Телефон вашої організації';
+
+// Panels
+$txt['lp_panels']              = 'Панелі';
+$txt['lp_panels_info']         = 'Тут можна налаштувати ширину деяких панелей, а також напрямок блоків.<br><strong>%1$s</strong> використовує <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12-колонкову сітку</a> для відображення блоків у 6 панелях.';
+$txt['lp_swap_header_footer']  = 'Поміняти місцями шапку і підвал';
+$txt['lp_swap_left_right']     = 'Поміняти місцями ліву і праву панелі';
+$txt['lp_swap_top_bottom']     = 'Поміняти місцями верхню і нижню центральні панелі';
+$txt['lp_panel_direction']     = 'Напрямок блоків в панелях';
+$txt['lp_panel_direction_set'] = array('Вертикальне', 'Горизонтальне');
 
 // Plugins
 $txt['lp_plugins']      = 'Плагіни';
 $txt['lp_plugins_desc'] = 'Будь-який з плагінів можна включити або виключити. А деякі ще й налаштувати!';
-$txt['lp_plugins_info'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a href="%1$s" target="_blank" rel="noopener">інструкцією</a>.';
+$txt['lp_plugins_info'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'   => 'Блок',

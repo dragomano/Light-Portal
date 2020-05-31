@@ -55,6 +55,7 @@ $txt['lp_show_debug_info']         = 'Show the loading time and number of the po
 $txt['lp_show_debug_info_subtext'] = 'This information will be available to administrators only!';
 $txt['lp_cache_update_interval']   = 'The cache update interval';
 
+// Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
@@ -64,19 +65,26 @@ $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => '
 $txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']     = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
-$txt['lp_panels']                       = 'Panels';
-$txt['lp_panel_direction']              = 'The direction of blocks in panels';
-$txt['lp_panel_direction_set']          = array('Vertical', 'Horizontal');
-$txt['lp_open_graph']                   = 'Open Graph';
-$txt['lp_page_og_image']                = 'Use an image from the page content';
-$txt['lp_page_og_image_set']            = array('None', 'First found', 'Last found');
-$txt['lp_page_itemprop_address']        = 'Address of your organization';
-$txt['lp_page_itemprop_phone']          = 'Phone of your organization';
+
+$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_page_og_image']         = 'Use an image from the page content';
+$txt['lp_page_og_image_set']     = array('None', 'First found', 'Last found');
+$txt['lp_page_itemprop_address'] = 'Address of your organization';
+$txt['lp_page_itemprop_phone']   = 'Phone of your organization';
+
+// Panels
+$txt['lp_panels']              = 'Panels';
+$txt['lp_panels_info']         = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
+$txt['lp_swap_header_footer']  = 'Swap the header and the footer';
+$txt['lp_swap_left_right']     = 'Swap the left panel and the right panel';
+$txt['lp_swap_top_bottom']     = 'Swap the center (top) and the center (bottom)';
+$txt['lp_panel_direction']     = 'The direction of blocks in panels';
+$txt['lp_panel_direction_set'] = array('Vertical', 'Horizontal');
 
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
 $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And some of them are also customized!';
-$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
+$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'   => 'Block',
@@ -264,4 +272,4 @@ $txt['lp_buddies_set'] = array('buddy', 'buddies');
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'Loaded for %1$.3f seconds. Queries to DB: %2$d.';
+$txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d queries.';

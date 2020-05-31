@@ -9,16 +9,16 @@
  */
 function template_portal_above()
 {
-	global $context;
+	global $modSettings, $context;
 
 	echo '
-	<div id="lp_layout">';
+	<div id="lp_layout"', !empty($modSettings['lp_swap_header_footer']) ? ' class="row reverse2"' : '', '>';
 
 	// Header | Шапка
 	if (!empty($context['lp_blocks']['header'])) {
 		echo '
-		<div class="row">
-			<div class="col-xs-12">';
+		<div class="row center-xs">
+			<div class="col-xs-', $context['lp_header_panel_width'], '">';
 
 		lp_show_blocks('header');
 
@@ -28,12 +28,12 @@ function template_portal_above()
 	}
 
 	echo '
-		<div class="row">';
+		<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">';
 
 	// Left Side | Левая панель
 	if (!empty($context['lp_blocks']['left'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">';
 
 		lp_show_blocks('left');
 
@@ -41,8 +41,13 @@ function template_portal_above()
 			</div>';
 	}
 
+	$md = 12 - ($context['lp_left_panel_width']['md'] + $context['lp_right_panel_width']['md']);
+	$lg = 12 - ($context['lp_left_panel_width']['lg'] + $context['lp_right_panel_width']['lg']);
+	$xl = 12 - ($context['lp_left_panel_width']['xl'] + $context['lp_right_panel_width']['xl']);
+
 	echo '
-			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? '-12 col-sm-12 col-md-8 col-lg-8' : '', '">';
+			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-' . $md . ' col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
+				<div', !empty($modSettings['lp_swap_top_bottom']) ? ' class="row reverse2"' : '', '>';
 
 	// Center (top) | Центр (верх)
 	if (!empty($context['lp_blocks']['top'])) {
@@ -94,12 +99,13 @@ function template_portal_below()
 	}
 
 	echo '
+				</div>
 			</div>';
 
 	// Right Side | Правая панель
 	if (!empty($context['lp_blocks']['right'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">';
 
 		lp_show_blocks('right');
 
@@ -113,8 +119,8 @@ function template_portal_below()
 	// Footer | Подвал
 	if (!empty($context['lp_blocks']['footer'])) {
 		echo '
-		<div class="row">
-			<div class="col-xs-12">';
+		<div class="row center-xs">
+			<div class="col-xs-', $context['lp_footer_panel_width'], '">';
 
 		lp_show_blocks('footer');
 

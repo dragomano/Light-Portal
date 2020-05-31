@@ -72,7 +72,7 @@ $txt['lp_page_itemprop_phone'] = 'Teléfono de su organización';
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_desc'] = 'Puede activar o desactivar cualquiera de los plugins. ¡Y algunos de ellos también están personalizados!';
-$txt['lp_plugins_info'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a href="%1$s" target="_blank" rel="noopener">las instrucciones</a>.';
+$txt['lp_plugins_info'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block' => 'Bloque',
