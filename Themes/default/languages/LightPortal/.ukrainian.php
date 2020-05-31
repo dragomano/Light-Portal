@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Приклад: ';
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';
 $txt['lp_base']      = 'Налаштування головної сторінки і статей';
-$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-групі</a>.';
+$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-групі</a>.<br>Ви також можете <a class="bbc_link" href="https://yasobe.ru/na/light_portal_development">подякувати</a> розробника.';
 
 $txt['lp_frontpage_title']         = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode']          = 'Перша сторінка порталу';
@@ -44,6 +44,7 @@ obExit(true);</code></pre><br>
 Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо файл <em>portal.php</em> знаходиться поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Області, що відключаються';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Вкажіть області, які повинні бути ВІДКЛЮЧЕНІ в автономному режимі';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'Наприклад, якщо потрібно відключити область "Пошук" (index.php?action=<strong>search</strong>), додайте <strong>search</strong> в текстове поле.';
 
 $txt['groups_light_portal_view']             = 'Хто може переглядати елементи порталу';
 $txt['groups_light_portal_manage_blocks']    = 'Хто може керувати блоками';
@@ -73,13 +74,18 @@ $txt['lp_page_itemprop_address'] = 'Адреса вашої організаці
 $txt['lp_page_itemprop_phone']   = 'Телефон вашої організації';
 
 // Panels
-$txt['lp_panels']              = 'Панелі';
-$txt['lp_panels_info']         = 'Тут можна налаштувати ширину деяких панелей, а також напрямок блоків.<br><strong>%1$s</strong> використовує <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12-колонкову сітку</a> для відображення блоків у 6 панелях.';
-$txt['lp_swap_header_footer']  = 'Поміняти місцями шапку і підвал';
-$txt['lp_swap_left_right']     = 'Поміняти місцями ліву і праву панелі';
-$txt['lp_swap_top_bottom']     = 'Поміняти місцями верхню і нижню центральні панелі';
-$txt['lp_panel_direction']     = 'Напрямок блоків в панелях';
-$txt['lp_panel_direction_set'] = array('Вертикальне', 'Горизонтальне');
+$txt['lp_panels']               = 'Панелі';
+$txt['lp_panels_info']          = 'Тут можна налаштувати ширину деяких панелей, а також напрямок блоків.<br><strong>%1$s</strong> використовує <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12-колонкову сітку</a> для відображення блоків у 6 панелях.';
+$txt['lp_swap_header_footer']   = 'Поміняти місцями шапку і підвал';
+$txt['lp_swap_left_right']      = 'Поміняти місцями ліву і праву панелі';
+$txt['lp_swap_top_bottom']      = 'Поміняти місцями верхню і нижню центральні панелі';
+$txt['lp_panel_layout_note']    = 'Змінюйте ширину вікна браузера і дивіться, який клас використовується.';
+$txt['lp_browser_width']        = 'Ширина вікна браузера';
+$txt['lp_used_class']           = 'Використовуваний клас';
+$txt['lp_panel_layout_preview'] = 'Зроблені зміни можна побачити на макеті нижче.';
+$txt['lp_panel_direction_note'] = 'Тут можна змінити напрямок блоків для кожної панелі.';
+$txt['lp_panel_direction']      = 'Напрямок блоків в панелях';
+$txt['lp_panel_direction_set']  = array('Вертикальне', 'Горизонтальне');
 
 // Plugins
 $txt['lp_plugins']      = 'Плагіни';
@@ -134,12 +140,24 @@ $txt['lp_block_areas']         = 'Області';
 $txt['lp_block_areas_subtext'] = 'Вкажіть одну або кілька областей (через кому) для відображення в них блоку:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — відображати всюди</li>
-	<li><strong>forum</strong> — відображати лише на форумі (включаючи розділи та теми)</li>
-	<li><strong>board=id</strong> — відображати в розділі з ідентифікатором <strong>id</strong> (включаючи всі теми всередині розділу)</li>
-	<li><strong>topic=id</strong> — відображати в темі з ідентифікатором <strong>id</strong></li>
 	<li><strong>portal</strong> — відображати лише на порталі (включно зі сторінками)</li>
-	<li><strong>custom_action</strong> — відображати в області <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — відображати лише на форумі (включаючи розділи та теми)</li>
+	<li><strong>custom_action</strong> — відображати в області <em>index.php?action</em>=<strong>custom_action</strong> (наприклад: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — відображати на сторінці <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — відображати в розділі з ідентифікатором <strong>id</strong> (включаючи всі теми всередині розділу)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — відображати у всіх розділах/li>
+			<li><strong>board=id1-id3</strong> — відображати в розділах id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — відображати в розділах id3 i id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — відображати в темі з ідентифікатором <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — відображати у всіх темах</li>
+			<li><strong>topic=id1-id3</strong> — відображати в темах id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — відображати в темах id3 і id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class']   = 'CSS клас заголовка';
 $txt['lp_block_title_style']   = 'CSS стилі заголовка';
@@ -197,7 +215,7 @@ $txt['lp_export_all']                    = 'Експортувати всі';
 
 // Tags
 $txt['lp_all_page_tags']    = 'Всі теги сторінок порталу';
-$txt['lp_all_tags_by_key']  = 'Всі сторінки з тегом «%1$s»';
+$txt['lp_all_tags_by_key']  = 'Всі сторінки з тегом "%1$s"';
 $txt['lp_no_selected_tag']  = 'Вказаний тег не знайдено.';
 $txt['lp_no_tags']          = 'Тегів поки немає.';
 $txt['lp_keyword_column']   = 'Ключове слово';

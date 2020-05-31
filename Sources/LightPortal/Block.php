@@ -31,32 +31,14 @@ class Block
 	 */
 	public static function show()
 	{
-		global $context, $modSettings, $txt;
+		global $context, $modSettings;
 
 		if (empty($context['template_layers']))
 			return;
 
-		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
-
-		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
-			if (empty($context['current_action']))
-				$area = 'forum';
-			if ($modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
-				$area = 'portal';
-		}
-
-		if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']))
-			$area = 'forum';
-
-		if (!empty($_REQUEST['page']))
-			$area = 'portal';
-
-		$blocks = array_filter($context['lp_active_blocks'], function($block) use ($area) {
-			$block['areas'] = array_flip($block['areas']);
-			return isset($block['areas']['all']) || isset($block['areas'][$area]) || !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]) || !empty($_GET['board']) && isset($block['areas']['board=' . (string) $_GET['board']]) || !empty($_GET['topic']) && isset($block['areas']['topic=' . (string) $_GET['topic']]);
-		});
-
 		$context['lp_blocks'] = [];
+
+		$blocks = self::getFilteredByAreas();
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))
 			return;
@@ -93,5 +75,95 @@ class Block
 			array('portal'),
 			array_slice($context['template_layers'], $counter, null, true)
 		);
+	}
+
+	/**
+	 * Get blocks filtered by areas
+	 *
+	 * Получаем блоки, отфильтрованные по области
+	 *
+	 * @return array
+	 */
+	private static function getFilteredByAreas()
+	{
+		global $context, $modSettings;
+
+		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
+
+		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
+			if (empty($context['current_action']))
+				$area = 'forum';
+			if ($modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
+				$area = 'portal';
+		}
+
+		if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']))
+			$area = 'forum';
+
+		if (empty($context['current_action']) && !empty($_REQUEST['page']))
+			$area = 'portal';
+
+		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
+			global $context;
+
+			$temp_areas     = $block['areas'];
+			$block['areas'] = array_flip($block['areas']);
+
+			if (isset($block['areas']['all']))
+				return true;
+
+			if ($area == 'portal' && !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]))
+				return true;
+
+			$boards = $topics = [];
+			foreach ($temp_areas as $areas) {
+				$entity = explode('=', $areas);
+				if ($entity[0] === 'board') {
+					$items = explode('|', $entity[1]);
+					foreach ($items as $item) {
+						if (strpos($item, '-') !== false) {
+							$range = explode('-', $item);
+							for ($i = $range[0]; $i <= $range[1]; $i++) {
+								$boards[] = $i;
+							}
+						} else {
+							$boards[] = $item;
+						}
+					}
+				} elseif ($entity[0] === 'topic') {
+					$items = explode('|', $entity[1]);
+					foreach ($items as $item) {
+						if (strpos($item, '-') !== false) {
+							$range = explode('-', $item);
+							for ($i = $range[0]; $i <= $range[1]; $i++) {
+								$topics[] = $i;
+							}
+						} else {
+							$topics[] = $item;
+						}
+					}
+				}
+			}
+
+			if ($area == 'forum' && !isset($block['areas']['forum'])) {
+				if (!empty($context['current_board'])) {
+					if (isset($block['areas']['boards'])) {
+						$area = 'boards';
+					} elseif (in_array($context['current_board'], $boards)) {
+						$area = 'board=' . $entity[1];
+					}
+				}
+
+				if (!empty($context['current_topic'])) {
+					if (isset($block['areas']['topics'])) {
+						$area = 'topics';
+					} elseif (in_array($context['current_topic'], $topics)) {
+						$area = 'topic=' . $entity[1];
+					}
+				}
+			}
+
+			return isset($block['areas'][$area]);
+		});
 	}
 }

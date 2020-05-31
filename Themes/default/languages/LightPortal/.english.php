@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Example: ';
 // Settings
 $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make a donation</a> to the developer.';
 
 $txt['lp_frontpage_title']         = 'The frontpage title';
 $txt['lp_frontpage_mode']          = 'The portal frontpage';
@@ -44,6 +44,7 @@ obExit(true);</code></pre><br>
 Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
 $txt['groups_light_portal_view']             = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
@@ -73,13 +74,18 @@ $txt['lp_page_itemprop_address'] = 'Address of your organization';
 $txt['lp_page_itemprop_phone']   = 'Phone of your organization';
 
 // Panels
-$txt['lp_panels']              = 'Panels';
-$txt['lp_panels_info']         = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
-$txt['lp_swap_header_footer']  = 'Swap the header and the footer';
-$txt['lp_swap_left_right']     = 'Swap the left panel and the right panel';
-$txt['lp_swap_top_bottom']     = 'Swap the center (top) and the center (bottom)';
-$txt['lp_panel_direction']     = 'The direction of blocks in panels';
-$txt['lp_panel_direction_set'] = array('Vertical', 'Horizontal');
+$txt['lp_panels']               = 'Panels';
+$txt['lp_panels_info']          = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
+$txt['lp_swap_header_footer']   = 'Swap the header and the footer';
+$txt['lp_swap_left_right']      = 'Swap the left panel and the right panel';
+$txt['lp_swap_top_bottom']      = 'Swap the center (top) and the center (bottom)';
+$txt['lp_panel_layout_note']    = 'Change the width of the browser window and see which class is used.';
+$txt['lp_browser_width']        = 'Width of the browser window';
+$txt['lp_used_class']           = 'Class used';
+$txt['lp_panel_layout_preview'] = 'You can see the changes made in the layout below.';
+$txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
+$txt['lp_panel_direction']      = 'The direction of blocks in panels';
+$txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
@@ -134,12 +140,24 @@ $txt['lp_block_areas']         = 'Actions';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — display everywhere</li>
-	<li><strong>forum</strong> — display only on the forum area (including boards and topics)</li>
-	<li><strong>board=id</strong> — display only inside the board with identificator #<strong>id</strong> (including all topics inside the board)</li>
-	<li><strong>topic=id</strong> — display only inside the topic with identificator #<strong>id</strong></li>
 	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
-	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — display only on the forum area (including boards and topics)</li>
+	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — display in all boards</li>
+			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — display in all topics</li>
+			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class']   = 'CSS title class';
 $txt['lp_block_title_style']   = 'CSS title style';

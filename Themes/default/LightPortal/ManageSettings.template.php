@@ -47,19 +47,52 @@ function template_callback_portal_layout_preview()
 }
 
 /**
- * Callback template for setting the width of panels (left and right)
+ * Callback template to configure panel layouts
  *
- * Callback-шаблон для установки ширины панелей (левой и правой)
+ * Callback-шаблон для настройки макета панелей
  *
  * @return void
  */
-function template_callback_panel_width()
+function template_callback_panel_layout()
 {
-	global $modSettings, $context, $txt;
+	global $txt, $modSettings, $context;
 
 	echo '
 	<dt style="width: 0"></dt>
 	<dd style="width: 100%">
+		<div class="infobox">', $txt['lp_panel_layout_note'], '</div>
+		<table class="table_grid centertext">
+			<thead>
+				<tr class="title_bar">
+					<th>', $txt['lp_browser_width'], '</th>
+					<th>', $txt['lp_used_class'], '</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="windowbg">
+					<td> >= 0px</td>
+					<td>col-xs-* <span class="hidden-sm hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
+				</tr>
+				<tr class="windowbg">
+					<td> >= 576px</td>
+					<td>col-sm-* <span class="hidden-xs hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
+				</tr>
+				<tr class="windowbg">
+					<td> >= 768px</td>
+					<td>col-md-* <span class="hidden-xs hidden-sm hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
+				</tr>
+				<tr class="windowbg">
+					<td> >= 992px</td>
+					<td>col-lg-* <span class="hidden-xs hidden-sm hidden-md hidden-xl"><i class="fas fa-grin"></i></span></td>
+				</tr>
+				<tr class="windowbg">
+					<td> >= 1200px</td>
+					<td>col-xl-* <span class="hidden-xs hidden-sm hidden-md hidden-lg"><i class="fas fa-grin"></i></span></td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
 		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row reverse2' : '', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
@@ -245,7 +278,6 @@ echo '
 				</div>
 			</div>
 		</div>
-		<br>
 	</dd>';
 }
 
@@ -263,6 +295,7 @@ function template_callback_panel_direction()
 	echo '
 	<dt style="width: 0"></dt>
 	<dd style="width: 100%">
+		<div class="infobox">', $txt['lp_panel_direction_note'], '</div>
 		<table class="table_grid centertext">
 			<thead>
 				<tr class="title_bar">

@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Пример: ';
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
 $txt['lp_base']      = 'Настройки главной страницы и статей';
-$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-группе</a>.';
+$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-группе</a>.<br>Вы также можете <a class="bbc_link" href="https://yasobe.ru/na/light_portal_development">поблагодарить</a> разработчика.';
 
 $txt['lp_frontpage_title']         = 'Заголовок главной страницы';
 $txt['lp_frontpage_mode']          = 'Первая страница портала';
@@ -44,6 +44,7 @@ obExit(true);</code></pre><br>
 Отключите параметр «<strong>Использовать локальное хранение куки</strong>», если файл <em>portal.php</em> находится вне директории форума (Обслуживание => Настройки сервера => Куки и сессии).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Отключаемые области';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Укажите области, которые должны быть ОТКЛЮЧЕНЫ в автономном режиме.';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'Например, если нужно отключить область «Поиск» (index.php?action=<strong>search</strong>), добавьте <strong>search</strong> в текстовое поле.';
 
 $txt['groups_light_portal_view']             = 'Кто может просматривать элементы портала';
 $txt['groups_light_portal_manage_blocks']    = 'Кто может управлять блоками';
@@ -73,13 +74,18 @@ $txt['lp_page_itemprop_address'] = 'Адрес вашей организации
 $txt['lp_page_itemprop_phone']   = 'Телефон вашей организации';
 
 // Panels
-$txt['lp_panels']              = 'Панели';
-$txt['lp_panels_info']         = 'Здесь можно настроить ширину некоторых панелей, а также направление блоков.<br><strong>%1$s</strong> использует <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12-колоночную сетку</a> для отображения блоков в 6 панелях.';
-$txt['lp_swap_header_footer']  = 'Поменять местами шапку и подвал';
-$txt['lp_swap_left_right']     = 'Поменять местами левую и правую панели';
-$txt['lp_swap_top_bottom']     = 'Поменять местами верхнюю и нижнюю центральные панели';
-$txt['lp_panel_direction']     = 'Направление блоков в панелях';
-$txt['lp_panel_direction_set'] = array('Вертикальное', 'Горизонтальное');
+$txt['lp_panels']               = 'Панели';
+$txt['lp_panels_info']          = 'Здесь можно настроить ширину некоторых панелей, а также направление блоков.<br><strong>%1$s</strong> использует <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12-колоночную сетку</a> для отображения блоков в 6 панелях.';
+$txt['lp_swap_header_footer']   = 'Поменять местами шапку и подвал';
+$txt['lp_swap_left_right']      = 'Поменять местами левую и правую панели';
+$txt['lp_swap_top_bottom']      = 'Поменять местами верхнюю и нижнюю центральные панели';
+$txt['lp_panel_layout_note']    = 'Изменяйте ширину окна браузера и смотрите, какой класс используется.';
+$txt['lp_browser_width']        = 'Ширина окна браузера';
+$txt['lp_used_class']           = 'Используемый класс';
+$txt['lp_panel_layout_preview'] = 'Сделанные изменения можно увидеть на макете ниже.';
+$txt['lp_panel_direction_note'] = 'Здесь можно изменить направление блоков для каждой панели.';
+$txt['lp_panel_direction']      = 'Направление блоков в панелях';
+$txt['lp_panel_direction_set']  = array('Вертикальное', 'Горизонтальное');
 
 // Plugins
 $txt['lp_plugins']      = 'Плагины';
@@ -134,12 +140,24 @@ $txt['lp_block_areas']         = 'Области';
 $txt['lp_block_areas_subtext'] = 'Укажите одну или несколько областей (через запятую) для отображения в них блока:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — отображать везде</li>
-	<li><strong>forum</strong> — отображать только на форуме (включая разделы и темы)</li>
-	<li><strong>board=id</strong> — отображать в разделе с идентификатором <strong>id</strong> (включая все темы внутри раздела)</li>
-	<li><strong>topic=id</strong> — отображать в теме с идентификатором <strong>id</strong></li>
 	<li><strong>portal</strong> — отображать только на портале (включая страницы)</li>
-	<li><strong>custom_action</strong> — отображать в области <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — отображать только на форуме (включая разделы и темы)</li>
+	<li><strong>custom_action</strong> — отображать в области <em>index.php?action</em>=<strong>custom_action</strong> (например: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — отображать на странице <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — отображать в разделе с идентификатором <strong>id</strong> (включая все темы внутри раздела)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — отображать во всех разделах</li>
+			<li><strong>board=id1-id3</strong> — отображать в разделах id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — отображать в разделах id3 и id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — отображать в теме с идентификатором <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — отображать во всех темах</li>
+			<li><strong>topic=id1-id3</strong> — отображать в темах id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — отображать в темах id3 и id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class']   = 'CSS класс заголовка';
 $txt['lp_block_title_style']   = 'CSS стили заголовка';
@@ -152,7 +170,7 @@ $txt['lp_block_types'] = array(
 	'php'  => 'Блок с PHP-кодом'
 );
 $txt['lp_block_types_descriptions'] = array(
-	'bbc'  => 'В этом блоке в качестве контента можно использовать любые ББ-теги форума.',
+	'bbc'  => 'В этом блоке в качестве контента можно использовать любые форумные теги.',
 	'html' => 'В этом блоке в качестве контента можно использовать любые теги HTML.',
 	'php'  => 'В этом блоке в качестве контента можно использовать произвольный код PHP.'
 );

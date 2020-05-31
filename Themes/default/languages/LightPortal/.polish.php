@@ -17,7 +17,7 @@ $txt['lp_no_items'] = 'Nic nie zostało dodane.';
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make a donation</a> to the developer.';
 
 $txt['lp_frontpage_title']         = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']          = 'Strona główna portalu';

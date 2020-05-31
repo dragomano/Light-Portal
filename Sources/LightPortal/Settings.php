@@ -188,7 +188,7 @@ class Settings
 		if (!isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_standalone_mode_disabled_actions']))
-			$add_settings['lp_standalone_mode_disabled_actions'] = 'home,mlist,calendar';
+			$add_settings['lp_standalone_mode_disabled_actions'] = 'mlist,calendar';
 		if (!isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
 		if (!isset($modSettings['lp_cache_update_interval']))
@@ -227,7 +227,14 @@ class Settings
 				'help' => 'lp_standalone_url_help',
 				'disabled' => empty($modSettings['lp_standalone_mode'])
 			),
-			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'], 'disabled' => empty($modSettings['lp_standalone_mode'])),
+			array(
+				'text',
+				'lp_standalone_mode_disabled_actions',
+				80,
+				'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'],
+				'help' => 'lp_standalone_mode_disabled_actions_help',
+				'disabled' => empty($modSettings['lp_standalone_mode'])
+			),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
 			array('permissions', 'light_portal_view'),
@@ -275,11 +282,7 @@ class Settings
 	 */
 	public static function extra(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings;
-
-		loadTemplate('LightPortal/ManageSettings');
-
-		require_once($sourcedir . '/ManageServer.php');
+		global $context, $txt, $scripturl, $modSettings;
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -304,11 +307,12 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
-		$context['sub_template'] = 'show_settings';
-
 		if (isset($_GET['save'])) {
 			checkSession();
+
+			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
+
 			redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
@@ -368,7 +372,7 @@ class Settings
 			array('check', 'lp_swap_header_footer'),
 			array('check', 'lp_swap_left_right'),
 			array('check', 'lp_swap_top_bottom'),
-			array('callback', 'panel_width'),
+			array('callback', 'panel_layout'),
 			array('callback', 'panel_direction')
 		);
 
