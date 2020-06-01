@@ -36,8 +36,6 @@ class Block
 		if (empty($context['template_layers']))
 			return;
 
-		$context['lp_blocks'] = [];
-
 		$blocks = self::getFilteredByAreas();
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))
