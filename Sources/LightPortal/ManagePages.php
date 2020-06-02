@@ -1294,7 +1294,7 @@ class ManagePages
 					'page_id'      => $row['page_id'],
 					'author_id'    => $row['author_id'],
 					'alias'        => $row['alias'],
-					'description'  => $row['description'],
+					'description'  => trim($row['description']),
 					'content'      => $row['content'],
 					'type'         => $row['type'],
 					'permissions'  => $row['permissions'],
@@ -1319,7 +1319,7 @@ class ManagePages
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
-					'message'    => $row['message'],
+					'message'    => trim($row['message']),
 					'created_at' => $row['com_created_at']
 				);
 			}
@@ -1361,6 +1361,8 @@ class ManagePages
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}
+				} elseif (in_array($key, ['description', 'content'])) {
+					$xmlName->appendChild($xml->createCDATASection($val));
 				} elseif ($key == 'keywords' && !empty($val)) {
 					$xmlName->appendChild($xml->createTextNode(implode(', ', array_unique($val))));
 				} elseif ($key == 'comments') {
@@ -1368,7 +1370,7 @@ class ManagePages
 						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
 						foreach ($comment as $label => $text) {
 							$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
-							$xmlCommentElem->appendChild($xml->createTextNode($text));
+							$xmlCommentElem->appendChild($label == 'message' ? $xml->createCDATASection($text) : $xml->createTextNode($text));
 						}
 					}
 				} else {

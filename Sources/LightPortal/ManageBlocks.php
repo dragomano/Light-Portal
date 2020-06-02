@@ -1182,6 +1182,8 @@ class ManageBlocks
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}
+				} elseif ($key == 'content') {
+					$xmlName->appendChild($xml->createCDATASection($val));
 				} else {
 					$xmlName->appendChild($xml->createTextNode($val));
 				}
