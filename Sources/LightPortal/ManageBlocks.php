@@ -203,6 +203,8 @@ class ManageBlocks
 			];
 		}
 
+		clean_cache();
+
 		exit(json_encode($result));
 	}
 
@@ -1247,6 +1249,9 @@ class ManageBlocks
 		if ($xml === false)
 			return;
 
+		if (!isset($xml->blocks->item[0]['block_id']))
+			fatal_lang_error('lp_wrong_import_file', false);
+
 		$items = $titles = $params = [];
 
 		foreach ($xml as $element) {
@@ -1302,29 +1307,32 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($items);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
 
-		if (!empty($titles)) {
+		if (!empty($titles) && !empty($result)) {
 			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
 				VALUES ";
 
 			$sql .= Subs::getValues($titles);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
 
-		if (!empty($params)) {
+		if (!empty($params) && !empty($result)) {
 			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
 				VALUES ";
 
 			$sql .= Subs::getValues($params);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
+
+		if (empty($result))
+			fatal_lang_error('lp_import_failed', false);
 
 		clean_cache();
 	}

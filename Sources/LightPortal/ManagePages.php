@@ -46,7 +46,7 @@ class ManagePages
 	 */
 	public static function main()
 	{
-		global $context, $txt, $scripturl, $sourcedir;
+		global $context, $txt, $smcFunc, $scripturl, $sourcedir;
 
 		loadLanguage('Packages');
 		loadTemplate('LightPortal/ManagePages');
@@ -63,18 +63,41 @@ class ManagePages
 		self::doActions();
 		self::massActions();
 
+		if (!empty($_REQUEST['params']) && empty($_REQUEST['is_search'])) {
+			$search_params = base64_decode(strtr($_REQUEST['params'], array(' ' => '+')));
+			$search_params = $smcFunc['json_decode']($search_params, true);
+		}
+
+		$search_params_string = empty($_REQUEST['search']) ? '' : $_REQUEST['search'];
+		$search_params = array(
+			'string' => $smcFunc['htmlspecialchars']($search_params_string)
+		);
+
+		$context['search_params'] = empty($search_params_string) ? '' : base64_encode($smcFunc['json_encode']($search_params));
+		$context['search'] = array(
+			'string' => $search_params['string']
+		);
+
 		$listOptions = array(
 			'id' => 'pages',
 			'items_per_page' => self::$num_pages,
 			'title' => $txt['lp_extra_pages'],
 			'no_items_label' => $txt['lp_no_items'],
-			'base_href' => $scripturl . '?action=admin;area=lp_pages',
+			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
 			'default_sort_col' => 'date',
 			'get_items' => array(
-				'function' => __CLASS__ . '::getAll'
+				'function' => __CLASS__ . '::getAll',
+				'params' => array(
+					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string})' : ''),
+					array('quick_search_string' => $search_params['string'])
+				)
 			),
 			'get_count' => array(
-				'function' => __CLASS__ . '::getTotalQuantity'
+				'function' => __CLASS__ . '::getTotalQuantity',
+				'params' => array(
+					(!empty($search_params['string']) ? ' INSTR(alias, {string:quick_search_string})' : ''),
+					array('quick_search_string' => $search_params['string'])
+				)
 			),
 			'columns' => array(
 				'date' => array(
@@ -121,11 +144,11 @@ class ManagePages
 				),
 				'alias' => array(
 					'header' => array(
-						'value' => $txt['lp_page_alias']
+						'value' => $txt['lp_page_alias'],
 					),
 					'data' => array(
 						'db'    => 'alias',
-						'class' => 'centertext'
+						'class' => 'centertext word_break'
 					),
 					'sort' => array(
 						'default' => 'p.alias DESC',
@@ -182,10 +205,24 @@ class ManagePages
 				)
 			),
 			'form' => array(
+				'name' => 'manage_pages',
 				'href' => $scripturl . '?action=admin;area=lp_pages',
-				'name' => 'manage_pages'
+				'include_sort' => true,
+				'include_start' => true,
+				'hidden_fields' => array(
+					$context['session_var'] => $context['session_id'],
+					'params' => $context['search_params']
+				)
 			),
 			'additional_rows' => array(
+				array(
+					'position' => 'after_title',
+					'value' => '
+						<i class="fas fa-search centericon"></i>
+						<input type="text" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_page_alias'] . '">
+						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button" style="float:none">',
+					'class' => 'floatright'
+				),
 				array(
 					'position' => 'below_table_data',
 					'value' => '
@@ -194,7 +231,7 @@ class ManagePages
 							<option value="action_on">' . $txt['lp_action_on'] . '</option>
 							<option value="action_off">' . $txt['lp_action_off'] . '</option>
 						</select>
-						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
+						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
 				)
 			)
@@ -225,9 +262,11 @@ class ManagePages
 	 * @param int $start
 	 * @param int $items_per_page
 	 * @param string $sort
+	 * @param string $query_string
+	 * @param array $query_params
 	 * @return array
 	 */
-	public static function getAll(int $start, int $items_per_page, string $sort)
+	public static function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
 	{
 		global $smcFunc, $user_info, $context;
 
@@ -236,15 +275,18 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '' : '
-			WHERE p.author_id = {int:user_id}') . '
-			ORDER BY ' . $sort . '
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '
+			WHERE 1=1' : '
+			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
+				AND ' . $query_string : '') . '
+			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array(
+			array_merge($query_params, array(
 				'user_id' => $user_info['id'],
+				'sort'    => $sort,
 				'start'   => $start,
 				'limit'   => $items_per_page
-			)
+			))
 		);
 
 		$items = [];
@@ -274,19 +316,23 @@ class ManagePages
 	 *
 	 * Подсчитываем общее количество страниц
 	 *
+	 * @param string $query_string
+	 * @param array $query_params
 	 * @return int
 	 */
-	public static function getTotalQuantity()
+	public static function getTotalQuantity(string $query_string = '', array $query_params = [])
 	{
 		global $smcFunc, $user_info, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '' : '
-			WHERE author_id = {int:user_id}'),
-			array(
+			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '
+			WHERE 1=1' : '
+			WHERE author_id = {int:user_id}') . (!empty($query_string) ? '
+				AND ' . $query_string : ''),
+			array_merge($query_params, array(
 				'user_id' => $user_info['id']
-			)
+			))
 		);
 
 		list ($num_entries) = $smcFunc['db_fetch_row']($request);
@@ -1184,7 +1230,8 @@ class ManagePages
 			'columns' => array(
 				'id' => array(
 					'header' => array(
-						'value' => '#'
+						'value' => '#',
+						'style' => 'width: 5%'
 					),
 					'data' => array(
 						'db'    => 'id',
@@ -1201,7 +1248,7 @@ class ManagePages
 					),
 					'data' => array(
 						'db'    => 'alias',
-						'class' => 'centertext'
+						'class' => 'centertext word_break'
 					),
 					'sort' => array(
 						'default' => 'p.alias DESC',
@@ -1439,6 +1486,9 @@ class ManagePages
 		if ($xml === false)
 			return;
 
+		if (!isset($xml->pages->item[0]['page_id']))
+			fatal_lang_error('lp_wrong_import_file', false);
+
 		$items = $titles = $params = $keywords = $comments = [];
 
 		foreach ($xml as $element) {
@@ -1446,10 +1496,10 @@ class ManagePages
 				$items[] = [
 					'page_id'      => $page_id = intval($item['page_id']),
 					'author_id'    => intval($item['author_id']),
-					'alias'        => $item->alias,
+					'alias'        => (string) $item->alias,
 					'description'  => $item->description,
 					'content'      => $item->content,
-					'type'         => $item->type,
+					'type'         => (string) $item->type,
 					'permissions'  => intval($item['permissions']),
 					'status'       => intval($item['status']),
 					'num_views'    => intval($item['num_views']),
@@ -1478,7 +1528,7 @@ class ManagePages
 								'item_id' => $page_id,
 								'type'    => 'page',
 								'name'    => $k,
-								'value'   => $v
+								'value'   => intval($v)
 							];
 						}
 					}
@@ -1511,54 +1561,82 @@ class ManagePages
 		}
 
 		if (!empty($items)) {
-			$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
-				VALUES ";
+			$items = array_chunk($items, 100);
+			$count = count($items);
 
-			$sql .= Subs::getValues($items);
+			for ($i = 0; $i < $count; $i++) {
+				$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
+					VALUES ";
 
-			$smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+				$sql .= Subs::getValues($items[$i]);
+
+				$result = $smcFunc['db_query']('', $sql);
+				$context['lp_num_queries']++;
+			}
 		}
 
-		if (!empty($titles)) {
-			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
-				VALUES ";
+		if (!empty($titles) && !empty($result)) {
+			$titles = array_chunk($titles, 100);
+			$count = count($titles);
 
-			$sql .= Subs::getValues($titles);
+			for ($i = 0; $i < $count; $i++) {
+				$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
+					VALUES ";
 
-			$smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+				$sql .= Subs::getValues($titles[$i]);
+
+				$result = $smcFunc['db_query']('', $sql);
+				$context['lp_num_queries']++;
+			}
 		}
 
-		if (!empty($params)) {
-			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
-				VALUES ";
+		if (!empty($params) && !empty($result)) {
+			$params = array_chunk($params, 100);
+			$count = count($params);
 
-			$sql .= Subs::getValues($params);
+			for ($i = 0; $i < $count; $i++) {
+				$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
+					VALUES ";
 
-			$smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+				$sql .= Subs::getValues($params[$i]);
+
+				$result = $smcFunc['db_query']('', $sql);
+				$context['lp_num_queries']++;
+			}
 		}
 
-		if (!empty($keywords)) {
-			$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
-				VALUES ";
+		if (!empty($keywords) && !empty($result)) {
+			$keywords = array_chunk($keywords, 100);
+			$count = count($keywords);
 
-			$sql .= Subs::getValues($keywords);
+			for ($i = 0; $i < $count; $i++) {
+				$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
+					VALUES ";
 
-			$smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+				$sql .= Subs::getValues($keywords[$i]);
+
+				$result = $smcFunc['db_query']('', $sql);
+				$context['lp_num_queries']++;
+			}
 		}
 
-		if (!empty($comments)) {
-			$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)
-				VALUES ";
+		if (!empty($comments) && !empty($result)) {
+			$comments = array_chunk($comments, 100);
+			$count = count($comments);
 
-			$sql .= Subs::getValues($comments);
+			for ($i = 0; $i < $count; $i++) {
+				$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)
+					VALUES ";
 
-			$smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+				$sql .= Subs::getValues($comments[$i]);
+
+				$result = $smcFunc['db_query']('', $sql);
+				$context['lp_num_queries']++;
+			}
 		}
+
+		if (empty($result))
+			fatal_lang_error('lp_import_failed', false);
 
 		clean_cache();
 	}

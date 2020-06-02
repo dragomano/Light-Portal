@@ -82,7 +82,7 @@ $txt['lp_swap_top_bottom']      = 'Поміняти місцями верхню 
 $txt['lp_panel_layout_note']    = 'Змінюйте ширину вікна браузера і дивіться, який клас використовується.';
 $txt['lp_browser_width']        = 'Ширина вікна браузера';
 $txt['lp_used_class']           = 'Використовуваний клас';
-$txt['lp_panel_layout_preview'] = 'Зроблені зміни можна побачити на макеті нижче.';
+$txt['lp_panel_layout_preview'] = 'На макеті нижче можна задати кількість колонок для деяких панелей, в залежності від ширини вікна браузера.';
 $txt['lp_panel_direction_note'] = 'Тут можна змінити напрямок блоків для кожної панелі.';
 $txt['lp_panel_direction']      = 'Напрямок блоків в панелях';
 $txt['lp_panel_direction_set']  = array('Вертикальне', 'Горизонтальне');
@@ -243,6 +243,8 @@ $txt['lp_post_error_no_content']      = 'Не вказано зміст!';
 $txt['lp_post_error_no_areas']        = 'Не вказана область разташування!';
 $txt['lp_page_not_editable']          = 'Вам заборонено редагування цієї сторінки!';
 $txt['lp_addon_not_installed']        = 'Плагін %1$s не встановлений';
+$txt['lp_wrong_import_file']          = 'Неправильний файл для імпорту...';
+$txt['lp_import_failed']              = 'Не вдалося здійснити імпорт...';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';

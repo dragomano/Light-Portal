@@ -82,7 +82,7 @@ $txt['lp_swap_top_bottom']      = 'Swap the center (top) and the center (bottom)
 $txt['lp_panel_layout_note']    = 'Change the width of the browser window and see which class is used.';
 $txt['lp_browser_width']        = 'Width of the browser window';
 $txt['lp_used_class']           = 'Class used';
-$txt['lp_panel_layout_preview'] = 'You can see the changes made in the layout below.';
+$txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
 $txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
 $txt['lp_panel_direction']      = 'The direction of blocks in panels';
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
@@ -243,6 +243,8 @@ $txt['lp_post_error_no_content']      = 'The content not specified! It is requir
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
 $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
+$txt['lp_wrong_import_file']          = 'Wrong file to import...';
+$txt['lp_import_failed']              = 'Failed to import...';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
