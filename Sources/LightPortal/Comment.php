@@ -369,7 +369,7 @@ class Comment
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'avatar'      => $memberContext[$row['author_id']]['avatar']['image'],
-				'message'     => $row['message'],
+				'message'     => parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id),
 				'created_at'  => $row['created_at']
 			);
 		}
