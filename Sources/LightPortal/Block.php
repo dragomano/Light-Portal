@@ -101,65 +101,62 @@ class Block
 		if (empty($context['current_action']) && !empty($_REQUEST['page']))
 			$area = 'portal';
 
-		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
+		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
+			global $context;
+
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
-			if (isset($block['areas']['all']))
+			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
 			if ($area == 'portal' && !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]))
 				return true;
 
+			if (empty($context['current_board']))
+				return false;
+
+			if (isset($block['areas']['boards']) || (!empty($context['current_topic']) && isset($block['areas']['topics'])))
+				return true;
+
 			$boards = $topics = [];
 			foreach ($temp_areas as $areas) {
 				$entity = explode('=', $areas);
-				if ($entity[0] === 'board') {
-					$items = explode('|', $entity[1]);
-					foreach ($items as $item) {
-						if (strpos($item, '-') !== false) {
-							$range = explode('-', $item);
-							for ($i = $range[0]; $i <= $range[1]; $i++) {
-								$boards[] = $i;
-							}
-						} else {
-							$boards[] = $item;
-						}
-					}
-				} elseif ($entity[0] === 'topic') {
-					$items = explode('|', $entity[1]);
-					foreach ($items as $item) {
-						if (strpos($item, '-') !== false) {
-							$range = explode('-', $item);
-							for ($i = $range[0]; $i <= $range[1]; $i++) {
-								$topics[] = $i;
-							}
-						} else {
-							$topics[] = $item;
-						}
-					}
-				}
+
+				if ($entity[0] === 'board')
+					$boards = self::getAllowedIds($entity[1]);
+				if ($entity[0] === 'topic')
+					$topics = self::getAllowedIds($entity[1]);
 			}
 
-			if ($area == 'forum' && !isset($block['areas']['forum'])) {
-				if (!empty($context['current_board'])) {
-					if (isset($block['areas']['boards'])) {
-						$area = 'boards';
-					} elseif (in_array($context['current_board'], $boards)) {
-						$area = 'board=' . $entity[1];
-					}
-				}
-
-				if (!empty($context['current_topic'])) {
-					if (isset($block['areas']['topics'])) {
-						$area = 'topics';
-					} elseif (in_array($context['current_topic'], $topics)) {
-						$area = 'topic=' . $entity[1];
-					}
-				}
-			}
-
-			return isset($block['areas'][$area]);
+			return in_array($context['current_board'], $boards) || (!empty($context['current_topic']) && in_array($context['current_topic'], $topics));
 		});
+	}
+
+	/**
+	 * Get allowed identificators for $entity string
+	 *
+	 * Получаем разрешенные идентификаторы из строки $entity
+	 *
+	 * @param string $entity
+	 * @return array
+	 */
+	private static function getAllowedIds(string $entity = '')
+	{
+		$ids = [];
+
+		$items = explode('|', $entity);
+		foreach ($items as $item) {
+			if (strpos($item, '-') !== false) {
+				$range = explode('-', $item);
+				for ($i = $range[0]; $i <= $range[1]; $i++) {
+					$ids[] = $i;
+				}
+			} else {
+				$ids[] = $item;
+			}
+		}
+
+		return $ids;
 	}
 }

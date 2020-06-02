@@ -436,7 +436,12 @@ section {
 	}
 }
 
-@media (max-width: 800px) {
+@media (max-width: 887px) {
+	.information {
+		.righttext {
+			text-align: center;
+		}
+	}
 	#pages {
 		th, td {
 			&.alias {
@@ -446,7 +451,7 @@ section {
 	}
 }
 
-@media (max-width: 980px) {
+@media (max-width: 800px) {
 	#pages {
 		th, td {
 			&.num_views,
@@ -457,20 +462,7 @@ section {
 	}
 }
 
-@media (max-width: 1120px) and (min-width: 1024px) {
-	.block_user_info {
-		span {
-			.floatleft,
-			.floatright {
-				float: none;
-				margin: 0 auto;
-				display: block;
-			}
-		}
-	}
-}
-
-@media (max-width: 1200px) and (min-width: 1022px) {
+@media (min-width: 1022px) and (max-width: 1200px) {
 	.article_info {
 		div {
 			text-align: center;
@@ -492,6 +484,20 @@ section {
 }
 
 /* Addons */
+
+/* UserInfo */
+@media (min-width: 769px) and (max-width: 1241px) {
+	.block_user_info {
+		span {
+			&.floatleft,
+			&.floatright {
+				float: none;
+				margin: 0 auto;
+				display: block;
+			}
+		}
+	}
+}
 
 /* Likely */
 .likely__widget {

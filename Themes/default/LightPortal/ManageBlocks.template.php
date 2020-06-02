@@ -48,7 +48,7 @@ function show_block_table()
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
-	<table class="lp_current_blocks table_grid">';
+	<table class="lp_current_blocks table_grid centertext">';
 
 			if (is_array($blocks)) {
 				echo '
@@ -119,24 +119,24 @@ function show_block_entry($id, $data)
 
 	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
 		echo '
-		<td class="icon centertext">
+		<td class="icon">
 			', $data['icon'], '
 		</td>';
 
 	echo '
-		<td class="title centertext">
+		<td class="title">
 			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
 		</td>
-		<td class="type centertext">
+		<td class="type">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
-		<td class="areas centertext">
+		<td class="areas">
 			', $data['areas'], '
 		</td>
-		<td class="priority centertext">
+		<td class="priority">
 			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td class="actions centertext">';
+		<td class="actions">';
 
 		if (empty($data['status']))
 			echo '
