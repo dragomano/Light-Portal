@@ -101,9 +101,7 @@ class Block
 		if (empty($context['current_action']) && !empty($_REQUEST['page']))
 			$area = 'portal';
 
-		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
-			global $context;
-
+		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
