@@ -315,7 +315,7 @@ function template_callback_panel_direction()
 
 		foreach ($txt['lp_panel_direction_set'] as $value => $direction) {
 			echo '
-							<option value="', $value, '"', $context['lp_panel_direction'][$key] == $value ? ' selected' : '', '>', $direction, '</option>';
+							<option value="', $value, '"', !empty($context['lp_panel_direction'][$key]) && $context['lp_panel_direction'][$key] == $value ? ' selected' : '', '>', $direction, '</option>';
 		}
 
 		echo '

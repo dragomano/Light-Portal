@@ -155,12 +155,12 @@ class Settings
 		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
 
 		loadTemplate('LightPortal/ManageSettings');
-
 		require_once($sourcedir . '/ManageServer.php');
+		db_extend();
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_server_info']())
+			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
 		);
 
 		self::checkNewVersion();
