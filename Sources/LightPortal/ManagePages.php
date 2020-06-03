@@ -1468,18 +1468,22 @@ class ManagePages
 	 */
 	private static function runImport()
 	{
-		global $smcFunc, $context;
+		global $db_temp_cache, $db_cache, $smcFunc, $context;
 
 		if (empty($_FILES['import_file']))
 			return;
+
+		// Might take some time.
+		@set_time_limit(600);
+
+		// Don't allow the cache to get too full
+		$db_temp_cache = $db_cache;
+		$db_cache = [];
 
 		$file = $_FILES['import_file'];
 
 		if ($file['type'] !== 'text/xml')
 			return;
-
-		// Might take some time.
-		@set_time_limit(600);
 
 		$xml = simplexml_load_file($file['tmp_name']);
 
@@ -1637,6 +1641,9 @@ class ManagePages
 
 		if (empty($result))
 			fatal_lang_error('lp_import_failed', false);
+
+		// Restore the cache
+		$db_cache = $db_temp_cache;
 
 		clean_cache();
 	}
