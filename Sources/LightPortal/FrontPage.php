@@ -51,6 +51,10 @@ class FrontPage
 		} elseif ($modSettings['lp_frontpage_mode'] == 2) {
 			self::prepareArticles('topics');
 			$context['sub_template'] = 'show_topics_as_articles';
+
+			// Custom topic style
+			//$context['lp_all_categories'] = self::getListSelectedBoards();
+			//$context['sub_template']      = 'show_topics_as_custom_style';
 		} elseif ($modSettings['lp_frontpage_mode'] == 3) {
 			self::prepareArticles();
 			$context['sub_template'] = 'show_pages_as_articles';
@@ -58,10 +62,6 @@ class FrontPage
 			self::prepareArticles('boards');
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
-
-		// Custom style
-		//$context['lp_all_categories'] = self::getListSelectedBoards();
-		//$context['sub_template']      = 'show_topics_as_custom_style';
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
@@ -255,11 +255,12 @@ class FrontPage
 					$messages[] = $row['id_first_msg'];
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
+						'id_msg'      => $row['id_first_msg'],
 						'poster_id'   => $row['id_member'],
 						'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
 						'poster_name' => $row['poster_name'],
 						'time'        => $row['poster_time'],
-						'subject'     => self::getShortenSubject($row['subject']),
+						'subject'     => $row['subject'],
 						'preview'     => self::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
@@ -269,7 +270,8 @@ class FrontPage
 						'num_views'   => $row['num_views'],
 						'num_replies' => $row['num_replies'],
 						'css_class'   => $colorClass,
-						'image'       => $image
+						'image'       => $image,
+						'can_edit'    => $user_info['is_admin'] || $row['id_member'] == $user_info['id']
 					);
 				}
 
@@ -431,7 +433,7 @@ class FrontPage
 						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
-				$pages[$row['page_id']]['title'] = self::getShortenSubject($titles[$row['page_id']]);
+				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
 				Subs::runAddons('frontPagesOutput', array(&$pages, $row));
 			}
@@ -546,14 +548,15 @@ class FrontPage
 
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
-					'name'        => self::getShortenSubject($board_name),
+					'name'        => $board_name,
 					'description' => self::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
 					'is_updated'  => empty($row['is_read']),
 					'num_posts'   => $row['num_posts'],
-					'image'       => $image
+					'image'       => $image,
+					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards')
 				);
 
 				if (!empty($row['last_updated'])) {
@@ -632,24 +635,6 @@ class FrontPage
 		);
 
 		return getBoardList($boardListOptions);
-	}
-
-	/**
-	 * Get the shorten title|titles
-	 *
-	 * Получаем короткий заголовок или заголовки
-	 *
-	 * @param array|string $object
-	 * @return array|string
-	 */
-	public static function getShortenSubject($object)
-	{
-		global $modSettings;
-
-		if (is_array($object))
-			return array_map('self::getShortenSubject', $object);
-
-		return !empty($modSettings['lp_subject_size']) ? shorten_subject(trim($object), $modSettings['lp_subject_size']) : trim($object);
 	}
 
 	/**

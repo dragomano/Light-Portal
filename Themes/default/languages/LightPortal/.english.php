@@ -29,7 +29,6 @@ $txt['lp_frontpage_layout']        = 'Number of columns for displaying articles'
 $txt['lp_frontpage_layout_set']    = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_images_in_articles'] = 'Show images that found in articles';
 $txt['lp_image_placeholder']       = 'URL of the default placeholder image';
-$txt['lp_subject_size']            = 'The max size of article titles (in symbols)';
 $txt['lp_teaser_size']             = 'The max size of article teasers (in symbols)';
 $txt['lp_num_items_per_page']      = 'Number of items per page (for pagination)';
 

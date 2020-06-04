@@ -181,8 +181,6 @@ class Settings
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_id']))
 			$add_settings['lp_frontpage_id'] = 1;
-		if (!isset($modSettings['lp_subject_size']))
-			$add_settings['lp_subject_size'] = 22;
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
@@ -210,7 +208,6 @@ class Settings
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
-			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			'',
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
