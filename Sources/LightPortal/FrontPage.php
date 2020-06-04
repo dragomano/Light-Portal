@@ -129,8 +129,17 @@ class FrontPage
 				$function = 'ActivePages';
 		}
 
-		$start       = (int) $_REQUEST['start'];
-		$limit       = $modSettings['lp_num_items_per_page'] ?? 10;
+		$start = (int) $_REQUEST['start'];
+		$limit = $modSettings['lp_num_items_per_page'] ?? 10;
+
+		$getTotalFunction = 'getTotal' . $function;
+		$total_items      = self::$getTotalFunction();
+
+		if ($start >= $total_items) {
+			send_http_status(404);
+			$start = $total_items - 1;
+		}
+
 		$getFunction = 'get' . $function;
 		$articles    = self::$getFunction($start, $limit);
 
@@ -151,9 +160,7 @@ class FrontPage
 			return $article;
 		}, $articles);
 
-		$getTotalFunction = 'getTotal' . $function;
-
-		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], self::$getTotalFunction(), $limit);
+		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], $total_items, $limit);
 		$context['start']      = &$_REQUEST['start'];
 
 		$context['lp_frontpage_articles'] = $articles;
