@@ -65,14 +65,7 @@ class KarmaPostRating
 	 */
 	public static function frontTopicsOutput(&$topics, $row)
 	{
-		global $modSettings;
-
-		$rating = $row['rating'] ?? 0;
-
-		if (!empty($rating) && !empty($modSettings['lp_subject_size']))
-			$topics[$row['id_topic']]['subject'] = shorten_subject($topics[$row['id_topic']]['subject'], $modSettings['lp_subject_size'] - strlen((string) $rating));
-
-		$topics[$row['id_topic']]['kpr_rating'] = $rating;
+		$topics[$row['id_topic']]['kpr_rating'] = $row['rating'] ?? 0;
 	}
 
 	/**
@@ -87,19 +80,10 @@ class KarmaPostRating
 		if (empty($context['lp_frontpage_articles']))
 			return;
 
-		$js = '';
 		foreach ($context['lp_frontpage_articles'] as $topic) {
 			if (!empty($topic['kpr_rating'])) {
-				$js .= '
-				let starImg' . $topic['id'] . ' = $(".catbg a[data-id=' . $topic['id'] . ']");
-				starImg' . $topic['id'] . '.after(\'<span class="floatright"><span class="new_posts">' . $topic['kpr_rating'] . '<\/span><\/span>\');';
+				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}
 		}
-
-		if (!empty($js))
-			addInlineJavaScript('
-		jQuery(document).ready(function ($) {
-			' . $js . '
-		});', true);
 	}
 }

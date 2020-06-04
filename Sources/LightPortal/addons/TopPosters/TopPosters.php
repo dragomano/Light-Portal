@@ -150,10 +150,11 @@ class TopPosters
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
 			FROM {db_prefix}members AS mem' . ($show_avatars ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)' : '') . '
-			WHERE mem.posts > 0
+			WHERE mem.posts > {int:num_posts}
 			ORDER BY mem.posts DESC
 			LIMIT {int:num_posters}',
 			array(
+				'num_posts'   => 0,
 				'num_posters' => $num_posters
 			)
 		);

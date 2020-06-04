@@ -39,9 +39,10 @@ class ThemeSwitcher
 			SELECT id_theme, value
 			FROM {db_prefix}themes
 			WHERE id_member = 0
-				AND variable = \'name\'
+				AND variable = {string:name}
 				AND id_theme IN ({array_int:themes})',
 			array(
+				'name'   => 'name',
 				'themes' => explode(',', $modSettings['knownThemes'])
 			)
 		);

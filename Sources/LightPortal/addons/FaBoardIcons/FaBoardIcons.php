@@ -57,7 +57,10 @@ class FaBoardIcons
 	 */
 	public static function frontBoardsOutput(&$boards, $row)
 	{
-		global $modSettings;
+		global $sourcedir, $modSettings;
+
+		if (!is_file($sourcedir . '/FA-BoardIcons.php'))
+			return;
 
 		$icon = !empty($row['fabi_icon']) && empty($modSettings['fabi_force_default_icon']) ? $row['fabi_icon'] : (!empty($modSettings['fabi_default_icon']) ? $modSettings['fabi_default_icon'] : 'fas fa-comments');
 		$color = !empty($row['fabi_color']) && empty($modSettings['fabi_force_default_color']) ? $row['fabi_color'] : (!empty($modSettings['fabi_default_color']) ? $modSettings['fabi_default_color'] : '');
