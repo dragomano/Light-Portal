@@ -33,7 +33,7 @@ class Block
 	{
 		global $context, $modSettings;
 
-		if (empty($context['template_layers']))
+		if (empty($context['template_layers']) || empty($context['lp_active_blocks']))
 			return;
 
 		$blocks = self::getFilteredByAreas();
