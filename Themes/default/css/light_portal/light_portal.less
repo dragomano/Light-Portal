@@ -173,9 +173,16 @@ section {
 }
 
 .lp_frontpage_articles {
-	h3, h4 {
+	.article_title_link {
+		display: inline-block;
 		white-space: nowrap;
+		overflow: hidden;
 		text-overflow: ellipsis;
+		width: 90%;
+
+		&:hover {
+			white-space: normal;
+		}
 	}
 
 	.roundframe {
@@ -184,6 +191,32 @@ section {
 		justify-content: space-between;
 		box-sizing: content-box;
 		padding: 8px 10px;
+	}
+
+	.article_image {
+		text-align: center;
+
+		img {
+			display: block;
+			height: auto;
+			max-width: 100%;
+			.border-radius;
+		}
+	}
+
+	.article_content {
+		overflow: hidden;
+		flex: 1 1 auto;
+
+		.inner {
+			height: auto;
+			min-height: auto;
+			overflow: hidden;
+			color: transparent;
+			-webkit-background-clip: text;
+			background-clip: text;
+			background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
+		}
 	}
 }
 
@@ -310,32 +343,6 @@ section {
 		&.actions {
 			width: 14%;
 		}
-	}
-}
-
-.article_image {
-	text-align: center;
-
-	img {
-		display: block;
-		height: auto;
-		max-width: 100%;
-		.border-radius;
-	}
-}
-
-.article_content {
-	overflow: hidden;
-	flex: 1 1 auto;
-
-	.inner {
-		height: auto;
-		min-height: auto;
-		overflow: hidden;
-		color: transparent;
-		-webkit-background-clip: text;
-		background-clip: text;
-		background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
 	}
 }
 

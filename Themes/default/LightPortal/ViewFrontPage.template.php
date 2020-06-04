@@ -9,19 +9,31 @@
  */
 function template_show_topics_as_articles()
 {
-	global $context, $txt;
+	global $context, $txt, $scripturl;
 
 	if (!empty($context['lp_frontpage_articles'])) {
 		echo '
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $topic) {
+			if ($topic['is_new']) {
+				$topic['subject'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $topic['subject'];
+			}
+
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], ' col-lg-', $context['lp_frontpage_layout'], '">
 			<div class="cat_bar">
 				<h3 class="catbg">
-					', $topic['is_new'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '',
-					'<a data-id="', $topic['id'], '" href="', $topic['link'], '">', $topic['subject'], '</a>', '
+					<a class="article_title_link" data-id="', $topic['id'], '" href="', $topic['link'], '">', $topic['subject'], '</a>';
+
+			if ($topic['can_edit']) {
+				echo '
+					<a class="floatright" href="', $scripturl, '?action=post;msg=', $topic['id_msg'], ';topic=', $topic['id'], '.0">
+						<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+					</a>';
+			}
+
+			echo '
 				</h3>
 			</div>
 			<div class="roundframe noup', $topic['css_class'], '">';
@@ -109,16 +121,20 @@ function template_show_pages_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $page) {
+			if ($page['is_new']) {
+				$page['title'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $page['title'];
+			}
+
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], '">
 			<div class="cat_bar">
 				<h3 class="catbg">
-					', $page['is_new'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '', '<a href="', $page['link'], '">', $page['title'], '</a>';
+					<a class="article_title_link" href="', $page['link'], '">', $page['title'], '</a>';
 
 			if ($page['can_edit']) {
 				echo '
-					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $page['id'] . '">
-						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>
+					<a class="floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $page['id'], '">
+						<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 					</a>';
 			}
 
@@ -200,18 +216,33 @@ function template_show_pages_as_articles()
  */
 function template_show_boards_as_articles()
 {
-	global $context, $txt;
+	global $context, $txt, $scripturl;
 
 	if (!empty($context['lp_frontpage_articles'])) {
 		echo '
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $board) {
+			if ($board['is_updated']) {
+				$board['name'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $board['name'];
+			}
+
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], ' col-lg-', $context['lp_frontpage_layout'], '">
 			<div class="cat_bar">
 				<h3 class="catbg">
-					', $board['is_updated'] ? '<span class="new_posts centericon">' . $txt['new'] . '</span> ' : '', '<a data-id="', $board['id'], '" href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>', '
+					<a class="article_title_link" data-id="', $board['id'], '" href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>
+						', $board['name'], '
+					</a>';
+
+			if ($board['can_edit']) {
+				echo '
+					<a class="floatright" href="', $scripturl, '?action=admin;area=manageboards;sa=board;boardid=', $board['id'], '">
+						<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+					</a>';
+			}
+
+			echo '
 				</h3>
 			</div>
 			<div class="roundframe noup">';
@@ -233,28 +264,8 @@ function template_show_boards_as_articles()
 					<div class="floatleft">&nbsp;</div>
 					<div class="floatright">', $board['category'], '</div>
 					<div class="smalltext clear">
-						<div class="floatleft">';
-
-			if (!empty($board['last_updated'])) {
-				echo '
-							', $board['last_updated'];
-			} else
-				echo '&nbsp;';
-
-			echo '
-						</div>
-						<div class="floatright">';
-
-			if ($board['is_redirect']) {
-				echo '
-							', $txt['redirect_board'];
-			} else {
-				echo '
-							<i class="fas fa-comment"></i> ', $board['num_posts'];
-			}
-
-			echo '
-						</div>
+						<div class="floatleft">', !empty($board['last_updated']) ? $board['last_updated'] : '&nbsp;', '</div>
+						<div class="floatright">', $board['is_redirect'] ? $txt['redirect_board'] : ('<i class="fas fa-comment"></i> ' . $board['num_posts']), '</div>
 					</div>
 				</div>';
 
@@ -392,8 +403,7 @@ function template_show_topics_as_custom_style()
 			} else
 				echo $topic['poster_name'], ', ';
 
-			echo '
-						', $topic['time'], '
+			echo $topic['time'], '
 					</div>';
 
 			if (!empty($topic['preview'])) {
