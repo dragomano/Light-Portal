@@ -61,9 +61,8 @@ class Comment
 		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
-				$date                  = date('Y-m-d', $comment['created_at']);
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
-				$comment['created_at'] = $date;
+				$comment['created_at'] = date('Y-m-d', $comment['created_at']);
 
 				return $comment;
 			},
@@ -77,19 +76,18 @@ class Comment
 		$comment_tree   = $this->getTree($comments);
 		$total_comments = count($comment_tree);
 
+		$temp_start            = (int) $_REQUEST['start'];
 		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
 		$context['start']      = &$_REQUEST['start'];
 		$start                 = (int) $_REQUEST['start'];
 
+		$context['page_info']['num_pages'] = floor(($total_comments - 1) / $limit) + 1;
+		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
+
+		if ($temp_start >= $total_comments)
+			send_http_status(404);
+
 		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
-
-		$context['page_info'] = array(
-			'current_page' => $_REQUEST['start'] / $limit + 1,
-			'num_pages'    => floor(($total_comments - 1) / $limit) + 1,
-			'next_page'    => $_REQUEST['start'] + $limit < $total_comments ? $context['canonical_url'] . ';start=' . ($_REQUEST['start'] + $limit) : ''
-		);
-
-		$context['page_info']['start'] = $context['page_info']['num_pages'] * $limit - $limit;
 	}
 
 	/**
@@ -116,6 +114,9 @@ class Comment
 		);
 
 		$data = filter_input_array(INPUT_POST, $args);
+
+		if (empty($data))
+			return;
 
 		$parent     = $data['parent_id'];
 		$counter    = $data['counter'];

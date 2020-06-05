@@ -130,14 +130,14 @@ class FrontPage
 		}
 
 		$start = (int) $_REQUEST['start'];
-		$limit = $modSettings['lp_num_items_per_page'] ?? 10;
+		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$getTotalFunction = 'getTotal' . $function;
 		$total_items      = self::$getTotalFunction();
 
 		if ($start >= $total_items) {
 			send_http_status(404);
-			$start = $total_items - 1;
+			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
 
 		$getFunction = 'get' . $function;
