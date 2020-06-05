@@ -160,7 +160,7 @@ class TopBoards
 			<dt>' . $board['link'] . '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar' . (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
-				<span>' . $parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']) . '</span>
+				<span>' . ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics'])) . '</span>
 			</dd>';
 		}
 

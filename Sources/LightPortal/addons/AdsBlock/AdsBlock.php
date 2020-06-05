@@ -283,9 +283,12 @@ class AdsBlock
 					return false;
 			}
 
-			$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+			if (!empty($block['parameters']['ads_placement'])) {
+				$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+				return array_key_exists($position, $placements);
+			}
 
-			return !empty($block['parameters']['ads_placement']) && array_key_exists($position, $placements);
+			return false;
 		});
 
 		return $blocks;

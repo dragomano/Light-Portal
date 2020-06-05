@@ -188,7 +188,7 @@ class RecentAttachments
 			$fancybox = class_exists('FancyBox');
 
 			$html .= '
-		<div class="recent_attachments' . ($direction == 'vertical' ? ' column_direction' : '') . '">';
+		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
 
 			foreach ($recent_attachments as $attach) {
 				if (!empty($attach['file']['image'])) {

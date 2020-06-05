@@ -106,9 +106,9 @@ class Integration
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? array() : explode(',', $modSettings['lp_enabled_plugins']);
 
-		Subs::runAddons();
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
+		Subs::runAddons();
 	}
 
 	/**
