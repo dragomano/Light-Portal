@@ -37,6 +37,10 @@ function show_block_table()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+			$bloсk_group_type = 'default';
+			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
+				$bloсk_group_type = 'additional';
+
 			echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
@@ -48,7 +52,7 @@ function show_block_table()
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
-	<table class="lp_current_blocks table_grid centertext">';
+	<table class="lp_', $bloсk_group_type, '_blocks table_grid centertext">';
 
 			if (is_array($blocks)) {
 				echo '
