@@ -154,7 +154,6 @@ class Settings
 	{
 		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
 
-		loadTemplate('LightPortal/ManageSettings');
 		require_once($sourcedir . '/ManageServer.php');
 		db_extend();
 
@@ -209,10 +208,8 @@ class Settings
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
 			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-			'',
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
-			array('callback', 'portal_layout_preview'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
 			array(
@@ -232,9 +229,9 @@ class Settings
 			),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
-			array('permissions', 'light_portal_view'),
-			array('permissions', 'light_portal_manage_blocks'),
-			array('permissions', 'light_portal_manage_own_pages'),
+			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
+			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
+			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
@@ -423,8 +420,9 @@ class Settings
 		$context['page_title'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=plugins;save';
 
-		// The mod authors can easily add their own settings | Авторы модов модут легко добавлять собственные настройки
 		$config_vars = [];
+
+		// The mod authors can add their own settings | Авторы модов модут добавлять собственные настройки
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
