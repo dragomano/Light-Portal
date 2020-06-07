@@ -12,10 +12,10 @@
 
 ## Description
 This modification will transform your forum into a portal:
-    * the frontpage,
-    * separate pages with keywords,
-    * blocks.
-The portal supports for BBC, HTML, PHP, and Markdown content withing pages and blocks.
+* the frontpage,
+* separate pages with keywords,
+* blocks.
+The portal supports for BBC, HTML, PHP, and Markdown content within pages and blocks.
 
 ### Features:
 * Blocks with multilingual titles and FontAwesome icons.
@@ -33,9 +33,9 @@ The portal supports for BBC, HTML, PHP, and Markdown content withing pages an
 
 ## Описание
 Модификация преобразует ваш форум в портал:
-    * главная страница,
-    * отдельные страницы с ключевыми словами,
-    * блоки.
+* главная страница,
+* отдельные страницы с ключевыми словами,
+* блоки.
 Поддержка контента с форумными тегами, HTML, PHP и Markdown в страницах и блоках.
 
 ### Особенности:

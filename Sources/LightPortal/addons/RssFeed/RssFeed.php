@@ -94,7 +94,7 @@ class RssFeed
 
 		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed_addon_url'];
 		$context['posting_fields']['url']['input'] = array(
-			'type' => 'text',
+			'type' => 'url',
 			'attributes' => array(
 				'maxlength'   => 255,
 				'value'       => $context['lp_block']['options']['parameters']['url'],
@@ -124,6 +124,9 @@ class RssFeed
 	 */
 	private static function getData($url)
 	{
+		if (empty($url))
+			return;
+
 		$file = file_get_contents($url);
 		$rss  = simplexml_load_string($file);
 

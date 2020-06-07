@@ -342,6 +342,8 @@ class Settings
 
 		// Initial settings | Первоначальные настройки
 		$add_settings = [];
+		if (!isset($modSettings['lp_swap_left_right']))
+			$add_settings['lp_swap_left_right'] = !empty($txt['lang_rtl']);
 		if (!isset($modSettings['lp_header_panel_width']))
 			$add_settings['lp_header_panel_width'] = 12;
 		if (!isset($modSettings['lp_left_panel_width']))
