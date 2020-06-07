@@ -52,6 +52,9 @@ class Page
 		if (empty($context['lp_page']['status']))
 			fatal_lang_error('lp_page_not_activated', false);
 
+		if ($context['lp_page']['created_at'] > time())
+			send_http_status(404);
+
 		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
@@ -95,8 +98,9 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
-		$modSettings['meta_keywords']          = implode(', ', $context['lp_page']['keywords']);
-		$context['meta_description']           = $context['lp_page']['description'];
+		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
+		$context['meta_description']  = $context['lp_page']['description'];
+
 		$context['optimus_og_type']['article'] = array(
 			'published_time' => date('c', $context['lp_page']['created_at']),
 			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null,
@@ -194,6 +198,8 @@ class Page
 					'permissions' => $row['permissions'],
 					'status'      => $row['status'],
 					'num_views'   => $row['num_views'],
+					'date'        => date('Y-m-d', $row['created_at']),
+					'time'        => date('H:i', $row['created_at']),
 					'created_at'  => $row['created_at'],
 					'updated_at'  => $row['updated_at'],
 					'image'       => $og_image

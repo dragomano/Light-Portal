@@ -119,6 +119,7 @@ $txt['lp_blocks_add_tab_description']    = 'There are not many blocks yet, but t
 $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
+$txt['lp_block_publish_datetime']        = 'Date and time of publication';
 $txt['lp_block_content']                 = 'Content';
 $txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';

@@ -166,14 +166,16 @@ class TopPages
 			SELECT page_id, alias, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
+				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
 			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'type'        => 'page',
-				'status'      => 1,
-				'permissions' => Helpers::getPermissions(),
-				'limit'       => $num_pages
+				'type'         => 'page',
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'limit'        => $num_pages
 			)
 		);
 

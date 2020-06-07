@@ -605,9 +605,11 @@ class ManagePages
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
 				'keywords'    => FILTER_SANITIZE_STRING,
-				'content'     => FILTER_UNSAFE_RAW,
 				'type'        => FILTER_SANITIZE_STRING,
-				'permissions' => FILTER_VALIDATE_INT
+				'permissions' => FILTER_VALIDATE_INT,
+				'date'        => FILTER_SANITIZE_STRING,
+				'time'        => FILTER_SANITIZE_STRING,
+				'content'     => FILTER_UNSAFE_RAW
 			);
 
 			$source_args = $args;
@@ -635,9 +637,12 @@ class ManagePages
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
-			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
+			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
+			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
+			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
 			'options'     => $options
 		);
 
@@ -806,6 +811,13 @@ class ManagePages
 			}
 		}
 
+		if ($context['lp_page']['created_at'] >= time()) {
+			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_block_publish_datetime'] . '</label>';
+			$context['posting_fields']['datetime']['input']['html'] = '
+			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $context['lp_page']['date'] . '">
+			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
+		}
+
 		if ($context['lp_page']['type'] !== 'bbc') {
 			$context['posting_fields']['content']['label']['text'] = $txt['lp_page_content'];
 			$context['posting_fields']['content']['input'] = array(
@@ -917,6 +929,28 @@ class ManagePages
 	}
 
 	/**
+	 * Get the date and time of the page publish
+	 *
+	 * Получаем дату и время публикации страницы
+	 *
+	 * @return int
+	 */
+	private static function getPublishTime()
+	{
+		global $context;
+
+		$publish_time = time();
+
+		if (!empty($context['lp_page']['date']))
+			$publish_time = strtotime($context['lp_page']['date']);
+
+		if (!empty($context['lp_page']['time']))
+			$publish_time = strtotime(date('Y-m-d', $publish_time) . ' ' . $context['lp_page']['time']);
+
+		return $publish_time;
+	}
+
+	/**
 	 * Creating or updating a page
 	 *
 	 * Создаем или обновляем страницу
@@ -954,7 +988,7 @@ class ManagePages
 					$context['lp_page']['content'],
 					$context['lp_page']['type'],
 					$context['lp_page']['permissions'],
-					time()
+					self::getPublishTime()
 				), $db_type == 'postgresql' ? array(self::getAutoIncrementValue()) : array()),
 				array('page_id'),
 				1
@@ -1038,7 +1072,7 @@ class ManagePages
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, updated_at = {int:updated_at}
+				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
@@ -1047,6 +1081,7 @@ class ManagePages
 					'content'     => $context['lp_page']['content'],
 					'type'        => $context['lp_page']['type'],
 					'permissions' => $context['lp_page']['permissions'],
+					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? self::getPublishTime() : $context['lp_page']['created_at'],
 					'updated_at'  => time()
 				)
 			);

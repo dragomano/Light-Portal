@@ -150,16 +150,18 @@ class PageList
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE p.status = {int:status}
+				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort} DESC' . (!empty($num_pages) ? '
 			LIMIT {int:limit}' : ''),
 			array(
-				'guest'       => $txt['guest_title'],
-				'type'        => 'page',
-				'status'      => 1,
-				'permissions' => Helpers::getPermissions(),
-				'sort'        => $sort,
-				'limit'       => $num_pages
+				'guest'        => $txt['guest_title'],
+				'type'         => 'page',
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'sort'         => $sort,
+				'limit'        => $num_pages
 			)
 		);
 
