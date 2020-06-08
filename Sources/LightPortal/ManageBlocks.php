@@ -765,7 +765,7 @@ class ManageBlocks
 		censorText($context['preview_content']);
 
 		if (empty($context['preview_content']))
-			Subs::prepareContent($context['preview_content'], $context['lp_block']['type']);
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 

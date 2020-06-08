@@ -104,10 +104,14 @@ class CurrentMonth
 		if (empty($context['lp_active_blocks'][$data['block_id']]['title'][$context['user']['language']])) {
 			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
 
-			if (allowedTo('light_portal_manage_blocks'))
-				$title = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $data['block_id'] . '">' . $title . '</a>';
+			if ($context['current_subaction'] == 'edit') {
+				$context['preview_title'] = $title;
+			} else {
+				if (allowedTo('light_portal_manage_blocks'))
+					$title = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $data['block_id'] . '">' . $title . '</a>';
 
-			echo sprintf($context['lp_all_title_classes'][$context['lp_active_blocks'][$data['block_id']]['title_class']], $title);
+				echo sprintf($context['lp_all_title_classes'][$context['lp_active_blocks'][$data['block_id']]['title_class']], $title);
+			}
 		}
 
 		echo '

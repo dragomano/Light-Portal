@@ -122,10 +122,24 @@ $txt['lp_block_areas']         = 'Akcje';
 $txt['lp_block_areas_subtext'] = 'Wybierz jedną lub kilka akcji do wyświetlania bloku (oddziel akcje przecinkami):<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — wyświetl wszędzie</li>
-	<li><strong>forum</strong> — wyświetl tylko na forum</li>
 	<li><strong>portal</strong> — wyświetl tylko na portalu (włącznie ze stronami)</li>
-	<li><strong>custom_action</strong> — wyświetl tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — wyświetl tylko na forum</li>
+	<li><strong>custom_action</strong> — wyświetl tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — wyświetl na stronie <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — display in all boards</li>
+			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — display in all topics</li>
+			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class']   = 'Klasa CSS tytułu';
 $txt['lp_block_title_style']   = 'Styl CSS tytułu';
