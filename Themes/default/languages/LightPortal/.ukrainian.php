@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Приклад: ';
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';
 $txt['lp_base']      = 'Налаштування головної сторінки і статей';
-$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-групі</a>.<br>Ви також можете <a class="bbc_link" href="https://yasobe.ru/na/light_portal_development">подякувати</a> розробника.';
+$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-групі</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a>, <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a> або <a class="bbc_link" href="https://yasobe.ru/na/light_portal_development">зробити пожертву через Яндекс.Гроші</a>.';
 
 $txt['lp_frontpage_title']         = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode']          = 'Перша сторінка порталу';

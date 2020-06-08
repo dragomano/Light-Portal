@@ -11,10 +11,11 @@
 * **Languages:** English, Polish, Russian, Spanish, Ukrainian
 
 ## Description
-This modification will transform your forum into a portal:
+This modification will transform your forum into a portal that includes:
 * the frontpage,
 * separate pages with keywords,
 * blocks.
+
 The portal supports for BBC, HTML, PHP, and Markdown content within pages and blocks.
 
 ### Features:
@@ -36,6 +37,7 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * главная страница,
 * отдельные страницы с ключевыми словами,
 * блоки.
+
 Поддержка контента с форумными тегами, HTML, PHP и Markdown в страницах и блоках.
 
 ### Особенности:
@@ -51,3 +53,7 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Поддержка плагинов.
 * Автономный режим.
 * Кэширование.
+
+### Supporting Light Portal
+Light Portal is an BSD-licensed open source project and completely free to use.
+It was made for your convenient, and if you like the project, support the developer.
