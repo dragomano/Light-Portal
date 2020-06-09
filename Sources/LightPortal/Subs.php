@@ -283,7 +283,11 @@ class Subs
 	 */
 	public static function runAddons(string $hook = 'init', array $vars = [], array $plugins = [])
 	{
-		global $context, $txt;
+		global $txt, $context;
+
+		$txt['lp_bbc_icon']  = 'fas fa-square';
+		$txt['lp_html_icon'] = 'fab fa-html5';
+		$txt['lp_php_icon']  = 'fab fa-php';
 
 		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
@@ -298,6 +302,7 @@ class Subs
 			if (!isset($addon_snake_name[$id])) {
 				$addon_snake_name[$id] = Helpers::getSnakeName($addon);
 				$txt['lp_' . $addon_snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class::$addon_type : 'block';
+				$txt['lp_' . $addon_snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class::$addon_icon : 'fas fa-puzzle-piece';
 			}
 
 			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))
@@ -421,7 +426,7 @@ class Subs
 			'div.noticebox'   => '<div class="noticebox"%2$s>%1$s</div>',
 			'div.infobox'     => '<div class="infobox"%2$s>%1$s</div>',
 			'div.descbox'     => '<div class="descbox"%2$s>%1$s</div>',
-			'_'               => '%1$s' // Empty class == w\o div
+			'_'               => '<div%2$s>%1$s</div>' // Empty class
 		];
 	}
 

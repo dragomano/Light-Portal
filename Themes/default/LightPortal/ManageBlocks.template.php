@@ -192,7 +192,9 @@ function template_block_add()
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div>
 						<div class="item roundframe" data-type="', $type, '">
-							<strong>', $title, '</strong><hr>
+							<i class="', $txt['lp_' . $type . '_icon'], '"></i>
+							<strong>', $title, '</strong>
+							<hr>
 							<p>', $txt['lp_block_types_descriptions'][$type], '</p>
 						</div>
 					</div>
@@ -242,25 +244,16 @@ function template_block_post()
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
-	<div class="preview block_', $context['lp_block']['type'], '">';
-
-		if (!empty($context['lp_block']['content_class']))
-			echo sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style);
-		else
-			echo $context['preview_content'];
-
-		echo '
+	<div class="preview block_', $context['lp_block']['type'], '">
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class'] ?: '_'], $context['preview_content'], $style), '
 	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_area_title'], '</h3>
+		<h3 class="catbg">', $txt['lp_block_types'][$context['lp_block']['type']], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_block_types'][$context['lp_block']['type']], '
-	</div>
-	<div class="infobox">',
-		$txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+		', $txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
 	</div>';
 	}
 
