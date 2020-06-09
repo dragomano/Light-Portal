@@ -9,10 +9,7 @@
  */
 function template_ads_placement_board_above()
 {
-	global $context;
-
-	foreach ($context['lp_ads_blocks']['board_top'] as $block)
-		lp_show_block($block);
+	lp_show_blocks('board_top');
 }
 
 /**
@@ -24,10 +21,7 @@ function template_ads_placement_board_above()
  */
 function template_ads_placement_board_below()
 {
-	global $context;
-
-	foreach ($context['lp_ads_blocks']['board_bottom'] as $block)
-		lp_show_block($block);
+	lp_show_blocks('board_bottom');
 }
 
 /**
@@ -39,10 +33,7 @@ function template_ads_placement_board_below()
  */
 function template_ads_placement_topic_above()
 {
-	global $context;
-
-	foreach ($context['lp_ads_blocks']['topic_top'] as $block)
-		lp_show_block($block);
+	lp_show_blocks('topic_top');
 }
 
 /**
@@ -54,10 +45,7 @@ function template_ads_placement_topic_above()
  */
 function template_ads_placement_topic_below()
 {
-	global $context;
-
-	foreach ($context['lp_ads_blocks']['topic_bottom'] as $block)
-		lp_show_block($block);
+	lp_show_blocks('topic_bottom');
 }
 
 /**

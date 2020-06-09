@@ -22,13 +22,22 @@ if (!defined('SMF'))
 class UserInfo
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-user';
+
+	/**
 	 * Get the current user info
 	 *
 	 * Получаем информацию о пользователе
 	 *
 	 * @return array
 	 */
-	public static function getUserInfo()
+	public static function getData()
 	{
 		global $memberContext, $user_info;
 
@@ -61,7 +70,7 @@ class UserInfo
 		ob_start();
 
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::getFromCache('user_info_addon_u' . $context['user']['id'], 'getUserInfo', __CLASS__, $cache_time);
+			$userData = Helpers::getFromCache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 			echo '
 			<ul class="centertext">

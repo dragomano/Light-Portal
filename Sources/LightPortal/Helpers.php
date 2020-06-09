@@ -336,7 +336,7 @@ class Helpers
 		if ($funcName === null)
 			cache_put_data('light_portal_' . $key, null);
 
-		if (($$key = cache_get_data('light_portal_' . $key, $time)) == null) {
+		if (($$key = cache_get_data('light_portal_' . $key, $time)) === null) {
 			$$key = null;
 
 			if (method_exists($class, $funcName)) {
@@ -378,7 +378,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canShowItem(int $permissions)
+	public static function canViewItem(int $permissions)
 	{
 		global $user_info;
 
@@ -410,7 +410,7 @@ class Helpers
 		elseif ($user_info['is_guest'] == 1)
 			return [1, 3];
 		elseif (!empty($user_info['id']))
-			return [1, 2, 3];
+			return [2, 3];
 
 		return [3];
 	}

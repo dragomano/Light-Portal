@@ -53,8 +53,9 @@ class Settings
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'base'    => array($txt['mods_cat_features']),
+								'basic'   => array($txt['mods_cat_features']),
 								'extra'   => array($txt['lp_extra']),
+								'panels'  => array($txt['lp_panels']),
 								'plugins' => array($txt['lp_plugins'])
 							)
 						),
@@ -115,8 +116,9 @@ class Settings
 	 */
 	public static function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
-		$settings_search[] = array(__CLASS__ . '::base', 'area=lp_settings;sa=base');
+		$settings_search[] = array(__CLASS__ . '::basic', 'area=lp_settings;sa=basic');
 		$settings_search[] = array(__CLASS__ . '::extra', 'area=lp_settings;sa=extra');
+		$settings_search[] = array(__CLASS__ . '::panels', 'area=lp_settings;sa=panels');
 	}
 
 	/**
@@ -131,12 +133,13 @@ class Settings
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'base'    => 'Settings::base',
+			'basic'   => 'Settings::basic',
 			'extra'   => 'Settings::extra',
+			'panels'  => 'Settings::panels',
 			'plugins' => 'Settings::plugins'
 		);
 
-		self::loadGeneralSettingParameters($subActions, 'base');
+		self::loadGeneralSettingParameters($subActions, 'basic');
 	}
 
 	/**
@@ -147,23 +150,22 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function base(bool $return_config = false)
+	public static function basic(bool $return_config = false)
 	{
 		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
 
-		loadTemplate('LightPortal/ManageSettings');
-
 		require_once($sourcedir . '/ManageServer.php');
+		db_extend();
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_server_info']())
+			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
 		);
 
 		self::checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
-		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=base;save';
+		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
 
 		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
 
@@ -178,14 +180,10 @@ class Settings
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_id']))
 			$add_settings['lp_frontpage_id'] = 1;
-		if (!isset($modSettings['lp_subject_size']))
-			$add_settings['lp_subject_size'] = 22;
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
-		if (!isset($modSettings['lp_standalone_mode_disabled_actions']))
-			$add_settings['lp_standalone_mode_disabled_actions'] = 'home,mlist,calendar';
 		if (!isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
 		if (!isset($modSettings['lp_cache_update_interval']))
@@ -208,22 +206,32 @@ class Settings
 			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_image_placeholder', '80" placeholder="' . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
-			array('int', 'lp_subject_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
 			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-			'',
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
-			array('callback', 'portal_layout_preview'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_standalone_url', '80" placeholder="' . $boardurl . '/portal.php', 'help' => 'lp_standalone_url_help'),
-			array('text', 'lp_standalone_mode_disabled_actions', 80, 'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext']),
+			array(
+				'text',
+				'lp_standalone_url',
+				'80" placeholder="' . $txt['lp_example'] . $boardurl . '/portal.php',
+				'help' => 'lp_standalone_url_help',
+				'disabled' => empty($modSettings['lp_standalone_mode'])
+			),
+			array(
+				'text',
+				'lp_standalone_mode_disabled_actions',
+				'80" placeholder="' . $txt['lp_example'] . 'mlist,calendar',
+				'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'],
+				'help' => 'lp_standalone_mode_disabled_actions_help',
+				'disabled' => empty($modSettings['lp_standalone_mode'])
+			),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
-			array('permissions', 'light_portal_view'),
-			array('permissions', 'light_portal_manage_blocks'),
-			array('permissions', 'light_portal_manage_own_pages'),
+			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
+			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
+			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
@@ -237,6 +245,9 @@ class Settings
 		if (isset($_GET['save'])) {
 			checkSession();
 
+			if (empty($_POST['lp_frontpage_mode']))
+				$_POST['lp_standalone_url'] = 0;
+
 			if (!empty($_POST['lp_image_placeholder']))
 				$_POST['lp_image_placeholder'] = filter_var($_POST['lp_image_placeholder'], FILTER_VALIDATE_URL);
 
@@ -247,7 +258,7 @@ class Settings
 			saveDBSettings($save_vars);
 
 			clean_cache();
-			redirectexit('action=admin;area=lp_settings;sa=base');
+			redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
 		prepareDBSettingContext($config_vars);
@@ -263,9 +274,7 @@ class Settings
 	 */
 	public static function extra(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings;
-
-		require_once($sourcedir . '/ManageServer.php');
+		global $context, $txt, $scripturl, $modSettings;
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -290,8 +299,6 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
-		$context['sub_template'] = 'show_settings';
-
 		if (isset($_GET['save'])) {
 			checkSession();
 
@@ -299,6 +306,91 @@ class Settings
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');
+		}
+
+		prepareDBSettingContext($config_vars);
+	}
+
+	/**
+	 * Output panel settings
+	 *
+	 * Выводим настройки панелей
+	 *
+	 * @param bool $return_config
+	 * @return array|void
+	 */
+	public static function panels(bool $return_config = false)
+	{
+		global $sourcedir, $context, $txt, $scripturl, $modSettings;
+
+		loadTemplate('LightPortal/ManageSettings');
+
+		require_once($sourcedir . '/ManageServer.php');
+
+		addInlineCss('
+		dl.settings {
+			overflow: hidden;
+		}');
+
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title'       => LP_NAME,
+			'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
+		);
+
+		$context['page_title'] = $context['settings_title'] = $txt['lp_panels'];
+		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=panels;save';
+
+		// Initial settings | Первоначальные настройки
+		$add_settings = [];
+		if (!isset($modSettings['lp_swap_left_right']))
+			$add_settings['lp_swap_left_right'] = !empty($txt['lang_rtl']);
+		if (!isset($modSettings['lp_header_panel_width']))
+			$add_settings['lp_header_panel_width'] = 12;
+		if (!isset($modSettings['lp_left_panel_width']))
+			$add_settings['lp_left_panel_width'] = json_encode($context['lp_left_panel_width']);
+		if (!isset($modSettings['lp_right_panel_width']))
+			$add_settings['lp_right_panel_width'] = json_encode($context['lp_right_panel_width']);
+		if (!isset($modSettings['lp_footer_panel_width']))
+			$add_settings['lp_footer_panel_width'] = 12;
+		if (!empty($add_settings))
+			updateSettings($add_settings);
+
+		$context['lp_panels'] = $txt['lp_block_placement_set'];
+
+		$context['lp_left_right_width_values']    = [2, 3, 4];
+		$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
+
+		Subs::runAddons('addPanels');
+
+		$config_vars = array(
+			array('check', 'lp_swap_header_footer'),
+			array('check', 'lp_swap_left_right'),
+			array('check', 'lp_swap_top_bottom'),
+			array('callback', 'panel_layout'),
+			array('callback', 'panel_direction')
+		);
+
+		if ($return_config)
+			return $config_vars;
+
+		$context['sub_template'] = 'show_settings';
+
+		if (isset($_GET['save'])) {
+			checkSession();
+
+			$_POST['lp_left_panel_width']  = json_encode($_POST['lp_left_panel_width']);
+			$_POST['lp_right_panel_width'] = json_encode($_POST['lp_right_panel_width']);
+			$_POST['lp_panel_direction']   = json_encode($_POST['lp_panel_direction']);
+
+			$save_vars = $config_vars;
+			$save_vars[] = ['int', 'lp_header_panel_width'];
+			$save_vars[] = ['text', 'lp_left_panel_width'];
+			$save_vars[] = ['text', 'lp_right_panel_width'];
+			$save_vars[] = ['int', 'lp_footer_panel_width'];
+			$save_vars[] = ['text', 'lp_panel_direction'];
+			saveDBSettings($save_vars);
+
+			redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
 		prepareDBSettingContext($config_vars);
@@ -330,8 +422,9 @@ class Settings
 		$context['page_title'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=plugins;save';
 
-		// The mod authors can easily add their own settings | Авторы модов модут легко добавлять собственные настройки
 		$config_vars = [];
+
+		// The mod authors can add their own settings | Авторы модов модут добавлять собственные настройки
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {

@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class RandomTopics
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-random';
+
+	/**
 	 * You cannot select a class for the content of this block
 	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
@@ -95,8 +104,8 @@ class RandomTopics
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
-				'id' => 'num_topics',
-				'min' => 1,
+				'id'    => 'num_topics',
+				'min'   => 1,
 				'value' => $context['lp_block']['options']['parameters']['num_topics']
 			)
 		);
@@ -110,7 +119,7 @@ class RandomTopics
 	 * @param int $num_topics
 	 * @return array
 	 */
-	public static function getRandomTopics($num_topics)
+	private static function getData($num_topics)
 	{
 		global $db_type, $smcFunc, $modSettings, $user_info, $context, $settings, $scripturl;
 
@@ -169,7 +178,7 @@ class RandomTopics
 			$context['lp_num_queries']++;
 
 			if (empty($topic_ids))
-				return self::getRandomTopics($num_topics - 1);
+				return self::getData($num_topics - 1);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -243,6 +252,41 @@ class RandomTopics
 	}
 
 	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param int $num_topics
+	 * @return string
+	 */
+	public static function getHtml($num_topics)
+	{
+		global $txt;
+
+		$topics = self::getData($num_topics);
+
+		if (empty($topics))
+			return '';
+
+		$html = '
+		<ul class="random_topics noup">';
+
+		foreach ($topics as $topic) {
+			$html .= '
+			<li class="windowbg">' . ($topic['is_new'] ? '
+				<span class="new_posts">' . $txt['new'] . '</span>' : '') . $topic['icon'] . ' ' . $topic['link'] . '
+				<br><span class="smalltext">' . $txt['by'] . ' ' . $topic['poster'] . '</span>
+				<br><span class="smalltext">' . Helpers::getFriendlyTime($topic['time']) . '</span>
+			</li>';
+		}
+
+		$html .= '
+		</ul>';
+
+		return $html;
+	}
+
+	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -254,31 +298,16 @@ class RandomTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info;
 
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $context['user']['id'], 'getRandomTopics', __CLASS__, $cache_time, $parameters['num_topics']);
+		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters['num_topics']);
 
 		if (!empty($random_topics)) {
 			ob_start();
-
-			echo '
-			<ul class="random_topics noup">';
-
-			foreach ($random_topics as $topic) {
-				echo '
-				<li class="windowbg">
-					', ($topic['is_new'] ? '<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
-					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
-				</li>';
-			}
-
-			echo '
-			</ul>';
-
+			echo $random_topics;
 			$content = ob_get_clean();
 		}
 	}

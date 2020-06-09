@@ -106,9 +106,9 @@ class Integration
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? array() : explode(',', $modSettings['lp_enabled_plugins']);
 
-		Subs::runAddons();
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
+		Subs::runAddons();
 	}
 
 	/**
@@ -161,7 +161,7 @@ class Integration
 	}
 
 	/**
-	 * Add a selection of the "Forum" menu item  when viewing boards and topics
+	 * Add a selection of the "Forum" menu item when viewing boards and topics
 	 *
 	 * Добавляем выделение кнопки «Форум» при просмотре разделов и тем
 	 *
@@ -178,11 +178,17 @@ class Integration
 		if (empty($_REQUEST['action'])) {
 			$current_action = 'portal';
 
-			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $_SERVER['REQUEST_URL'] != $modSettings['lp_standalone_url'])
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != $_SERVER['REQUEST_URL'])
 				$current_action = 'forum';
+
+			if (!empty($_REQUEST['page']))
+				$current_action = 'portal';
+		} else {
+			$current_action = empty($modSettings['lp_standalone_mode']) && $context['current_action'] == 'forum' ? 'home' : $context['current_action'];
 		}
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions[] = 'home';
 		if (!empty($context['current_board']) || !empty($context['current_topic']))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
@@ -206,6 +212,8 @@ class Integration
 
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
+
+		Block::show();
 
 		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
 		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
@@ -263,11 +271,6 @@ class Integration
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
 			);
 		}
-
-		if (!empty($context['current_action']))
-			Block::show($context['current_action']);
-		else if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']) || (empty($modSettings['lp_frontpage_mode']) && empty($context['current_action']) && empty($_GET['page'])))
-			Block::show('forum');
 
 		Subs::showDebugInfo();
 

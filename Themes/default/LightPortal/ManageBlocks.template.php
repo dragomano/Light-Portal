@@ -37,6 +37,10 @@ function show_block_table()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+			$bloсk_group_type = 'default';
+			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
+				$bloсk_group_type = 'additional';
+
 			echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
@@ -45,10 +49,10 @@ function show_block_table()
 					<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
-			', $txt['lp_block_placement_set'][$placement], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
+			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
-	<table class="lp_current_blocks table_grid">';
+	<table class="lp_', $bloсk_group_type, '_blocks table_grid centertext">';
 
 			if (is_array($blocks)) {
 				echo '
@@ -119,24 +123,24 @@ function show_block_entry($id, $data)
 
 	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
 		echo '
-		<td class="icon centertext">
+		<td class="icon">
 			', $data['icon'], '
 		</td>';
 
 	echo '
-		<td class="title centertext">
+		<td class="title">
 			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
 		</td>
-		<td class="type centertext">
+		<td class="type">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
-		<td class="areas centertext">
+		<td class="areas">
 			', $data['areas'], '
 		</td>
-		<td class="priority centertext">
+		<td class="priority">
 			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td class="actions centertext">';
+		<td class="actions">';
 
 		if (empty($data['status']))
 			echo '
@@ -188,7 +192,9 @@ function template_block_add()
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div>
 						<div class="item roundframe" data-type="', $type, '">
-							<strong>', $title, '</strong><hr>
+							<i class="', $txt['lp_' . $type . '_icon'], '"></i>
+							<strong>', $title, '</strong>
+							<hr>
 							<p>', $txt['lp_block_types_descriptions'][$type], '</p>
 						</div>
 					</div>
@@ -238,25 +244,16 @@ function template_block_post()
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
-	<div class="preview block_', $context['lp_block']['type'], '">';
-
-		if (!empty($context['lp_block']['content_class']))
-			echo sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style);
-		else
-			echo $context['preview_content'];
-
-		echo '
+	<div class="preview block_', $context['lp_block']['type'], '">
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class'] ?: '_'], $context['preview_content'], $style), '
 	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_area_title'], '</h3>
+		<h3 class="catbg">', $txt['lp_block_types'][$context['lp_block']['type']], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_block_types'][$context['lp_block']['type']], '
-	</div>
-	<div class="infobox">',
-		$txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+		', $txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
 	</div>';
 	}
 

@@ -128,21 +128,14 @@
 		white-space: break-spaces;
 	}
 
-	.post_button_container {
-		input {
-			display: block;
-			width: 100%;
-		}
-	}
-
-	.post_button_container {
-		.button:not(:first-child) {
-			margin-left: 0 !important;
-		}
-	}
-
 	#post_confirm_buttons {
 		padding: 12px 0 0 0 !important;
+	}
+
+	.row {
+		> aside {
+			margin: 0 !important;
+		}
 	}
 
 	aside {
@@ -157,14 +150,14 @@
 			clear: both;
 			margin-top: 4px;
 		}
+	}
+}
 
-		&.comments {
-			margin-top: 1em;
+.comments {
+	margin-top: 1em;
 
-			.cat_bar {
-				.border-radius;
-			}
-		}
+	.cat_bar {
+		.border-radius;
 	}
 }
 
@@ -180,9 +173,16 @@ section {
 }
 
 .lp_frontpage_articles {
-	h3, h4 {
+	.article_title_link {
+		display: inline-block;
 		white-space: nowrap;
+		overflow: hidden;
 		text-overflow: ellipsis;
+		width: 90%;
+
+		&:hover {
+			white-space: normal;
+		}
 	}
 
 	.roundframe {
@@ -191,6 +191,32 @@ section {
 		justify-content: space-between;
 		box-sizing: content-box;
 		padding: 8px 10px;
+	}
+
+	.article_image {
+		text-align: center;
+
+		img {
+			display: block;
+			height: auto;
+			max-width: 100%;
+			.border-radius;
+		}
+	}
+
+	.article_content {
+		overflow: hidden;
+		flex: 1 1 auto;
+
+		.inner {
+			height: auto;
+			min-height: auto;
+			overflow: hidden;
+			color: transparent;
+			-webkit-background-clip: text;
+			background-clip: text;
+			background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
+		}
 	}
 }
 
@@ -306,7 +332,8 @@ section {
 	.pointer;
 }
 
-.lp_current_blocks {
+.lp_default_blocks,
+.lp_additional_blocks {
 	th {
 		&.icon {
 			width: 8%;
@@ -317,32 +344,6 @@ section {
 		&.actions {
 			width: 14%;
 		}
-	}
-}
-
-.article_image {
-	text-align: center;
-
-	img {
-		display: block;
-		height: auto;
-		max-width: 100%;
-		.border-radius;
-	}
-}
-
-.article_content {
-	overflow: hidden;
-	flex: 1 1 auto;
-
-	.inner {
-		height: auto;
-		min-height: auto;
-		overflow: hidden;
-		color: transparent;
-		-webkit-background-clip: text;
-		background-clip: text;
-		background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
 	}
 }
 
@@ -378,19 +379,19 @@ section {
 	}
 }
 
-#postpage {
+#postpage,
+#postblock {
 	#post_header {
-		dt {
-			width: 22%;
-		}
-		dd {
-			width: 76%;
+		dt,dd {
+			float: none;
+			width: auto;
 		}
 	}
 }
 
 @media (max-width: 480px) {
-	.lp_current_blocks {
+	.lp_default_blocks,
+	.lp_additional_blocks {
 		th, td {
 			&.icon {
 				display: none;
@@ -407,7 +408,8 @@ section {
 }
 
 @media (max-width: 600px) {
-	.lp_current_blocks {
+	.lp_default_blocks,
+	.lp_additional_blocks {
 		th, td {
 			&.title,
 			&.areas {
@@ -436,13 +438,6 @@ section {
 		}
 	}
 	#lp_layout {
-		.post_button_container {
-			margin: 0 auto;
-
-			& + .padding {
-				padding: 0;
-			}
-		}
 		input {
 			&[type="radio"] {
 				width: auto;
@@ -451,7 +446,12 @@ section {
 	}
 }
 
-@media (max-width: 800px) {
+@media (max-width: 887px) {
+	.information {
+		.righttext {
+			text-align: center;
+		}
+	}
 	#pages {
 		th, td {
 			&.alias {
@@ -461,16 +461,7 @@ section {
 	}
 }
 
-@media (max-width: 980px) {
-	#postpage,
-	#postblock {
-		#post_header {
-			dt, dd {
-				width: auto;
-				float: none;
-			}
-		}
-	}
+@media (max-width: 800px) {
 	#pages {
 		th, td {
 			&.num_views,
@@ -481,20 +472,7 @@ section {
 	}
 }
 
-@media (max-width: 1120px) and (min-width: 1024px) {
-	.block_user_info {
-		span {
-			.floatleft,
-			.floatright {
-				float: none;
-				margin: 0 auto;
-				display: block;
-			}
-		}
-	}
-}
-
-@media (max-width: 1200px) and (min-width: 1022px) {
+@media (min-width: 1022px) and (max-width: 1200px) {
 	.article_info {
 		div {
 			text-align: center;
@@ -507,7 +485,29 @@ section {
 	}
 }
 
+/* Flexbox Grid */
+.row.reverse2 {
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: reverse;
+	-ms-flex-direction: column-reverse;
+	flex-direction: column-reverse;
+}
+
 /* Addons */
+
+/* UserInfo */
+@media (min-width: 769px) and (max-width: 1241px) {
+	.block_user_info {
+		span {
+			&.floatleft,
+			&.floatright {
+				float: none;
+				margin: 0 auto;
+				display: block;
+			}
+		}
+	}
+}
 
 /* Likely */
 .likely__widget {
@@ -693,5 +693,14 @@ dl {
 .block_board_list {
 	ul {
 		padding-left: 10px;
+	}
+}
+
+/* Flipster Carousel */
+.flipster {
+	overflow: hidden !important;
+
+	.flipster__button {
+		height: auto !important;
 	}
 }

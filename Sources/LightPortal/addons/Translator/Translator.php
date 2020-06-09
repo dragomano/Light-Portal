@@ -20,6 +20,15 @@ if (!defined('SMF'))
 class Translator
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-language';
+
+	/**
 	 * You cannot select a class for the content of this block
 	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
@@ -176,7 +185,7 @@ class Translator
 		$context['posting_fields']['auto_mode']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id' => 'auto_mode',
+				'id'      => 'auto_mode',
 				'checked' => !empty($context['lp_block']['options']['parameters']['auto_mode'])
 			)
 		);

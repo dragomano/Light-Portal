@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class BoardList
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-list-alt';
+
+	/**
 	 * You cannot select a class for the content of this block
 	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
@@ -155,11 +164,11 @@ class BoardList
 	/**
 	 * Get the board list
 	 *
-	 * Получаем список разделов, с учётом прав доступа и списка игнора
+	 * Получаем список разделов
 	 *
 	 * @return array
 	 */
-	public static function getBoardList()
+	public static function getData()
 	{
 		global $sourcedir;
 
@@ -193,9 +202,9 @@ class BoardList
 		if ($type !== 'board_list')
 			return;
 
-		$context['lp_boardlist'] = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getBoardList', __CLASS__, $cache_time);
+		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
-		if (!empty($context['lp_boardlist'])) {
+		if (!empty($board_list)) {
 			if ($parameters['board_class'] == '_')
 				$parameters['board_class'] = '';
 			else
@@ -205,7 +214,7 @@ class BoardList
 
 			ob_start();
 
-			foreach ($context['lp_boardlist'] as $category) {
+			foreach ($board_list as $category) {
 				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
 
 				echo '

@@ -74,11 +74,11 @@ class Credits
 
 		$links[] = array(
 			'title' => 'Flexbox Grid',
-			'link' => 'https://github.com/kristoferjoseph/flexboxgrid',
+			'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
 			'author' => '2013 Kristofer Joseph',
 			'license' => array(
 				'name' => 'the Apache License',
-				'link' => 'https://github.com/kristoferjoseph/flexboxgrid/blob/master/LICENSE'
+				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
 			)
 		);
 		$links[] = array(

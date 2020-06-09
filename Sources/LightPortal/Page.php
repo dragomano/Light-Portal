@@ -43,16 +43,17 @@ class Page
 			$context['lp_page'] = self::getDataByAlias($alias);
 		}
 
-		Block::show();
-
 		if (empty($context['lp_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
 
-		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
+		if (empty($context['lp_page']['can_view']))
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
 		if (empty($context['lp_page']['status']))
 			fatal_lang_error('lp_page_not_activated', false);
+
+		if ($context['lp_page']['created_at'] > time())
+			send_http_status(404);
 
 		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
@@ -97,8 +98,9 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
-		$modSettings['meta_keywords']          = implode(', ', $context['lp_page']['keywords']);
-		$context['meta_description']           = $context['lp_page']['description'];
+		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
+		$context['meta_description']  = $context['lp_page']['description'];
+
 		$context['optimus_og_type']['article'] = array(
 			'published_time' => date('c', $context['lp_page']['created_at']),
 			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null,
@@ -196,6 +198,8 @@ class Page
 					'permissions' => $row['permissions'],
 					'status'      => $row['status'],
 					'num_views'   => $row['num_views'],
+					'date'        => date('Y-m-d', $row['created_at']),
+					'time'        => date('H:i', $row['created_at']),
 					'created_at'  => $row['created_at'],
 					'updated_at'  => $row['updated_at'],
 					'image'       => $og_image
@@ -270,10 +274,12 @@ class Page
 		if (empty($data))
 			return;
 
+		$is_author = !empty($data['author_id']) && $data['author_id'] == $user_info['id'];
+
 		$data['created']  = Helpers::getFriendlyTime($data['created_at']);
 		$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
-		$data['can_show'] = Helpers::canShowItem($data['permissions']);
-		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
+		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
+		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
 		$data['keywords'] = !empty($data['keywords']) ? array_unique($data['keywords']) : [];
 	}
 

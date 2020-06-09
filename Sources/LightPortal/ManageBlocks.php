@@ -77,7 +77,7 @@ class ManageBlocks
 					'priority'    => $row['priority'],
 					'permissions' => $row['permissions'],
 					'status'      => $row['status'],
-					'areas'       => $row['areas']
+					'areas'       => str_replace(',', PHP_EOL, $row['areas'])
 				);
 
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
@@ -117,7 +117,9 @@ class ManageBlocks
 		}
 
 		self::updatePriority();
-		clean_cache();
+
+		Helpers::getFromCache('active_blocks', null);
+
 		exit;
 	}
 
@@ -202,6 +204,8 @@ class ManageBlocks
 				'block'   => $new_block
 			];
 		}
+
+		Helpers::getFromCache('active_blocks', null);
 
 		exit(json_encode($result));
 	}
@@ -303,9 +307,8 @@ class ManageBlocks
 
 		loadTemplate('LightPortal/ManageBlocks');
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
-		$context['page_area_title'] = $txt['lp_blocks_add_title'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=add';
+		$context['page_title']    = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
+		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -329,7 +332,7 @@ class ManageBlocks
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData();
 	}
 
@@ -366,13 +369,11 @@ class ManageBlocks
 
 		self::validateData();
 
-		$block_title = $context['lp_block']['title'][$context['user']['language']] ?? '';
-		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
+		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData($context['lp_block']['id']);
 	}
 
@@ -746,7 +747,7 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	private static function showPreview()
+	private static function preparePreview()
 	{
 		global $context, $smcFunc, $txt;
 
@@ -763,7 +764,7 @@ class ManageBlocks
 		censorText($context['preview_content']);
 
 		if (empty($context['preview_content']))
-			Subs::prepareContent($context['preview_content'], $context['lp_block']['type']);
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
@@ -993,7 +994,8 @@ class ManageBlocks
 		if (!empty($_POST['clone']))
 			return $item;
 
-		clean_cache();
+		Helpers::getFromCache('active_blocks', null);
+
 		redirectexit('action=admin;area=lp_blocks;sa=main');
 	}
 
@@ -1014,8 +1016,7 @@ class ManageBlocks
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-				bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
@@ -1183,6 +1184,8 @@ class ManageBlocks
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}
+				} elseif ($key == 'content') {
+					$xmlName->appendChild($xml->createCDATASection($val));
 				} else {
 					$xmlName->appendChild($xml->createTextNode($val));
 				}
@@ -1246,6 +1249,9 @@ class ManageBlocks
 		if ($xml === false)
 			return;
 
+		if (!isset($xml->blocks->item[0]['block_id']))
+			fatal_lang_error('lp_wrong_import_file', false);
+
 		$items = $titles = $params = [];
 
 		foreach ($xml as $element) {
@@ -1301,29 +1307,32 @@ class ManageBlocks
 
 			$sql .= Subs::getValues($items);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
 
-		if (!empty($titles)) {
+		if (!empty($titles) && !empty($result)) {
 			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
 				VALUES ";
 
 			$sql .= Subs::getValues($titles);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
 
-		if (!empty($params)) {
+		if (!empty($params) && !empty($result)) {
 			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
 				VALUES ";
 
 			$sql .= Subs::getValues($params);
 
-			$smcFunc['db_query']('', $sql);
+			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
 		}
+
+		if (empty($result))
+			fatal_lang_error('lp_import_failed', false);
 
 		clean_cache();
 	}

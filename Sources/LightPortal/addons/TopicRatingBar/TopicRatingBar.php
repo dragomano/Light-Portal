@@ -24,7 +24,7 @@ class TopicRatingBar
 	 *
 	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @var array
+	 * @var string
 	 */
 	public static $addon_type = 'article';
 
@@ -57,14 +57,7 @@ class TopicRatingBar
 	 */
 	public static function frontTopicsOutput(&$topics, $row)
 	{
-		global $modSettings;
-
-		$rating = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
-
-		if (!empty($rating) && !empty($modSettings['lp_subject_size']))
-			$topics[$row['id_topic']]['subject'] = shorten_subject($topics[$row['id_topic']]['subject'], $modSettings['lp_subject_size'] - $rating);
-
-		$topics[$row['id_topic']]['rating'] = $rating;
+		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
 	}
 
 	/**
@@ -79,23 +72,10 @@ class TopicRatingBar
 		if (empty($context['lp_frontpage_articles']))
 			return;
 
-		$js = '';
-		foreach ($context['lp_frontpage_articles'] as $topic) {
+		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['rating'])) {
-				$img = '';
-				for ($i = 0; $i < $topic['rating']; $i++)
-					$img .= '<span class="topic_stars">&nbsp;&nbsp;&nbsp;</span>';
-
-				$js .= '
-			let starImg' . $topic['id'] . ' = $(".catbg a[data-id=' . $topic['id'] . ']");
-			starImg' . $topic['id'] . '.after(\'<span class="topic_stars_main">' . $img . '<\/span>\');';
+				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}
-
-		if (!empty($js))
-			addInlineJavaScript('
-		jQuery(document).ready(function ($) {
-			' . $js . '
-		});', true);
 	}
 }

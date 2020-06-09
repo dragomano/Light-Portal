@@ -43,7 +43,7 @@ class Subs
 	 */
 	public static function loadBlocks()
 	{
-		global $context;
+		global $context, $modSettings;
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
@@ -51,6 +51,15 @@ class Subs
 
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
+
+		// Ширина некоторых панелей
+		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
+		$context['lp_left_panel_width']   = !empty($modSettings['lp_left_panel_width']) ? json_decode($modSettings['lp_left_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
+		$context['lp_right_panel_width']  = !empty($modSettings['lp_right_panel_width']) ? json_decode($modSettings['lp_right_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
+		$context['lp_footer_panel_width'] = !empty($modSettings['lp_footer_panel_width']) ? (int) $modSettings['lp_footer_panel_width'] : 12;
+
+		// Block direction in panels | Направление блоков в панелях
+		$context['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? json_decode($modSettings['lp_panel_direction'], true) : [];
 	}
 
 	/**
@@ -155,6 +164,7 @@ class Subs
 		global $modSettings, $context;
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
+		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 
 		foreach ($data as $action => $dump) {
@@ -273,7 +283,11 @@ class Subs
 	 */
 	public static function runAddons(string $hook = 'init', array $vars = [], array $plugins = [])
 	{
-		global $context, $txt;
+		global $txt, $context;
+
+		$txt['lp_bbc_icon']  = 'fas fa-square';
+		$txt['lp_html_icon'] = 'fab fa-html5';
+		$txt['lp_php_icon']  = 'fab fa-php';
 
 		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
@@ -288,6 +302,7 @@ class Subs
 			if (!isset($addon_snake_name[$id])) {
 				$addon_snake_name[$id] = Helpers::getSnakeName($addon);
 				$txt['lp_' . $addon_snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class::$addon_type : 'block';
+				$txt['lp_' . $addon_snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class::$addon_icon : 'fas fa-puzzle-piece';
 			}
 
 			if (method_exists($class, $hook) && is_callable(array($class, $hook), false, $callable_name))
@@ -411,7 +426,7 @@ class Subs
 			'div.noticebox'   => '<div class="noticebox"%2$s>%1$s</div>',
 			'div.infobox'     => '<div class="infobox"%2$s>%1$s</div>',
 			'div.descbox'     => '<div class="descbox"%2$s>%1$s</div>',
-			'_'               => '%1$s' // Empty class == w\o div
+			'_'               => '<div%2$s>%1$s</div>' // Empty class
 		];
 	}
 
@@ -461,6 +476,9 @@ class Subs
 	{
 		if (empty($file))
 			return;
+
+		// Might take some time.
+		@set_time_limit(600);
 
 		if (file_exists($file)) {
 			if (ob_get_level())

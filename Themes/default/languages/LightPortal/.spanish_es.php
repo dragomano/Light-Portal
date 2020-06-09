@@ -17,7 +17,7 @@ $txt['lp_no_items'] = 'No hay elementos que mostrar.';
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
 $txt['lp_base'] = 'Configuraciones para la portada y los artículos';
-$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.';
+$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, or <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make one-time donation via PayPal</a>.';
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
@@ -59,7 +59,7 @@ $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de pág
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
-$txt['lp_show_comment_block_set'] = array('ninguno' => 'Ninguno', 'por defecto' => 'Integrado');
+$txt['lp_show_comment_block_set'] = array('none' => 'Ninguno', 'default' => 'Integrado');
 $txt['lp_num_comments_per_page'] = 'Número de comentarios de los padres por página'; // Check meaning
 $txt['lp_page_editor_type_default'] = 'El tipo de editor de la página por defecto';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ocultar bloques activos en el área de administración';
@@ -122,10 +122,24 @@ $txt['lp_block_areas'] = 'Acciones';
 $txt['lp_block_areas_subtext'] = 'Especifique una o más áreas (separadas por comas) para mostrar el bloque en:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — mostrar en todas partes</li>
-	<li><strong>forum</strong> — mostrar solo en el área del foro</li>
 	<li><strong>portal</strong> — mostrar solo en el área del portal (incluidas las páginas)</li>
-	<li><strong>custom_action</strong> — mostrar en el área <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — mostrar solo en el área del foro</li>
+	<li><strong>custom_action</strong> — mostrar en el área <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — mostrar en la página <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — display in all boards</li>
+			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — display in all topics</li>
+			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class'] = 'Clase de título CSS';
 $txt['lp_block_title_style'] = 'Estilo de título CSS';

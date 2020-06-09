@@ -13,11 +13,12 @@ $txt['lp_new_version_is_available'] = 'A new version is available!';
 
 $txt['lp_article']  = 'Article';
 $txt['lp_no_items'] = 'There is no items to show.';
+$txt['lp_example']  = 'Example: ';
 
 // Settings
 $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, or <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make one-time donation via PayPal</a>.';
 
 $txt['lp_frontpage_title']         = 'The frontpage title';
 $txt['lp_frontpage_mode']          = 'The portal frontpage';
@@ -28,7 +29,6 @@ $txt['lp_frontpage_layout']        = 'Number of columns for displaying articles'
 $txt['lp_frontpage_layout_set']    = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_images_in_articles'] = 'Show images that found in articles';
 $txt['lp_image_placeholder']       = 'URL of the default placeholder image';
-$txt['lp_subject_size']            = 'The max size of article titles (in symbols)';
 $txt['lp_teaser_size']             = 'The max size of article teasers (in symbols)';
 $txt['lp_num_items_per_page']      = 'Number of items per page (for pagination)';
 
@@ -43,6 +43,7 @@ obExit(true);</code></pre><br>
 Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
 $txt['groups_light_portal_view']             = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
@@ -54,6 +55,7 @@ $txt['lp_show_debug_info']         = 'Show the loading time and number of the po
 $txt['lp_show_debug_info_subtext'] = 'This information will be available to administrators only!';
 $txt['lp_cache_update_interval']   = 'The cache update interval';
 
+// Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
@@ -63,16 +65,31 @@ $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => '
 $txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']     = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
-$txt['lp_open_graph']                   = 'Open Graph';
-$txt['lp_page_og_image']                = 'Use an image from the page content';
-$txt['lp_page_og_image_set']            = array('None', 'First found', 'Last found');
-$txt['lp_page_itemprop_address']        = 'Address of your organization';
-$txt['lp_page_itemprop_phone']          = 'Phone of your organization';
+
+$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_page_og_image']         = 'Use an image from the page content';
+$txt['lp_page_og_image_set']     = array('None', 'First found', 'Last found');
+$txt['lp_page_itemprop_address'] = 'Address of your organization';
+$txt['lp_page_itemprop_phone']   = 'Phone of your organization';
+
+// Panels
+$txt['lp_panels']               = 'Panels';
+$txt['lp_panels_info']          = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
+$txt['lp_swap_header_footer']   = 'Swap the header and the footer';
+$txt['lp_swap_left_right']      = 'Swap the left panel and the right panel';
+$txt['lp_swap_top_bottom']      = 'Swap the center (top) and the center (bottom)';
+$txt['lp_panel_layout_note']    = 'Change the width of the browser window and see which class is used.';
+$txt['lp_browser_width']        = 'Width of the browser window';
+$txt['lp_used_class']           = 'Class used';
+$txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
+$txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
+$txt['lp_panel_direction']      = 'The direction of blocks in panels';
+$txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
 $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And some of them are also customized!';
-$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
+$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'   => 'Block',
@@ -102,6 +119,7 @@ $txt['lp_blocks_add_tab_description']    = 'There are not many blocks yet, but t
 $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
+$txt['lp_block_publish_datetime']        = 'Date and time of publication';
 $txt['lp_block_content']                 = 'Content';
 $txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';
@@ -122,10 +140,24 @@ $txt['lp_block_areas']         = 'Actions';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
 <ul class="bbc_list">
 	<li><strong>all</strong> — display everywhere</li>
-	<li><strong>forum</strong> — display only on the forum area</li>
 	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
-	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong></li>
+	<li><strong>forum</strong> — display only on the forum area (including boards and topics)</li>
+	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
+	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
+		<ul class="bbc_list">
+			<li><strong>boards</strong> — display in all boards</li>
+			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
+		</ul>
+	</li>
+	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
+		<ul class="bbc_list">
+			<li><strong>topics</strong> — display in all topics</li>
+			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
+		</ul>
+	</li>
 </ul>';
 $txt['lp_block_title_class']   = 'CSS title class';
 $txt['lp_block_title_style']   = 'CSS title style';
@@ -211,6 +243,8 @@ $txt['lp_post_error_no_content']      = 'The content not specified! It is requir
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
 $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
+$txt['lp_wrong_import_file']          = 'Wrong file to import...';
+$txt['lp_import_failed']              = 'Failed to import...';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
@@ -258,4 +292,4 @@ $txt['lp_buddies_set'] = array('buddy', 'buddies');
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'Loaded for %1$.3f seconds. Queries to DB: %2$d.';
+$txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d queries.';

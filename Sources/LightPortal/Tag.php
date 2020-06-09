@@ -155,17 +155,19 @@ class Tag
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
+				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array(
-				'guest'       => $txt['guest_title'],
-				'key'         => $context['lp_keyword'],
-				'status'      => Page::STATUS_ACTIVE,
-				'permissions' => Helpers::getPermissions(),
-				'sort'        => $sort,
-				'start'       => $start,
-				'limit'       => $items_per_page
+				'guest'        => $txt['guest_title'],
+				'key'          => $context['lp_keyword'],
+				'status'       => Page::STATUS_ACTIVE,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'sort'         => $sort,
+				'start'        => $start,
+				'limit'        => $items_per_page
 			)
 		);
 
@@ -205,11 +207,13 @@ class Tag
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
+				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			array(
-				'key'         => $context['lp_keyword'],
-				'status'      => Page::STATUS_ACTIVE,
-				'permissions' => Helpers::getPermissions()
+				'key'          => $context['lp_keyword'],
+				'status'       => Page::STATUS_ACTIVE,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions()
 			)
 		);
 
@@ -316,15 +320,17 @@ class Tag
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
+				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
-				'status'      => Page::STATUS_ACTIVE,
-				'permissions' => Helpers::getPermissions(),
-				'sort'        => $sort,
-				'start'       => $start,
-				'limit'       => $items_per_page
+				'status'       => Page::STATUS_ACTIVE,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'sort'         => $sort,
+				'start'        => $start,
+				'limit'        => $items_per_page
 			)
 		);
 
@@ -369,10 +375,12 @@ class Tag
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
+				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			array(
-				'status'      => Page::STATUS_ACTIVE,
-				'permissions' => Helpers::getPermissions()
+				'status'       => Page::STATUS_ACTIVE,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions()
 			)
 		);
 

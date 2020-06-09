@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class TopBoards
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-balance-scale-left';
+
+	/**
 	 * The maximum number of boards to output
 	 *
 	 * Максимальное количество разделов для вывода
@@ -102,7 +111,7 @@ class TopBoards
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards_addon_show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -118,14 +127,56 @@ class TopBoards
 	 * Получаем список популярных разделов
 	 *
 	 * @param int $num_boards
-	 * @return void
+	 * @return array
 	 */
-	public static function getTopBoards($num_boards)
+	private static function getData($num_boards)
 	{
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_topBoards($num_boards, 'array');
+	}
+
+	/**
+	 * Get the block html code
+	 *
+	 * Получаем html-код блока
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	public static function getHtml($parameters)
+	{
+		global $txt;
+
+		$top_boards = self::getData($parameters['num_boards']);
+
+		if (empty($top_boards))
+			return '';
+
+		$html = '
+		<dl class="stats">';
+
+		$max = $top_boards[0]['num_topics'];
+
+		foreach ($top_boards as $board) {
+			if ($board['num_topics'] < 1)
+				continue;
+
+			$width = $board['num_topics'] * 100 / $max;
+
+			$html .= '
+			<dt>' . $board['link'] . '</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar' . (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
+				<span>' . ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics'])) . '</span>
+			</dd>';
+		}
+
+		$html .= '
+		</dl>';
+
+		return $html;
 	}
 
 	/**
@@ -142,38 +193,16 @@ class TopBoards
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt;
+		global $user_info;
 
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $context['user']['id'], 'getTopBoards', __CLASS__, $cache_time, $parameters['num_boards']);
+		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_boards)) {
 			ob_start();
-
-			echo '
-			<dl class="stats">';
-
-			$max = $top_boards[0]['num_topics'];
-
-			foreach ($top_boards as $board) {
-				if ($board['num_topics'] < 1)
-					continue;
-
-				$width = $board['num_topics'] * 100 / $max;
-
-				echo '
-				<dt>', $board['link'], '</dt>
-				<dd class="statsbar generic_bar righttext">
-					<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-					<span>', $parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics']), '</span>
-				</dd>';
-			}
-
-			echo '
-			</dl>';
-
+			echo $top_boards;
 			$content = ob_get_clean();
 		}
 	}

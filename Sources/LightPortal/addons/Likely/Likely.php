@@ -20,6 +20,15 @@ if (!defined('SMF'))
 class Likely
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-share-square';
+
+	/**
 	 * Button size (small|big)
 	 *
 	 * Размер кнопок (small|big)
@@ -58,8 +67,8 @@ class Likely
 	{
 		$options['likely'] = array(
 			'parameters' => array(
-				'skin'    => static::$skin,
 				'size'    => static::$size,
+				'skin'    => static::$skin,
 				'buttons' => static::$buttons
 			)
 		);
@@ -199,7 +208,7 @@ class Likely
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $context, $txt, $modSettings, $settings;
+		global $txt, $modSettings, $settings;
 
 		if ($type !== 'likely')
 			return;

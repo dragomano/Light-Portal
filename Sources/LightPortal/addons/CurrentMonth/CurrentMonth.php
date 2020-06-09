@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class CurrentMonth
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-calendar-check';
+
+	/**
 	 * You cannot select a class for the content of this block
 	 *
 	 * Нельзя выбрать класс для оформления контента этого блока
@@ -52,7 +61,7 @@ class CurrentMonth
 	 *
 	 * @return array
 	 */
-	public static function getCalendarData()
+	public static function getData()
 	{
 		global $sourcedir, $options, $modSettings;
 
@@ -94,21 +103,12 @@ class CurrentMonth
 	 */
 	private static function showCurrentMonthGrid($data)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $txt, $modSettings, $scripturl;
 
 		if (empty($data))
 			return false;
 
 		$calendar_data = &$data;
-
-		if (empty($context['lp_active_blocks'][$data['block_id']]['title'][$context['user']['language']])) {
-			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
-
-			if (allowedTo('light_portal_manage_blocks'))
-				$title = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $data['block_id'] . '">' . $title . '</a>';
-
-			echo sprintf($context['lp_all_title_classes'][$context['lp_active_blocks'][$data['block_id']]['title_class']], $title);
-		}
 
 		echo '
 				<table>';
@@ -191,17 +191,26 @@ class CurrentMonth
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
-		global $context;
+		global $user_info, $txt, $context;
 
 		if ($type !== 'current_month')
 			return;
 
-		$calendar_data = Helpers::getFromCache('current_month_addon_u' . $context['user']['id'], 'getCalendarData', __CLASS__, $cache_time);
+		$calendar_data = Helpers::getFromCache('current_month_addon_u' . $user_info['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($calendar_data)) {
 			ob_start();
 
 			$calendar_data['block_id'] = $block_id;
+
+			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
+
+			// Auto title
+			if (isset($context['preview_title']) && empty($context['preview_title']))
+				$context['preview_title'] = $title;
+			elseif (empty($context['lp_active_blocks'][$block_id]['title'][$user_info['language']]))
+				$context['lp_active_blocks'][$block_id]['title'][$user_info['language']] = $title;
+
 			self::showCurrentMonthGrid($calendar_data);
 
 			$content = ob_get_clean();

@@ -43,7 +43,7 @@ function template_plugin_settings()
 			</div>';
 
 		if (!empty($plugin['settings']))
-			show_lp_plugin_settings($plugin['snake_name'], $plugin['settings']);
+			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
 		</div>
@@ -63,7 +63,7 @@ function template_plugin_settings()
  * @param array $settings
  * @return void
  */
-function show_lp_plugin_settings($plugin_name, $settings)
+function show_plugin_settings($plugin_name, $settings)
 {
 	global $txt, $context, $modSettings;
 

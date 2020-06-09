@@ -9,16 +9,16 @@
  */
 function template_portal_above()
 {
-	global $context;
+	global $modSettings, $context;
 
 	echo '
-	<div id="lp_layout">';
+	<div id="lp_layout"', !empty($modSettings['lp_swap_header_footer']) ? ' class="row reverse2"' : '', '>';
 
 	// Header | Шапка
 	if (!empty($context['lp_blocks']['header'])) {
 		echo '
-		<div class="row">
-			<div class="col-xs-12">';
+		<div class="row center-xs">
+			<div class="col-xs-', $context['lp_header_panel_width'], '">';
 
 		lp_show_blocks('header');
 
@@ -28,12 +28,12 @@ function template_portal_above()
 	}
 
 	echo '
-		<div class="row">';
+		<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">';
 
 	// Left Side | Левая панель
 	if (!empty($context['lp_blocks']['left'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">';
 
 		lp_show_blocks('left');
 
@@ -41,28 +41,32 @@ function template_portal_above()
 			</div>';
 	}
 
+	$md = 12 - ($context['lp_left_panel_width']['md'] + $context['lp_right_panel_width']['md']);
+	$lg = 12 - ($context['lp_left_panel_width']['lg'] + $context['lp_right_panel_width']['lg']);
+	$xl = 12 - ($context['lp_left_panel_width']['xl'] + $context['lp_right_panel_width']['xl']);
+
 	echo '
-			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? '-12 col-sm-12 col-md-8 col-lg-8' : '', '">
-				<div class="box">';
+			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-' . $md . ' col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
+				<div', !empty($modSettings['lp_swap_top_bottom']) ? ' class="row reverse2"' : '', '>';
 
 	// Center (top) | Центр (верх)
 	if (!empty($context['lp_blocks']['top'])) {
 		echo '
 
-					<div class="row">
-						<div class="col-xs">';
+				<div class="row">
+					<div class="col-xs">';
 
 		lp_show_blocks('top');
 
 		echo '
-						</div>
-					</div>';
+					</div>
+				</div>';
 	}
 
 	echo '
-					<div class="row">
-						<div class="col-xs noup">
-							<main>';
+				<div class="row">
+					<div class="col-xs noup">
+						<main>';
 }
 
 /**
@@ -77,21 +81,21 @@ function template_portal_below()
 	global $context;
 
 	echo '
-							</main>
-						</div>
-					</div>';
+						</main>
+					</div>
+				</div>';
 
 	// Center (bottom) | Центр (низ)
 	if (!empty($context['lp_blocks']['bottom'])) {
 		echo '
-					<div class="row">
-						<div class="col-xs">';
+				<div class="row">
+					<div class="col-xs">';
 
 		lp_show_blocks('bottom');
 
 		echo '
-						</div>
-					</div>';
+					</div>
+				</div>';
 	}
 
 	echo '
@@ -101,7 +105,7 @@ function template_portal_below()
 	// Right Side | Правая панель
 	if (!empty($context['lp_blocks']['right'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">';
 
 		lp_show_blocks('right');
 
@@ -115,8 +119,8 @@ function template_portal_below()
 	// Footer | Подвал
 	if (!empty($context['lp_blocks']['footer'])) {
 		echo '
-		<div class="row">
-			<div class="col-xs-12">';
+		<div class="row center-xs">
+			<div class="col-xs-', $context['lp_footer_panel_width'], '">';
 
 		lp_show_blocks('footer');
 
@@ -139,14 +143,21 @@ function template_portal_below()
  */
 function lp_show_blocks($placement = '')
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl;
 
-	if (empty($placement))
+	if (empty($placement) || empty($context['lp_blocks'][$placement]))
 		return;
 
-	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+	if (!empty($context['lp_panel_direction'][$placement])) {
 		echo '
-	<aside id="block_', $block['id'], '" class="block_', $block['type'], '">';
+		<div class="row">';
+	}
+
+	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+		$class = 'block_' . $block['type'] . (!empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '') . (!empty($block['custom_class']) ? ' ' . $block['custom_class'] : '');
+
+		echo '
+			<aside id="block_', $block['id'], '" class="', $class, '">';
 
 		if (!empty($block['title_style']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
@@ -166,12 +177,14 @@ function lp_show_blocks($placement = '')
 		if (!empty($block['content_style']))
 			$style = ' style="' . $block['content_style'] . '"';
 
-		if (!empty($block['content_class']))
-			echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
-		else
-			echo $block['content'];
+		echo sprintf($context['lp_all_content_classes'][$block['content_class'] ?: '_'], $block['content'], $style);
 
 		echo '
-	</aside>';
+			</aside>';
+	}
+
+	if (!empty($context['lp_panel_direction'][$placement])) {
+		echo '
+		</div>';
 	}
 }

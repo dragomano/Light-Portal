@@ -22,13 +22,22 @@ if (!defined('SMF'))
 class News
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-newspaper';
+
+	/**
 	 * Get the news list of the forum
 	 *
 	 * Получаем список новостей форума
 	 *
 	 * @return string
 	 */
-	public static function getNews()
+	public static function getData()
 	{
 		global $boarddir;
 
@@ -56,7 +65,7 @@ class News
 		if ($type !== 'news')
 			return;
 
-		$news = Helpers::getFromCache('news_addon_b' . $block_id, 'getNews', __CLASS__, $cache_time);
+		$news = Helpers::getFromCache('news_addon_b' . $block_id, 'getData', __CLASS__, $cache_time);
 
 		ob_start();
 		echo $news ?: $txt['lp_news_addon_no_items'];

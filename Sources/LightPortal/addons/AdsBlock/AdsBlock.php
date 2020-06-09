@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class AdsBlock
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-ad';
+
+	/**
 	 * Default placement of ads block
 	 *
 	 * Размещение рекламного блока по умолчанию
@@ -72,7 +81,7 @@ class AdsBlock
 	 */
 	public static function menuButtons()
 	{
-		global $context;
+		global $context, $txt;
 
 		if ($context['current_action'] == 'admin' && isset($_REQUEST['area']) && $_REQUEST['area'] == 'lp_blocks') {
 			require_once(__DIR__ . '/AdsBlock.template.php');
@@ -82,7 +91,13 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getAdsBlocks', __CLASS__);
+		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getData', __CLASS__);
+
+		if (!empty($context['lp_ads_blocks']))
+			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
+
+		if (!function_exists('lp_show_blocks'))
+			loadTemplate('LightPortal/ViewBlock');
 	}
 
 	/**
@@ -90,14 +105,17 @@ class AdsBlock
 	 *
 	 * Получаем все рекламные блоки
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public static function getAdsBlocks()
+	public static function getData()
 	{
-		global $txt;
+		global $context, $txt;
+
+		if (empty($context['lp_blocks']['ads']))
+			return [];
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump)
-			$ads_blocks[$position] = self::getAdsBlocksByPosition($position);
+			$ads_blocks[$position] = self::getByPosition($position);
 
 		return $ads_blocks;
 	}
@@ -152,8 +170,7 @@ class AdsBlock
 		 * Вывод рекламы перед первым сообщением
 		 */
 		if (!empty($context['lp_ads_blocks']['before_first_post']) && $output['id'] == $context['topic_first_message']) {
-			foreach ($context['lp_ads_blocks']['before_first_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('before_first_post');
 		}
 
 		/**
@@ -162,8 +179,7 @@ class AdsBlock
 		 * Вывод рекламы перед каждым первым сообщением
 		 */
 		if (!empty($context['lp_ads_blocks']['before_every_first_post']) && $output['counter'] == $context['start']) {
-			foreach ($context['lp_ads_blocks']['before_every_first_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('before_every_first_post');
 		}
 
 		/**
@@ -172,8 +188,7 @@ class AdsBlock
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
 		if (!empty($context['lp_ads_blocks']['before_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
-			foreach ($context['lp_ads_blocks']['before_every_last_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('before_every_last_post');
 		}
 
 		/**
@@ -182,8 +197,7 @@ class AdsBlock
 		 * Вывод рекламы перед последним сообщением
 		 */
 		if (!empty($context['lp_ads_blocks']['before_last_post']) && $output['id'] == $context['topic_last_message']) {
-			foreach ($context['lp_ads_blocks']['before_last_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('before_last_post');
 		}
 
 		/**
@@ -192,8 +206,7 @@ class AdsBlock
 		 * Вывод рекламы после первого сообщения
 		 */
 		if (!empty($context['lp_ads_blocks']['after_first_post']) && $counter == 2) {
-			foreach ($context['lp_ads_blocks']['after_first_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('after_first_post');
 		}
 
 		/**
@@ -202,8 +215,7 @@ class AdsBlock
 		 * Вывод рекламы после каждого первого сообщения
 		 */
 		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == $context['start'] + 1)) {
-			foreach ($context['lp_ads_blocks']['after_every_first_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('after_every_first_post');
 		}
 
 		/**
@@ -212,8 +224,7 @@ class AdsBlock
 		 * Вывод рекламы после каждого пятого сообщения
 		 */
 		if (!empty($context['lp_ads_blocks']['after_every_five_post']) && $counter % 6 == 0) {
-			foreach ($context['lp_ads_blocks']['after_every_five_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('after_every_five_post');
 		}
 
 		/**
@@ -224,8 +235,7 @@ class AdsBlock
 		if (!empty($context['lp_ads_blocks']['after_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
 			ob_start();
 
-			foreach ($context['lp_ads_blocks']['after_every_last_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('after_every_last_post');
 
 			$after_every_last_post = ob_get_clean();
 
@@ -243,8 +253,7 @@ class AdsBlock
 		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == $context['topic_last_message']) {
 			ob_start();
 
-			foreach ($context['lp_ads_blocks']['after_last_post'] as $block)
-				lp_show_block($block);
+			lp_show_blocks('after_last_post');
 
 			$after_last_post = ob_get_clean();
 
@@ -263,11 +272,11 @@ class AdsBlock
 	 * @param string $position
 	 * @return array
 	 */
-	private static function getAdsBlocksByPosition($position)
+	private static function getByPosition($position)
 	{
 		global $context;
 
-		if (empty($position) || empty($context['lp_blocks']['ads']))
+		if (empty($position))
 			return [];
 
 		$blocks = array_filter($context['lp_blocks']['ads'], function($block) use ($position, $context) {
@@ -283,12 +292,30 @@ class AdsBlock
 					return false;
 			}
 
-			$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+			if (!empty($block['parameters']['ads_placement'])) {
+				$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+				return array_key_exists($position, $placements);
+			}
 
-			return !empty($block['parameters']['ads_placement']) && array_key_exists($position, $placements);
+			return false;
 		});
 
 		return $blocks;
+	}
+
+	/**
+	 * Add advertising areas to panel settings
+	 *
+	 * Добавляем рекламные области в настройки панелей
+	 *
+	 * @return void
+	 */
+	public static function addPanels()
+	{
+		global $context, $txt;
+
+		unset($context['lp_panels']['ads']);
+		$context['lp_panels'] += $txt['lp_ads_block_addon_placement_set'];
 	}
 
 	/**
