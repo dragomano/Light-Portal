@@ -117,7 +117,9 @@ class ManageBlocks
 		}
 
 		self::updatePriority();
-		clean_cache();
+
+		Helpers::getFromCache('active_blocks', null);
+
 		exit;
 	}
 
@@ -203,7 +205,7 @@ class ManageBlocks
 			];
 		}
 
-		clean_cache();
+		Helpers::getFromCache('active_blocks', null);
 
 		exit(json_encode($result));
 	}
@@ -305,9 +307,8 @@ class ManageBlocks
 
 		loadTemplate('LightPortal/ManageBlocks');
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
-		$context['page_area_title'] = $txt['lp_blocks_add_title'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=add';
+		$context['page_title']    = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_add_title'];
+		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
@@ -331,7 +332,7 @@ class ManageBlocks
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData();
 	}
 
@@ -368,13 +369,11 @@ class ManageBlocks
 
 		self::validateData();
 
-		$block_title = $context['lp_block']['title'][$context['user']['language']] ?? '';
-		$context['page_area_title'] = $txt['lp_blocks_edit_title'] . (!empty($block_title) ? ' - ' . $block_title : '');
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
+		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];
 
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData($context['lp_block']['id']);
 	}
 
@@ -748,7 +747,7 @@ class ManageBlocks
 	 *
 	 * @return void
 	 */
-	private static function showPreview()
+	private static function preparePreview()
 	{
 		global $context, $smcFunc, $txt;
 
@@ -995,7 +994,8 @@ class ManageBlocks
 		if (!empty($_POST['clone']))
 			return $item;
 
-		clean_cache();
+		Helpers::getFromCache('active_blocks', null);
+
 		redirectexit('action=admin;area=lp_blocks;sa=main');
 	}
 

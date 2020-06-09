@@ -484,7 +484,10 @@ class ManagePages
 				break;
 		}
 
-		clean_cache();
+		foreach ($items as $item) {
+			Helpers::getFromCache('page_' . $item, null);
+		}
+
 		redirectexit($redirect);
 	}
 
@@ -515,7 +518,7 @@ class ManagePages
 		self::validateData();
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData();
 
 		$context['sub_template'] = 'page_post';
@@ -564,7 +567,7 @@ class ManagePages
 
 		self::prepareFormFields();
 		self::prepareEditor();
-		self::showPreview();
+		self::preparePreview();
 		self::setData($context['lp_page']['id']);
 
 		$context['sub_template'] = 'page_post';
@@ -885,7 +888,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function showPreview()
+	private static function preparePreview()
 	{
 		global $context, $smcFunc, $txt;
 
@@ -1173,7 +1176,10 @@ class ManagePages
 			}
 		}
 
-		clean_cache();
+		Helpers::getFromCache('all_titles', null);
+		Helpers::getFromCache('page_' . $item, null);
+		Helpers::getFromCache('page_' . $context['lp_page']['alias'], null);
+
 		redirectexit('action=admin;area=lp_pages;sa=main');
 	}
 

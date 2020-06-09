@@ -43,20 +43,23 @@ class Block
 
 		// Block placement
 		foreach ($blocks as $item => $data) {
-			if (Helpers::canShowItem($data['permissions']) === false)
+			if (Helpers::canViewItem($data['permissions']) === false)
 				continue;
-
-			if (empty(Helpers::getPublicTitle($data)))
-				$data['title_class'] = '';
 
 			if (empty($data['content']))
 				Subs::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME);
 			else
 				Subs::parseContent($data['content'], $data['type']);
 
+			if (empty($data['title'][$context['user']['language']]))
+				$data['title'][$context['user']['language']] = $context['lp_active_blocks'][$data['id']]['title'][$context['user']['language']] ?? '';
+
+			if (empty($title = Helpers::getPublicTitle($data)))
+				$data['title_class'] = '';
+
 			$context['lp_blocks'][$data['placement']][$item] = $data;
 			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
-			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . Helpers::getPublicTitle($context['lp_blocks'][$data['placement']][$item]);
+			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
 		loadTemplate('LightPortal/ViewBlock');

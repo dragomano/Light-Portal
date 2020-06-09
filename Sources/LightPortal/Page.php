@@ -46,7 +46,7 @@ class Page
 		if (empty($context['lp_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
 
-		if ($context['lp_page']['can_show'] === false && !$context['user']['is_admin'])
+		if (empty($context['lp_page']['can_view']))
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
 		if (empty($context['lp_page']['status']))
@@ -274,10 +274,12 @@ class Page
 		if (empty($data))
 			return;
 
+		$is_author = !empty($data['author_id']) && $data['author_id'] == $user_info['id'];
+
 		$data['created']  = Helpers::getFriendlyTime($data['created_at']);
 		$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
-		$data['can_show'] = Helpers::canShowItem($data['permissions']);
-		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $data['author_id'] == $user_info['id']);
+		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
+		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
 		$data['keywords'] = !empty($data['keywords']) ? array_unique($data['keywords']) : [];
 	}
 

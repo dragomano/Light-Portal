@@ -378,7 +378,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canShowItem(int $permissions)
+	public static function canViewItem(int $permissions)
 	{
 		global $user_info;
 

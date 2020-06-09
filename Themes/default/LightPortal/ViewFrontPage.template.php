@@ -16,9 +16,9 @@ function template_show_topics_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $topic) {
-			if ($topic['is_new']) {
+			$alt = $topic['subject'];
+			if ($topic['is_new'])
 				$topic['subject'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $topic['subject'];
-			}
 
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], ' col-lg-', $context['lp_frontpage_layout'], '">
@@ -41,7 +41,7 @@ function template_show_topics_as_articles()
 			if (!empty($topic['image'])) {
 				echo '
 				<div class="article_image">
-					<img src="', $topic['image'], '" alt="', $topic['subject'], '">
+					<img src="', $topic['image'], '" alt="', $alt, '">
 				</div>';
 			} elseif (!empty($topic['image_placeholder'])) {
 				echo '
@@ -121,9 +121,9 @@ function template_show_pages_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $page) {
-			if ($page['is_new']) {
+			$alt = $page['title'];
+			if ($page['is_new'])
 				$page['title'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $page['title'];
-			}
 
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], '">
@@ -146,7 +146,7 @@ function template_show_pages_as_articles()
 			if (!empty($page['image'])) {
 				echo '
 				<div class="article_image">
-					<img src="', $page['image'], '" alt="', $page['title'], '">
+					<img src="', $page['image'], '" alt="', $alt, '">
 				</div>';
 			} elseif (!empty($page['image_placeholder'])) {
 				echo '
@@ -223,9 +223,9 @@ function template_show_boards_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $board) {
-			if ($board['is_updated']) {
+			$alt = $board['name'];
+			if ($board['is_updated'])
 				$board['name'] = '<span class="new_posts centericon">' . $txt['new'] . '</span> ' . $board['name'];
-			}
 
 			echo '
 		<div class="col-xs-12 col-sm-', $context['lp_frontpage_layout'], ' col-md-', $context['lp_frontpage_layout'], ' col-lg-', $context['lp_frontpage_layout'], '">
@@ -250,7 +250,7 @@ function template_show_boards_as_articles()
 			if (!empty($board['image'])) {
 				echo '
 				<div class="article_image">
-					<img src="', $board['image'], '" alt="', $board['name'], '">
+					<img src="', $board['image'], '" alt="', $alt, '">
 				</div>';
 			} elseif (!empty($board['image_placeholder'])) {
 				echo '

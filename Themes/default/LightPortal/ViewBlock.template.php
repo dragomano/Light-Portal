@@ -177,10 +177,7 @@ function lp_show_blocks($placement = '')
 		if (!empty($block['content_style']))
 			$style = ' style="' . $block['content_style'] . '"';
 
-		if (!empty($block['content_class']))
-			echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
-		else
-			echo $block['content'];
+		echo sprintf($context['lp_all_content_classes'][$block['content_class'] ?: '_'], $block['content'], $style);
 
 		echo '
 			</aside>';
