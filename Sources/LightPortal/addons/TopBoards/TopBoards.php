@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class TopBoards
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-balance-scale-left';
+
+	/**
 	 * The maximum number of boards to output
 	 *
 	 * Максимальное количество разделов для вывода

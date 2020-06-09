@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class TopPosters
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-users';
+
+	/**
 	 * Display user avatars (true|false)
 	 *
 	 * Отображать аватарки пользователей (true|false)

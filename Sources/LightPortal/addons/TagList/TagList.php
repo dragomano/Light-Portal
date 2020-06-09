@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class TagList
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-tags';
+
+	/**
 	 * The source of tags (lp_tags|keywords)
 	 *
 	 * Источник тегов (lp_tags|keywords)
@@ -164,20 +173,9 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::getFromCache(
-				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $user_info['id'],
-				'getAll',
-				'\Bugo\LightPortal\Tag',
-				$cache_time,
-				...array(0, 0, 'value')
-			);
+			$tag_list = Helpers::getFromCache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', '\Bugo\LightPortal\Tag', $cache_time, ...array(0, 0, 'value'));
 		} else {
-			$tag_list = Helpers::getFromCache(
-				'tag_list_addon_b' . $block_id . '_source_' . $parameters['source'] . '_u' . $user_info['id'],
-				'getAllTopicKeywords',
-				__CLASS__,
-				$cache_time
-			);
+			$tag_list = Helpers::getFromCache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);
 		}
 
 		ob_start();

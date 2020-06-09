@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class RandomTopics
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-random';
+
+	/**
 	 * You cannot select a class for the content of this block
 	 *
 	 * Нельзя выбрать класс для оформления контента этого блока

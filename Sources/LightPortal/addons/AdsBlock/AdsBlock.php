@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class AdsBlock
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-ad';
+
+	/**
 	 * Default placement of ads block
 	 *
 	 * Размещение рекламного блока по умолчанию

@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class TopTopics
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-balance-scale-left';
+
+	/**
 	 * Type of popularity calculation (replies|views)
 	 *
 	 * Тип расчёта популярности (replies|views)

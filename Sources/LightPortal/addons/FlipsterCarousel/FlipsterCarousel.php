@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class FlipsterCarousel
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-images';
+
+	/**
 	 * The slider autoplay, in ms
 	 *
 	 * Автозапуск слайдера, в мс

@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class BoardNews
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-newspaper';
+
+	/**
 	 * Board id by default
 	 *
 	 * Идентификатор раздела по умолчанию

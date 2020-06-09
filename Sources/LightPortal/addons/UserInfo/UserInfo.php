@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class UserInfo
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-user';
+
+	/**
 	 * Get the current user info
 	 *
 	 * Получаем информацию о пользователе

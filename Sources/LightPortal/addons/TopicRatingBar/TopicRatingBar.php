@@ -24,7 +24,7 @@ class TopicRatingBar
 	 *
 	 * Указываем тип аддона (если 'block', то можно не указывать)
 	 *
-	 * @var array
+	 * @var string
 	 */
 	public static $addon_type = 'article';
 

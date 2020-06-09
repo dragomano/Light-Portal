@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class RssFeed
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-rss';
+
+	/**
 	 * RSS Feed Url
 	 *
 	 * Адрес ленты RSS

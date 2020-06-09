@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class WhosOnline
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-eye';
+
+	/**
 	 * Online list update interval, in seconds
 	 *
 	 * Интервал обновления списка онлайн, в секундах

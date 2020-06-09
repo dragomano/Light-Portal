@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class News
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-newspaper';
+
+	/**
 	 * Get the news list of the forum
 	 *
 	 * Получаем список новостей форума

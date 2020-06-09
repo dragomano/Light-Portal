@@ -31,6 +31,15 @@ class Todays
 	private static $type = 'calendar';
 
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-calendar-day';
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока

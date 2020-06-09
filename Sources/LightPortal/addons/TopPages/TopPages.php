@@ -31,6 +31,15 @@ class TopPages
 	private static $type = 'comments';
 
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-balance-scale-left';
+
+	/**
 	 * The maximum number of pages to output
 	 *
 	 * Максимальное количество страниц для вывода

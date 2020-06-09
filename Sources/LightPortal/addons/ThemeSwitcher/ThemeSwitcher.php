@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class ThemeSwitcher
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-desktop';
+
+	/**
 	 * Get the list of active themes
 	 *
 	 * Получаем список активных шаблонов форума

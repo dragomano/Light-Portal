@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class PageList
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'far fa-file-alt';
+
+	/**
 	 * The sort method of pages
 	 *
 	 * Способ сортировки страниц (см. $txt['lp_page_list_addon_sort_set'])

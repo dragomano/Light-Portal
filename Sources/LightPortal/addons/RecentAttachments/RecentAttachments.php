@@ -22,6 +22,15 @@ if (!defined('SMF'))
 class RecentAttachments
 {
 	/**
+	 * Specify an icon (from the FontAwesome Free collection)
+	 *
+	 * Указываем иконку (из коллекции FontAwesome Free)
+	 *
+	 * @var string
+	 */
+	public static $addon_icon = 'fas fa-paperclip';
+
+	/**
 	 * The maximum number of attachments to output
 	 *
 	 * Максимальное количество вложений для вывода
