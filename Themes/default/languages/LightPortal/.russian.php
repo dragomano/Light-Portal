@@ -61,6 +61,7 @@ $txt['lp_extra_info'] = 'Здесь находятся общие настрой
 
 $txt['lp_show_tags_on_page']            = 'Отображать ключевые слова в верхней части страницы';
 $txt['lp_show_comment_block']           = 'Отображать блок комментариев';
+$txt['lp_disabled_bbc_in_comments']     = 'Разрешённые ББ-теги в комментариях';
 $txt['lp_show_comment_block_set']       = array('none' => 'Нет', 'default' => 'Встроенный');
 $txt['lp_num_comments_per_page']        = 'Количество родительских комментариев на странице';
 $txt['lp_page_editor_type_default']     = 'Тип редактора страниц по умолчанию';

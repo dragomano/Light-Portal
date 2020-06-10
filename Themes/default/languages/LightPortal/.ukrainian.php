@@ -61,6 +61,7 @@ $txt['lp_extra_info'] = 'Тут знаходяться загальні нала
 
 $txt['lp_show_tags_on_page']            = 'Відображати ключові слова у верхній частині сторінки';
 $txt['lp_show_comment_block']           = 'Відображати блок коментарів';
+$txt['lp_disabled_bbc_in_comments']     = 'Дозволені ББ-теги в коментарях';
 $txt['lp_show_comment_block_set']       = array('none' => 'Ні', 'default' => 'Вбудований');
 $txt['lp_num_comments_per_page']        = 'Кількість батьківських коментарів на сторінці';
 $txt['lp_page_editor_type_default']     = 'Тип редактора сторінок за замовчуванням';

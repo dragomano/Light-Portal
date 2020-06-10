@@ -61,6 +61,7 @@ $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks
 
 $txt['lp_show_tags_on_page']            = 'Display keywords at the top of the page';
 $txt['lp_show_comment_block']           = 'Display comments block';
+$txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
 $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => 'Integrated');
 $txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']     = 'The type of page editor by default';

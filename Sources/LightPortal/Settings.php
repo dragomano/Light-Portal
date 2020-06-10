@@ -284,9 +284,12 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
+		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
+
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
+			array('bbc', 'lp_disabled_bbc_in_comments'),
 			array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
@@ -302,9 +305,24 @@ class Settings
 		if (isset($_GET['save'])) {
 			checkSession();
 
+			// Clean up the tags
+			$bbcTags = [];
+			foreach (parse_bbc(false) as $tag)
+				$bbcTags[] = $tag['tag'];
+
+			if (!isset($_POST['lp_disabled_bbc_in_comments_enabledTags']))
+				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = [];
+			elseif (!is_array($_POST['lp_disabled_bbc_in_comments_enabledTags']))
+				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = array($_POST['lp_disabled_bbc_in_comments_enabledTags']);
+
+			$_POST['lp_enabled_bbc_in_comments']  = implode(',', $_POST['lp_disabled_bbc_in_comments_enabledTags']);
+			$_POST['lp_disabled_bbc_in_comments'] = implode(',', array_diff($bbcTags, $_POST['lp_disabled_bbc_in_comments_enabledTags']));
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			saveDBSettings($save_vars);
 
+			clean_cache();
 			redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 

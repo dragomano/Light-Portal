@@ -99,7 +99,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $txt;
+		global $smcFunc, $user_info, $context, $modSettings, $txt;
 
 		$args = array(
 			'parent_id'  => FILTER_VALIDATE_INT,
@@ -171,13 +171,15 @@ class Comment
 
 			ob_start();
 
+			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+
 			show_single_comment([
 				'id'          => $item,
 				'alias'       => $page_alias,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => $this->getUserAvatar(),
-				'message'     => $message,
+				'message'     => empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time)
 			], $counter + 1, $level + 1);
@@ -342,7 +344,7 @@ class Comment
 	 */
 	public static function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext, $context;
+		global $smcFunc, $memberContext, $modSettings, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
@@ -363,6 +365,8 @@ class Comment
 				loadMemberContext($row['author_id']);
 			}
 
+			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],
 				'page_id'     => $row['page_id'],
@@ -370,7 +374,7 @@ class Comment
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'avatar'      => $memberContext[$row['author_id']]['avatar']['image'],
-				'message'     => parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id),
+				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
 				'created_at'  => $row['created_at']
 			);
 		}
