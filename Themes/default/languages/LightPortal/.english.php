@@ -248,10 +248,17 @@ $txt['lp_wrong_import_file']          = 'Wrong file to import...';
 $txt['lp_import_failed']              = 'Failed to import...';
 
 // Who
-$txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
-$txt['lp_who_viewing_page']      = 'Viewing <a href="%1$s">the portal page</a>.';
-$txt['lp_who_viewing_tags']      = 'Viewing <a href="%1$s">the portal page tags</a>.';
-$txt['lp_who_viewing_the_tag']   = 'Viewing the page list with <a href="%1$s" class="bbc_link">%2$s</a> tag.';
+$txt['lp_who_viewing_frontpage']       = 'Viewing <a href="%1$s">the portal frontpage</a>.';
+$txt['lp_who_viewing_page']            = 'Viewing <a href="%1$s">the portal page</a>.';
+$txt['lp_who_viewing_tags']            = 'Viewing <a href="%1$s">the portal page tags</a>.';
+$txt['lp_who_viewing_the_tag']         = 'Viewing the page list with <a href="%1$s" class="bbc_link">%2$s</a> tag.';
+$txt['lp_who_viewing_portal_settings'] = 'Viewing or changing <a href="%1$s">the portal settings</a>.';
+$txt['lp_who_viewing_portal_blocks']   = 'Viewing <a href="%1$s">the portal blocks</a> in the admin area.';
+$txt['lp_who_viewing_editing_block']   = 'Editing the portal block (#%1$d).';
+$txt['lp_who_viewing_adding_block']    = 'Adding a block for the portal.';
+$txt['lp_who_viewing_portal_pages']    = 'Viewing <a href="%1$s">the portal pages</a> in the admin area.';
+$txt['lp_who_viewing_editing_page']    = 'Editing the portal page (#%1$d).';
+$txt['lp_who_viewing_adding_page']     = 'Adding a page for the portal.';
 
 // Permissions
 $txt['permissiongroup_light_portal']                 = LP_NAME;

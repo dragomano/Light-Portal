@@ -465,6 +465,33 @@ class Integration
 		if (!empty($actions['page']))
 			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?page=' . $actions['page']);
 
+		if (!empty($actions['action']) && $actions['action'] == 'lp_settings')
+			$result = sprintf($txt['lp_who_viewing_portal_settings'], $scripturl . '?action=admin;area=lp_settings');
+
+		if (!empty($actions['action']) && $actions['action'] == 'lp_blocks') {
+			if (!empty($actions['area']) && $actions['area'] == 'lp_blocks') {
+				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action==admin;area=lp_blocks');
+
+				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
+					$result = sprintf($txt['lp_who_viewing_editing_block'], $actions['id']);
+
+				if (!empty($actions['sa']) && $actions['sa'] == 'add')
+					$result = sprintf($txt['lp_who_viewing_adding_block']);
+			}
+		}
+
+		if (!empty($actions['action']) && $actions['action'] == 'lp_pages') {
+			if (!empty($actions['area']) && $actions['area'] == 'lp_pages') {
+				$result = sprintf($txt['lp_who_viewing_portal_pages'], $scripturl . '?action==admin;area=lp_pages');
+
+				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
+					$result = sprintf($txt['lp_who_viewing_editing_page'], $actions['id']);
+
+				if (!empty($actions['sa']) && $actions['sa'] == 'add')
+					$result = sprintf($txt['lp_who_viewing_adding_page']);
+			}
+		}
+
 		return $result;
 	}
 }
