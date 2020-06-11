@@ -162,6 +162,7 @@ function show_comment_block()
 					<input type="hidden" name="page_alias" value="', $context['lp_page']['alias'], '">
 					<input type="hidden" name="page_url" value="', $context['lp_current_page_url'], '">
 					<input type="hidden" name="start" value="', $context['page_info']['start'], '">
+					<input type="hidden" name="commentator" value="0">
 					<button type="submit" class="button" name="comment" disabled>', $txt['post'], '</button>
 				</form>';
 
@@ -204,7 +205,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	global $context, $txt;
 
 	echo '
-	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
+	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" data-commentator="', $comment['author_id'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
 		<div class="comment_avatar">
 			', $comment['avatar'];
 

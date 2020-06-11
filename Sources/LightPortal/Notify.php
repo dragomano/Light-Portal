@@ -25,19 +25,37 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir, $smcFunc, $context;
+		global $sourcedir, $user_profile, $smcFunc, $context;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
 
+		if ($this->_details['content_type'] == 'new_comment') {
+			$members = array_intersect($members, [$this->_details['author_id']]);
+		} else {
+			$members = array_intersect($members, [$this->_details['commentator_id']]);
+		}
+
+		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
+		if (!empty($this->_details['sender_id']))
+			$members = array_diff($members, array($this->_details['sender_id']));
+
 		require_once($sourcedir . '/Subs-Notify.php');
 		$prefs = getNotifyPrefs($members, $this->_details['content_type'] == 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
+
+		if (!empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
+			loadMemberData($this->_details['sender_id'], false, 'minimal');
+			if (!empty($user_profile[$this->_details['sender_id']]))
+				$this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
+			else
+				$this->_details['sender_id'] = 0;
+		}
 
 		$alert_bits = array(
 			'alert' => self::RECEIVE_NOTIFY_ALERT
 		);
-		$notifies = [];
 
+		$notifies = [];
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
 				if ($this->_details['content_type'] == 'new_comment') {
@@ -54,8 +72,8 @@ class Notify extends \SMF_BackgroundTask
 				$insert_rows[] = array(
 					'alert_time'        => $this->_details['time'],
 					'id_member'         => $member,
-					'id_member_started' => $this->_details['member_id'],
-					'member_name'       => $this->_details['member_name'],
+					'id_member_started' => $this->_details['sender_id'],
+					'member_name'       => $this->_details['sender_name'],
 					'content_type'      => $this->_details['content_type'],
 					'content_id'        => $this->_details['content_id'],
 					'content_action'    => $this->_details['content_action'],

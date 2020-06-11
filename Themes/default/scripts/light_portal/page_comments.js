@@ -3,11 +3,13 @@ jQuery(document).ready(function($) {
 		let parent_id = $(this).parents("li").attr("data-id"),
 			counter = $(this).parents("li").attr("data-counter"),
 			level = $(this).parents("li").attr("data-level"),
-			start = $(this).parents("li").attr("data-start");
+			start = $(this).parents("li").attr("data-start"),
+			commentator = $(this).parents("li").attr("data-commentator");
 		$("#comment_form").children("input[name=parent_id]").val(parent_id);
 		$("#comment_form").children("input[name=counter]").val(counter);
 		$("#comment_form").children("input[name=level]").val(level);
 		$("#comment_form").children("input[name=start]").val(start);
+		$("#comment_form").children("input[name=commentator]").val(commentator);
 		$("#message").focus();
 	});
 	$("#page_comments").on("click", "span.remove_button", function() {

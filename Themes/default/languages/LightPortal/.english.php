@@ -226,11 +226,12 @@ $txt['lp_frequency_column'] = 'Frequency';
 $txt['lp_comments']            = 'Comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
+// Comment alerts
 $txt['alert_group_light_portal']           = LP_NAME;
 $txt['alert_page_comment']                 = 'When my page gets a comment';
-$txt['alert_new_comment_page_comment']     = '{member_link} left a comment <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_comment_page_comment']     = '{member_link} left a comment {page_comment_new_comment}';
 $txt['alert_page_comment_reply']           = 'When my comment gets a reply';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your comment <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your comment {page_comment_reply_new_reply}';
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
@@ -249,6 +250,7 @@ $txt['lp_import_failed']              = 'Failed to import...';
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Viewing <a href="%1$s">the portal frontpage</a>.';
+$txt['lp_who_viewing_index']           = 'Viewing <a href="%1$s">the portal frontpage</a> or <a href="%2$s">the forum index</a>.';
 $txt['lp_who_viewing_page']            = 'Viewing <a href="%1$s">the portal page</a>.';
 $txt['lp_who_viewing_tags']            = 'Viewing <a href="%1$s">the portal page tags</a>.';
 $txt['lp_who_viewing_the_tag']         = 'Viewing the page list with <a href="%1$s" class="bbc_link">%2$s</a> tag.';

@@ -226,11 +226,12 @@ $txt['lp_frequency_column'] = 'Частотність';
 $txt['lp_comments']            = 'Коментарi';
 $txt['lp_comment_placeholder'] = 'Введіть текст коментаря...';
 
+// Comment alerts
 $txt['alert_group_light_portal']           = LP_NAME;
 $txt['alert_page_comment']                 = 'При розміщенні нового коментаря до моєї сторінки';
-$txt['alert_new_comment_page_comment']     = '{member_link} залишив(а) коментар <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_comment_page_comment']     = '{member_link} залишив(а) коментар {page_comment_new_comment}';
 $txt['alert_page_comment_reply']           = 'При отриманні відповіді на мій коментар';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} відповів (а) на ваш коментар <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} відповів (а) на ваш коментар {page_comment_reply_new_reply}';
 
 // Errors
 $txt['lp_page_not_found']             = 'Сторінку не знайдено!';
@@ -249,6 +250,7 @@ $txt['lp_import_failed']              = 'Не вдалося здійснити 
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';
+$txt['lp_who_viewing_index']           = 'Переглядає головну сторінку <a href="%1$s">порталу</a> або <a href="%2$s">форуму</a>.';
 $txt['lp_who_viewing_page']            = 'Переглядає <a href="%1$s">сторінку порталу</a>.';
 $txt['lp_who_viewing_tags']            = 'Переглядає <a href="%1$s">теги сторінок порталу</a>.';
 $txt['lp_who_viewing_the_tag']         = 'Переглядає список сторінок з тегом <a href="%1$s" class="bbc_link">%2$s</a>.';

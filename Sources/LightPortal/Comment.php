@@ -102,15 +102,16 @@ class Comment
 		global $smcFunc, $user_info, $context, $modSettings, $txt;
 
 		$args = array(
-			'parent_id'  => FILTER_VALIDATE_INT,
-			'counter'    => FILTER_VALIDATE_INT,
-			'level'      => FILTER_VALIDATE_INT,
-			'page_id'    => FILTER_VALIDATE_INT,
-			'page_title' => FILTER_SANITIZE_STRING,
-			'page_alias' => FILTER_SANITIZE_STRING,
-			'page_url'   => FILTER_SANITIZE_STRING,
-			'message'    => FILTER_SANITIZE_STRING,
-			'start'      => FILTER_VALIDATE_INT
+			'parent_id'   => FILTER_VALIDATE_INT,
+			'counter'     => FILTER_VALIDATE_INT,
+			'level'       => FILTER_VALIDATE_INT,
+			'page_id'     => FILTER_VALIDATE_INT,
+			'page_title'  => FILTER_SANITIZE_STRING,
+			'page_alias'  => FILTER_SANITIZE_STRING,
+			'page_url'    => FILTER_SANITIZE_STRING,
+			'message'     => FILTER_SANITIZE_STRING,
+			'start'       => FILTER_VALIDATE_INT,
+			'commentator' => FILTER_VALIDATE_INT
 		);
 
 		$data = filter_input_array(INPUT_POST, $args);
@@ -118,15 +119,16 @@ class Comment
 		if (empty($data))
 			return;
 
-		$parent     = $data['parent_id'];
-		$counter    = $data['counter'];
-		$level      = $data['level'];
-		$page_id    = $data['page_id'];
-		$page_title = $data['page_title'];
-		$page_alias = $data['page_alias'];
-		$page_url   = $data['page_url'];
-		$message    = $data['message'];
-		$start      = $data['start'];
+		$parent      = $data['parent_id'];
+		$counter     = $data['counter'];
+		$level       = $data['level'];
+		$page_id     = $data['page_id'];
+		$page_title  = $data['page_title'];
+		$page_alias  = $data['page_alias'];
+		$page_url    = $data['page_url'];
+		$message     = $data['message'];
+		$start       = $data['start'];
+		$commentator = $data['commentator'];
 
 		if (empty($page_id) || empty($message))
 			return;
@@ -187,14 +189,15 @@ class Comment
 			$comment = ob_get_clean();
 
 			$result = array(
-				'item'     => $item,
-				'parent'   => $parent,
-				'comment'  => $comment,
-				'created'  => $time,
-				'title'    => $txt['response_prefix'] . $page_title,
-				'alias'    => $page_alias,
-				'page_url' => $page_url,
-				'start'    => $start
+				'item'        => $item,
+				'parent'      => $parent,
+				'comment'     => $comment,
+				'created'     => $time,
+				'title'       => $txt['response_prefix'] . $page_title,
+				'alias'       => $page_alias,
+				'page_url'    => $page_url,
+				'start'       => $start,
+				'commentator' => $commentator
 			);
 
 			if (empty($parent))
@@ -261,10 +264,9 @@ class Comment
 		$smcFunc['db_insert']('',
 			'{db_prefix}background_tasks',
 			array(
-				'task_file'    => 'string',
-				'task_class'   => 'string',
-				'task_data'    => 'string',
-				'claimed_time' => 'int'
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
 			),
 			array(
 				'$sourcedir/LightPortal/Notify.php',
@@ -272,20 +274,19 @@ class Comment
 				$smcFunc['json_encode'](
 					array(
 						'time'           => $options['created'],
-						'member_id'	     => $user_info['id'],
-						'member_name'    => $user_info['name'],
+						'sender_id'	     => $user_info['id'],
+						'sender_name'    => $user_info['name'],
+						'author_id'      => $context['lp_page']['author_id'],
+						'commentator_id' => $options['commentator'],
 						'content_type'   => $type,
 						'content_id'     => $options['item'],
 						'content_action' => $action,
-						'extra'          => json_encode(
-							array(
-								'content_subject' => $options['title'],
-								'content_link'    => $options['page_url'] . "start=" . $options['start'] . '#comment' . $options['item']
-							)
-						)
+						'extra'          => $smcFunc['json_encode']([
+							'content_subject' => $options['title'],
+							'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
+						])
 					)
-				),
-				0
+				)
 			),
 			array('id_task')
 		);

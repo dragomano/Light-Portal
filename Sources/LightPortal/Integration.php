@@ -396,11 +396,12 @@ class Integration
 	 * Добавляем оповещение о новых комментариях
 	 *
 	 * @param array $alerts
+	 * @param array $formats
 	 * @return void
 	 */
-	public static function fetchAlerts(array &$alerts)
+	public static function fetchAlerts(array &$alerts, array &$formats)
 	{
-		global $user_info, $memberContext, $txt, $scripturl;
+		global $user_info, $txt;
 
 		if (empty($alerts))
 			return;
@@ -408,27 +409,18 @@ class Integration
 		foreach ($alerts as $id => $alert) {
 			if ($alert['content_action'] == 'page_comment' || $alert['content_action'] == 'page_comment_reply') {
 				if ($alert['sender_id'] != $user_info['id']) {
-					if (!empty($memberContext[$alert['sender_id']]))
-						$alerts[$id]['sender'] = &$memberContext[$alert['sender_id']];
+					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] == 'page_comment' ? 'im_off' : 'im_on') . '"></span>';
 
-					$string = 'alert_' . $alert['content_type'] . '_' . $alert['content_action'];
-
-					if (isset($txt[$string])) {
-						$extra   = $alerts[$id]['extra'];
-						$search  = array('{member_link}', '{comment_link}', '{comment_title}');
-						$replace = array(
-							!empty($alert['sender_id']) ? ('<a href="' . $scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>') : $alert['sender_name'],
-							$alert['extra']['content_link'],
-							$alert['extra']['content_subject']
-						);
-
-						foreach ($extra as $k => $v) {
-							$search[]  = '{' . $k . '}';
-							$replace[] = $v;
-						}
-
-						$alerts[$id]['text'] = str_replace($search, $replace, $txt[$string]);
-					}
+					$formats['page_comment_new_comment'] = array(
+						'required' => array('content_subject', 'content_link'),
+						'link'     => '<a href="%2$s">%1$s</a>',
+						'text'     => '<strong>%1$s</strong>'
+					);
+					$formats['page_comment_reply_new_reply'] = array(
+						'required' => array('content_subject', 'content_link'),
+						'link'     => '<a href="%2$s">%1s</a>',
+						'text'     => '<strong>%1$s</strong>'
+					);
 				} else {
 					unset($alerts[$id]);
 				}
@@ -446,11 +438,15 @@ class Integration
 	 */
 	public static function whosOnline(array $actions)
 	{
-		global $txt, $scripturl, $context;
+		global $txt, $scripturl, $modSettings, $context;
 
 		$result = '';
-		if (empty($actions['action']))
+		if (empty($actions['action'])) {
 			$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
+
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))
+				$result = sprintf($txt['lp_who_viewing_index'], $modSettings['lp_standalone_url'], $scripturl);
+		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'portal') {
 			if ($context['current_subaction'] == 'tags') {
@@ -476,7 +472,7 @@ class Integration
 					$result = sprintf($txt['lp_who_viewing_editing_block'], $actions['id']);
 
 				if (!empty($actions['sa']) && $actions['sa'] == 'add')
-					$result = sprintf($txt['lp_who_viewing_adding_block']);
+					$result = $txt['lp_who_viewing_adding_block'];
 			}
 		}
 
@@ -488,7 +484,7 @@ class Integration
 					$result = sprintf($txt['lp_who_viewing_editing_page'], $actions['id']);
 
 				if (!empty($actions['sa']) && $actions['sa'] == 'add')
-					$result = sprintf($txt['lp_who_viewing_adding_page']);
+					$result = $txt['lp_who_viewing_adding_page'];
 			}
 		}
 
