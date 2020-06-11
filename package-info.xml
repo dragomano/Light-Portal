@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>1.0 rc5</version>
+	<version>1.0 rc6</version>
 	<type>modification</type>
 
 	<install for="2.1.*">
