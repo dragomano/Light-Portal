@@ -58,6 +58,42 @@ class RecentPosts
 	private static $type = 'link';
 
 	/**
+	 * If set, does NOT show posts from the specified boards
+	 *
+	 * Идентификаторы разделов, сообщения из которых НЕ нужно показывать
+	 *
+	 * @var string
+	 */
+	private static $exclude_boards = '';
+
+	/**
+	 * If set, ONLY includes posts from the specified boards
+	 *
+	 * Идентификаторы разделов, для отображения сообщений ТОЛЬКО из них
+	 *
+	 * @var string
+	 */
+	private static $include_boards = '';
+
+	/**
+	 * If set, does NOT show posts from the specified topics
+	 *
+	 * Идентификаторы тем, сообщения из которых НЕ нужно показывать
+	 *
+	 * @var string
+	 */
+	private static $exclude_topics = '';
+
+	/**
+	 * If set, ONLY includes posts from the specified topics
+	 *
+	 * Идентификаторы тем, для отображения сообщений ТОЛЬКО из них
+	 *
+	 * @var string
+	 */
+	private static $include_topics = '';
+
+	/**
 	 * Display user avatars (true|false)
 	 *
 	 * Отображать аватарки (true|false)
@@ -90,6 +126,10 @@ class RecentPosts
 			'parameters' => array(
 				'num_posts'       => static::$num_posts,
 				'link_type'       => static::$type,
+				'exclude_boards'  => static::$exclude_boards,
+				'include_boards'  => static::$include_boards,
+				'exclude_topics'  => static::$exclude_topics,
+				'include_topics'  => static::$include_topics,
 				'show_avatars'    => static::$show_avatars,
 				'update_interval' => static::$update_interval
 			)
@@ -114,6 +154,10 @@ class RecentPosts
 		$args['parameters'] = array(
 			'num_posts'       => FILTER_VALIDATE_INT,
 			'link_type'       => FILTER_SANITIZE_STRING,
+			'exclude_boards'  => FILTER_SANITIZE_STRING,
+			'include_boards'  => FILTER_SANITIZE_STRING,
+			'exclude_topics'  => FILTER_SANITIZE_STRING,
+			'include_topics'  => FILTER_SANITIZE_STRING,
 			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
 			'update_interval' => FILTER_VALIDATE_INT
 		);
@@ -166,6 +210,50 @@ class RecentPosts
 			}
 		}
 
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_posts_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_exclude_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_posts_addon_include_boards'];
+		$context['posting_fields']['include_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_include_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['exclude_topics']['label']['text'] = $txt['lp_recent_posts_addon_exclude_topics'];
+		$context['posting_fields']['exclude_topics']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_exclude_topics_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['include_topics']['label']['text'] = $txt['lp_recent_posts_addon_include_topics'];
+		$context['posting_fields']['include_topics']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_include_topics_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['include_topics'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
 		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_posts_addon_show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
@@ -198,10 +286,35 @@ class RecentPosts
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
-		$posts = ssi_recentPosts($parameters['num_posts'], null, null, 'array');
+		if (!empty($parameters['exclude_boards']))
+			$exclude_boards = explode(',', $parameters['exclude_boards']);
 
-		if (!empty($posts) && !empty($parameters['show_avatars'])) {
+		if (!empty($parameters['include_boards']))
+			$include_boards = explode(',', $parameters['include_boards']);
+
+		require_once($boarddir . '/SSI.php');
+		$posts = ssi_recentPosts($parameters['num_posts'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+
+		if (empty($posts))
+			return [];
+
+		if (!empty($parameters['exclude_topics'])) {
+			$exclude_topics = array_flip(explode(',', $parameters['exclude_topics']));
+
+			$posts = array_filter($posts, function ($item) use ($exclude_topics) {
+				return !array_key_exists($item['topic'], $exclude_topics);
+			});
+		}
+
+		if (!empty($parameters['include_topics'])) {
+			$include_topics = array_flip(explode(',', $parameters['include_topics']));
+
+			$posts = array_filter($posts, function ($item) use ($include_topics) {
+				return array_key_exists($item['topic'], $include_topics);
+			});
+		}
+
+		if (!empty($parameters['show_avatars'])) {
 			$posters = array_map(function ($item) {
 				return $item['poster']['id'];
 			}, $posts);
