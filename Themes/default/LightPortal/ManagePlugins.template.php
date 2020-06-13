@@ -81,7 +81,7 @@ function show_plugin_settings($plugin_name, $settings)
 	foreach ($settings as $id => $value) {
 		echo '
 				<div>
-					<label for="', $value[1], '">', $txt[$value[1]], '</label>';
+					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $txt[$value[1]], '</strong></label>';
 
 		if ($value[0] == 'text') {
 			echo '
@@ -92,6 +92,24 @@ function show_plugin_settings($plugin_name, $settings)
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1">';
+		} elseif ($value[0] == 'multicheck') {
+			echo '
+					<fieldset>
+						<ul>';
+
+			$temp[$value[1] . '_options'] = !empty($modSettings[$value[1]]) ? json_decode($modSettings[$value[1]], true) : [];
+			foreach ($context[$value[1] . '_options'] as $key => $option_label) {
+				echo '
+							<li>
+								<label for="', $value[1], '[', $key, ']">
+									<input type="checkbox" name="', $value[1], '[', $key, ']" id="', $value[1], '[', $key, ']" value="1"', !empty($temp[$value[1] . '_options'][$key]) ? ' checked' : '', '> ', $option_label, '
+								</label>
+							</li>';
+			}
+
+			echo '
+						</ul>
+					</fieldset>';
 		} else {
 			$multiple = false;
 

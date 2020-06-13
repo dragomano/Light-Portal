@@ -288,8 +288,13 @@ class Settings
 
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
-			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-			array('bbc', 'lp_disabled_bbc_in_comments'),
+			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set'])
+		);
+
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
+			$config_vars[] = array('bbc', 'lp_disabled_bbc_in_comments');
+
+		$config_vars = array_merge($config_vars, array(
 			array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
@@ -297,7 +302,7 @@ class Settings
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
 			array('text', 'lp_page_itemprop_phone', 80)
-		);
+		));
 
 		if ($return_config)
 			return $config_vars;
@@ -463,8 +468,20 @@ class Settings
 
 			$plugin_options = [];
 			foreach ($config_vars as $id => $var) {
-				if (isset($_POST[$var[1]]))
-					$plugin_options[$var[1]] = $var[0] == 'check' || $var[0] == 'int' ? (int) $_POST[$var[1]] : $_POST[$var[1]];
+				if (isset($_POST[$var[1]])) {
+					if ($var[0] == 'check' || $var[0] == 'int') {
+						$plugin_options[$var[1]] = (int) $_POST[$var[1]];
+					} elseif ($var[0] == 'multicheck') {
+						$multi_check_vars = [];
+						foreach ($_POST[$var[1]] as $key => $value) {
+							$key = (int) $key;
+							$multi_check_vars[$key] = (int) $value;
+						}
+						$plugin_options[$var[1]] = json_encode($multi_check_vars);
+					} else {
+						$plugin_options[$var[1]] = $_POST[$var[1]];
+					}
+				}
 			}
 
 			if (!empty($plugin_options))
@@ -627,8 +644,8 @@ class Settings
 	{
 		global $context, $txt;
 
-		// Check every 3 days | Проверяем раз в 3 дня
-		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
+		// Check once a week | Проверяем раз в неделю
+		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 604800)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
