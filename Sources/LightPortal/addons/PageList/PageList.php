@@ -158,6 +158,7 @@ class PageList
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -166,6 +167,7 @@ class PageList
 			array(
 				'guest'        => $txt['guest_title'],
 				'type'         => 'page',
+				'lang'         => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -215,25 +217,25 @@ class PageList
 		$html = '';
 		if (!empty($pages)) {
 			$html .= '
-			<ul class="normallist page_list">';
+		<ul class="normallist page_list">';
 
 			foreach ($pages as $page) {
 				if (empty($title = Helpers::getPublicTitle($page)))
 					continue;
 
 				$html .= '
-				<li>
-					<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a> ' . $txt['by'] . ' ' . (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>') . ', ' . Helpers::getFriendlyTime($page['created_at']) . ' (' . Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+			<li>
+				<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a> ' . $txt['by'] . ' ' . (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>') . ', ' . Helpers::getFriendlyTime($page['created_at']) . ' (' . Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					$html .= ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
 
 				$html .= ')
-				</li>';
+			</li>';
 			}
 
 			$html .= '
-			</ul>';
+		</ul>';
 		} else
 			$html .= $txt['lp_page_list_addon_no_items'];
 

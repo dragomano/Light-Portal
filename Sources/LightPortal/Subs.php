@@ -29,7 +29,7 @@ class Subs
 	public static function loadCssFiles()
 	{
 		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
-		loadCssFile('light_portal/flexboxgrid.min.css');
+		loadCssFile('light_portal/flexboxgrid.css');
 		loadCssFile('light_portal/light_portal.css');
 	}
 
@@ -52,7 +52,7 @@ class Subs
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
 
-		// Ширина некоторых панелей
+		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
 		$context['lp_left_panel_width']   = !empty($modSettings['lp_left_panel_width']) ? json_decode($modSettings['lp_left_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
 		$context['lp_right_panel_width']  = !empty($modSettings['lp_right_panel_width']) ? json_decode($modSettings['lp_right_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];

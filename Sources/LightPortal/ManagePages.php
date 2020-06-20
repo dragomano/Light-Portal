@@ -219,7 +219,7 @@ class ManagePages
 					'position' => 'after_title',
 					'value' => '
 						<i class="fas fa-search centericon"></i>
-						<input type="text" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_page_alias'] . '">
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_page_alias'] . '">
 						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button" style="float:none">',
 					'class' => 'floatright'
 				),

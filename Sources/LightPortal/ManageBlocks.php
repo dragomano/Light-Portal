@@ -764,7 +764,7 @@ class ManageBlocks
 		censorText($context['preview_content']);
 
 		if (empty($context['preview_content']))
-			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id'], 0);
 		else
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
 
@@ -989,6 +989,10 @@ class ManageBlocks
 
 				$context['lp_num_queries']++;
 			}
+
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item, null);
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_u' . $context['user']['id'], null);
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id'], null);
 		}
 
 		if (!empty($_POST['clone']))

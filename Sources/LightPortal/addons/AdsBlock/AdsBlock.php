@@ -279,7 +279,7 @@ class AdsBlock
 		if (empty($position))
 			return [];
 
-		$blocks = array_filter($context['lp_blocks']['ads'], function($block) use ($position, $context) {
+		$blocks = array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
 				if (!array_key_exists($context['current_board'], $boards))

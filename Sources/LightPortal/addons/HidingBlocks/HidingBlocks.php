@@ -122,7 +122,10 @@ class HidingBlocks
 	{
 		global $context, $txt;
 
-		$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
+		if (isset($context['lp_block']['options']['parameters']['hidden_breakpoints'])) {
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
+		} else
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = $_POST['hidden_breakpoints'] ?? [];
 
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
