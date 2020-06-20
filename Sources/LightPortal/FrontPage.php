@@ -261,7 +261,7 @@ class FrontPage
 						'poster_name' => $row['poster_name'],
 						'time'        => $row['poster_time'],
 						'subject'     => $row['subject'],
-						'preview'     => self::getTeaser($row['body']),
+						'preview'     => Helpers::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
@@ -424,7 +424,7 @@ class FrontPage
 						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
 						'author_name'  => $row['author_name'],
 						'alias'        => $row['alias'],
-						'description'  => self::getTeaser($row['description'] ?: strip_tags($row['content'])),
+						'description'  => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
 						'type'         => $row['type'],
 						'num_views'    => $row['num_views'],
 						'num_comments' => $row['num_comments'],
@@ -553,7 +553,7 @@ class FrontPage
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => $board_name,
-					'description' => self::getTeaser($description),
+					'description' => Helpers::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
@@ -639,20 +639,5 @@ class FrontPage
 		);
 
 		return getBoardList($boardListOptions);
-	}
-
-	/**
-	 * Get the article teaser
-	 *
-	 * Получаем тизер статьи
-	 *
-	 * @param string $text
-	 * @return string
-	 */
-	public static function getTeaser($text)
-	{
-		global $modSettings;
-
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 }

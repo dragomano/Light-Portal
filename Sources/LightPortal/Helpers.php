@@ -490,4 +490,19 @@ class Helpers
 
 		return implode($glue, $new_str);
 	}
+
+	/**
+	 * Get the article teaser
+	 *
+	 * Получаем тизер статьи
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	public static function getTeaser($text)
+	{
+		global $modSettings;
+
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+	}
 }
