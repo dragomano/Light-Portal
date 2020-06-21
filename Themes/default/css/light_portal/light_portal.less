@@ -704,3 +704,19 @@ dl {
 		height: auto !important;
 	}
 }
+
+/* ArticleList */
+.article_list {
+	a {
+		display: inline-block;
+		width: 99%;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+
+		&:hover {
+			overflow: visible;
+			white-space: normal;
+		}
+	}
+}
