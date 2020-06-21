@@ -720,3 +720,37 @@ dl {
 		}
 	}
 }
+
+/* Slick Slider */
+.slick-slider {
+	min-width: 0;
+	margin: 0 20px;
+	position: relative;
+
+	.slick-arrow {
+		box-shadow: none;
+		position: absolute;
+		top: 50%;
+		z-index: 10;
+		font-size: 0;
+		width: 30px;
+		height: 60px;
+	}
+
+	.slick-prev,
+	.slick-next {
+		&::before {
+			color: #000 !important;
+		}
+	}
+	.slick-disabled{
+		opacity: 0.2;
+	}
+}
+.slider__item {
+	padding: 0px 15px;
+
+	img {
+		max-width: 100%;
+	}
+}
