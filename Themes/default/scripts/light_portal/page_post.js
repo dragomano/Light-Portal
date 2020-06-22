@@ -15,6 +15,11 @@ jQuery(document).ready(function($) {
 			$("#type").prop("disabled", true);
 		} else {
 			$("#type").prop("disabled", false);
+			let alias_field = $("#alias").val();
+			if (alias_field == "" && typeof (slugify) === "function") {
+				let first_title = $("#content-tab1 input:first").val();
+				$("#alias").val(slugify(first_title, {separator: '_', allowedChars: "a-zA-Z0-9_"}));
+			}
 		}
 	});
 	$("#type").on("change", function() {

@@ -77,5 +77,6 @@ function template_page_post()
 			</div>
 		</div>
 	</form>
+	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_post.js"></script>';
 }

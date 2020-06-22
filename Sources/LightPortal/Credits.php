@@ -106,6 +106,14 @@ class Credits
 				'link' => 'https://github.com/liabru/jquery-match-height/blob/master/LICENSE'
 			)
 		);
+		$links[] = array(
+			'title' => 'Transliteration',
+			'link' => 'https://github.com/dzcpy/transliteration',
+			'license' => array(
+				'name' => 'the MIT License (MIT)',
+				'link' => 'https://github.com/dzcpy/transliteration/blob/master/LICENSE.txt'
+			)
+		);
 
 		// Adding copyrights of used plugins
 		// Возможность добавить копирайты используемых плагинов
