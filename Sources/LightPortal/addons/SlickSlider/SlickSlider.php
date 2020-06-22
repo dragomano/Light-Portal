@@ -259,8 +259,9 @@ class SlickSlider
 			'type' => 'textarea',
 			'after' => $txt['lp_slick_slider_addon_images_subtext'],
 			'attributes' => array(
-				'id'    => 'images',
-				'value' => $context['lp_block']['options']['parameters']['images']
+				'id'       => 'images',
+				'value'    => $context['lp_block']['options']['parameters']['images'],
+				'required' => true
 			)
 		);
 	}

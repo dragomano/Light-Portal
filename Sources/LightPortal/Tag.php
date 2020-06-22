@@ -224,7 +224,7 @@ class Tag
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return count($items);
+		return sizeof($items);
 	}
 
 	/**
@@ -391,6 +391,6 @@ class Tag
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return count($items);
+		return sizeof($items);
 	}
 }

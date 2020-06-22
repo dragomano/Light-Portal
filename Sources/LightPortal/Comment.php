@@ -69,12 +69,12 @@ class Comment
 			$comments
 		);
 
-		$total_comments     = count($comments);
+		$total_comments     = sizeof($comments);
 		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
 
 		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$comment_tree   = $this->getTree($comments);
-		$total_comments = count($comment_tree);
+		$total_comments = sizeof($comment_tree);
 
 		$temp_start            = (int) $_REQUEST['start'];
 		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
