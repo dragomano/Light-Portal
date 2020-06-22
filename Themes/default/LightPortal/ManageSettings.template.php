@@ -283,3 +283,271 @@ function template_callback_panel_direction()
 		</table>
 	</dd>';
 }
+
+/**
+ * Alternative to the standard template_post_header function (Post.template.php)
+ *
+ * Альтернатива стандартной функции template_post_header (Post.template.php)
+ *
+ * @param string $tab
+ * @return void
+ */
+function template_post_tab($tab = 'content')
+{
+	global $context, $txt;
+
+	// Start printing the header
+	echo '
+					<dl>';
+
+	foreach ($context['posting_fields'] as $pfid => $pf)
+	{
+		if (empty($pf['input']['tab']))
+			$pf['input']['tab'] = 'tuning';
+
+		if ($pf['input']['tab'] != $tab)
+			continue;
+
+		// We need both a label and an input
+		if (empty($pf['label']) || empty($pf['input']))
+			continue;
+
+		// The labels are pretty simple...
+		echo '
+						<dt class="clear pf_', $pfid, '">';
+
+		// Any leading HTML before the label
+		if (!empty($pf['label']['before']))
+			echo '
+							', $pf['label']['before'];
+
+		if (!empty($pf['label']['html']))
+			echo $pf['label']['html'];
+		else
+			echo '
+							<label', ($pf['input']['type'] === 'radio_select' ? '' : ' for="' . (!empty($pf['input']['attributes']['id']) ? $pf['input']['attributes']['id'] : $pfid) . '"'), ' id="caption_', $pfid, '"', !empty($pf['label']['class']) ? ' class="' . $pf['label']['class'] . '"' : '', '>', $pf['label']['text'], '</label>';
+
+		// Any trailing HTML after the label
+		if (!empty($pf['label']['after']))
+			echo '
+							', $pf['label']['after'];
+
+		echo '
+						</dt>';
+
+		// Here's where the fun begins...
+		echo '
+						<dd class="pf_', $pfid, '">';
+
+		// Any leading HTML before the main input
+		if (!empty($pf['input']['before']))
+			echo '
+							', $pf['input']['before'];
+
+		// If there is a literal HTML string already defined, just print it.
+		if (!empty($pf['input']['html']))
+		{
+			echo $pf['input']['html'];
+		}
+		// Simple text inputs and checkboxes
+		elseif (in_array($pf['input']['type'], array('text', 'password', 'color', 'date', 'datetime-local', 'email', 'month', 'number', 'range', 'tel', 'time', 'url', 'week', 'checkbox')))
+		{
+			echo '
+							<input type="', $pf['input']['type'], '"';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes']))
+			{
+				foreach ($pf['input']['attributes'] as $attribute => $value)
+				{
+					if (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">';
+		}
+		// textarea
+		elseif ($pf['input']['type'] === 'textarea')
+		{
+			echo '
+							<textarea';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes']))
+			{
+				foreach ($pf['input']['attributes'] as $attribute => $value)
+				{
+					if ($attribute === 'value')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">', !empty($pf['input']['attributes']['value']) ? $pf['input']['attributes']['value'] : '', '</textarea>';
+		}
+		// Select menus are more complicated
+		elseif ($pf['input']['type'] === 'select' && is_array($pf['input']['options']))
+		{
+			// The select element itself
+			echo '
+							<select';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes']))
+			{
+				foreach ($pf['input']['attributes'] as $attribute => $value)
+				{
+					if (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">';
+
+			// The options
+			foreach ($pf['input']['options'] as $optlabel => $option)
+			{
+				// An option containing options is an optgroup
+				if (!empty($option['options']) && is_array($option['options']))
+				{
+					echo '
+								<optgroup';
+
+					if (empty($option['label']))
+						echo ' label="', $optlabel, '"';
+
+					if (!empty($option) && is_array($option))
+					{
+						foreach ($option as $attribute => $value)
+						{
+							if ($attribute === 'options')
+								continue;
+							elseif (is_bool($value))
+								echo $value ? ' ' . $attribute : '';
+							else
+								echo ' ', $attribute, '="', $value, '"';
+						}
+					}
+
+					echo '>';
+
+					foreach ($option['options'] as $grouped_optlabel => $grouped_option)
+					{
+						echo '
+									<option';
+
+						foreach ($grouped_option as $attribute => $value)
+						{
+							if (is_bool($value))
+								echo $value ? ' ' . $attribute : '';
+							else
+								echo ' ', $attribute, '="', $value, '"';
+						}
+
+						echo '>', $grouped_option['label'], '</option>';
+
+					}
+
+					echo '
+								</optgroup>';
+				}
+				// Simple option
+				else
+				{
+					echo '
+								<option';
+
+					foreach ($option as $attribute => $value)
+					{
+						if (is_bool($value))
+							echo $value ? ' ' . $attribute : '';
+						else
+							echo ' ', $attribute, '="', $value, '"';
+					}
+
+					echo '>', $optlabel, '</option>';
+				}
+			}
+
+			// Close the select element
+			echo '
+							</select>';
+		}
+		// Radio_select makes a div with some radio buttons in it
+		elseif ($pf['input']['type'] === 'radio_select' && is_array($pf['input']['options']))
+		{
+			echo '
+							<div';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes']))
+			{
+				foreach ($pf['input']['attributes'] as $attribute => $value)
+				{
+					if ($attribute === 'name')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo '>';
+
+			foreach ($pf['input']['options'] as $optlabel => $option)
+			{
+				echo '
+							<label style="margin-right:2ch"><input type="radio" name="', !empty($pf['input']['attributes']['name']) ? $pf['input']['attributes']['name'] : $pfid, '"';
+
+				foreach ($option as $attribute => $value)
+				{
+					if ($attribute === 'label')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . ($attribute === 'selected' ? 'checked' : $attribute) : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+
+				echo ' tabindex="', $context['tabindex']++, '"> ', isset($option['label']) ? $option['label'] : $optlabel, '</label>';
+			}
+
+			echo '
+							</div>';
+		}
+
+		// Any trailing HTML after the main input
+		if (!empty($pf['input']['after']))
+			echo '
+							', $pf['input']['after'];
+
+		echo '
+						</dd>';
+	}
+
+	echo '
+					</dl>';
+}

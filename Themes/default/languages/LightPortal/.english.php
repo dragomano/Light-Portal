@@ -73,6 +73,8 @@ $txt['lp_page_og_image_set']     = array('None', 'First found', 'Last found');
 $txt['lp_page_itemprop_address'] = 'Address of your organization';
 $txt['lp_page_itemprop_phone']   = 'Phone of your organization';
 
+$txt['lp_permissions'] = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
+
 // Panels
 $txt['lp_panels']               = 'Panels';
 $txt['lp_panels_info']          = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
@@ -120,7 +122,6 @@ $txt['lp_blocks_add_tab_description']    = 'There are not many blocks yet, but t
 $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_publish_datetime']        = 'Date and time of publication';
 $txt['lp_block_content']                 = 'Content';
 $txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';
@@ -194,12 +195,19 @@ $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
 $txt['lp_page_keywords_after']          = 'Use a comma to separate';
-$txt['lp_permissions']                  = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
+$txt['lp_page_publish_datetime']        = 'Date and time of publication';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
 	'allow_comments'       => 'Allow comments'
 );
+
+// Tabs
+$txt['lp_tab_content']          = 'Content';
+$txt['lp_tab_seo']              = 'SEO';
+$txt['lp_tab_access_placement'] = 'Access and placement';
+$txt['lp_tab_appearance']       = 'Appearance';
+$txt['lp_tab_tuning']           = 'Tuning';
 
 // Import and Export
 $txt['lp_pages_export']                  = 'Page export';
@@ -243,6 +251,7 @@ $txt['lp_post_error_no_valid_alias']  = 'The specified alias is not correct!';
 $txt['lp_post_error_no_unique_alias'] = 'A page with this alias already exists!';
 $txt['lp_post_error_no_content']      = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
+$txt['lp_post_error_no_valid_areas']  = 'The <strong>areas</strong> field was set incorrectly!';
 $txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
 $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
 $txt['lp_wrong_import_file']          = 'Wrong file to import...';

@@ -20,9 +20,9 @@ if (!defined('SMF'))
 class ManagePages
 {
 	/**
-	 * The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore
+	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
 	 *
-	 * Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания
+	 * Имя страницы должно начинаться с латинской буквы и может состоять из строчных латинских букв, цифр и знака подчеркивания
 	 *
 	 * @var string
 	 */
@@ -100,6 +100,20 @@ class ManagePages
 				)
 			),
 			'columns' => array(
+				'id' => array(
+					'header' => array(
+						'value' => '#',
+						'style' => 'width: 5%'
+					),
+					'data' => array(
+						'db'    => 'id',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.page_id',
+						'reverse' => 'p.page_id DESC'
+					)
+				),
 				'date' => array(
 					'header' => array(
 						'value' => $txt['date']
@@ -164,7 +178,8 @@ class ManagePages
 						{
 							$title = Helpers::getPublicTitle($entry);
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
-						}
+						},
+						'class' => 'word_break'
 					)
 				),
 				'actions' => array(
@@ -728,7 +743,8 @@ class ManagePages
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], array('english', $language)),
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -743,7 +759,8 @@ class ManagePages
 				'required'  => true,
 				'pattern'   => static::$alias_pattern,
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
@@ -753,7 +770,8 @@ class ManagePages
 				'id'       => 'type',
 				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias'])
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		foreach ($txt['lp_page_types'] as $type => $title) {
@@ -777,7 +795,8 @@ class ManagePages
 				'id'        => 'description',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['description']
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
@@ -788,7 +807,8 @@ class ManagePages
 				'id'        => 'keywords',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['keywords']
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
@@ -815,7 +835,7 @@ class ManagePages
 		}
 
 		if ($context['lp_page']['created_at'] >= time()) {
-			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_block_publish_datetime'] . '</label>';
+			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
 			$context['posting_fields']['datetime']['input']['html'] = '
 			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $context['lp_page']['date'] . '">
 			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
@@ -830,7 +850,8 @@ class ManagePages
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_page']['content'],
 					'required'  => true
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -861,7 +882,7 @@ class ManagePages
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
-		loadTemplate('Post');
+		loadTemplate('LightPortal/ManageSettings');
 	}
 
 	/**
@@ -1306,7 +1327,8 @@ class ManagePages
 							$title = Helpers::getPublicTitle($entry);
 
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
-						}
+						},
+						'class' => 'word_break'
 					)
 				),
 				'actions' => array(
@@ -1607,7 +1629,7 @@ class ManagePages
 
 		if (!empty($items)) {
 			$items = array_chunk($items, 100);
-			$count = count($items);
+			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
@@ -1622,7 +1644,7 @@ class ManagePages
 
 		if (!empty($titles) && !empty($result)) {
 			$titles = array_chunk($titles, 100);
-			$count = count($titles);
+			$count = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
@@ -1637,7 +1659,7 @@ class ManagePages
 
 		if (!empty($params) && !empty($result)) {
 			$params = array_chunk($params, 100);
-			$count = count($params);
+			$count = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
@@ -1652,7 +1674,7 @@ class ManagePages
 
 		if (!empty($keywords) && !empty($result)) {
 			$keywords = array_chunk($keywords, 100);
-			$count = count($keywords);
+			$count = sizeof($keywords);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
@@ -1667,7 +1689,7 @@ class ManagePages
 
 		if (!empty($comments) && !empty($result)) {
 			$comments = array_chunk($comments, 100);
-			$count = count($comments);
+			$count = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)

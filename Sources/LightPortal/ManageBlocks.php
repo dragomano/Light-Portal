@@ -20,6 +20,15 @@ if (!defined('SMF'))
 class ManageBlocks
 {
 	/**
+	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
+	 *
+	 * Области для вывода блока должны начинаться с латинской буквы и могут состоять из строчных латинских букв, цифр и некоторых знаков
+	 *
+	 * @var string
+	 */
+	private static $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+
+	/**
 	 * Manage blocks
 	 *
 	 * Управление блоками
@@ -501,6 +510,12 @@ class ManageBlocks
 		if (empty($data['areas']))
 			$post_errors[] = 'no_areas';
 
+		$areas_format = array(
+			'options' => array("regexp" => '/' . static::$areas_pattern . '/')
+		);
+		if (!empty($data['areas']) && empty(filter_var($data['areas'], FILTER_VALIDATE_REGEXP, $areas_format)))
+			$post_errors[] = 'no_valid_areas';
+
 		if (!empty($post_errors)) {
 			$_POST['preview'] = true;
 			$context['post_errors'] = [];
@@ -533,7 +548,8 @@ class ManageBlocks
 					'maxlength' => 255,
 					'value'     => $context['lp_block']['title'][$lang['filename']] ?? '',
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -546,7 +562,8 @@ class ManageBlocks
 				'id'        => 'icon',
 				'maxlength' => 30,
 				'value'     => $context['lp_block']['icon']
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
@@ -555,7 +572,8 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'icon_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
@@ -578,7 +596,8 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'placement'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
@@ -601,7 +620,8 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'permissions'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
@@ -626,8 +646,10 @@ class ManageBlocks
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
 				'required'  => true,
+				'pattern'   => static::$areas_pattern,
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 
 		$context['posting_fields']['title_class']['label']['text'] = $txt['lp_block_title_class'];
@@ -636,7 +658,8 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'title_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
@@ -655,12 +678,13 @@ class ManageBlocks
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
 		$context['posting_fields']['title_style']['input'] = array(
-			'type' => 'text',
+			'type' => 'textarea',
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['title_style'],
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		if (empty($context['lp_block']['options']['no_content_class'])) {
@@ -670,7 +694,8 @@ class ManageBlocks
 				'attributes' => array(
 					'id' => 'content_class'
 				),
-				'options' => array()
+				'options' => array(),
+				'tab' => 'appearance'
 			);
 
 			foreach ($context['lp_all_content_classes'] as $key => $data) {
@@ -692,12 +717,13 @@ class ManageBlocks
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
 			$context['posting_fields']['content_style']['input'] = array(
-				'type' => 'text',
+				'type' => 'textarea',
 				'attributes' => array(
 					'maxlength' => 255,
 					'value'     => $context['lp_block']['content_style'],
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'appearance'
 			);
 		}
 
@@ -709,7 +735,8 @@ class ManageBlocks
 					'id'        => 'content',
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_block']['content']
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -720,7 +747,7 @@ class ManageBlocks
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
-		loadTemplate('Post');
+		loadTemplate('LightPortal/ManageSettings');
 	}
 
 	/**
