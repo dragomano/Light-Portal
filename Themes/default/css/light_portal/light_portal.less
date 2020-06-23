@@ -163,6 +163,11 @@
 .comments {
 	margin-top: 1em;
 
+	.avatar {
+		max-width: 65px;
+		max-height: 65px;
+	}
+
 	.cat_bar {
 		.border-radius;
 	}
@@ -223,6 +228,112 @@ section {
 			-webkit-background-clip: text;
 			background-clip: text;
 			background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
+		}
+	}
+}
+
+.lp_frontpage_articles {
+	margin-top: -10px;
+
+	.card {
+		transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
+		position: relative;
+		border-radius: 12px;
+		overflow: hidden;
+		padding: 0;
+
+		&:hover {
+			box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
+
+			.new_posts {
+				display: none;
+			}
+
+			.card__info-hover {
+				opacity: 1;
+			}
+
+			.card__img--hover {
+				height: 100%;
+				opacity: 0.3;
+			}
+
+			.card__info {
+				background-color: transparent;
+				position: relative;
+			}
+		}
+
+		.card__info-hover {
+			position: absolute;
+			padding: 16px;
+			opacity: 0;
+			top: 0;
+			right: 0;
+
+			.card__edit-icon {
+				position: relative;
+				z-index: 2;
+			}
+		}
+
+		.card__img {
+			visibility: hidden;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			width: 100%;
+			height: 235px;
+			border-top-left-radius: 12px;
+			border-top-right-radius: 12px;
+		}
+
+		.card__img--hover {
+			transition: 0.2s all ease-out;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			width: 100%;
+			position: absolute;
+			height: 235px;
+			border-top-left-radius: 12px;
+			border-top-right-radius: 12px;
+			top: 0;
+		}
+
+		.card__info {
+			z-index: 2;
+			border-bottom-left-radius: 12px;
+			border-bottom-right-radius: 12px;
+			padding: 16px 24px 24px 24px;
+
+			.card__category {
+				font-weight: 500;
+				color: #868686;
+			}
+
+			.card__title {
+				text-transform: uppercase;
+				margin-top: 5px;
+				margin-bottom: 10px;
+
+				+ div {
+					display: flex;
+					flex-wrap: wrap;
+					flex-direction: row;
+					justify-content: space-between;
+				}
+			}
+
+			.card__by {
+				font-weight: 500;
+			}
+
+			.card__author {
+				font-weight: 600;
+				text-decoration: none;
+				color: #AD7D52;
+			}
 		}
 	}
 }
@@ -738,17 +849,6 @@ dl {
 
 .column_direction {
 	flex-direction: column !important;
-}
-
-/* TopicRatingBar */
-.lp_frontpage_articles {
-	.topic_stars_main {
-		float: right;
-	}
-	.topic_stars {
-		background-image: url(../../images/trb/one_star.png);
-		background-repeat: no-repeat;
-	}
 }
 
 /* VkComments */

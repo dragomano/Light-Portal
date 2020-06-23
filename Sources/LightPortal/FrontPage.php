@@ -27,13 +27,6 @@ class FrontPage
 	private static $num_columns = 12;
 
 	/**
-	 * Placeholder image for articles
-	 *
-	 * @var string
-	 */
-	private static $placeholder_image = '<i class="far fa-image fa-6x"></i>';
-
-	/**
 	 * Show articles on the portal frontpage
 	 *
 	 * Выводим статьи на главной странице портала
@@ -143,19 +136,15 @@ class FrontPage
 		$getFunction = 'get' . $function;
 		$articles    = self::$getFunction($start, $limit);
 
-		$articles = array_map(function ($article) use ($modSettings, $context) {
-			if (isset($article['time']))
-				$article['time'] = Helpers::getFriendlyTime($article['time']);
-			if (isset($article['created_at']))
-				$article['created_at'] = Helpers::getFriendlyTime($article['created_at']);
-			if (isset($article['last_updated']))
-				$article['last_updated'] = Helpers::getFriendlyTime($article['last_updated']);
+		$articles = array_map(function ($article) use ($modSettings) {
+			$article['datetime'] = date('Y-m-d', $article['date']);
+			$article['date'] = Helpers::getFriendlyTime($article['date']);
+
 			if (isset($article['title']))
 				$article['title'] = Helpers::getPublicTitle($article);
-			if (!empty($modSettings['lp_image_placeholder']))
-				$image = '<img src="' . $modSettings['lp_image_placeholder'] . '" alt="' . $article['title'] . '">';
-			if (empty($article['image']) && !empty($modSettings['lp_show_images_in_articles']))
-				$article['image_placeholder'] = Subs::runAddons('getFrontpagePlaceholderImage') ?: $image ?? self::$placeholder_image;
+
+			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
+				$article['image'] = $modSettings['lp_image_placeholder'];
 
 			return $article;
 		}, $articles);
@@ -256,12 +245,12 @@ class FrontPage
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
-						'poster_id'   => $row['id_member'],
-						'poster_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
-						'poster_name' => $row['poster_name'],
-						'time'        => $row['poster_time'],
+						'author_id'   => $row['id_member'],
+						'author_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
+						'author_name' => $row['poster_name'],
+						'date'        => $row['poster_time'],
 						'subject'     => $row['subject'],
-						'preview'     => Helpers::getTeaser($row['body']),
+						'teaser'      => Helpers::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
@@ -371,7 +360,7 @@ class FrontPage
 	 */
 	public static function getActivePages(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
+		global $user_info, $smcFunc, $modSettings, $scripturl, $memberContext, $context;
 
 		if (($pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
@@ -417,23 +406,23 @@ class FrontPage
 					$image = $first_post_image ? array_pop($value) : null;
 				}
 
-				if (!isset($pages[$row['page_id']]))
+				if (!isset($pages[$row['page_id']])) {
 					$pages[$row['page_id']] = array(
-						'id'           => $row['page_id'],
-						'author_id'    => $row['author_id'],
-						'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
-						'author_name'  => $row['author_name'],
-						'alias'        => $row['alias'],
-						'description'  => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
-						'type'         => $row['type'],
-						'num_views'    => $row['num_views'],
-						'num_comments' => $row['num_comments'],
-						'created_at'   => $row['date'],
-						'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-						'link'         => $scripturl . '?page=' . $row['alias'],
-						'image'        => $image,
-						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+						'id'            => $row['page_id'],
+						'author_id'     => $row['author_id'],
+						'author_link'   => $scripturl . '?action=profile;u=' . $row['author_id'],
+						'author_name'   => $row['author_name'],
+						'teaser'        => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
+						'type'          => $row['type'],
+						'num_views'     => $row['num_views'],
+						'num_comments'  => $row['num_comments'],
+						'date'          => $row['date'],
+						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+						'link'          => $scripturl . '?page=' . $row['alias'],
+						'image'         => $image,
+						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
+				}
 
 				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
@@ -553,7 +542,7 @@ class FrontPage
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => $board_name,
-					'description' => Helpers::getTeaser($description),
+					'teaser'      => Helpers::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
 					'is_redirect' => $row['is_redirect'],
@@ -565,7 +554,7 @@ class FrontPage
 
 				if (!empty($row['last_updated'])) {
 					$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
-					$boards[$row['id_board']]['last_updated'] = $row['last_updated'];
+					$boards[$row['id_board']]['date'] = $row['last_updated'];
 				}
 
 				Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
