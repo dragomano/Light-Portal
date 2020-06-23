@@ -411,7 +411,8 @@ class AdsBlock
 				'multiple' => true,
 				'style'    => 'height: auto'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
@@ -436,7 +437,8 @@ class AdsBlock
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['ads_boards'] ?? '',
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 
 		$context['posting_fields']['ads_topics']['label']['text'] = $txt['lp_ads_block_addon_ads_topics'];
@@ -447,7 +449,8 @@ class AdsBlock
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['ads_topics'] ?? '',
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 	}
 }

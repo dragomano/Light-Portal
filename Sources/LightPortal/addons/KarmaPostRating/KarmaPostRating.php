@@ -80,7 +80,7 @@ class KarmaPostRating
 		if (empty($context['lp_frontpage_articles']))
 			return;
 
-		foreach ($context['lp_frontpage_articles'] as $topic) {
+		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['kpr_rating'])) {
 				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}

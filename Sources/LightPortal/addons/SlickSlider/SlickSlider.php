@@ -262,7 +262,8 @@ class SlickSlider
 				'id'       => 'images',
 				'value'    => $context['lp_block']['options']['parameters']['images'],
 				'required' => true
-			)
+			),
+			'tab' => 'content'
 		);
 	}
 

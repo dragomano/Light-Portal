@@ -3,7 +3,6 @@
 $txt['lp_block_types']['article_list']              = 'Article List';
 $txt['lp_block_types_descriptions']['article_list'] = 'Displays a list of selected articles of the portal (with images if exist).';
 
-$txt['lp_article_list_addon_title_class']      = 'CSS class of article titles';
 $txt['lp_article_list_addon_body_class']       = 'CSS class of article blocks';
 $txt['lp_article_list_addon_article_type']     = 'What should be displayed';
 $txt['lp_article_list_addon_article_type_set'] = array('Forum topics', 'Portal pages');

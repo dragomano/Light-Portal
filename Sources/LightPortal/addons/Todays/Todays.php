@@ -96,7 +96,8 @@ class Todays
 			'attributes' => array(
 				'id' => 'widget_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		foreach ($txt['lp_todays_addon_type_set'] as $key => $value) {

@@ -110,7 +110,8 @@ class RssFeed
 				'placeholder' => $scripturl . '?action=.xml;type=rss2',
 				'required'    => true,
 				'style'       => 'width: 100%'
-			)
+			),
+			'tab' => 'content'
 		);
 
 		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed_addon_show_text'];

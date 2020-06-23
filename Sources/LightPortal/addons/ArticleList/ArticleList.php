@@ -41,22 +41,13 @@ class ArticleList
 	private static $no_content_class = true;
 
 	/**
-	 * Default class for article headers
-	 *
-	 * Класс (по умолчанию) для оформления заголовков статей
-	 *
-	 * @var string
-	 */
-	private static $article_title_class = 'div.title_bar > h4.titlebg';
-
-	/**
 	 * Default class for article blocks
 	 *
 	 * Класс (по умолчанию) для оформления блоков статей
 	 *
 	 * @var string
 	 */
-	private static $article_body_class = 'div.roundframe';
+	private static $article_body_class = 'div.descbox';
 
 	/**
 	 * Articles type (0 - topics, 1 - pages)
@@ -107,12 +98,11 @@ class ArticleList
 		$options['article_list'] = array(
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
-				'article_title_class' => static::$article_title_class,
-				'article_body_class'  => static::$article_body_class,
-				'article_type'        => static::$article_type,
-				'ids'                 => static::$ids,
-				'direction'           => static::$direction,
-				'show_images'         => static::$show_images
+				'article_body_class' => static::$article_body_class,
+				'article_type'       => static::$article_type,
+				'ids'                => static::$ids,
+				'direction'          => static::$direction,
+				'show_images'        => static::$show_images
 			)
 		);
 	}
@@ -133,12 +123,11 @@ class ArticleList
 			return;
 
 		$args['parameters'] = array(
-			'article_title_class' => FILTER_SANITIZE_STRING,
-			'article_body_class'  => FILTER_SANITIZE_STRING,
-			'article_type'        => FILTER_VALIDATE_INT,
-			'ids'                 => FILTER_SANITIZE_STRING,
-			'direction'           => FILTER_SANITIZE_STRING,
-			'show_images'         => FILTER_VALIDATE_BOOLEAN
+			'article_body_class' => FILTER_SANITIZE_STRING,
+			'article_type'       => FILTER_VALIDATE_INT,
+			'ids'                => FILTER_SANITIZE_STRING,
+			'direction'          => FILTER_SANITIZE_STRING,
+			'show_images'        => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -155,29 +144,6 @@ class ArticleList
 
 		if ($context['lp_block']['type'] !== 'article_list')
 			return;
-
-		$context['posting_fields']['article_title_class']['label']['text'] = $txt['lp_article_list_addon_title_class'];
-		$context['posting_fields']['article_title_class']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'article_title_class'
-			),
-			'options' => array()
-		);
-
-		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (!defined('JQUERY_VERSION')) {
-				$context['posting_fields']['article_title_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['article_title_class']
-				);
-			} else {
-				$context['posting_fields']['article_title_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['article_title_class']
-				);
-			}
-		}
 
 		$context['posting_fields']['article_body_class']['label']['text'] = $txt['lp_article_list_addon_body_class'];
 		$context['posting_fields']['article_body_class']['input'] = array(
@@ -211,7 +177,8 @@ class ArticleList
 			'attributes' => array(
 				'id' => 'article_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		foreach ($txt['lp_article_list_addon_article_type_set'] as $article_type => $title) {
@@ -236,7 +203,8 @@ class ArticleList
 				'id'    => 'ids',
 				'value' => $context['lp_block']['options']['parameters']['ids'],
 				'style' => 'width: 100%'
-			)
+			),
+			'tab' => 'content'
 		);
 
 		$context['posting_fields']['direction']['label']['text'] = $txt['lp_article_list_addon_direction'];
@@ -374,7 +342,10 @@ class ArticleList
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			}
 
-			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
+			$image = !empty($first_post_image) ? array_pop($value) : null;
+
+			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
+				$image = $modSettings['lp_image_placeholder'];
 
 			$pages[$row['page_id']] = array(
 				'id'          => $row['page_id'],
@@ -419,9 +390,6 @@ class ArticleList
 				$html .= '
 			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
 
-				$title = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
-				$html .= sprintf($context['lp_all_title_classes'][$parameters['article_title_class']], $title);
-
 				$content = '';
 				if (!empty($topic['image'])) {
 					$content .= '
@@ -429,6 +397,8 @@ class ArticleList
 						<img src="' . $topic['image'] . '" alt="">
 					</div>';
 				}
+
+				$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
 				$html .= sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
 
@@ -449,9 +419,6 @@ class ArticleList
 				$html .= '
 			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
 
-				$title = '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
-				$html .= sprintf($context['lp_all_title_classes'][$parameters['article_title_class']], $title);
-
 				$content = '';
 				if (!empty($page['image'])) {
 					$content .= '
@@ -459,6 +426,8 @@ class ArticleList
 						<img src="' . $page['image'] . '" alt="">
 					</div>';
 				}
+
+				$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
 
 				$html .= sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
 
@@ -497,7 +466,7 @@ class ArticleList
 			loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
 			addInlineJavaScript('
 			jQuery(document).ready(function ($) {
-				$(".article_list .roundframe").matchHeight();
+				$(".article_list .col-xs > div").matchHeight();
 			});', true);
 
 			ob_start();

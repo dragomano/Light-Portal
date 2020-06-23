@@ -190,7 +190,8 @@ class Likely
 				'id'        => 'buttons',
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['buttons']
-			)
+			),
+			'tab' => 'content'
 		);
 	}
 

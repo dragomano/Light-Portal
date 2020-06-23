@@ -3,7 +3,6 @@
 $txt['lp_block_types']['article_list']              = 'Список статей';
 $txt['lp_block_types_descriptions']['article_list'] = 'Відображає список вибраних статей порталу, з картинками.';
 
-$txt['lp_article_list_addon_title_class']      = 'Клас для оформлення заголовка кожної статті';
 $txt['lp_article_list_addon_body_class']       = 'Клас для оформлення блоку кожної статті';
 $txt['lp_article_list_addon_article_type']     = 'Що має відображатися';
 $txt['lp_article_list_addon_article_type_set'] = array('Теми форуму', 'Сторінки порталу');
