@@ -333,7 +333,7 @@ class Helpers
 		if (empty($key))
 			return false;
 
-		if ($funcName === null)
+		if ($funcName === null || $time === 0)
 			cache_put_data('light_portal_' . $key, null);
 
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) === null) {

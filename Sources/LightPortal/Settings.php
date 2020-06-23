@@ -207,7 +207,7 @@ class Settings
 			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
 			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
-			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
+			//array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
 			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
 			array('title', 'lp_standalone_mode_title'),
