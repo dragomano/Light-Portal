@@ -458,7 +458,7 @@ class ManageBlocks
 		if (empty($options[$context['current_block']['type']]))
 			$options[$context['current_block']['type']] = [];
 
-		$block_options = $context['current_block']['options'] ?? $options;
+		$block_options = $context['current_block']['options'] ?? $options[$context['current_block']['type']];
 
 		$context['lp_block'] = array(
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
@@ -480,8 +480,13 @@ class ManageBlocks
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
-				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data['parameters']) && $post_data['parameters'][$option] === null)
-					$post_data['parameters'][$option] = 0;
+				if (!empty($post_data['parameters'])) {
+					if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data['parameters'][$option] === null)
+						$post_data['parameters'][$option] = 0;
+
+					if (is_array($parameters[$option]) && $parameters[$option]['filter'] == FILTER_SANITIZE_STRING && $post_data['parameters'][$option] === null)
+						$post_data['parameters'][$option] = [];
+				}
 
 				$context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
 			}
@@ -541,7 +546,7 @@ class ManageBlocks
 		$context['posting_fields']['subject'] = ['no'];
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
