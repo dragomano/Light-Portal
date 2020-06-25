@@ -223,7 +223,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
 						<span itemprop="datePublished" content="' , $comment['created_at'], '">
-							', $comment['created'], ' <a href="#comment', $comment['id'], '">#' , $comment['id'], '</a>
+							', $comment['created'], ' <a class="bbc_link" href="#comment', $comment['id'], '">#' , $comment['id'], '</a>
 						</span>
 					</div>
 				</div>

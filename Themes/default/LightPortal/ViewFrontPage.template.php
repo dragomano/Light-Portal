@@ -281,7 +281,7 @@ function template_show_topics_as_custom_style()
 			<nav>
 				<ul>
 					<li>
-						<div class="roundframe">
+						<div class="roundframe" style="margin-top: 0">
 							<ul>
 								<li>
 									<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">Все разделы</a>
