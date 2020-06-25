@@ -96,7 +96,7 @@ class BoardNews
 	 */
 	private static function getBoardList()
 	{
-		global $sourcedir, $modSettings, $content;
+		global $sourcedir, $modSettings, $context;
 
 		require_once($sourcedir . '/Subs-MessageIndex.php');
 
@@ -139,7 +139,7 @@ class BoardNews
 			$context['posting_fields']['board_id']['input']['options'][$category['name']] = array('options' => array());
 
 			foreach ($category['boards'] as $board) {
-				if (!defined('JQUERY_VERSION')) {
+				if (RC2_CLEAN) {
 					$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']]['attributes'] = array(
 						'value'    => $board['id'],
 						'selected' => (bool) $board['selected'],

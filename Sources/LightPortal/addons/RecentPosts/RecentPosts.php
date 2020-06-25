@@ -197,7 +197,7 @@ class RecentPosts
 		);
 
 		foreach ($txt['lp_recent_posts_addon_type_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['link_type']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']

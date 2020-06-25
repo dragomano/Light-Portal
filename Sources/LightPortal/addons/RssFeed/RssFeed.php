@@ -135,7 +135,7 @@ class RssFeed
 	private static function getData($url)
 	{
 		if (empty($url))
-			return;
+			return '';
 
 		$file = file_get_contents($url);
 		$rss  = simplexml_load_string($file);

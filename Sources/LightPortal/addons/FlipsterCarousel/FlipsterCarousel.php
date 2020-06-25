@@ -154,7 +154,7 @@ class FlipsterCarousel
 		);
 
 		foreach ($txt['lp_flipster_carousel_addon_style_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['style']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['style']

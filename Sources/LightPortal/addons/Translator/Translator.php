@@ -129,7 +129,7 @@ class Translator
 		);
 
 		foreach ($txt['lp_translator_addon_engine_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['engine']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
@@ -153,7 +153,7 @@ class Translator
 			)
 		);
 
-		if (!defined('JQUERY_VERSION')) {
+		if (RC2_CLEAN) {
 			$context['posting_fields']['widget_theme']['input']['options'] = array(
 				'light' => array(
 					'attributes' => array(

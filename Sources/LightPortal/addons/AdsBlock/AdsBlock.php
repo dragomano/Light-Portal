@@ -81,7 +81,7 @@ class AdsBlock
 	 */
 	public static function menuButtons()
 	{
-		global $context, $txt;
+		global $context;
 
 		if ($context['current_action'] == 'admin' && isset($_REQUEST['area']) && $_REQUEST['area'] == 'lp_blocks') {
 			require_once(__DIR__ . '/AdsBlock.template.php');
@@ -416,7 +416,7 @@ class AdsBlock
 		);
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
 					'value'    => $position,
 					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])

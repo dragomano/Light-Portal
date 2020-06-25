@@ -49,7 +49,7 @@ class Markdown
 	 * Парсим Markdown-контент
 	 *
 	 * @param string $text
-	 * @return void
+	 * @return string
 	 */
 	private static function getParsedMarkdown($text)
 	{

@@ -102,8 +102,6 @@ class HidingBlocks
 	 */
 	public static function validateBlockData(&$args)
 	{
-		global $context;
-
 		$args['parameters']['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
 			'filter' => FILTER_SANITIZE_STRING,
@@ -140,7 +138,7 @@ class HidingBlocks
 		);
 
 		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $size => $label) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label]['attributes'] = array(
 					'value'    => $size,
 					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])

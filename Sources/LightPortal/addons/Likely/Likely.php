@@ -118,7 +118,7 @@ class Likely
 			)
 		);
 
-		if (!defined('JQUERY_VERSION')) {
+		if (RC2_CLEAN) {
 			$context['posting_fields']['size']['input']['options'] = array(
 				'small' => array(
 					'attributes' => array(
@@ -154,7 +154,7 @@ class Likely
 			)
 		);
 
-		if (!defined('JQUERY_VERSION')) {
+		if (RC2_CLEAN) {
 			$context['posting_fields']['skin']['input']['options'] = array(
 				'normal' => array(
 					'attributes' => array(

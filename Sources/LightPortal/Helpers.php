@@ -399,7 +399,7 @@ class Helpers
 	 *
 	 * Возвращает допустимый набор прав доступа текущего пользователя
 	 *
-	 * @return int
+	 * @return array
 	 */
 	public static function getPermissions()
 	{

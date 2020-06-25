@@ -286,16 +286,18 @@ class RandomTopics
 		return $html;
 	}
 
-	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @param int $block_id
-	 * @return void
-	 */
+    /**
+     * Form the block content
+     *
+     * Формируем контент блока
+     *
+     * @param string $content
+     * @param string $type
+     * @param int $block_id
+     * @param int $cache_time
+     * @param array $parameters
+     * @return void
+     */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info;

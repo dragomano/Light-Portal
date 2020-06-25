@@ -294,7 +294,7 @@ function template_callback_panel_direction()
  */
 function template_post_tab($tab = 'content')
 {
-	global $context, $txt;
+	global $context;
 
 	echo '
 					<dl>';

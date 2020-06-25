@@ -111,7 +111,7 @@ class PageList
 		);
 
 		foreach ($txt['lp_page_list_addon_sort_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['sort']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
@@ -242,16 +242,18 @@ class PageList
 		return $html;
 	}
 
-	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @param int $block_id
-	 * @return void
-	 */
+    /**
+     * Form the block content
+     *
+     * Формируем контент блока
+     *
+     * @param string $content
+     * @param string $type
+     * @param int $block_id
+     * @param int $cache_time
+     * @param array $parameters
+     * @return void
+     */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info;

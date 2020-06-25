@@ -543,8 +543,6 @@ class ManageBlocks
 
 		checkSubmitOnce('register');
 
-		$context['posting_fields']['subject'] = ['no'];
-
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
@@ -582,7 +580,7 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
 					'value'   => $type,
 					'checked' => $type == $context['lp_block']['icon_type']
@@ -606,7 +604,7 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['placement']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_block']['placement']
@@ -630,7 +628,7 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_block']['permissions']
@@ -668,7 +666,7 @@ class ManageBlocks
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['title_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['title_class']
@@ -707,7 +705,7 @@ class ManageBlocks
 				$value = $key;
 				$key   = $key == '_' ? $txt['no'] : $key;
 
-				if (!defined('JQUERY_VERSION')) {
+				if (RC2_CLEAN) {
 					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
 						'value'    => $value,
 						'selected' => $value == $context['lp_block']['content_class']
@@ -750,9 +748,38 @@ class ManageBlocks
 		foreach ($context['posting_fields'] as $item => $data) {
 			if ($item !== 'icon' && !empty($data['input']['after']))
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
+		$context['lp_block_tab_tuning'] = self::hasParameters($context['posting_fields']);
+
 		loadTemplate('LightPortal/ManageSettings');
+	}
+
+	/**
+	 * Check whether there are any parameters on the "Tuning" tab
+	 *
+	 * Проверяем, есть ли какие-нибудь параметры на вкладке «Тюнинг»
+	 *
+	 * @param array $data
+	 * @param string $check_key
+	 * @param string $check_value
+	 * @return bool
+	 */
+	public static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	{
+		if (empty($data))
+			return false;
+
+		foreach (new \RecursiveIteratorIterator(new \RecursiveArrayIterator($data), \RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
+			if ($check_key === $key) {
+				$result[] = $value;
+			}
+		}
+
+		return in_array($check_value, $result);
 	}
 
 	/**
@@ -841,7 +868,7 @@ class ManageBlocks
 	 * Создаем или обновляем блок
 	 *
 	 * @param int $item
-	 * @return void
+	 * @return int|void
 	 */
 	public static function setData(int $item = 0)
 	{

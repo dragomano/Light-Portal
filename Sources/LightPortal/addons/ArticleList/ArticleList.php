@@ -158,7 +158,7 @@ class ArticleList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['article_body_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $value,
 					'selected' => $value == $context['lp_block']['options']['parameters']['article_body_class']
@@ -182,7 +182,7 @@ class ArticleList
 		);
 
 		foreach ($txt['lp_article_list_addon_article_type_set'] as $article_type => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['article_type']['input']['options'][$title]['attributes'] = array(
 					'value'    => $article_type,
 					'selected' => $article_type == $context['lp_block']['options']['parameters']['article_type']
@@ -217,7 +217,7 @@ class ArticleList
 		);
 
 		foreach ($txt['lp_article_list_addon_direction_set'] as $direction => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
 					'value'    => $direction,
 					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']

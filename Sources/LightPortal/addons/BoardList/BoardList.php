@@ -121,7 +121,7 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['category_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
@@ -147,7 +147,7 @@ class BoardList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['board_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $value,
 					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']

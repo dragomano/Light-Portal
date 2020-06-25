@@ -314,8 +314,6 @@ class SlickSlider
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $txt;
-
 		if ($type !== 'slick_slider')
 			return;
 

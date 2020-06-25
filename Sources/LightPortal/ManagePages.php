@@ -123,8 +123,8 @@ class ManagePages
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'p.created_at DESC',
-						'reverse' => 'p.created_at'
+						'default' => 'date DESC',
+						'reverse' => 'date'
 					)
 				),
 				'num_views' => array(
@@ -288,7 +288,7 @@ class ManagePages
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '
 			WHERE 1=1' : '
@@ -314,7 +314,7 @@ class ManagePages
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['created_at']),
+				'created_at'  => Helpers::getFriendlyTime($row['date']),
 				'is_front'    => Helpers::isFrontpage($row['page_id']),
 				'title'       => $titles[$row['page_id']] ?? []
 			);
@@ -731,8 +731,6 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$context['posting_fields']['subject'] = ['no'];
-
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
@@ -775,7 +773,7 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_page_types'] as $type => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
 					'value'    => $type,
 					'selected' => $type == $context['lp_page']['type']
@@ -821,7 +819,7 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_page']['permissions']

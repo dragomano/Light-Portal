@@ -101,7 +101,7 @@ class Todays
 		);
 
 		foreach ($txt['lp_todays_addon_type_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['widget_type']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']

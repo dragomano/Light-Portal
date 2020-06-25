@@ -281,9 +281,15 @@ function template_block_post()
 				<input id="tab2" type="radio" name="tabs">
 				<label for="tab2" class="bg odd">', $txt['lp_tab_access_placement'], '</label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_tab_appearance'], '</label>
+				<label for="tab3" class="bg odd">', $txt['lp_tab_appearance'], '</label>';
+
+	if ($context['lp_block_tab_tuning']) {
+		echo '
 				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
+				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>';
+	}
+
+	echo '
 				<section id="content-tab1" class="bg even">
 					', template_post_tab();
 
@@ -299,10 +305,16 @@ function template_block_post()
 				</section>
 				<section id="content-tab3" class="bg even">
 					', template_post_tab('appearance'), '
-				</section>
+				</section>';
+
+	if ($context['lp_block_tab_tuning']) {
+		echo '
 				<section id="content-tab4" class="bg even">
 					', template_post_tab('tuning'), '
-				</section>
+				</section>';
+	}
+
+	echo '
 			</div>
 			<br class="clear">
 			<div class="centertext">

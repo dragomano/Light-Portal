@@ -30,7 +30,7 @@ class Credits
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = self::getAuthorLink();
+		$context['credits_modifications'][] = self::getCopyrights();
 
 		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
 			self::getComponentList();
@@ -52,7 +52,7 @@ class Credits
 	 *
 	 * @return string
 	 */
-	public static function getAuthorLink()
+	public static function getCopyrights()
 	{
 		global $scripturl;
 
@@ -115,8 +115,7 @@ class Credits
 			)
 		);
 
-		// Adding copyrights of used plugins
-		// Возможность добавить копирайты используемых плагинов
+		// Adding copyrights of used plugins | Возможность добавить копирайты используемых плагинов
 		Subs::runAddons('credits', array(&$links));
 
 		$context['lp_components'] = $links;

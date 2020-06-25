@@ -88,8 +88,6 @@ class LanguageAccess
 	 */
 	public static function validateBlockData(&$args)
 	{
-		global $context;
-
 		$args['parameters']['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
 			'filter' => FILTER_SANITIZE_STRING,
@@ -128,7 +126,7 @@ class LanguageAccess
 		);
 
 		foreach ($context['languages'] as $lang) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']]['attributes'] = array(
 					'value'    => $lang['filename'],
 					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])

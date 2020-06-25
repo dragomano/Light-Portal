@@ -360,7 +360,7 @@ class FrontPage
 	 */
 	public static function getActivePages(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $scripturl, $memberContext, $context;
+		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
 
 		if (($pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
