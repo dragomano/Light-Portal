@@ -47,7 +47,7 @@ class CodeMirror
 
 			loadCssFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/fullscreen.css', array('external' => true));
 
-			addInlineCss('.CodeMirror {max-height: 24em; font-size: 1.4em; border: 1px solid #C5C5C5} .CodeMirror-line {z-index: auto !important}');
+			addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5} .CodeMirror-line {z-index: auto !important}');
 
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.js', array('external' => true));
@@ -62,7 +62,6 @@ class CodeMirror
 			addInlineJavaScript('
 		let php_editor = CodeMirror.fromTextArea(document.getElementById("content"), {
 			lineNumbers: true,
-			matchBrackets: true,
 			mode: "text/x-php",
 			firstLineNumber: 1,
 			lineWrapping: true,

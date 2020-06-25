@@ -137,7 +137,7 @@ class Block
 	}
 
 	/**
-	 * Get allowed identificators for $entity string
+	 * Get allowed identifiers for $entity string
 	 *
 	 * Получаем разрешенные идентификаторы из строки $entity
 	 *

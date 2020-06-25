@@ -254,7 +254,7 @@ $tables[] = array(
 		 ),
 		 array(
 			 'type'    => 'unique',
-			 'columns' => 'alias'
+			 'columns' => array('alias')
 		 )
 	),
 	'default' => array(

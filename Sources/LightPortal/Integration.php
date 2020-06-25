@@ -47,9 +47,9 @@ class Integration
 	}
 
 	/**
-	 * Setup for autoloading of used classes
+	 * Setup for autoloader of used classes
 	 *
-	 * Настраиваем поиск файлов используемых классов для автоподключения
+	 * Настраиваем автоподключение используемых классов
 	 *
 	 * @param array $classMap
 	 * @return void
@@ -80,7 +80,8 @@ class Integration
 			'LP_RELEASE_DATE' => '2020-06-11',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
-			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600
+			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
+			'RC2_CLEAN'       => !defined('JQUERY_VERSION')
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -417,7 +418,7 @@ class Integration
 	 */
 	public static function fetchAlerts(array &$alerts, array &$formats)
 	{
-		global $user_info, $txt;
+		global $user_info;
 
 		if (empty($alerts))
 			return;
@@ -457,7 +458,7 @@ class Integration
 		global $txt, $scripturl, $modSettings, $context;
 
 		$result = '';
-		if (empty($actions['action'])) {
+		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl);
 
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))
