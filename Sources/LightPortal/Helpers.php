@@ -206,7 +206,7 @@ class Helpers
 	 */
 	public static function getFriendlyTime(int $timestamp)
 	{
-		global $txt, $smcFunc;
+		global $modSettings, $user_info, $txt, $smcFunc;
 
 		$current_time = time();
 
@@ -214,6 +214,9 @@ class Helpers
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);
+
+		// Use forum and user offsets
+		$timestamp = $timestamp - ($modSettings['time_offset'] - $user_info['time_offset']) * 3600;
 
 		// Difference between current time and $timestamp
 		$time_difference = $current_time - $timestamp;

@@ -17,7 +17,7 @@ function template_portal_above()
 	// Header | Шапка
 	if (!empty($context['lp_blocks']['header'])) {
 		echo '
-		<div class="row center-xs">
+		<div class="row between-xs">
 			<div class="col-xs-', $context['lp_header_panel_width'], '">';
 
 		lp_show_blocks('header');
@@ -119,7 +119,7 @@ function template_portal_below()
 	// Footer | Подвал
 	if (!empty($context['lp_blocks']['footer'])) {
 		echo '
-		<div class="row center-xs">
+		<div class="row between-xs">
 			<div class="col-xs-', $context['lp_footer_panel_width'], '">';
 
 		lp_show_blocks('footer');

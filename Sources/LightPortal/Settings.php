@@ -130,6 +130,8 @@ class Settings
 	 */
 	public static function settingArea()
 	{
+		global $context, $txt, $smcFunc;
+
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
@@ -137,6 +139,27 @@ class Settings
 			'extra'   => 'Settings::extra',
 			'panels'  => 'Settings::panels',
 			'plugins' => 'Settings::plugins'
+		);
+
+		db_extend();
+
+		// Tabs
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title' => LP_NAME,
+			'tabs' => array(
+				'basic' => array(
+					'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
+				),
+				'extra' => array(
+					'description' => $txt['lp_extra_info']
+				),
+				'panels' => array(
+					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
+				),
+				'plugins' => array(
+					'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
+				)
+			)
 		);
 
 		self::loadGeneralSettingParameters($subActions, 'basic');
@@ -152,15 +175,9 @@ class Settings
 	 */
 	public static function basic(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
+		global $sourcedir, $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
 
 		require_once($sourcedir . '/ManageServer.php');
-		db_extend();
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
-		);
 
 		self::checkNewVersion();
 
@@ -276,11 +293,6 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => $txt['lp_extra_info']
-		);
-
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
@@ -355,11 +367,6 @@ class Settings
 			overflow: hidden;
 		}');
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
-		);
-
 		$context['page_title'] = $context['settings_title'] = $txt['lp_panels'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
@@ -433,11 +440,6 @@ class Settings
 		loadTemplate('LightPortal/ManagePlugins');
 
 		require_once($sourcedir . '/ManageServer.php');
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
-		);
 
 		$context['lp_plugins'] = Subs::getAddons();
 		asort($context['lp_plugins']);
