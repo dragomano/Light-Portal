@@ -228,8 +228,13 @@ function template_show_boards_as_articles()
 			echo '
 				<div class="card__info">
 					<span class="card__category smalltext">
-						', $board['is_updated'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<time datetime="', $board['datetime'], '">', $board['date'], '</time>
+						', $board['is_updated'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '';
+
+			if (!empty($board['date']))
+				echo '
+						<time datetime="', $board['datetime'], '">', $board['date'], '</time>';
+
+			echo '
 					</span>
 					<h3 class="card__title">
 						<a href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>

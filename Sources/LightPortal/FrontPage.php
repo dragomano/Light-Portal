@@ -137,8 +137,10 @@ class FrontPage
 		$articles    = self::$getFunction($start, $limit);
 
 		$articles = array_map(function ($article) use ($modSettings) {
-			$article['datetime'] = date('Y-m-d', $article['date']);
-			$article['date'] = Helpers::getFriendlyTime($article['date']);
+			if (!empty($article['date'])) {
+				$article['datetime'] = date('Y-m-d', $article['date']);
+				$article['date'] = Helpers::getFriendlyTime($article['date']);
+			}
 
 			if (isset($article['title']))
 				$article['title'] = Helpers::getPublicTitle($article);
@@ -260,7 +262,7 @@ class FrontPage
 						'num_replies' => $row['num_replies'],
 						'css_class'   => $colorClass,
 						'image'       => $image,
-						'can_edit'    => $user_info['is_admin'] || $row['id_member'] == $user_info['id']
+						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
 				}
 

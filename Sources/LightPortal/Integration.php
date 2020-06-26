@@ -31,7 +31,6 @@ class Integration
 		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
-		add_integration_function('integrate_change_member_data', __CLASS__ . '::changeMemberData', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
@@ -111,21 +110,6 @@ class Integration
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
 		Subs::runAddons();
-	}
-
-	/**
-	 * Reset the cache when switching languages
-	 *
-	 * Сбрасываем кэш при переключении языков
-	 *
-	 * @param array $member_names
-	 * @param string $var
-	 * @return void
-	 */
-	public static function changeMemberData($member_names, $var)
-	{
-		if ($var == 'lngfile')
-			clean_cache();
 	}
 
 	/**
