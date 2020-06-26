@@ -88,14 +88,14 @@ class ManagePages
 			'get_items' => array(
 				'function' => __CLASS__ . '::getAll',
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0 OR INSTR(t.title, {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $search_params['string'])
 				)
 			),
 			'get_count' => array(
 				'function' => __CLASS__ . '::getTotalQuantity',
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(alias, {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0 OR INSTR(t.title, {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $search_params['string'])
 				)
 			),
@@ -180,6 +180,10 @@ class ManagePages
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
 						},
 						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
 					)
 				),
 				'actions' => array(
@@ -234,7 +238,7 @@ class ManagePages
 					'position' => 'after_title',
 					'value' => '
 						<i class="fas fa-search centericon"></i>
-						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_page_alias'] . '">
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_search_pages'] . '">
 						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button" style="float:none">',
 					'class' => 'floatright'
 				),
@@ -290,13 +294,16 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . (allowedTo('admin_forum') ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, array(
+				'type'    => 'page',
+				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id'],
 				'sort'    => $sort,
 				'start'   => $start,
@@ -340,12 +347,15 @@ class ManagePages
 		global $smcFunc, $user_info, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '
+			SELECT COUNT(p.page_id)
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . (allowedTo('admin_forum') ? '
 			WHERE 1=1' : '
-			WHERE author_id = {int:user_id}') . (!empty($query_string) ? '
+			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
 			array_merge($query_params, array(
+				'type'    => 'page',
+				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id']
 			))
 		);
@@ -1327,6 +1337,10 @@ class ManagePages
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
 						},
 						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
 					)
 				),
 				'actions' => array(

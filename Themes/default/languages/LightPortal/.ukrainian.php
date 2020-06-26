@@ -187,6 +187,7 @@ $txt['lp_pages_add_tab_description']    = 'Заповніть заголовок
 $txt['lp_pages_edit_title']             = 'Редагування сторінки';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Сторінки порталу';
+$txt['lp_search_pages']                 = 'Аліас або заголовок';
 $txt['lp_page_types']                   = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Аліас';
 $txt['lp_page_alias_subtext']           = 'Ім\'я сторінки має починатися з латинської літери і складатися з малих латинських букв, цифр і знака підкреслення.';

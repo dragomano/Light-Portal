@@ -187,6 +187,7 @@ $txt['lp_pages_add_tab_description']    = 'Fill the page title and alias. After 
 $txt['lp_pages_edit_title']             = 'Editing page';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Portal pages';
+$txt['lp_search_pages']                 = 'Alias or title';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
 $txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
