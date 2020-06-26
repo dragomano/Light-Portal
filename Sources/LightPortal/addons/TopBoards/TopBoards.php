@@ -129,54 +129,12 @@ class TopBoards
 	 * @param int $num_boards
 	 * @return array
 	 */
-	private static function getData($num_boards)
+	public static function getData($num_boards)
 	{
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_topBoards($num_boards, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$top_boards = self::getData($parameters['num_boards']);
-
-		if (empty($top_boards))
-			return '';
-
-		$html = '
-		<dl class="stats">';
-
-		$max = $top_boards[0]['num_topics'];
-
-		foreach ($top_boards as $board) {
-			if ($board['num_topics'] < 1)
-				continue;
-
-			$width = $board['num_topics'] * 100 / $max;
-
-			$html .= '
-			<dt>' . $board['link'] . '</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar' . (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
-				<span>' . ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics'])) . '</span>
-			</dd>';
-		}
-
-		$html .= '
-		</dl>';
-
-		return $html;
 	}
 
 	/**
@@ -193,16 +151,38 @@ class TopBoards
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_boards)) {
 			ob_start();
-			echo $top_boards;
+
+			echo '
+		<dl class="stats">';
+
+			$max = $top_boards[0]['num_topics'];
+
+			foreach ($top_boards as $board) {
+				if ($board['num_topics'] < 1)
+					continue;
+
+				$width = $board['num_topics'] * 100 / $max;
+
+				echo '
+			<dt>', $board['link'], '</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics'])), '</span>
+			</dd>';
+			}
+
+			echo '
+		</dl>';
+
 			$content = ob_get_clean();
 		}
 	}

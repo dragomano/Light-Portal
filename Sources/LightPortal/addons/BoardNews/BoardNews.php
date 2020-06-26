@@ -174,7 +174,7 @@ class BoardNews
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
@@ -182,72 +182,6 @@ class BoardNews
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_boardNews($board_id, $num_posts, null, null, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt, $modSettings, $scripturl, $context;
-
-		$board_news = self::getData($parameters);
-
-		$html = '';
-		foreach ($board_news as $news) {
-			$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getCorrectDeclension($news['replies'], $txt['lp_comments_set']) . '</a>';
-
-			$html .= '
-		<div class="news_item">
-			<h3 class="news_header">
-				' . $news['icon'] . '
-				<a href="' . $news['href'] . '">' . $news['subject'] . '</a>
-			</h3>
-			<div class="news_timestamp">' . $news['time'] . ' ' . $txt['by'] . ' ' . $news['poster']['link'] . '</div>
-			<div class="news_body" style="padding: 2ex 0">' . $news['body'] . '</div>
-			' . $news['link'] . ($news['locked'] ? '' : ' | ' . $news['comment_link']) . '';
-
-			if (!empty($modSettings['enable_likes'])) {
-				$html .= '
-				<ul>';
-
-				if (!empty($news['likes']['can_like'])) {
-					$html .= '
-					<li class="smflikebutton" id="msg_' . $news['message_id'] . '_likes"><a href="' . $scripturl . '?action=likes;ltype=msg;sa=like;like=' . $news['message_id'] . ';' . $context['session_var'] . '=' . $context['session_id'] . '" class="msg_like"><span class="' . ($news['likes']['you'] ? 'unlike' : 'like') . '"></span>' . ($news['likes']['you'] ? $txt['unlike'] : $txt['like']) . '</a></li>';
-				}
-
-				if (!empty($news['likes']['count'])) {
-					$context['some_likes'] = true;
-					$count = $news['likes']['count'];
-					$base = 'likes_';
-					if ($news['likes']['you']) {
-						$base = 'you_' . $base;
-						$count--;
-					}
-					$base .= (isset($txt[$base . $count])) ? $count : 'n';
-
-					$html .= '
-					<li class="like_count smalltext">' . sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $context['session_var'] . '=' . $context['session_id'], comma_format($count)) . '</li>';
-				}
-
-				$html .= '
-				</ul>';
-			}
-
-			$html .= '
-		</div>';
-
-			if (!$news['is_last'])
-				$html .= '
-		<hr>';
-		}
-
-		return $html;
 	}
 
 	/**
@@ -264,16 +198,64 @@ class BoardNews
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt, $modSettings, $scripturl, $context;
 
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::getFromCache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$board_news = Helpers::getFromCache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($board_news)) {
 			ob_start();
-			echo $board_news;
+
+			foreach ($board_news as $news) {
+				$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getCorrectDeclension($news['replies'], $txt['lp_comments_set']) . '</a>';
+
+				echo '
+			<div class="news_item">
+				<h3 class="news_header">
+					', $news['icon'], '
+					<a href="', $news['href'], '">', $news['subject'], '</a>
+				</h3>
+				<div class="news_timestamp">', $news['time'], ' ', $txt['by'], ' ', $news['poster']['link'], '</div>
+				<div class="news_body" style="padding: 2ex 0">', $news['body'], '</div>
+				', $news['link'], ($news['locked'] ? '' : ' | ' . $news['comment_link']), '';
+
+				if (!empty($modSettings['enable_likes'])) {
+					echo '
+					<ul>';
+
+					if (!empty($news['likes']['can_like'])) {
+						echo '
+						<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $context['session_var'], '=', $context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $txt['unlike'] : $txt['like']), '</a></li>';
+					}
+
+					if (!empty($news['likes']['count'])) {
+						$context['some_likes'] = true;
+						$count = $news['likes']['count'];
+						$base = 'likes_';
+						if ($news['likes']['you']) {
+							$base = 'you_' . $base;
+							$count--;
+						}
+						$base .= (isset($txt[$base . $count])) ? $count : 'n';
+
+						echo '
+						<li class="like_count smalltext">', sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $context['session_var'] . '=' . $context['session_id'], comma_format($count)), '</li>';
+					}
+
+					echo '
+					</ul>';
+				}
+
+				echo '
+			</div>';
+
+				if (!$news['is_last'])
+					echo '
+			<hr>';
+			}
+
 			$content = ob_get_clean();
 		}
 	}

@@ -149,7 +149,7 @@ class TopPosters
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $smcFunc, $scripturl, $modSettings, $context;
 
@@ -171,6 +171,7 @@ class TopPosters
 		$posters = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request))	{
 			$posters[] = array(
+				'name'   => $row['real_name'],
 				'link'   => allowedTo('profile_view') ? '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
 				'avatar' => $show_avatars ? ($row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : $modSettings['avatar_url'] . '/default.png') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar'])) : null,
 				'posts'  => $row['posts']
@@ -182,54 +183,6 @@ class TopPosters
 		$context++;
 
 		return $posters;
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$top_posters = self::getData($parameters);
-
-		if (empty($top_posters))
-			return '';
-
-		$html = '
-		<dl class="top_posters stats">';
-
-		$max = $top_posters[0]['posts'];
-
-		foreach ($top_posters as $poster) {
-			$html .= '
-			<dt>';
-
-			if (!empty($poster['avatar'])) {
-				$html .= '
-				<img src="' . $poster['avatar'] . '" alt="*"> ';
-			}
-
-			$width = $poster['posts'] * 100 / $max;
-
-			$html .= '
-				' . $poster['link'] . '
-			</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar' . (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
-				<span>' . ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set'])) . '</span>
-			</dd>';
-		}
-
-		$html .= '
-		</dl>';
-
-		return $html;
 	}
 
 	/**
@@ -246,16 +199,44 @@ class TopPosters
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::getFromCache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::getFromCache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_posters)) {
 			ob_start();
-			echo $top_posters;
+
+			echo '
+		<dl class="top_posters stats">';
+
+			$max = $top_posters[0]['posts'];
+
+			foreach ($top_posters as $poster) {
+				echo '
+			<dt>';
+
+				if (!empty($poster['avatar'])) {
+					echo '
+				<img src="', $poster['avatar'], '" alt="', $poster['name'], '"> ';
+				}
+
+				$width = $poster['posts'] * 100 / $max;
+
+				echo '
+					', $poster['link'], '
+			</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set'])), '</span>
+			</dd>';
+			}
+
+			echo '
+		</dl>';
+
 			$content = ob_get_clean();
 		}
 	}

@@ -201,72 +201,52 @@ class PageList
 	}
 
 	/**
-	 * Get the block html code
+	 * Form the block content
 	 *
-	 * Получаем html-код блока
+	 * Формируем контент блока
 	 *
+	 * @param string $content
+	 * @param string $type
+	 * @param int $block_id
+	 * @param int $cache_time
 	 * @param array $parameters
-	 * @return string
+	 * @return void
 	 */
-	public static function getHtml($parameters)
-	{
-		global $scripturl, $txt;
-
-		$pages = self::getData($parameters);
-
-		$html = '';
-		if (!empty($pages)) {
-			$html .= '
-		<ul class="normallist page_list">';
-
-			foreach ($pages as $page) {
-				if (empty($title = Helpers::getPublicTitle($page)))
-					continue;
-
-				$html .= '
-			<li>
-				<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a> ' . $txt['by'] . ' ' . (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>') . ', ' . Helpers::getFriendlyTime($page['created_at']) . ' (' . Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
-
-				if (!empty($page['num_comments']))
-					$html .= ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
-
-				$html .= ')
-			</li>';
-			}
-
-			$html .= '
-		</ul>';
-		} else
-			$html .= $txt['lp_page_list_addon_no_items'];
-
-		return $html;
-	}
-
-    /**
-     * Form the block content
-     *
-     * Формируем контент блока
-     *
-     * @param string $content
-     * @param string $type
-     * @param int $block_id
-     * @param int $cache_time
-     * @param array $parameters
-     * @return void
-     */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+
+		ob_start();
 
 		if (!empty($page_list)) {
-			ob_start();
-			echo $page_list;
-			$content = ob_get_clean();
-		}
+			echo '
+		<ul class="normallist page_list">';
+
+			foreach ($page_list as $page) {
+				if (empty($title = Helpers::getPublicTitle($page)))
+					continue;
+
+				echo '
+			<li>
+				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+
+				if (!empty($page['num_comments']))
+					echo ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
+
+				echo ')
+			</li>';
+			}
+
+			echo '
+		</ul>';
+		} else
+			echo $txt['lp_page_list_addon_no_items'];
+
+		$content = ob_get_clean();
 	}
 }

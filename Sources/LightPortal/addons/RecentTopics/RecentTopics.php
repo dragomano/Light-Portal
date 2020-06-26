@@ -184,7 +184,7 @@ class RecentTopics
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
@@ -196,41 +196,6 @@ class RecentTopics
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$recent_topics = self::getData($parameters);
-
-		if (empty($recent_topics))
-			return '';
-
-		$html = '
-		<ul class="recent_topics noup">';
-
-		foreach ($recent_topics as $topic) {
-			$html .= '
-			<li class="windowbg">' . ($topic['is_new'] ? '
-				<span class="new_posts">' . $txt['new'] . '</span>' : '') . $topic['icon'] . ' ' . $topic['link'] . '
-				<br><span class="smalltext">' . $txt['by'] . ' ' . $topic['poster']['link'] . '</span>
-				<br><span class="smalltext">' . Helpers::getFriendlyTime($topic['timestamp']) . '</span>
-			</li>';
-		}
-
-		$html .= '
-		</ul>';
-
-		return $html;
 	}
 
 	/**
@@ -247,16 +212,36 @@ class RecentTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::getFromCache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_topics = Helpers::getFromCache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
 
 		if (!empty($recent_topics)) {
 			ob_start();
-			echo $recent_topics;
+
+			echo '
+		<ul class="recent_topics noup">';
+
+			foreach ($recent_topics as $topic) {
+				echo '
+			<li class="windowbg">';
+
+				if ($topic['is_new'])
+					echo '
+				<span class="new_posts">', $txt['new'], '</span>';
+
+				echo $topic['icon'], ' ', $topic['link'], '
+				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>
+				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
+			</li>';
+			}
+
+			echo '
+		</ul>';
+
 			$content = ob_get_clean();
 		}
 	}

@@ -282,7 +282,7 @@ class RecentPosts
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
@@ -341,51 +341,6 @@ class RecentPosts
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$posts = self::getData($parameters);
-
-		if (empty($posts))
-			return '';
-
-		$html = '
-		<ul class="recent_posts noup">';
-
-		foreach ($posts as $post) {
-			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
-
-			$html .= '
-			<li class="windowbg">';
-
-			if (!empty($parameters['show_avatars']))
-				$html .= '
-				<span class="poster_avatar">' . $post['poster']['avatar'] . '</span>';
-
-			$html .= ($post['is_new'] ? '
-				<span class="new_posts">' . $txt['new'] . '</span> ' : '') . $post[$parameters['link_type']] . '
-				<br>
-				<span class="smalltext">' . $txt['by'] . ' ' . $post['poster']['link'] . '</span>
-				<br class="clear">
-				<span class="smalltext">' . Helpers::getFriendlyTime($post['timestamp']) . '</span>
-			</li>';
-		}
-
-		$html .= '
-		</ul>';
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -399,16 +354,43 @@ class RecentPosts
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
 
 		if (!empty($recent_posts)) {
 			ob_start();
-			echo $recent_posts;
+
+			echo '
+		<ul class="recent_posts noup">';
+
+			foreach ($recent_posts as $post) {
+				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
+
+				echo '
+			<li class="windowbg">';
+
+				if (!empty($parameters['show_avatars']))
+					echo '
+				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+
+				if ($post['is_new'])
+					echo '
+				<span class="new_posts">', $txt['new'], '</span> ';
+
+				echo '
+				', $post[$parameters['link_type']], '
+				<br class="clear">
+				<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
+			</li>';
+			}
+
+			echo '
+		</ul>';
+
 			$content = ob_get_clean();
 		}
 	}

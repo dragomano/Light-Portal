@@ -363,87 +363,6 @@ class ArticleList
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param int $block_id
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($block_id, $parameters)
-	{
-		global $scripturl, $context, $txt;
-
-		if (empty($parameters['article_type'])) {
-			$topics = self::getTopics($parameters);
-		} else {
-			$pages = self::getPages($parameters);
-		}
-
-		$html = '';
-		if (!empty($topics)) {
-			$html .= '
-		<div class="article_list row' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
-
-			foreach ($topics as $topic) {
-				$html .= '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
-
-				$content = '';
-				if (!empty($topic['image'])) {
-					$content .= '
-					<div class="article_image">
-						<img src="' . $topic['image'] . '" alt="">
-					</div>';
-				}
-
-				$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
-
-				$html .= sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-				$html .= '
-			</div>';
-			}
-
-			$html .= '
-		</div>';
-		} elseif (!empty($pages)) {
-			$html .= '
-		<div class="article_list row' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
-
-			foreach ($pages as $page) {
-				if (empty($title = Helpers::getPublicTitle($page)))
-					continue;
-
-				$html .= '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
-
-				$content = '';
-				if (!empty($page['image'])) {
-					$content .= '
-					<div class="article_image">
-						<img src="' . $page['image'] . '" alt="">
-					</div>';
-				}
-
-				$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
-
-				$html .= sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-				$html .= '
-			</div>';
-			}
-
-			$html .= '
-		</div>';
-		} else
-			$html .= $txt['lp_article_list_addon_no_items'];
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -451,16 +370,21 @@ class ArticleList
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $scripturl, $context, $txt;
 
 		if ($type !== 'article_list')
 			return;
 
-		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
+		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
+
+		ob_start();
 
 		if (!empty($article_list)) {
 			loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
@@ -469,9 +393,59 @@ class ArticleList
 				$(".article_list .col-xs > div").matchHeight();
 			});', true);
 
-			ob_start();
-			echo $article_list;
-			$content = ob_get_clean();
-		}
+			echo '
+		<div class="article_list row', ($parameters['direction'] == 'vertical' ? ' column_direction' : ''), ' between-xs">';
+
+			if (empty($parameters['article_type'])) {
+				foreach ($article_list as $topic) {
+					echo '
+			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
+
+					$content = '';
+					if (!empty($topic['image'])) {
+						$content .= '
+				<div class="article_image">
+					<img src="' . $topic['image'] . '" alt="">
+				</div>';
+					}
+
+					$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
+
+					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
+
+					echo '
+			</div>';
+				}
+			} else {
+				foreach ($article_list as $page) {
+					if (empty($title = Helpers::getPublicTitle($page)))
+						continue;
+
+					echo '
+			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
+
+					$content = '';
+					if (!empty($page['image'])) {
+						$content .= '
+				<div class="article_image">
+					<img src="' . $page['image'] . '" alt="">
+				</div>';
+					}
+
+					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
+
+					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
+
+					echo '
+			</div>';
+				}
+			}
+
+			echo '
+		</div>';
+		} else
+			echo $txt['lp_article_list_addon_no_items'];
+
+		$content = ob_get_clean();
 	}
 }

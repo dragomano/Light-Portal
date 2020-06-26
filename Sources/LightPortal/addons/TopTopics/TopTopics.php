@@ -163,7 +163,7 @@ class TopTopics
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
@@ -171,48 +171,6 @@ class TopTopics
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_topTopics($popularity_type, $num_topics, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$top_topics = self::getData($parameters);
-
-		if (empty($top_topics))
-			return '';
-
-		$html = '
-		<dl class="stats">';
-
-		$max = $top_topics[0]['num_' . $parameters['popularity_type']];
-
-		foreach ($top_topics as $topic) {
-			if ($topic['num_' . $parameters['popularity_type']] < 1)
-				continue;
-
-			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
-
-			$html .= '
-			<dt>' . $topic['link'] . '</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar' . (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
-				<span>' . ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])) . '</span>
-			</dd>';
-		}
-
-		$html .= '
-		</dl>';
-
-		return $html;
 	}
 
 	/**
@@ -229,16 +187,38 @@ class TopTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::getFromCache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$top_topics = Helpers::getFromCache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_topics)) {
 			ob_start();
-			echo $top_topics;
+
+			echo '
+		<dl class="stats">';
+
+			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
+
+			foreach ($top_topics as $topic) {
+				if ($topic['num_' . $parameters['popularity_type']] < 1)
+					continue;
+
+				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+
+				echo '
+			<dt>', $topic['link'], '</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+			</dd>';
+			}
+
+			echo '
+		</dl>';
+
 			$content = ob_get_clean();
 		}
 	}
