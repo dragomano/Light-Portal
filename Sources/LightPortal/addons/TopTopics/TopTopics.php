@@ -167,10 +167,8 @@ class TopTopics
 	{
 		global $boarddir;
 
-		extract($parameters);
-
 		require_once($boarddir . '/SSI.php');
-		return ssi_topTopics($popularity_type, $num_topics, 'array');
+		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}
 
 	/**

@@ -174,14 +174,12 @@ class BoardNews
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public static function getData(array $parameters)
 	{
 		global $boarddir;
 
-		extract($parameters);
-
 		require_once($boarddir . '/SSI.php');
-		return ssi_boardNews($board_id, $num_posts, null, null, 'array');
+		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
 	}
 
 	/**

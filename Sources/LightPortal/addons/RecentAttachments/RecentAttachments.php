@@ -166,15 +166,14 @@ class RecentAttachments
 	 * @param array $parameters
 	 * @return string
 	 */
-	public static function getData($parameters)
+	public static function getData(array $parameters)
 	{
 		global $boarddir;
 
-		extract($parameters);
-		$extensions = !empty($extensions) ? explode(',', $extensions) : [];
+		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
 
 		require_once($boarddir . '/SSI.php');
-		return ssi_recentAttachments($num_attachments, $extensions, 'array');
+		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}
 
 	/**

@@ -252,9 +252,7 @@ class ArticleList
 	{
 		global $smcFunc, $modSettings, $context;
 
-		extract($parameters);
-
-		if (empty($ids))
+		if (empty($parameters['ids']))
 			return [];
 
 		$request = $smcFunc['db_query']('', '
@@ -268,7 +266,7 @@ class ArticleList
 				AND ml.approved = {int:is_approved}' : '') . '
 			ORDER BY t.id_last_msg DESC',
 			array(
-				'topics'      => explode(',', $ids),
+				'topics'      => explode(',', $parameters['ids']),
 				'is_approved' => 1
 			)
 		);
@@ -278,7 +276,7 @@ class ArticleList
 			censorText($row['subject']);
 			censorText($row['body']);
 
-			if (!empty($show_images))
+			if (!empty($parameters['show_images']))
 				$first_post_image = preg_match('/\[img.*]([^\]\[]+)\[\/img\]/U', $row['body'], $value);
 
 			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
@@ -309,9 +307,7 @@ class ArticleList
 	{
 		global $smcFunc, $modSettings, $context;
 
-		extract($parameters);
-
-		if (empty($ids))
+		if (empty($parameters['ids']))
 			return [];
 
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
@@ -328,16 +324,16 @@ class ArticleList
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'pages'        => explode(',', $ids)
+				'pages'        => explode(',', $parameters['ids'])
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['page_id']))
+			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
-			if (!empty($show_images)) {
+			if (!empty($parameters['show_images'])) {
 				Subs::parseContent($row['content'], $row['type']);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			}

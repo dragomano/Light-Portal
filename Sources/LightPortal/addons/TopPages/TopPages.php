@@ -167,8 +167,6 @@ class TopPages
 	{
 		global $smcFunc, $scripturl, $context;
 
-		extract($parameters);
-
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
@@ -177,20 +175,20 @@ class TopPages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
-			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			ORDER BY ' . ($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
 				'type'         => 'page',
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'limit'        => $num_pages
+				'limit'        => $parameters['num_pages']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['page_id']))
+			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(

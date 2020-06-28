@@ -148,8 +148,6 @@ class PageList
 	{
 		global $smcFunc, $txt, $context;
 
-		extract($parameters);
-
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
@@ -162,7 +160,7 @@ class PageList
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			ORDER BY {raw:sort} DESC' . (!empty($num_pages) ? '
+			ORDER BY {raw:sort} DESC' . (!empty($parameters['num_pages']) ? '
 			LIMIT {int:limit}' : ''),
 			array(
 				'guest'        => $txt['guest_title'],
@@ -171,14 +169,14 @@ class PageList
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'sort'         => $sort,
-				'limit'        => $num_pages
+				'sort'         => $parameters['sort'],
+				'limit'        => $parameters['num_pages']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['page_id']))
+			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(

@@ -153,18 +153,16 @@ class TopPosters
 	{
 		global $smcFunc, $scripturl, $modSettings, $context;
 
-		extract($parameters);
-
 		$request = $smcFunc['db_query']('', '
-			SELECT mem.id_member, mem.real_name, mem.posts' . ($show_avatars ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
-			FROM {db_prefix}members AS mem' . ($show_avatars ? '
+			SELECT mem.id_member, mem.real_name, mem.posts' . ($parameters['show_avatars'] ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
+			FROM {db_prefix}members AS mem' . ($parameters['show_avatars'] ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)' : '') . '
 			WHERE mem.posts > {int:num_posts}
 			ORDER BY mem.posts DESC
 			LIMIT {int:num_posters}',
 			array(
 				'num_posts'   => 0,
-				'num_posters' => $num_posters
+				'num_posters' => $parameters['num_posters']
 			)
 		);
 
@@ -173,7 +171,7 @@ class TopPosters
 			$posters[] = array(
 				'name'   => $row['real_name'],
 				'link'   => allowedTo('profile_view') ? '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
-				'avatar' => $show_avatars ? ($row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : $modSettings['avatar_url'] . '/default.png') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar'])) : null,
+				'avatar' => $parameters['show_avatars'] ? ($row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : $modSettings['avatar_url'] . '/default.png') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar'])) : null,
 				'posts'  => $row['posts']
 			);
 		}
