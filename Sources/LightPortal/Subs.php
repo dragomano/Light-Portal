@@ -136,7 +136,7 @@ class Subs
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
+			WHERE status = {int:status}' . ($context['user']['is_admin'] ? '' : '
 				AND author_id = {int:user_id}'),
 			array(
 				'status'  => Page::STATUS_ACTIVE,

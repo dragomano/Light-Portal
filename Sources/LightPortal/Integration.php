@@ -105,7 +105,7 @@ class Integration
 
 		loadLanguage('LightPortal/');
 
-		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? array() : explode(',', $modSettings['lp_enabled_plugins']);
+		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
@@ -228,7 +228,7 @@ class Integration
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				allowedTo('admin_forum') ? array(
+				$context['user']['is_admin'] ? array(
 					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
