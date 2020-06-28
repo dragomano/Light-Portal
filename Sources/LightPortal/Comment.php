@@ -45,7 +45,7 @@ class Comment
 	 */
 	public function prepare()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $txt, $modSettings, $scripturl;
 
 		if (empty($this->alias))
 			return;
@@ -76,8 +76,12 @@ class Comment
 		$comment_tree   = $this->getTree($comments);
 		$total_comments = sizeof($comment_tree);
 
+		$page_index_url = $context['canonical_url'];
+		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']))
+			$page_index_url = $scripturl . '?action=portal';
+
 		$temp_start            = (int) $_REQUEST['start'];
-		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
+		$context['page_index'] = constructPageIndex($page_index_url, $_REQUEST['start'], $total_comments, $limit);
 		$context['start']      = &$_REQUEST['start'];
 		$start                 = (int) $_REQUEST['start'];
 

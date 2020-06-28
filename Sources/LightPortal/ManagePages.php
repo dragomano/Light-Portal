@@ -295,7 +295,7 @@ class ManagePages
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . (allowedTo('admin_forum') ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
@@ -322,7 +322,7 @@ class ManagePages
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'created_at'  => Helpers::getFriendlyTime($row['date']),
-				'is_front'    => Helpers::isFrontpage($row['page_id']),
+				'is_front'    => Helpers::isFrontpage($row['alias']),
 				'title'       => $titles[$row['page_id']] ?? []
 			);
 		}
@@ -349,7 +349,7 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . (allowedTo('admin_forum') ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
@@ -507,10 +507,6 @@ class ManagePages
 			case 'action_off':
 				self::toggleStatus($items);
 				break;
-		}
-
-		foreach ($items as $item) {
-			Helpers::getFromCache('page_' . $item, null);
 		}
 
 		redirectexit($redirect);
@@ -1206,7 +1202,6 @@ class ManagePages
 		}
 
 		Helpers::getFromCache('all_titles', null);
-		Helpers::getFromCache('page_' . $item, null);
 		Helpers::getFromCache('page_' . $context['lp_page']['alias'], null);
 
 		redirectexit('action=admin;area=lp_pages;sa=main');

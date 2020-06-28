@@ -81,7 +81,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['id']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
+							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					)

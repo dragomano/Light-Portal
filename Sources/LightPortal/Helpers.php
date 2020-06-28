@@ -419,21 +419,21 @@ class Helpers
 	}
 
 	/**
-	 * Check if the page with id = $id set as the portal frontpage
+	 * Check if the page with alias = $alias set as the portal frontpage
 	 *
-	 * Проверяет, установлена ли страница с id = $id как главная страница
+	 * Проверяет, установлена ли страница с alias = $alias как главная
 	 *
-	 * @param int $id
+	 * @param string $alias
 	 * @return bool
 	 */
-	public static function isFrontpage(int $id)
+	public static function isFrontpage(string $alias)
 	{
 		global $modSettings;
 
-		if (empty($id))
+		if (empty($alias))
 			return false;
 
-		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) && $modSettings['lp_frontpage_id'] == $id;
+		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']) && $modSettings['lp_frontpage_alias'] == $alias;
 	}
 
 	/**
