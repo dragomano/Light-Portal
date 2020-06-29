@@ -52,19 +52,21 @@ class FacebookComments
 	}
 
 	/**
+	 * Add settings
+	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $settings
+	 * @param array $options
 	 * @return void
 	 */
-	public static function addSettings(&$settings)
+	public static function addSettings(&$options)
 	{
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_color_scheme']))
-			$modSettings['lp_facebook_comments_addon_color_scheme'] = static::$color_scheme;
+			updateSettings(array('lp_facebook_comments_addon_color_scheme' => static::$color_scheme));
 
-		$settings[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
+		$options[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
 	}
 
 	/**

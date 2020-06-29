@@ -47,27 +47,31 @@ class Trumbowyg
 	private static $auto_grow = 0;
 
 	/**
+	 * Add settings
+	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $settings
+	 * @param array $options
 	 * @return void
 	 */
-	public static function addSettings(&$settings)
+	public static function addSettings(&$options)
 	{
 		global $modSettings, $context, $txt;
 
 		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
-			$modSettings['lp_trumbowyg_addon_dark_themes'] = static::$dark_themes;
+			updateSettings(array('lp_trumbowyg_addon_dark_themes' => static::$dark_themes));
 		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
-			$modSettings['lp_trumbowyg_addon_auto_grow'] = static::$auto_grow;
+			updateSettings(array('lp_trumbowyg_addon_auto_grow' => static::$auto_grow));
 
 		$context['lp_trumbowyg_addon_dark_themes_options'] = self::getForumThemes();
 
-		$settings[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
-		$settings[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
+		$options[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
+		$options[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
 	}
 
 	/**
+	 * Collecting the names of existing themes
+	 *
 	 * Собираем названия существующих тем оформления
 	 *
 	 * @return void

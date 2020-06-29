@@ -83,7 +83,7 @@ class ArticleList
 	 *
 	 * @var bool
 	 */
-	private static $show_images = false;
+	private static $seek_images = false;
 
 	/**
 	 * Adding the block options
@@ -102,7 +102,7 @@ class ArticleList
 				'article_type'       => static::$article_type,
 				'ids'                => static::$ids,
 				'direction'          => static::$direction,
-				'show_images'        => static::$show_images
+				'seek_images'        => static::$seek_images
 			)
 		);
 	}
@@ -127,7 +127,7 @@ class ArticleList
 			'article_type'       => FILTER_VALIDATE_INT,
 			'ids'                => FILTER_SANITIZE_STRING,
 			'direction'          => FILTER_SANITIZE_STRING,
-			'show_images'        => FILTER_VALIDATE_BOOLEAN
+			'seek_images'        => FILTER_VALIDATE_BOOLEAN
 		);
 	}
 
@@ -230,12 +230,12 @@ class ArticleList
 			}
 		}
 
-		$context['posting_fields']['show_images']['label']['text'] = $txt['lp_article_list_addon_show_images'];
-		$context['posting_fields']['show_images']['input'] = array(
+		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list_addon_seek_images'];
+		$context['posting_fields']['seek_images']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
-				'id'      => 'show_images',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_images'])
+				'id'      => 'seek_images',
+				'checked' => !empty($context['lp_block']['options']['parameters']['seek_images'])
 			)
 		);
 	}
@@ -276,7 +276,7 @@ class ArticleList
 			censorText($row['subject']);
 			censorText($row['body']);
 
-			if (!empty($parameters['show_images']))
+			if (!empty($parameters['seek_images']))
 				$first_post_image = preg_match('/\[img.*]([^\]\[]+)\[\/img\]/U', $row['body'], $value);
 
 			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
@@ -333,13 +333,12 @@ class ArticleList
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
-			if (!empty($parameters['show_images'])) {
+			if (!empty($parameters['seek_images'])) {
 				Subs::parseContent($row['content'], $row['type']);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			}
 
 			$image = !empty($first_post_image) ? array_pop($value) : null;
-
 			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
 				$image = $modSettings['lp_image_placeholder'];
 

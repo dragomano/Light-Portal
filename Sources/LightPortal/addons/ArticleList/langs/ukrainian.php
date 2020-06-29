@@ -10,6 +10,6 @@ $txt['lp_article_list_addon_ids']              = 'Ідентифікатори �
 $txt['lp_article_list_addon_ids_subtext']      = 'Вкажіть ідентифікатори потрібних тем або сторінок, через кому.';
 $txt['lp_article_list_addon_direction']        = 'Напрямок списку';
 $txt['lp_article_list_addon_direction_set']    = array('horizontal' => 'Горизонтальне', 'vertical' => 'Вертикальне');
-$txt['lp_article_list_addon_show_images']      = 'Показувати зображення з тексту статей';
+$txt['lp_article_list_addon_seek_images']      = 'Шукати зображення в тексті статей';
 
 $txt['lp_article_list_addon_no_items'] = 'Доступних статей немає.';
