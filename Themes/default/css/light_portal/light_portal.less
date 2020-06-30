@@ -955,6 +955,14 @@ dl {
 
 	.flipster__button {
 		height: auto !important;
+
+		&:focus,
+		&:hover,
+		&::selection {
+			background: none;
+			border: none;
+			box-shadow: none;
+		}
 	}
 }
 

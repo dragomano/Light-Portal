@@ -57,3 +57,6 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 ### Supporting Light Portal
 Light Portal is an BSD-licensed open source project and completely free to use.
 It was made for your convenient, and if you like the project, support the developer.
+
+### About plugins
+All custom addons for the portal may or may not have their own licenses.
