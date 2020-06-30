@@ -9,7 +9,7 @@
  */
 function template_show_topics_as_articles()
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl, $txt, $modSettings;
 
 	if (!empty($context['lp_frontpage_articles'])) {
 		echo '
@@ -44,7 +44,7 @@ function template_show_topics_as_articles()
 			}
 
 			echo '
-				<div class="card__info">
+				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
 					<span class="card__category smalltext">
 						', $topic['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
 						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
@@ -100,7 +100,7 @@ function template_show_topics_as_articles()
  */
 function template_show_pages_as_articles()
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl, $txt, $modSettings;
 
 	if (!empty($context['lp_frontpage_articles'])) {
 		echo '
@@ -135,7 +135,7 @@ function template_show_pages_as_articles()
 			}
 
 			echo '
-				<div class="card__info">
+				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
 					<span class="card__category smalltext">
 						', $page['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
 						<time datetime="', $page['datetime'], '">', $page['date'], '</time>
@@ -191,7 +191,7 @@ function template_show_pages_as_articles()
  */
 function template_show_boards_as_articles()
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl, $txt, $modSettings;
 
 	if (!empty($context['lp_frontpage_articles'])) {
 		echo '
@@ -226,7 +226,7 @@ function template_show_boards_as_articles()
 			}
 
 			echo '
-				<div class="card__info">
+				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
 					<span class="card__category smalltext">
 						', $board['is_updated'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '';
 

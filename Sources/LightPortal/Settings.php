@@ -214,6 +214,7 @@ class Settings
 			array('check', 'lp_show_images_in_articles'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
 			//array('int', 'lp_teaser_size', 'min' => 0),
+			array('check', 'lp_frontpage_card_alt_layout'),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
@@ -245,13 +246,13 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item)
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item)
