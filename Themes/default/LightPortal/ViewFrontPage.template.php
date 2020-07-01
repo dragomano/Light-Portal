@@ -103,8 +103,12 @@ function template_show_pages_as_articles()
 	global $context, $scripturl, $txt, $modSettings;
 
 	if (!empty($context['lp_frontpage_articles'])) {
+		if (empty($context['lp_active_blocks']))
+			echo '
+	<div class="col-xs">';
+
 		echo '
-	<div class="lp_frontpage_articles row">';
+	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 		foreach ($context['lp_frontpage_articles'] as $page) {
 			$alt = $page['title'];
@@ -178,6 +182,10 @@ function template_show_pages_as_articles()
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
 		</div>
+	</div>';
+
+		if (empty($context['lp_active_blocks']))
+			echo '
 	</div>';
 	}
 }

@@ -186,59 +186,8 @@ section {
 	}
 }
 
-/* The frontpage old style */
+/* The frontpage style */
 .lp_frontpage_articles {
-	.article_title_link {
-		display: inline-block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		width: 90%;
-
-		&:hover {
-			white-space: normal;
-		}
-	}
-
-	.roundframe {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		box-sizing: content-box;
-		padding: 8px 10px;
-	}
-
-	.article_image {
-		text-align: center;
-
-		img {
-			display: block;
-			height: auto;
-			max-width: 100%;
-			.border-radius;
-		}
-	}
-
-	.article_content {
-		overflow: hidden;
-		flex: 1 1 auto;
-
-		.inner {
-			height: auto;
-			min-height: auto;
-			overflow: hidden;
-			color: transparent;
-			-webkit-background-clip: text;
-			background-clip: text;
-			background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
-		}
-	}
-}
-
-/* The frontpage new style */
-.lp_frontpage_articles {
-	margin-top: -10px;
-
 	.card {
 		transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
 		position: relative;

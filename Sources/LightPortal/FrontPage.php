@@ -159,7 +159,7 @@ class FrontPage
 		loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
 		addInlineJavaScript('
 		jQuery(document).ready(function ($) {
-			$(".lp_frontpage_articles .roundframe").matchHeight();
+			$(".lp_frontpage_articles .card").matchHeight();
 		});', true);
 
 		Subs::runAddons('frontpageAssets');
