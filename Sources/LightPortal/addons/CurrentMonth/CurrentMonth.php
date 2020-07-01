@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -128,10 +128,6 @@ class CurrentMonth
 		}
 
 		foreach ($calendar_data['weeks'] as $week) {
-			$current_month_started = false;
-			$count = 1;
-			$final_count = 1;
-
 			echo '
 					<tbody>
 						<tr class="days_wrapper">';
@@ -159,14 +155,10 @@ class CurrentMonth
 						echo '
 								<span class="day_text">', $day['day'], '</span>';
 					}
-
-					$current_month_started = $count;
 				}
 
 				echo '
 							</td>';
-
-				++$count;
 			}
 
 			echo '

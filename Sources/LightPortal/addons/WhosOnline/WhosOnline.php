@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -108,48 +108,12 @@ class WhosOnline
 	 *
 	 * @return array
 	 */
-	private static function getData()
+	public static function getData()
 	{
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
 		return ssi_whosOnline('array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @return string
-	 */
-	public static function getHtml()
-	{
-		global $user_info, $txt, $settings;
-
-		$whos_online = self::getData();
-
-		$html = Helpers::getCorrectDeclension(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getCorrectDeclension(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
-
-		$online_list = [];
-		if (!empty($user_info['buddies']))
-			$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
-		if (!empty($whos_online['num_spiders']))
-			$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
-		if (!empty($whos_online['num_users_hidden']))
-			$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
-
-		if (!empty($online_list))
-			$html .= ' (' . implode(', ', $online_list) . ')';
-
-		$html .= '
-		<br>' . implode(', ', $whos_online['list_users_online']);
-
-		if (!empty($settings['show_group_key']) && !empty($whos_online['membergroups']))
-			$html .= '
-		<br>[' . implode(']&nbsp;&nbsp;[', $whos_online['membergroups']) . ']';
-
-		return $html;
 	}
 
 	/**
@@ -166,16 +130,36 @@ class WhosOnline
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt, $settings;
 
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helpers::getFromCache('whos_online_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $parameters['update_interval'] ?? $cache_time);
+		$whos_online = Helpers::getFromCache('whos_online_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time);
 
 		if (!empty($whos_online)) {
 			ob_start();
-			echo $whos_online;
+
+			echo Helpers::getCorrectDeclension(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getCorrectDeclension(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
+
+			$online_list = [];
+			if (!empty($user_info['buddies']))
+				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
+			if (!empty($whos_online['num_spiders']))
+				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
+			if (!empty($whos_online['num_users_hidden']))
+				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
+
+			if (!empty($online_list))
+				echo ' (' . implode(', ', $online_list) . ')';
+
+			echo '
+			<br>' . implode(', ', $whos_online['list_users_online']);
+
+			if (!empty($settings['show_group_key']) && !empty($whos_online['membergroups']))
+				echo '
+			<br>[' . implode(']&nbsp;&nbsp;[', $whos_online['membergroups']) . ']';
+
 			$content = ob_get_clean();
 		}
 	}

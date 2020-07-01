@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -20,9 +20,9 @@ if (!defined('SMF'))
 class ManagePages
 {
 	/**
-	 * The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore
+	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
 	 *
-	 * Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания
+	 * Имя страницы должно начинаться с латинской буквы и может состоять из строчных латинских букв, цифр и знака подчеркивания
 	 *
 	 * @var string
 	 */
@@ -88,18 +88,32 @@ class ManagePages
 			'get_items' => array(
 				'function' => __CLASS__ . '::getAll',
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0 OR INSTR(t.title, {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $search_params['string'])
 				)
 			),
 			'get_count' => array(
 				'function' => __CLASS__ . '::getTotalQuantity',
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(alias, {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' INSTR(p.alias, {string:quick_search_string}) > 0 OR INSTR(t.title, {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $search_params['string'])
 				)
 			),
 			'columns' => array(
+				'id' => array(
+					'header' => array(
+						'value' => '#',
+						'style' => 'width: 5%'
+					),
+					'data' => array(
+						'db'    => 'id',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.page_id',
+						'reverse' => 'p.page_id DESC'
+					)
+				),
 				'date' => array(
 					'header' => array(
 						'value' => $txt['date']
@@ -109,8 +123,8 @@ class ManagePages
 						'class' => 'centertext'
 					),
 					'sort' => array(
-						'default' => 'p.created_at DESC',
-						'reverse' => 'p.created_at'
+						'default' => 'date DESC',
+						'reverse' => 'date'
 					)
 				),
 				'num_views' => array(
@@ -164,7 +178,12 @@ class ManagePages
 						{
 							$title = Helpers::getPublicTitle($entry);
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
-						}
+						},
+						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
 					)
 				),
 				'actions' => array(
@@ -219,7 +238,7 @@ class ManagePages
 					'position' => 'after_title',
 					'value' => '
 						<i class="fas fa-search centericon"></i>
-						<input type="text" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_page_alias'] . '">
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_search_pages'] . '">
 						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button" style="float:none">',
 					'class' => 'floatright'
 				),
@@ -273,15 +292,18 @@ class ManagePages
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.created_at, mem.real_name AS author_name
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (allowedTo('admin_forum') ? '
+				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, array(
+				'type'    => 'page',
+				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id'],
 				'sort'    => $sort,
 				'start'   => $start,
@@ -299,8 +321,8 @@ class ManagePages
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['created_at']),
-				'is_front'    => Helpers::isFrontpage($row['page_id']),
+				'created_at'  => Helpers::getFriendlyTime($row['date']),
+				'is_front'    => Helpers::isFrontpage($row['alias']),
 				'title'       => $titles[$row['page_id']] ?? []
 			);
 		}
@@ -325,12 +347,15 @@ class ManagePages
 		global $smcFunc, $user_info, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages' . (allowedTo('admin_forum') ? '
+			SELECT COUNT(p.page_id)
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
-			WHERE author_id = {int:user_id}') . (!empty($query_string) ? '
+			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
 			array_merge($query_params, array(
+				'type'    => 'page',
+				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id']
 			))
 		);
@@ -482,10 +507,6 @@ class ManagePages
 			case 'action_off':
 				self::toggleStatus($items);
 				break;
-		}
-
-		foreach ($items as $item) {
-			Helpers::getFromCache('page_' . $item, null);
 		}
 
 		redirectexit($redirect);
@@ -716,10 +737,8 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$context['posting_fields']['subject'] = ['no'];
-
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -728,7 +747,8 @@ class ManagePages
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], array('english', $language)),
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -743,7 +763,8 @@ class ManagePages
 				'required'  => true,
 				'pattern'   => static::$alias_pattern,
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
@@ -753,11 +774,12 @@ class ManagePages
 				'id'       => 'type',
 				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias'])
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		foreach ($txt['lp_page_types'] as $type => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
 					'value'    => $type,
 					'selected' => $type == $context['lp_page']['type']
@@ -777,7 +799,8 @@ class ManagePages
 				'id'        => 'description',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['description']
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
@@ -788,7 +811,8 @@ class ManagePages
 				'id'        => 'keywords',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['keywords']
-			)
+			),
+			'tab' => 'seo'
 		);
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
@@ -801,7 +825,7 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_page']['permissions']
@@ -815,7 +839,7 @@ class ManagePages
 		}
 
 		if ($context['lp_page']['created_at'] >= time()) {
-			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_block_publish_datetime'] . '</label>';
+			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
 			$context['posting_fields']['datetime']['input']['html'] = '
 			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $context['lp_page']['date'] . '">
 			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
@@ -830,7 +854,8 @@ class ManagePages
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_page']['content'],
 					'required'  => true
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -861,7 +886,7 @@ class ManagePages
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
-		loadTemplate('Post');
+		loadTemplate('LightPortal/ManageSettings');
 	}
 
 	/**
@@ -1177,7 +1202,6 @@ class ManagePages
 		}
 
 		Helpers::getFromCache('all_titles', null);
-		Helpers::getFromCache('page_' . $item, null);
 		Helpers::getFromCache('page_' . $context['lp_page']['alias'], null);
 
 		redirectexit('action=admin;area=lp_pages;sa=main');
@@ -1306,7 +1330,12 @@ class ManagePages
 							$title = Helpers::getPublicTitle($entry);
 
 							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
-						}
+						},
+						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
 					)
 				),
 				'actions' => array(
@@ -1607,7 +1636,7 @@ class ManagePages
 
 		if (!empty($items)) {
 			$items = array_chunk($items, 100);
-			$count = count($items);
+			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
@@ -1622,7 +1651,7 @@ class ManagePages
 
 		if (!empty($titles) && !empty($result)) {
 			$titles = array_chunk($titles, 100);
-			$count = count($titles);
+			$count = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
@@ -1637,7 +1666,7 @@ class ManagePages
 
 		if (!empty($params) && !empty($result)) {
 			$params = array_chunk($params, 100);
-			$count = count($params);
+			$count = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
@@ -1652,7 +1681,7 @@ class ManagePages
 
 		if (!empty($keywords) && !empty($result)) {
 			$keywords = array_chunk($keywords, 100);
-			$count = count($keywords);
+			$count = sizeof($keywords);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
@@ -1667,7 +1696,7 @@ class ManagePages
 
 		if (!empty($comments) && !empty($result)) {
 			$comments = array_chunk($comments, 100);
-			$count = count($comments);
+			$count = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
 				$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)

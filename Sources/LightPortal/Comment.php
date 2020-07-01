@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -45,7 +45,7 @@ class Comment
 	 */
 	public function prepare()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $txt, $modSettings, $scripturl;
 
 		if (empty($this->alias))
 			return;
@@ -69,15 +69,19 @@ class Comment
 			$comments
 		);
 
-		$total_comments     = count($comments);
+		$total_comments     = sizeof($comments);
 		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
 
 		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$comment_tree   = $this->getTree($comments);
-		$total_comments = count($comment_tree);
+		$total_comments = sizeof($comment_tree);
+
+		$page_index_url = $context['canonical_url'];
+		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']))
+			$page_index_url = $scripturl . '?action=portal';
 
 		$temp_start            = (int) $_REQUEST['start'];
-		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_comments, $limit);
+		$context['page_index'] = constructPageIndex($page_index_url, $_REQUEST['start'], $total_comments, $limit);
 		$context['start']      = &$_REQUEST['start'];
 		$start                 = (int) $_REQUEST['start'];
 
@@ -99,18 +103,19 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $txt;
+		global $smcFunc, $user_info, $context, $modSettings, $txt;
 
 		$args = array(
-			'parent_id'  => FILTER_VALIDATE_INT,
-			'counter'    => FILTER_VALIDATE_INT,
-			'level'      => FILTER_VALIDATE_INT,
-			'page_id'    => FILTER_VALIDATE_INT,
-			'page_title' => FILTER_SANITIZE_STRING,
-			'page_alias' => FILTER_SANITIZE_STRING,
-			'page_url'   => FILTER_SANITIZE_STRING,
-			'message'    => FILTER_SANITIZE_STRING,
-			'start'      => FILTER_VALIDATE_INT
+			'parent_id'   => FILTER_VALIDATE_INT,
+			'counter'     => FILTER_VALIDATE_INT,
+			'level'       => FILTER_VALIDATE_INT,
+			'page_id'     => FILTER_VALIDATE_INT,
+			'page_title'  => FILTER_SANITIZE_STRING,
+			'page_alias'  => FILTER_SANITIZE_STRING,
+			'page_url'    => FILTER_SANITIZE_STRING,
+			'message'     => FILTER_SANITIZE_STRING,
+			'start'       => FILTER_VALIDATE_INT,
+			'commentator' => FILTER_VALIDATE_INT
 		);
 
 		$data = filter_input_array(INPUT_POST, $args);
@@ -118,15 +123,16 @@ class Comment
 		if (empty($data))
 			return;
 
-		$parent     = $data['parent_id'];
-		$counter    = $data['counter'];
-		$level      = $data['level'];
-		$page_id    = $data['page_id'];
-		$page_title = $data['page_title'];
-		$page_alias = $data['page_alias'];
-		$page_url   = $data['page_url'];
-		$message    = $data['message'];
-		$start      = $data['start'];
+		$parent      = $data['parent_id'];
+		$counter     = $data['counter'];
+		$level       = $data['level'];
+		$page_id     = $data['page_id'];
+		$page_title  = $data['page_title'];
+		$page_alias  = $data['page_alias'];
+		$page_url    = $data['page_url'];
+		$message     = $data['message'];
+		$start       = $data['start'];
+		$commentator = $data['commentator'];
 
 		if (empty($page_id) || empty($message))
 			return;
@@ -171,13 +177,15 @@ class Comment
 
 			ob_start();
 
+			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+
 			show_single_comment([
 				'id'          => $item,
 				'alias'       => $page_alias,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => $this->getUserAvatar(),
-				'message'     => $message,
+				'message'     => empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time)
 			], $counter + 1, $level + 1);
@@ -185,14 +193,15 @@ class Comment
 			$comment = ob_get_clean();
 
 			$result = array(
-				'item'     => $item,
-				'parent'   => $parent,
-				'comment'  => $comment,
-				'created'  => $time,
-				'title'    => $txt['response_prefix'] . $page_title,
-				'alias'    => $page_alias,
-				'page_url' => $page_url,
-				'start'    => $start
+				'item'        => $item,
+				'parent'      => $parent,
+				'comment'     => $comment,
+				'created'     => $time,
+				'title'       => $txt['response_prefix'] . $page_title,
+				'alias'       => $page_alias,
+				'page_url'    => $page_url,
+				'start'       => $start,
+				'commentator' => $commentator
 			);
 
 			if (empty($parent))
@@ -259,10 +268,9 @@ class Comment
 		$smcFunc['db_insert']('',
 			'{db_prefix}background_tasks',
 			array(
-				'task_file'    => 'string',
-				'task_class'   => 'string',
-				'task_data'    => 'string',
-				'claimed_time' => 'int'
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
 			),
 			array(
 				'$sourcedir/LightPortal/Notify.php',
@@ -270,20 +278,19 @@ class Comment
 				$smcFunc['json_encode'](
 					array(
 						'time'           => $options['created'],
-						'member_id'	     => $user_info['id'],
-						'member_name'    => $user_info['name'],
+						'sender_id'	     => $user_info['id'],
+						'sender_name'    => $user_info['name'],
+						'author_id'      => $context['lp_page']['author_id'],
+						'commentator_id' => $options['commentator'],
 						'content_type'   => $type,
 						'content_id'     => $options['item'],
 						'content_action' => $action,
-						'extra'          => json_encode(
-							array(
-								'content_subject' => $options['title'],
-								'content_link'    => $options['page_url'] . "start=" . $options['start'] . '#comment' . $options['item']
-							)
-						)
+						'extra'          => $smcFunc['json_encode']([
+							'content_subject' => $options['title'],
+							'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
+						])
 					)
-				),
-				0
+				)
 			),
 			array('id_task')
 		);
@@ -342,7 +349,7 @@ class Comment
 	 */
 	public static function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext, $context;
+		global $smcFunc, $memberContext, $modSettings, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
@@ -363,6 +370,8 @@ class Comment
 				loadMemberContext($row['author_id']);
 			}
 
+			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],
 				'page_id'     => $row['page_id'],
@@ -370,7 +379,7 @@ class Comment
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'avatar'      => $memberContext[$row['author_id']]['avatar']['image'],
-				'message'     => parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id),
+				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
 				'created_at'  => $row['created_at']
 			);
 		}

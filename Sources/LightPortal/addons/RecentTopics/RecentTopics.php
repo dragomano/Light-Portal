@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -49,6 +49,24 @@ class RecentTopics
 	private static $num_topics = 10;
 
 	/**
+	 * If set, does NOT show topics from the specified boards
+	 *
+	 * Идентификаторы разделов, темы из которых НЕ нужно показывать
+	 *
+	 * @var string
+	 */
+	private static $exclude_boards = '';
+
+	/**
+	 * If set, ONLY includes topics from the specified boards
+	 *
+	 * Идентификаторы разделов, для отображения тем ТОЛЬКО из них
+	 *
+	 * @var string
+	 */
+	private static $include_boards = '';
+
+	/**
 	 * Online list update interval, in seconds
 	 *
 	 * Интервал обновления списка онлайн, в секундах
@@ -71,6 +89,8 @@ class RecentTopics
 			'no_content_class' => static::$no_content_class,
 			'parameters' => array(
 				'num_topics'      => static::$num_topics,
+				'exclude_boards'  => static::$exclude_boards,
+				'include_boards'  => static::$include_boards,
 				'update_interval' => static::$update_interval
 			)
 		);
@@ -93,6 +113,8 @@ class RecentTopics
 
 		$args['parameters'] = array(
 			'num_topics'      => FILTER_VALIDATE_INT,
+			'exclude_boards'  => FILTER_SANITIZE_STRING,
+			'include_boards'  => FILTER_SANITIZE_STRING,
 			'update_interval' => FILTER_VALIDATE_INT
 		);
 	}
@@ -121,6 +143,28 @@ class RecentTopics
 			)
 		);
 
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_topics_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_topics_addon_exclude_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_topics_addon_include_boards'];
+		$context['posting_fields']['include_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_topics_addon_include_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
 		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics_addon_update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
@@ -137,50 +181,21 @@ class RecentTopics
 	 *
 	 * Получаем последние темы форума
 	 *
-	 * @param int $num_topics
+	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($num_topics)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
+		if (!empty($parameters['exclude_boards']))
+			$exclude_boards = explode(',', $parameters['exclude_boards']);
+
+		if (!empty($parameters['include_boards']))
+			$include_boards = explode(',', $parameters['include_boards']);
+
 		require_once($boarddir . '/SSI.php');
-		return ssi_recentTopics($num_topics, null, null, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param int $num_topics
-	 * @return string
-	 */
-	public static function getHtml($num_topics)
-	{
-		global $txt;
-
-		$recent_topics = self::getData($num_topics);
-
-		if (empty($recent_topics))
-			return '';
-
-		$html = '
-		<ul class="recent_topics noup">';
-
-		foreach ($recent_topics as $topic) {
-			$html .= '
-			<li class="windowbg">' . ($topic['is_new'] ? '
-				<span class="new_posts">' . $txt['new'] . '</span>' : '') . $topic['icon'] . ' ' . $topic['link'] . '
-				<br><span class="smalltext">' . $txt['by'] . ' ' . $topic['poster']['link'] . '</span>
-				<br><span class="smalltext">' . Helpers::getFriendlyTime($topic['timestamp']) . '</span>
-			</li>';
-		}
-
-		$html .= '
-		</ul>';
-
-		return $html;
+		return ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 	}
 
 	/**
@@ -197,22 +212,36 @@ class RecentTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::getFromCache(
-			'recent_topics_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getHtml',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters['num_topics']
-		);
+		$recent_topics = Helpers::getFromCache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
 
 		if (!empty($recent_topics)) {
 			ob_start();
-			echo $recent_topics;
+
+			echo '
+		<ul class="recent_topics noup">';
+
+			foreach ($recent_topics as $topic) {
+				echo '
+			<li class="windowbg">';
+
+				if ($topic['is_new'])
+					echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+
+				echo $topic['icon'], ' ', $topic['link'], '
+				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>
+				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
+			</li>';
+			}
+
+			echo '
+		</ul>';
+
 			$content = ob_get_clean();
 		}
 	}

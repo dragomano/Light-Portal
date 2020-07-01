@@ -22,7 +22,7 @@ $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <
 $txt['lp_frontpage_title']         = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']          = 'Strona główna portalu';
 $txt['lp_frontpage_mode_set']      = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
-$txt['lp_frontpage_id']            = 'Strona główna portalu';
+$txt['lp_frontpage_alias']         = 'Strona główna portalu';
 $txt['lp_frontpage_boards']        = 'Działy artykułów strony głównej';
 $txt['lp_frontpage_layout']        = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']    = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
@@ -209,9 +209,9 @@ $txt['lp_comment_placeholder'] = 'Dodaj komentarz...';
 
 $txt['alert_group_light_portal']           = LP_NAME;
 $txt['alert_page_comment']                 = 'Po otrzymaniu komentarza na stronie';
-$txt['alert_new_comment_page_comment']     = '{member_link} napisał komentarz <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_comment_page_comment']     = '{member_link} napisał komentarz {page_comment_new_comment}';
 $txt['alert_page_comment_reply']           = 'Po otrzymaniu odpowiedzi na mój komentarz';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} napisał odpowiedź pod Twoim komentarzem <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} napisał odpowiedź pod Twoim komentarzem {page_comment_reply_new_reply}';
 
 // Errors
 $txt['lp_page_not_found']             = 'Nie znaleziono strony!';

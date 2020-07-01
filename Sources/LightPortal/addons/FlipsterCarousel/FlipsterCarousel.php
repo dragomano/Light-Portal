@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -154,7 +154,7 @@ class FlipsterCarousel
 		);
 
 		foreach ($txt['lp_flipster_carousel_addon_style_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['style']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['style']
@@ -190,9 +190,11 @@ class FlipsterCarousel
 			'type' => 'textarea',
 			'after' => $txt['lp_flipster_carousel_addon_images_subtext'],
 			'attributes' => array(
-				'id'    => 'images',
-				'value' => $context['lp_block']['options']['parameters']['images']
-			)
+				'id'       => 'images',
+				'value'    => $context['lp_block']['options']['parameters']['images'],
+				'required' => true
+			),
+			'tab' => 'content'
 		);
 	}
 
@@ -250,7 +252,7 @@ class FlipsterCarousel
 		if ($type !== 'flipster_carousel')
 			return;
 
-		$flipster_html = Helpers::getFromCache('flipster_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$flipster_html = Helpers::getFromCache('flipster_carousel_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
 		if (!empty($flipster_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/jquery.flipster@1/dist/jquery.flipster.min.css', array('external' => true));

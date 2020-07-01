@@ -283,3 +283,222 @@ function template_callback_panel_direction()
 		</table>
 	</dd>';
 }
+
+/**
+ * Display settings on multiple tabs
+ *
+ * Вывод настроек на нескольких вкладках
+ *
+ * @param string $tab
+ * @return void
+ */
+function template_post_tab($tab = 'content')
+{
+	global $context;
+
+	echo '
+					<dl>';
+
+	foreach ($context['posting_fields'] as $pfid => $pf) {
+		if (empty($pf['input']['tab']))
+			$pf['input']['tab'] = 'tuning';
+
+		if ($pf['input']['tab'] != $tab)
+			continue;
+
+		if (empty($pf['label']) || empty($pf['input']))
+			continue;
+
+		echo '
+						<dt class="clear pf_', $pfid, '">';
+
+		if (!empty($pf['label']['before']))
+			echo '
+							', $pf['label']['before'];
+
+		if (!empty($pf['label']['html']))
+			echo $pf['label']['html'];
+		else
+			echo '
+							<label', ($pf['input']['type'] === 'radio_select' ? '' : ' for="' . (!empty($pf['input']['attributes']['id']) ? $pf['input']['attributes']['id'] : $pfid) . '"'), ' id="caption_', $pfid, '"', !empty($pf['label']['class']) ? ' class="' . $pf['label']['class'] . '"' : '', '>', $pf['label']['text'], '</label>';
+
+		if (!empty($pf['label']['after']))
+			echo '
+							', $pf['label']['after'];
+
+		echo '
+						</dt>
+						<dd class="pf_', $pfid, '">';
+
+		if (!empty($pf['input']['before']))
+			echo '
+							', $pf['input']['before'];
+
+		if (!empty($pf['input']['html'])) {
+			echo $pf['input']['html'];
+		} elseif (in_array($pf['input']['type'], array('text', 'password', 'color', 'date', 'datetime-local', 'email', 'month', 'number', 'range', 'tel', 'time', 'url', 'week', 'checkbox'))) {
+			echo '
+							<input type="', $pf['input']['type'], '"';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
+				foreach ($pf['input']['attributes'] as $attribute => $value) {
+					if (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">';
+		} elseif ($pf['input']['type'] === 'textarea') {
+			echo '
+							<textarea';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
+				foreach ($pf['input']['attributes'] as $attribute => $value) {
+					if ($attribute === 'value')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">', !empty($pf['input']['attributes']['value']) ? $pf['input']['attributes']['value'] : '', '</textarea>';
+		} elseif ($pf['input']['type'] === 'select' && is_array($pf['input']['options'])) {
+			echo '
+							<select';
+
+			if (empty($pf['input']['attributes']['id']))
+				echo ' id="', $pfid, '"';
+
+			if (empty($pf['input']['attributes']['name']))
+				echo ' name="', $pfid, '"';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
+				foreach ($pf['input']['attributes'] as $attribute => $value) {
+					if (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo ' tabindex="', $context['tabindex']++, '">';
+
+			foreach ($pf['input']['options'] as $optlabel => $option) {
+				if (!empty($option['options']) && is_array($option['options'])) {
+					echo '
+								<optgroup';
+
+					if (empty($option['label']))
+						echo ' label="', $optlabel, '"';
+
+					if (!empty($option) && is_array($option)) {
+						foreach ($option as $attribute => $value) {
+							if ($attribute === 'options')
+								continue;
+							elseif (is_bool($value))
+								echo $value ? ' ' . $attribute : '';
+							else
+								echo ' ', $attribute, '="', $value, '"';
+						}
+					}
+
+					echo '>';
+
+					foreach ($option['options'] as $grouped_optlabel => $grouped_option) {
+						echo '
+									<option';
+
+						foreach ($grouped_option as $attribute => $value) {
+							if (is_bool($value))
+								echo $value ? ' ' . $attribute : '';
+							else
+								echo ' ', $attribute, '="', $value, '"';
+						}
+
+						echo '>', $grouped_option['label'], '</option>';
+
+					}
+
+					echo '
+								</optgroup>';
+				} else {
+					echo '
+								<option';
+
+					foreach ($option as $attribute => $value) {
+						if (is_bool($value))
+							echo $value ? ' ' . $attribute : '';
+						else
+							echo ' ', $attribute, '="', $value, '"';
+					}
+
+					echo '>', $optlabel, '</option>';
+				}
+			}
+
+			echo '
+							</select>';
+		} elseif ($pf['input']['type'] === 'radio_select' && is_array($pf['input']['options'])) {
+			echo '
+							<div';
+
+			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
+				foreach ($pf['input']['attributes'] as $attribute => $value) {
+					if ($attribute === 'name')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . $attribute : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+			}
+
+			echo '>';
+
+			foreach ($pf['input']['options'] as $optlabel => $option) {
+				echo '
+							<label style="margin-right:2ch"><input type="radio" name="', !empty($pf['input']['attributes']['name']) ? $pf['input']['attributes']['name'] : $pfid, '"';
+
+				foreach ($option as $attribute => $value) {
+					if ($attribute === 'label')
+						continue;
+					elseif (is_bool($value))
+						echo $value ? ' ' . ($attribute === 'selected' ? 'checked' : $attribute) : '';
+					else
+						echo ' ', $attribute, '="', $value, '"';
+				}
+
+				echo ' tabindex="', $context['tabindex']++, '"> ', isset($option['label']) ? $option['label'] : $optlabel, '</label>';
+			}
+
+			echo '
+							</div>';
+		}
+
+		if (!empty($pf['input']['after']))
+			echo '
+							', $pf['input']['after'];
+
+		echo '
+						</dd>';
+	}
+
+	echo '
+					</dl>';
+}

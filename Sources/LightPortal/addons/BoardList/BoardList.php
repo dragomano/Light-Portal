@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -55,7 +55,7 @@ class BoardList
 	 *
 	 * @var string
 	 */
-	private static $board_class = 'div.roundframe.noup';
+	private static $board_class = 'div.roundframe';
 
 	/**
 	 * Adding the block options
@@ -121,7 +121,7 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['category_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
@@ -147,7 +147,7 @@ class BoardList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['board_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $value,
 					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
@@ -205,11 +205,6 @@ class BoardList
 		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($board_list)) {
-			if ($parameters['board_class'] == '_')
-				$parameters['board_class'] = '';
-			else
-				$parameters['board_class'] = strtr($parameters['board_class'], array('div.' => '', '.' => ' '));
-
 			$context['current_board'] = $context['current_board'] ?? 0;
 
 			ob_start();
@@ -217,31 +212,31 @@ class BoardList
 			foreach ($board_list as $category) {
 				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
 
-				echo '
-			<div', !empty($parameters['board_class']) ? ' class="' . $parameters['board_class'] . '"' : '', '>
+				$content = '
 				<ul class="smalltext">';
 
 				foreach ($category['boards'] as $board) {
-					echo '
+					$content .= '
 					<li>';
 
 					if ($board['child_level']) {
-						echo '
+						$content .= '
 						<ul class="smalltext">
-							<li>', $context['current_board'] == $board['id'] ? '<strong>' : '', '&raquo; <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '', '</li>
+							<li>' . ($context['current_board'] == $board['id'] ? '<strong>' : '') . '&raquo; <a href="' . $scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($context['current_board'] == $board['id'] ? '</strong>' : '') . '</li>
 						</ul>';
 					} else {
-						echo '
-						', $context['current_board'] == $board['id'] ? '<strong>' : '', '<a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>', $context['current_board'] == $board['id'] ? '</strong>' : '';
+						$content .= '
+						' . ($context['current_board'] == $board['id'] ? '<strong>' : '') . '<a href="' . $scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($context['current_board'] == $board['id'] ? '</strong>' : '');
 					}
 
-					echo '
+					$content .= '
 					</li>';
 				}
 
-				echo '
-				</ul>
-			</div>';
+				$content .= '
+				</ul>';
+
+				echo sprintf($context['lp_all_content_classes'][$parameters['board_class'] ?: '_'], $content, null);
 			}
 
 			$content = ob_get_clean();

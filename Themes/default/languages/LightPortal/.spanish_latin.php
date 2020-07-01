@@ -22,7 +22,7 @@ $txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP:
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
 $txt['lp_frontpage_mode_set'] = array('Desactivar', 'Página especificada', 'Todos los temas de foros seleccionados', 'Todas las páginas activas', 'Foros seleccionados	');
-$txt['lp_frontpage_id'] = 'Página del portal para mostrar como página principal';
+$txt['lp_frontpage_alias'] = 'Página del portal para mostrar como página principal';
 $txt['lp_frontpage_boards'] = 'Foros como fuentes de artículos para la portada';
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
@@ -209,9 +209,9 @@ $txt['lp_comment_placeholder'] = 'Deja un comentario...';
 
 $txt['alert_group_light_portal'] = LP_NAME;
 $txt['alert_page_comment'] = 'Cuando mi página recibe un comentario';
-$txt['alert_new_comment_page_comment'] = '{member_link} dejó un comentario <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_comment_page_comment'] = '{member_link} dejó un comentario {page_comment_new_comment}';
 $txt['alert_page_comment_reply'] = 'Cuando mi comentario recibe una respuesta';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} dejó una respuesta en tu comentario <a href="{comment_link}">{comment_title}</a>';
+$txt['alert_new_reply_page_comment_reply'] = '{member_link} dejó una respuesta en tu comentario {page_comment_reply_new_reply}';
 
 // Errors
 $txt['lp_page_not_found'] = '¡Página no encontrada!';

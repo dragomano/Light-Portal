@@ -1,6 +1,6 @@
 <?php
 
-$txt['lp_block_types']['flipster_carousel']              = 'Слайдер зображень';
+$txt['lp_block_types']['flipster_carousel']              = 'Flipster Carousel';
 $txt['lp_block_types_descriptions']['flipster_carousel'] = 'Відображає чуйний слайдер з ефектом «Cover Flow».';
 
 $txt['lp_flipster_carousel_addon_autoplay']  = 'Автозапуск слайдера (в мілісекундах)';

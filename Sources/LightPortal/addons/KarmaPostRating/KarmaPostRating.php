@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\KarmaPostRating;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -80,7 +80,7 @@ class KarmaPostRating
 		if (empty($context['lp_frontpage_articles']))
 			return;
 
-		foreach ($context['lp_frontpage_articles'] as $topic) {
+		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['kpr_rating'])) {
 				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}

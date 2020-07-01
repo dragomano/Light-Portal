@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -81,10 +81,10 @@ class AdsBlock
 	 */
 	public static function menuButtons()
 	{
-		global $context, $txt;
+		global $context;
 
 		if ($context['current_action'] == 'admin' && isset($_REQUEST['area']) && $_REQUEST['area'] == 'lp_blocks') {
-			require_once(__DIR__ . '/AdsBlock.template.php');
+			require_once(__DIR__ . '/Template.php');
 			ads_block_form();
 		}
 
@@ -131,7 +131,7 @@ class AdsBlock
 	{
 		global $context;
 
-		require_once(__DIR__ . '/AdsBlock.template.php');
+		require_once(__DIR__ . '/Template.php');
 		$context['template_layers'][] = 'ads_placement_board';
 	}
 
@@ -146,7 +146,7 @@ class AdsBlock
 	{
 		global $context;
 
-		require_once(__DIR__ . '/AdsBlock.template.php');
+		require_once(__DIR__ . '/Template.php');
 		$context['template_layers'][] = 'ads_placement_topic';
 	}
 
@@ -279,7 +279,7 @@ class AdsBlock
 		if (empty($position))
 			return [];
 
-		$blocks = array_filter($context['lp_blocks']['ads'], function($block) use ($position, $context) {
+		$blocks = array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
 				if (!array_key_exists($context['current_board'], $boards))
@@ -411,11 +411,12 @@ class AdsBlock
 				'multiple' => true,
 				'style'    => 'height: auto'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
 					'value'    => $position,
 					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
@@ -436,7 +437,8 @@ class AdsBlock
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['ads_boards'] ?? '',
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 
 		$context['posting_fields']['ads_topics']['label']['text'] = $txt['lp_ads_block_addon_ads_topics'];
@@ -447,7 +449,8 @@ class AdsBlock
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['ads_topics'] ?? '',
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 	}
 }

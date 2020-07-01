@@ -274,16 +274,48 @@ function template_block_post()
 
 	echo '
 	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
-		<div class="roundframe">';
+		<div class="roundframe">
+			<div class="lp_tabs">
+				<input id="tab1" type="radio" name="tabs" checked>
+				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
+				<input id="tab2" type="radio" name="tabs">
+				<label for="tab2" class="bg odd">', $txt['lp_tab_access_placement'], '</label>
+				<input id="tab3" type="radio" name="tabs">
+				<label for="tab3" class="bg odd">', $txt['lp_tab_appearance'], '</label>';
 
-	template_post_header();
-
-	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
+	if ($context['lp_block_tab_tuning']) {
 		echo '
-			<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+				<input id="tab4" type="radio" name="tabs">
+				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>';
 	}
 
 	echo '
+				<section id="content-tab1" class="bg even">
+					', template_post_tab();
+
+	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
+		echo '
+					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+	}
+
+	echo '
+				</section>
+				<section id="content-tab2" class="bg even">
+					', template_post_tab('access_placement'), '
+				</section>
+				<section id="content-tab3" class="bg even">
+					', template_post_tab('appearance'), '
+				</section>';
+
+	if ($context['lp_block_tab_tuning']) {
+		echo '
+				<section id="content-tab4" class="bg even">
+					', template_post_tab('tuning'), '
+				</section>';
+	}
+
+	echo '
+			</div>
 			<br class="clear">
 			<div class="centertext">
 				<input type="hidden" name="block_id" value="', $context['lp_block']['id'], '">
@@ -304,6 +336,17 @@ function template_block_post()
 			}
 			$("#icon").on("change", change_icon);
 			$("#icon_type input").on("change", change_icon);
+			$("#postblock").on("click", "button", function () {
+				$("#postblock").find(":input").each(function () {
+					if (this.required && this.value == "") {
+						let elem = this.closest("section").id;
+						$("input[name=tabs]").prop("checked", false);
+						$("#" + elem.replace("content-", "")).prop("checked", true);
+						$("#" + this.id).focus();
+						return false;
+					}
+				});
+			});
 		});
 	</script>';
 }

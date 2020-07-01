@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\VkComments;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -61,23 +61,25 @@ class VkComments
 	}
 
 	/**
+	 * Add settings
+	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $settings
+	 * @param array $options
 	 * @return void
 	 */
-	public static function addSettings(&$settings)
+	public static function addSettings(&$options)
 	{
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
-			$modSettings['lp_vk_comments_addon_allow_attachments'] = static::$allow_attachments;
+			updateSettings(array('lp_vk_comments_addon_allow_attachments' => static::$allow_attachments));
 		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
-			$modSettings['lp_vk_comments_addon_auto_publish'] = static::$auto_publish;
+			updateSettings(array('lp_vk_comments_addon_auto_publish' => static::$auto_publish));
 
-		$settings[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
-		$settings[] = array('check', 'lp_vk_comments_addon_allow_attachments');
-		$settings[] = array('check', 'lp_vk_comments_addon_auto_publish');
+		$options[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
+		$options[] = array('check', 'lp_vk_comments_addon_allow_attachments');
+		$options[] = array('check', 'lp_vk_comments_addon_auto_publish');
 	}
 
 	/**

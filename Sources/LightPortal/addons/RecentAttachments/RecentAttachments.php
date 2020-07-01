@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -144,7 +144,7 @@ class RecentAttachments
 		);
 
 		foreach ($txt['lp_recent_attachments_addon_direction_set'] as $direction => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
 					'value'    => $direction,
 					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
@@ -166,60 +166,14 @@ class RecentAttachments
 	 * @param array $parameters
 	 * @return string
 	 */
-	private static function getData($parameters)
+	public static function getData(array $parameters)
 	{
 		global $boarddir;
 
-		extract($parameters);
-		$extensions = !empty($extensions) ? explode(',', $extensions) : [];
+		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
 
 		require_once($boarddir . '/SSI.php');
-		return ssi_recentAttachments($num_attachments, $extensions, 'array');
-	}
-
-	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param int $block_id
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($block_id, $parameters)
-	{
-		global $settings;
-
-		$recent_attachments = self::getData($parameters);
-
-		$html = '';
-		if (!empty($recent_attachments)) {
-			$fancybox = class_exists('FancyBox');
-
-			$html .= '
-		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
-
-			foreach ($recent_attachments as $attach) {
-				if (!empty($attach['file']['image'])) {
-					$html .= '
-			<div class="item">
-				<a' . ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : '') . ' href="' . $attach['file']['href'] . ';image">' . $attach['file']['image']['thumb'] . '</a>
-			</div>';
-				} else {
-					$html .= '
-			<div class="item">
-				<a href="' . $attach['file']['href'] . '">
-					<img class="centericon" src="' . $settings['images_url'] . '/icons/clip.png" alt="' . $attach['file']['filename'] . '"> ' . $attach['file']['filename'] . '
-				</a> (' . $attach['file']['filesize'] . ')
-			</div>';
-				}
-			}
-
-			$html .= '
-		</div>';
-		}
-
-		return $html;
+		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}
 
 	/**
@@ -236,16 +190,40 @@ class RecentAttachments
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $settings;
 
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($attachment_list)) {
 			ob_start();
-			echo $attachment_list;
+
+			$fancybox = class_exists('FancyBox');
+
+			echo '
+		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
+
+			foreach ($attachment_list as $attach) {
+				if (!empty($attach['file']['image'])) {
+					echo '
+			<div class="item">
+				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
+			</div>';
+				} else {
+					echo '
+			<div class="item">
+				<a href="', $attach['file']['href'], '">
+					<img class="centericon" src="', $settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
+				</a> (', $attach['file']['filesize'], ')
+			</div>';
+				}
+			}
+
+			echo '
+		</div>';
+
 			$content = ob_get_clean();
 		}
 	}

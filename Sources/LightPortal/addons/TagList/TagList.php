@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -99,11 +99,12 @@ class TagList
 			'attributes' => array(
 				'id' => 'source'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		foreach ($txt['lp_tag_list_addon_source_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['source']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['source']

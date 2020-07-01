@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -81,7 +81,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['id']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
+							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					)
@@ -224,7 +224,7 @@ class Tag
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return count($items);
+		return sizeof($items);
 	}
 
 	/**
@@ -391,6 +391,6 @@ class Tag
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return count($items);
+		return sizeof($items);
 	}
 }

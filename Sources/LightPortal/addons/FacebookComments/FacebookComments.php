@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\FacebookComments;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -52,19 +52,21 @@ class FacebookComments
 	}
 
 	/**
+	 * Add settings
+	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $settings
+	 * @param array $options
 	 * @return void
 	 */
-	public static function addSettings(&$settings)
+	public static function addSettings(&$options)
 	{
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_color_scheme']))
-			$modSettings['lp_facebook_comments_addon_color_scheme'] = static::$color_scheme;
+			updateSettings(array('lp_facebook_comments_addon_color_scheme' => static::$color_scheme));
 
-		$settings[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
+		$options[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
 	}
 
 	/**

@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -206,7 +206,7 @@ class Helpers
 	 */
 	public static function getFriendlyTime(int $timestamp)
 	{
-		global $txt, $smcFunc;
+		global $modSettings, $user_info, $txt, $smcFunc;
 
 		$current_time = time();
 
@@ -214,6 +214,9 @@ class Helpers
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);
+
+		// Use forum and user offsets
+		$timestamp = $timestamp - ($modSettings['time_offset'] - $user_info['time_offset']) * 3600;
 
 		// Difference between current time and $timestamp
 		$time_difference = $current_time - $timestamp;
@@ -333,7 +336,7 @@ class Helpers
 		if (empty($key))
 			return false;
 
-		if ($funcName === null)
+		if ($funcName === null || $time === 0)
 			cache_put_data('light_portal_' . $key, null);
 
 		if (($$key = cache_get_data('light_portal_' . $key, $time)) === null) {
@@ -399,7 +402,7 @@ class Helpers
 	 *
 	 * Возвращает допустимый набор прав доступа текущего пользователя
 	 *
-	 * @return int
+	 * @return array
 	 */
 	public static function getPermissions()
 	{
@@ -416,21 +419,21 @@ class Helpers
 	}
 
 	/**
-	 * Check if the page with id = $id set as the portal frontpage
+	 * Check if the page with alias = $alias set as the portal frontpage
 	 *
-	 * Проверяет, установлена ли страница с id = $id как главная страница
+	 * Проверяет, установлена ли страница с alias = $alias как главная
 	 *
-	 * @param int $id
+	 * @param string $alias
 	 * @return bool
 	 */
-	public static function isFrontpage(int $id)
+	public static function isFrontpage(string $alias)
 	{
 		global $modSettings;
 
-		if (empty($id))
+		if (empty($alias))
 			return false;
 
-		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id']) && $modSettings['lp_frontpage_id'] == $id;
+		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']) && $modSettings['lp_frontpage_alias'] == $alias;
 	}
 
 	/**
@@ -489,5 +492,20 @@ class Helpers
 		}
 
 		return implode($glue, $new_str);
+	}
+
+	/**
+	 * Get the article teaser
+	 *
+	 * Получаем тизер статьи
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	public static function getTeaser($text)
+	{
+		global $modSettings;
+
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 }

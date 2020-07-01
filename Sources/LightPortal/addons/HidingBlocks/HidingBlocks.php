@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\HidingBlocks;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -102,8 +102,6 @@ class HidingBlocks
 	 */
 	public static function validateBlockData(&$args)
 	{
-		global $context;
-
 		$args['parameters']['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
 			'filter' => FILTER_SANITIZE_STRING,
@@ -122,7 +120,10 @@ class HidingBlocks
 	{
 		global $context, $txt;
 
-		$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
+		if (isset($context['lp_block']['options']['parameters']['hidden_breakpoints'])) {
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
+		} else
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = $_POST['hidden_breakpoints'] ?? [];
 
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
@@ -137,7 +138,7 @@ class HidingBlocks
 		);
 
 		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $size => $label) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label]['attributes'] = array(
 					'value'    => $size,
 					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])

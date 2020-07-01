@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -111,7 +111,7 @@ class PageList
 		);
 
 		foreach ($txt['lp_page_list_addon_sort_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['sort']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
@@ -148,8 +148,6 @@ class PageList
 	{
 		global $smcFunc, $txt, $context;
 
-		extract($parameters);
-
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
@@ -158,25 +156,27 @@ class PageList
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			ORDER BY {raw:sort} DESC' . (!empty($num_pages) ? '
+			ORDER BY {raw:sort} DESC' . (!empty($parameters['num_pages']) ? '
 			LIMIT {int:limit}' : ''),
 			array(
 				'guest'        => $txt['guest_title'],
 				'type'         => 'page',
+				'lang'         => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'sort'         => $sort,
-				'limit'        => $num_pages
+				'sort'         => $parameters['sort'],
+				'limit'        => $parameters['num_pages']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['page_id']))
+			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(
@@ -199,48 +199,6 @@ class PageList
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $scripturl, $txt;
-
-		$pages = self::getData($parameters);
-
-		$html = '';
-		if (!empty($pages)) {
-			$html .= '
-			<ul class="normallist page_list">';
-
-			foreach ($pages as $page) {
-				if (empty($title = Helpers::getPublicTitle($page)))
-					continue;
-
-				$html .= '
-				<li>
-					<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a> ' . $txt['by'] . ' ' . (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>') . ', ' . Helpers::getFriendlyTime($page['created_at']) . ' (' . Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
-
-				if (!empty($page['num_comments']))
-					$html .= ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
-
-				$html .= ')
-				</li>';
-			}
-
-			$html .= '
-			</ul>';
-		} else
-			$html .= $txt['lp_page_list_addon_no_items'];
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -248,21 +206,45 @@ class PageList
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+
+		ob_start();
 
 		if (!empty($page_list)) {
-			ob_start();
-			echo $page_list;
-			$content = ob_get_clean();
-		}
+			echo '
+		<ul class="normallist page_list">';
+
+			foreach ($page_list as $page) {
+				if (empty($title = Helpers::getPublicTitle($page)))
+					continue;
+
+				echo '
+			<li>
+				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+
+				if (!empty($page['num_comments']))
+					echo ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
+
+				echo ')
+			</li>';
+			}
+
+			echo '
+		</ul>';
+		} else
+			echo $txt['lp_page_list_addon_no_items'];
+
+		$content = ob_get_clean();
 	}
 }

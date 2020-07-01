@@ -251,6 +251,10 @@ $tables[] = array(
 		 array(
 			'type'    => 'primary',
 			'columns' => array('page_id')
+		 ),
+		 array(
+			 'type'    => 'unique',
+			 'columns' => array('alias')
 		 )
 	),
 	'default' => array(

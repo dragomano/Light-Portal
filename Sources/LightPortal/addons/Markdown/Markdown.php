@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\Markdown;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -49,7 +49,7 @@ class Markdown
 	 * Парсим Markdown-контент
 	 *
 	 * @param string $text
-	 * @return void
+	 * @return string
 	 */
 	private static function getParsedMarkdown($text)
 	{

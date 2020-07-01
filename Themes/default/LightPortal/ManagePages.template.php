@@ -43,16 +43,31 @@ function template_page_post()
 
 	echo '
 	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
-		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">';
-
-	template_post_header();
+		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">
+			<div class="lp_tabs">
+				<input id="tab1" type="radio" name="tabs" checked>
+				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
+				<input id="tab2" type="radio" name="tabs">
+				<label for="tab2" class="bg odd">', $txt['lp_tab_seo'], '</label>
+				<input id="tab3" type="radio" name="tabs">
+				<label for="tab3" class="bg odd">', $txt['lp_tab_tuning'], '</label>
+				<section id="content-tab1" class="bg even">
+					', template_post_tab();
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
-			<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
 	}
 
 	echo '
+				</section>
+				<section id="content-tab2" class="bg even">
+					', template_post_tab('seo'), '
+				</section>
+				<section id="content-tab3" class="bg even">
+					', template_post_tab('tuning'), '
+				</section>
+			</div>
 			<br class="clear">
 			<div class="centertext">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
@@ -62,5 +77,6 @@ function template_page_post()
 			</div>
 		</div>
 	</form>
+	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_post.js"></script>';
 }

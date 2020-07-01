@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -122,7 +122,7 @@ class TopPages
 		);
 
 		foreach ($txt['lp_top_pages_addon_type_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['popularity_type']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
@@ -163,11 +163,9 @@ class TopPages
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $smcFunc, $scripturl, $context;
-
-		extract($parameters);
 
 		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
@@ -177,20 +175,20 @@ class TopPages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
-			ORDER BY ' . ($popularity_type == 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			ORDER BY ' . ($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
 				'type'         => 'page',
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'limit'        => $num_pages
+				'limit'        => $parameters['num_pages']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['page_id']))
+			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(
@@ -208,55 +206,6 @@ class TopPages
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$top_pages = self::getData($parameters);
-
-		if (empty($top_pages))
-			return $txt['lp_top_pages_addon_no_items'];
-
-		$html = '';
-		$max = reset($top_pages)['num_' . $parameters['popularity_type']];
-
-		if (empty($max))
-			$html .= $txt['lp_top_pages_addon_no_items'];
-		else {
-			$html .= '
-		<dl class="stats">';
-
-			foreach ($top_pages as $page) {
-				if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getPublicTitle($page)))
-					continue;
-
-				$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
-
-				$html .= '
-			<dt>
-				<a href="' . $page['href'] . '">' . $title . '</a>
-			</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar' . (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"') . '></div>
-				<span>' . ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])) . '</span>
-			</dd>';
-			}
-
-			$html .= '
-		</dl>';
-		}
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -270,17 +219,47 @@ class TopPages
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::getFromCache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters);
+		$top_pages = Helpers::getFromCache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+
+		ob_start();
 
 		if (!empty($top_pages)) {
-			ob_start();
-			echo $top_pages;
-			$content = ob_get_clean();
+			$max = reset($top_pages)['num_' . $parameters['popularity_type']];
+
+			if (empty($max))
+				echo $txt['lp_top_pages_addon_no_items'];
+			else {
+				echo '
+		<dl class="stats">';
+
+				foreach ($top_pages as $page) {
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getPublicTitle($page)))
+						continue;
+
+					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
+
+					echo '
+			<dt>
+				<a href="', $page['href'], '">', $title, '</a>
+			</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+			</dd>';
+				}
+
+				echo '
+		</dl>';
+			}
+		} else {
+			echo $txt['lp_top_pages_addon_no_items'];
 		}
+
+		$content = ob_get_clean();
 	}
 }

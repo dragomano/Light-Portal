@@ -4,9 +4,9 @@
 ![PHP](https://img.shields.io/badge/PHP-^7.2-blue.svg?style=flat)
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
-* **License:** [BSD 3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
+* **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
-* **Tested on:** PHP 7.3.18 / MySQL 5.7.25 / MariaDB 10.4.13 / PostgreSQL 9.6.18
+* **Tested on:** PHP 7.4.7 / MySQL 5.7.25 / MariaDB 10.4.13 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
 * **Languages:** English, Polish, Russian, Spanish, Ukrainian
 
@@ -55,5 +55,8 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Кэширование.
 
 ### Supporting Light Portal
-Light Portal is an BSD-licensed open source project and completely free to use.
+Light Portal is completely free to use.
 It was made for your convenient, and if you like the project, support the developer.
+
+### About plugins
+All custom addons for the portal may or may not have their own licenses.

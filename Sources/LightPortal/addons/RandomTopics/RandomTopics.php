@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -119,7 +119,7 @@ class RandomTopics
 	 * @param int $num_topics
 	 * @return array
 	 */
-	private static function getData($num_topics)
+	public static function getData($num_topics)
 	{
 		global $db_type, $smcFunc, $modSettings, $user_info, $context, $settings, $scripturl;
 
@@ -252,41 +252,6 @@ class RandomTopics
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param int $num_topics
-	 * @return string
-	 */
-	public static function getHtml($num_topics)
-	{
-		global $txt;
-
-		$topics = self::getData($num_topics);
-
-		if (empty($topics))
-			return '';
-
-		$html = '
-		<ul class="random_topics noup">';
-
-		foreach ($topics as $topic) {
-			$html .= '
-			<li class="windowbg">' . ($topic['is_new'] ? '
-				<span class="new_posts">' . $txt['new'] . '</span>' : '') . $topic['icon'] . ' ' . $topic['link'] . '
-				<br><span class="smalltext">' . $txt['by'] . ' ' . $topic['poster'] . '</span>
-				<br><span class="smalltext">' . Helpers::getFriendlyTime($topic['time']) . '</span>
-			</li>';
-		}
-
-		$html .= '
-		</ul>';
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -294,20 +259,37 @@ class RandomTopics
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $txt;
 
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $cache_time, $parameters['num_topics']);
+		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_topics']);
 
 		if (!empty($random_topics)) {
 			ob_start();
-			echo $random_topics;
+
+			echo '
+			<ul class="random_topics noup">';
+
+			foreach ($topics as $topic) {
+				echo '
+				<li class="windowbg">', ($topic['is_new'] ? '
+					<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
+					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
+					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
+				</li>';
+			}
+
+			echo '
+			</ul>';
+
 			$content = ob_get_clean();
 		}
 	}

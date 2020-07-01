@@ -9,7 +9,7 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -118,7 +118,7 @@ class Likely
 			)
 		);
 
-		if (!defined('JQUERY_VERSION')) {
+		if (RC2_CLEAN) {
 			$context['posting_fields']['size']['input']['options'] = array(
 				'small' => array(
 					'attributes' => array(
@@ -154,7 +154,7 @@ class Likely
 			)
 		);
 
-		if (!defined('JQUERY_VERSION')) {
+		if (RC2_CLEAN) {
 			$context['posting_fields']['skin']['input']['options'] = array(
 				'normal' => array(
 					'attributes' => array(
@@ -190,7 +190,8 @@ class Likely
 				'id'        => 'buttons',
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['buttons']
-			)
+			),
+			'tab' => 'content'
 		);
 	}
 

@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -19,6 +19,15 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
+	/**
+	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
+	 *
+	 * Области для вывода блока должны начинаться с латинской буквы и могут состоять из строчных латинских букв, цифр и некоторых знаков
+	 *
+	 * @var string
+	 */
+	private static $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+
 	/**
 	 * Manage blocks
 	 *
@@ -449,7 +458,7 @@ class ManageBlocks
 		if (empty($options[$context['current_block']['type']]))
 			$options[$context['current_block']['type']] = [];
 
-		$block_options = $context['current_block']['options'] ?? $options;
+		$block_options = $context['current_block']['options'] ?? $options[$context['current_block']['type']];
 
 		$context['lp_block'] = array(
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
@@ -471,8 +480,13 @@ class ManageBlocks
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
-				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data['parameters']) && $post_data['parameters'][$option] === null)
-					$post_data['parameters'][$option] = 0;
+				if (!empty($post_data['parameters'])) {
+					if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data['parameters'][$option] === null)
+						$post_data['parameters'][$option] = 0;
+
+					if (is_array($parameters[$option]) && $parameters[$option]['filter'] == FILTER_SANITIZE_STRING && $post_data['parameters'][$option] === null)
+						$post_data['parameters'][$option] = [];
+				}
 
 				$context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
 			}
@@ -501,6 +515,12 @@ class ManageBlocks
 		if (empty($data['areas']))
 			$post_errors[] = 'no_areas';
 
+		$areas_format = array(
+			'options' => array("regexp" => '/' . static::$areas_pattern . '/')
+		);
+		if (!empty($data['areas']) && empty(filter_var($data['areas'], FILTER_VALIDATE_REGEXP, $areas_format)))
+			$post_errors[] = 'no_valid_areas';
+
 		if (!empty($post_errors)) {
 			$_POST['preview'] = true;
 			$context['post_errors'] = [];
@@ -523,17 +543,16 @@ class ManageBlocks
 
 		checkSubmitOnce('register');
 
-		$context['posting_fields']['subject'] = ['no'];
-
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
 					'maxlength' => 255,
 					'value'     => $context['lp_block']['title'][$lang['filename']] ?? '',
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -546,7 +565,8 @@ class ManageBlocks
 				'id'        => 'icon',
 				'maxlength' => 30,
 				'value'     => $context['lp_block']['icon']
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
@@ -555,11 +575,12 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'icon_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
 					'value'   => $type,
 					'checked' => $type == $context['lp_block']['icon_type']
@@ -578,11 +599,12 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'placement'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['placement']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_block']['placement']
@@ -601,11 +623,12 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'permissions'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
 					'value'    => $level,
 					'selected' => $level == $context['lp_block']['permissions']
@@ -626,8 +649,10 @@ class ManageBlocks
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
 				'required'  => true,
+				'pattern'   => static::$areas_pattern,
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 
 		$context['posting_fields']['title_class']['label']['text'] = $txt['lp_block_title_class'];
@@ -636,11 +661,12 @@ class ManageBlocks
 			'attributes' => array(
 				'id' => 'title_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['title_class']['input']['options'][$key]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['title_class']
@@ -655,12 +681,13 @@ class ManageBlocks
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
 		$context['posting_fields']['title_style']['input'] = array(
-			'type' => 'text',
+			'type' => 'textarea',
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['title_style'],
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		if (empty($context['lp_block']['options']['no_content_class'])) {
@@ -670,14 +697,15 @@ class ManageBlocks
 				'attributes' => array(
 					'id' => 'content_class'
 				),
-				'options' => array()
+				'options' => array(),
+				'tab' => 'appearance'
 			);
 
 			foreach ($context['lp_all_content_classes'] as $key => $data) {
 				$value = $key;
 				$key   = $key == '_' ? $txt['no'] : $key;
 
-				if (!defined('JQUERY_VERSION')) {
+				if (RC2_CLEAN) {
 					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
 						'value'    => $value,
 						'selected' => $value == $context['lp_block']['content_class']
@@ -692,12 +720,13 @@ class ManageBlocks
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
 			$context['posting_fields']['content_style']['input'] = array(
-				'type' => 'text',
+				'type' => 'textarea',
 				'attributes' => array(
 					'maxlength' => 255,
 					'value'     => $context['lp_block']['content_style'],
 					'style'     => 'width: 100%'
-				)
+				),
+				'tab' => 'appearance'
 			);
 		}
 
@@ -709,7 +738,8 @@ class ManageBlocks
 					'id'        => 'content',
 					'maxlength' => Helpers::getMaxMessageLength(),
 					'value'     => $context['lp_block']['content']
-				)
+				),
+				'tab' => 'content'
 			);
 		}
 
@@ -718,9 +748,38 @@ class ManageBlocks
 		foreach ($context['posting_fields'] as $item => $data) {
 			if ($item !== 'icon' && !empty($data['input']['after']))
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
-		loadTemplate('Post');
+		$context['lp_block_tab_tuning'] = self::hasParameters($context['posting_fields']);
+
+		loadTemplate('LightPortal/ManageSettings');
+	}
+
+	/**
+	 * Check whether there are any parameters on the "Tuning" tab
+	 *
+	 * Проверяем, есть ли какие-нибудь параметры на вкладке «Тюнинг»
+	 *
+	 * @param array $data
+	 * @param string $check_key
+	 * @param string $check_value
+	 * @return bool
+	 */
+	public static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	{
+		if (empty($data))
+			return false;
+
+		foreach (new \RecursiveIteratorIterator(new \RecursiveArrayIterator($data), \RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
+			if ($check_key === $key) {
+				$result[] = $value;
+			}
+		}
+
+		return in_array($check_value, $result);
 	}
 
 	/**
@@ -809,7 +868,7 @@ class ManageBlocks
 	 * Создаем или обновляем блок
 	 *
 	 * @param int $item
-	 * @return void
+	 * @return int|void
 	 */
 	public static function setData(int $item = 0)
 	{
@@ -989,6 +1048,10 @@ class ManageBlocks
 
 				$context['lp_num_queries']++;
 			}
+
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item, null);
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_u' . $context['user']['id'], null);
+			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id'], null);
 		}
 
 		if (!empty($_POST['clone']))

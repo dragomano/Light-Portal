@@ -3,14 +3,13 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>1.0 rc5</version>
+	<version>1.0 rc6</version>
 	<type>modification</type>
 
 	<install for="2.1.*">
 		<readme parsebbc="true" lang="english" type="file">readme/english.txt</readme>
 		<readme parsebbc="true" lang="russian" type="file">readme/russian.txt</readme>
 		<readme parsebbc="true" lang="ukrainian" type="file">readme/ukrainian.txt</readme>
-		<license parsebbc="true">license.txt</license>
 		<require-dir name="Themes" destination="$boarddir" />
 		<require-dir name="Sources" destination="$boarddir" />
 		<database>database.php</database>

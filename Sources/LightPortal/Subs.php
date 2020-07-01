@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -29,7 +29,7 @@ class Subs
 	public static function loadCssFiles()
 	{
 		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
-		loadCssFile('light_portal/flexboxgrid.min.css');
+		loadCssFile('light_portal/flexboxgrid.css');
 		loadCssFile('light_portal/light_portal.css');
 	}
 
@@ -52,7 +52,7 @@ class Subs
 		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
 		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
 
-		// Ширина некоторых панелей
+		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
 		$context['lp_left_panel_width']   = !empty($modSettings['lp_left_panel_width']) ? json_decode($modSettings['lp_left_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
 		$context['lp_right_panel_width']  = !empty($modSettings['lp_right_panel_width']) ? json_decode($modSettings['lp_right_panel_width'], true) : ['md' => 3, 'lg' => 3, 'xl' => 2];
@@ -136,7 +136,7 @@ class Subs
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}' . (allowedTo('admin_forum') ? '' : '
+			WHERE status = {int:status}' . ($context['user']['is_admin'] ? '' : '
 				AND author_id = {int:user_id}'),
 			array(
 				'status'  => Page::STATUS_ACTIVE,
@@ -202,7 +202,7 @@ class Subs
 	{
 		global $context;
 
-		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
+		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]) && !isset($_REQUEST['preview']))
 			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
 		else
 			$parameters = $context['lp_block']['options']['parameters'] ?? [];

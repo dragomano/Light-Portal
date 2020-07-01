@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -36,8 +36,8 @@ class Page
 
 		isAllowedTo('light_portal_view');
 
-		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_id'])) {
-			$context['lp_page'] = self::getDataByItem($modSettings['lp_frontpage_id']);
+		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
+			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
 			$context['lp_page'] = self::getDataByAlias($alias);
@@ -80,8 +80,8 @@ class Page
 		self::prepareComments();
 		self::updateNumViews();
 
-		if (!empty($_REQUEST['page']) && (empty($alias) || Helpers::isFrontpage($context['lp_page']['id'])))
-			redirectexit();
+/* 		if (!empty($_REQUEST['page']) && (empty($alias) || Helpers::isFrontpage($context['lp_page']['alias'])))
+			redirectexit(); */
 	}
 
 	/**
@@ -253,7 +253,7 @@ class Page
 		if (empty($item))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $item, 'getData', __CLASS__, LP_CACHE_TIME, array('item' => $item));
+		$data = self::getData(array('item' => $item));
 		self::prepareData($data);
 
 		return $data;

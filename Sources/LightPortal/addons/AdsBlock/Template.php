@@ -65,10 +65,10 @@ function ads_block_form()
 		<input type="hidden" name="placement" value="ads">
 	</form>
 	<script>
-		jQuery(document).ready(function($) {
+		jQuery(document).ready(function ($) {
 			let add_button = $(\'h3 a[href$="placement=ads"]\');
 			add_button.removeAttr("href");
-			$(add_button).on("click", function() {
+			$(add_button).on("click", function () {
 				$("form[name=ads_block_add_form]").submit();
 			});
 		});

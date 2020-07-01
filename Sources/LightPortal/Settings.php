@@ -9,7 +9,7 @@ namespace Bugo\LightPortal;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -91,7 +91,7 @@ class Settings
 			array_slice($admin_areas, $counter, count($admin_areas), true)
 		);
 
-		if (allowedTo('admin_forum')) {
+		if ($context['user']['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
 				'export' => array($txt['lp_blocks_export']),
 				'import' => array($txt['lp_blocks_import'])
@@ -130,6 +130,8 @@ class Settings
 	 */
 	public static function settingArea()
 	{
+		global $context, $txt, $smcFunc;
+
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
@@ -137,6 +139,27 @@ class Settings
 			'extra'   => 'Settings::extra',
 			'panels'  => 'Settings::panels',
 			'plugins' => 'Settings::plugins'
+		);
+
+		db_extend();
+
+		// Tabs
+		$context[$context['admin_menu_name']]['tab_data'] = array(
+			'title' => LP_NAME,
+			'tabs' => array(
+				'basic' => array(
+					'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
+				),
+				'extra' => array(
+					'description' => $txt['lp_extra_info']
+				),
+				'panels' => array(
+					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
+				),
+				'plugins' => array(
+					'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
+				)
+			)
 		);
 
 		self::loadGeneralSettingParameters($subActions, 'basic');
@@ -152,22 +175,14 @@ class Settings
 	 */
 	public static function basic(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $smcFunc, $scripturl, $modSettings, $settings, $boardurl;
+		global $sourcedir, $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
 
 		require_once($sourcedir . '/ManageServer.php');
-		db_extend();
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
-		);
 
 		self::checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
-
-		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
 
 		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
@@ -178,8 +193,8 @@ class Settings
 		$add_settings = [];
 		if (!isset($modSettings['lp_frontpage_title']))
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
-		if (!isset($modSettings['lp_frontpage_id']))
-			$add_settings['lp_frontpage_id'] = 1;
+		if (!isset($modSettings['lp_frontpage_alias']))
+			$add_settings['lp_frontpage_alias'] = 'home';
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
@@ -191,41 +206,31 @@ class Settings
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
-		$frontpage_disabled = empty($modSettings['lp_frontpage_mode']);
-
-		$active_pages = !$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1 ? self::getActivePages() : array($txt['no']);
-
 		$config_vars = array(
-			array(
-				'text',
-				'lp_frontpage_title',
-				'80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal'],
-				'disabled' => $frontpage_disabled || (!$frontpage_disabled && $modSettings['lp_frontpage_mode'] == 1)
-			),
 			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
-			array('select', 'lp_frontpage_id', $active_pages, 'disabled' => $frontpage_disabled || $modSettings['lp_frontpage_mode'] != 1),
-			array('boards', 'lp_frontpage_boards', 'disabled' => $frontpage_disabled),
-			array('check', 'lp_show_images_in_articles', 'disabled' => $frontpage_disabled),
-			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg', 'disabled' => $frontpage_disabled),
-			array('int', 'lp_teaser_size', 'min' => 0, 'disabled' => $frontpage_disabled),
-			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set'], 'disabled' => $frontpage_disabled),
-			array('int', 'lp_num_items_per_page', 'disabled' => $frontpage_disabled),
+			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
+			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
+			array('boards', 'lp_frontpage_boards'),
+			array('check', 'lp_show_images_in_articles'),
+			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
+			//array('int', 'lp_teaser_size', 'min' => 0),
+			array('check', 'lp_frontpage_card_alt_layout'),
+			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
+			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
-			array('check', 'lp_standalone_mode', 'disabled' => $frontpage_disabled),
+			array('check', 'lp_standalone_mode'),
 			array(
 				'text',
 				'lp_standalone_url',
 				'80" placeholder="' . $txt['lp_example'] . $boardurl . '/portal.php',
-				'help' => 'lp_standalone_url_help',
-				'disabled' => empty($modSettings['lp_standalone_mode'])
+				'help' => 'lp_standalone_url_help'
 			),
 			array(
 				'text',
 				'lp_standalone_mode_disabled_actions',
 				'80" placeholder="' . $txt['lp_example'] . 'mlist,calendar',
 				'subtext' => $txt['lp_standalone_mode_disabled_actions_subtext'],
-				'help' => 'lp_standalone_mode_disabled_actions_help',
-				'disabled' => empty($modSettings['lp_standalone_mode'])
+				'help' => 'lp_standalone_mode_disabled_actions_help'
 			),
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
@@ -240,8 +245,53 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
-		$context['sub_template'] = 'show_settings';
+		// Frontpage mode toggle
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
+		$frontpage_mode_toggle_dt = [];
+		foreach ($frontpage_mode_toggle as $item)
+			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
+
+		$frontpage_alias_toggle_dt = [];
+		foreach ($frontpage_alias_toggle as $item)
+			$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+
+		addInlineJavaScript('
+		function toggleFrontpageMode() {
+			let change_mode = $("#lp_frontpage_mode").val() > 0;
+			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
+			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
+			$(".board_selector").toggle(change_mode);
+			let allow_change_title = $("#lp_frontpage_mode").val() > 1;
+			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
+			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
+			$(".board_selector").toggle(allow_change_title);
+			let allow_change_alias = $("#lp_frontpage_mode").val() == 1;
+			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
+			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
+		};
+		toggleFrontpageMode();
+		$("#lp_frontpage_mode").click(function () {toggleFrontpageMode();});', true);
+
+		// Standalone mode toggle
+		$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
+
+		$standalone_mode_toggle_dt = [];
+		foreach ($standalone_mode_toggle as $item)
+			$standalone_mode_toggle_dt[] = 'setting_' . $item;
+
+		addInlineJavaScript('
+		function toggleStandaloneMode() {
+			let change_mode = $("#lp_standalone_mode").prop("checked");
+			$("#' . implode(', #', $standalone_mode_toggle) . '").closest("dd").toggle(change_mode);
+			$("#' . implode(', #', $standalone_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
+		};
+		toggleStandaloneMode();
+		$("#lp_standalone_mode").click(function () {toggleStandaloneMode();});', true);
+
+		// Save
 		if (isset($_GET['save'])) {
 			checkSession();
 
@@ -276,18 +326,16 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => $txt['lp_extra_info']
-		);
-
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
+
+		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
 
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-			array('int', 'lp_num_comments_per_page', 'disabled' => empty($modSettings['lp_show_comment_block'])),
+			array('bbc', 'lp_disabled_bbc_in_comments'),
+			array('int', 'lp_num_comments_per_page'),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
 			array('title', 'lp_open_graph'),
@@ -299,12 +347,44 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
+		// Show comment block toggle
+		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_num_comments_per_page');
+
+		$show_comment_block_toggle_dt = [];
+		foreach ($show_comment_block_toggle as $item)
+			$show_comment_block_toggle_dt[] = 'setting_' . $item;
+
+		addInlineJavaScript('
+		function toggleShowCommentBlock() {
+			let change_mode = $("#lp_show_comment_block").val() != "none";
+			$("#' . implode(', #', $show_comment_block_toggle) . '").closest("dd").toggle(change_mode);
+			$("#' . implode(', #', $show_comment_block_toggle_dt) . '").closest("dt").toggle(change_mode);
+		};
+		toggleShowCommentBlock();
+		$("#lp_show_comment_block").click(function () {toggleShowCommentBlock();});', true);
+
+		// Save
 		if (isset($_GET['save'])) {
 			checkSession();
 
+			// Clean up the tags
+			$bbcTags = [];
+			foreach (parse_bbc(false) as $tag)
+				$bbcTags[] = $tag['tag'];
+
+			if (!isset($_POST['lp_disabled_bbc_in_comments_enabledTags']))
+				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = [];
+			elseif (!is_array($_POST['lp_disabled_bbc_in_comments_enabledTags']))
+				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = array($_POST['lp_disabled_bbc_in_comments_enabledTags']);
+
+			$_POST['lp_enabled_bbc_in_comments']  = implode(',', $_POST['lp_disabled_bbc_in_comments_enabledTags']);
+			$_POST['lp_disabled_bbc_in_comments'] = implode(',', array_diff($bbcTags, $_POST['lp_disabled_bbc_in_comments_enabledTags']));
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			saveDBSettings($save_vars);
 
+			clean_cache();
 			redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
@@ -331,11 +411,6 @@ class Settings
 		dl.settings {
 			overflow: hidden;
 		}');
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
-		);
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_panels'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=panels;save';
@@ -411,11 +486,6 @@ class Settings
 
 		require_once($sourcedir . '/ManageServer.php');
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
-			'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
-		);
-
 		$context['lp_plugins'] = Subs::getAddons();
 		asort($context['lp_plugins']);
 
@@ -445,8 +515,20 @@ class Settings
 
 			$plugin_options = [];
 			foreach ($config_vars as $id => $var) {
-				if (isset($_POST[$var[1]]))
-					$plugin_options[$var[1]] = $var[0] == 'check' || $var[0] == 'int' ? (int) $_POST[$var[1]] : $_POST[$var[1]];
+				if (isset($_POST[$var[1]])) {
+					if ($var[0] == 'check' || $var[0] == 'int') {
+						$plugin_options[$var[1]] = (int) $_POST[$var[1]];
+					} elseif ($var[0] == 'multicheck') {
+						$multi_check_vars = [];
+						foreach ($_POST[$var[1]] as $key => $value) {
+							$key = (int) $key;
+							$multi_check_vars[$key] = (int) $value;
+						}
+						$plugin_options[$var[1]] = json_encode($multi_check_vars);
+					} else {
+						$plugin_options[$var[1]] = $_POST[$var[1]];
+					}
+				}
 			}
 
 			if (!empty($plugin_options))
@@ -532,6 +614,8 @@ class Settings
 	 */
 	public static function blockArea()
 	{
+		global $user_info;
+
 		isAllowedTo('light_portal_manage_blocks');
 
 		$subActions = array(
@@ -540,7 +624,7 @@ class Settings
 			'edit' => 'ManageBlocks::edit'
 		);
 
-		if (allowedTo('admin_forum')) {
+		if ($user_info['is_admin']) {
 			$subActions['export'] = 'ManageBlocks::export';
 			$subActions['import'] = 'ManageBlocks::import';
 		}
@@ -557,6 +641,8 @@ class Settings
 	 */
 	public static function pageArea()
 	{
+		global $user_info;
+
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
@@ -565,7 +651,7 @@ class Settings
 			'edit'   => 'ManagePages::edit'
 		);
 
-		if (allowedTo('admin_forum')) {
+		if ($user_info['is_admin']) {
 			$subActions['export'] = 'ManagePages::export';
 			$subActions['import'] = 'ManagePages::import';
 		}
@@ -609,8 +695,8 @@ class Settings
 	{
 		global $context, $txt;
 
-		// Check every 3 days | Проверяем раз в 3 дня
-		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 259200)) {
+		// Check once a week | Проверяем раз в неделю
+		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 604800)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
@@ -648,26 +734,5 @@ class Settings
 			return $data->tag_name;
 
 		return LP_VERSION;
-	}
-
-	/**
-	 * Get active pages to set the frontpage
-	 *
-	 * Получаем список активных страниц, для назначения главной
-	 *
-	 * @return array
-	 */
-	private static function getActivePages()
-	{
-		$pages = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
-		if (!empty($pages)) {
-			$pages = array_map(function ($page) {
-				global $user_info;
-
-				return $page['id'] = $page[$user_info['language']];
-			}, $pages);
-		}
-
-		return $pages;
 	}
 }

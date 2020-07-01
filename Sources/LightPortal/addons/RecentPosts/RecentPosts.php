@@ -11,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2020 Bugo
- * @license https://opensource.org/licenses/BSD-3-Clause BSD
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 1.0
  */
@@ -58,6 +58,42 @@ class RecentPosts
 	private static $type = 'link';
 
 	/**
+	 * If set, does NOT show posts from the specified boards
+	 *
+	 * Идентификаторы разделов, сообщения из которых НЕ нужно показывать
+	 *
+	 * @var string
+	 */
+	private static $exclude_boards = '';
+
+	/**
+	 * If set, ONLY includes posts from the specified boards
+	 *
+	 * Идентификаторы разделов, для отображения сообщений ТОЛЬКО из них
+	 *
+	 * @var string
+	 */
+	private static $include_boards = '';
+
+	/**
+	 * If set, does NOT show posts from the specified topics
+	 *
+	 * Идентификаторы тем, сообщения из которых НЕ нужно показывать
+	 *
+	 * @var string
+	 */
+	private static $exclude_topics = '';
+
+	/**
+	 * If set, ONLY includes posts from the specified topics
+	 *
+	 * Идентификаторы тем, для отображения сообщений ТОЛЬКО из них
+	 *
+	 * @var string
+	 */
+	private static $include_topics = '';
+
+	/**
 	 * Display user avatars (true|false)
 	 *
 	 * Отображать аватарки (true|false)
@@ -90,6 +126,10 @@ class RecentPosts
 			'parameters' => array(
 				'num_posts'       => static::$num_posts,
 				'link_type'       => static::$type,
+				'exclude_boards'  => static::$exclude_boards,
+				'include_boards'  => static::$include_boards,
+				'exclude_topics'  => static::$exclude_topics,
+				'include_topics'  => static::$include_topics,
 				'show_avatars'    => static::$show_avatars,
 				'update_interval' => static::$update_interval
 			)
@@ -114,6 +154,10 @@ class RecentPosts
 		$args['parameters'] = array(
 			'num_posts'       => FILTER_VALIDATE_INT,
 			'link_type'       => FILTER_SANITIZE_STRING,
+			'exclude_boards'  => FILTER_SANITIZE_STRING,
+			'include_boards'  => FILTER_SANITIZE_STRING,
+			'exclude_topics'  => FILTER_SANITIZE_STRING,
+			'include_topics'  => FILTER_SANITIZE_STRING,
 			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
 			'update_interval' => FILTER_VALIDATE_INT
 		);
@@ -153,7 +197,7 @@ class RecentPosts
 		);
 
 		foreach ($txt['lp_recent_posts_addon_type_set'] as $key => $value) {
-			if (!defined('JQUERY_VERSION')) {
+			if (RC2_CLEAN) {
 				$context['posting_fields']['link_type']['input']['options'][$value]['attributes'] = array(
 					'value'    => $key,
 					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
@@ -165,6 +209,50 @@ class RecentPosts
 				);
 			}
 		}
+
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_posts_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_exclude_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_posts_addon_include_boards'];
+		$context['posting_fields']['include_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_include_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['exclude_topics']['label']['text'] = $txt['lp_recent_posts_addon_exclude_topics'];
+		$context['posting_fields']['exclude_topics']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_exclude_topics_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
+
+		$context['posting_fields']['include_topics']['label']['text'] = $txt['lp_recent_posts_addon_include_topics'];
+		$context['posting_fields']['include_topics']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_recent_posts_addon_include_topics_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['include_topics'] ?? '',
+				'style'     => 'width: 100%'
+			)
+		);
 
 		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_posts_addon_show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
@@ -194,14 +282,39 @@ class RecentPosts
 	 * @param array $parameters
 	 * @return array
 	 */
-	private static function getData($parameters)
+	public static function getData($parameters)
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
-		$posts = ssi_recentPosts($parameters['num_posts'], null, null, 'array');
+		if (!empty($parameters['exclude_boards']))
+			$exclude_boards = explode(',', $parameters['exclude_boards']);
 
-		if (!empty($posts) && !empty($parameters['show_avatars'])) {
+		if (!empty($parameters['include_boards']))
+			$include_boards = explode(',', $parameters['include_boards']);
+
+		require_once($boarddir . '/SSI.php');
+		$posts = ssi_recentPosts($parameters['num_posts'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+
+		if (empty($posts))
+			return [];
+
+		if (!empty($parameters['exclude_topics'])) {
+			$exclude_topics = array_flip(explode(',', $parameters['exclude_topics']));
+
+			$posts = array_filter($posts, function ($item) use ($exclude_topics) {
+				return !array_key_exists($item['topic'], $exclude_topics);
+			});
+		}
+
+		if (!empty($parameters['include_topics'])) {
+			$include_topics = array_flip(explode(',', $parameters['include_topics']));
+
+			$posts = array_filter($posts, function ($item) use ($include_topics) {
+				return array_key_exists($item['topic'], $include_topics);
+			});
+		}
+
+		if (!empty($parameters['show_avatars'])) {
 			$posters = array_map(function ($item) {
 				return $item['poster']['id'];
 			}, $posts);
@@ -228,51 +341,6 @@ class RecentPosts
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
-	 * @param array $parameters
-	 * @return string
-	 */
-	public static function getHtml($parameters)
-	{
-		global $txt;
-
-		$posts = self::getData($parameters);
-
-		if (empty($posts))
-			return '';
-
-		$html = '
-		<ul class="recent_posts noup">';
-
-		foreach ($posts as $post) {
-			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
-
-			$html .= '
-			<li class="windowbg">';
-
-			if (!empty($parameters['show_avatars']))
-				$html .= '
-				<span class="poster_avatar">' . $post['poster']['avatar'] . '</span>';
-
-			$html .= ($post['is_new'] ? '
-				<span class="new_posts">' . $txt['new'] . '</span> ' : '') . $post[$parameters['link_type']] . '
-				<br>
-				<span class="smalltext">' . $txt['by'] . ' ' . $post['poster']['link'] . '</span>
-				<br class="clear">
-				<span class="smalltext">' . Helpers::getFriendlyTime($post['timestamp']) . '</span>
-			</li>';
-		}
-
-		$html .= '
-		</ul>';
-
-		return $html;
-	}
-
-	/**
 	 * Form the block content
 	 *
 	 * Формируем контент блока
@@ -286,16 +354,43 @@ class RecentPosts
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getHtml', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
 
 		if (!empty($recent_posts)) {
 			ob_start();
-			echo $recent_posts;
+
+			echo '
+		<ul class="recent_posts noup">';
+
+			foreach ($recent_posts as $post) {
+				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
+
+				echo '
+			<li class="windowbg">';
+
+				if (!empty($parameters['show_avatars']))
+					echo '
+				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+
+				if ($post['is_new'])
+					echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+
+				echo '
+				', $post[$parameters['link_type']], '
+				<br class="clear">
+				<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
+			</li>';
+			}
+
+			echo '
+		</ul>';
+
 			$content = ob_get_clean();
 		}
 	}
