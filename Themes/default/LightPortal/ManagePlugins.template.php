@@ -89,6 +89,9 @@ function show_plugin_settings($plugin_name, $settings)
 		} elseif ($value[0] == 'url') {
 			echo '
 					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+		} elseif ($value[0] == 'color') {
+			echo '
+					<br><input type="color" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'int') {
 			echo '
 					<br><input type="number" min="0" step="1" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
@@ -105,7 +108,7 @@ function show_plugin_settings($plugin_name, $settings)
 				echo '
 							<li>
 								<label for="', $value[1], '[', $key, ']">
-									<input type="checkbox" name="', $value[1], '[', $key, ']" id="', $value[1], '[', $key, ']" value="1"', !empty($temp[$value[1] . '_options'][$key]) ? ' checked' : '', '> ', $option_label, '
+									<input type="checkbox" name="', $value[1], '[', $key, ']" id="', $value[1], '[', $key, ']"', !empty($temp[$value[1] . '_options'][$key]) ? ' checked' : '', ' value="1"> ', $option_label, '
 								</label>
 							</li>';
 			}

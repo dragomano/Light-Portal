@@ -2,7 +2,7 @@ jQuery(document).ready(function ($) {
 	$(".form_settings").on("submit", (function (e) {
 		let values = $(this).serializeArray();
 		values = values.concat(
-			jQuery(".form_settings input[type=checkbox]:not(:checked)").map(
+			$(this).find(":checkbox").filter(":not(:checked)").map(
 				function() {
 					return {"name": this.name, "value": false}
 				}

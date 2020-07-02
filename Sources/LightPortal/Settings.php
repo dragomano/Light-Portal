@@ -359,6 +359,10 @@ class Settings
 			let change_mode = $("#lp_show_comment_block").val() != "none";
 			$("#' . implode(', #', $show_comment_block_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $show_comment_block_toggle_dt) . '").closest("dt").toggle(change_mode);
+			if (change_mode && $("#lp_show_comment_block").val() != "default") {
+				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
+				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
+			}
 		};
 		toggleShowCommentBlock();
 		$("#lp_show_comment_block").click(function () {toggleShowCommentBlock();});', true);
@@ -519,12 +523,11 @@ class Settings
 					if ($var[0] == 'check' || $var[0] == 'int') {
 						$plugin_options[$var[1]] = (int) $_POST[$var[1]];
 					} elseif ($var[0] == 'multicheck') {
-						$multi_check_vars = [];
+						$plugin_options[$var[1]] = [];
 						foreach ($_POST[$var[1]] as $key => $value) {
-							$key = (int) $key;
-							$multi_check_vars[$key] = (int) $value;
+							$plugin_options[$var[1]][(int) $key] = (int) $value;
 						}
-						$plugin_options[$var[1]] = json_encode($multi_check_vars);
+						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 					} else {
 						$plugin_options[$var[1]] = $_POST[$var[1]];
 					}

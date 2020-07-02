@@ -11,6 +11,9 @@ function template_portal_credits()
 {
 	global $txt, $context;
 
+	if (empty($context['lp_components']))
+		return;
+
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">', $txt['lp_used_components'], '</h3>
@@ -20,8 +23,19 @@ function template_portal_credits()
 
 	foreach ($context['lp_components'] as $item) {
 		echo '
-			<li class="windowbg">
-				<a href="' . $item['link'] . '" target="_blank" rel="noopener">' . $item['title'] . '</a> ' . (isset($item['author']) ? ' | &copy; ' . $item['author'] : '') . ' | Licensed under <a href="' . $item['license']['link'] . '" target="_blank" rel="noopener">' . $item['license']['name'] . '</a>
+			<li class="windowbg">';
+
+		if (!empty($item['link'])) {
+			echo '
+				<a href="', $item['link'], '" target="_blank" rel="noopener">', $item['title'], '</a>';
+		} else {
+			echo '
+				', $item['title'];
+		}
+
+		echo ' ', (isset($item['author']) ? ' | &copy; ' . $item['author'] : ''), ' | Licensed under <a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
+
+		echo '
 			</li>';
 	}
 
