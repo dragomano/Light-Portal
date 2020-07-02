@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * FacebookComments
  *
@@ -29,13 +31,13 @@ class FacebookComments
 	public static $addon_type = 'comment';
 
 	/**
-	 * Widget color scheme (light|dark)
+	 * The IDs list of dark themes
 	 *
-	 * Цветовая схема виджета (light|dark)
+	 * Список идентификаторов тёмных тем оформления
 	 *
 	 * @var string
 	 */
-	private static $color_scheme = 'light';
+	private static $dark_themes = '';
 
 	/**
 	 * Adding the new comment type
@@ -56,17 +58,19 @@ class FacebookComments
 	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $options
+	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$options)
+	public static function addSettings(&$config_vars)
 	{
-		global $modSettings, $txt;
+		global $modSettings, $context;
 
-		if (!isset($modSettings['lp_facebook_comments_addon_color_scheme']))
-			updateSettings(array('lp_facebook_comments_addon_color_scheme' => static::$color_scheme));
+		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
+			updateSettings(array('lp_facebook_comments_addon_dark_themes' => static::$dark_themes));
 
-		$options[] = array('select', 'lp_facebook_comments_addon_color_scheme', $txt['lp_facebook_comments_addon_color_scheme_set']);
+		$context['lp_facebook_comments_addon_dark_themes_options'] = Helpers::getForumThemes();
+
+		$config_vars[] = array('multicheck', 'lp_facebook_comments_addon_dark_themes');
 	}
 
 	/**
@@ -78,13 +82,15 @@ class FacebookComments
 	 */
 	public static function comments()
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $context, $txt, $settings;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'facebook') {
+			$dark_themes = !empty($modSettings['lp_facebook_comments_addon_dark_themes']) ? json_decode($modSettings['lp_facebook_comments_addon_dark_themes'], true) : [];
+
 			$context['lp_facebook_comment_block'] = '
 				<div id="fb-root"></div>
 				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $txt['lang_locale'] . '/sdk.js#xfbml=1&version=v6.0"></script>
-				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($modSettings['lp_facebook_comments_addon_color_scheme'] ?? static::$color_scheme) . '"></div>';
+				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? 'dark' : 'light') . '"></div>';
 		}
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * Trumbowyg
  *
@@ -51,10 +53,10 @@ class Trumbowyg
 	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $options
+	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$options)
+	public static function addSettings(&$config_vars)
 	{
 		global $modSettings, $context, $txt;
 
@@ -63,39 +65,10 @@ class Trumbowyg
 		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
 			updateSettings(array('lp_trumbowyg_addon_auto_grow' => static::$auto_grow));
 
-		$context['lp_trumbowyg_addon_dark_themes_options'] = self::getForumThemes();
+		$context['lp_trumbowyg_addon_dark_themes_options'] = Helpers::getForumThemes();
 
-		$options[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
-		$options[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
-	}
-
-	/**
-	 * Collecting the names of existing themes
-	 *
-	 * Собираем названия существующих тем оформления
-	 *
-	 * @return void
-	 */
-	private static function getForumThemes()
-	{
-		global $smcFunc, $context;
-
-		$result = $smcFunc['db_query']('', '
-			SELECT id_theme, variable, value
-			FROM {db_prefix}themes
-			WHERE variable = {string:name}',
-			array(
-				'name' => 'name'
-			)
-		);
-
-		$current_themes = [];
-		while ($row = $smcFunc['db_fetch_assoc']($result))
-			$current_themes[$row['id_theme']] = $row['value'];
-
-		$smcFunc['db_free_result']($result);
-
-		return $current_themes;
+		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
+		$config_vars[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
 	}
 
 	/**

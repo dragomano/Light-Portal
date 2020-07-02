@@ -433,7 +433,8 @@ class Helpers
 		if (empty($alias))
 			return false;
 
-		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']) && $modSettings['lp_frontpage_alias'] == $alias;
+		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1
+		 && !empty($modSettings['lp_frontpage_alias']) && $modSettings['lp_frontpage_alias'] == $alias;
 	}
 
 	/**
@@ -507,5 +508,35 @@ class Helpers
 		global $modSettings;
 
 		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+	}
+
+	/**
+	 * Collecting the names of existing themes
+	 *
+	 * Собираем названия существующих тем оформления
+	 *
+	 * @return void
+	 */
+	public static function getForumThemes()
+	{
+		global $smcFunc, $context;
+
+		$result = $smcFunc['db_query']('', '
+			SELECT id_theme, variable, value
+			FROM {db_prefix}themes
+			WHERE variable = {string:name}',
+			array(
+				'name' => 'name'
+			)
+		);
+
+		$current_themes = [];
+		while ($row = $smcFunc['db_fetch_assoc']($result))
+			$current_themes[$row['id_theme']] = $row['value'];
+
+		$smcFunc['db_free_result']($result);
+		$context['lp_num_queries']++;
+
+		return $current_themes;
 	}
 }

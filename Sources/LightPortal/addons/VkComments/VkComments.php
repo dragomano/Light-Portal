@@ -65,10 +65,10 @@ class VkComments
 	 *
 	 * Добавляем настройки
 	 *
-	 * @param array $options
+	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$options)
+	public static function addSettings(&$config_vars)
 	{
 		global $modSettings, $txt;
 
@@ -77,9 +77,9 @@ class VkComments
 		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
 			updateSettings(array('lp_vk_comments_addon_auto_publish' => static::$auto_publish));
 
-		$options[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
-		$options[] = array('check', 'lp_vk_comments_addon_allow_attachments');
-		$options[] = array('check', 'lp_vk_comments_addon_auto_publish');
+		$config_vars[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
+		$config_vars[] = array('check', 'lp_vk_comments_addon_allow_attachments');
+		$config_vars[] = array('check', 'lp_vk_comments_addon_auto_publish');
 	}
 
 	/**
