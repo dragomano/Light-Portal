@@ -226,22 +226,31 @@ class Subs
 		switch ($type) {
 			case 'bbc':
 				$content = parse_bbc($content);
+
+				// Integrate with the Paragrapher mod
+				call_integration_hook('integrate_paragrapher_string', array(&$content));
+
 				break;
 			case 'html':
 				$content = un_htmlspecialchars($content);
+
 				break;
 			case 'php':
 				$content = trim(un_htmlspecialchars($content));
 				$content = trim($content, '<?php');
 				$content = trim($content, '?>');
+
 				ob_start();
+
 				try {
 					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
 					eval($content);
 				} catch (\ParseError $p) {
 					echo $p->getMessage();
 				}
+
 				$content = ob_get_clean();
+
 				break;
 			default:
 				self::runAddons('parseContent', array(&$content, $type));
