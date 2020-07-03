@@ -1,6 +1,15 @@
 /* Light Portal ~ less file */
 
 @color-light-gray: #ddd;
+@color-white: #fff;
+@color-black: #000;
+@article-category-color: #868686;
+@article-author-color: #ad7d52;
+@comment-smalltext-color: #bfbfbf;
+@tabs-input-color: #555;
+@tabs-input-border-color: #f49a3a;
+@tabs-label-color: #aaa;
+@tabs-label-hover-color: #888;
 
 .pointer() {
 	cursor: pointer;
@@ -194,6 +203,9 @@ section {
 		border-radius: 12px;
 		overflow: hidden;
 		padding: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
 
 		&:hover {
 			box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
@@ -268,13 +280,14 @@ section {
 
 			.card__category {
 				font-weight: 500;
-				color: #868686;
+				color: @article-category-color;
 			}
 
 			.card__title {
 				text-transform: uppercase;
 				margin-top: 5px;
 				margin-bottom: 10px;
+				word-break: break-word;
 
 				+ div {
 					display: flex;
@@ -291,7 +304,7 @@ section {
 			.card__author {
 				font-weight: 600;
 				text-decoration: none;
-				color: #AD7D52;
+				color: @article-author-color;
 			}
 		}
 	}
@@ -367,7 +380,7 @@ section {
 		.smalltext {
 			margin-top: 6px;
 			padding-top: 6px;
-			border-top: 1px dashed #bfbfbf;
+			border-top: 1px dashed @comment-smalltext-color;
 		}
 	}
 }
@@ -584,9 +597,9 @@ section {
 		position: absolute;
 
 		&:checked+label {
-			color: #555;
-			border-top: 1px solid #f49a3a;
-			border-bottom: 1px solid #fff;
+			color: @tabs-input-color;
+			border-top: 1px solid @tabs-input-border-color;
+			border-bottom: 1px solid @color-white;
 		}
 	}
 
@@ -603,13 +616,13 @@ section {
 		padding: 15px 25px;
 		font-weight: 600;
 		text-align: center;
-		color: #aaa;
-		border: 0px solid #ddd;
+		color: @tabs-label-color;
+		border: 0px solid @color-light-gray;
 		border-width: 1px 1px 1px 1px;
 		border-radius: 3px 3px 0 0;
 
 		&:hover {
-			color: #888;
+			color: @tabs-label-hover-color;
 			cursor: pointer;
 		}
 
@@ -643,8 +656,8 @@ section {
 	section {
 		display: none;
 		padding: 15px;
-		background: #fff;
-		border: 1px solid #ddd;
+		background: @color-white;
+		border: 1px solid @color-light-gray;
 		.border-radius(0, 7px, 7px, 7px);
 
 		dl {
@@ -943,7 +956,7 @@ dl {
 	.slick-prev,
 	.slick-next {
 		&::before {
-			color: #000 !important;
+			color: @color-black !important;
 		}
 	}
 	.slick-disabled{

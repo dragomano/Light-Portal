@@ -363,8 +363,8 @@ function template_show_topics_as_custom_style()
 				<div class="floatleft" style="width: 64px">
 					<img src="', $topic['image'], '" alt="', $topic['subject'], '">
 				</div>';
-				} elseif (!empty($topic['image_placeholder'])) {
-					echo '
+			 } else {
+				echo '
 				<div class="floatleft" style="width: 64px">
 					<i class="far fa-image fa-5x"></i>
 				</div>';
