@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Spanish translation by Rock Lee https://www.bombercode.net | Rev. 4.3
+ * Spanish translation by Rock Lee https://www.bombercode.net | Rev. 4.5
  *
  * @package Light Portal
  */
@@ -13,6 +13,7 @@ $txt['lp_new_version_is_available'] = '¡Una nueva version esta disponible!';
 
 $txt['lp_article'] = 'Artículo';
 $txt['lp_no_items'] = 'No hay elementos que mostrar.';
+$txt['lp_example'] = 'Ejemplo: ';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
@@ -23,12 +24,13 @@ $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
 $txt['lp_frontpage_mode_set'] = array('Desactivar', 'Página especificada', 'Todos los temas de foros seleccionados', 'Todas las páginas activas', 'Foros seleccionados	');
 $txt['lp_frontpage_alias'] = 'Página del portal para mostrar como página principal';
+$txt['lp_frontpage_alias_subtext'] = 'Ingrese el alias de la página que existen.';
 $txt['lp_frontpage_boards'] = 'Foros como fuentes de artículos para la portada';
+$txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elementos en las tarjetas.';
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
-$txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';
-$txt['lp_subject_size'] = 'El tamaño máximo de los títulos de los artículos (en símbolos)';
+$txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';	
 $txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
@@ -43,6 +45,7 @@ obExit(true);</code></pre><br>
 Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" si el archivo <em>portal.php</em> se encuentra fuera del directorio del foro (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
 $txt['lp_standalone_mode_disabled_actions'] = 'Acciones desactivadas';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Especifique las áreas que deben DESACTIVARSE en el modo independiente.';
+$txt['lp_standalone_mode_disabled_actions_help'] = 'Por ejemplo, si necesita desactivar el área de búsqueda (index.php?action=<strong>search</strong>), Agregar <strong>búsqueda</strong> en el campo de texto.';
 
 $txt['groups_light_portal_view'] = '¿Quién puede ver los elementos del portal?';
 $txt['groups_light_portal_manage_blocks'] = '¿Quién puede administrar los bloques?';
@@ -54,20 +57,39 @@ $txt['lp_show_debug_info'] = 'Muestra el tiempo de carga y el número de consult
 $txt['lp_show_debug_info_subtext'] = '¡Esta información estará disponible solo para administradores!';
 $txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché';
 
+// Pages and blocks
 $txt['lp_extra'] = 'Páginas y bloques';
 $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de páginas y bloques.';
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
-$txt['lp_show_comment_block_set'] = array('none' => 'Ninguno', 'default' => 'Integrado');
-$txt['lp_num_comments_per_page'] = 'Número de comentarios de los padres por página'; // Check meaning
-$txt['lp_page_editor_type_default'] = 'El tipo de editor de la página por defecto';
+$txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
+$txt['lp_show_comment_block_set'] = array('none' => 'None', 'default' => 'Integrated');
+$txt['lp_num_comments_per_page'] = 'Número de comentarios de los foros por página';
+$txt['lp_page_editor_type_default'] = 'El tipo de editor de página por defecto';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ocultar bloques activos en el área de administración';
+
 $txt['lp_open_graph'] = 'Open Graph';
 $txt['lp_page_og_image'] = 'Usa una imagen del contenido de la página';
 $txt['lp_page_og_image_set'] = array('ninguno', 'Primero encontrado', 'Último encontrado');
 $txt['lp_page_itemprop_address'] = 'Dirección de su organización';
 $txt['lp_page_itemprop_phone'] = 'Teléfono de su organización';
+
+$txt['lp_permissions'] = array('Mostrar a los administradores', 'Mostrar a los invitados', 'Mostrar a los usuarios', 'Mostrar a todos');
+
+// Panels
+$txt['lp_panels'] = 'Paneles';
+$txt['lp_panels_info'] = 'Aquí se puede personalizar el ancho de algunos paneles, así como la dirección de los bloques.<br><strong>%1$s</strong> utiliza <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">un sistema de cuadrícula de 12 columnas</a> to display blocks in 6 panels.';
+$txt['lp_swap_header_footer'] = 'Cambia el encabezado y el pie de página';
+$txt['lp_swap_left_right'] = 'Cambia el panel izquierdo y el panel derecho';
+$txt['lp_swap_top_bottom'] = 'Cambie el centro (arriba) y el centro (abajo)';
+$txt['lp_panel_layout_note'] = 'Cambia el ancho de la ventana del navegador y ver qué clase se utiliza.';
+$txt['lp_browser_width'] = 'Ancho de la ventana del navegador';
+$txt['lp_used_class'] = 'Clase utilizada';
+$txt['lp_panel_layout_preview'] = 'Aquí puede establecer el número de columnas para algunos paneles, dependiendo del ancho de la ventana del navegador.';
+$txt['lp_panel_direction_note'] = 'Aquí puede cambiar la dirección de los bloques para cada panel.';
+$txt['lp_panel_direction'] = 'La dirección de los bloques en los paneles.';
+$txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
@@ -167,6 +189,7 @@ $txt['lp_pages_add_tab_description'] = 'Rellene el título de la página y el al
 $txt['lp_pages_edit_title'] = 'Página de edición';
 $txt['lp_pages_edit_tab_description'] = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages'] = 'Páginas del portal';
+$txt['lp_search_pages'] = 'Alias o título';
 $txt['lp_page_types'] = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'El nombre de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
@@ -175,12 +198,19 @@ $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
 $txt['lp_page_keywords_after'] = 'Usa una coma para separar';
-$txt['lp_permissions'] = array('Mostrar a los administradores', 'Mostrar a los invitados', 'Mostrar a los usuarios', 'Mostrar a todos');
+$txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Mostrar el autor y la fecha de creación',
 	'allow_comments' => 'Permitir comentarios'
 );
+
+// Tabs
+$txt['lp_tab_content'] = 'Contenido';
+$txt['lp_tab_seo'] = 'SEO';
+$txt['lp_tab_access_placement'] = 'El acceso y la colocación';
+$txt['lp_tab_appearance'] = 'Apariencia';
+$txt['lp_tab_tuning'] = 'Extras';
 
 // Import and Export
 $txt['lp_pages_export'] = 'Exportar página';
@@ -207,6 +237,7 @@ $txt['lp_frequency_column'] = 'Frecuencia';
 $txt['lp_comments'] = 'Comentarios';
 $txt['lp_comment_placeholder'] = 'Deja un comentario...';
 
+// Comment alerts
 $txt['alert_group_light_portal'] = LP_NAME;
 $txt['alert_page_comment'] = 'Cuando mi página recibe un comentario';
 $txt['alert_new_comment_page_comment'] = '{member_link} dejó un comentario {page_comment_new_comment}';
@@ -223,14 +254,25 @@ $txt['lp_post_error_no_valid_alias'] = '¡El alias especificado no es correcto!'
 $txt['lp_post_error_no_unique_alias'] = '¡Ya existe una página con este alias!';
 $txt['lp_post_error_no_content'] = '¡El contenido no especificado! Es requerido.';
 $txt['lp_post_error_no_areas'] = 'El campo <strong>areas</strong> no se completó. Es requerido.';
+$txt['lp_post_error_no_valid_areas'] = '¡El campo de las <strong>zonas</strong> se configuró incorrectamente!';
 $txt['lp_page_not_editable'] = '¡No tienes permiso para editar esta página!';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
+$txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
+$txt['lp_import_failed'] = 'Error al importar	...';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viendo <a href="%1$s">la página principal del portal</a>.';
+$txt['lp_who_viewing_index'] = 'Viendo <a href="%1$s">la página principal del portal</a> o <a href="%2$s">el índice del foro</a>.';
 $txt['lp_who_viewing_page'] = 'Viendo <a href="%1$s">la página del portal</a>.';
 $txt['lp_who_viewing_tags'] = 'Viendo <a href="%1$s">las etiquetas de la página del portal</a>.';
 $txt['lp_who_viewing_the_tag'] = 'Viendo la lista de páginas con la etiqueta <a href="%1$s" class="bbc_link">%2$s</a>.';
+$txt['lp_who_viewing_portal_settings'] = 'Viendo o cambiando <a href="%1$s">la configuración del portal</a>.';
+$txt['lp_who_viewing_portal_blocks'] = 'Viendo <a href="%1$s">the portal blocks</a> in the admin area.';
+$txt['lp_who_viewing_editing_block'] = 'Editando el bloque del portal (#%1$d).';
+$txt['lp_who_viewing_adding_block'] = 'Agregando un bloque para el portal.';
+$txt['lp_who_viewing_portal_pages'] = 'Viendo <a href="%1$s">las páginas del portal</a> en el área de administración.';
+$txt['lp_who_viewing_editing_page'] = 'Editando la página del portal (#%1$d).';
+$txt['lp_who_viewing_adding_page'] = 'Agregando una página para el portal.';
 
 // Permissions
 $txt['permissiongroup_light_portal'] = LP_NAME;
