@@ -13,22 +13,24 @@ $txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
 
 $txt['lp_article']  = 'Artykuł';
 $txt['lp_no_items'] = 'Nic nie zostało dodane.';
+$txt['lp_example']  = 'Przykład: ';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make a donation</a> to the developer.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>Możesz również <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">dać napiwek</a> autorowi lub zostać <a class="bbc_link" href="https://www.patreon.com/bugo">sponsorem w serwisie Patreon</a>.';
 
 $txt['lp_frontpage_title']         = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']          = 'Strona główna portalu';
 $txt['lp_frontpage_mode_set']      = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
 $txt['lp_frontpage_alias']         = 'Strona główna portalu';
+$txt['lp_frontpage_alias_subtext']   = 'Podaj alias strony.';
 $txt['lp_frontpage_boards']        = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_card_alt_layout'] = 'Alternatywny układ elementów kart';
 $txt['lp_frontpage_layout']        = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']    = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles'] = 'Wyświetlaj obrazy z artykułów';
 $txt['lp_image_placeholder']       = 'Adres domyślnego obrazu';
-$txt['lp_subject_size']            = 'Długość tytułów artykułów';
 $txt['lp_teaser_size']             = 'Długość podglądu artykułów';
 $txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
 
@@ -43,6 +45,7 @@ obExit(true);</code></pre><br>
 Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" jeśli plik <em>portal.php</em> jest zlokalizowany poza katalogiem forum (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'Na przykład, jeśli chcesz wyłączyć akcję wyszukiwania (index.php?action=<strong>search</strong>), dodaj w polu <strong>search</strong>.';
 
 $txt['groups_light_portal_view']             = 'Kto może widzieć portal';
 $txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
@@ -54,20 +57,39 @@ $txt['lp_show_debug_info']         = 'Wyświetl czas ładowania portalu oraz ilo
 $txt['lp_show_debug_info_subtext'] = 'Informacja ta widoczna jest tylko dla administratorów!';
 $txt['lp_cache_update_interval']   = 'Interwał aktualizacji pamięci podręcznej';
 
+// Pages and blocks
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
+$txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
 $txt['lp_num_comments_per_page']        = 'Ilość komentarzy na stronę';
 $txt['lp_page_editor_type_default']     = 'Rodzaj domyślnego edytora ';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ukryj aktywne bloki w centrum administracji';
+
 $txt['lp_open_graph']                   = 'Open Graph';
 $txt['lp_page_og_image']                = 'Użyj obrazu z treści';
 $txt['lp_page_og_image_set']            = array('Brak', 'Pierwszy', 'Ostatni');
 $txt['lp_page_itemprop_address']        = 'Adres Twojej organizacji';
 $txt['lp_page_itemprop_phone']          = 'Numer telefonu';
+
+$txt['lp_permissions'] = array('Pokaż administratorom', 'Pokaż gościom', 'Pokaż użytkownikom', 'Pokaż wszystkim');
+
+// Panels
+$txt['lp_panels']               = 'Panele';
+$txt['lp_panels_info']          = 'Możesz spersolanizować szerokość niektórych panelów oraz kierunek bloków.<br><strong>%1$s</strong> wykorzystuje <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 kolumnowy układ siatki</a> do wyświetlania bloków w 6 panelach.';
+$txt['lp_swap_header_footer']   = 'Zamień miejscami nagłówek ze stopką';
+$txt['lp_swap_left_right']      = 'Zamień miejscami panel lewy z prawym';
+$txt['lp_swap_top_bottom']      = 'Zamień miejscami panele centralne';
+$txt['lp_panel_layout_note']    = 'Zmień szerokość przeglądarki i sprawdź która klasa jest używana.';
+$txt['lp_browser_width']        = 'Szerokość okna przeglądarki';
+$txt['lp_used_class']           = 'Uzywana klasa';
+$txt['lp_panel_layout_preview'] = 'Możesz ustawić ilość kolumn dla niektórych panelów w zależnośc iod szerokości okna przeglądarki.';
+$txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';
+$txt['lp_panel_direction']      = 'Kierunek bloków w panelach';
+$txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
@@ -111,10 +133,10 @@ $txt['lp_block_icon_type_set']           = array('fas' => 'Wypełnione', 'far' =
 $txt['lp_block_placement']               = 'Umieszczenie';
 $txt['lp_block_placement_set']           = array(
 	'header' => 'Nagłówek',
-	'top'    => 'Wyśrodkowane (na górze)',
+	'top'    => 'Centralny (na górze)',
 	'left'   => 'Lewa strona',
 	'right'  => 'Prawa strona',
-	'bottom' => 'Wyśrodkowane (na dole)',
+	'bottom' => 'Centralny (na dole)',
 	'footer' => 'Stopka'
 );
 
@@ -126,18 +148,18 @@ $txt['lp_block_areas_subtext'] = 'Wybierz jedną lub kilka akcji do wyświetlani
 	<li><strong>forum</strong> — wyświetl tylko na forum</li>
 	<li><strong>custom_action</strong> — wyświetl tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
 	<li><strong>page=alias</strong> — wyświetl na stronie <em>index.php?page</em>=<strong>alias</strong></li>
-	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
+	<li><strong>board=id</strong> — wyświetl tylko w dziale o wskazanym <strong>id</strong> (włączając w to wszystkie wątki w dziale)
 		<ul class="bbc_list">
-			<li><strong>boards</strong> — display in all boards</li>
-			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
-			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
+			<li><strong>boards</strong> — wyświetl we wszystkich działach</li>
+			<li><strong>board=id1-id3</strong> — wyświetl w działach id1, id2, id3</li>
+			<li><strong>board=id3|id7</strong> — wyświetl w działach id3 i id7</li>
 		</ul>
 	</li>
-	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
+	<li><strong>topic=id</strong> — wyświetlaj tylko w wątku o wskazanym <strong>id</strong>
 		<ul class="bbc_list">
-			<li><strong>topics</strong> — display in all topics</li>
-			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
-			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
+			<li><strong>topics</strong> — wyświetl we wszystkich wątkach</li>
+			<li><strong>topic=id1-id3</strong> — wyświetl w wątkach id1, id2, id3</li>
+			<li><strong>topic=id3|id7</strong> — wyświetl w wątkach id3 i id7</li>
 		</ul>
 	</li>
 </ul>';
@@ -167,6 +189,7 @@ $txt['lp_pages_add_tab_description']    = 'Podaj nazwę strony i jej alias. Po t
 $txt['lp_pages_edit_title']             = 'Edytowanie strony';
 $txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
 $txt['lp_extra_pages']                  = 'Strony portalu';
+$txt['lp_search_pages']                 = 'Alias lub tytuł';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
 $txt['lp_page_alias_subtext']           = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
@@ -175,12 +198,19 @@ $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
 $txt['lp_page_keywords_after']          = 'Oddzielone przecinkami';
-$txt['lp_permissions']                  = array('Wyświetl dla administratorów', 'Wyświetl dla gości', 'Wyświetl dla użytkowników', 'Wyświetl wszystkim');
+$txt['lp_page_publish_datetime']        = 'Data i czas publikacji';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
 	'allow_comments'       => 'Włącz komentarze'
 );
+
+// Tabs
+$txt['lp_tab_content']          = 'Zawartość';
+$txt['lp_tab_seo']              = 'SEO';
+$txt['lp_tab_access_placement'] = 'Dostęp i rozmieszczenie';
+$txt['lp_tab_appearance']       = 'Wygląd';
+$txt['lp_tab_tuning']           = 'Tuning';
 
 // Import and Export
 $txt['lp_pages_export']                  = 'Eksport stron';
@@ -207,6 +237,7 @@ $txt['lp_frequency_column'] = 'Częstotliwość';
 $txt['lp_comments']            = 'Komentarze';
 $txt['lp_comment_placeholder'] = 'Dodaj komentarz...';
 
+// Comment alerts
 $txt['alert_group_light_portal']           = LP_NAME;
 $txt['alert_page_comment']                 = 'Po otrzymaniu komentarza na stronie';
 $txt['alert_new_comment_page_comment']     = '{member_link} napisał komentarz {page_comment_new_comment}';
@@ -223,14 +254,25 @@ $txt['lp_post_error_no_valid_alias']  = 'Podany alias nie jest poprawny!';
 $txt['lp_post_error_no_unique_alias'] = 'Alias jest używany już przez inną stronę!';
 $txt['lp_post_error_no_content']      = 'Nie wpisano zawartości!';
 $txt['lp_post_error_no_areas']        = 'Pole <strong>Akcje</strong> nie zostało wypełnione.';
+$txt['lp_post_error_no_valid_areas']  = 'W polu <strong>Akcje</strong> podano niewłaściwą akcję!';
 $txt['lp_page_not_editable']          = 'Nie posiadasz uprawnień do edytowania tej strony!';
 $txt['lp_addon_not_installed']        = 'Wtyczka %1$s nie jest zainstalowana';
+$txt['lp_wrong_import_file']          = 'Nie można importować tego pliku...';
+$txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania...';
 
 // Who
-$txt['lp_who_viewing_frontpage'] = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';
-$txt['lp_who_viewing_page']      = 'Przegląda <a href="%1$s">stronę na portalu</a>.';
-$txt['lp_who_viewing_tags']      = 'Przegląda <a href="%1$s">tagi stron portalu</a>.';
-$txt['lp_who_viewing_the_tag']   = 'Przegląda listę stron z tagiem <a href="%1$s" class="bbc_link">%2$s</a>.';
+$txt['lp_who_viewing_frontpage']       = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';
+$txt['lp_who_viewing_index']           = 'Przegląda <a href="%1$s">stronę główną portalu</a> lub <a href="%2$s">stronę główną forum</a>.';
+$txt['lp_who_viewing_page']     	   = 'Przegląda <a href="%1$s">stronę na portalu</a>.';
+$txt['lp_who_viewing_tags']            = 'Przegląda <a href="%1$s">tagi stron portalu</a>.';
+$txt['lp_who_viewing_the_tag']         = 'Przegląda listę stron z tagiem <a href="%1$s" class="bbc_link">%2$s</a>.';
+$txt['lp_who_viewing_portal_settings'] = 'Przegląda lub zmienia <a href="%1$s">ustawienia portalu</a>.';
+$txt['lp_who_viewing_portal_blocks']   = 'Przegląda <a href="%1$s">bloki portalu</a> w centrum administracji.';
+$txt['lp_who_viewing_editing_block']   = 'Edytuje blok (#%1$d).';
+$txt['lp_who_viewing_adding_block']    = 'Dodaje nowy blok.';
+$txt['lp_who_viewing_portal_pages']    = 'Przegląda <a href="%1$s">strony portalu</a> w centrum administracji.';
+$txt['lp_who_viewing_editing_page']    = 'Edytuje stronę (#%1$d).';
+$txt['lp_who_viewing_adding_page']     = 'Dodaje nową stronę portalu.';
 
 // Permissions
 $txt['permissiongroup_light_portal']                 = LP_NAME;
