@@ -16,7 +16,7 @@ function template_portal_credits()
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_used_components'], '</h3>
+		<h3 class="catbg"><i class="far fa-copyright"></i> ', $txt['lp_used_components'], '</h3>
 	</div>
 	<div class="roundframe noup">
 		<ul>';
@@ -33,7 +33,7 @@ function template_portal_credits()
 				', $item['title'];
 		}
 
-		echo ' ', (isset($item['author']) ? ' | &copy; ' . $item['author'] : ''), ' | Licensed under <a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
+		echo ' ', (isset($item['author']) ? ' | &copy; ' . $item['author'] : ''), ' | ', strpos($item['license']['name'], 'the ') !== false ? 'Licensed under ' : '', '<a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
 
 		echo '
 			</li>';

@@ -459,6 +459,9 @@ class Integration
 				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
 		}
 
+		if (!empty($actions['action']) && $actions['action'] == 'forum')
+			$result = sprintf($txt['who_index'], $scripturl . '?action=forum', $context['forum_name']);
+
 		if (!empty($actions['page']))
 			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?page=' . $actions['page']);
 

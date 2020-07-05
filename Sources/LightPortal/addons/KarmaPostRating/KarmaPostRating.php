@@ -35,23 +35,17 @@ class KarmaPostRating
 	 *
 	 * @param array $custom_columns
 	 * @param array $custom_tables
-	 * @param array $custom_wheres
-	 * @param array $custom_parameters
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
+	public static function frontTopics(&$custom_columns, &$custom_tables)
 	{
-		global $modSettings, $context;
+		global $modSettings;
 
 		if (!class_exists('\Bugo\KarmaPostRating\Subs'))
 			return;
 
 		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor']) ? ' + t.num_replies' : '') . ', 0) AS rating';
-
 		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (kpr.item_id = t.id_first_msg AND kpr.item = "message")';
-		$custom_wheres[] = !empty($context['kpr_ignored_boards']) ? 'AND t.id_board NOT IN ({array_int:kpr_ignored_boards})' : '';
-
-		$custom_parameters['kpr_ignored_boards'] = !empty($context['kpr_ignored_boards']) ? $context['kpr_ignored_boards'] : null;
 	}
 
 	/**

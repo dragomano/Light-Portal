@@ -19,7 +19,7 @@ function template_show_topics_as_articles()
 			$alt = $topic['subject'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe', $topic['css_class'], '">
 				<div class="card__info-hover">';
 
@@ -81,12 +81,15 @@ function template_show_topics_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
 	</div>';
 	}
 }
@@ -114,7 +117,7 @@ function template_show_pages_as_articles()
 			$alt = $page['title'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
 				<div class="card__info-hover">';
 
@@ -176,12 +179,15 @@ function template_show_pages_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
 	</div>';
 
 		if (empty($context['lp_active_blocks']))
@@ -209,7 +215,7 @@ function template_show_boards_as_articles()
 			$alt = $board['name'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
 				<div class="card__info-hover">';
 
@@ -267,12 +273,15 @@ function template_show_boards_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
 	</div>';
 	}
 }
@@ -290,7 +299,7 @@ function template_show_topics_as_custom_style()
 
 	echo '
 	<div class="row">
-		<div class="col-xs-12 col-sm-3 col-md-3">
+		<div class="col-xs-12 col-sm-3">
 			<nav>
 				<ul>
 					<li>
@@ -414,11 +423,16 @@ function template_show_topics_as_custom_style()
 	}
 
 	echo '
-		</div>
+		</div>';
+
+	if (!empty($context['page_index']))
+		echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+	echo '
 	</div>';
 }
