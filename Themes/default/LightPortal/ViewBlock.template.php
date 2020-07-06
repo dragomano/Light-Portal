@@ -12,7 +12,7 @@ function template_portal_above()
 	global $modSettings, $context;
 
 	echo '
-	<div id="lp_layout"', !empty($modSettings['lp_swap_header_footer']) ? ' class="row reverse2"' : '', '>';
+	<div id="lp_layout"', !empty($modSettings['lp_swap_header_footer']) ? ' class="row column-reverse"' : '', '>';
 
 	// Header | Шапка
 	if (!empty($context['lp_blocks']['header'])) {
@@ -47,7 +47,7 @@ function template_portal_above()
 
 	echo '
 			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-' . $md . ' col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
-				<div', !empty($modSettings['lp_swap_top_bottom']) ? ' class="row reverse2"' : '', '>';
+				<div', !empty($modSettings['lp_swap_top_bottom']) ? ' class="row column-reverse"' : '', '>';
 
 	// Center (top) | Центр (верх)
 	if (!empty($context['lp_blocks']['top'])) {

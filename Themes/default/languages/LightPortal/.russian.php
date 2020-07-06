@@ -288,10 +288,10 @@ $txt['cannot_light_portal_manage_own_pages']         = 'Извините, вам
 $txt['cannot_light_portal_view_page']                = 'Извините, вам не разрешен просмотр этой страницы!';
 
 // Time units
-$txt['lp_days_set']       = array('день','дня','дней');
-$txt['lp_hours_set']      = array('час','часа','часов');
-$txt['lp_minutes_set']    = array('минуту','минуты','минут');
-$txt['lp_seconds_set']    = array('секунду','секунды','секунд');
+$txt['lp_days_set']       = array('день', 'дня', 'дней');
+$txt['lp_hours_set']      = array('час', 'часа', 'часов');
+$txt['lp_minutes_set']    = array('минуту', 'минуты', 'минут');
+$txt['lp_seconds_set']    = array('секунду', 'секунды', 'секунд');
 $txt['lp_tomorrow']       = '<strong>Завтра</strong> в ';
 $txt['lp_just_now']       = 'Только что';
 $txt['lp_time_label_in']  = 'Через %1$s';

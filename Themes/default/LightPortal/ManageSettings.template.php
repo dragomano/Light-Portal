@@ -47,7 +47,7 @@ function template_callback_panel_layout()
 		</table>
 		<br>
 		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
-		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row reverse2' : '', '">
+		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row column-reverse' : '', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
@@ -124,7 +124,7 @@ echo '
 					</div>
 				</div>
 				<div class="col-xs">
-					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' row reverse2' : '', '">
+					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' row column-reverse' : '', '">
 						<strong>col-xs (auto)</strong>
 						<div class="row">
 							<div class="col-xs">

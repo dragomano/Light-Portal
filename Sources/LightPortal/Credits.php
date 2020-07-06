@@ -92,6 +92,7 @@ class Credits
 		$links[] = array(
 			'title' => 'Sortable.js',
 			'link' => 'https://github.com/SortableJS/Sortable',
+			'author' => '2019 All contributors to Sortable',
 			'license' => array(
 				'name' => 'the MIT License (MIT)',
 				'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
