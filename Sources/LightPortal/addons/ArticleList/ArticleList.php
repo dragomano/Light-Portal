@@ -68,15 +68,6 @@ class ArticleList
 	private static $ids = '';
 
 	/**
-	 * The article list direction (horizontal|vertical)
-	 *
-	 * Направление списка статей (horizontal|vertical)
-	 *
-	 * @var string
-	 */
-	private static $direction = 'horizontal';
-
-	/**
 	 * Display article images (true|false)
 	 *
 	 * Отображать картинки статей (true|false)
@@ -101,7 +92,6 @@ class ArticleList
 				'article_body_class' => static::$article_body_class,
 				'article_type'       => static::$article_type,
 				'ids'                => static::$ids,
-				'direction'          => static::$direction,
 				'seek_images'        => static::$seek_images
 			)
 		);
@@ -126,7 +116,6 @@ class ArticleList
 			'article_body_class' => FILTER_SANITIZE_STRING,
 			'article_type'       => FILTER_VALIDATE_INT,
 			'ids'                => FILTER_SANITIZE_STRING,
-			'direction'          => FILTER_SANITIZE_STRING,
 			'seek_images'        => FILTER_VALIDATE_BOOLEAN
 		);
 	}
@@ -207,29 +196,6 @@ class ArticleList
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['direction']['label']['text'] = $txt['lp_article_list_addon_direction'];
-		$context['posting_fields']['direction']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'direction'
-			),
-			'options' => array()
-		);
-
-		foreach ($txt['lp_article_list_addon_direction_set'] as $direction => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			} else {
-				$context['posting_fields']['direction']['input']['options'][$title] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			}
-		}
-
 		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list_addon_seek_images'];
 		$context['posting_fields']['seek_images']['input'] = array(
 			'type' => 'checkbox',
@@ -266,7 +232,7 @@ class ArticleList
 				AND ml.approved = {int:is_approved}' : '') . '
 			ORDER BY t.id_last_msg DESC',
 			array(
-				'topics'      => explode(',', $parameters['ids']),
+				'topics'      => $parameters['ids'],
 				'is_approved' => 1
 			)
 		);
@@ -324,7 +290,7 @@ class ArticleList
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'pages'        => explode(',', $parameters['ids'])
+				'pages'        => $parameters['ids']
 			)
 		);
 
@@ -376,6 +342,11 @@ class ArticleList
 		if ($type !== 'article_list')
 			return;
 
+		$ids = explode(',', $parameters['ids']);
+		$parameters['ids'] = array_filter($ids, function($item) {
+			return is_numeric($item);
+		});
+
 		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
 		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
@@ -385,16 +356,16 @@ class ArticleList
 			loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
 			addInlineJavaScript('
 			jQuery(document).ready(function ($) {
-				$(".article_list .col-xs > div").matchHeight();
+				$(".article_list > div > div").matchHeight();
 			});', true);
 
 			echo '
-		<div class="article_list row', ($parameters['direction'] == 'vertical' ? ' column_direction' : ''), ' between-xs">';
+		<div class="article_list">';
 
 			if (empty($parameters['article_type'])) {
 				foreach ($article_list as $topic) {
 					echo '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
+			<div>';
 
 					$content = '';
 					if (!empty($topic['image'])) {
@@ -417,7 +388,7 @@ class ArticleList
 						continue;
 
 					echo '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
+			<div>';
 
 					$content = '';
 					if (!empty($page['image'])) {

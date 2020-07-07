@@ -8,8 +8,6 @@ $txt['lp_article_list_addon_article_type']     = 'Wyświetlanie';
 $txt['lp_article_list_addon_article_type_set'] = array('Wątki', 'Strony portalu');
 $txt['lp_article_list_addon_ids']              = 'ID wątków lub stron portalu ';
 $txt['lp_article_list_addon_ids_subtext']      = 'Podaj identyfikatory wątków lub stron portalu oddzielone przecinkiem.';
-$txt['lp_article_list_addon_direction']        = 'Kierunek listy';
-$txt['lp_article_list_addon_direction_set']    = array('horizontal' => 'Poziomy', 'vertical' => 'Pionowy');
 $txt['lp_article_list_addon_seek_images']      = 'Szukaj obrazów w treści artykułów';
 
 $txt['lp_article_list_addon_no_items'] = 'Nie dodano artykułów.';
