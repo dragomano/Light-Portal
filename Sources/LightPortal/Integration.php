@@ -30,6 +30,7 @@ class Integration
 	{
 		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
@@ -85,6 +86,19 @@ class Integration
 
 		foreach ($lp_constants as $key => $value)
 			defined($key) or define($key, $value);
+	}
+
+	/**
+	 * Speed up the loading of third-party resources
+	 *
+	 * Ускоряем загрузку сторонних ресурсов
+	 *
+	 * @return void
+	 */
+	public static function preCssOutput()
+	{
+		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
+		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
 	}
 
 	/**
