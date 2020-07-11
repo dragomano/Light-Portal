@@ -104,6 +104,12 @@ class Block
 		if (empty($context['current_action']) && !empty($_REQUEST['page']))
 			$area = 'portal';
 
+		if ($area == 'portal' && (empty($_GET) || $context['current_action'] == 'portal') && empty($context['current_subaction']))
+			$area = 'portal$';
+
+		if ($area == 'forum' && empty($_REQUEST['board']) && empty($_REQUEST['topic']) || $context['current_action'] == 'forum')
+			$area = 'forum$';
+
 		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
 			global $context;
 

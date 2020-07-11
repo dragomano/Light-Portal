@@ -140,29 +140,28 @@ $txt['lp_block_placement_set']           = array(
 	'footer' => 'Підвал'
 );
 
-$txt['lp_block_areas']         = 'Області';
-$txt['lp_block_areas_subtext'] = 'Вкажіть одну або кілька областей (через кому) для відображення в них блоку:<br>
-<ul class="bbc_list">
-	<li><strong>all</strong> — відображати всюди</li>
-	<li><strong>portal</strong> — відображати лише на порталі (включно зі сторінками)</li>
-	<li><strong>forum</strong> — відображати лише на форумі (включаючи розділи та теми)</li>
-	<li><strong>custom_action</strong> — відображати в області <em>index.php?action</em>=<strong>custom_action</strong> (наприклад: search,profile,pm)</li>
-	<li><strong>page=alias</strong> — відображати на сторінці <em>index.php?page</em>=<strong>alias</strong></li>
-	<li><strong>board=id</strong> — відображати в розділі з ідентифікатором <strong>id</strong> (включаючи всі теми всередині розділу)
-		<ul class="bbc_list">
-			<li><strong>boards</strong> — відображати у всіх розділах/li>
-			<li><strong>board=id1-id3</strong> — відображати в розділах id1, id2, id3</li>
-			<li><strong>board=id3|id7</strong> — відображати в розділах id3 i id7</li>
-		</ul>
-	</li>
-	<li><strong>topic=id</strong> — відображати в темі з ідентифікатором <strong>id</strong>
-		<ul class="bbc_list">
-			<li><strong>topics</strong> — відображати у всіх темах</li>
-			<li><strong>topic=id1-id3</strong> — відображати в темах id1, id2, id3</li>
-			<li><strong>topic=id3|id7</strong> — відображати в темах id3 і id7</li>
-		</ul>
-	</li>
-</ul>';
+$txt['lp_block_areas']            = 'Області';
+$txt['lp_block_areas_subtext']    = 'Вкажіть одну або кілька областей (через кому) для відображення в них блоку:';
+$txt['lp_block_areas_area_th']    = 'Область';
+$txt['lp_block_areas_display_th'] = 'Відображення';
+$txt['lp_block_areas_values']     = array(
+	'всюди',
+	'лише на порталі (включно зі сторінками)',
+	'тільки на головній сторінці порталу',
+	'лише на форумі (включаючи розділи та теми)',
+	'тільки на головній сторінці форуму',
+	'в області <em>index.php?action</em>=<strong>custom_action</strong> (наприклад: search,profile,pm)',
+	'на сторінці <em>index.php?page</em>=<strong>alias</strong>',
+	'у всіх розділах',
+	'в розділі з ідентифікатором <strong>id</strong> (включаючи всі теми всередині розділу)',
+	'в розділах id1, id2, id3',
+	'в розділах id3 i id7',
+	'у всіх темах',
+	'в темі з ідентифікатором <strong>id</strong>',
+	'в темах id1, id2, id3',
+	'в темах id3 і id7'
+);
+
 $txt['lp_block_title_class']   = 'CSS клас заголовка';
 $txt['lp_block_title_style']   = 'CSS стилі заголовка';
 $txt['lp_block_content_class'] = 'CSS клас вмісту';

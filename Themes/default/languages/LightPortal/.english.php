@@ -140,29 +140,28 @@ $txt['lp_block_placement_set']           = array(
 	'footer' => 'Footer'
 );
 
-$txt['lp_block_areas']         = 'Actions';
-$txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:<br>
-<ul class="bbc_list">
-	<li><strong>all</strong> — display everywhere</li>
-	<li><strong>portal</strong> — display only on the portal area (including pages)</li>
-	<li><strong>forum</strong> — display only on the forum area (including boards and topics)</li>
-	<li><strong>custom_action</strong> — display on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
-	<li><strong>page=alias</strong> — display on page <em>index.php?page</em>=<strong>alias</strong></li>
-	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
-		<ul class="bbc_list">
-			<li><strong>boards</strong> — display in all boards</li>
-			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
-			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
-		</ul>
-	</li>
-	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
-		<ul class="bbc_list">
-			<li><strong>topics</strong> — display in all topics</li>
-			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
-			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
-		</ul>
-	</li>
-</ul>';
+$txt['lp_block_areas']            = 'Actions';
+$txt['lp_block_areas_subtext']    = 'Specify one or more areas (separate by comma) to display the block in:';
+$txt['lp_block_areas_area_th']    = 'Area';
+$txt['lp_block_areas_display_th'] = 'Display';
+$txt['lp_block_areas_values']     = array(
+	'everywhere',
+	'only on the portal area (including pages)',
+	'only on the portal frontpage',
+	'only on the forum area (including boards and topics)',
+	'only on the forum main page',
+	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)',
+	'on page <em>index.php?page</em>=<strong>alias</strong>',
+	'in all boards',
+	'only inside the board with identificator <strong>id</strong> (including all topics inside the board)',
+	'in boards id1, id2, id3',
+	'in boards id3, and id7',
+	'in all topics',
+	'only inside the topic with identificator <strong>id</strong>',
+	'in topics id1, id2, id3',
+	'in topics id3, and id7'
+);
+
 $txt['lp_block_title_class']   = 'CSS title class';
 $txt['lp_block_title_style']   = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';

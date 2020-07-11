@@ -26,7 +26,7 @@ class ManageBlocks
 	 *
 	 * @var string
 	 */
-	private static $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+	private static $areas_pattern = '^[a-z][a-z0-9=|\-,\$]+$';
 
 	/**
 	 * Manage blocks
@@ -644,7 +644,7 @@ class ManageBlocks
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
 		$context['posting_fields']['areas']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_block_areas_subtext'],
+			'after' => self::getAreasInfo(),
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
@@ -759,6 +759,44 @@ class ManageBlocks
 	}
 
 	/**
+	 * Get a table with possible areas
+	 *
+	 * Получаем табличку с возможными областями
+	 *
+	 * @return string
+	 */
+	private static function getAreasInfo()
+	{
+		global $context, $txt;
+
+		$areas = array(
+			'all',
+			'portal',
+			'portal$',
+			'forum',
+			'forum$',
+			'custom_action',
+			'page=alias',
+			'boards',
+			'board=id',
+			'board=id1-id3',
+			'board=id3|id7',
+			'topics',
+			'topic=id',
+			'topic=id1-id3',
+			'topic=id3|id7'
+		);
+
+		$context['lp_possible_areas'] = array_combine($areas, $txt['lp_block_areas_values']);
+
+		ob_start();
+
+		template_show_areas_info();
+
+		return ob_get_clean();
+	}
+
+	/**
 	 * Check whether there are any parameters on the "Tuning" tab
 	 *
 	 * Проверяем, есть ли какие-нибудь параметры на вкладке «Тюнинг»
@@ -768,7 +806,7 @@ class ManageBlocks
 	 * @param string $check_value
 	 * @return bool
 	 */
-	public static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	private static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
 	{
 		if (empty($data))
 			return false;

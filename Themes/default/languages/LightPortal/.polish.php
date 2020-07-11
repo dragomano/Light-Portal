@@ -140,29 +140,28 @@ $txt['lp_block_placement_set']           = array(
 	'footer' => 'Stopka'
 );
 
-$txt['lp_block_areas']         = 'Akcje';
-$txt['lp_block_areas_subtext'] = 'Wybierz jedną lub kilka akcji do wyświetlania bloku (oddziel akcje przecinkami):<br>
-<ul class="bbc_list">
-	<li><strong>all</strong> — wyświetl wszędzie</li>
-	<li><strong>portal</strong> — wyświetl tylko na portalu (włącznie ze stronami)</li>
-	<li><strong>forum</strong> — wyświetl tylko na forum</li>
-	<li><strong>custom_action</strong> — wyświetl tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
-	<li><strong>page=alias</strong> — wyświetl na stronie <em>index.php?page</em>=<strong>alias</strong></li>
-	<li><strong>board=id</strong> — wyświetl tylko w dziale o wskazanym <strong>id</strong> (włączając w to wszystkie wątki w dziale)
-		<ul class="bbc_list">
-			<li><strong>boards</strong> — wyświetl we wszystkich działach</li>
-			<li><strong>board=id1-id3</strong> — wyświetl w działach id1, id2, id3</li>
-			<li><strong>board=id3|id7</strong> — wyświetl w działach id3 i id7</li>
-		</ul>
-	</li>
-	<li><strong>topic=id</strong> — wyświetlaj tylko w wątku o wskazanym <strong>id</strong>
-		<ul class="bbc_list">
-			<li><strong>topics</strong> — wyświetl we wszystkich wątkach</li>
-			<li><strong>topic=id1-id3</strong> — wyświetl w wątkach id1, id2, id3</li>
-			<li><strong>topic=id3|id7</strong> — wyświetl w wątkach id3 i id7</li>
-		</ul>
-	</li>
-</ul>';
+$txt['lp_block_areas']            = 'Akcje';
+$txt['lp_block_areas_subtext']    = 'Wybierz jedną lub kilka akcji do wyświetlania bloku (oddziel akcje przecinkami):';
+$txt['lp_block_areas_area_th']    = 'Area';
+$txt['lp_block_areas_display_th'] = 'Display';
+$txt['lp_block_areas_values']     = array(
+	'wszędzie',
+	'tylko na portalu (włącznie ze stronami)',
+	'only on the portal frontpage',
+	'tylko na forum',
+	'only on the forum main page',
+	'tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)',
+	'na stronie <em>index.php?page</em>=<strong>alias</strong>',
+	'we wszystkich działach',
+	'tylko w dziale o wskazanym <strong>id</strong> (włączając w to wszystkie wątki w dziale)',
+	'w działach id1, id2, id3',
+	'w działach id3 i id7',
+	'we wszystkich wątkach',
+	'tylko w wątku o wskazanym <strong>id</strong>',
+	'w wątkach id1, id2, id3',
+	'w wątkach id3 i id7'
+);
+
 $txt['lp_block_title_class']   = 'Klasa CSS tytułu';
 $txt['lp_block_title_style']   = 'Styl CSS tytułu';
 $txt['lp_block_content_class'] = 'Klasa CSS zawartości';

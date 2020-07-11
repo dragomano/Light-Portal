@@ -350,3 +350,39 @@ function template_block_post()
 		});
 	</script>';
 }
+
+/**
+ * Show a table with possible areas for displaying the block
+ *
+ * Отображаем табличку с возможными областями для вывода блока
+ *
+ * @return void
+ */
+function template_show_areas_info()
+{
+	global $txt, $context;
+
+	echo $txt['lp_block_areas_subtext'] . '<br>';
+
+	echo '
+	<table class="table_grid">
+		<thead>
+			<tr class="title_bar">
+				<th>', $txt['lp_block_areas_area_th'], '</th>
+				<th>', $txt['lp_block_areas_display_th'], '</th>
+			</tr>
+		</thead>
+		<tbody>';
+
+	foreach ($context['lp_possible_areas'] as $area => $where_to_display) {
+		echo '
+			<tr class="windowbg">
+				<td class="righttext"><strong>', $area, '</strong></td>
+				<td class="lefttext">', $where_to_display, '</td>
+			</tr>';
+	}
+
+	echo '
+		</tbody>
+	</table>';
+}
