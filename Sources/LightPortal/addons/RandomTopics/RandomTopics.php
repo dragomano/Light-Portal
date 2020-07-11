@@ -135,8 +135,7 @@ class RandomTopics
 							WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
 								AND t.id_board != {int:recycle_board}' : '') . '
 							ORDER BY t.id_topic DESC
-							LIMIT 1
-							OFFSET {int:limit} - 1
+							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
 						WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
