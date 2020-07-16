@@ -77,6 +77,7 @@ class Page
 		$context['sub_template'] = 'show_page';
 
 		self::setMeta();
+		self::prepareRelatedPages();
 		self::prepareComments();
 		self::updateNumViews();
 
@@ -109,6 +110,83 @@ class Page
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
 			$settings['og_image'] = $context['lp_page']['image'];
+	}
+
+	/**
+	 * Prepare related pages list
+	 *
+	 * Формируем список похожих страниц
+	 *
+	 * @return void
+	 */
+	private static function prepareRelatedPages()
+	{
+		global $context, $modSettings;
+
+		if (empty($context['lp_page']['options']['show_related_pages']) || empty($modSettings['lp_show_related_pages']))
+			return;
+
+		$context['lp_page']['related_pages'] = self::getRelatedPages();
+	}
+
+	/**
+	 * Get an array of related pages
+	 *
+	 * Получаем массив похожих страниц
+	 *
+	 * @return array
+	 */
+	public static function getRelatedPages()
+	{
+		global $smcFunc, $modSettings, $context;
+
+		if (empty($item = $context['lp_page']))
+			return [];
+
+		$request = $smcFunc['db_query']('', '
+			SELECT p.page_id, p.alias, p.content, p.type, (IF (t.title LIKE {string:title}, 80, 0) + IF (p.alias LIKE {string:alias}, 20, 0)) AS related, t.title
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.lang = {string:current_lang})
+			WHERE p.status = {int:status}
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+				AND p.page_id != {int:current_page}
+			HAVING related > 0
+			ORDER BY related DESC',
+			array(
+				'title'        => Helpers::getPublicTitle($context['lp_page']),
+				'alias'        => $item['alias'],
+				'current_lang' => $context['user']['language'],
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'current_page' => $item['id']
+			)
+		);
+
+		$related_pages = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (Helpers::isFrontpage($row['alias']))
+				continue;
+
+			Subs::parseContent($row['content'], $row['type']);
+			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
+			$image = !empty($first_post_image) ? array_pop($value) : null;
+			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
+				$image = $modSettings['lp_image_placeholder'];
+
+			$related_pages[$row['page_id']] = array(
+				'id'    => $row['page_id'],
+				'title' => $row['title'],
+				'alias' => $row['alias'],
+				'image' => $image
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
+
+		return $related_pages;
 	}
 
 	/**

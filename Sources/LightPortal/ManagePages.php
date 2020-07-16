@@ -605,6 +605,7 @@ class ManagePages
 	{
 		$options = [
 			'show_author_and_date' => true,
+			'show_related_pages'   => false,
 			'allow_comments'       => false
 		];
 
@@ -638,7 +639,10 @@ class ManagePages
 
 			$source_args = $args;
 			Subs::runAddons('validatePageData', array(&$args));
-			$parameters = array_merge(array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN), array_diff($args, $source_args));
+			$parameters = array_merge(
+				array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'show_related_pages' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN),
+				array_diff($args, $source_args)
+			);
 
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
@@ -867,6 +871,17 @@ class ManagePages
 				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
 			)
 		);
+
+		if (!empty($modSettings['lp_show_related_pages'])) {
+			$context['posting_fields']['show_related_pages']['label']['text'] = $txt['lp_page_options']['show_related_pages'];
+			$context['posting_fields']['show_related_pages']['input'] = array(
+				'type' => 'checkbox',
+				'attributes' => array(
+					'id'      => 'show_related_pages',
+					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
+				)
+			);
+		}
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
 			$context['posting_fields']['allow_comments']['label']['text'] = $txt['lp_page_options']['allow_comments'];

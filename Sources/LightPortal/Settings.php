@@ -333,6 +333,7 @@ class Settings
 
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
+			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('bbc', 'lp_disabled_bbc_in_comments'),
 			array('int', 'lp_num_comments_per_page'),

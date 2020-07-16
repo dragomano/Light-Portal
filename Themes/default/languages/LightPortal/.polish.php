@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Przykład: ';
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>Znalezione błędy oraz sugestie możesz zgłosić w wątku pomocy modyfikacji na <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>Możesz również <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">dać napiwek</a> autorowi lub zostać <a class="bbc_link" href="https://www.patreon.com/bugo">sponsorem w serwisie Patreon</a>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
 
 $txt['lp_frontpage_title']         = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']          = 'Strona główna portalu';

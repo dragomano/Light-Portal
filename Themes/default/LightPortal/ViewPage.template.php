@@ -74,6 +74,8 @@ function template_show_page()
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>
 		</article>';
 
+	show_related_pages();
+
 	show_comment_block();
 
 	echo '
@@ -89,9 +91,9 @@ function template_show_page()
  */
 function show_comment_block()
 {
-	global $context, $modSettings, $options, $txt, $settings;
+	global $modSettings, $context, $options, $txt, $settings;
 
-	if (empty($context['lp_page']['options']['allow_comments']) || empty($modSettings['lp_show_comment_block']))
+	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
 
 	if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
@@ -260,4 +262,50 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	echo '
 		</div>
 	</li>';
+}
+
+/**
+ * Related pages template
+ *
+ * Шаблон похожих страниц
+ *
+ * @return void
+ */
+function show_related_pages()
+{
+	global $context, $txt, $scripturl;
+
+	if (empty($context['lp_page']['related_pages']))
+		return;
+
+	echo '
+		<aside class="related_pages">
+			<div class="cat_bar">
+				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
+			</div>
+			<div class="roundframe">
+				<div class="article_list">';
+
+	foreach ($context['lp_page']['related_pages'] as $page) {
+		echo '
+					<div>
+						<a href="', $scripturl, '?page=', $page['alias'], '">';
+
+		if (!empty($page['image'])) {
+			echo '
+							<div class="article_image">
+								<img src="', $page['image'], '" alt="">
+							</div>';
+		}
+
+		echo '',
+							$page['title'], '
+						</a>
+					</div>';
+	}
+
+	echo '
+				</div>
+			</div>
+		</aside>';
 }

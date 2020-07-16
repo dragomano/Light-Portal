@@ -62,6 +62,7 @@ $txt['lp_extra']      = 'Страницы и блоки';
 $txt['lp_extra_info'] = 'Здесь находятся общие настройки страниц и блоков.';
 
 $txt['lp_show_tags_on_page']            = 'Отображать ключевые слова в верхней части страницы';
+$txt['lp_show_related_pages']           = 'Отображать блок похожих страниц';
 $txt['lp_show_comment_block']           = 'Отображать блок комментариев';
 $txt['lp_disabled_bbc_in_comments']     = 'Разрешённые ББ-теги в комментариях';
 $txt['lp_show_comment_block_set']       = array('none' => 'Нет', 'default' => 'Встроенный');
@@ -201,6 +202,7 @@ $txt['lp_page_publish_datetime']        = 'Дата и время публика
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показывать автора и дату создания',
+	'show_related_pages'   => 'Показывать похожие страницы',
 	'allow_comments'       => 'Разрешить комментарии'
 );
 
@@ -231,6 +233,9 @@ $txt['lp_no_selected_tag']  = 'Указанный тег не найден.';
 $txt['lp_no_tags']          = 'Тегов пока нет.';
 $txt['lp_keyword_column']   = 'Ключевое слово';
 $txt['lp_frequency_column'] = 'Частотность';
+
+// Related pages
+$txt['lp_related_pages'] = 'Похожие страницы';
 
 // Comments
 $txt['lp_comments']            = 'Комментарии';

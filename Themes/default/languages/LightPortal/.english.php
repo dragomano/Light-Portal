@@ -18,7 +18,7 @@ $txt['lp_example']  = 'Example: ';
 // Settings
 $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, or <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make one-time donation via PayPal</a>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
 
 $txt['lp_frontpage_title']           = 'The frontpage title';
 $txt['lp_frontpage_mode']            = 'The portal frontpage';
@@ -62,6 +62,7 @@ $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
 $txt['lp_show_tags_on_page']            = 'Display keywords at the top of the page';
+$txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Display comments block';
 $txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
 $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => 'Integrated');
@@ -201,6 +202,7 @@ $txt['lp_page_publish_datetime']        = 'Date and time of publication';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
+	'show_related_pages'   => 'Show related pages',
 	'allow_comments'       => 'Allow comments'
 );
 
@@ -231,6 +233,9 @@ $txt['lp_no_selected_tag']  = 'The specified tag was not found.';
 $txt['lp_no_tags']          = 'There is no tags yet.';
 $txt['lp_keyword_column']   = 'Keyword';
 $txt['lp_frequency_column'] = 'Frequency';
+
+// Related pages
+$txt['lp_related_pages'] = 'Related pages';
 
 // Comments
 $txt['lp_comments']            = 'Comments';
