@@ -10,6 +10,8 @@
 * **Hooks only:** Yes
 * **Languages:** English, Polish, Russian, Spanish, Ukrainian
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U41XD2G)
+
 ## Description
 This modification will transform your forum into a portal that includes:
 * the frontpage,
