@@ -92,23 +92,9 @@ class Block
 		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
 
 		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
-			if (empty($context['current_action']))
-				$area = 'forum';
-			if ($modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
+			if (!empty($_SERVER['REQUEST_URL']) && $modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
 				$area = 'portal';
 		}
-
-		if (!empty($_REQUEST['board']) || !empty($_REQUEST['topic']))
-			$area = 'forum';
-
-		if (empty($context['current_action']) && !empty($_REQUEST['page']))
-			$area = 'portal';
-
-		if ($area == 'portal' && (empty($_GET) || $context['current_action'] == 'portal') && empty($context['current_subaction']))
-			$area = 'portal$';
-
-		if ($area == 'forum' && empty($_REQUEST['board']) && empty($_REQUEST['topic']) || $context['current_action'] == 'forum')
-			$area = 'forum$';
 
 		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
 			global $context;
@@ -119,7 +105,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if ($area == 'portal' && !empty($_GET['page']) && isset($block['areas']['page=' . (string) $_GET['page']]))
+			if (empty($context['current_action']) && !empty($_GET['page']) && (isset($block['areas']['page=' . (string) $_GET['page']]) || isset($block['areas']['pages'])))
 				return true;
 
 			if (empty($context['current_board']))

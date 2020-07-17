@@ -771,11 +771,8 @@ class ManageBlocks
 
 		$areas = array(
 			'all',
-			'portal',
-			'portal$',
-			'forum',
-			'forum$',
 			'custom_action',
+			'pages',
 			'page=alias',
 			'boards',
 			'board=id',

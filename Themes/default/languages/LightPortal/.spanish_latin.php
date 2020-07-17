@@ -62,6 +62,7 @@ $txt['lp_extra'] = 'Páginas y bloques';
 $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de páginas y bloques.';
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
+
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
 $txt['lp_show_comment_block_set'] = array('none' => 'None', 'default' => 'Integrated');
@@ -146,11 +147,8 @@ $txt['lp_block_areas_area_th']    = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values']     = array(
 	'en todas partes',
-	'solo en el área del portal (incluidas las páginas)',
-	'only on the portal frontpage',
-	'solo en el área del foro',
-	'only on the forum main page',
-	'en el área <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)',
+	'en el área <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on all portal pages',
 	'en la página <em>index.php?page</em>=<strong>alias</strong>',
 	'in all boards',
 	'only inside the board with identificator <strong>id</strong> (including all topics inside the board)',

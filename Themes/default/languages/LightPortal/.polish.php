@@ -62,6 +62,7 @@ $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
+
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
@@ -146,11 +147,8 @@ $txt['lp_block_areas_area_th']    = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values']     = array(
 	'wszędzie',
-	'tylko na portalu (włącznie ze stronami)',
-	'only on the portal frontpage',
-	'tylko na forum',
-	'only on the forum main page',
-	'tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)',
+	'tylko na "własnej akcji" np. <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on all portal pages',
 	'na stronie <em>index.php?page</em>=<strong>alias</strong>',
 	'we wszystkich działach',
 	'tylko w dziale o wskazanym <strong>id</strong> (włączając w to wszystkie wątki w dziale)',

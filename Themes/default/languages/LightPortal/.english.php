@@ -147,18 +147,15 @@ $txt['lp_block_areas_area_th']    = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values']     = array(
 	'everywhere',
-	'only on the portal area (including pages)',
-	'only on the portal frontpage',
-	'only on the forum area (including boards and topics)',
-	'only on the forum main page',
-	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)',
+	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on all portal pages',
 	'on page <em>index.php?page</em>=<strong>alias</strong>',
 	'in all boards',
-	'only inside the board with identificator <strong>id</strong> (including all topics inside the board)',
+	'only inside the board with identifier <strong>id</strong> (including all topics inside the board)',
 	'in boards id1, id2, id3',
 	'in boards id3, and id7',
 	'in all topics',
-	'only inside the topic with identificator <strong>id</strong>',
+	'only inside the topic with identifier <strong>id</strong>',
 	'in topics id1, id2, id3',
 	'in topics id3, and id7'
 );

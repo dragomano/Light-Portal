@@ -147,11 +147,8 @@ $txt['lp_block_areas_area_th']    = 'Область';
 $txt['lp_block_areas_display_th'] = 'Отображение';
 $txt['lp_block_areas_values']     = array(
 	'везде',
-	'только на портале (включая страницы)',
-	'только на главной странице портала',
-	'только на форуме (включая разделы и темы)',
-	'только на главной странице форума',
-	'в области <em>index.php?action</em>=<strong>custom_action</strong> (например: search,profile,pm)',
+	'в области <em>index.php?action</em>=<strong>custom_action</strong> (например: portal,forum,search)',
+	'на всех страницах портала',
 	'на странице <em>index.php?page</em>=<strong>alias</strong>',
 	'во всех разделах',
 	'в разделе с идентификатором <strong>id</strong> (включая все темы внутри раздела)',
