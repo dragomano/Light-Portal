@@ -33,11 +33,13 @@ function template_portal_above()
 	// Left Side | Левая панель
 	if (!empty($context['lp_blocks']['left'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
+				<div class="sticky_sidebar">';
 
 		lp_show_blocks('left');
 
 		echo '
+				</div>
 			</div>';
 	}
 
@@ -105,11 +107,13 @@ function template_portal_below()
 	// Right Side | Правая панель
 	if (!empty($context['lp_blocks']['right'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">';
+			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
+				<div class="sticky_sidebar">';
 
 		lp_show_blocks('right');
 
 		echo '
+				</div>
 			</div>';
 	}
 
