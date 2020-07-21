@@ -857,10 +857,10 @@ class ManageBlocks
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
 
-		if (empty($context['preview_content']))
-			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
-		else
+		if (!empty($context['preview_content']))
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
+		else
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());
@@ -871,14 +871,13 @@ class ManageBlocks
 	 *
 	 * Получаем правильный приоритет для нового блока
 	 *
-	 * @param string $placement
 	 * @return int
 	 */
-	private static function calculatePriority(string $placement)
+	private static function getPriority()
 	{
-		global $smcFunc, $context;
+		global $context, $smcFunc;
 
-		if (empty($placement))
+		if (empty($context['lp_block']['placement']))
 			return 0;
 
 		$request = $smcFunc['db_query']('', '
@@ -886,7 +885,7 @@ class ManageBlocks
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',
 			array(
-				'placement' => $placement
+				'placement' => $context['lp_block']['placement']
 			)
 		);
 
@@ -916,7 +915,7 @@ class ManageBlocks
 
 		if (empty($item)) {
 			$max_length = Helpers::getMaxMessageLength();
-			$priority   = self::calculatePriority($context['lp_block']['placement']);
+			$priority   = self::getPriority();
 
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',

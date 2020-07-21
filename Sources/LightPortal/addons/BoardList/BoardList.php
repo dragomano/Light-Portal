@@ -205,12 +205,13 @@ class BoardList
 		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($board_list)) {
-			$context['current_board'] = $context['current_board'] ?? 0;
+			$context['current_board']     = $context['current_board'] ?? 0;
 
 			ob_start();
 
 			foreach ($board_list as $category) {
-				echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
+				if (!empty($parameters['category_class']))
+					echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
 
 				$content = '
 				<ul class="smalltext">';

@@ -940,12 +940,12 @@ class ManagePages
 		$context['preview_title']   = $context['lp_page']['title'][$context['user']['language']];
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
 
-		if (!empty($context['preview_content']))
-			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
-
 		Helpers::cleanBbcode($context['preview_title']);
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
+
+		if (!empty($context['preview_content']))
+			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle();

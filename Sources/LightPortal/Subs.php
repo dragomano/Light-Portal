@@ -202,7 +202,7 @@ class Subs
 	{
 		global $context;
 
-		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]) && !isset($_REQUEST['preview']))
+		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
 			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
 		else
 			$parameters = $context['lp_block']['options']['parameters'] ?? [];

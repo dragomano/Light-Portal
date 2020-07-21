@@ -163,7 +163,7 @@ function lp_show_blocks($placement = '')
 		echo '
 			<aside id="block_', $block['id'], '" class="', $class, '">';
 
-		if (!empty($block['title_style']))
+		if (!empty($block['title_style']) && !empty($block['title']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
 
 		if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
