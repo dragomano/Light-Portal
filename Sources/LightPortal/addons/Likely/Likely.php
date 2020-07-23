@@ -215,8 +215,8 @@ class Likely
 			return;
 
 		if (!empty($parameters['buttons'])) {
-			loadCSSFile('https://unpkg.com/ilyabirman-likely@2/release/likely.css', array('external' => true));
-			loadJavaScriptFile('https://unpkg.com/ilyabirman-likely@2/release/likely.js', array('external' => true));
+			loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', array('external' => true));
 
 			ob_start();
 
