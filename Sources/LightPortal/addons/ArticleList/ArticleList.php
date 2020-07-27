@@ -353,20 +353,11 @@ class ArticleList
 		ob_start();
 
 		if (!empty($article_list)) {
-			loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
-			addInlineJavaScript('
-			jQuery(document).ready(function ($) {
-				$(".article_list > div > div").matchHeight();
-			});', true);
-
 			echo '
 		<div class="article_list">';
 
 			if (empty($parameters['article_type'])) {
 				foreach ($article_list as $topic) {
-					echo '
-			<div>';
-
 					$content = '';
 					if (!empty($topic['image'])) {
 						$content .= '
@@ -378,17 +369,11 @@ class ArticleList
 					$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-					echo '
-			</div>';
 				}
 			} else {
 				foreach ($article_list as $page) {
 					if (empty($title = Helpers::getPublicTitle($page)))
 						continue;
-
-					echo '
-			<div>';
 
 					$content = '';
 					if (!empty($page['image'])) {
@@ -401,9 +386,6 @@ class ArticleList
 					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-					echo '
-			</div>';
 				}
 			}
 

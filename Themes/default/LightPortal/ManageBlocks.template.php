@@ -190,13 +190,11 @@ function template_block_add()
 	foreach ($txt['lp_block_types'] as $type => $title) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-					<div>
-						<div class="item roundframe" data-type="', $type, '">
-							<i class="', $txt['lp_' . $type . '_icon'], '"></i>
-							<strong>', $title, '</strong>
-							<hr>
-							<p>', $txt['lp_block_types_descriptions'][$type], '</p>
-						</div>
+					<div class="item roundframe" data-type="', $type, '">
+						<i class="', $txt['lp_' . $type . '_icon'], '"></i>
+						<strong>', $title, '</strong>
+						<hr>
+						<p>', $txt['lp_block_types_descriptions'][$type], '</p>
 					</div>
 				</div>';
 	}
@@ -206,8 +204,6 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-		<br class="clear">
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/jquery.matchHeight-min.js"></script>
 		<script>
 			jQuery(document).ready(function($) {
 				$("#lp_blocks .item").on("click", function() {
@@ -216,7 +212,6 @@ function template_block_add()
 					this_form.children("input[name=add_block]").val(block_name);
 					this_form.submit();
 				});
-				$("#lp_blocks .row .item").matchHeight();
 			});
 		</script>
 	</div>';
