@@ -293,6 +293,9 @@ class Page
 				$data['keywords'][] = $row['keyword'];
 		}
 
+		if (!empty($data['keywords']))
+			$data['keywords'] = array_unique($data['keywords']);
+
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
@@ -358,7 +361,7 @@ class Page
 		$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
 		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
 		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
-		$data['keywords'] = !empty($data['keywords']) ? array_unique($data['keywords']) : [];
+		$data['keywords'] = $data['keywords'] ?? [];
 	}
 
 	/**

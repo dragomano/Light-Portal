@@ -359,7 +359,7 @@ class Subs
 		$editorOptions = array(
 			'id'           => 'content',
 			'value'        => $content,
-			'height'       => '300px',
+			'height'       => '1px',
 			'width'        => '100%',
 			'preview_type' => 2,
 			'required'     => true
