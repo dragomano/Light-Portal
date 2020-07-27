@@ -185,11 +185,11 @@ class RandomTopics
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = mf.id_member)' . (!$user_info['is_guest'] ? '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})' : '') . '
+					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
+					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
+					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
 				WHERE t.id_topic IN ({array_int:topic_ids})' . (!empty($modSettings['allow_ignore_boards']) ? '
 					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : ''),
 				array(
@@ -204,11 +204,11 @@ class RandomTopics
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = mf.id_member)' . (!$user_info['is_guest'] ? '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})' : '') . '
+					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
+					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
+					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
 				WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
 					AND t.id_board != {int:recycle_board}' : '') . (!empty($modSettings['allow_ignore_boards']) ? '
 					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : '') . '

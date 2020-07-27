@@ -156,7 +156,7 @@ class TopPosters
 		$request = $smcFunc['db_query']('', '
 			SELECT mem.id_member, mem.real_name, mem.posts' . ($parameters['show_avatars'] ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
 			FROM {db_prefix}members AS mem' . ($parameters['show_avatars'] ? '
-				LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)' : '') . '
+				LEFT JOIN {db_prefix}attachments AS a ON (mem.id_member = a.id_member)' : '') . '
 			WHERE mem.posts > {int:num_posts}
 			ORDER BY mem.posts DESC
 			LIMIT {int:num_posters}',

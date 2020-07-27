@@ -43,7 +43,7 @@ class TopicRatingBar
 			return;
 
 		$custom_columns[] = 'tr.total_votes, tr.total_value';
-		$custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (tr.id = t.id_topic)';
+		$custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 	}
 
 	/**

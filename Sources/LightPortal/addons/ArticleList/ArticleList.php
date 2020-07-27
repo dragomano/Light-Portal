@@ -224,8 +224,8 @@ class ArticleList
 		$request = $smcFunc['db_query']('', '
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-				LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
+				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
+				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 			WHERE t.id_topic IN ({array_int:topics})
 				AND {query_wanna_see_board}' . ($modSettings['postmod_active'] ? '
 				AND t.approved = {int:is_approved}
