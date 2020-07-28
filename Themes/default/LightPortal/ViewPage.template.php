@@ -154,7 +154,7 @@ function show_comment_block()
 
 	if ($context['user']['is_logged'])
 		echo '
-				<form id="comment_form" class="roundframe sceditor-container descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
+				<form id="comment_form" class="roundframe descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
 					<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
@@ -178,7 +178,7 @@ function show_comment_block()
 			let comment_remove_url = "', $context['lp_current_page_url'], 'sa=del_comment",
 				page_info_start = ', $context['page_info']['start'], ';
 		</script>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/comment_page.js"></script>';
 
 	echo '
 		<script>
@@ -189,7 +189,7 @@ function show_comment_block()
 				use_theme_settings = ', $context['user']['is_guest'] ? 'false' : 'true', ',
 				use_cookie = ', $context['user']['is_guest'] ? 'true' : 'false', ';
 		</script>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments_toggle.js"></script>';
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/toggle_comments.js"></script>';
 }
 
 /**

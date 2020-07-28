@@ -14,7 +14,7 @@ function template_manage_blocks()
 	show_block_table();
 
 	echo '
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_blocks.js"></script>';
 }
 
@@ -204,16 +204,7 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-		<script>
-			jQuery(document).ready(function($) {
-				$("#lp_blocks .item").on("click", function() {
-					let block_name = $(this).attr("data-type"),
-						this_form = $("form[name=block_add_form]");
-					this_form.children("input[name=add_block]").val(block_name);
-					this_form.submit();
-				});
-			});
-		</script>
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/add_block.js"></script>
 	</div>';
 }
 
@@ -226,7 +217,7 @@ function template_block_add()
  */
 function template_block_post()
 {
-	global $context, $txt;
+	global $context, $txt, $settings;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		if (!empty($context['lp_block']['title_style']))
@@ -322,28 +313,7 @@ function template_block_post()
 			</div>
 		</div>
 	</form>
-	<script>
-		jQuery(document).ready(function($) {
-			change_icon = function() {
-				let icon = $("#icon").val(),
-					type = $("#icon_type input:checked").val();
-				$("#block_icon").html("<i class=\"" + type + " fa-" + icon + "\"></i>");
-			}
-			$("#icon").on("change", change_icon);
-			$("#icon_type input").on("change", change_icon);
-			$("#postblock").on("click", "button", function () {
-				$("#postblock").find(":input").each(function () {
-					if (this.required && this.value == "") {
-						let elem = this.closest("section").id;
-						$("input[name=tabs]").prop("checked", false);
-						$("#" + elem.replace("content-", "")).prop("checked", true);
-						$("#" + this.id).focus();
-						return false;
-					}
-				});
-			});
-		});
-	</script>';
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>';
 }
 
 /**

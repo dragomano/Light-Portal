@@ -1,6 +1,6 @@
 let work = smf_scripturl + "?action=admin;area=lp_blocks;actions";
 jQuery(document).ready(function($) {
-	$(".lp_default_blocks tbody").each(function (i, e) {
+	$(".lp_default_blocks").find("tbody").each(function (i, e) {
 		Sortable.create(this, {
 			group: "default_blocks",
 			animation: 500,
@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
 			}
 		});
 	});
-	$(".lp_additional_blocks tbody").each(function (i, e) {
+	$(".lp_additional_blocks").find("tbody").each(function (i, e) {
 		Sortable.create(this, {
 			group: "additional_blocks",
 			animation: 500,
