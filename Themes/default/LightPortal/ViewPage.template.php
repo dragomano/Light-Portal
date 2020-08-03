@@ -155,7 +155,7 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 				<form id="comment_form" class="roundframe descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
-					<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+					<textarea id="message" tabindex="1" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
@@ -234,12 +234,12 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	if ($context['user']['is_logged'] && $level < 5) {
 		echo '
 				<div class="smalltext">
-					<span class="button reply_button">', $txt['reply'], '</span>';
+					<span class="button reply_button" data-id="', $comment['id'], '">', $txt['reply'], '</span>';
 
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-					<span class="button remove_button floatright">', $txt['remove'], '</span>';
+					<span class="button remove_button floatright" data-id="', $comment['id'], '">', $txt['remove'], '</span>';
 
 		echo '
 				</div>';

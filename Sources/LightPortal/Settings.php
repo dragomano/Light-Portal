@@ -540,8 +540,11 @@ class Settings
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
-		if (isset($_POST['toggle_plugin'])) {
-			$plugin_id = (int) $_POST['toggle_plugin'];
+		$json  = file_get_contents('php://input');
+		$data  = json_decode($json, true);
+
+		if (isset($data['toggle_plugin'])) {
+			$plugin_id = (int) $data['toggle_plugin'];
 			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
 				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
 				unset($context['lp_enabled_plugins'][$key]);

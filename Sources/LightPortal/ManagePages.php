@@ -379,13 +379,16 @@ class ManagePages
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		$item = filter_input(INPUT_POST, 'del_page_id', FILTER_VALIDATE_INT);
-		if (!empty($item))
-			self::remove([$item]);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
-		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
-			$item   = (int) $_POST['item'];
-			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
+		if (!empty($data['del_page']))
+			self::remove([(int) $data['del_page']]);
+
+		if (!empty($data['toggle_status']) && !empty($data['item'])) {
+			$item   = (int) $data['item'];
+			$status = str_replace('toggle_status ', '', $data['toggle_status']);
+
 			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
 
@@ -1216,9 +1219,7 @@ class ManagePages
 			}
 		}
 
-		Helpers::getFromCache('all_titles', null);
-		Helpers::getFromCache('page_' . $context['lp_page']['alias'], null);
-
+		clean_cache();
 		redirectexit('action=admin;area=lp_pages;sa=main');
 	}
 

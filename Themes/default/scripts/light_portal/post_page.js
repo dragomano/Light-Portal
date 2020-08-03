@@ -1,35 +1,60 @@
-jQuery(document).ready(function($) {
-	let post_page = $("#postpage"),
-		page_type = $("#type"),
-		page_content = $("#content");
-	post_page.on("click", "button", function () {
-		post_page.find(":input").each(function () {
-			if (this.required && this.value == "") {
-				let elem = this.closest("section").id;
-				$("input[name=tabs]").prop("checked", false);
-				$("#" + elem.replace("content-", "")).prop("checked", true);
-				$("#" + this.id).focus();
+document.addEventListener('DOMContentLoaded', function () {
+
+	let form_page = document.getElementById('postpage'),
+		page_type = document.getElementById('type'),
+		page_content = document.getElementById('content');
+
+	form_page.addEventListener('change', function (e) {
+		if (e.target.required && e.target.value == '') {
+			page_type.disabled = true;
+		} else {
+			page_type.disabled = false;
+
+			let alias_field = document.getElementById('alias').value;
+
+			if (alias_field == '' && typeof (slugify) === 'function') {
+				let first_title = document.getElementById('content-tab1').querySelector('input').value;
+				document.getElementById('alias').value = slugify(first_title, {
+					separator: '_',
+					allowedChars: 'a-zA-Z0-9_'
+				});
+			}
+		}
+	});
+
+	page_type.addEventListener('change', function () {
+		ajax_indicator(true);
+
+		if (page_content.value == '') {
+			page_content.value = ' ';
+		}
+
+		form_page.preview.click();
+	});
+
+	form_page.addEventListener('click', function (e) {
+		for (var target = e.target; target && target != this; target = target.parentNode) {
+			if (target.matches('button')) {
+				post_page.call(target, e);
+				break;
+			}
+		}
+	}, false);
+
+	function post_page() {
+		let form_elements = form_page.elements;
+
+		for (i = 0; i < form_elements.length; i++) {
+			if (form_elements[i].required && form_elements[i].value == '') {
+				let elem = form_elements[i].closest('section').id;
+
+				document.getElementsByName('tabs').checked = false;
+				document.getElementById(elem.replace('content-', '')).checked = true;
+				document.getElementById(form_elements[i].id).focus();
+
 				return false;
 			}
-		});
-	});
-	post_page.on("change", function (e) {
-		if ($(e.target).attr("required") == "required" && $(e.target).val() == "") {
-			page_type.prop("disabled", true);
-		} else {
-			page_type.prop("disabled", false);
-			let alias_field = $("#alias").val();
-			if (alias_field == "" && typeof (slugify) === "function") {
-				let first_title = $("#content-tab1").find("input:first").val();
-				$("#alias").val(slugify(first_title, {separator: '_', allowedChars: "a-zA-Z0-9_"}));
-			}
 		}
-	});
-	page_type.on("change", function() {
-		ajax_indicator(true);
-		if (page_content.val() == "") {
-			page_content.val(" ");
-		}
-		$("button[name=preview]").click();
-	});
-});
+	}
+
+}, false);

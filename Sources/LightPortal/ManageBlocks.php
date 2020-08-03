@@ -111,16 +111,18 @@ class ManageBlocks
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
-		if (!empty($item))
-			self::remove([$item]);
+		if (!empty($data['del_block']))
+			self::remove([(int) $data['del_block']]);
 
-		self::makeCopy();
+		if (!empty($data['clone_block']))
+			self::makeCopy((int) $data['clone_block']);
 
-		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
-			$item   = (int) $_POST['item'];
-			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
+		if (!empty($data['toggle_status']) && !empty($data['item'])) {
+			$item   = (int) $data['item'];
+			$status = str_replace('toggle_status ', '', $data['toggle_status']);
 
 			self::toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}
@@ -183,13 +185,12 @@ class ManageBlocks
 	 *
 	 * Клонирование блока
 	 *
+	 * @param int $item
 	 * @return void
 	 */
-	private static function makeCopy()
+	private static function makeCopy(int $item)
 	{
 		global $context;
-
-		$item = filter_input(INPUT_POST, 'clone_block', FILTER_VALIDATE_INT);
 
 		if (empty($item))
 			return;
@@ -259,10 +260,13 @@ class ManageBlocks
 	{
 		global $smcFunc, $context;
 
-		if (!isset($_POST['update_priority']))
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
+
+		if (!isset($data['update_priority']))
 			return;
 
-		$blocks = $_POST['update_priority'];
+		$blocks = $data['update_priority'];
 
 		$conditions = '';
 		foreach ($blocks as $priority => $item)
@@ -285,15 +289,13 @@ class ManageBlocks
 
 			$context['lp_num_queries']++;
 
-			if (!empty($_POST['update_placement'])) {
-				$placement = (string) $_POST['update_placement'];
-
+			if (!empty($data['update_placement'])) {
 				$smcFunc['db_query']('', '
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
 					WHERE block_id IN ({array_int:blocks})',
 					array(
-						'placement' => $placement,
+						'placement' => $data['update_placement'],
 						'blocks'    => $blocks
 					)
 				);
