@@ -240,9 +240,8 @@ class AdsBlock
 			$after_every_last_post = ob_get_clean();
 
 			addInlineJavaScript('
-		jQuery(document).ready(function ($) {
-			$(' . JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
-		});', true);
+		let all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
+		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
 		}
 
 		/**
@@ -258,9 +257,7 @@ class AdsBlock
 			$after_last_post = ob_get_clean();
 
 			addInlineJavaScript('
-		jQuery(document).ready(function ($) {
-			$("#quickModForm").append(' . JavaScriptEscape($after_last_post) . ');
-		});', true);
+		document.getElementById("quickModForm").insertAdjacentHTML("beforeend", ' . JavaScriptEscape($after_last_post) . ');', true);
 		}
 	}
 

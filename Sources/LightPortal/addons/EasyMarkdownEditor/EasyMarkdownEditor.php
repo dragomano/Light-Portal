@@ -223,9 +223,9 @@ class EasyMarkdownEditor
 		$links[] = array(
 			'title' => 'EasyMDE',
 			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
-			'author' => '2015 Sparksuite, Inc. | 2017 Jeroen Akkerman',
+			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
 			)
 		);

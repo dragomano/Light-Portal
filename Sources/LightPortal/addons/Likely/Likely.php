@@ -254,9 +254,9 @@ class Likely
 		$links[] = array(
 			'title' => 'Likely',
 			'link' => 'https://github.com/NikolayRys/Likely',
-			'author' => '2013 Artem Sapegin, 2015 Evgeny Steblinsky, 2015 Ilya Birman',
+			'author' => 'Artem Sapegin, Evgeny Steblinsky, Ilya Birman',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/NikolayRys/Likely/blob/master/license.txt'
 			)
 		);

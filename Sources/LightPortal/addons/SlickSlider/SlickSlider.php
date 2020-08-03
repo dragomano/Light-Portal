@@ -28,7 +28,7 @@ class SlickSlider
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fab fa-sladeshare';
+	public static $addon_icon = 'fab fa-slideshare';
 
 	/**
 	 * Display arrows (true|false)
@@ -368,9 +368,9 @@ class SlickSlider
 		$links[] = array(
 			'title' => 'slick',
 			'link' => 'https://github.com/kenwheeler/slick/',
-			'author' => '2017 Ken Wheeler',
+			'author' => 'Ken Wheeler',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/kenwheeler/slick/blob/master/LICENSE'
 			)
 		);
