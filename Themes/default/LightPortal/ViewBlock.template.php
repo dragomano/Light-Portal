@@ -43,12 +43,12 @@ function template_portal_above()
 			</div>';
 	}
 
-	$md = 12 - ($context['lp_left_panel_width']['md'] + $context['lp_right_panel_width']['md']);
-	$lg = 12 - ($context['lp_left_panel_width']['lg'] + $context['lp_right_panel_width']['lg']);
-	$xl = 12 - ($context['lp_left_panel_width']['xl'] + $context['lp_right_panel_width']['xl']);
+	$md = 12 - ((!empty($context['lp_blocks']['left']) ? $context['lp_left_panel_width']['md'] : 0) + (!empty($context['lp_blocks']['right']) ? $context['lp_right_panel_width']['md'] : 0));
+	$lg = 12 - ((!empty($context['lp_blocks']['left']) ? $context['lp_left_panel_width']['lg'] : 0) + (!empty($context['lp_blocks']['right']) ? $context['lp_right_panel_width']['lg'] : 0));
+	$xl = 12 - ((!empty($context['lp_blocks']['left']) ? $context['lp_left_panel_width']['xl'] : 0) + (!empty($context['lp_blocks']['right']) ? $context['lp_right_panel_width']['xl'] : 0));
 
 	echo '
-			<div class="col-xs', !empty($context['lp_blocks']['left']) && !empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-' . $md . ' col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
+			<div class="col-xs', !empty($context['lp_blocks']['left']) || !empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-' . $md . ' col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
 				<div', !empty($modSettings['lp_swap_top_bottom']) ? ' class="row column-reverse"' : '', '>';
 
 	// Center (top) | Центр (верх)

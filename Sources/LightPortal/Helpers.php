@@ -202,9 +202,10 @@ class Helpers
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
 	 *
 	 * @param int $timestamp — Unix time
+	 * @param bool $use_user_offset
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $timestamp)
+	public static function getFriendlyTime(int $timestamp, $use_user_offset = false)
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
@@ -216,7 +217,8 @@ class Helpers
 		$y  = date('Y', $timestamp);
 
 		// Use forum and user offsets
-		$timestamp = $timestamp - ($modSettings['time_offset'] - $user_info['time_offset']) * 3600;
+		if ($use_user_offset)
+			$timestamp = $timestamp - ($modSettings['time_offset'] + $user_info['time_offset']) * 3600;
 
 		// Difference between current time and $timestamp
 		$time_difference = $current_time - $timestamp;
