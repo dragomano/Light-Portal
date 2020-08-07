@@ -382,8 +382,8 @@ class ManagePages
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
 
-		if (!empty($data['del_page']))
-			self::remove([(int) $data['del_page']]);
+		if (!empty($data['del_item']))
+			self::remove([(int) $data['del_item']]);
 
 		if (!empty($data['toggle_status']) && !empty($data['item'])) {
 			$item   = (int) $data['item'];

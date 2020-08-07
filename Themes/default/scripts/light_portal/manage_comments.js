@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		comment_form = document.getElementById('comment_form'),
 		message = document.getElementById('message');
 
+	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
 		this.style.height = 'auto';
 		comment_form.comment.style.display = 'block';
 	}, false);
 
+	// Disabled/enabled a submit button on textarea changing
 	message.addEventListener('keyup', function () {
 		if (this.value != '') {
 			comment_form.comment.disabled = false;
@@ -17,24 +19,25 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}, false);
 
+	// Post/remove comments & paste nickname to comment reply form
 	page_comments.addEventListener('click', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('span.reply_button')) {
-				leave_reply.call(target, e);
+				lp_leave_reply.call(target, e);
 				break;
 			}
 			if (target.matches('span.remove_button')) {
-				remove_comment.call(target, e);
+				lp_remove_comment.call(target, e);
 				break;
 			}
 			if (target.matches('.title > span')) {
-				paste_nickname.call(target, e);
+				lp_paste_nickname.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	function leave_reply() {
+	function lp_leave_reply() {
 		let parent_id = this.getAttribute('data-id'),
 			parent_li = document.getElementById('comment' + parent_id),
 			counter = parent_li.getAttribute('data-counter'),
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		message.focus();
 	}
 
-	async function remove_comment() {
+	async function lp_remove_comment() {
 		if (!confirm(smf_you_sure))
 			return false;
 
@@ -66,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				items.push(el.getAttribute('data-id'));
 			});
 
-			let response = await fetch(comment_remove_url, {
+			let response = await fetch(portal_page_url + 'sa=del_comment', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
@@ -85,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	function paste_nickname() {
+	function lp_paste_nickname() {
 		let commentTextarea = message.value,
 			position = message.selectionStart,
 			nickname = this.innerText + ", ";
@@ -94,20 +97,21 @@ document.addEventListener('DOMContentLoaded', function () {
 		this.parentNode.nextElementSibling.nextElementSibling.children[0].click();
 	}
 
+	// Post a comment on form submitting
 	page_comments.addEventListener('submit', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('[id="comment_form"]')) {
-				submit_form.call(target, e);
+				lp_submit_form.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function submit_form(e) {
+	async function lp_submit_form(e) {
 		e.preventDefault();
 
-		let response = await fetch(this.getAttribute('action'), {
-			method: this.getAttribute('method'),
+		let response = await fetch(portal_page_url + 'sa=new_comment', {
+			method: 'POST',
 			body: new FormData(this)
 		});
 

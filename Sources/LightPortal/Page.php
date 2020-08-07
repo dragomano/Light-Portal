@@ -80,9 +80,6 @@ class Page
 		self::prepareRelatedPages();
 		self::prepareComments();
 		self::updateNumViews();
-
-/* 		if (!empty($_REQUEST['page']) && (empty($alias) || Helpers::isFrontpage($context['lp_page']['alias'])))
-			redirectexit(); */
 	}
 
 	/**

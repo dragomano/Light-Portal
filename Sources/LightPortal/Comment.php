@@ -50,13 +50,11 @@ class Comment
 		if (empty($this->alias))
 			return;
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment') {
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment')
 			$this->add();
-		}
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment') {
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment')
 			$this->remove();
-		}
 
 		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(

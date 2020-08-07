@@ -1,22 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-	let lp_pages = document.getElementById('pages'),
+	let lp_pages = document.getElementById('manage_pages'),
 		work = smf_scripturl + '?action=admin;area=lp_pages;actions';
 
+	// Delete page, toggle status
 	lp_pages.addEventListener('click', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.del_page')) {
-				delete_page.call(target, e);
+				lp_delete_page.call(target, e);
 				break;
 			}
 			if (target.matches('.toggle_status')) {
-				toggle_status.call(target, e);
+				lp_toggle_status.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function delete_page() {
+	async function lp_delete_page() {
 		if (!confirm(smf_you_sure))
 			return false;
 
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					del_page: item
+					del_item: item
 				})
 			});
 
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	async function toggle_status() {
+	async function lp_toggle_status() {
 		let item = this.getAttribute('data-id'),
 			status = this.getAttribute('class');
 
@@ -72,6 +73,30 @@ document.addEventListener('DOMContentLoaded', function () {
 				this.classList.add('on');
 			}
 		}
+	}
+
+	// Toggle a spinner for "plus" icon
+	lp_pages.addEventListener('mouseover', function (e) {
+		for (var target = e.target; target && target != this; target = target.parentNode) {
+			if (target.matches('.fa-plus')) {
+				lp_toggle_spinner.call(target, e);
+				break;
+			}
+		}
+	}, false);
+
+	lp_pages.addEventListener('mouseout', function (e) {
+		for (var target = e.target; target && target != this; target = target.parentNode) {
+			if (target.matches('.fa-plus')) {
+				lp_toggle_spinner.call(target, e);
+				break;
+			}
+		}
+	}, false);
+
+	function lp_toggle_spinner()
+	{
+		this.classList.toggle('fa-spin');
 	}
 
 }, false);

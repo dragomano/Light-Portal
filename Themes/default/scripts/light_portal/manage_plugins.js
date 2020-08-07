@@ -1,23 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-	let plugins = document.getElementById('admin_content');
+	let lp_plugins = document.getElementById('admin_content');
 
-	plugins.addEventListener('submit', function (e) {
+	// Save plugin settings
+	lp_plugins.addEventListener('submit', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.form_settings')) {
-				submit_form.call(target, e);
+				lp_submit_form.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function submit_form(e) {
+	async function lp_submit_form(e) {
 		e.preventDefault();
 
 		let formData = new FormData(this),
-			checkboxes = this.querySelectorAll('input[type=checkbox]');
+			lp_checkboxes = this.querySelectorAll('input[type=checkbox]');
 
-		checkboxes.forEach(function(val) {
+		lp_checkboxes.forEach(function(val) {
 			formData.append(val.getAttribute('name'), val.matches(':checked'))
 		});
 
@@ -29,16 +30,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (response.ok) {
 			let infobox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[0];
 			infobox.style.display = 'block';
-			setTimeout(() => fadeOut(infobox), 3000);
+			setTimeout(() => lp_fadeOut(infobox), 3000);
 		} else {
 			let errorbox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[1];
 			errorbox.style.display = 'block';
-			setTimeout(() => fadeOut(errorbox), 3000);
+			setTimeout(() => lp_fadeOut(errorbox), 3000);
 			console.log(response.status);
 		}
 	}
 
-	function fadeOut(el) {
+	function lp_fadeOut(el) {
 		el.style.opacity = 1;
 		(function fade() {
 			if ((el.style.opacity -= .1) < 0) {
@@ -49,24 +50,25 @@ document.addEventListener('DOMContentLoaded', function () {
 		})();
 	};
 
-	plugins.addEventListener('click', function (e) {
+	// Toggle plugin, show/close settings
+	lp_plugins.addEventListener('click', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.lp_plugin_toggle')) {
-				toggle_plugin.call(target, e);
+				lp_toggle_plugin.call(target, e);
 				break;
 			}
 			if (target.matches('.lp_plugin_settings')) {
-				show_settings.call(target, e);
+				lp_show_settings.call(target, e);
 				break;
 			}
 			if (target.matches('.close_settings')) {
-				close_settings.call(target, e);
+				lp_close_settings.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function toggle_plugin() {
+	async function lp_toggle_plugin() {
 		let plugin = this.closest('.features').getAttribute('data-id'),
 			work = smf_scripturl + '?action=admin;area=lp_settings;sa=plugins';
 
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	function show_settings() {
+	function lp_show_settings() {
 		let el = document.getElementById(this.getAttribute('data-id') + '_settings');
 
 		if (el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none') {
@@ -105,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	function close_settings() {
+	function lp_close_settings() {
 		document.getElementById(this.parentNode.parentNode.id).style.display = 'none';
 	}
 

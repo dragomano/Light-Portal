@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		additional_blocks = document.querySelectorAll('.lp_additional_blocks tbody'),
 		work = smf_scripturl + '?action=admin;area=lp_blocks;actions';
 
+	// Add Sortable.js for default blocks
 	default_blocks.forEach(function (el) {
 		Sortable.create(el, {
 			group: 'default_blocks',
@@ -56,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	});
 
+	// Add Sortable.js for additional blocks
 	additional_blocks.forEach(function (el) {
 		Sortable.create(el, {
 			group: 'additional_blocks',
@@ -110,24 +112,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	let lp_block_actions = document.getElementById('admin_content');
 
+	// Toggle status, clone/delete block
 	lp_block_actions.addEventListener('click', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.actions .toggle_status')) {
-				toggle_status.call(target, e);
+				lp_toggle_status.call(target, e);
 				break;
 			}
 			if (target.matches('.actions .reports')) {
-				clone_block.call(target, e);
+				lp_clone_block.call(target, e);
 				break;
 			}
 			if (target.matches('.actions .del_block')) {
-				delete_block.call(target, e);
+				lp_delete_block.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function toggle_status() {
+	async function lp_toggle_status() {
 		let item = this.getAttribute('data-id'),
 			status = this.getAttribute('class');
 
@@ -157,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	async function clone_block() {
+	async function lp_clone_block() {
 		let item = this.getAttribute('data-id');
 
 		if (item) {
@@ -184,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	async function delete_block() {
+	async function lp_delete_block() {
 		if (!confirm(smf_you_sure))
 			return false;
 
@@ -197,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					del_block: item
+					del_item: item
 				})
 			});
 
@@ -209,6 +212,34 @@ document.addEventListener('DOMContentLoaded', function () {
 			} else {
 				console.log(response.status);
 			}
+		}
+	}
+
+	let lp_control_form = document.getElementById('admin_content');
+
+	// Toggle a spinner for "plus" icon
+	if (lp_control_form) {
+		lp_control_form.addEventListener('mouseover', function (e) {
+			for (var target = e.target; target && target != this; target = target.parentNode) {
+				if (target.matches('.fa-plus')) {
+					lp_toggle_spinner.call(target, e);
+					break;
+				}
+			}
+		}, false);
+
+		lp_control_form.addEventListener('mouseout', function (e) {
+			for (var target = e.target; target && target != this; target = target.parentNode) {
+				if (target.matches('.fa-plus')) {
+					lp_toggle_spinner.call(target, e);
+					break;
+				}
+			}
+		}, false);
+
+		function lp_toggle_spinner()
+		{
+			this.classList.toggle('fa-spin');
 		}
 	}
 

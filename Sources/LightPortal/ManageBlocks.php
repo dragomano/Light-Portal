@@ -114,8 +114,8 @@ class ManageBlocks
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
 
-		if (!empty($data['del_block']))
-			self::remove([(int) $data['del_block']]);
+		if (!empty($data['del_item']))
+			self::remove([(int) $data['del_item']]);
 
 		if (!empty($data['clone_block']))
 			self::makeCopy((int) $data['clone_block']);

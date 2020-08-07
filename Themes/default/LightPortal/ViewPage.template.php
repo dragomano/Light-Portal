@@ -154,7 +154,7 @@ function show_comment_block()
 
 	if ($context['user']['is_logged'])
 		echo '
-				<form id="comment_form" class="roundframe descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
+				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
 					<textarea id="message" tabindex="1" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
@@ -175,10 +175,10 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			let comment_remove_url = "', $context['lp_current_page_url'], 'sa=del_comment",
+			let portal_page_url = "', $context['lp_current_page_url'], '",
 				page_info_start = ', $context['page_info']['start'], ';
 		</script>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/comment_page.js"></script>';
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_comments.js"></script>';
 
 	echo '
 		<script>

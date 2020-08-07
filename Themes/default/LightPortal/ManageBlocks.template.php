@@ -204,7 +204,7 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/add_block.js"></script>
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>
 	</div>';
 }
 

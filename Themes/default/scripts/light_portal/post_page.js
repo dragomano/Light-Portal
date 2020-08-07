@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 			let alias_field = document.getElementById('alias').value;
 
+			// Create a page alias on page type changing
 			if (alias_field == '' && typeof (slugify) === 'function') {
 				let first_title = document.getElementById('content-tab1').querySelector('input').value;
 				document.getElementById('alias').value = slugify(first_title, {
@@ -35,13 +36,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	form_page.addEventListener('click', function (e) {
 		for (var target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('button')) {
-				post_page.call(target, e);
+				lp_post_page.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	function post_page() {
+	// Goto a required form element on page posting
+	function lp_post_page() {
 		let form_elements = form_page.elements;
 
 		for (i = 0; i < form_elements.length; i++) {
