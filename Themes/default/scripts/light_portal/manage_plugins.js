@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			let errorbox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[1];
 			errorbox.style.display = 'block';
 			setTimeout(() => lp_fadeOut(errorbox), 3000);
-			console.log(response.status);
+			console.error(response);
 		}
 	}
 
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 
 		if (!response.ok) {
-			console.log(response.status);
+			console.error(response);
 		}
 
 		if (this.getAttribute('data-toggle') == 'on') {

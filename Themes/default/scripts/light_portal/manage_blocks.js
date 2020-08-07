@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 						prevElem.style.display = 'none';
 					}
 				} else {
-					console.log(response.status, priority);
+					console.error(response.status, priority);
 				}
 			}
 		});
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 						prevElem.style.display = 'none';
 					}
 				} else {
-					console.log(response.status, priority);
+					console.error(response.status, priority);
 				}
 			}
 		});
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (!response.ok) {
-				console.log(response.status);
+				console.error(response);
 			}
 
 			if (this.classList.contains('on')) {
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					current_block.insertAdjacentHTML('afterend', json.block);
 				}
 			} else {
-				console.log(response.status);
+				console.error(response);
 			}
 		}
 	}
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				block_line.style.transition = 'height 3s';
 				block_line.style.display = 'none';
 			} else {
-				console.log(response.status);
+				console.error(response);
 			}
 		}
 	}

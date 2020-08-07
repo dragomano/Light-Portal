@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				removed_item.style.transition = 'height 3s';
 				removed_item.style.display = 'none';
 			} else {
-				console.log(response.status);
+				console.error(response);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 			window.location.hash = '#comment' + data.item;
 		} else {
-			console.log(response.status);
+			console.error(response);
 		}
 	}
 

@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				block_line.style.transition = 'height 3s';
 				block_line.style.display = 'none';
 			} else {
-				console.log(response.status);
+				console.error(response);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (!response.ok) {
-				console.log(response.status);
+				console.error(response);
 			}
 
 			if (this.classList.contains('on')) {
