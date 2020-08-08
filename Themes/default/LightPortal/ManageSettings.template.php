@@ -407,8 +407,8 @@ function template_post_tab($tab = 'content')
 					if (empty($option['label']))
 						echo ' label="', $optlabel, '"';
 
-					if (!empty($option) && is_array($option)) {
-						foreach ($option as $attribute => $value) {
+					if (!empty(RC2_CLEAN ? $option['attributes'] : $option) && is_array(RC2_CLEAN ? $option['attributes'] : $option)) {
+						foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
 							if ($attribute === 'options')
 								continue;
 							elseif (is_bool($value))
@@ -424,7 +424,7 @@ function template_post_tab($tab = 'content')
 						echo '
 									<option';
 
-						foreach ($grouped_option as $attribute => $value) {
+						foreach (RC2_CLEAN ? $grouped_option['attributes'] : $grouped_option as $attribute => $value) {
 							if (is_bool($value))
 								echo $value ? ' ' . $attribute : '';
 							else
@@ -441,7 +441,7 @@ function template_post_tab($tab = 'content')
 					echo '
 								<option';
 
-					foreach ($option as $attribute => $value) {
+					foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
 						if (is_bool($value))
 							echo $value ? ' ' . $attribute : '';
 						else
@@ -475,7 +475,7 @@ function template_post_tab($tab = 'content')
 				echo '
 							<label style="margin-right:2ch"><input type="radio" name="', !empty($pf['input']['attributes']['name']) ? $pf['input']['attributes']['name'] : $pfid, '"';
 
-				foreach ($option as $attribute => $value) {
+				foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
 					if ($attribute === 'label')
 						continue;
 					elseif (is_bool($value))

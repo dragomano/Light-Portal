@@ -151,8 +151,8 @@ class Tag
 				p.page_id, p.alias, p.num_views, GREATEST(p.created_at, p.updated_at) AS date,
 				t.value, mem.id_member AS author_id, COALESCE(mem.real_name, {string:guest}) AS author_name
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
+				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
@@ -204,7 +204,7 @@ class Tag
 		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
 			WHERE t.value = {string:key}
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
@@ -317,7 +317,7 @@ class Tag
 		$request = $smcFunc['db_query']('', '
 			SELECT t.value
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
@@ -372,7 +372,7 @@ class Tag
 		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = t.page_id)
+				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
 			WHERE t.value IS NOT NULL
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}

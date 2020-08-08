@@ -151,9 +151,9 @@ class Trumbowyg
 		$links[] = array(
 			'title' => 'Trumbowyg',
 			'link' => 'https://github.com/Alex-D/Trumbowyg',
-			'author' => '2012-2016 Alexandre Demode (Alex-D)',
+			'author' => 'Alexandre Demode (Alex-D)',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE'
 			)
 		);

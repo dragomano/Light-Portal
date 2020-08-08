@@ -384,7 +384,7 @@ class RecentPosts
 				echo '
 				', $post[$parameters['link_type']], '
 				<br class="clear">
-				<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp']), '</span>
+				<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
 			</li>';
 			}
 

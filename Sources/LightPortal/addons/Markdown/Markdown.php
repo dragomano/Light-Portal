@@ -74,7 +74,7 @@ class Markdown
 		$links[] = array(
 			'title' => 'PHP Markdown',
 			'link' => 'https://github.com/michelf/php-markdown',
-			'author' => '2004-2019 Michel Fortin',
+			'author' => 'Michel Fortin',
 			'license' => array(
 				'name' => 'the BSD-style License',
 				'link' => 'https://github.com/michelf/php-markdown/blob/lib/License.md'

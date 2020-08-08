@@ -26,7 +26,7 @@ class ManageBlocks
 	 *
 	 * @var string
 	 */
-	private static $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+	private static $areas_pattern = '^[a-z][a-z0-9=|\-,\$]+$';
 
 	/**
 	 * Manage blocks
@@ -70,7 +70,7 @@ class ManageBlocks
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
 			ORDER BY b.placement DESC, b.priority',
 			array(
 				'type' => 'block'
@@ -111,16 +111,18 @@ class ManageBlocks
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		$item = filter_input(INPUT_POST, 'del_block', FILTER_VALIDATE_INT);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
-		if (!empty($item))
-			self::remove([$item]);
+		if (!empty($data['del_item']))
+			self::remove([(int) $data['del_item']]);
 
-		self::makeCopy();
+		if (!empty($data['clone_block']))
+			self::makeCopy((int) $data['clone_block']);
 
-		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
-			$item   = (int) $_POST['item'];
-			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
+		if (!empty($data['toggle_status']) && !empty($data['item'])) {
+			$item   = (int) $data['item'];
+			$status = $data['toggle_status'];
 
 			self::toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}
@@ -183,13 +185,12 @@ class ManageBlocks
 	 *
 	 * Клонирование блока
 	 *
+	 * @param int $item
 	 * @return void
 	 */
-	private static function makeCopy()
+	private static function makeCopy(int $item)
 	{
 		global $context;
-
-		$item = filter_input(INPUT_POST, 'clone_block', FILTER_VALIDATE_INT);
 
 		if (empty($item))
 			return;
@@ -259,10 +260,13 @@ class ManageBlocks
 	{
 		global $smcFunc, $context;
 
-		if (!isset($_POST['update_priority']))
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
+
+		if (!isset($data['update_priority']))
 			return;
 
-		$blocks = $_POST['update_priority'];
+		$blocks = $data['update_priority'];
 
 		$conditions = '';
 		foreach ($blocks as $priority => $item)
@@ -285,15 +289,13 @@ class ManageBlocks
 
 			$context['lp_num_queries']++;
 
-			if (!empty($_POST['update_placement'])) {
-				$placement = (string) $_POST['update_placement'];
-
+			if (!empty($data['update_placement'])) {
 				$smcFunc['db_query']('', '
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
 					WHERE block_id IN ({array_int:blocks})',
 					array(
-						'placement' => $placement,
+						'placement' => $data['update_placement'],
 						'blocks'    => $blocks
 					)
 				);
@@ -644,7 +646,7 @@ class ManageBlocks
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
 		$context['posting_fields']['areas']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_block_areas_subtext'],
+			'after' => self::getAreasInfo(),
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
@@ -759,6 +761,41 @@ class ManageBlocks
 	}
 
 	/**
+	 * Get a table with possible areas
+	 *
+	 * Получаем табличку с возможными областями
+	 *
+	 * @return string
+	 */
+	private static function getAreasInfo()
+	{
+		global $context, $txt;
+
+		$areas = array(
+			'all',
+			'custom_action',
+			'pages',
+			'page=alias',
+			'boards',
+			'board=id',
+			'board=id1-id3',
+			'board=id3|id7',
+			'topics',
+			'topic=id',
+			'topic=id1-id3',
+			'topic=id3|id7'
+		);
+
+		$context['lp_possible_areas'] = array_combine($areas, $txt['lp_block_areas_values']);
+
+		ob_start();
+
+		template_show_areas_info();
+
+		return ob_get_clean();
+	}
+
+	/**
 	 * Check whether there are any parameters on the "Tuning" tab
 	 *
 	 * Проверяем, есть ли какие-нибудь параметры на вкладке «Тюнинг»
@@ -768,7 +805,7 @@ class ManageBlocks
 	 * @param string $check_value
 	 * @return bool
 	 */
-	public static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	private static function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
 	{
 		if (empty($data))
 			return false;
@@ -822,10 +859,10 @@ class ManageBlocks
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
 
-		if (empty($context['preview_content']))
-			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
-		else
+		if (!empty($context['preview_content']))
 			Subs::parseContent($context['preview_content'], $context['lp_block']['type']);
+		else
+			Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());
@@ -836,14 +873,13 @@ class ManageBlocks
 	 *
 	 * Получаем правильный приоритет для нового блока
 	 *
-	 * @param string $placement
 	 * @return int
 	 */
-	private static function calculatePriority(string $placement)
+	private static function getPriority()
 	{
-		global $smcFunc, $context;
+		global $context, $smcFunc;
 
-		if (empty($placement))
+		if (empty($context['lp_block']['placement']))
 			return 0;
 
 		$request = $smcFunc['db_query']('', '
@@ -851,7 +887,7 @@ class ManageBlocks
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',
 			array(
-				'placement' => $placement
+				'placement' => $context['lp_block']['placement']
 			)
 		);
 
@@ -881,7 +917,7 @@ class ManageBlocks
 
 		if (empty($item)) {
 			$max_length = Helpers::getMaxMessageLength();
-			$priority   = self::calculatePriority($context['lp_block']['placement']);
+			$priority   = self::getPriority();
 
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
@@ -1081,8 +1117,8 @@ class ManageBlocks
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
 			WHERE b.block_id = {int:item}',
 			array(
 				'type' => 'block',
@@ -1175,8 +1211,8 @@ class ManageBlocks
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = b.block_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = b.block_id AND pp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})
 			WHERE b.block_id IN ({array_int:blocks})',
 			array(
 				'type'  => 'block',

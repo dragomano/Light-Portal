@@ -177,7 +177,7 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
+							return '<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -194,7 +194,10 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$actions = (empty($entry['status']) ? '
+							$actions = '';
+
+							if (allowedTo('light_portal_approve_pages'))
+								$actions .= (empty($entry['status']) ? '
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
 							if ($context['lp_fontawesome_enabled']) {
@@ -246,9 +249,9 @@ class ManagePages
 					'position' => 'below_table_data',
 					'value' => '
 						<select name="page_actions">
-							<option value="delete">' . $txt['remove'] . '</option>
+							<option value="delete">' . $txt['remove'] . '</option>' . (allowedTo('light_portal_approve_pages') ? '
 							<option value="action_on">' . $txt['lp_action_on'] . '</option>
-							<option value="action_off">' . $txt['lp_action_off'] . '</option>
+							<option value="action_off">' . $txt['lp_action_off'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
@@ -294,8 +297,8 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
@@ -349,7 +352,7 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
@@ -379,13 +382,16 @@ class ManagePages
 		if (!isset($_REQUEST['actions']))
 			return;
 
-		$item = filter_input(INPUT_POST, 'del_page_id', FILTER_VALIDATE_INT);
-		if (!empty($item))
-			self::remove([$item]);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
-		if (!empty($_POST['toggle_status']) && !empty($_POST['item'])) {
-			$item   = (int) $_POST['item'];
-			$status = str_replace('toggle_status ', '', $_POST['toggle_status']);
+		if (!empty($data['del_item']))
+			self::remove([(int) $data['del_item']]);
+
+		if (!empty($data['toggle_status']) && !empty($data['item'])) {
+			$item   = (int) $data['item'];
+			$status = $data['toggle_status'];
+
 			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
 
@@ -605,6 +611,7 @@ class ManagePages
 	{
 		$options = [
 			'show_author_and_date' => true,
+			'show_related_pages'   => false,
 			'allow_comments'       => false
 		];
 
@@ -638,7 +645,10 @@ class ManagePages
 
 			$source_args = $args;
 			Subs::runAddons('validatePageData', array(&$args));
-			$parameters = array_merge(array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN), array_diff($args, $source_args));
+			$parameters = array_merge(
+				array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'show_related_pages' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN),
+				array_diff($args, $source_args)
+			);
 
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
@@ -663,6 +673,7 @@ class ManagePages
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'status'      => $user_info['is_admin'] ? 1 : (int) allowedTo('light_portal_approve_pages'),
 			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
 			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
@@ -868,6 +879,17 @@ class ManagePages
 			)
 		);
 
+		if (!empty($modSettings['lp_show_related_pages'])) {
+			$context['posting_fields']['show_related_pages']['label']['text'] = $txt['lp_page_options']['show_related_pages'];
+			$context['posting_fields']['show_related_pages']['input'] = array(
+				'type' => 'checkbox',
+				'attributes' => array(
+					'id'      => 'show_related_pages',
+					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
+				)
+			);
+		}
+
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
 			$context['posting_fields']['allow_comments']['label']['text'] = $txt['lp_page_options']['allow_comments'];
 			$context['posting_fields']['allow_comments']['input'] = array(
@@ -925,12 +947,12 @@ class ManagePages
 		$context['preview_title']   = $context['lp_page']['title'][$context['user']['language']];
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
 
-		if (!empty($context['preview_content']))
-			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
-
 		Helpers::cleanBbcode($context['preview_title']);
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
+
+		if (!empty($context['preview_content']))
+			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle();
@@ -1007,6 +1029,7 @@ class ManagePages
 					'content'     => 'string-' . Helpers::getMaxMessageLength(),
 					'type'        => 'string-4',
 					'permissions' => 'int',
+					'status'      => 'int',
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
@@ -1016,6 +1039,7 @@ class ManagePages
 					$context['lp_page']['content'],
 					$context['lp_page']['type'],
 					$context['lp_page']['permissions'],
+					$context['lp_page']['status'],
 					self::getPublishTime()
 				), $db_type == 'postgresql' ? array(self::getAutoIncrementValue()) : array()),
 				array('page_id'),
@@ -1100,7 +1124,7 @@ class ManagePages
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
@@ -1109,6 +1133,7 @@ class ManagePages
 					'content'     => $context['lp_page']['content'],
 					'type'        => $context['lp_page']['type'],
 					'permissions' => $context['lp_page']['permissions'],
+					'status'      => $context['lp_page']['status'],
 					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? self::getPublishTime() : $context['lp_page']['created_at'],
 					'updated_at'  => time()
 				)
@@ -1201,9 +1226,7 @@ class ManagePages
 			}
 		}
 
-		Helpers::getFromCache('all_titles', null);
-		Helpers::getFromCache('page_' . $context['lp_page']['alias'], null);
-
+		clean_cache();
 		redirectexit('action=admin;area=lp_pages;sa=main');
 	}
 
@@ -1329,7 +1352,7 @@ class ManagePages
 						{
 							$title = Helpers::getPublicTitle($entry);
 
-							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
+							return '<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -1393,10 +1416,10 @@ class ManagePages
 				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (pt.item_id = p.page_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (pp.item_id = p.page_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (t.page_id = p.page_id)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (com.page_id = p.page_id)' . (!empty($pages) ? '
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
 			WHERE p.page_id IN ({array_int:pages})' : ''),
 			array(
 				'type'  => 'page',

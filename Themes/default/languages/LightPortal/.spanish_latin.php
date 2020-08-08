@@ -18,7 +18,7 @@ $txt['lp_example'] = 'Ejemplo: ';
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
 $txt['lp_base'] = 'Configuraciones para la portada y los artículos';
-$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, or <a class="bbc_link" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SJLXR6X7XGEDC">make one-time donation via PayPal</a>.';
+$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
@@ -30,7 +30,7 @@ $txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elemento
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
-$txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';	
+$txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';
 $txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
@@ -62,6 +62,7 @@ $txt['lp_extra'] = 'Páginas y bloques';
 $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de páginas y bloques.';
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
+
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
 $txt['lp_show_comment_block_set'] = array('none' => 'None', 'default' => 'Integrated');
@@ -140,29 +141,25 @@ $txt['lp_block_placement_set'] = array(
 	'footer' => 'Pie de página'
 );
 
-$txt['lp_block_areas'] = 'Acciones';
-$txt['lp_block_areas_subtext'] = 'Especifique una o más áreas (separadas por comas) para mostrar el bloque en:<br>
-<ul class="bbc_list">
-	<li><strong>all</strong> — mostrar en todas partes</li>
-	<li><strong>portal</strong> — mostrar solo en el área del portal (incluidas las páginas)</li>
-	<li><strong>forum</strong> — mostrar solo en el área del foro</li>
-	<li><strong>custom_action</strong> — mostrar en el área <em>index.php?action</em>=<strong>custom_action</strong> (for example: search,profile,pm)</li>
-	<li><strong>page=alias</strong> — mostrar en la página <em>index.php?page</em>=<strong>alias</strong></li>
-	<li><strong>board=id</strong> — display only inside the board with identificator <strong>id</strong> (including all topics inside the board)
-		<ul class="bbc_list">
-			<li><strong>boards</strong> — display in all boards</li>
-			<li><strong>board=id1-id3</strong> — display in boards id1, id2, id3</li>
-			<li><strong>board=id3|id7</strong> — display in boards id3, and id7</li>
-		</ul>
-	</li>
-	<li><strong>topic=id</strong> — display only inside the topic with identificator <strong>id</strong>
-		<ul class="bbc_list">
-			<li><strong>topics</strong> — display in all topics</li>
-			<li><strong>topic=id1-id3</strong> — display in topics id1, id2, id3</li>
-			<li><strong>topic=id3|id7</strong> — display in topics id3, and id7</li>
-		</ul>
-	</li>
-</ul>';
+$txt['lp_block_areas']            = 'Acciones';
+$txt['lp_block_areas_subtext']    = 'Especifique una o más áreas (separadas por comas) para mostrar el bloque en:';
+$txt['lp_block_areas_area_th']    = 'Area';
+$txt['lp_block_areas_display_th'] = 'Display';
+$txt['lp_block_areas_values']     = array(
+	'en todas partes',
+	'en el área <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on all portal pages',
+	'en la página <em>index.php?page</em>=<strong>alias</strong>',
+	'in all boards',
+	'only inside the board with identificator <strong>id</strong> (including all topics inside the board)',
+	'in boards id1, id2, id3',
+	'in boards id3, and id7',
+	'in all topics',
+	'only inside the topic with identificator <strong>id</strong>',
+	'in topics id1, id2, id3',
+	'in topics id3, and id7'
+);
+
 $txt['lp_block_title_class'] = 'Clase de título CSS';
 $txt['lp_block_title_style'] = 'Estilo de título CSS';
 $txt['lp_block_content_class'] = 'Clase de contenido CSS';

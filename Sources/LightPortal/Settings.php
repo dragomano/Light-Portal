@@ -186,6 +186,7 @@ class Settings
 
 		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_approve_pages'] = [-1, 0];
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
@@ -213,9 +214,10 @@ class Settings
 			array('boards', 'lp_frontpage_boards'),
 			array('check', 'lp_show_images_in_articles'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
-			//array('int', 'lp_teaser_size', 'min' => 0),
 			array('check', 'lp_frontpage_card_alt_layout'),
+			array('check', 'lp_frontpage_order_by_num_replies'),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
+			//array('int', 'lp_teaser_size', 'min' => 0),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode'),
@@ -237,6 +239,7 @@ class Settings
 			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
 			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
+			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'),
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
@@ -246,13 +249,13 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item)
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item)
@@ -333,6 +336,7 @@ class Settings
 
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
+			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('bbc', 'lp_disabled_bbc_in_comments'),
 			array('int', 'lp_num_comments_per_page'),
@@ -539,8 +543,11 @@ class Settings
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
-		if (isset($_POST['toggle_plugin'])) {
-			$plugin_id = (int) $_POST['toggle_plugin'];
+		$json  = file_get_contents('php://input');
+		$data  = json_decode($json, true);
+
+		if (isset($data['toggle_plugin'])) {
+			$plugin_id = (int) $data['toggle_plugin'];
 			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
 				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
 				unset($context['lp_enabled_plugins'][$key]);

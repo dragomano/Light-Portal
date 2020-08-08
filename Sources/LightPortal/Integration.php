@@ -30,6 +30,7 @@ class Integration
 	{
 		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
@@ -75,8 +76,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => 'v1.0rc7',
-			'LP_RELEASE_DATE' => '2020-07-06',
+			'LP_VERSION'      => 'v1.0',
+			'LP_RELEASE_DATE' => '2020-08-08',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
@@ -85,6 +86,19 @@ class Integration
 
 		foreach ($lp_constants as $key => $value)
 			defined($key) or define($key, $value);
+	}
+
+	/**
+	 * Speed up the loading of third-party resources
+	 *
+	 * Ускоряем загрузку сторонних ресурсов
+	 *
+	 * @return void
+	 */
+	public static function preCssOutput()
+	{
+		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
+		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
 	}
 
 	/**
@@ -362,12 +376,14 @@ class Integration
 	{
 		global $context;
 
-		$context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
+		$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
+		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
 
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}

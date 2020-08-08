@@ -215,8 +215,8 @@ class Likely
 			return;
 
 		if (!empty($parameters['buttons'])) {
-			loadCSSFile('https://unpkg.com/ilyabirman-likely@2/release/likely.css', array('external' => true));
-			loadJavaScriptFile('https://unpkg.com/ilyabirman-likely@2/release/likely.js', array('external' => true));
+			loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', array('external' => true));
 
 			ob_start();
 
@@ -254,9 +254,9 @@ class Likely
 		$links[] = array(
 			'title' => 'Likely',
 			'link' => 'https://github.com/NikolayRys/Likely',
-			'author' => '2013 Artem Sapegin, 2015 Evgeny Steblinsky, 2015 Ilya Birman',
+			'author' => 'Artem Sapegin, Evgeny Steblinsky, Ilya Birman',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/NikolayRys/Likely/blob/master/license.txt'
 			)
 		);

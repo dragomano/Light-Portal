@@ -135,7 +135,7 @@ class TagList
 		$request = $smcFunc['db_query']('', '
 			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
 			FROM {db_prefix}optimus_keywords AS ok
-				LEFT JOIN {db_prefix}optimus_log_keywords AS olk ON (olk.keyword_id = ok.id)
+				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
 			GROUP BY ok.id, ok.name
 			ORDER BY ok.name DESC',
 			array()

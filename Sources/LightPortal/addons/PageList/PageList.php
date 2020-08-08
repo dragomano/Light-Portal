@@ -155,8 +155,8 @@ class PageList
 				p.page_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (t.item_id = p.page_id AND t.type = {string:type} AND t.lang = {string:lang})
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})

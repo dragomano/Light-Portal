@@ -78,8 +78,8 @@ class Subs
 				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (bt.item_id = b.block_id AND bt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (bp.item_id = b.block_id AND bp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
 			WHERE b.status = {int:status}
 			ORDER BY b.placement, b.priority',
 			array(
@@ -202,7 +202,7 @@ class Subs
 	{
 		global $context;
 
-		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]) && !isset($_REQUEST['preview']))
+		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
 			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
 		else
 			$parameters = $context['lp_block']['options']['parameters'] ?? [];
@@ -359,7 +359,7 @@ class Subs
 		$editorOptions = array(
 			'id'           => 'content',
 			'value'        => $content,
-			'height'       => '300px',
+			'height'       => '1px',
 			'width'        => '100%',
 			'preview_type' => 2,
 			'required'     => true

@@ -50,13 +50,11 @@ class Comment
 		if (empty($this->alias))
 			return;
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment') {
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment')
 			$this->add();
-		}
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment') {
+		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment')
 			$this->remove();
-		}
 
 		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
@@ -88,7 +86,7 @@ class Comment
 		$context['page_info']['num_pages'] = floor(($total_comments - 1) / $limit) + 1;
 		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
 
-		if ($temp_start >= $total_comments)
+		if ($temp_start > $total_comments)
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
@@ -228,7 +226,7 @@ class Comment
 
 		$user_avatar = [];
 
-		if (($modSettings['gravatarEnabled'] && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
+		if ((!empty($modSettings['gravatarEnabled']) && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
 			if (!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url'][12]))
 				$user_avatar['href'] = get_gravatar_url($smcFunc['substr']($user_info['avatar']['url'], 11));
 			else
@@ -309,7 +307,9 @@ class Comment
 	{
 		global $smcFunc, $context;
 
-		$items = filter_input(INPUT_POST, 'items', FILTER_VALIDATE_INT, array('flags'  => FILTER_REQUIRE_ARRAY));
+		$json  = file_get_contents('php://input');
+		$data  = json_decode($json, true);
+		$items = $data['items'];
 
 		if (empty($items))
 			return;
@@ -324,7 +324,8 @@ class Comment
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments - {int:num_items}
+			SET num_comments = CASE WHEN num_comments > 0 THEN num_comments - {int:num_items}
+				ELSE num_comments END
 			WHERE alias = {string:alias}',
 			array(
 				'num_items' => count($items),
@@ -351,10 +352,13 @@ class Comment
 	{
 		global $smcFunc, $memberContext, $modSettings, $context;
 
+		if (empty($page_id))
+			return [];
+
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)' . (!empty($page_id) ? '
+				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (!empty($page_id) ? '
 			WHERE com.page_id = {int:id}' : ''),
 			array(
 				'id' => $page_id
@@ -370,6 +374,12 @@ class Comment
 				loadMemberContext($row['author_id']);
 			}
 
+			$avatar = $memberContext[$row['author_id']]['avatar']['image'];
+
+			// Temporaly fix
+			if (empty($modSettings['gravatarOverride']) && empty($modSettings['gravatarEnabled']) && stristr($memberContext[$row['author_id']]['avatar']['name'], 'gravatar://'))
+				$avatar = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
+
 			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
 
 			$comments[$row['id']] = array(
@@ -378,7 +388,7 @@ class Comment
 				'parent_id'   => $row['parent_id'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'avatar'      => $memberContext[$row['author_id']]['avatar']['image'],
+				'avatar'      => $avatar,
 				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
 				'created_at'  => $row['created_at']
 			);

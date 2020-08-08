@@ -156,12 +156,6 @@ class FrontPage
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
-		addInlineJavaScript('
-		jQuery(document).ready(function ($) {
-			$(".lp_frontpage_articles .card").matchHeight();
-		});', true);
-
 		Subs::runAddons('frontpageAssets');
 	}
 
@@ -183,7 +177,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($topics = cache_get_data('light_portal_fronttopics_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($topics = cache_get_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -192,6 +186,7 @@ class FrontPage
 				'is_approved'       => 1,
 				'id_poll'           => 0,
 				'id_redirect_topic' => 0,
+				'attachment_type'   => 0,
 				'selected_boards'   => $selected_boards,
 				'start'             => $start,
 				'limit'             => $limit
@@ -201,15 +196,15 @@ class FrontPage
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(SELECT id_attach FROM {db_prefix}attachments WHERE id_msg = t.id_first_msg AND width <> 0 AND height <> 0 AND approved = {int:is_approved} AND attachment_type = {int:attachment_type} ORDER BY id_attach LIMIT 1) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = mf.id_member)
-					LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)' . ($user_info['is_guest'] ? '' : '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (lt.id_topic = t.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (lmr.id_board = t.id_board AND lmr.id_member = {int:current_member})') . (!empty($custom_tables) ? '
+					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
+					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
+					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (!empty($custom_tables) ? '
 					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
@@ -217,12 +212,12 @@ class FrontPage
 					AND t.id_board IN ({array_int:selected_boards})
 					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY t.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . 't.id_last_msg DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
 
-			$topics = $messages = [];
+			$topics = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
 				if (!isset($topics[$row['id_topic']])) {
 					Helpers::cleanBbcode($row['subject']);
@@ -230,7 +225,10 @@ class FrontPage
 					censorText($row['body']);
 
 					$image = null;
-					if (!empty($modSettings['lp_show_images_in_articles'])) {
+					if (!empty($row['id_attach']))
+						$image = $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
+
+					if (!empty($modSettings['lp_show_images_in_articles']) && empty($image)) {
 						$body = parse_bbc($row['body'], false);
 						$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
 						$image = $first_post_image ? array_pop($value) : null;
@@ -243,7 +241,6 @@ class FrontPage
 					if ($row['is_sticky'])
 						$colorClass .= ' alternative2';
 
-					$messages[] = $row['id_first_msg'];
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
@@ -272,36 +269,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			if (!empty($messages) && !empty($modSettings['lp_show_images_in_articles'])) {
-				$request = $smcFunc['db_query']('', '
-					SELECT a.id_attach, a.id_msg, t.id_topic
-					FROM {db_prefix}attachments AS a
-						LEFT JOIN {db_prefix}topics AS t ON (t.id_first_msg = a.id_msg)
-					WHERE a.id_msg IN ({array_int:message_list})
-						AND a.width <> 0
-						AND a.height <> 0
-						AND a.approved = {int:is_approved}
-						AND a.attachment_type = {int:attachment_type}
-					ORDER BY a.id_attach',
-					array(
-						'message_list'    => $messages,
-						'attachment_type' => 0,
-						'is_approved'     => 1
-					)
-				);
-
-				$attachments = [];
-				while ($row = $smcFunc['db_fetch_assoc']($request))
-					$attachments[$row['id_topic']][] = $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
-
-				$smcFunc['db_free_result']($request);
-				$context['lp_num_queries']++;
-
-				foreach ($attachments as $id_topic => $data)
-					$topics[$id_topic]['image'] = $data[0];
-			}
-
-			cache_put_data('light_portal_fronttopics_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
 
 		return $topics;
@@ -323,11 +291,11 @@ class FrontPage
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_topics = cache_get_data('light_portal_fronttopics_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_topics = cache_get_data('light_portal_articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
-					LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
+					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
 					AND t.id_redirect_topic = {int:id_redirect_topic}
@@ -345,7 +313,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_fronttopics_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
 		}
 
 		return $num_topics;
@@ -364,7 +332,7 @@ class FrontPage
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
 
-		if (($pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($pages = cache_get_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns    = [];
@@ -387,13 +355,13 @@ class FrontPage
 					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = p.author_id)' . (!empty($custom_tables) ? '
+					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
 					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY date DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . 'date DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -434,7 +402,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
 
 		return $pages;
@@ -451,7 +419,7 @@ class FrontPage
 	{
 		global $user_info, $smcFunc, $context;
 
-		if (($num_pages = cache_get_data('light_portal_frontpages_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_pages = cache_get_data('light_portal_articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -469,7 +437,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontpages_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
 		}
 
 		return $num_pages;
@@ -493,7 +461,7 @@ class FrontPage
 		if (empty($selected_boards))
 			return [];
 
-		if (($boards = cache_get_data('light_portal_frontboards_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($boards = cache_get_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
@@ -514,15 +482,15 @@ class FrontPage
 					(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}boards AS b
-					LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)
-					LEFT JOIN {db_prefix}messages AS m ON (m.id_msg = b.id_last_msg)' . ($user_info['is_guest'] ? '' : '
-					LEFT JOIN {db_prefix}log_boards AS lb ON (lb.id_board = b.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
-					LEFT JOIN {db_prefix}attachments AS a ON (a.id_msg = b.id_last_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
+					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
+					LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . ($user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
+					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
 					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
 				WHERE b.id_board IN ({array_int:selected_boards})
 					AND {query_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY b.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . 'b.id_last_msg DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -565,7 +533,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
 
 		return $boards;
@@ -587,11 +555,11 @@ class FrontPage
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_boards = cache_get_data('light_portal_frontboards_u' . $context['user']['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_boards = cache_get_data('light_portal_articles_u' . $context['user']['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
-					LEFT JOIN {db_prefix}categories AS c ON (c.id_cat = b.id_cat)
+					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
 				WHERE b.id_board IN ({array_int:selected_boards})
 					AND {query_see_board}',
 				array(
@@ -603,7 +571,7 @@ class FrontPage
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_frontboards_u' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
 		}
 
 		return $num_boards;
