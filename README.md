@@ -25,7 +25,7 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Using Flexbox to output blocks.
 * Available panels: header, left and right sidebars, center (top and bottom), footer.
 * Frontpage article system: portal pages, forum topics, or boards.
-* Comments for pages.
+* Tree comments for pages.
 * Open Graph markup for pages and comments.
 * Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
 * Built-in ad manager (AdsBlock addon).
@@ -47,7 +47,7 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Использование Flexbox для вывода блоков.
 * Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
 * Статьи на главной: отображение тем, разделов или страниц портала.
-* Комментарии для статей.
+* Древовидные комментарии для статей.
 * Разметка Open Graph для страниц и комментариев.
 * Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
 * Встроенный менеджер рекламы (плагин AdsBlock).

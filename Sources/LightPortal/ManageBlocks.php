@@ -122,7 +122,7 @@ class ManageBlocks
 
 		if (!empty($data['toggle_status']) && !empty($data['item'])) {
 			$item   = (int) $data['item'];
-			$status = str_replace('toggle_status ', '', $data['toggle_status']);
+			$status = $data['toggle_status'];
 
 			self::toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 		}

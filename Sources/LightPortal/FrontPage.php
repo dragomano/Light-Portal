@@ -212,7 +212,7 @@ class FrontPage
 					AND t.id_board IN ({array_int:selected_boards})
 					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY t.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . 't.id_last_msg DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -361,7 +361,7 @@ class FrontPage
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY date DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . 'date DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -490,7 +490,7 @@ class FrontPage
 				WHERE b.id_board IN ({array_int:selected_boards})
 					AND {query_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY b.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . 'b.id_last_msg DESC
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);

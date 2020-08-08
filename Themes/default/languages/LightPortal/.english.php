@@ -20,19 +20,20 @@ $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
 
-$txt['lp_frontpage_title']           = 'The frontpage title';
-$txt['lp_frontpage_mode']            = 'The portal frontpage';
-$txt['lp_frontpage_mode_set']        = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
-$txt['lp_frontpage_alias']           = 'Portal page to display as the main page';
-$txt['lp_frontpage_alias_subtext']   = 'Enter the alias of the page that exist.';
-$txt['lp_frontpage_boards']          = 'Boards as sources of articles for the frontpage';
-$txt['lp_frontpage_card_alt_layout'] = 'Alternative arrangement of the elements in the cards';
-$txt['lp_frontpage_layout']          = 'Number of columns for displaying articles';
-$txt['lp_frontpage_layout_set']      = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
-$txt['lp_show_images_in_articles']   = 'Show images that found in articles';
-$txt['lp_image_placeholder']         = 'URL of the default placeholder image';
-$txt['lp_teaser_size']               = 'The max size of article teasers (in symbols)';
-$txt['lp_num_items_per_page']        = 'Number of items per page (for pagination)';
+$txt['lp_frontpage_title']                = 'The frontpage title';
+$txt['lp_frontpage_mode']                 = 'The portal frontpage';
+$txt['lp_frontpage_mode_set']             = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
+$txt['lp_frontpage_alias']                = 'Portal page to display as the main page';
+$txt['lp_frontpage_alias_subtext']        = 'Enter the alias of the page that exist.';
+$txt['lp_frontpage_boards']               = 'Boards as sources of articles for the frontpage';
+$txt['lp_frontpage_card_alt_layout']      = 'Alternative arrangement of the elements in the cards';
+$txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
+$txt['lp_frontpage_layout']               = 'Number of columns for displaying articles';
+$txt['lp_frontpage_layout_set']           = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
+$txt['lp_show_images_in_articles']        = 'Show images that found in articles';
+$txt['lp_image_placeholder']              = 'URL of the default placeholder image';
+$txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
+$txt['lp_num_items_per_page']             = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_url']      = 'The frontpage URL in the standalone mode';
@@ -50,6 +51,7 @@ $txt['lp_standalone_mode_disabled_actions_help']    = 'For example, if you need 
 $txt['groups_light_portal_view']             = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
+$txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 
 $txt['lp_debug_and_caching']       = 'Debugging and caching';
@@ -247,7 +249,6 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
-$txt['lp_page_not_activated']         = 'The requested page is disabled!';
 $txt['lp_block_not_found']            = 'Block not found!';
 $txt['lp_post_error_no_title']        = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias']        = 'The <strong>alias</strong> field was not filled out. It is required.';
@@ -280,12 +281,15 @@ $txt['permissiongroup_light_portal']                 = LP_NAME;
 $txt['permissionname_light_portal_view']             = $txt['group_perms_name_light_portal_view']             = 'View the portal elements';
 $txt['permissionname_light_portal_manage_blocks']    = $txt['group_perms_name_light_portal_manage_blocks']    = 'Manage blocks';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
+$txt['permissionname_light_portal_approve_pages']    = $txt['group_perms_name_light_portal_approve_pages']    = 'Post pages without approval';
 $txt['permissionhelp_light_portal_view']             = 'Ability to view portal pages and blocks.';
 $txt['permissionhelp_light_portal_manage_blocks']    = 'Access to manage portal blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
+$txt['permissionhelp_light_portal_approve_pages']    = 'Ability to post portal pages without approval.';
 $txt['cannot_light_portal_view']                     = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage_blocks']            = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages']         = 'Sorry, you are not allowed to manage pages!';
+$txt['cannot_light_portal_approve_pages']            = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page']                = 'Sorry, you are not allowed to view this page!';
 
 // Time units

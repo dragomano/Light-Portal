@@ -177,7 +177,7 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
+							return '<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -194,7 +194,10 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$actions = (empty($entry['status']) ? '
+							$actions = '';
+
+							if (allowedTo('light_portal_approve_pages'))
+								$actions .= (empty($entry['status']) ? '
 							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
 
 							if ($context['lp_fontawesome_enabled']) {
@@ -246,9 +249,9 @@ class ManagePages
 					'position' => 'below_table_data',
 					'value' => '
 						<select name="page_actions">
-							<option value="delete">' . $txt['remove'] . '</option>
+							<option value="delete">' . $txt['remove'] . '</option>' . (allowedTo('light_portal_approve_pages') ? '
 							<option value="action_on">' . $txt['lp_action_on'] . '</option>
-							<option value="action_off">' . $txt['lp_action_off'] . '</option>
+							<option value="action_off">' . $txt['lp_action_off'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
@@ -387,7 +390,7 @@ class ManagePages
 
 		if (!empty($data['toggle_status']) && !empty($data['item'])) {
 			$item   = (int) $data['item'];
-			$status = str_replace('toggle_status ', '', $data['toggle_status']);
+			$status = $data['toggle_status'];
 
 			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
@@ -670,6 +673,7 @@ class ManagePages
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'status'      => $user_info['is_admin'] ? 1 : (int) allowedTo('light_portal_approve_pages'),
 			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
 			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
@@ -1025,6 +1029,7 @@ class ManagePages
 					'content'     => 'string-' . Helpers::getMaxMessageLength(),
 					'type'        => 'string-4',
 					'permissions' => 'int',
+					'status'      => 'int',
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
@@ -1034,6 +1039,7 @@ class ManagePages
 					$context['lp_page']['content'],
 					$context['lp_page']['type'],
 					$context['lp_page']['permissions'],
+					$context['lp_page']['status'],
 					self::getPublishTime()
 				), $db_type == 'postgresql' ? array(self::getAutoIncrementValue()) : array()),
 				array('page_id'),
@@ -1118,7 +1124,7 @@ class ManagePages
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
@@ -1127,6 +1133,7 @@ class ManagePages
 					'content'     => $context['lp_page']['content'],
 					'type'        => $context['lp_page']['type'],
 					'permissions' => $context['lp_page']['permissions'],
+					'status'      => $context['lp_page']['status'],
 					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? self::getPublishTime() : $context['lp_page']['created_at'],
 					'updated_at'  => time()
 				)
@@ -1345,7 +1352,7 @@ class ManagePages
 						{
 							$title = Helpers::getPublicTitle($entry);
 
-							return $entry['status'] && !empty($title) ? ('<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>') : $title;
+							return '<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>';
 						},
 						'class' => 'word_break'
 					),

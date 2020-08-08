@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	async function lp_toggle_status() {
 		let item = this.getAttribute('data-id'),
-			status = this.getAttribute('class');
+			status = this.classList.contains("on") ? "on" : "off";
 
 		if (item) {
 			let response = await fetch(work, {

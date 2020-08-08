@@ -76,8 +76,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => 'v1.0rc7',
-			'LP_RELEASE_DATE' => '2020-07-06',
+			'LP_VERSION'      => 'v1.0',
+			'LP_RELEASE_DATE' => '2020-08-08',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
@@ -376,12 +376,14 @@ class Integration
 	{
 		global $context;
 
-		$context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
+		$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
+		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
 
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}
