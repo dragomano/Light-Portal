@@ -357,7 +357,8 @@ class Integration
 			$context['non_guest_permissions'],
 			array(
 				'light_portal_manage_blocks',
-				'light_portal_manage_own_pages'
+				'light_portal_manage_own_pages',
+				'light_portal_approve_pages'
 			)
 		);
 	}
