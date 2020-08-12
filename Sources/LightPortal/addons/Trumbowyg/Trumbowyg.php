@@ -133,6 +133,10 @@ class Trumbowyg
 			imageWidthModalEdit: true' . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 1 ? ',
 			autogrow: true' : '') . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
 			autogrowOnEnter: true' : '') . '
+		}).on("tbwopenfullscreen", function() {
+			$(".sticky_sidebar").css("position", "initial");
+		}).on("tbwclosefullscreen", function() {
+			$(".sticky_sidebar").css("position", "sticky");
 		});' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 		}
