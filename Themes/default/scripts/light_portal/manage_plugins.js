@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		let formData = new FormData(this),
 			lp_checkboxes = this.querySelectorAll('input[type=checkbox]');
 
-		lp_checkboxes.forEach(function(val) {
+		lp_checkboxes.forEach(function (val) {
 			formData.append(val.getAttribute('name'), val.matches(':checked'))
 		});
 
@@ -29,26 +29,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		if (response.ok) {
 			let infobox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[0];
-			infobox.style.display = 'block';
-			setTimeout(() => lp_fadeOut(infobox), 3000);
+			infobox.style.display = "block";
+			lp_fadeOut(infobox);
 		} else {
 			let errorbox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[1];
-			errorbox.style.display = 'block';
-			setTimeout(() => lp_fadeOut(errorbox), 3000);
+			errorbox.style.display = "block";
+			lp_fadeOut(errorbox);
 			console.error(response);
 		}
 	}
 
-	function lp_fadeOut(el) {
-		el.style.opacity = 1;
-		(function fade() {
-			if ((el.style.opacity -= .1) < 0) {
-				el.style.display = 'none';
-			} else {
-				requestAnimationFrame(fade);
+	function lp_fadeIn(el) {
+		let opacity = 0.01;
+		el.style.display = "block";
+
+		let timer = setInterval(function() {
+			if (opacity >= 1) {
+				clearInterval(timer);
 			}
-		})();
-	};
+
+			el.style.opacity = opacity;
+			opacity += opacity * 0.1;
+		}, 400);
+	}
+
+	function lp_fadeOut(el) {
+		let opacity = 1,
+			timer = setInterval(function () {
+			if (opacity <= 0.1) {
+				clearInterval(timer);
+				el.style.display = "none";
+			}
+
+			el.style.opacity = opacity;
+			opacity -= opacity * 0.1;
+		}, 400);
+	}
 
 	// Toggle plugin, show/close settings
 	lp_plugins.addEventListener('click', function (e) {
