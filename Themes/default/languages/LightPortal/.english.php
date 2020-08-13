@@ -14,6 +14,7 @@ $txt['lp_new_version_is_available'] = 'A new version is available!';
 $txt['lp_article']  = 'Article';
 $txt['lp_no_items'] = 'There is no items to show.';
 $txt['lp_example']  = 'Example: ';
+$txt['lp_content']  = 'Content';
 
 // Settings
 $txt['lp_settings']  = 'Portal settings';
@@ -127,7 +128,6 @@ $txt['lp_blocks_add_tab_description']    = 'Blocks can contain any content, depe
 $txt['lp_blocks_add_instruction']        = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_content']                 = 'Content';
 $txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';
 $txt['lp_block_priority']                = 'Priority';
@@ -184,15 +184,14 @@ $txt['lp_pages_manage']                 = 'Manage pages';
 $txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
-$txt['lp_pages_add_tab_description']    = 'Fill the page title and alias. After that, you can change its type, use preview and save.';
+$txt['lp_pages_add_tab_description']    = 'Fill the page title. After that, you can change its type, use preview and save.';
 $txt['lp_pages_edit_title']             = 'Editing page';
-$txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
+$txt['lp_pages_edit_tab_description']   = 'Make the necessary changes.';
 $txt['lp_extra_pages']                  = 'Portal pages';
 $txt['lp_search_pages']                 = 'Alias or title';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
 $txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
-$txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';

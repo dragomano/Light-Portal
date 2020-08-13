@@ -14,6 +14,7 @@ $txt['lp_new_version_is_available'] = '¡Una nueva version esta disponible!';
 $txt['lp_article'] = 'Artículo';
 $txt['lp_no_items'] = 'No hay elementos que mostrar.';
 $txt['lp_example'] = 'Ejemplo: ';
+$txt['lp_content'] = 'Contenido';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
@@ -27,6 +28,7 @@ $txt['lp_frontpage_alias'] = 'Página del portal para mostrar como página princ
 $txt['lp_frontpage_alias_subtext'] = 'Ingrese el alias de la página que existen.';
 $txt['lp_frontpage_boards'] = 'Foros como fuentes de artículos para la portada';
 $txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elementos en las tarjetas.';
+$txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
@@ -50,6 +52,7 @@ $txt['lp_standalone_mode_disabled_actions_help'] = 'Por ejemplo, si necesita des
 $txt['groups_light_portal_view'] = '¿Quién puede ver los elementos del portal?';
 $txt['groups_light_portal_manage_blocks'] = '¿Quién puede administrar los bloques?';
 $txt['groups_light_portal_manage_own_pages'] = '¿Quién puede administrar sus propias páginas?';
+$txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions'] = 'Nota: algunas páginas y bloques pueden contener contenido HTML/PHP peligroso, ¡así que no otorgue este derecho a todos!';
 
 $txt['lp_debug_and_caching'] = 'Depuración y almacenamiento en caché';
@@ -62,7 +65,7 @@ $txt['lp_extra'] = 'Páginas y bloques';
 $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de páginas y bloques.';
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
-
+$txt['lp_show_related_pages'] = 'Display related pages block';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
 $txt['lp_show_comment_block_set'] = array('none' => 'None', 'default' => 'Integrated');
@@ -125,7 +128,6 @@ $txt['lp_blocks_add_tab_description'] = 'Todavía no hay muchos bloques, pero ex
 $txt['lp_blocks_add_instruction'] = 'Seleccione el bloque deseado haciendo clic en él.';
 $txt['lp_blocks_edit_title'] = 'Edición de bloques';
 $txt['lp_blocks_edit_tab_description'] = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_content'] = 'Contenido';
 $txt['lp_block_icon_cheatsheet'] = 'Lista de los iconos';
 $txt['lp_block_type'] = 'Tipo de bloque';
 $txt['lp_block_priority'] = 'Prioridad';
@@ -190,7 +192,6 @@ $txt['lp_search_pages'] = 'Alias o título';
 $txt['lp_page_types'] = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'El nombre de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
-$txt['lp_page_content'] = $txt['lp_block_content'];
 $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
@@ -199,6 +200,7 @@ $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Mostrar el autor y la fecha de creación',
+	'show_related_pages' => 'Show related pages',
 	'allow_comments' => 'Permitir comentarios'
 );
 
@@ -234,6 +236,9 @@ $txt['lp_frequency_column'] = 'Frecuencia';
 $txt['lp_comments'] = 'Comentarios';
 $txt['lp_comment_placeholder'] = 'Deja un comentario...';
 
+// Related pages
+$txt['lp_related_pages'] = 'Related pages';
+
 // Comment alerts
 $txt['alert_group_light_portal'] = LP_NAME;
 $txt['alert_page_comment'] = 'Cuando mi página recibe un comentario';
@@ -243,7 +248,6 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} dejó una respuesta 
 
 // Errors
 $txt['lp_page_not_found'] = '¡Página no encontrada!';
-$txt['lp_page_not_activated'] = '¡La página solicitada está deshabilitada!';
 $txt['lp_block_not_found'] = '¡Bloque no encontrado!';
 $txt['lp_post_error_no_title'] = 'El campo <strong>título</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_alias'] = 'El campo <strong>alias</strong> no se completó. Es requerido.';
@@ -276,12 +280,15 @@ $txt['permissiongroup_light_portal'] = LP_NAME;
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'Ver los elementos del portal';
 $txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Administrar bloques';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Administra tus propias páginas';
+$txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages']    = 'Post pages without approval';
 $txt['permissionhelp_light_portal_view'] = 'Capacidad para ver páginas y bloques del portal.';
 $txt['permissionhelp_light_portal_manage_blocks'] = 'Acceso para gestionar bloques del portal.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Acceso para gestionar páginas propias.';
+$txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
 $txt['cannot_light_portal_view'] = 'Lo sentimos, ¡no tienes permiso para ver el portal!';
 $txt['cannot_light_portal_manage_blocks'] = 'Lo sentimos, ¡no tienes permiso para administrar bloques!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Lo sentimos, ¡no tienes permiso para administrar páginas!';
+$txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page'] = 'Lo sentimos, ¡no puedes ver esta página!';
 
 // Time units

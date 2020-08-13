@@ -14,25 +14,27 @@ $txt['lp_new_version_is_available'] = 'Dostępna jest nowa wersja!';
 $txt['lp_article']  = 'Artykuł';
 $txt['lp_no_items'] = 'Nic nie zostało dodane.';
 $txt['lp_example']  = 'Przykład: ';
+$txt['lp_content']  = 'Zawartość';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
 $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
 
-$txt['lp_frontpage_title']         = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']          = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']      = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
-$txt['lp_frontpage_alias']         = 'Strona główna portalu';
-$txt['lp_frontpage_alias_subtext']   = 'Podaj alias strony.';
-$txt['lp_frontpage_boards']        = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_card_alt_layout'] = 'Alternatywny układ elementów kart';
-$txt['lp_frontpage_layout']        = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']    = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
-$txt['lp_show_images_in_articles'] = 'Wyświetlaj obrazy z artykułów';
-$txt['lp_image_placeholder']       = 'Adres domyślnego obrazu';
-$txt['lp_teaser_size']             = 'Długość podglądu artykułów';
-$txt['lp_num_items_per_page']      = 'Ilość artykułów na stronę';
+$txt['lp_frontpage_title']                = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']                 = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set']             = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
+$txt['lp_frontpage_alias']                = 'Strona główna portalu';
+$txt['lp_frontpage_alias_subtext']        = 'Podaj alias strony.';
+$txt['lp_frontpage_boards']               = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_card_alt_layout']      = 'Alternatywny układ elementów kart';
+$txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
+$txt['lp_frontpage_layout']               = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_layout_set']           = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
+$txt['lp_show_images_in_articles']        = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
+$txt['lp_teaser_size']                    = 'Długość podglądu artykułów';
+$txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
 $txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
@@ -50,6 +52,7 @@ $txt['lp_standalone_mode_disabled_actions_help']    = 'Na przykład, jeśli chce
 $txt['groups_light_portal_view']             = 'Kto może widzieć portal';
 $txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
 $txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
+$txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 
 $txt['lp_debug_and_caching']       = 'Debugowanie i pamięć podręczna';
@@ -62,7 +65,7 @@ $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
-
+$txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
@@ -125,7 +128,6 @@ $txt['lp_blocks_add_tab_description']    = 'Nie ma jeszcze zbyt wielu bloków, a
 $txt['lp_blocks_add_instruction']        = 'Wybierz blok przez kliknięcie.';
 $txt['lp_blocks_edit_title']             = 'Edytowanie bloku';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_content']                 = 'Zawartość';
 $txt['lp_block_icon_cheatsheet']         = 'Ikony';
 $txt['lp_block_type']                    = 'Typ bloku';
 $txt['lp_block_priority']                = 'Priorytet';
@@ -190,7 +192,6 @@ $txt['lp_search_pages']                 = 'Alias lub tytuł';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
 $txt['lp_page_alias_subtext']           = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
-$txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
@@ -199,6 +200,7 @@ $txt['lp_page_publish_datetime']        = 'Data i czas publikacji';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
+	'show_related_pages'   => 'Show related pages',
 	'allow_comments'       => 'Włącz komentarze'
 );
 
@@ -230,6 +232,9 @@ $txt['lp_no_tags']          = 'Nie dodano żadnych tagów.';
 $txt['lp_keyword_column']   = 'Słowa kluczowe';
 $txt['lp_frequency_column'] = 'Częstotliwość';
 
+// Related pages
+$txt['lp_related_pages'] = 'Related pages';
+
 // Comments
 $txt['lp_comments']            = 'Komentarze';
 $txt['lp_comment_placeholder'] = 'Dodaj komentarz...';
@@ -243,7 +248,6 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} napisał odpowiedź 
 
 // Errors
 $txt['lp_page_not_found']             = 'Nie znaleziono strony!';
-$txt['lp_page_not_activated']         = 'Strona jest wyłączona!';
 $txt['lp_block_not_found']            = 'Nie znaleziono bloku!';
 $txt['lp_post_error_no_title']        = 'Pole <strong>Tytuł</strong> nie zostało wypełnione.';
 $txt['lp_post_error_no_alias']        = 'Pole <strong>Alias</strong> nie zostało wypełnione.';
@@ -276,12 +280,15 @@ $txt['permissiongroup_light_portal']                 = LP_NAME;
 $txt['permissionname_light_portal_view']             = $txt['group_perms_name_light_portal_view']             = 'Oglądanie elementów portalu';
 $txt['permissionname_light_portal_manage_blocks']    = $txt['group_perms_name_light_portal_manage_blocks']    = 'Zarządzanie blokami';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Zarządzanie własnymi stronami';
+$txt['permissionname_light_portal_approve_pages']    = $txt['group_perms_name_light_portal_approve_pages']    = 'Post pages without approval';
 $txt['permissionhelp_light_portal_view']             = 'Możliwość do przeglądania portalu oraz stron.';
 $txt['permissionhelp_light_portal_manage_blocks']    = 'Dostęp do zarządzania blokami.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Dostęp do zarządzania własnymi stronami portalu.';
+$txt['permissionhelp_light_portal_approve_pages']    = 'Ability to post portal pages without approval.';
 $txt['cannot_light_portal_view']                     = 'Przepraszamy, nie posiadasz uprawnień do przeglądania portalu!';
 $txt['cannot_light_portal_manage_blocks']            = 'Przepraszamy, nie posiadasz uprawnień do zarządzania blokami!';
 $txt['cannot_light_portal_manage_own_pages']         = 'Przepraszamy, nie posiadasz uprawnień do zarządzania stronami!';
+$txt['cannot_light_portal_approve_pages']            = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page']                = 'Przepraszamy, nie posiadasz uprawnień do przeglądania tej strony!';
 
 // Time units

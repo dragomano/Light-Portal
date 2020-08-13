@@ -14,6 +14,7 @@ $txt['lp_new_version_is_available'] = 'Доступна нова версія!';
 $txt['lp_article']  = 'Стаття';
 $txt['lp_no_items'] = 'Немає елементів для відображення.';
 $txt['lp_example']  = 'Приклад: ';
+$txt['lp_content']  = 'Вміст';
 
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';
@@ -127,7 +128,6 @@ $txt['lp_blocks_add_tab_description']    = 'Блоки можуть містит
 $txt['lp_blocks_add_instruction']        = 'Оберіть потрібний блок, натиснувши на нього.';
 $txt['lp_blocks_edit_title']             = 'Редагування блоку';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_content']                 = 'Вміст';
 $txt['lp_block_icon_cheatsheet']         = 'Список іконок';
 $txt['lp_block_type']                    = 'Тип блоку';
 $txt['lp_block_priority']                = 'Пріоритет';
@@ -184,15 +184,14 @@ $txt['lp_pages_manage']                 = 'Керування сторінкам
 $txt['lp_pages_manage_tab_description'] = 'Тут перераховані всі сторінки порталу. Для додавання нової сторінки скористайтеся відповідною кнопкою.';
 $txt['lp_pages_add']                    = 'Додати сторінку';
 $txt['lp_pages_add_title']              = 'Додавання сторінки';
-$txt['lp_pages_add_tab_description']    = 'Заповніть заголовок і аліас сторінки. Після цього можна буде змінити її тип, використовувати попередній перегляд і збереження.';
+$txt['lp_pages_add_tab_description']    = 'Заповніть заголовок сторінки. Після цього можна буде змінити її тип, використовувати попередній перегляд і збереження.';
 $txt['lp_pages_edit_title']             = 'Редагування сторінки';
-$txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
+$txt['lp_pages_edit_tab_description']   = 'Внесіть необхідні зміни.';
 $txt['lp_extra_pages']                  = 'Сторінки порталу';
 $txt['lp_search_pages']                 = 'Аліас або заголовок';
 $txt['lp_page_types']                   = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Аліас';
 $txt['lp_page_alias_subtext']           = 'Ім\'я сторінки має починатися з латинської літери і складатися з малих латинських букв, цифр і знака підкреслення.';
-$txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Тип сторінки';
 $txt['lp_page_description']             = 'Опис';
 $txt['lp_page_keywords']                = 'Ключові слова';

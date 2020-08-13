@@ -14,6 +14,7 @@ $txt['lp_new_version_is_available'] = 'Доступна новая версия!
 $txt['lp_article']  = 'Статья';
 $txt['lp_no_items'] = 'Нет элементов для отображения.';
 $txt['lp_example']  = 'Пример: ';
+$txt['lp_content']  = 'Содержимое';
 
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
@@ -127,7 +128,6 @@ $txt['lp_blocks_add_tab_description']    = 'Блоки могут содержа
 $txt['lp_blocks_add_instruction']        = 'Выберите нужный блок, нажав на него.';
 $txt['lp_blocks_edit_title']             = 'Редактирование блока';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_content']                 = 'Содержимое';
 $txt['lp_block_icon_cheatsheet']         = 'Список иконок';
 $txt['lp_block_type']                    = 'Тип блока';
 $txt['lp_block_priority']                = 'Приоритет';
@@ -184,15 +184,14 @@ $txt['lp_pages_manage']                 = 'Управление страница
 $txt['lp_pages_manage_tab_description'] = 'Здесь перечислены все страницы портала. Для добавления новой страницы воспользуйтесь соответствующей кнопкой.';
 $txt['lp_pages_add']                    = 'Добавить страницу';
 $txt['lp_pages_add_title']              = 'Добавление страницы';
-$txt['lp_pages_add_tab_description']    = 'Заполните заголовок и алиас страницы. После этого можно будет сменить её тип, использовать предварительный просмотр и сохранение.';
+$txt['lp_pages_add_tab_description']    = 'Заполните заголовок страницы. После этого можно будет сменить её тип, использовать предварительный просмотр и сохранение.';
 $txt['lp_pages_edit_title']             = 'Редактирование страницы';
-$txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
+$txt['lp_pages_edit_tab_description']   = 'Внесите необходимые изменения.';
 $txt['lp_extra_pages']                  = 'Страницы портала';
 $txt['lp_search_pages']                 = 'Алиас или заголовок';
 $txt['lp_page_types']                   = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Алиас';
 $txt['lp_page_alias_subtext']           = 'Имя страницы должно начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания.';
-$txt['lp_page_content']                 = $txt['lp_block_content'];
 $txt['lp_page_type']                    = 'Тип страницы';
 $txt['lp_page_description']             = 'Описание';
 $txt['lp_page_keywords']                = 'Ключевые слова';
