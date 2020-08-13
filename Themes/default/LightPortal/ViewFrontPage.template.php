@@ -19,7 +19,7 @@ function template_show_topics_as_articles()
 			$alt = $topic['subject'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe', $topic['css_class'], '">
 				<div class="card__info-hover">';
 
@@ -81,12 +81,15 @@ function template_show_topics_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
 	</div>';
 	}
 }
@@ -103,14 +106,18 @@ function template_show_pages_as_articles()
 	global $context, $scripturl, $txt, $modSettings;
 
 	if (!empty($context['lp_frontpage_articles'])) {
+		if (empty($context['lp_active_blocks']))
+			echo '
+	<div class="col-xs">';
+
 		echo '
-	<div class="lp_frontpage_articles row">';
+	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 		foreach ($context['lp_frontpage_articles'] as $page) {
 			$alt = $page['title'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
 				<div class="card__info-hover">';
 
@@ -172,12 +179,19 @@ function template_show_pages_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
+	</div>';
+
+		if (empty($context['lp_active_blocks']))
+			echo '
 	</div>';
 	}
 }
@@ -201,7 +215,7 @@ function template_show_boards_as_articles()
 			$alt = $board['name'];
 
 			echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-', $context['lp_frontpage_layout'], '">
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
 				<div class="card__info-hover">';
 
@@ -259,12 +273,15 @@ function template_show_boards_as_articles()
 		</div>';
 		}
 
-		echo '
+		if (!empty($context['page_index']))
+			echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+		echo '
 	</div>';
 	}
 }
@@ -282,7 +299,7 @@ function template_show_topics_as_custom_style()
 
 	echo '
 	<div class="row">
-		<div class="col-xs-12 col-sm-3 col-md-3">
+		<div class="col-xs-12 col-sm-3">
 			<nav>
 				<ul>
 					<li>
@@ -355,8 +372,8 @@ function template_show_topics_as_custom_style()
 				<div class="floatleft" style="width: 64px">
 					<img src="', $topic['image'], '" alt="', $topic['subject'], '">
 				</div>';
-				} elseif (!empty($topic['image_placeholder'])) {
-					echo '
+			 } else {
+				echo '
 				<div class="floatleft" style="width: 64px">
 					<i class="far fa-image fa-5x"></i>
 				</div>';
@@ -406,11 +423,16 @@ function template_show_topics_as_custom_style()
 	}
 
 	echo '
-		</div>
+		</div>';
+
+	if (!empty($context['page_index']))
+		echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">
 				<div class="pagelinks">', $context['page_index'], '</div>
 			</div>
-		</div>
+		</div>';
+
+	echo '
 	</div>';
 }

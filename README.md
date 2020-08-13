@@ -10,6 +10,8 @@
 * **Hooks only:** Yes
 * **Languages:** English, Polish, Russian, Spanish, Ukrainian
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U41XD2G)
+
 ## Description
 This modification will transform your forum into a portal that includes:
 * the frontpage,
@@ -23,10 +25,10 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Using Flexbox to output blocks.
 * Available panels: header, left and right sidebars, center (top and bottom), footer.
 * Frontpage article system: portal pages, forum topics, or boards.
-* Comments for pages.
+* Tree comments for pages.
 * Open Graph markup for pages and comments.
 * Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
-* Pages with support for various content.
+* Built-in ad manager (AdsBlock addon).
 * Import and export of pages and blocks.
 * Support for addons.
 * Standalone mode.
@@ -45,18 +47,19 @@ The portal supports for BBC, HTML, PHP, and Markdown content within pages and
 * Использование Flexbox для вывода блоков.
 * Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
 * Статьи на главной: отображение тем, разделов или страниц портала.
-* Комментарии для статей.
+* Древовидные комментарии для статей.
 * Разметка Open Graph для страниц и комментариев.
 * Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
-* Страницы с поддержкой различного контента.
+* Встроенный менеджер рекламы (плагин AdsBlock).
 * Импорт и экспорт страниц и блоков.
 * Поддержка плагинов.
 * Автономный режим.
 * Кэширование.
 
 ### Supporting Light Portal
-Light Portal is completely free to use.
+Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+
 It was made for your convenient, and if you like the project, support the developer.
 
 ### About plugins
-All custom addons for the portal may or may not have their own licenses.
+All custom addons for the portal may have their own licenses.

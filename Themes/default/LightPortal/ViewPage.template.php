@@ -74,6 +74,8 @@ function template_show_page()
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>
 		</article>';
 
+	show_related_pages();
+
 	show_comment_block();
 
 	echo '
@@ -89,9 +91,9 @@ function template_show_page()
  */
 function show_comment_block()
 {
-	global $context, $modSettings, $options, $txt, $settings;
+	global $modSettings, $context, $options, $txt, $settings;
 
-	if (empty($context['lp_page']['options']['allow_comments']) || empty($modSettings['lp_show_comment_block']))
+	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
 
 	if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
@@ -152,8 +154,8 @@ function show_comment_block()
 
 	if ($context['user']['is_logged'])
 		echo '
-				<form id="comment_form" class="roundframe sceditor-container descbox" action="', $context['lp_current_page_url'], 'sa=new_comment" method="post" accept-charset="', $context['character_set'], '">
-					<textarea id="message" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
+					<textarea id="message" tabindex="1" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
@@ -173,10 +175,10 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			let comment_remove_url = "', $context['lp_current_page_url'], 'sa=del_comment",
+			let portal_page_url = "', $context['lp_current_page_url'], '",
 				page_info_start = ', $context['page_info']['start'], ';
 		</script>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments.js"></script>';
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_comments.js"></script>';
 
 	echo '
 		<script>
@@ -187,7 +189,7 @@ function show_comment_block()
 				use_theme_settings = ', $context['user']['is_guest'] ? 'false' : 'true', ',
 				use_cookie = ', $context['user']['is_guest'] ? 'true' : 'false', ';
 		</script>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/page_comments_toggle.js"></script>';
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/toggle_comments.js"></script>';
 }
 
 /**
@@ -232,12 +234,12 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	if ($context['user']['is_logged'] && $level < 5) {
 		echo '
 				<div class="smalltext">
-					<span class="button reply_button">', $txt['reply'], '</span>';
+					<span class="button reply_button" data-id="', $comment['id'], '">', $txt['reply'], '</span>';
 
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-					<span class="button remove_button floatright">', $txt['remove'], '</span>';
+					<span class="button remove_button floatright" data-id="', $comment['id'], '">', $txt['remove'], '</span>';
 
 		echo '
 				</div>';
@@ -260,4 +262,50 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	echo '
 		</div>
 	</li>';
+}
+
+/**
+ * Related pages template
+ *
+ * Шаблон похожих страниц
+ *
+ * @return void
+ */
+function show_related_pages()
+{
+	global $context, $txt, $scripturl;
+
+	if (empty($context['lp_page']['related_pages']))
+		return;
+
+	echo '
+		<aside class="related_pages">
+			<div class="cat_bar">
+				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
+			</div>
+			<div class="roundframe">
+				<div class="article_list">';
+
+	foreach ($context['lp_page']['related_pages'] as $page) {
+		echo '
+					<div>
+						<a href="', $scripturl, '?page=', $page['alias'], '">';
+
+		if (!empty($page['image'])) {
+			echo '
+							<div class="article_image">
+								<img src="', $page['image'], '" alt="">
+							</div>';
+		}
+
+		echo '',
+							$page['title'], '
+						</a>
+					</div>';
+	}
+
+	echo '
+				</div>
+			</div>
+		</aside>';
 }

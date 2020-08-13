@@ -295,9 +295,9 @@ class FlipsterCarousel
 		$links[] = array(
 			'title' => 'jQuery.Flipster',
 			'link' => 'https://github.com/drien/jquery-flipster/',
-			'author' => '2013-2019 Adrien Delessert',
+			'author' => 'Adrien Delessert',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/drien/jquery-flipster/blob/master/LICENSE'
 			)
 		);

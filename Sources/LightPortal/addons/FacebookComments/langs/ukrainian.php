@@ -1,4 +1,3 @@
 <?php
 
-$txt['lp_facebook_comments_addon_color_scheme']     = 'Колірна схема віджета';
-$txt['lp_facebook_comments_addon_color_scheme_set'] = array('light' => 'Світла', 'dark' => 'Темна');
+$txt['lp_facebook_comments_addon_dark_themes'] = 'Відзначте теми, при виборі яких колірна схема віджета повинна бути темною';

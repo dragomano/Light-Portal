@@ -72,7 +72,7 @@ class EasyMarkdownEditor
 		if ($object['type'] == 'md') {
 			loadLanguage('Editor');
 
-			loadCssFile('https://unpkg.com/easymde/dist/easymde.min.css', array('external' => true));
+			loadCssFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
 			addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
@@ -83,7 +83,7 @@ class EasyMarkdownEditor
 		.editor-statusbar .words:before {
 			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
 		}');
-			loadJavaScriptFile('https://unpkg.com/easymde/dist/easymde.min.js', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
 			addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
@@ -223,9 +223,9 @@ class EasyMarkdownEditor
 		$links[] = array(
 			'title' => 'EasyMDE',
 			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
-			'author' => '2015 Sparksuite, Inc. | 2017 Jeroen Akkerman',
+			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
 			)
 		);

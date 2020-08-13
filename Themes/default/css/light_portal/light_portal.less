@@ -1,6 +1,15 @@
 /* Light Portal ~ less file */
 
 @color-light-gray: #ddd;
+@color-white: #fff;
+@color-black: #000;
+@article-category-color: #868686;
+@article-author-color: #ad7d52;
+@comment-smalltext-color: #bfbfbf;
+@tabs-input-color: #555;
+@tabs-input-border-color: #f49a3a;
+@tabs-label-color: #aaa;
+@tabs-label-hover-color: #888;
 
 .pointer() {
 	cursor: pointer;
@@ -103,6 +112,7 @@
 #lp_blocks {
 	.item {
 		.pointer;
+		height: 96%;
 	}
 }
 
@@ -145,6 +155,11 @@
 		}
 	}
 
+	.sticky_sidebar {
+		position: sticky;
+		top: 5px;
+	}
+
 	aside {
 		> div {
 			> h3, > h4 {
@@ -156,6 +171,18 @@
 		&[id^="block"]:not(:first-child) {
 			clear: both;
 			margin-top: 4px;
+		}
+	}
+}
+
+.related_pages {
+	margin-top: 1em;
+
+	.article_list {
+		grid-template-columns: repeat(4, 1fr);
+
+		div {
+			text-align: center;
 		}
 	}
 }
@@ -186,65 +213,18 @@ section {
 	}
 }
 
-/* The frontpage old style */
+/* The frontpage style */
 .lp_frontpage_articles {
-	.article_title_link {
-		display: inline-block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		width: 90%;
-
-		&:hover {
-			white-space: normal;
-		}
-	}
-
-	.roundframe {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		box-sizing: content-box;
-		padding: 8px 10px;
-	}
-
-	.article_image {
-		text-align: center;
-
-		img {
-			display: block;
-			height: auto;
-			max-width: 100%;
-			.border-radius;
-		}
-	}
-
-	.article_content {
-		overflow: hidden;
-		flex: 1 1 auto;
-
-		.inner {
-			height: auto;
-			min-height: auto;
-			overflow: hidden;
-			color: transparent;
-			-webkit-background-clip: text;
-			background-clip: text;
-			background-image: linear-gradient(to bottom, #000, #000, rgba(0, 0, 0, 0));
-		}
-	}
-}
-
-/* The frontpage new style */
-.lp_frontpage_articles {
-	margin-top: -10px;
-
 	.card {
 		transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
 		position: relative;
 		border-radius: 12px;
 		overflow: hidden;
 		padding: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		height: 96%;
 
 		&:hover {
 			box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
@@ -255,6 +235,7 @@ section {
 
 			.card__info-hover {
 				opacity: 1;
+				z-index: 1;
 			}
 
 			.card__img--hover {
@@ -319,13 +300,14 @@ section {
 
 			.card__category {
 				font-weight: 500;
-				color: #868686;
+				color: @article-category-color;
 			}
 
 			.card__title {
 				text-transform: uppercase;
 				margin-top: 5px;
 				margin-bottom: 10px;
+				word-break: break-word;
 
 				+ div {
 					display: flex;
@@ -342,7 +324,7 @@ section {
 			.card__author {
 				font-weight: 600;
 				text-decoration: none;
-				color: #AD7D52;
+				color: @article-author-color;
 			}
 		}
 	}
@@ -418,7 +400,7 @@ section {
 		.smalltext {
 			margin-top: 6px;
 			padding-top: 6px;
-			border-top: 1px dashed #bfbfbf;
+			border-top: 1px dashed @comment-smalltext-color;
 		}
 	}
 }
@@ -439,7 +421,8 @@ section {
 }
 
 .sceditor-container {
-	min-height: 0 !important;
+	position: relative;
+	min-height: 300px !important;
 }
 
 .priority,
@@ -493,6 +476,9 @@ section {
 }
 
 .form_settings {
+	> div {
+		margin: 10px;
+	}
 	input {
 		&[type="text"],
 		&[type="url"] {
@@ -614,14 +600,6 @@ section {
 	}
 }
 
-/* Flexbox Grid */
-.row.reverse2 {
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: reverse;
-	-ms-flex-direction: column-reverse;
-	flex-direction: column-reverse;
-}
-
 /* Tabs for settings */
 .lp_tabs {
 	padding: 0px;
@@ -632,9 +610,9 @@ section {
 		position: absolute;
 
 		&:checked+label {
-			color: #555;
-			border-top: 1px solid #f49a3a;
-			border-bottom: 1px solid #fff;
+			color: @tabs-input-color;
+			border-top: 1px solid @tabs-input-border-color;
+			border-bottom: 1px solid @color-white;
 		}
 	}
 
@@ -651,13 +629,13 @@ section {
 		padding: 15px 25px;
 		font-weight: 600;
 		text-align: center;
-		color: #aaa;
-		border: 0px solid #ddd;
+		color: @tabs-label-color;
+		border: 0px solid @color-light-gray;
 		border-width: 1px 1px 1px 1px;
 		border-radius: 3px 3px 0 0;
 
 		&:hover {
-			color: #888;
+			color: @tabs-label-hover-color;
 			cursor: pointer;
 		}
 
@@ -691,8 +669,8 @@ section {
 	section {
 		display: none;
 		padding: 15px;
-		background: #fff;
-		border: 1px solid #ddd;
+		background: @color-white;
+		border: 1px solid @color-light-gray;
 		.border-radius(0, 7px, 7px, 7px);
 
 		dl {
@@ -991,7 +969,7 @@ dl {
 	.slick-prev,
 	.slick-next {
 		&::before {
-			color: #000 !important;
+			color: @color-black !important;
 		}
 	}
 	.slick-disabled{
@@ -1004,4 +982,11 @@ dl {
 	img {
 		max-width: 100%;
 	}
+}
+
+/* ArticleList */
+.article_list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	grid-gap: 0 10px;
 }

@@ -235,7 +235,7 @@ class RecentTopics
 
 				echo $topic['icon'], ' ', $topic['link'], '
 				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>
-				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp']), '</span>
+				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
 			}
 

@@ -68,15 +68,6 @@ class ArticleList
 	private static $ids = '';
 
 	/**
-	 * The article list direction (horizontal|vertical)
-	 *
-	 * Направление списка статей (horizontal|vertical)
-	 *
-	 * @var string
-	 */
-	private static $direction = 'horizontal';
-
-	/**
 	 * Display article images (true|false)
 	 *
 	 * Отображать картинки статей (true|false)
@@ -101,7 +92,6 @@ class ArticleList
 				'article_body_class' => static::$article_body_class,
 				'article_type'       => static::$article_type,
 				'ids'                => static::$ids,
-				'direction'          => static::$direction,
 				'seek_images'        => static::$seek_images
 			)
 		);
@@ -126,7 +116,6 @@ class ArticleList
 			'article_body_class' => FILTER_SANITIZE_STRING,
 			'article_type'       => FILTER_VALIDATE_INT,
 			'ids'                => FILTER_SANITIZE_STRING,
-			'direction'          => FILTER_SANITIZE_STRING,
 			'seek_images'        => FILTER_VALIDATE_BOOLEAN
 		);
 	}
@@ -207,29 +196,6 @@ class ArticleList
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['direction']['label']['text'] = $txt['lp_article_list_addon_direction'];
-		$context['posting_fields']['direction']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'direction'
-			),
-			'options' => array()
-		);
-
-		foreach ($txt['lp_article_list_addon_direction_set'] as $direction => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			} else {
-				$context['posting_fields']['direction']['input']['options'][$title] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			}
-		}
-
 		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list_addon_seek_images'];
 		$context['posting_fields']['seek_images']['input'] = array(
 			'type' => 'checkbox',
@@ -258,15 +224,15 @@ class ArticleList
 		$request = $smcFunc['db_query']('', '
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-				LEFT JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
+				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
+				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 			WHERE t.id_topic IN ({array_int:topics})
 				AND {query_wanna_see_board}' . ($modSettings['postmod_active'] ? '
 				AND t.approved = {int:is_approved}
 				AND ml.approved = {int:is_approved}' : '') . '
 			ORDER BY t.id_last_msg DESC',
 			array(
-				'topics'      => explode(',', $parameters['ids']),
+				'topics'      => $parameters['ids'],
 				'is_approved' => 1
 			)
 		);
@@ -324,7 +290,7 @@ class ArticleList
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
-				'pages'        => explode(',', $parameters['ids'])
+				'pages'        => $parameters['ids']
 			)
 		);
 
@@ -376,26 +342,22 @@ class ArticleList
 		if ($type !== 'article_list')
 			return;
 
+		$ids = explode(',', $parameters['ids']);
+		$parameters['ids'] = array_filter($ids, function($item) {
+			return is_numeric($item);
+		});
+
 		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
 		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 
 		if (!empty($article_list)) {
-			loadJavaScriptFile('light_portal/jquery.matchHeight-min.js', array('minimize' => true));
-			addInlineJavaScript('
-			jQuery(document).ready(function ($) {
-				$(".article_list .col-xs > div").matchHeight();
-			});', true);
-
 			echo '
-		<div class="article_list row', ($parameters['direction'] == 'vertical' ? ' column_direction' : ''), ' between-xs">';
+		<div class="article_list">';
 
 			if (empty($parameters['article_type'])) {
 				foreach ($article_list as $topic) {
-					echo '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
-
 					$content = '';
 					if (!empty($topic['image'])) {
 						$content .= '
@@ -407,17 +369,11 @@ class ArticleList
 					$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-					echo '
-			</div>';
 				}
 			} else {
 				foreach ($article_list as $page) {
 					if (empty($title = Helpers::getPublicTitle($page)))
 						continue;
-
-					echo '
-			<div class="col-xs col-sm-6 col-md-4 col-lg-2">';
 
 					$content = '';
 					if (!empty($page['image'])) {
@@ -430,9 +386,6 @@ class ArticleList
 					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
-
-					echo '
-			</div>';
 				}
 			}
 

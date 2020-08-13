@@ -40,7 +40,7 @@ class FaBoardIcons
 	{
 		global $sourcedir;
 
-		if (!is_file($sourcedir . '/FA-BoardIcons.php'))
+		if (!is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php'))
 			return;
 
 		$custom_columns[] = 'b.fabi_icon, b.fabi_color';
@@ -59,12 +59,12 @@ class FaBoardIcons
 	{
 		global $sourcedir, $modSettings;
 
-		if (!is_file($sourcedir . '/FA-BoardIcons.php'))
+		if (!is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php'))
 			return;
 
 		$icon = !empty($row['fabi_icon']) && empty($modSettings['fabi_force_default_icon']) ? $row['fabi_icon'] : (!empty($modSettings['fabi_default_icon']) ? $modSettings['fabi_default_icon'] : 'fas fa-comments');
 		$color = !empty($row['fabi_color']) && empty($modSettings['fabi_force_default_color']) ? $row['fabi_color'] : (!empty($modSettings['fabi_default_color']) ? $modSettings['fabi_default_color'] : '');
 
-		$boards[$row['id_board']]['image_placeholder'] = '<i class="' . $icon . ' fa-6x"' . (!empty($color) ? ' style="color: ' . $color . '"' : '') . '></i>';
+		$boards[$row['id_board']]['name'] = '<i class="' . $icon . ' fa"' . (!empty($color) ? ' style="color: ' . $color . '"' : '') . '></i> ' . $boards[$row['id_board']]['name'];
 	}
 }

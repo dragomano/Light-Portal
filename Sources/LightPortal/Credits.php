@@ -75,7 +75,7 @@ class Credits
 		$links[] = array(
 			'title' => 'Flexbox Grid',
 			'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
-			'author' => '2013 Kristofer Joseph',
+			'author' => 'Kristofer Joseph',
 			'license' => array(
 				'name' => 'the Apache License',
 				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
@@ -92,25 +92,17 @@ class Credits
 		$links[] = array(
 			'title' => 'Sortable.js',
 			'link' => 'https://github.com/SortableJS/Sortable',
+			'author' => 'All contributors to Sortable',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
-			)
-		);
-		$links[] = array(
-			'title' => 'jquery.matchHeight.js',
-			'link' => 'https://github.com/liabru/jquery-match-height',
-			'author' => '2015 Liam Brummitt',
-			'license' => array(
-				'name' => 'the MIT License (MIT)',
-				'link' => 'https://github.com/liabru/jquery-match-height/blob/master/LICENSE'
 			)
 		);
 		$links[] = array(
 			'title' => 'Transliteration',
 			'link' => 'https://github.com/dzcpy/transliteration',
 			'license' => array(
-				'name' => 'the MIT License (MIT)',
+				'name' => 'the MIT License',
 				'link' => 'https://github.com/dzcpy/transliteration/blob/master/LICENSE.txt'
 			)
 		);
