@@ -524,14 +524,18 @@ class Settings
 			$plugin_options = [];
 			foreach ($config_vars as $id => $var) {
 				if (isset($_POST[$var[1]])) {
-					if ($var[0] == 'check' || $var[0] == 'int') {
-						$plugin_options[$var[1]] = (int) $_POST[$var[1]];
+					if ($var[0] == 'check') {
+						$plugin_options[$var[1]] = (int) filter_var($_POST[$var[1]], FILTER_VALIDATE_BOOLEAN);
+					} elseif ($var[0] == 'int') {
+						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_VALIDATE_INT);
 					} elseif ($var[0] == 'multicheck') {
 						$plugin_options[$var[1]] = [];
 						foreach ($_POST[$var[1]] as $key => $value) {
-							$plugin_options[$var[1]][(int) $key] = (int) $value;
+							$plugin_options[$var[1]][(int) $key] = (int) filter_var($value, FILTER_VALIDATE_BOOLEAN);
 						}
 						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
+					} elseif ($var[0] == 'url') {
+						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_SANITIZE_URL);
 					} else {
 						$plugin_options[$var[1]] = $_POST[$var[1]];
 					}
@@ -543,8 +547,8 @@ class Settings
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
-		$json  = file_get_contents('php://input');
-		$data  = json_decode($json, true);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
 		if (isset($data['toggle_plugin'])) {
 			$plugin_id = (int) $data['toggle_plugin'];
