@@ -276,7 +276,9 @@ class Settings
 			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
 		};
 		toggleFrontpageMode();
-		$("#lp_frontpage_mode").click(function () {toggleFrontpageMode();});', true);
+		$("#lp_frontpage_mode").on("click", function () {
+			toggleFrontpageMode()
+		});', true);
 
 		// Standalone mode toggle
 		$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
@@ -292,7 +294,9 @@ class Settings
 			$("#' . implode(', #', $standalone_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
 		};
 		toggleStandaloneMode();
-		$("#lp_standalone_mode").click(function () {toggleStandaloneMode();});', true);
+		$("#lp_standalone_mode").on("click", function () {
+			toggleStandaloneMode()
+		});', true);
 
 		// Save
 		if (isset($_GET['save'])) {

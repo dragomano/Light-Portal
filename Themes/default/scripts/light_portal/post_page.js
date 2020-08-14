@@ -1,21 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-	let form_page = document.getElementById('postpage'),
-		page_type = document.getElementById('type'),
-		page_content = document.getElementById('content');
+	const formPage = document.getElementById('postpage'),
+		pageType = document.getElementById('type'),
+		pageContent = document.getElementById('content');
 
-	form_page.addEventListener('change', function (e) {
+	formPage.addEventListener('change', function (e) {
 		if (e.target.required && e.target.value == '') {
-			page_type.disabled = true;
+			pageType.disabled = true;
 		} else {
-			page_type.disabled = false;
+			pageType.disabled = false;
 
-			let alias_field = document.getElementById('alias').value;
+			const aliasField = document.getElementById('alias').value;
 
 			// Create a page alias on page type changing
-			if (alias_field == '' && typeof (slugify) === 'function') {
-				let first_title = document.getElementById('content-tab1').querySelector('input').value;
-				document.getElementById('alias').value = slugify(first_title, {
+			if (aliasField == '' && typeof (slugify) === 'function') {
+				const firstTitle = document.getElementById('content-tab1').querySelector('input').value;
+				document.getElementById('alias').value = slugify(firstTitle, {
 					separator: '_',
 					allowedChars: 'a-zA-Z0-9_'
 				});
@@ -23,36 +23,36 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	page_type.addEventListener('change', function () {
+	pageType.addEventListener('change', function () {
 		ajax_indicator(true);
 
-		if (page_content.value == '') {
-			page_content.value = ' ';
+		if (!pageContent.value) {
+			pageContent.value = ' ';
 		}
 
-		form_page.preview.click();
+		formPage.preview.click();
 	});
 
-	form_page.addEventListener('click', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	// Goto a required form element on page posting
+	formPage.addEventListener('click', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('button')) {
-				lp_post_page.call(target, e);
+				lpPostPage.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	// Goto a required form element on page posting
-	function lp_post_page() {
-		let form_elements = form_page.elements;
+	function lpPostPage() {
+		const formElements = formPage.elements;
 
-		for (i = 0; i < form_elements.length; i++) {
-			if (form_elements[i].required && form_elements[i].value == '') {
-				let elem = form_elements[i].closest('section').id;
+		for (let i = 0; i < formElements.length; i++) {
+			if (formElements[i].required && formElements[i].value == '') {
+				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;
 				document.getElementById(elem.replace('content-', '')).checked = true;
-				document.getElementById(form_elements[i].id).focus();
+				document.getElementById(formElements[i].id).focus();
 
 				return false;
 			}

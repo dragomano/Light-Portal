@@ -175,14 +175,14 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			let portal_page_url = "', $context['lp_current_page_url'], '",
+			const portal_page_url = "', $context['lp_current_page_url'], '",
 				page_info_start = ', $context['page_info']['start'], ';
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_comments.js"></script>';
 
 	echo '
 		<script>
-			let is_currently_collapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
+			const is_currently_collapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggle_alt_expanded_title = ', JavaScriptEscape($txt['hide']), ',
 				toggle_alt_collapsed_title = ', JavaScriptEscape($txt['show']), ',
 				toggle_msg_block_title = ', JavaScriptEscape($txt['lp_comments']), ',

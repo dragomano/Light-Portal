@@ -1,30 +1,30 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-	let lp_pages = document.getElementById('manage_pages'),
-		work = smf_scripturl + '?action=admin;area=lp_pages;actions';
+	const lpPages = document.getElementById('manage_pages'),
+		workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions';
 
 	// Delete page, toggle status
-	lp_pages.addEventListener('click', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	lpPages.addEventListener('click', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.del_page')) {
-				lp_delete_page.call(target, e);
+				lpDeletePage.call(target, e);
 				break;
 			}
 			if (target.matches('.toggle_status')) {
-				lp_toggle_status.call(target, e);
+				lpToggleStatus.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function lp_delete_page() {
+	async function lpDeletePage() {
 		if (!confirm(smf_you_sure))
 			return false;
 
-		let item = this.getAttribute('data-id');
+		const item = this.getAttribute('data-id');
 
 		if (item) {
-			let response = await fetch(work, {
+			let response = await fetch(workUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
@@ -35,22 +35,22 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (response.ok) {
-				let block_line = this.closest('tr');
+				const pageRow = this.closest('tr');
 
-				block_line.style.transition = 'height 3s';
-				block_line.style.display = 'none';
+				pageRow.style.transition = 'height 3s';
+				pageRow.style.display = 'none';
 			} else {
 				console.error(response);
 			}
 		}
 	}
 
-	async function lp_toggle_status() {
-		let item = this.getAttribute('data-id'),
+	async function lpToggleStatus() {
+		const item = this.getAttribute('data-id'),
 			status = this.classList.contains("on") ? "on" : "off";
 
 		if (item) {
-			let response = await fetch(work, {
+			let response = await fetch(workUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
@@ -76,26 +76,25 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	// Toggle a spinner for "plus" icon
-	lp_pages.addEventListener('mouseover', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	lpPages.addEventListener('mouseover', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.fa-plus')) {
-				lp_toggle_spinner.call(target, e);
+				lpToggleSpinner.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	lp_pages.addEventListener('mouseout', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	lpPages.addEventListener('mouseout', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.fa-plus')) {
-				lp_toggle_spinner.call(target, e);
+				lpToggleSpinner.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	function lp_toggle_spinner()
-	{
+	function lpToggleSpinner() {
 		this.classList.toggle('fa-spin');
 	}
 
