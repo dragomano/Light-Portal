@@ -857,7 +857,7 @@ class ManagePages
 		}
 
 		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_page_content'];
+			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(

@@ -1,71 +1,71 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-	let page_comments = document.getElementById('page_comments'),
-		comment_form = document.getElementById('comment_form'),
+	const pageComments = document.getElementById('page_comments'),
+		commentForm = document.getElementById('comment_form'),
 		message = document.getElementById('message');
 
 	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
 		this.style.height = 'auto';
-		comment_form.comment.style.display = 'block';
+		commentForm.comment.style.display = 'block';
 	}, false);
 
 	// Disabled/enabled a submit button on textarea changing
 	message.addEventListener('keyup', function () {
-		if (this.value != '') {
-			comment_form.comment.disabled = false;
+		if (this.value) {
+			commentForm.comment.disabled = false;
 		} else {
-			comment_form.comment.disabled = true;
+			commentForm.comment.disabled = true;
 		}
 	}, false);
 
 	// Post/remove comments & paste nickname to comment reply form
-	page_comments.addEventListener('click', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	pageComments.addEventListener('click', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('span.reply_button')) {
-				lp_leave_reply.call(target, e);
+				lpLeaveReply.call(target, e);
 				break;
 			}
 			if (target.matches('span.remove_button')) {
-				lp_remove_comment.call(target, e);
+				lpRemoveComment.call(target, e);
 				break;
 			}
 			if (target.matches('.title > span')) {
-				lp_paste_nickname.call(target, e);
+				lpPasteNickname.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	function lp_leave_reply() {
-		let parent_id = this.getAttribute('data-id'),
-			parent_li = document.getElementById('comment' + parent_id),
-			counter = parent_li.getAttribute('data-counter'),
-			level = parent_li.getAttribute('data-level'),
-			start = parent_li.getAttribute('data-start'),
-			commentator = parent_li.getAttribute('data-commentator');
+	function lpLeaveReply() {
+		const parentId = this.getAttribute('data-id'),
+			parentLiItem = document.getElementById('comment' + parentId),
+			counter = parentLiItem.getAttribute('data-counter'),
+			level = parentLiItem.getAttribute('data-level'),
+			start = parentLiItem.getAttribute('data-start'),
+			commentator = parentLiItem.getAttribute('data-commentator');
 
-		comment_form.parent_id.value = parent_id;
-		comment_form.counter.value = counter;
-		comment_form.level.value = level;
-		comment_form.start.value = start;
-		comment_form.commentator.value = commentator;
+		commentForm.parent_id.value = parentId;
+		commentForm.counter.value = counter;
+		commentForm.level.value = level;
+		commentForm.start.value = start;
+		commentForm.commentator.value = commentator;
 
 		message.focus();
 	}
 
-	async function lp_remove_comment() {
+	async function lpRemoveComment() {
 		if (!confirm(smf_you_sure))
 			return false;
 
-		let item = this.getAttribute('data-id');
+		const item = this.getAttribute('data-id');
 
 		if (item) {
-			let items = [item],
-				comment_tree = document.querySelectorAll('li[data-id="' + item + '"] li'),
-				removed_item = this.closest('li');
+			const items = [item],
+				commentTree = document.querySelectorAll('li[data-id="' + item + '"] li'),
+				removedItem = this.closest('li');
 
-			comment_tree.forEach(function (el) {
+			commentTree.forEach(function (el) {
 				items.push(el.getAttribute('data-id'));
 			});
 
@@ -80,34 +80,34 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (response.ok) {
-				removed_item.style.transition = 'height 3s';
-				removed_item.style.display = 'none';
+				removedItem.style.transition = 'height 3s';
+				removedItem.style.display = 'none';
 			} else {
 				console.error(response);
 			}
 		}
 	}
 
-	function lp_paste_nickname() {
-		let commentTextarea = message.value,
+	function lpPasteNickname() {
+		const commentTextarea = message.value,
 			position = message.selectionStart,
-			nickname = this.innerText + ", ";
+			nickname = this.innerText + ', ';
 
 		message.value = commentTextarea.substring(0, position) + nickname + commentTextarea.substring(position);
 		this.parentNode.nextElementSibling.nextElementSibling.children[0].click();
 	}
 
 	// Post a comment on form submitting
-	page_comments.addEventListener('submit', function (e) {
-		for (var target = e.target; target && target != this; target = target.parentNode) {
+	pageComments.addEventListener('submit', function (e) {
+		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('[id="comment_form"]')) {
-				lp_submit_form.call(target, e);
+				lpSubmitForm.call(target, e);
 				break;
 			}
 		}
 	}, false);
 
-	async function lp_submit_form(e) {
+	async function lpSubmitForm(e) {
 		e.preventDefault();
 
 		let response = await fetch(portal_page_url + 'sa=new_comment', {
@@ -120,37 +120,37 @@ document.addEventListener('DOMContentLoaded', function () {
 				comment = data.comment;
 
 			if (data.parent != 0) {
-				let li_elem = document.querySelector('li[data-id="' + data.parent + '"]'),
-					comment_list = li_elem.querySelector('ul.comment_list'),
-					comment_wrap = li_elem.querySelector('.comment_wrapper');
+				const liElem = document.querySelector('li[data-id="' + data.parent + '"]'),
+					commentList = liElem.querySelector('ul.comment_list'),
+					commentWrap = liElem.querySelector('.comment_wrapper');
 
-				if (comment_list) {
-					comment_list.insertAdjacentHTML('beforeend', comment);
-					comment_list.style.transition = 'height 3s';
+				if (commentList) {
+					commentList.insertAdjacentHTML('beforeend', comment);
+					commentList.style.transition = 'height 3s';
 				} else {
-					comment_wrap.insertAdjacentHTML('beforeend', '<ul class="comment_list row"></ul>');
-					comment_wrap.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
-					comment_wrap.querySelector('ul.comment_list').style.transition = 'height 3s';
+					commentWrap.insertAdjacentHTML('beforeend', '<ul class="comment_list row"></ul>');
+					commentWrap.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
+					commentWrap.querySelector('ul.comment_list').style.transition = 'height 3s';
 				}
 			} else {
-				let all_comments = page_comments.querySelector('ul.comment_list')
+				const allComments = pageComments.querySelector('ul.comment_list')
 
-				if (all_comments) {
-					all_comments.insertAdjacentHTML('beforeend', comment);
-					all_comments.style.transition = 'height 3s';
+				if (allComments) {
+					allComments.insertAdjacentHTML('beforeend', comment);
+					allComments.style.transition = 'height 3s';
 				} else {
-					page_comments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>');
-					page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
-					page_comments.querySelector('ul.comment_list').style.transition = 'height 3s';
+					pageComments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>');
+					pageComments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
+					pageComments.querySelector('ul.comment_list').style.transition = 'height 3s';
 				}
 			}
 
 			message.style.height = '30px';
 
-			comment_form.reset();
-			comment_form.comment.style.display = 'none';
-			comment_form.parent_id.value = 0;
-			comment_form.start.value = page_info_start;
+			commentForm.reset();
+			commentForm.comment.style.display = 'none';
+			commentForm.parent_id.value = 0;
+			commentForm.start.value = page_info_start;
 
 			window.location.hash = '#comment' + data.item;
 		} else {
