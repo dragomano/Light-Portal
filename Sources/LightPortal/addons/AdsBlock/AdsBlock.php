@@ -240,7 +240,7 @@ class AdsBlock
 			$after_every_last_post = ob_get_clean();
 
 			addInlineJavaScript('
-		let all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
+		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
 		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
 		}
 

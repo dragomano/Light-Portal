@@ -65,12 +65,10 @@ function ads_block_form()
 		<input type="hidden" name="placement" value="ads">
 	</form>
 	<script>
-		let add_button = document.querySelector(\'h3 a[href$="placement=ads"]\');
-		if (add_button) {
-			add_button.removeAttribute("href");
-			add_button.addEventListener("click", () => {
-				document.forms.ads_block_add_form.submit();
-			});
+		const addButton = document.querySelector(\'h3 a[href$="placement=ads"]\');
+		if (addButton) {
+			addButton.removeAttribute("href");
+			addButton.addEventListener("click", () => document.forms.ads_block_add_form.submit());
 		}
 	</script>';
 }

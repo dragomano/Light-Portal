@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const lpBlocks = document.getElementById('lp_blocks');
 

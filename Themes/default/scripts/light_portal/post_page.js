@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const formPage = document.getElementById('postpage'),
 		pageType = document.getElementById('type'),

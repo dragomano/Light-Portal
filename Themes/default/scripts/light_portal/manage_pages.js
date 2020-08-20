@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const lpPages = document.getElementById('manage_pages'),
 		workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions';

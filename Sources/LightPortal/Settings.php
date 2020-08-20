@@ -373,7 +373,9 @@ class Settings
 			}
 		};
 		toggleShowCommentBlock();
-		$("#lp_show_comment_block").click(function () {toggleShowCommentBlock();});', true);
+		$("#lp_show_comment_block").on("click", function () {
+			toggleShowCommentBlock()
+		});', true);
 
 		// Save
 		if (isset($_GET['save'])) {

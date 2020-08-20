@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const pageComments = document.getElementById('page_comments'),
 		commentForm = document.getElementById('comment_form'),
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				items.push(el.getAttribute('data-id'));
 			});
 
-			let response = await fetch(portal_page_url + 'sa=del_comment', {
+			let response = await fetch(PAGE_URL + 'sa=del_comment', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	async function lpSubmitForm(e) {
 		e.preventDefault();
 
-		let response = await fetch(portal_page_url + 'sa=new_comment', {
+		let response = await fetch(PAGE_URL + 'sa=new_comment', {
 			method: 'POST',
 			body: new FormData(this)
 		});
@@ -150,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			commentForm.reset();
 			commentForm.comment.style.display = 'none';
 			commentForm.parent_id.value = 0;
-			commentForm.start.value = page_info_start;
+			commentForm.start.value = PAGE_START;
 
 			window.location.hash = '#comment' + data.item;
 		} else {

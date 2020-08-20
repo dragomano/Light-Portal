@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const defaultBlocks = document.querySelectorAll('.lp_default_blocks tbody'),
 		additionalBlocks = document.querySelectorAll('.lp_additional_blocks tbody'),
@@ -11,13 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			placement = '';
 
 		for (let i = 0; i < items2.length; i++) {
-			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').getAttribute('data-key')) : undefined,
-				place = items[i] && items[i].parentNode ? items[i].parentNode.getAttribute('data-placement') : undefined,
-				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.getAttribute('data-placement') : undefined;
+			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').getAttribute('data-key')) : null,
+				place = items[i] && items[i].parentNode ? items[i].parentNode.getAttribute('data-placement') : null,
+				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.getAttribute('data-placement') : null;
 
 			if (place !== place2)
 				placement = place2;
-			if (typeof key !== 'undefined')
+			if (key !== null)
 				priority.push(key);
 		}
 
