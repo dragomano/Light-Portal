@@ -704,11 +704,11 @@ class ManagePages
 	 */
 	private static function findErrors(array $data)
 	{
-		global $context, $txt;
+		global $modSettings, $context, $txt;
 
 		$post_errors = [];
 
-		if (empty($data['title_english']) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -744,9 +744,11 @@ class ManagePages
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt, $language, $modSettings;
+		global $context, $txt, $modSettings, $language;
 
 		checkSubmitOnce('register');
+
+		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
@@ -756,7 +758,7 @@ class ManagePages
 					'id'        => 'title_' . $lang['filename'],
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], array('english', $language)),
+					'required'  => in_array($lang['filename'], $languages),
 					'style'     => 'width: 100%'
 				),
 				'tab' => 'content'
