@@ -12,9 +12,9 @@
 * Use bug report or feature request templates.
 
 ## How to submit a pull request
-* If you want to send a bug fix, use "Fix" word in the title of your PR (i.e. "Fix page permissions").
-* If you want to send a new feature or a new translation, use "Add" word in the title of your PR (i.e "Add new frontpage template", "Add Chinese translation").
-In any case, the title of each of your commits should continue such a phrase — "If applied, this commit will  ..." ("Update Polish", etc.)
+* If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. "Fix page permissions").
+* If you want to send a new feature or a new translation, use `Add` word in the title of your PR (i.e `Add new frontpage template`, `Add Chinese translation`).
+In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update Polish`, etc.)
 
 ## Styleguides with examples
 
@@ -70,13 +70,17 @@ $test = isset($variable) ? $variable : 'default_value';
 * You can use CSS or LESS
 
 ```css
-section {
-	#display_head {
-		margin-top: .1em;
-		margin-bottom: 0;
+#comment_form {
+	textarea {
+		width: 100%;
+		height: 30px;
+	}
 
-		span {
-			margin: 0;
+	button {
+		&[name="comment"] {
+			margin-top: 10px;
+			float: right;
+			display: none;
 		}
 	}
 }
