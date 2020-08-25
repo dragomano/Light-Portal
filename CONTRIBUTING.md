@@ -69,20 +69,20 @@ $test = isset($variable) ? $variable : 'default_value';
 ### CSS Styleguide
 * You can use CSS or LESS
 
-```css
+```less
 #comment_form {
-	textarea {
-		width: 100%;
-		height: 30px;
-	}
+    textarea {
+        width: 100%;
+        height: 30px;
+    }
 
-	button {
-		&[name="comment"] {
-			margin-top: 10px;
-			float: right;
-			display: none;
-		}
-	}
+    button {
+        &[name="comment"] {
+            margin-top: 10px;
+            float: right;
+            display: none;
+        }
+    }
 }
 ```
 
