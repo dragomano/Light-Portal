@@ -363,11 +363,11 @@ class ManagePages
 			))
 		);
 
-		list ($num_entries) = $smcFunc['db_fetch_row']($request);
+		[$num_entries] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return $num_entries;
+		return (int) $num_entries;
 	}
 
 	/**
@@ -1244,8 +1244,7 @@ class ManagePages
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
-
-		list ($value) = $smcFunc['db_fetch_row']($request);
+		[$value] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
@@ -1275,7 +1274,7 @@ class ManagePages
 			)
 		);
 
-		list ($count) = $smcFunc['db_fetch_row']($request);
+		[$count] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 

@@ -891,11 +891,11 @@ class ManageBlocks
 			)
 		);
 
-		list ($priority) = $smcFunc['db_fetch_row']($request);
+		[$priority] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return $priority;
+		return (int) $priority;
 	}
 
 	/**

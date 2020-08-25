@@ -186,7 +186,7 @@ class Settings
 
 		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
-		$context['permissions_excluded']['light_portal_approve_pages'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
