@@ -4,9 +4,9 @@
 * Test your code.
 * Send a pull request to us.
 
-### Recommended applications
-* [Visual Studio Code](https://code.visualstudio.com)
-* [GitKraken](https://www.gitkraken.com), or [Git Extensions](https://github.com/gitextensions/gitextensions/releases) (Windows), or [GitHub Desktop](https://desktop.github.com) (macOS, Windows)
+### Recommended soft
+* [Visual Studio Code](https://code.visualstudio.com) (all OS)
+* [SmartGit](https://www.syntevo.com/smartgit/download/) (all OS), or [Git Extensions](https://github.com/gitextensions/gitextensions/releases) (Windows), or [GitHub Desktop](https://desktop.github.com) (macOS, Windows)
 
 ## How to submit an issue
 * Use bug report or feature request templates.
@@ -45,15 +45,7 @@ $test = isset($variable) ? $variable : 'default_value';
 ```
 
 ### HTML Styleguide
-* Use HTML5
-
-```html
-<ul class="your_class">
-  <li>1</li>
-  <li>2</li>
-  <li>3</li>
-</ul>
-```
+* Use [HTML5](https://www.w3schools.com/html/html5_syntax.asp)
 
 ### CSS Styleguide
 * You can use CSS or LESS
