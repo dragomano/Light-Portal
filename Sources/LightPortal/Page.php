@@ -49,6 +49,9 @@ class Page
 		if (empty($context['lp_page']['can_view']))
 			fatal_lang_error('cannot_light_portal_view_page', false);
 
+		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit']))
+			fatal_lang_error('lp_page_not_activated', false);
+
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
 

@@ -248,6 +248,9 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} napisał odpowiedź 
 
 // Errors
 $txt['lp_page_not_found']             = 'Nie znaleziono strony!';
+$txt['lp_page_not_activated']         = 'The requested page is disabled!';
+$txt['lp_page_not_editable']          = 'Nie posiadasz uprawnień do edytowania tej strony!';
+$txt['lp_page_visible_but_disabled']  = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found']            = 'Nie znaleziono bloku!';
 $txt['lp_post_error_no_title']        = 'Pole <strong>Tytuł</strong> nie zostało wypełnione.';
 $txt['lp_post_error_no_alias']        = 'Pole <strong>Alias</strong> nie zostało wypełnione.';
@@ -256,7 +259,6 @@ $txt['lp_post_error_no_unique_alias'] = 'Alias jest używany już przez inną st
 $txt['lp_post_error_no_content']      = 'Nie wpisano zawartości!';
 $txt['lp_post_error_no_areas']        = 'Pole <strong>Akcje</strong> nie zostało wypełnione.';
 $txt['lp_post_error_no_valid_areas']  = 'W polu <strong>Akcje</strong> podano niewłaściwą akcję!';
-$txt['lp_page_not_editable']          = 'Nie posiadasz uprawnień do edytowania tej strony!';
 $txt['lp_addon_not_installed']        = 'Wtyczka %1$s nie jest zainstalowana';
 $txt['lp_wrong_import_file']          = 'Nie można importować tego pliku...';
 $txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania...';
@@ -264,7 +266,7 @@ $txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania.
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';
 $txt['lp_who_viewing_index']           = 'Przegląda <a href="%1$s">stronę główną portalu</a> lub <a href="%2$s">stronę główną forum</a>.';
-$txt['lp_who_viewing_page']     	   = 'Przegląda <a href="%1$s">stronę na portalu</a>.';
+$txt['lp_who_viewing_page']            = 'Przegląda <a href="%1$s">stronę na portalu</a>.';
 $txt['lp_who_viewing_tags']            = 'Przegląda <a href="%1$s">tagi stron portalu</a>.';
 $txt['lp_who_viewing_the_tag']         = 'Przegląda listę stron z tagiem <a href="%1$s" class="bbc_link">%2$s</a>.';
 $txt['lp_who_viewing_portal_settings'] = 'Przegląda lub zmienia <a href="%1$s">ustawienia portalu</a>.';

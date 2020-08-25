@@ -248,6 +248,9 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} відповів (а
 
 // Errors
 $txt['lp_page_not_found']             = 'Сторінку не знайдено!';
+$txt['lp_page_not_activated']         = 'Запитувана сторінка відключена!';
+$txt['lp_page_not_editable']          = 'Вам заборонено редагування цієї сторінки!';
+$txt['lp_page_visible_but_disabled']  = 'Сторінка видно вам, але не активована!';
 $txt['lp_block_not_found']            = 'Блок не знайдений!';
 $txt['lp_post_error_no_title']        = 'Не вказаний заголовок!';
 $txt['lp_post_error_no_alias']        = 'Не вказаний аліас!';
@@ -256,7 +259,6 @@ $txt['lp_post_error_no_unique_alias'] = 'Сторінка з таким аліа
 $txt['lp_post_error_no_content']      = 'Не вказано зміст!';
 $txt['lp_post_error_no_areas']        = 'Не вказана область разташування!';
 $txt['lp_post_error_no_valid_areas']  = 'Область розміщення задана неправильно!';
-$txt['lp_page_not_editable']          = 'Вам заборонено редагування цієї сторінки!';
 $txt['lp_addon_not_installed']        = 'Плагін %1$s не встановлений';
 $txt['lp_wrong_import_file']          = 'Неправильний файл для імпорту...';
 $txt['lp_import_failed']              = 'Не вдалося здійснити імпорт...';
