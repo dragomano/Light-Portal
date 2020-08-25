@@ -118,4 +118,5 @@ console.log('Sorted array: ', arr.bubbleSort())
 // Sorted array:  (7) [1, 2, 3, 4, 5, 6, 7]
 ```
 
+### Do. Or do not. There is no try
 Anyway, you can use [SMF Coding Guidelines](https://wiki.simplemachines.org/smf/Coding_Guidelines) and that will be enough.
