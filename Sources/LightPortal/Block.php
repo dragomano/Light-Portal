@@ -89,7 +89,7 @@ class Block
 	{
 		global $context, $modSettings;
 
-		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
+		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : (empty($context['current_board']) ? 'forum' : ''));
 
 		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
 			if (!empty($_SERVER['REQUEST_URL']) && $modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
