@@ -20,17 +20,36 @@ In any case, the title of each of your commits should continue such a phrase —
 
 ### PHP Styleguide
 * Use PHP 7.2+
+* Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
 
 ```php
-function getValue($variable)
+/**
+ * Get array with bubble sorting
+ *
+ * @param array $array
+ * @return array
+ */
+function getBubbleSortedArray($array)
 {
-  if (!empty($variable)) {
-    return $variable;
-  }
-  
-  return false;
+    $count = count($array);
+    for ($j = 0; $j < $count - 1; $j++) {
+        for ($i = 0; $i < $count - $j - 1; $i++) {
+            if ($array[$i] > $array[$i + 1]){
+                $tmp_var = $array[$i + 1];
+                $array[$i + 1] = $array[$i];
+                $array[$i] = $tmp_var;
+            }
+        }
+    }
+
+    return $array;
 }
 
+$array = [5, 3, 2, 6, 1, 4, 7];
+$result = getBubbleSortedArray($array);
+var_dump($result);
+```
+```php
 // Use this
 $test = $variable ?: 'default_value';
 
@@ -51,8 +70,15 @@ $test = isset($variable) ? $variable : 'default_value';
 * You can use CSS or LESS
 
 ```css
-.classname {
-  // rule
+section {
+	#display_head {
+		margin-top: .1em;
+		margin-bottom: 0;
+
+		span {
+			margin: 0;
+		}
+	}
 }
 ```
 
@@ -62,13 +88,34 @@ $test = isset($variable) ? $variable : 'default_value';
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
 ```js
-function testFunc(n) {
-  for (let i = 0; i < n; i++) {
-    console.log(`${i} < ${n}`, i);
-  }
+"use strict";
+
+Array.prototype.bubbleSort = function() {
+    let swapped;
+
+    do {
+        swapped = false;
+
+        this.forEach((item, index) => {
+            if (item > this[index + 1]) {
+                let temp = item;
+
+                this[index] = this[index + 1];
+                this[index + 1] = temp;
+                swapped = true;
+            }
+        })
+    } while (swapped);
+
+    return this;
 }
 
-let x = testFunc(10);
+const arr = [5, 3, 2, 6, 1, 4, 7];
+console.log('Source array: ', arr);
+// Source array:  (7) [5, 3, 2, 6, 1, 4, 7]
+
+console.log('Sorted array: ', arr.bubbleSort())
+// Sorted array:  (7) [1, 2, 3, 4, 5, 6, 7]
 ```
 
 Anyway, you can use [SMF Coding Guidelines](https://wiki.simplemachines.org/smf/Coding_Guidelines) and that will be enough.
