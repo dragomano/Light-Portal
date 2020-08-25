@@ -13,8 +13,8 @@
 
 ## How to submit a pull request
 * If you want to send a bug fix, use "Fix" word in the title of your PR (i.e. "Fix page permissions").
-* If you want to send a new feature or a new translation, use "Add" word in the title of your PR (i.e "Add new frontpage template").
-In any case, the title of each of your commits should continue such a phrase — "If applied, this commit will  ..."
+* If you want to send a new feature or a new translation, use "Add" word in the title of your PR (i.e "Add new frontpage template", "Add Chinese translation").
+In any case, the title of each of your commits should continue such a phrase — "If applied, this commit will  ..." ("Update Polish", etc.)
 
 ## Styleguides with examples
 
