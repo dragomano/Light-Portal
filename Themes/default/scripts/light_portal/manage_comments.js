@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Disabled/enabled a submit button on textarea changing
 	message.addEventListener('keyup', function () {
 		if (this.value) {
-			commentForm.comment.disabled = false;
+			commentForm.comment.disabled = false
 		} else {
-			commentForm.comment.disabled = true;
+			commentForm.comment.disabled = true
 		}
 	}, false);
 
@@ -24,15 +24,17 @@ document.addEventListener('DOMContentLoaded', function () {
 	pageComments.addEventListener('click', function (e) {
 		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('span.reply_button')) {
-				lpLeaveReply.call(target, e);
+				lpLeaveReply.call(target);
 				break;
 			}
+
 			if (target.matches('span.remove_button')) {
-				lpRemoveComment.call(target, e);
+				lpRemoveComment.call(target);
 				break;
 			}
+
 			if (target.matches('.title > span')) {
-				lpPasteNickname.call(target, e);
+				lpPasteNickname.call(target);
 				break;
 			}
 		}
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				removedItem = this.closest('li');
 
 			commentTree.forEach(function (el) {
-				items.push(el.getAttribute('data-id'));
+				items.push(el.getAttribute('data-id'))
 			});
 
 			let response = await fetch(PAGE_URL + 'sa=del_comment', {
@@ -81,10 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (response.ok) {
-				removedItem.style.transition = 'height 3s';
-				removedItem.style.display = 'none';
+				removedItem.remove()
 			} else {
-				console.error(response);
+				console.error(response)
 			}
 		}
 	}

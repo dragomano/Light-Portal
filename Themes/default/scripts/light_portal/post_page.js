@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	formPage.addEventListener('change', function (e) {
 		if (e.target.required && e.target.value == '') {
-			pageType.disabled = true;
+			pageType.disabled = true
 		} else {
 			pageType.disabled = false;
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		ajax_indicator(true);
 
 		if (!pageContent.value) {
-			pageContent.value = ' ';
+			pageContent.value = ' '
 		}
 
 		formPage.preview.click();
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	formPage.addEventListener('click', function (e) {
 		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('button')) {
-				lpPostPage.call(target, e);
+				lpPostPage.call(target);
 				break;
 			}
 		}
