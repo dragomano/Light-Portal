@@ -76,7 +76,7 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => 'v1.0',
+			'LP_VERSION'      => '1.0',
 			'LP_RELEASE_DATE' => '2020-08-08',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',

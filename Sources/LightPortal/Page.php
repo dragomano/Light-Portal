@@ -43,14 +43,20 @@ class Page
 			$context['lp_page'] = self::getDataByAlias($alias);
 		}
 
-		if (empty($context['lp_page']))
+		if (empty($context['lp_page'])) {
+			self::changeBackButton();
 			fatal_lang_error('lp_page_not_found', false, null, 404);
+		}
 
-		if (empty($context['lp_page']['can_view']))
+		if (empty($context['lp_page']['can_view'])) {
+			self::changeBackButton();
 			fatal_lang_error('cannot_light_portal_view_page', false);
+		}
 
-		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit']))
+		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit'])) {
+			self::changeBackButton();
 			fatal_lang_error('lp_page_not_activated', false);
+		}
 
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
@@ -80,6 +86,29 @@ class Page
 		self::prepareRelatedPages();
 		self::prepareComments();
 		self::updateNumViews();
+	}
+
+	/**
+	 * Change back button text and back button href
+	 *
+	 * Меняем текст и href кнопки «Назад»
+	 *
+	 * @return void
+	 */
+	private static function changeBackButton()
+	{
+		global $modSettings, $txt;
+
+		addInlineJavaScript('
+		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
+		if (!document.referrer) {
+			backButton.setAttribute("href", smf_scripturl);
+			backButton.text = "' . (!empty($modSettings['lp_frontpage_mode']) ? $txt['lp_portal'] : $txt['lp_forum']) . '";
+			if (document.location.href == smf_scripturl && backButton.text == "' . $txt['lp_portal'] . '") {
+				backButton.setAttribute("href", smf_scripturl + "?action=forum");
+				backButton.text = "' . $txt['lp_forum'] . '";
+			}
+		}', true);
 	}
 
 	/**

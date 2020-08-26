@@ -751,7 +751,7 @@ class Settings
 		$data = json_decode($data);
 
 		if (LP_RELEASE_DATE < $data->published_at)
-			return $data->tag_name;
+			return str_replace('v', '', $data->tag_name);
 
 		return LP_VERSION;
 	}
