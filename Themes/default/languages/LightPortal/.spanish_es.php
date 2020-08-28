@@ -191,7 +191,7 @@ $txt['lp_extra_pages'] = 'Páginas del portal';
 $txt['lp_search_pages'] = 'Alias o título';
 $txt['lp_page_types'] = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias'] = 'Alias';
-$txt['lp_page_alias_subtext'] = 'El nombre de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
+$txt['lp_page_alias_subtext'] = 'El alias de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
 $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';

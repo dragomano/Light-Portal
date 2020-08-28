@@ -191,7 +191,7 @@ $txt['lp_extra_pages']                  = 'Portal pages';
 $txt['lp_search_pages']                 = 'Alias or title';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
-$txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
+$txt['lp_page_alias_subtext']           = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
