@@ -568,4 +568,39 @@ class Subs
 			}
 		}
 	}
+
+	/**
+	 * Fix canonical url for forum action
+	 *
+	 * Исправляем канонический адрес для области forum
+	 *
+	 * @return void
+	 */
+	public static function fixCanonicalUrl()
+	{
+		global $context, $scripturl;
+
+		if ($context['current_action'] == 'forum')
+			$context['canonical_url'] = $scripturl . '?action=forum';
+	}
+
+	/**
+	 * Change the link tree
+	 *
+	 * Меняем дерево ссылок
+	 *
+	 * @return void
+	 */
+	public static function fixLinktree()
+	{
+		global $context, $scripturl;
+
+		if (empty($context['current_board']) || empty($context['linktree'][1]))
+			return;
+
+		$old_url = explode('#', $context['linktree'][1]['url']);
+
+		if (!empty($old_url[1]))
+			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
+	}
 }
