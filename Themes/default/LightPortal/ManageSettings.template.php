@@ -140,7 +140,8 @@ echo '
 							<div class="col-xs">
 								<div class="descbox alternative">
 									<strong><i class="far fa-newspaper fa-2x"></i></i></strong>
-									<br>col-xs (auto)
+									<div>', $txt['lp_content'], '</div>
+									col-xs (auto)
 								</div>
 							</div>
 						</div>

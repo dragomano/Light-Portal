@@ -6,11 +6,9 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC2+ / PHP 7.2+
-* **Tested on:** PHP 7.4.9 / MySQL 5.7.25 / MariaDB 10.4.13 / PostgreSQL 9.6.18
+* **Tested on:** PHP 7.3.22, 7.4.10 / MySQL 5.7.25 / MariaDB 5.5.67, 10.4.13 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
-* **Languages:** English, Polish, Russian, Spanish, Ukrainian
-
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U41XD2G)
+* **Languages:** Spanish, Ukrainian, Polish, English, Russian
 
 ## Description
 This modification will transform your forum into a portal that includes:
@@ -62,4 +60,4 @@ Light Portal is completely free to use. It is distributed in the hope that it wi
 It was made for your convenient, and if you like the project, support the developer.
 
 ### About plugins
-Some custom addons for the portal may have their own licenses.
+Some custom addons may have their own licenses.
