@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -186,7 +186,7 @@ class Settings
 
 		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
-		$context['permissions_excluded']['light_portal_approve_pages'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
@@ -373,7 +373,9 @@ class Settings
 			}
 		};
 		toggleShowCommentBlock();
-		$("#lp_show_comment_block").click(function () {toggleShowCommentBlock();});', true);
+		$("#lp_show_comment_block").on("click", function () {
+			toggleShowCommentBlock()
+		});', true);
 
 		// Save
 		if (isset($_GET['save'])) {
@@ -749,7 +751,7 @@ class Settings
 		$data = json_decode($data);
 
 		if (LP_RELEASE_DATE < $data->published_at)
-			return $data->tag_name;
+			return str_replace('v', '', $data->tag_name);
 
 		return LP_VERSION;
 	}

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -95,6 +95,9 @@ class Block
 			if (!empty($_SERVER['REQUEST_URL']) && $modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL'])
 				$area = 'portal';
 		}
+
+		if (!empty($context['current_board']))
+			$area = '';
 
 		return array_filter($context['lp_active_blocks'], function($block) use ($area) {
 			global $context;

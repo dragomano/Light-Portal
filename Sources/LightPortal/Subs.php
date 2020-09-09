@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -144,11 +144,11 @@ class Subs
 			)
 		);
 
-		list ($num_pages) = $smcFunc['db_fetch_row']($request);
+		[$num_pages] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return $num_pages;
+		return (int) $num_pages;
 	}
 
 	/**
@@ -567,5 +567,40 @@ class Subs
 				);
 			}
 		}
+	}
+
+	/**
+	 * Fix canonical url for forum action
+	 *
+	 * Исправляем канонический адрес для области forum
+	 *
+	 * @return void
+	 */
+	public static function fixCanonicalUrl()
+	{
+		global $context, $scripturl;
+
+		if ($context['current_action'] == 'forum')
+			$context['canonical_url'] = $scripturl . '?action=forum';
+	}
+
+	/**
+	 * Change the link tree
+	 *
+	 * Меняем дерево ссылок
+	 *
+	 * @return void
+	 */
+	public static function fixLinktree()
+	{
+		global $context, $scripturl;
+
+		if (empty($context['current_board']) || empty($context['linktree'][1]))
+			return;
+
+		$old_url = explode('#', $context['linktree'][1]['url']);
+
+		if (!empty($old_url[1]))
+			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
 	}
 }

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -86,7 +86,7 @@ class Helpers
 			'Wide'
 		];
 
-		// Add possibility to change the list of FontAwesome themes by manual | Возможность изменить список поддерживающих FontAwesome тем вручную
+		// Add ability to manually change the list of themes that support FontAwesome | Возможность вручную изменить список тем, поддерживающих FontAwesome
 		Subs::runAddons('fontAwesomeThemes', array(&$supported_themes));
 
 		return in_array(explode('_', $settings['name'])[0], $supported_themes);
@@ -121,9 +121,9 @@ class Helpers
 	}
 
 	/**
-	 * The correct declination of words
+	 * Get the word in the correct declension, depending on the number $num and the array|string $str with declension forms
 	 *
-	 * Правильное склонение слов
+	 * Получаем слово в правильном склонении, в зависимости от числа $num и массива|строки $str с формами склонения
 	 *
 	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
 	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
@@ -345,10 +345,7 @@ class Helpers
 			$$key = null;
 
 			if (method_exists($class, $funcName)) {
-				if ($class == 'self')
-					$$key = self::$funcName(...$vars);
-				else
-					$$key = $class::$funcName(...$vars);
+				$$key = $class == 'self' ? self::$funcName(...$vars) : $class::$funcName(...$vars);
 			} elseif (function_exists($funcName)) {
 				$$key = $funcName(...$vars);
 			}

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const lpPlugins = document.getElementById('admin_content');
 
@@ -28,11 +29,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 
 		if (response.ok) {
-			const infobox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[0];
+			const infobox = document.getElementById(this.id).parentElement.nextElementSibling.children[0];
 			infobox.style.display = 'block';
 			lpFadeOut(infobox);
 		} else {
-			const errorbox = document.getElementById(e.target.id).parentElement.nextElementSibling.children[1];
+			const errorbox = document.getElementById(this.id).parentElement.nextElementSibling.children[1];
 			errorbox.style.display = 'block';
 			lpFadeOut(errorbox);
 			console.error(response);
@@ -73,10 +74,12 @@ document.addEventListener('DOMContentLoaded', function () {
 				lpTogglePlugin.call(target, e);
 				break;
 			}
+
 			if (target.matches('.lp_plugin_settings')) {
 				lpShowSettings.call(target, e);
 				break;
 			}
+
 			if (target.matches('.close_settings')) {
 				lpCloseSettings.call(target, e);
 				break;
@@ -99,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 
 		if (!response.ok) {
-			console.error(response);
+			console.error(response)
 		}
 
 		if (this.getAttribute('data-toggle') == 'on') {
@@ -117,14 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		const el = document.getElementById(this.getAttribute('data-id') + '_settings');
 
 		if (el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none') {
-			el.style.display = 'block';
+			el.style.display = 'block'
 		} else {
-			el.style.display = 'none';
+			el.style.display = 'none'
 		}
 	}
 
 	function lpCloseSettings() {
-		document.getElementById(this.parentNode.parentNode.id).style.display = 'none';
+		document.getElementById(this.parentNode.parentNode.id).style.display = 'none'
 	}
 
 }, false);

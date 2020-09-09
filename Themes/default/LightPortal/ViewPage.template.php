@@ -9,7 +9,21 @@
  */
 function template_show_page()
 {
-	global $context, $scripturl, $txt, $settings, $modSettings, $boardurl;
+	global $context, $txt, $scripturl, $settings, $modSettings, $boardurl;
+
+	if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
+		echo '
+	<aside class="errorbox">
+		<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
+	</aside>';
+	}
+
+	if ($context['lp_page']['can_edit']) {
+		echo '
+	<aside class="infobox">
+		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+	</aside>';
+	}
 
 	echo '
 	<section itemscope itemtype="http://schema.org/Article">
@@ -175,19 +189,19 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			const portal_page_url = "', $context['lp_current_page_url'], '",
-				page_info_start = ', $context['page_info']['start'], ';
+			const PAGE_URL = "', $context['lp_current_page_url'], '",
+				PAGE_START = ', $context['page_info']['start'], ';
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_comments.js"></script>';
 
 	echo '
 		<script>
-			const is_currently_collapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
-				toggle_alt_expanded_title = ', JavaScriptEscape($txt['hide']), ',
-				toggle_alt_collapsed_title = ', JavaScriptEscape($txt['show']), ',
-				toggle_msg_block_title = ', JavaScriptEscape($txt['lp_comments']), ',
-				use_theme_settings = ', $context['user']['is_guest'] ? 'false' : 'true', ',
-				use_cookie = ', $context['user']['is_guest'] ? 'true' : 'false', ';
+			const isCurrentlyCollapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
+				toggleAltExpandedTitle = ', JavaScriptEscape($txt['hide']), ',
+				toggleAltCollapsedTitle = ', JavaScriptEscape($txt['show']), ',
+				toggleMsgBlockTitle = ', JavaScriptEscape($txt['lp_comments']), ',
+				useThemeSettings = ', $context['user']['is_guest'] ? 'false' : 'true', ',
+				useCookie = ', $context['user']['is_guest'] ? 'true' : 'false', ';
 		</script>
 		<script src="', $settings['default_theme_url'], '/scripts/light_portal/toggle_comments.js"></script>';
 }

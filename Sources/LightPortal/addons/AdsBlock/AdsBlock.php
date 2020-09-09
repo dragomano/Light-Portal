@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -240,7 +240,7 @@ class AdsBlock
 			$after_every_last_post = ob_get_clean();
 
 			addInlineJavaScript('
-		let all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
+		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
 		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
 		}
 

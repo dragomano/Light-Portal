@@ -23,7 +23,7 @@ $txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP:
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
-$txt['lp_frontpage_mode_set'] = array('Desactivar', 'Página especificada', 'Todos los temas de foros seleccionados', 'Todas las páginas activas', 'Foros seleccionados	');
+$txt['lp_frontpage_mode_set'] = array('Desactivar', 'Página especificada', 'Todos los temas de foros seleccionados', 'Todas las páginas activas', 'Foros seleccionados');
 $txt['lp_frontpage_alias'] = 'Página del portal para mostrar como página principal';
 $txt['lp_frontpage_alias_subtext'] = 'Ingrese el alias de la página que existen.';
 $txt['lp_frontpage_boards'] = 'Foros como fuentes de artículos para la portada';
@@ -191,7 +191,7 @@ $txt['lp_extra_pages'] = 'Páginas del portal';
 $txt['lp_search_pages'] = 'Alias o título';
 $txt['lp_page_types'] = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias'] = 'Alias';
-$txt['lp_page_alias_subtext'] = 'El nombre de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
+$txt['lp_page_alias_subtext'] = 'El alias de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
 $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
@@ -248,6 +248,9 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} dejó una respuesta 
 
 // Errors
 $txt['lp_page_not_found'] = '¡Página no encontrada!';
+$txt['lp_page_not_activated'] = 'The requested page is disabled!';
+$txt['lp_page_not_editable'] = '¡No tienes permiso para editar esta página!';
+$txt['lp_page_visible_but_disabled'] = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found'] = '¡Bloque no encontrado!';
 $txt['lp_post_error_no_title'] = 'El campo <strong>título</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_alias'] = 'El campo <strong>alias</strong> no se completó. Es requerido.';
@@ -256,10 +259,9 @@ $txt['lp_post_error_no_unique_alias'] = '¡Ya existe una página con este alias!
 $txt['lp_post_error_no_content'] = '¡El contenido no especificado! Es requerido.';
 $txt['lp_post_error_no_areas'] = 'El campo <strong>areas</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_valid_areas'] = '¡El campo de las <strong>zonas</strong> se configuró incorrectamente!';
-$txt['lp_page_not_editable'] = '¡No tienes permiso para editar esta página!';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
 $txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
-$txt['lp_import_failed'] = 'Error al importar	...';
+$txt['lp_import_failed'] = 'Error al importar...';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viendo <a href="%1$s">la página principal del portal</a>.';

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const lpPages = document.getElementById('manage_pages'),
 		workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions';
@@ -7,11 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	lpPages.addEventListener('click', function (e) {
 		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.del_page')) {
-				lpDeletePage.call(target, e);
+				lpDeletePage.call(target);
 				break;
 			}
+
 			if (target.matches('.toggle_status')) {
-				lpToggleStatus.call(target, e);
+				lpToggleStatus.call(target);
 				break;
 			}
 		}
@@ -35,12 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (response.ok) {
-				const pageRow = this.closest('tr');
-
-				pageRow.style.transition = 'height 3s';
-				pageRow.style.display = 'none';
+				this.closest('tr').remove()
 			} else {
-				console.error(response);
+				console.error(response)
 			}
 		}
 	}
@@ -62,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (!response.ok) {
-				console.error(response);
+				console.error(response)
 			}
 
 			if (this.classList.contains('on')) {
@@ -76,26 +75,12 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	// Toggle a spinner for "plus" icon
-	lpPages.addEventListener('mouseover', function (e) {
+	lpPages.onmouseover = lpPages.onmouseout = e => {
 		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.fa-plus')) {
-				lpToggleSpinner.call(target, e);
-				break;
+				target.classList.toggle('fa-spin')
 			}
 		}
-	}, false);
-
-	lpPages.addEventListener('mouseout', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
-			if (target.matches('.fa-plus')) {
-				lpToggleSpinner.call(target, e);
-				break;
-			}
-		}
-	}, false);
-
-	function lpToggleSpinner() {
-		this.classList.toggle('fa-spin');
 	}
 
 }, false);

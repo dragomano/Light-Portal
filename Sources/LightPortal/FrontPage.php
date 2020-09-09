@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -309,14 +309,14 @@ class FrontPage
 				)
 			);
 
-			list ($num_topics) = $smcFunc['db_fetch_row']($request);
+			[$num_topics] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', (int) $num_topics, LP_CACHE_TIME);
 		}
 
-		return $num_topics;
+		return (int) $num_topics;
 	}
 
 	/**
@@ -433,14 +433,14 @@ class FrontPage
 				)
 			);
 
-			list ($num_pages) = $smcFunc['db_fetch_row']($request);
+			[$num_pages] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $user_info['id'] . '_total', (int) $num_pages, LP_CACHE_TIME);
 		}
 
-		return $num_pages;
+		return (int) $num_pages;
 	}
 
 	/**
@@ -567,14 +567,14 @@ class FrontPage
 				)
 			);
 
-			list ($num_boards) = $smcFunc['db_fetch_row']($request);
+			[$num_boards] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
 			$context['lp_num_queries']++;
 
-			cache_put_data('light_portal_articles_u' . $context['user']['id'] . '_total', $num_boards, LP_CACHE_TIME);
+			cache_put_data('light_portal_articles_u' . $context['user']['id'] . '_total', (int) $num_boards, LP_CACHE_TIME);
 		}
 
-		return $num_boards;
+		return (int) $num_boards;
 	}
 
 	/**

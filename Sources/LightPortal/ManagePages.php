@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -363,11 +363,11 @@ class ManagePages
 			))
 		);
 
-		list ($num_entries) = $smcFunc['db_fetch_row']($request);
+		[$num_entries] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return $num_entries;
+		return (int) $num_entries;
 	}
 
 	/**
@@ -704,11 +704,11 @@ class ManagePages
 	 */
 	private static function findErrors(array $data)
 	{
-		global $context, $txt;
+		global $modSettings, $context, $txt;
 
 		$post_errors = [];
 
-		if (empty($data['title_english']) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -744,9 +744,11 @@ class ManagePages
 	 */
 	private static function prepareFormFields()
 	{
-		global $context, $txt, $language, $modSettings;
+		global $context, $txt, $modSettings, $language;
 
 		checkSubmitOnce('register');
+
+		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
@@ -756,7 +758,7 @@ class ManagePages
 					'id'        => 'title_' . $lang['filename'],
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], array('english', $language)),
+					'required'  => in_array($lang['filename'], $languages),
 					'style'     => 'width: 100%'
 				),
 				'tab' => 'content'
@@ -1242,8 +1244,7 @@ class ManagePages
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
-
-		list ($value) = $smcFunc['db_fetch_row']($request);
+		[$value] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
@@ -1273,7 +1274,7 @@ class ManagePages
 			)
 		);
 
-		list ($count) = $smcFunc['db_fetch_row']($request);
+		[$count] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 

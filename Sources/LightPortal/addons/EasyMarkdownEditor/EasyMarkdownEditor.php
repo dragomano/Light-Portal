@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -87,9 +87,13 @@ class EasyMarkdownEditor
 			addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
+			autofocus: true,
 			spellChecker: false,
 			placeholder: "' . $txt['lp_post_error_no_content'] . '",
 			forceSync: true,
+			onToggleFullScreen: function () {
+				toggleStickedPanels();
+			},
 			toolbar: [
 				{
 					name: "bold",
@@ -206,7 +210,24 @@ class EasyMarkdownEditor
 					title: "' . $txt['lp_easy_markdown_editor_addon_guide'] . '"
 				}
 			]
-		});', true);
+		});
+
+		function toggleStickedPanels() {
+			let stickedPanels = document.getElementsByClassName("sticky_sidebar");
+
+			if (!stickedPanels)
+				return;
+
+			if (easymde.isFullscreenActive()) {
+				stickedPanels.forEach(function (el) {
+					el.style.position = "initial";
+				})
+			} else {
+				stickedPanels.forEach(function (el) {
+					el.style.position = "sticky";
+				})
+			}
+		}', true);
 		}
 	}
 

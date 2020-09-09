@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.0
+ * @version 1.1
  */
 
 if (!defined('SMF'))
@@ -22,11 +22,11 @@ class ManageBlocks
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
-	 * Области для вывода блока должны начинаться с латинской буквы и могут состоять из строчных латинских букв, цифр и некоторых знаков
+	 * Области для вывода блока должны начинаться с латинской буквы и могут состоять из строчных латинских букв, цифр и некоторых символов
 	 *
 	 * @var string
 	 */
-	private static $areas_pattern = '^[a-z][a-z0-9=|\-,\$]+$';
+	private static $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
 
 	/**
 	 * Manage blocks
@@ -891,11 +891,11 @@ class ManageBlocks
 			)
 		);
 
-		list ($priority) = $smcFunc['db_fetch_row']($request);
+		[$priority] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 		$context['lp_num_queries']++;
 
-		return $priority;
+		return (int) $priority;
 	}
 
 	/**

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+	"use strict";
 
 	const defaultBlocks = document.querySelectorAll('.lp_default_blocks tbody'),
 		additionalBlocks = document.querySelectorAll('.lp_additional_blocks tbody'),
@@ -7,18 +8,22 @@ document.addEventListener('DOMContentLoaded', function () {
 	async function lpSortBlocks(e) {
 		const items = e.from.children,
 			items2 = e.to.children;
+
 		let priority = [],
 			placement = '';
 
 		for (let i = 0; i < items2.length; i++) {
-			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').getAttribute('data-key')) : undefined,
-				place = items[i] && items[i].parentNode ? items[i].parentNode.getAttribute('data-placement') : undefined,
-				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.getAttribute('data-placement') : undefined;
+			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').getAttribute('data-key')) : null,
+				place = items[i] && items[i].parentNode ? items[i].parentNode.getAttribute('data-placement') : null,
+				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.getAttribute('data-placement') : null;
 
-			if (place !== place2)
-				placement = place2;
-			if (typeof key !== 'undefined')
-				priority.push(key);
+			if (place !== place2) {
+				placement = place2
+			}
+
+			if (key !== null) {
+				priority.push(key)
+			}
 		}
 
 		let response = await fetch(workUrl, {
@@ -37,14 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
 				prevElem = e.item.previousElementSibling;
 
 			if (nextElem && nextElem.className == 'windowbg centertext') {
-				nextElem.style.transition = 'height 3s';
-				nextElem.style.display = 'none';
+				nextElem.remove()
 			} else if (prevElem && prevElem.className == 'windowbg centertext') {
-				prevElem.style.transition = 'height 3s';
-				prevElem.style.display = 'none';
+				prevElem.remove()
 			}
 		} else {
-			console.error(response.status, priority);
+			console.error(response.status, priority)
 		}
 	}
 
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			animation: 500,
 			handle: '.handle',
 			draggable: 'tr.windowbg',
-			onSort: (e) => lpSortBlocks(e)
+			onSort: e => lpSortBlocks(e)
 		});
 	});
 
@@ -66,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			animation: 500,
 			handle: '.handle',
 			draggable: 'tr.windowbg',
-			onSort: (e) => lpSortBlocks(e)
+			onSort: e => lpSortBlocks(e)
 		});
 	});
 
@@ -76,15 +79,17 @@ document.addEventListener('DOMContentLoaded', function () {
 	lpBlockActions.addEventListener('click', function (e) {
 		for (let target = e.target; target && target != this; target = target.parentNode) {
 			if (target.matches('.actions .toggle_status')) {
-				lpToggleStatus.call(target, e);
+				lpToggleStatus.call(target);
 				break;
 			}
+
 			if (target.matches('.actions .reports')) {
-				lpCloneBlock.call(target, e);
+				lpCloneBlock.call(target);
 				break;
 			}
+
 			if (target.matches('.actions .del_block')) {
-				lpDeleteBlock.call(target, e);
+				lpDeleteBlock.call(target);
 				break;
 			}
 		}
@@ -107,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (!response.ok) {
-				console.error(response);
+				console.error(response)
 			}
 
 			if (this.classList.contains('on')) {
@@ -142,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					currentBlock.insertAdjacentHTML('afterend', json.block);
 				}
 			} else {
-				console.error(response);
+				console.error(response)
 			}
 		}
 	}
@@ -165,12 +170,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 
 			if (response.ok) {
-				const blockRow = this.closest('tr');
-
-				blockRow.style.transition = 'height 3s';
-				blockRow.style.display = 'none';
+				this.closest('tr').remove()
 			} else {
-				console.error(response);
+				console.error(response)
 			}
 		}
 	}
@@ -179,26 +181,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Toggle a spinner for "plus" icon
 	if (lpControlForm) {
-		lpControlForm.addEventListener('mouseover', function (e) {
+		lpControlForm.onmouseover = lpControlForm.onmouseout = e => {
 			for (let target = e.target; target && target != this; target = target.parentNode) {
 				if (target.matches('.fa-plus')) {
-					lpToggleSpinner.call(target, e);
-					break;
+					target.classList.toggle('fa-spin')
 				}
 			}
-		}, false);
-
-		lpControlForm.addEventListener('mouseout', function (e) {
-			for (let target = e.target; target && target != this; target = target.parentNode) {
-				if (target.matches('.fa-plus')) {
-					lpToggleSpinner.call(target, e);
-					break;
-				}
-			}
-		}, false);
-
-		function lpToggleSpinner() {
-			this.classList.toggle('fa-spin');
 		}
 	}
 

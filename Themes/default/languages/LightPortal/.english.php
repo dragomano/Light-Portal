@@ -191,7 +191,7 @@ $txt['lp_extra_pages']                  = 'Portal pages';
 $txt['lp_search_pages']                 = 'Alias or title';
 $txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
 $txt['lp_page_alias']                   = 'Alias';
-$txt['lp_page_alias_subtext']           = 'The page name must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
+$txt['lp_page_alias_subtext']           = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
@@ -248,6 +248,9 @@ $txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your
 
 // Errors
 $txt['lp_page_not_found']             = 'Page not found!';
+$txt['lp_page_not_activated']         = 'The requested page is disabled!';
+$txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
+$txt['lp_page_visible_but_disabled']  = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found']            = 'Block not found!';
 $txt['lp_post_error_no_title']        = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias']        = 'The <strong>alias</strong> field was not filled out. It is required.';
@@ -256,7 +259,6 @@ $txt['lp_post_error_no_unique_alias'] = 'A page with this alias already exists!'
 $txt['lp_post_error_no_content']      = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas']        = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_areas']  = 'The <strong>areas</strong> field was set incorrectly!';
-$txt['lp_page_not_editable']          = 'You are not allowed to edit this page!';
 $txt['lp_addon_not_installed']        = 'Plugin %1$s not installed';
 $txt['lp_wrong_import_file']          = 'Wrong file to import...';
 $txt['lp_import_failed']              = 'Failed to import...';
