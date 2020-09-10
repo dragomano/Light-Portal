@@ -129,8 +129,7 @@ class ManageBlocks
 
 		self::updatePriority();
 
-		Helpers::getFromCache('active_blocks', null);
-
+		clean_cache();
 		exit;
 	}
 
