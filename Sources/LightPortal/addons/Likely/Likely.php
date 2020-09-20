@@ -65,13 +65,9 @@ class Likely
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['likely'] = array(
-			'parameters' => array(
-				'size'    => static::$size,
-				'skin'    => static::$skin,
-				'buttons' => static::$buttons
-			)
-		);
+		$options['likely']['parameters']['size']    = static::$size;
+		$options['likely']['parameters']['skin']    = static::$skin;
+		$options['likely']['parameters']['buttons'] = static::$buttons;
 	}
 
 	/**
@@ -89,11 +85,9 @@ class Likely
 		if ($context['current_block']['type'] !== 'likely')
 			return;
 
-		$args['parameters'] = array(
-			'size'    => FILTER_SANITIZE_STRING,
-			'skin'    => FILTER_SANITIZE_STRING,
-			'buttons' => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['size']    = FILTER_SANITIZE_STRING;
+		$args['parameters']['skin']    = FILTER_SANITIZE_STRING;
+		$args['parameters']['buttons'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

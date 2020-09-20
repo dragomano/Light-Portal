@@ -85,15 +85,12 @@ class RecentTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_topics'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'num_topics'      => static::$num_topics,
-				'exclude_boards'  => static::$exclude_boards,
-				'include_boards'  => static::$include_boards,
-				'update_interval' => static::$update_interval
-			)
-		);
+		$options['recent_topics']['no_content_class'] = static::$no_content_class;
+
+		$options['recent_topics']['parameters']['num_topics']      = static::$num_topics;
+		$options['recent_topics']['parameters']['exclude_boards']  = static::$exclude_boards;
+		$options['recent_topics']['parameters']['include_boards']  = static::$include_boards;
+		$options['recent_topics']['parameters']['update_interval'] = static::$update_interval;
 	}
 
 	/**
@@ -111,12 +108,10 @@ class RecentTopics
 		if ($context['current_block']['type'] !== 'recent_topics')
 			return;
 
-		$args['parameters'] = array(
-			'num_topics'      => FILTER_VALIDATE_INT,
-			'exclude_boards'  => FILTER_SANITIZE_STRING,
-			'include_boards'  => FILTER_SANITIZE_STRING,
-			'update_interval' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['num_topics']      = FILTER_VALIDATE_INT;
+		$args['parameters']['exclude_boards']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['include_boards']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

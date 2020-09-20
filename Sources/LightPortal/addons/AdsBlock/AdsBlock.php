@@ -325,14 +325,11 @@ class AdsBlock
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['ads_block'] = array(
-			'content' => 'html',
-			'parameters' => array(
-				'ads_placement' => static::$placement,
-				'ads_boards'    => static::$boards,
-				'ads_topics'    => static::$topics
-			)
-		);
+		$options['ads_block']['content'] = 'html';
+
+		$options['ads_block']['parameters']['ads_placement'] = static::$placement;
+		$options['ads_block']['parameters']['ads_boards']    = static::$boards;
+		$options['ads_block']['parameters']['ads_topics']    = static::$topics;
 	}
 
 	/**
@@ -350,15 +347,13 @@ class AdsBlock
 		if ($context['current_block']['type'] !== 'ads_block')
 			return;
 
-		$args['parameters'] = array(
-			'ads_placement' => array(
-				'name'   => 'ads_placement',
-				'filter' => FILTER_SANITIZE_STRING,
-				'flags'  => FILTER_REQUIRE_ARRAY
-			),
-			'ads_boards' => FILTER_SANITIZE_STRING,
-			'ads_topics' => FILTER_SANITIZE_STRING
+		$args['parameters']['ads_placement'] = array(
+			'name'   => 'ads_placement',
+			'filter' => FILTER_SANITIZE_STRING,
+			'flags'  => FILTER_REQUIRE_ARRAY
 		);
+		$args['parameters']['ads_boards'] = FILTER_SANITIZE_STRING;
+		$args['parameters']['ads_topics'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

@@ -49,11 +49,7 @@ class Todays
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['todays'] = array(
-			'parameters' => array(
-				'widget_type' => static::$type
-			)
-		);
+		$options['todays']['parameters']['widget_type'] = static::$type;
 	}
 
 	/**
@@ -71,9 +67,7 @@ class Todays
 		if ($context['current_block']['type'] !== 'todays')
 			return;
 
-		$args['parameters'] = array(
-			'widget_type' => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['widget_type'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

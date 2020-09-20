@@ -58,12 +58,9 @@ class RandomTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['random_topics'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'num_topics' => static::$num_topics
-			)
-		);
+		$options['random_topics']['no_content_class'] = static::$no_content_class;
+
+		$options['random_topics']['parameters']['num_topics'] = static::$num_topics;
 	}
 
 	/**
@@ -81,9 +78,7 @@ class RandomTopics
 		if ($context['current_block']['type'] !== 'random_topics')
 			return;
 
-		$args['parameters'] = array(
-			'num_topics' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['num_topics'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

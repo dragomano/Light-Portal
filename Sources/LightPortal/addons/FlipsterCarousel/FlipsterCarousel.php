@@ -85,15 +85,11 @@ class FlipsterCarousel
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['flipster_carousel'] = array(
-			'parameters' => array(
-				'autoplay'     => static::$autoplay,
-				'style'        => static::$style,
-				'show_nav'     => static::$show_nav,
-				'show_buttons' => static::$show_buttons,
-				'images'       => static::$images
-			)
-		);
+		$options['flipster_carousel']['parameters']['autoplay']     = static::$autoplay;
+		$options['flipster_carousel']['parameters']['style']        = static::$style;
+		$options['flipster_carousel']['parameters']['show_nav']     = static::$show_nav;
+		$options['flipster_carousel']['parameters']['show_buttons'] = static::$show_buttons;
+		$options['flipster_carousel']['parameters']['images']       = static::$images;
 	}
 
 	/**
@@ -111,13 +107,11 @@ class FlipsterCarousel
 		if ($context['current_block']['type'] !== 'flipster_carousel')
 			return;
 
-		$args['parameters'] = array(
-			'autoplay'     => FILTER_VALIDATE_INT,
-			'style'        => FILTER_SANITIZE_STRING,
-			'show_nav'     => FILTER_VALIDATE_BOOLEAN,
-			'show_buttons' => FILTER_VALIDATE_BOOLEAN,
-			'images'       => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['autoplay']     = FILTER_VALIDATE_INT;
+		$args['parameters']['style']        = FILTER_SANITIZE_STRING;
+		$args['parameters']['show_nav']     = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['show_buttons'] = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['images']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**

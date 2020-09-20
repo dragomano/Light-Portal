@@ -86,15 +86,12 @@ class ArticleList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['article_list'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'article_body_class' => static::$article_body_class,
-				'article_type'       => static::$article_type,
-				'ids'                => static::$ids,
-				'seek_images'        => static::$seek_images
-			)
-		);
+		$options['article_list']['no_content_class'] = static::$no_content_class;
+
+		$options['article_list']['parameters']['article_body_class'] = static::$article_body_class;
+		$options['article_list']['parameters']['article_type']       = static::$article_type;
+		$options['article_list']['parameters']['ids']                = static::$ids;
+		$options['article_list']['parameters']['seek_images']        = static::$seek_images;
 	}
 
 	/**
@@ -112,12 +109,10 @@ class ArticleList
 		if ($context['current_block']['type'] !== 'article_list')
 			return;
 
-		$args['parameters'] = array(
-			'article_body_class' => FILTER_SANITIZE_STRING,
-			'article_type'       => FILTER_VALIDATE_INT,
-			'ids'                => FILTER_SANITIZE_STRING,
-			'seek_images'        => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['article_body_class'] = FILTER_SANITIZE_STRING;
+		$args['parameters']['article_type']       = FILTER_VALIDATE_INT;
+		$args['parameters']['ids']                = FILTER_SANITIZE_STRING;
+		$args['parameters']['seek_images']        = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
