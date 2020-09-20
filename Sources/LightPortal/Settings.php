@@ -550,6 +550,9 @@ class Settings
 
 			if (!empty($plugin_options))
 				updateSettings($plugin_options);
+
+			// Additional actions after settings saving | Дополнительные действия после сохранения настроек
+			Subs::runAddons('onSettingsSaving');
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
