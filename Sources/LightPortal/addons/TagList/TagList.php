@@ -49,11 +49,7 @@ class TagList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['tag_list'] = array(
-			'parameters' => array(
-				'source' => static::$source
-			)
-		);
+		$options['tag_list']['parameters']['source'] = static::$source;
 	}
 
 	/**
@@ -71,9 +67,7 @@ class TagList
 		if ($context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$args['parameters'] = array(
-			'source' => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['source'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

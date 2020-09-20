@@ -58,12 +58,8 @@ class RssFeed
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['rss_feed'] = array(
-			'parameters' => array(
-				'url'       => static::$url,
-				'show_text' => static::$show_text
-			)
-		);
+		$options['rss_feed']['parameters']['url']       = static::$url;
+		$options['rss_feed']['parameters']['show_text'] = static::$show_text;
 	}
 
 	/**
@@ -81,10 +77,8 @@ class RssFeed
 		if ($context['current_block']['type'] !== 'rss_feed')
 			return;
 
-		$args['parameters'] = array(
-			'url'       => FILTER_VALIDATE_URL,
-			'show_text' => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['url']       = FILTER_VALIDATE_URL;
+		$args['parameters']['show_text'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

@@ -58,12 +58,8 @@ class PageList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['page_list'] = array(
-			'parameters' => array(
-				'sort'      => static::$sort,
-				'num_pages' => static::$num_pages
-			)
-		);
+		$options['page_list']['parameters']['sort']      = static::$sort;
+		$options['page_list']['parameters']['num_pages'] = static::$num_pages;
 	}
 
 	/**
@@ -81,10 +77,8 @@ class PageList
 		if ($context['current_block']['type'] !== 'page_list')
 			return;
 
-		$args['parameters'] = array(
-			'sort'      => FILTER_SANITIZE_STRING,
-			'num_pages' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['sort']      = FILTER_SANITIZE_STRING;
+		$args['parameters']['num_pages'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

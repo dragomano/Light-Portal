@@ -19,7 +19,6 @@ if (!defined('SMF'))
 
 class LanguageAccess
 {
-
 	/**
 	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *

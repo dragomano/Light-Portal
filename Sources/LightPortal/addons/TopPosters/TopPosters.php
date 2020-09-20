@@ -67,13 +67,9 @@ class TopPosters
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_posters'] = array(
-			'parameters' => array(
-				'show_avatars'      => static::$show_avatars,
-				'num_posters'       => static::$num_posters,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_posters']['parameters']['show_avatars']      = static::$show_avatars;
+		$options['top_posters']['parameters']['num_posters']       = static::$num_posters;
+		$options['top_posters']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -91,11 +87,9 @@ class TopPosters
 		if ($context['current_block']['type'] !== 'top_posters')
 			return;
 
-		$args['parameters'] = array(
-			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
-			'num_posters'       => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['show_avatars']      = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['num_posters']       = FILTER_VALIDATE_INT;
+		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

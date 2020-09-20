@@ -58,12 +58,8 @@ class BoardNews
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['board_news'] = array(
-			'parameters' => array(
-				'board_id'  => static::$board_id,
-				'num_posts' => static::$num_posts
-			)
-		);
+		$options['board_news']['parameters']['board_id']  = static::$board_id;
+		$options['board_news']['parameters']['num_posts'] = static::$num_posts;
 	}
 
 	/**
@@ -81,10 +77,8 @@ class BoardNews
 		if ($context['current_block']['type'] !== 'board_news')
 			return;
 
-		$args['parameters'] = array(
-			'board_id'  => FILTER_VALIDATE_INT,
-			'num_posts' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['board_id']  = FILTER_VALIDATE_INT;
+		$args['parameters']['num_posts'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

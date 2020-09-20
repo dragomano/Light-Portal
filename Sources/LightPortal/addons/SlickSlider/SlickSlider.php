@@ -121,19 +121,15 @@ class SlickSlider
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['slick_slider'] = array(
-			'parameters' => array(
-				'show_arrows'      => static::$show_arrows,
-				'show_dots'        => static::$show_dots,
-				'adaptive_height'  => static::$adaptive_height,
-				'slides_to_show'   => static::$slides_to_show,
-				'slides_to_scroll' => static::$slides_to_scroll,
-				'autoplay'         => static::$autoplay,
-				'autoplay_speed'   => static::$autoplay_speed,
-				'speed'            => static::$speed,
-				'images'           => static::$images
-			)
-		);
+		$options['slick_slider']['parameters']['show_arrows']      = static::$show_arrows;
+		$options['slick_slider']['parameters']['show_dots']        = static::$show_dots;
+		$options['slick_slider']['parameters']['adaptive_height']  = static::$adaptive_height;
+		$options['slick_slider']['parameters']['slides_to_show']   = static::$slides_to_show;
+		$options['slick_slider']['parameters']['slides_to_scroll'] = static::$slides_to_scroll;
+		$options['slick_slider']['parameters']['autoplay']         = static::$autoplay;
+		$options['slick_slider']['parameters']['autoplay_speed']   = static::$autoplay_speed;
+		$options['slick_slider']['parameters']['speed']            = static::$speed;
+		$options['slick_slider']['parameters']['images']           = static::$images;
 	}
 
 	/**
@@ -151,17 +147,15 @@ class SlickSlider
 		if ($context['current_block']['type'] !== 'slick_slider')
 			return;
 
-		$args['parameters'] = array(
-			'show_arrows'      => FILTER_VALIDATE_BOOLEAN,
-			'show_dots'        => FILTER_VALIDATE_BOOLEAN,
-			'adaptive_height'  => FILTER_VALIDATE_BOOLEAN,
-			'slides_to_show'   => FILTER_VALIDATE_INT,
-			'slides_to_scroll' => FILTER_VALIDATE_INT,
-			'autoplay'         => FILTER_VALIDATE_BOOLEAN,
-			'autoplay_speed'   => FILTER_VALIDATE_INT,
-			'speed'            => FILTER_VALIDATE_INT,
-			'images'           => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['show_arrows']      = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['show_dots']        = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['adaptive_height']  = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['slides_to_show']   = FILTER_VALIDATE_INT;
+		$args['parameters']['slides_to_scroll'] = FILTER_VALIDATE_INT;
+		$args['parameters']['autoplay']         = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['autoplay_speed']   = FILTER_VALIDATE_INT;
+		$args['parameters']['speed']            = FILTER_VALIDATE_INT;
+		$args['parameters']['images']           = FILTER_SANITIZE_STRING;
 	}
 
 	/**

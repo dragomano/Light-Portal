@@ -121,19 +121,16 @@ class RecentPosts
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_posts'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'num_posts'       => static::$num_posts,
-				'link_type'       => static::$type,
-				'exclude_boards'  => static::$exclude_boards,
-				'include_boards'  => static::$include_boards,
-				'exclude_topics'  => static::$exclude_topics,
-				'include_topics'  => static::$include_topics,
-				'show_avatars'    => static::$show_avatars,
-				'update_interval' => static::$update_interval
-			)
-		);
+		$options['recent_posts']['no_content_class'] = static::$no_content_class;
+
+		$options['recent_posts']['parameters']['num_posts']       = static::$num_posts;
+		$options['recent_posts']['parameters']['link_type']       = static::$type;
+		$options['recent_posts']['parameters']['exclude_boards' ] = static::$exclude_boards;
+		$options['recent_posts']['parameters']['include_boards']  = static::$include_boards;
+		$options['recent_posts']['parameters']['exclude_topics']  = static::$exclude_topics;
+		$options['recent_posts']['parameters']['include_topics']  = static::$include_topics;
+		$options['recent_posts']['parameters']['show_avatars']    = static::$show_avatars;
+		$options['recent_posts']['parameters']['update_interval'] = static::$update_interval;
 	}
 
 	/**
@@ -151,16 +148,14 @@ class RecentPosts
 		if ($context['current_block']['type'] !== 'recent_posts')
 			return;
 
-		$args['parameters'] = array(
-			'num_posts'       => FILTER_VALIDATE_INT,
-			'link_type'       => FILTER_SANITIZE_STRING,
-			'exclude_boards'  => FILTER_SANITIZE_STRING,
-			'include_boards'  => FILTER_SANITIZE_STRING,
-			'exclude_topics'  => FILTER_SANITIZE_STRING,
-			'include_topics'  => FILTER_SANITIZE_STRING,
-			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
-			'update_interval' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['num_posts']       = FILTER_VALIDATE_INT;
+		$args['parameters']['link_type']       = FILTER_SANITIZE_STRING;
+		$args['parameters']['exclude_boards']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['include_boards']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['exclude_topics']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['include_topics']  = FILTER_SANITIZE_STRING;
+		$args['parameters']['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
+		$args['parameters']['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

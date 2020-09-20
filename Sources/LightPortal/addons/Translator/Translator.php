@@ -74,14 +74,11 @@ class Translator
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['translator'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'engine'       => static::$engine,
-				'widget_theme' => static::$widget_theme,
-				'auto_mode'    => static::$auto_mode
-			)
-		);
+		$options['translator']['no_content_class'] = static::$no_content_class;
+
+		$options['translator']['parameters']['engine']       = static::$engine;
+		$options['translator']['parameters']['widget_theme'] = static::$widget_theme;
+		$options['translator']['parameters']['auto_mode']    = static::$auto_mode;
 	}
 
 	/**
@@ -99,11 +96,9 @@ class Translator
 		if ($context['current_block']['type'] !== 'translator')
 			return;
 
-		$args['parameters'] = array(
-			'engine'       => FILTER_SANITIZE_STRING,
-			'widget_theme' => FILTER_SANITIZE_STRING,
-			'auto_mode'    => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['engine']       = FILTER_SANITIZE_STRING;
+		$args['parameters']['widget_theme'] = FILTER_SANITIZE_STRING;
+		$args['parameters']['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

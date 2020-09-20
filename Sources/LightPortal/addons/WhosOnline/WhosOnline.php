@@ -49,11 +49,7 @@ class WhosOnline
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['whos_online'] = array(
-			'parameters' => array(
-				'update_interval' => static::$update_interval
-			)
-		);
+		$options['whos_online']['parameters']['update_interval'] = static::$update_interval;
 	}
 
 	/**
@@ -71,9 +67,7 @@ class WhosOnline
 		if ($context['current_block']['type'] !== 'whos_online')
 			return;
 
-		$args['parameters'] = array(
-			'update_interval' => FILTER_VALIDATE_INT
-		);
+		$args['parameters']['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

@@ -67,13 +67,9 @@ class RecentAttachments
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_attachments'] = array(
-			'parameters' => array(
-				'num_attachments' => static::$num_attachments,
-				'extensions'      => static::$extensions,
-				'direction'       => static::$direction
-			)
-		);
+		$options['recent_attachments']['parameters']['num_attachments'] = static::$num_attachments;
+		$options['recent_attachments']['parameters']['extensions']      = static::$extensions;
+		$options['recent_attachments']['parameters']['direction']       = static::$direction;
 	}
 
 	/**
@@ -91,11 +87,9 @@ class RecentAttachments
 		if ($context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		$args['parameters'] = array(
-			'num_attachments' => FILTER_VALIDATE_INT,
-			'extensions'      => FILTER_SANITIZE_STRING,
-			'direction'       => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['num_attachments'] = FILTER_VALIDATE_INT;
+		$args['parameters']['extensions']      = FILTER_SANITIZE_STRING;
+		$args['parameters']['direction']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**

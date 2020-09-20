@@ -67,13 +67,9 @@ class TopPages
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_pages'] = array(
-			'parameters' => array(
-				'popularity_type'   => static::$type,
-				'num_pages'         => static::$num_pages,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_pages']['parameters']['popularity_type']   = static::$type;
+		$options['top_pages']['parameters']['num_pages']         = static::$num_pages;
+		$options['top_pages']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -91,11 +87,9 @@ class TopPages
 		if ($context['current_block']['type'] !== 'top_pages')
 			return;
 
-		$args['parameters'] = array(
-			'popularity_type'   => FILTER_SANITIZE_STRING,
-			'num_pages'         => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['popularity_type']   = FILTER_SANITIZE_STRING;
+		$args['parameters']['num_pages']         = FILTER_VALIDATE_INT;
+		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

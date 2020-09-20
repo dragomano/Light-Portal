@@ -67,13 +67,10 @@ class BoardList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['board_list'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'category_class' => static::$category_class,
-				'board_class'    => static::$board_class
-			)
-		);
+		$options['board_list']['no_content_class'] = static::$no_content_class;
+
+		$options['board_list']['parameters']['category_class'] = static::$category_class;
+		$options['board_list']['parameters']['board_class']    = static::$board_class;
 	}
 
 	/**
@@ -91,10 +88,8 @@ class BoardList
 		if ($context['current_block']['type'] !== 'board_list')
 			return;
 
-		$args['parameters'] = array(
-			'category_class' => FILTER_SANITIZE_STRING,
-			'board_class'    => FILTER_SANITIZE_STRING
-		);
+		$args['parameters']['category_class'] = FILTER_SANITIZE_STRING;
+		$args['parameters']['board_class']    = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -205,7 +200,7 @@ class BoardList
 		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($board_list)) {
-			$context['current_board']     = $context['current_board'] ?? 0;
+			$context['current_board'] = $context['current_board'] ?? 0;
 
 			ob_start();
 

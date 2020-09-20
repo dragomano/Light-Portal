@@ -67,13 +67,9 @@ class TopTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_topics'] = array(
-			'parameters' => array(
-				'popularity_type'   => static::$type,
-				'num_topics'        => static::$num_topics,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_topics']['parameters']['popularity_type']   = static::$type;
+		$options['top_topics']['parameters']['num_topics']        = static::$num_topics;
+		$options['top_topics']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -91,11 +87,9 @@ class TopTopics
 		if ($context['current_block']['type'] !== 'top_topics')
 			return;
 
-		$args['parameters'] = array(
-			'popularity_type'   => FILTER_SANITIZE_STRING,
-			'num_topics'        => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['popularity_type']   = FILTER_SANITIZE_STRING;
+		$args['parameters']['num_topics']        = FILTER_VALIDATE_INT;
+		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

@@ -58,12 +58,8 @@ class TopBoards
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_boards'] = array(
-			'parameters' => array(
-				'num_boards'        => static::$num_boards,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_boards']['parameters']['num_boards']        = static::$num_boards;
+		$options['top_boards']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -81,10 +77,8 @@ class TopBoards
 		if ($context['current_block']['type'] !== 'top_boards')
 			return;
 
-		$args['parameters'] = array(
-			'num_boards'        => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$args['parameters']['num_boards']        = FILTER_VALIDATE_INT;
+		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
