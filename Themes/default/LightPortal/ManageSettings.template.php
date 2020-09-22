@@ -444,7 +444,7 @@ function template_post_tab($tab = 'content')
 
 					foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
 						if (is_bool($value))
-							echo $value ? ' ' . $attribute : '';
+							echo $value ? (' ' . $attribute) : '';
 						else
 							echo ' ', $attribute, '="', $value, '"';
 					}
