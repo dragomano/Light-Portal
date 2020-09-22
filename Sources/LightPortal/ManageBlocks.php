@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
+	use ShareTools;
+
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
@@ -441,13 +443,13 @@ class ManageBlocks
 				'content_style' => FILTER_SANITIZE_STRING
 			);
 
-			Subs::runAddons('validateBlockData', array(&$args));
-
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 
-			$parameters = $args['parameters'] ?? [];
-			unset($args['parameters']);
+			$parameters = [];
+
+			Subs::runAddons('validateBlockData', array(&$parameters, $context['current_block']['type']));
+
 			$post_data = filter_input_array(INPUT_POST, $args);
 			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
 
@@ -485,7 +487,7 @@ class ManageBlocks
 					if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data['parameters'][$option] === null)
 						$post_data['parameters'][$option] = 0;
 
-					if (is_array($parameters[$option]) && $parameters[$option]['filter'] == FILTER_SANITIZE_STRING && $post_data['parameters'][$option] === null)
+					if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data['parameters'][$option] === null)
 						$post_data['parameters'][$option] = [];
 				}
 
@@ -770,7 +772,7 @@ class ManageBlocks
 	{
 		global $context, $txt;
 
-		$areas = array(
+		$exampe_areas = array(
 			'all',
 			'custom_action',
 			'pages',
@@ -785,7 +787,7 @@ class ManageBlocks
 			'topic=id3|id7'
 		);
 
-		$context['lp_possible_areas'] = array_combine($areas, $txt['lp_block_areas_values']);
+		$context['lp_possible_areas'] = array_combine($exampe_areas, $txt['lp_block_areas_values']);
 
 		ob_start();
 
@@ -905,7 +907,7 @@ class ManageBlocks
 	 * @param int $item
 	 * @return int|void
 	 */
-	public static function setData(int $item = 0)
+	private static function setData(int $item = 0)
 	{
 		global $context, $smcFunc;
 
@@ -986,6 +988,7 @@ class ManageBlocks
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
+
 					$parameters[] = array(
 						'item_id' => $item,
 						'type'    => 'block',
@@ -1061,6 +1064,7 @@ class ManageBlocks
 				$parameters = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
+
 					$parameters[] = array(
 						'item_id' => $item,
 						'type'    => 'block',
@@ -1183,7 +1187,7 @@ class ManageBlocks
 			'description' => $txt['lp_blocks_export_tab_description']
 		);
 
-		Subs::runExport(self::getXmlFile());
+		self::runExport(self::getXmlFile());
 
 		$context['lp_current_blocks'] = self::getAll();
 		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
@@ -1403,7 +1407,7 @@ class ManageBlocks
 			$sql = "REPLACE INTO {db_prefix}lp_blocks (`block_id`, `icon`, `icon_type`, `type`, `content`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `title_style`, `content_class`, `content_style`)
 				VALUES ";
 
-			$sql .= Subs::getValues($items);
+			$sql .= self::getValues($items);
 
 			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
@@ -1413,7 +1417,7 @@ class ManageBlocks
 			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
 				VALUES ";
 
-			$sql .= Subs::getValues($titles);
+			$sql .= self::getValues($titles);
 
 			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
@@ -1423,7 +1427,7 @@ class ManageBlocks
 			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
 				VALUES ";
 
-			$sql .= Subs::getValues($params);
+			$sql .= self::getValues($params);
 
 			$result = $smcFunc['db_query']('', $sql);
 			$context['lp_num_queries']++;
