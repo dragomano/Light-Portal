@@ -82,12 +82,12 @@ class LanguageAccess
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters)
 	{
-		$args['parameters']['allowed_languages'] = array(
+		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY

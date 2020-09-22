@@ -87,10 +87,6 @@ class UserInfo
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>
 				<li>
-					<a href="#"', !empty($context['self_alerts']) ? ' class="active"' : '', ' id="alerts_menu_top1">', $txt['alerts'], !empty($context['user']['alerts']) ? ' <span class="amt">' . $context['user']['alerts'] . '</span>' : '', '</a>
-					<div id="alerts_menu" class="top_menu scrollable"></div>
-				</li>
-				<li>
 					<hr>
 					<span class="floatleft">
 						', $fa ? '<i class="fas fa-user"></i>' : '<span class="main_icons members"></span>', ' <a href="', $userData['href'], '">', $txt['profile'], '</a>

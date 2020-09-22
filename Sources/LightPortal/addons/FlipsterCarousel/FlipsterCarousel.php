@@ -97,21 +97,20 @@ class FlipsterCarousel
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'flipster_carousel')
+		if ($type !== 'flipster_carousel')
 			return;
 
-		$args['parameters']['autoplay']     = FILTER_VALIDATE_INT;
-		$args['parameters']['style']        = FILTER_SANITIZE_STRING;
-		$args['parameters']['show_nav']     = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['show_buttons'] = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['images']       = FILTER_SANITIZE_STRING;
+		$parameters['autoplay']     = FILTER_VALIDATE_INT;
+		$parameters['style']        = FILTER_SANITIZE_STRING;
+		$parameters['show_nav']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_buttons'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['images']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**

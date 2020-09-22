@@ -67,18 +67,17 @@ class BoardNews
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'board_news')
+		if ($type !== 'board_news')
 			return;
 
-		$args['parameters']['board_id']  = FILTER_VALIDATE_INT;
-		$args['parameters']['num_posts'] = FILTER_VALIDATE_INT;
+		$parameters['board_id']  = FILTER_VALIDATE_INT;
+		$parameters['num_posts'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

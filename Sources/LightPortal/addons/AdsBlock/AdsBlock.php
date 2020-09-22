@@ -337,23 +337,22 @@ class AdsBlock
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'ads_block')
+		if ($type !== 'ads_block')
 			return;
 
-		$args['parameters']['ads_placement'] = array(
+		$parameters['ads_placement'] = array(
 			'name'   => 'ads_placement',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		);
-		$args['parameters']['ads_boards'] = FILTER_SANITIZE_STRING;
-		$args['parameters']['ads_topics'] = FILTER_SANITIZE_STRING;
+		$parameters['ads_boards'] = FILTER_SANITIZE_STRING;
+		$parameters['ads_topics'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

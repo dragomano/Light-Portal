@@ -67,18 +67,17 @@ class RssFeed
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'rss_feed')
+		if ($type !== 'rss_feed')
 			return;
 
-		$args['parameters']['url']       = FILTER_VALIDATE_URL;
-		$args['parameters']['show_text'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['url']       = FILTER_VALIDATE_URL;
+		$parameters['show_text'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

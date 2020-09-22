@@ -98,20 +98,19 @@ class RecentTopics
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'recent_topics')
+		if ($type !== 'recent_topics')
 			return;
 
-		$args['parameters']['num_topics']      = FILTER_VALIDATE_INT;
-		$args['parameters']['exclude_boards']  = FILTER_SANITIZE_STRING;
-		$args['parameters']['include_boards']  = FILTER_SANITIZE_STRING;
-		$args['parameters']['update_interval'] = FILTER_VALIDATE_INT;
+		$parameters['num_topics']      = FILTER_VALIDATE_INT;
+		$parameters['exclude_boards']  = FILTER_SANITIZE_STRING;
+		$parameters['include_boards']  = FILTER_SANITIZE_STRING;
+		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

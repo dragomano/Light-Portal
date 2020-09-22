@@ -57,17 +57,16 @@ class TagList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'tag_list')
+		if ($type !== 'tag_list')
 			return;
 
-		$args['parameters']['source'] = FILTER_SANITIZE_STRING;
+		$parameters['source'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

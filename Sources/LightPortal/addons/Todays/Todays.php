@@ -57,17 +57,18 @@ class Todays
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
 		global $context;
 
-		if ($context['current_block']['type'] !== 'todays')
+		if ($type !== 'todays')
 			return;
 
-		$args['parameters']['widget_type'] = FILTER_SANITIZE_STRING;
+		$parameters['widget_type'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

@@ -86,19 +86,18 @@ class Translator
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'translator')
+		if ($type !== 'translator')
 			return;
 
-		$args['parameters']['engine']       = FILTER_SANITIZE_STRING;
-		$args['parameters']['widget_theme'] = FILTER_SANITIZE_STRING;
-		$args['parameters']['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
+		$parameters['engine']       = FILTER_SANITIZE_STRING;
+		$parameters['widget_theme'] = FILTER_SANITIZE_STRING;
+		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

@@ -75,19 +75,18 @@ class Likely
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'likely')
+		if ($type !== 'likely')
 			return;
 
-		$args['parameters']['size']    = FILTER_SANITIZE_STRING;
-		$args['parameters']['skin']    = FILTER_SANITIZE_STRING;
-		$args['parameters']['buttons'] = FILTER_SANITIZE_STRING;
+		$parameters['size']    = FILTER_SANITIZE_STRING;
+		$parameters['skin']    = FILTER_SANITIZE_STRING;
+		$parameters['buttons'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**
