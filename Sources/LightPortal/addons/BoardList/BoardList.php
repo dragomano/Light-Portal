@@ -78,18 +78,17 @@ class BoardList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'board_list')
+		if ($type !== 'board_list')
 			return;
 
-		$args['parameters']['category_class'] = FILTER_SANITIZE_STRING;
-		$args['parameters']['board_class']    = FILTER_SANITIZE_STRING;
+		$parameters['category_class'] = FILTER_SANITIZE_STRING;
+		$parameters['board_class']    = FILTER_SANITIZE_STRING;
 	}
 
 	/**

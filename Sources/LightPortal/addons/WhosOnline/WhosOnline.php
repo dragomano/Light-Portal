@@ -57,17 +57,16 @@ class WhosOnline
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'whos_online')
+		if ($type !== 'whos_online')
 			return;
 
-		$args['parameters']['update_interval'] = FILTER_VALIDATE_INT;
+		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

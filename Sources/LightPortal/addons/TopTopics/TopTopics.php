@@ -77,19 +77,18 @@ class TopTopics
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'top_topics')
+		if ($type !== 'top_topics')
 			return;
 
-		$args['parameters']['popularity_type']   = FILTER_SANITIZE_STRING;
-		$args['parameters']['num_topics']        = FILTER_VALIDATE_INT;
-		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['popularity_type']   = FILTER_SANITIZE_STRING;
+		$parameters['num_topics']        = FILTER_VALIDATE_INT;
+		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

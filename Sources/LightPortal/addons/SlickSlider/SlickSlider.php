@@ -137,25 +137,24 @@ class SlickSlider
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'slick_slider')
+		if ($type !== 'slick_slider')
 			return;
 
-		$args['parameters']['show_arrows']      = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['show_dots']        = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['adaptive_height']  = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['slides_to_show']   = FILTER_VALIDATE_INT;
-		$args['parameters']['slides_to_scroll'] = FILTER_VALIDATE_INT;
-		$args['parameters']['autoplay']         = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['autoplay_speed']   = FILTER_VALIDATE_INT;
-		$args['parameters']['speed']            = FILTER_VALIDATE_INT;
-		$args['parameters']['images']           = FILTER_SANITIZE_STRING;
+		$parameters['show_arrows']      = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_dots']        = FILTER_VALIDATE_BOOLEAN;
+		$parameters['adaptive_height']  = FILTER_VALIDATE_BOOLEAN;
+		$parameters['slides_to_show']   = FILTER_VALIDATE_INT;
+		$parameters['slides_to_scroll'] = FILTER_VALIDATE_INT;
+		$parameters['autoplay']         = FILTER_VALIDATE_BOOLEAN;
+		$parameters['autoplay_speed']   = FILTER_VALIDATE_INT;
+		$parameters['speed']            = FILTER_VALIDATE_INT;
+		$parameters['images']           = FILTER_SANITIZE_STRING;
 	}
 
 	/**

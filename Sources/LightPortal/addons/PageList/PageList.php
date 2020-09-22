@@ -67,18 +67,17 @@ class PageList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'page_list')
+		if ($type !== 'page_list')
 			return;
 
-		$args['parameters']['sort']      = FILTER_SANITIZE_STRING;
-		$args['parameters']['num_pages'] = FILTER_VALIDATE_INT;
+		$parameters['sort']      = FILTER_SANITIZE_STRING;
+		$parameters['num_pages'] = FILTER_VALIDATE_INT;
 	}
 
 	/**

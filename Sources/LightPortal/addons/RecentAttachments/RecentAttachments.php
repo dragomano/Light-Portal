@@ -77,19 +77,18 @@ class RecentAttachments
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'recent_attachments')
+		if ($type !== 'recent_attachments')
 			return;
 
-		$args['parameters']['num_attachments'] = FILTER_VALIDATE_INT;
-		$args['parameters']['extensions']      = FILTER_SANITIZE_STRING;
-		$args['parameters']['direction']       = FILTER_SANITIZE_STRING;
+		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
+		$parameters['extensions']      = FILTER_SANITIZE_STRING;
+		$parameters['direction']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**

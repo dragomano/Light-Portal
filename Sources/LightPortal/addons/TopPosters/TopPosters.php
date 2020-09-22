@@ -77,19 +77,18 @@ class TopPosters
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'top_posters')
+		if ($type !== 'top_posters')
 			return;
 
-		$args['parameters']['show_avatars']      = FILTER_VALIDATE_BOOLEAN;
-		$args['parameters']['num_posters']       = FILTER_VALIDATE_INT;
-		$args['parameters']['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_avatars']      = FILTER_VALIDATE_BOOLEAN;
+		$parameters['num_posters']       = FILTER_VALIDATE_INT;
+		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

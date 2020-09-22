@@ -42,9 +42,9 @@ class HidingBlocks
 	 *
 	 * Включенные скрытые классы по умолчанию
 	 *
-	 * @var string
+	 * @var array
 	 */
-	private static $hidden_breakpoints = '';
+	private static $hidden_breakpoints = [];
 
 	/**
 	 * Fill additional block classes
@@ -96,12 +96,12 @@ class HidingBlocks
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters)
 	{
-		$args['parameters']['hidden_breakpoints'] = array(
+		$parameters['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
@@ -127,6 +127,7 @@ class HidingBlocks
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
 			'type' => 'select',
+			'after' => $txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'],
 			'attributes' => array(
 				'id'       => 'hidden_breakpoints',
 				'name'     => 'hidden_breakpoints[]',

@@ -99,20 +99,19 @@ class ArticleList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'article_list')
+		if ($type !== 'article_list')
 			return;
 
-		$args['parameters']['article_body_class'] = FILTER_SANITIZE_STRING;
-		$args['parameters']['article_type']       = FILTER_VALIDATE_INT;
-		$args['parameters']['ids']                = FILTER_SANITIZE_STRING;
-		$args['parameters']['seek_images']        = FILTER_VALIDATE_BOOLEAN;
+		$parameters['article_body_class'] = FILTER_SANITIZE_STRING;
+		$parameters['article_type']       = FILTER_VALIDATE_INT;
+		$parameters['ids']                = FILTER_SANITIZE_STRING;
+		$parameters['seek_images']        = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

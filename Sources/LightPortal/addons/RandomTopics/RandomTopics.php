@@ -68,17 +68,16 @@ class RandomTopics
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'random_topics')
+		if ($type !== 'random_topics')
 			return;
 
-		$args['parameters']['num_topics'] = FILTER_VALIDATE_INT;
+		$parameters['num_topics'] = FILTER_VALIDATE_INT;
 	}
 
 	/**
