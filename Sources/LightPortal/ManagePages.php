@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManagePages
 {
+	use ShareTools;
+
 	/**
 	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
 	 *
@@ -458,6 +460,8 @@ class ManagePages
 			)
 		);
 
+		Subs::runAddons('onRemovePages', array(&$items));
+
 		$context['lp_num_queries'] += 5;
 	}
 
@@ -643,15 +647,21 @@ class ManagePages
 				'content'     => FILTER_UNSAFE_RAW
 			);
 
-			$source_args = $args;
-			Subs::runAddons('validatePageData', array(&$args));
-			$parameters = array_merge(
-				array('show_author_and_date' => FILTER_VALIDATE_BOOLEAN, 'show_related_pages' => FILTER_VALIDATE_BOOLEAN, 'allow_comments' => FILTER_VALIDATE_BOOLEAN),
-				array_diff($args, $source_args)
-			);
-
 			foreach ($context['languages'] as $lang)
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+
+			$parameters = [];
+
+			Subs::runAddons('validatePageData', array(&$parameters));
+
+			$parameters = array_merge(
+				array(
+					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
+					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
+					'allow_comments'       => FILTER_VALIDATE_BOOLEAN
+				),
+				$parameters
+			);
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 			$post_data['id'] = !empty($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -682,8 +692,13 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null)
-				$post_data[$option] = 0;
+			if (!empty($post_data)) {
+				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data[$option] === null)
+					$post_data[$option] = 0;
+
+				/* if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data[$option] === null)
+					$post_data[$option] = []; */
+			}
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
@@ -1010,7 +1025,7 @@ class ManagePages
 	 * @param int $item
 	 * @return void
 	 */
-	public static function setData(int $item = 0)
+	private static function setData(int $item = 0)
 	{
 		global $context, $smcFunc, $db_type;
 
@@ -1050,6 +1065,8 @@ class ManagePages
 
 			$context['lp_num_queries']++;
 
+			Subs::runAddons('onDataSaving', array($item));
+
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -1079,6 +1096,8 @@ class ManagePages
 			if (!empty($context['lp_page']['options'])) {
 				$parameters = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					$value = is_array($value) ? implode(',', $value) : $value;
+
 					$parameters[] = array(
 						'item_id' => $item,
 						'type'    => 'page',
@@ -1143,6 +1162,8 @@ class ManagePages
 
 			$context['lp_num_queries']++;
 
+			Subs::runAddons('onDataSaving', array($item));
+
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
 				foreach ($context['lp_page']['title'] as $lang => $title) {
@@ -1172,6 +1193,8 @@ class ManagePages
 			if (!empty($context['lp_page']['options'])) {
 				$parameters = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					$value = is_array($value) ? implode(',', $value) : $value;
+
 					$parameters[] = array(
 						'item_id' => $item,
 						'type'    => 'page',
@@ -1301,7 +1324,7 @@ class ManagePages
 			'description' => $txt['lp_pages_export_tab_description']
 		);
 
-		Subs::runExport(self::getXmlFile());
+		self::runExport(self::getXmlFile());
 
 		$listOptions = array(
 			'id' => 'pages',
@@ -1666,7 +1689,7 @@ class ManagePages
 				$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
 					VALUES ";
 
-				$sql .= Subs::getValues($items[$i]);
+				$sql .= self::getValues($items[$i]);
 
 				$result = $smcFunc['db_query']('', $sql);
 				$context['lp_num_queries']++;
@@ -1681,7 +1704,7 @@ class ManagePages
 				$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
 					VALUES ";
 
-				$sql .= Subs::getValues($titles[$i]);
+				$sql .= self::getValues($titles[$i]);
 
 				$result = $smcFunc['db_query']('', $sql);
 				$context['lp_num_queries']++;
@@ -1696,7 +1719,7 @@ class ManagePages
 				$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
 					VALUES ";
 
-				$sql .= Subs::getValues($params[$i]);
+				$sql .= self::getValues($params[$i]);
 
 				$result = $smcFunc['db_query']('', $sql);
 				$context['lp_num_queries']++;
@@ -1711,7 +1734,7 @@ class ManagePages
 				$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
 					VALUES ";
 
-				$sql .= Subs::getValues($keywords[$i]);
+				$sql .= self::getValues($keywords[$i]);
 
 				$result = $smcFunc['db_query']('', $sql);
 				$context['lp_num_queries']++;
@@ -1726,7 +1749,7 @@ class ManagePages
 				$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)
 					VALUES ";
 
-				$sql .= Subs::getValues($comments[$i]);
+				$sql .= self::getValues($comments[$i]);
 
 				$result = $smcFunc['db_query']('', $sql);
 				$context['lp_num_queries']++;

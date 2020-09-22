@@ -279,6 +279,29 @@ class Subs
 	}
 
 	/**
+	 * Require the language file of the addon
+	 *
+	 * Подключаем языковой файл аддона
+	 *
+	 * @param string $addon
+	 * @return void
+	 */
+	public static function loadAddonLanguage(string $addon = '')
+	{
+		global $user_info, $txt;
+
+		$base_dir  = LP_ADDONS . '/' . $addon . '/langs/';
+		$languages = array_merge(['english'], [$user_info['language']]);
+
+		foreach ($languages as $lang) {
+			$lang_file = $base_dir . $lang . '.php';
+
+			if (is_file($lang_file))
+				require_once($lang_file);
+		}
+	}
+
+	/**
 	 * Run addons
 	 *
 	 * Подключаем аддоны
@@ -298,13 +321,13 @@ class Subs
 		$txt['lp_html_icon'] = 'fab fa-html5';
 		$txt['lp_php_icon']  = 'fab fa-php';
 
-		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
+		$addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
-		if (empty($light_portal_addons))
+		if (empty($addons))
 			return false;
 
 		$results = [];
-		foreach ($light_portal_addons as $id => $addon) {
+		foreach ($addons as $id => $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 			self::loadAddonLanguage($addon);
 
@@ -319,29 +342,6 @@ class Subs
 		}
 
 		return $results[$hook] ?? null;
-	}
-
-	/**
-	 * Require the language file of the addon
-	 *
-	 * Подключаем языковой файл аддона
-	 *
-	 * @param string $addon
-	 * @return void
-	 */
-	public static function loadAddonLanguage(string $addon = '')
-	{
-		global $user_info, $txt;
-
-		$base_dir = LP_ADDONS . '/' . $addon . '/langs/';
-
-		$languages = array_merge(['english'], [$user_info['language']]);
-
-		foreach ($languages as $lang) {
-			$lang_file = $base_dir . $lang . '.php';
-			if (is_file($lang_file))
-				require_once($lang_file);
-		}
 	}
 
 	/**
@@ -471,73 +471,6 @@ class Subs
 		$context['lp_num_queries']++;
 
 		return $titles;
-	}
-
-	/**
-	 * Get an export file via the user browser
-	 *
-	 * Получаем экспортируемый файл через браузер
-	 *
-	 * @param string $file
-	 * @return void
-	 */
-	public static function runExport(string $file)
-	{
-		if (empty($file))
-			return;
-
-		// Might take some time.
-		@set_time_limit(600);
-
-		if (file_exists($file)) {
-			if (ob_get_level())
-				ob_end_clean();
-
-			header('Content-Description: File Transfer');
-			header('Content-Type: application/octet-stream');
-			header('Content-Disposition: attachment; filename=' . basename($file));
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($file));
-
-			if ($fd = fopen($file, 'rb')) {
-				while (!feof($fd))
-					print fread($fd, 1024);
-
-				fclose($fd);
-			}
-
-			unlink($file);
-		}
-
-		exit;
-	}
-
-	/**
-	 * Getting a part of an SQL expression like "(value1, value2, value3)"
-	 *
-	 * Получаем часть SQL-выражения вида "(value1, value2, value3)"
-	 *
-	 * @param array $items
-	 * @return string
-	 */
-	public static function getValues(array $items)
-	{
-		if (empty($items))
-			return '';
-
-		$result = '';
-		$cnt = count($items);
-		for ($i = 0; $i < $cnt; $i++) {
-			if ($i > 0)
-				$result .= ', ';
-
-			$result .= "('" . implode("', '", $items[$i]) . "')";
-		}
-
-		return $result;
 	}
 
 	/**
