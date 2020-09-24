@@ -162,14 +162,16 @@ class AdsBlock
 	 */
 	public static function prepareDisplayContext(&$output, &$message, $counter)
 	{
-		global $context;
+		global $options, $context;
+
+		$current_counter = empty($options['view_newest_first']) ? $context['start'] : $context['total_visible_posts'] - $context['start'];
 
 		/**
 		 * Displaying ads before the first message
 		 *
 		 * Вывод рекламы перед первым сообщением
 		 */
-		if (!empty($context['lp_ads_blocks']['before_first_post']) && $output['id'] == $context['topic_first_message']) {
+		if (!empty($context['lp_ads_blocks']['before_first_post']) && $current_counter == $output['counter'] && empty($context['start'])) {
 			lp_show_blocks('before_first_post');
 		}
 
@@ -178,7 +180,7 @@ class AdsBlock
 		 *
 		 * Вывод рекламы перед каждым первым сообщением
 		 */
-		if (!empty($context['lp_ads_blocks']['before_every_first_post']) && $output['counter'] == $context['start']) {
+		if (!empty($context['lp_ads_blocks']['before_every_first_post']) && $current_counter == $output['counter']) {
 			lp_show_blocks('before_every_first_post');
 		}
 
@@ -187,7 +189,8 @@ class AdsBlock
 		 *
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
-		if (!empty($context['lp_ads_blocks']['before_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
+		$before_every_last_post = empty($options['view_newest_first']) ? $counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0 : ($output['id'] == $context['topic_first_message'] || ($context['total_visible_posts'] - $counter) % $context['messages_per_page'] == 0);
+		if (!empty($context['lp_ads_blocks']['before_every_last_post']) && $before_every_last_post) {
 			lp_show_blocks('before_every_last_post');
 		}
 
@@ -196,7 +199,8 @@ class AdsBlock
 		 *
 		 * Вывод рекламы перед последним сообщением
 		 */
-		if (!empty($context['lp_ads_blocks']['before_last_post']) && $output['id'] == $context['topic_last_message']) {
+		if (!empty($context['lp_ads_blocks']['before_last_post']) &&
+			$output['id'] == (empty($options['view_newest_first']) ? $context['topic_last_message'] : $context['topic_first_message'])) {
 			lp_show_blocks('before_last_post');
 		}
 
@@ -205,7 +209,7 @@ class AdsBlock
 		 *
 		 * Вывод рекламы после первого сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_first_post']) && $counter == 2) {
+		if (!empty($context['lp_ads_blocks']['after_first_post']) && ($counter == (empty($options['view_newest_first']) ? 2 : $context['total_visible_posts'] - 2))) {
 			lp_show_blocks('after_first_post');
 		}
 
@@ -214,7 +218,7 @@ class AdsBlock
 		 *
 		 * Вывод рекламы после каждого первого сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == $context['start'] + 1)) {
+		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($options['view_newest_first']) ? $context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
 		}
 
@@ -223,8 +227,16 @@ class AdsBlock
 		 *
 		 * Вывод рекламы после каждого пятого сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_every_five_post']) && $counter % 6 == 0) {
+		if (!empty($context['lp_ads_blocks']['after_every_five_post']) && abs($current_counter - $counter) == 5) {
+			ob_start();
+
 			lp_show_blocks('after_every_five_post');
+
+			$after_every_five_post = ob_get_clean();
+
+			addInlineJavaScript('
+		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
+		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_five_post) . ');', true);
 		}
 
 		/**
@@ -240,8 +252,8 @@ class AdsBlock
 			$after_every_last_post = ob_get_clean();
 
 			addInlineJavaScript('
-		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
-		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
+		const all_windowbg2 = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
+		all_windowbg2[all_windowbg2.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
 		}
 
 		/**
@@ -249,7 +261,7 @@ class AdsBlock
 		 *
 		 * Вывод рекламы после последнего сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == $context['topic_last_message']) {
+		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == (empty($options['view_newest_first']) ? $context['topic_last_message'] : $context['topic_first_message'])) {
 			ob_start();
 
 			lp_show_blocks('after_last_post');
