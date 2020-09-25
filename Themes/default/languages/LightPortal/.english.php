@@ -65,6 +65,7 @@ $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
 $txt['lp_show_tags_on_page']            = 'Display keywords at the top of the page';
+$txt['lp_show_tags_as_articles']        = 'Display lists of articles with the same tag as cards';
 $txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Display comments block';
 $txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
@@ -225,12 +226,21 @@ $txt['lp_import_run']                    = 'Run import';
 $txt['lp_export_all']                    = 'Export all';
 
 // Tags
-$txt['lp_all_page_tags']    = 'All portal page tags';
-$txt['lp_all_tags_by_key']  = 'All pages with the "%1$s" tag';
-$txt['lp_no_selected_tag']  = 'The specified tag was not found.';
-$txt['lp_no_tags']          = 'There is no tags yet.';
-$txt['lp_keyword_column']   = 'Keyword';
-$txt['lp_frequency_column'] = 'Frequency';
+$txt['lp_all_page_tags']          = 'All portal page tags';
+$txt['lp_all_tags_by_key']        = 'All pages with the "%1$s" tag';
+$txt['lp_no_selected_tag']        = 'The specified tag was not found.';
+$txt['lp_no_tags']                = 'There is no tags yet.';
+$txt['lp_keyword_column']         = 'Keyword';
+$txt['lp_frequency_column']       = 'Frequency';
+$txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
+$txt['lp_sort_by_created']        = 'Creation date (old first)';
+$txt['lp_sort_by_updated_desc']   = 'Update date (new first)';
+$txt['lp_sort_by_updated']        = 'Update date (old first)';
+$txt['lp_sort_by_author_desc']    = 'Author name (desc)';
+$txt['lp_sort_by_author']         = 'Author name (asc)';
+$txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
+$txt['lp_sort_by_num_views']      = 'Number of views (asc)';
 
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';

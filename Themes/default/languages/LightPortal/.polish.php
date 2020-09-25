@@ -65,6 +65,7 @@ $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
+$txt['lp_show_tags_as_articles']        = 'Display lists of articles with the same tag as cards';
 $txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
@@ -225,12 +226,21 @@ $txt['lp_import_run']                    = 'Importuj';
 $txt['lp_export_all']                    = 'Eksportuj wszystko';
 
 // Tags
-$txt['lp_all_page_tags']    = 'Wszystkie tagi stron portalu';
-$txt['lp_all_tags_by_key']  = 'Strony z tagiem "%1$s"';
-$txt['lp_no_selected_tag']  = 'Nie znaleziono podanego tagu.';
-$txt['lp_no_tags']          = 'Nie dodano żadnych tagów.';
-$txt['lp_keyword_column']   = 'Słowa kluczowe';
-$txt['lp_frequency_column'] = 'Częstotliwość';
+$txt['lp_all_page_tags']          = 'Wszystkie tagi stron portalu';
+$txt['lp_all_tags_by_key']        = 'Strony z tagiem "%1$s"';
+$txt['lp_no_selected_tag']        = 'Nie znaleziono podanego tagu.';
+$txt['lp_no_tags']                = 'Nie dodano żadnych tagów.';
+$txt['lp_keyword_column']         = 'Słowa kluczowe';
+$txt['lp_frequency_column']       = 'Częstotliwość';
+$txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
+$txt['lp_sort_by_created']        = 'Creation date (old first)';
+$txt['lp_sort_by_updated_desc']   = 'Update date (new first)';
+$txt['lp_sort_by_updated']        = 'Update date (old first)';
+$txt['lp_sort_by_author_desc']    = 'Author name (desc)';
+$txt['lp_sort_by_author']         = 'Author name (asc)';
+$txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
+$txt['lp_sort_by_num_views']      = 'Number of views (asc)';
 
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';

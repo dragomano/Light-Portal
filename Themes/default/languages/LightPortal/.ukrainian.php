@@ -65,6 +65,7 @@ $txt['lp_extra']      = 'Сторінки і блоки';
 $txt['lp_extra_info'] = 'Тут знаходяться загальні налаштування сторінок і блоків.';
 
 $txt['lp_show_tags_on_page']            = 'Відображати ключові слова у верхній частині сторінки';
+$txt['lp_show_tags_as_articles']        = 'Відображати списки статей з однаковим тегом у вигляді карток';
 $txt['lp_show_related_pages']           = 'Відображати блок схожих сторінок';
 $txt['lp_show_comment_block']           = 'Відображати блок коментарів';
 $txt['lp_disabled_bbc_in_comments']     = 'Дозволені ББ-теги в коментарях';
@@ -225,12 +226,21 @@ $txt['lp_import_run']                    = 'Імпортувати';
 $txt['lp_export_all']                    = 'Експортувати всі';
 
 // Tags
-$txt['lp_all_page_tags']    = 'Всі теги сторінок порталу';
-$txt['lp_all_tags_by_key']  = 'Всі сторінки з тегом "%1$s"';
-$txt['lp_no_selected_tag']  = 'Вказаний тег не знайдено.';
-$txt['lp_no_tags']          = 'Тегів поки немає.';
-$txt['lp_keyword_column']   = 'Ключове слово';
-$txt['lp_frequency_column'] = 'Частотність';
+$txt['lp_all_page_tags']          = 'Всі теги сторінок порталу';
+$txt['lp_all_tags_by_key']        = 'Всі сторінки з тегом "%1$s"';
+$txt['lp_no_selected_tag']        = 'Вказаний тег не знайдено.';
+$txt['lp_no_tags']                = 'Тегів поки немає.';
+$txt['lp_keyword_column']         = 'Ключове слово';
+$txt['lp_frequency_column']       = 'Частотність';
+$txt['lp_sorting_label']          = 'Сортування';
+$txt['lp_sort_by_created_desc']   = 'За датою створення (спочатку нові)';
+$txt['lp_sort_by_created']        = 'За датою створення (спочатку старі)';
+$txt['lp_sort_by_updated_desc']   = 'За датою оновлення (спочатку нові)';
+$txt['lp_sort_by_updated']        = 'За датою оновлення (спочатку старі';
+$txt['lp_sort_by_author_desc']    = 'За автором (за спаданням)';
+$txt['lp_sort_by_author']         = 'За автором (за зростанням)';
+$txt['lp_sort_by_num_views_desc'] = 'За кількістю переглядів (за спаданням)';
+$txt['lp_sort_by_num_views']      = 'За кількістю переглядів (за зростанням)';
 
 // Related pages
 $txt['lp_related_pages'] = 'Схожі сторінки';
