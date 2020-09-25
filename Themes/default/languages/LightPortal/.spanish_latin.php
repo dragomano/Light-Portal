@@ -65,6 +65,7 @@ $txt['lp_extra'] = 'Páginas y bloques';
 $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de páginas y bloques.';
 
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
+$txt['lp_show_tags_as_articles'] = 'Display lists of articles with the same tag as cards';
 $txt['lp_show_related_pages'] = 'Display related pages block';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
@@ -231,6 +232,15 @@ $txt['lp_no_selected_tag'] = 'No se encontró la etiqueta especificada.';
 $txt['lp_no_tags'] = 'No hay etiquetas todavía.';
 $txt['lp_keyword_column'] = 'Palabra clave';
 $txt['lp_frequency_column'] = 'Frecuencia';
+$txt['lp_sorting_label'] = 'Sort by';
+$txt['lp_sort_by_created_desc'] = 'Creation date (new first)';
+$txt['lp_sort_by_created'] = 'Creation date (old first)';
+$txt['lp_sort_by_updated_desc'] = 'Update date (new first)';
+$txt['lp_sort_by_updated'] = 'Update date (old first)';
+$txt['lp_sort_by_author_desc'] = 'Author name (desc)';
+$txt['lp_sort_by_author'] = 'Author name (asc)';
+$txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
+$txt['lp_sort_by_num_views'] = 'Number of views (asc)';
 
 // Comments
 $txt['lp_comments'] = 'Comentarios';
