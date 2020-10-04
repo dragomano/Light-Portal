@@ -44,10 +44,6 @@ class FrontPage
 		} elseif ($modSettings['lp_frontpage_mode'] == 2) {
 			self::prepareArticles('topics');
 			$context['sub_template'] = 'show_topics_as_articles';
-
-			// Custom topic style
-			//$context['lp_all_categories'] = self::getListSelectedBoards();
-			//$context['sub_template']      = 'show_topics_as_custom_style';
 		} elseif ($modSettings['lp_frontpage_mode'] == 3) {
 			self::prepareArticles();
 			$context['sub_template'] = 'show_pages_as_articles';
@@ -55,6 +51,8 @@ class FrontPage
 			self::prepareArticles('boards');
 			$context['sub_template'] = 'show_boards_as_articles';
 		}
+
+		Subs::runAddons('frontpageCustomTemplate');
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
@@ -575,28 +573,5 @@ class FrontPage
 		}
 
 		return (int) $num_boards;
-	}
-
-	/**
-	 * Get the list of categories with boards, considering the selected boards in the portal settings
-	 *
-	 * Получаем список всех категорий с разделами, учитывая отмеченные разделы в настройках портала
-	 *
-	 * @return array
-	 */
-	public static function getListSelectedBoards()
-	{
-		global $sourcedir, $modSettings;
-
-		require_once($sourcedir . '/Subs-MessageIndex.php');
-
-		$boardListOptions = array(
-			'ignore_boards'   => true,
-			'use_permissions' => true,
-			'not_redirection' => true,
-			'included_boards' => !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : []
-		);
-
-		return getBoardList($boardListOptions);
 	}
 }
