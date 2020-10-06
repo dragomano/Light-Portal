@@ -39,17 +39,20 @@ class FrontPage
 
 		isAllowedTo('light_portal_view');
 
-		if ($modSettings['lp_frontpage_mode'] == 1) {
-			return Page::show();
-		} elseif ($modSettings['lp_frontpage_mode'] == 2) {
-			self::prepareArticles('topics');
-			$context['sub_template'] = 'show_topics_as_articles';
-		} elseif ($modSettings['lp_frontpage_mode'] == 3) {
-			self::prepareArticles();
-			$context['sub_template'] = 'show_pages_as_articles';
-		} else {
-			self::prepareArticles('boards');
-			$context['sub_template'] = 'show_boards_as_articles';
+		switch ($modSettings['lp_frontpage_mode']) {
+			case 1:
+				return Page::show();
+			case 2:
+				self::prepareArticles('topics');
+				$context['sub_template'] = 'show_topics_as_articles';
+				break;
+			case 3:
+				self::prepareArticles();
+				$context['sub_template'] = 'show_pages_as_articles';
+				break;
+			default:
+				self::prepareArticles('boards');
+				$context['sub_template'] = 'show_boards_as_articles';
 		}
 
 		Subs::runAddons('frontpageCustomTemplate');
@@ -179,6 +182,7 @@ class FrontPage
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
+
 			$custom_parameters = [
 				'current_member'    => $user_info['id'],
 				'is_approved'       => 1,
@@ -190,7 +194,13 @@ class FrontPage
 				'limit'             => $limit
 			];
 
-			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+			$custom_sorting = [
+				't.id_last_msg DESC',
+				'mf.poster_time DESC',
+				'mf.poster_time',
+			];
+
+			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -210,7 +220,7 @@ class FrontPage
 					AND t.id_board IN ({array_int:selected_boards})
 					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . 't.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -336,6 +346,7 @@ class FrontPage
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
+
 			$custom_parameters = [
 				'type'         => 'page',
 				'status'       => Page::STATUS_ACTIVE,
@@ -345,12 +356,18 @@ class FrontPage
 				'limit'        => $limit
 			];
 
-			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+			$custom_sorting = [
+				'comment_date DESC',
+				'p.created_at DESC',
+				'p.created_at',
+			];
+
+			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments,
-					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name' . (!empty($custom_columns) ? ',
+					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
+					mem.real_name AS author_name, (SELECT lp.created_at FROM {db_prefix}lp_comments AS lp WHERE lp.page_id = p.page_id ORDER BY lp.created_at DESC LIMIT 1) AS comment_date' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
@@ -359,7 +376,7 @@ class FrontPage
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . 'date DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -384,7 +401,7 @@ class FrontPage
 						'type'          => $row['type'],
 						'num_views'     => $row['num_views'],
 						'num_comments'  => $row['num_comments'],
-						'date'          => $row['date'],
+						'date'          => $row['created_at'],
 						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'link'          => $scripturl . '?page=' . $row['alias'],
 						'image'         => $image,
@@ -463,6 +480,7 @@ class FrontPage
 			$custom_columns    = [];
 			$custom_tables     = [];
 			$custom_wheres     = [];
+
 			$custom_parameters = [
 				'blank_string'    => '',
 				'current_member'  => $user_info['id'],
@@ -471,7 +489,13 @@ class FrontPage
 				'limit'           => $limit
 			];
 
-			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters));
+			$custom_sorting = [
+				'b.id_last_msg DESC',
+				'm.poster_time DESC',
+				'm.poster_time',
+			];
+
+			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -488,7 +512,7 @@ class FrontPage
 				WHERE b.id_board IN ({array_int:selected_boards})
 					AND {query_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . 'b.id_last_msg DESC
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
