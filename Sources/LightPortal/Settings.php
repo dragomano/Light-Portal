@@ -179,6 +179,9 @@ class Settings
 
 		require_once($sourcedir . '/ManageServer.php');
 
+		addInlineJavaScript('
+		$("p.information").removeClass("information").toggleClass("infobox");', true);
+
 		self::checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
@@ -216,6 +219,7 @@ class Settings
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
 			array('check', 'lp_frontpage_card_alt_layout'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
+			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set']),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
 			//array('int', 'lp_teaser_size', 'min' => 0),
 			array('int', 'lp_num_items_per_page'),
@@ -537,9 +541,11 @@ class Settings
 						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_VALIDATE_INT);
 					} elseif ($var[0] == 'multicheck') {
 						$plugin_options[$var[1]] = [];
+
 						foreach ($_POST[$var[1]] as $key => $value) {
 							$plugin_options[$var[1]][(int) $key] = (int) filter_var($value, FILTER_VALIDATE_BOOLEAN);
 						}
+
 						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 					} elseif ($var[0] == 'url') {
 						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_SANITIZE_URL);
@@ -562,6 +568,7 @@ class Settings
 
 		if (isset($data['toggle_plugin'])) {
 			$plugin_id = (int) $data['toggle_plugin'];
+
 			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
 				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
 				unset($context['lp_enabled_plugins'][$key]);
@@ -702,10 +709,11 @@ class Settings
 
 		$defaultAction = $defaultAction ?: key($subActions);
 
-		$_REQUEST['sa'] = isset($_REQUEST['sa'], $subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : $defaultAction;
-		$context['sub_action'] = $_REQUEST['sa'];
+		$subAction = isset($_REQUEST['sa'], $subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : $defaultAction;
 
-		call_helper(__NAMESPACE__ . '\\' . $subActions[$_REQUEST['sa']]);
+		$context['sub_action'] = $subAction;
+
+		call_helper(__NAMESPACE__ . '\\' . $subActions[$subAction]);
 	}
 
 	/**
