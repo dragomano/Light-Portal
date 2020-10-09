@@ -63,7 +63,7 @@ class KarmaPostRating
 	}
 
 	/**
-	 * Add rating via jQuery
+	 * Show rating as stars
 	 *
 	 * @return void
 	 */
