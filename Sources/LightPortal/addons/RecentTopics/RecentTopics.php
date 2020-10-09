@@ -67,6 +67,15 @@ class RecentTopics
 	private static $include_boards = '';
 
 	/**
+	 * Display user avatars (true|false)
+	 *
+	 * Отображать аватарки (true|false)
+	 *
+	 * @var bool
+	 */
+	private static $show_avatars = false;
+
+	/**
 	 * Online list update interval, in seconds
 	 *
 	 * Интервал обновления списка онлайн, в секундах
@@ -90,6 +99,7 @@ class RecentTopics
 		$options['recent_topics']['parameters']['num_topics']      = static::$num_topics;
 		$options['recent_topics']['parameters']['exclude_boards']  = static::$exclude_boards;
 		$options['recent_topics']['parameters']['include_boards']  = static::$include_boards;
+		$options['recent_topics']['parameters']['show_avatars']    = static::$show_avatars;
 		$options['recent_topics']['parameters']['update_interval'] = static::$update_interval;
 	}
 
@@ -110,6 +120,7 @@ class RecentTopics
 		$parameters['num_topics']      = FILTER_VALIDATE_INT;
 		$parameters['exclude_boards']  = FILTER_SANITIZE_STRING;
 		$parameters['include_boards']  = FILTER_SANITIZE_STRING;
+		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
@@ -159,6 +170,15 @@ class RecentTopics
 			)
 		);
 
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'show_avatars',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+			)
+		);
+
 		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics_addon_update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
@@ -189,7 +209,35 @@ class RecentTopics
 			$include_boards = explode(',', $parameters['include_boards']);
 
 		require_once($boarddir . '/SSI.php');
-		return ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+		$topics = ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+
+		if (empty($topics))
+			return [];
+
+		if (!empty($parameters['show_avatars'])) {
+			$posters = array_map(function ($item) {
+				return $item['poster']['id'];
+			}, $topics);
+
+			loadMemberData(array_unique($posters));
+
+			$topics = array_map(function ($item) {
+				global $memberContext, $modSettings;
+
+				if (!empty($item['poster']['id'])) {
+					if (!isset($memberContext[$item['poster']['id']]))
+						loadMemberContext($item['poster']['id']);
+
+					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
+				} else {
+					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
+				}
+
+				return $item;
+			}, $topics);
+		}
+
+		return $topics;
 	}
 
 	/**
@@ -223,12 +271,21 @@ class RecentTopics
 				echo '
 			<li class="windowbg">';
 
+				if (!empty($parameters['show_avatars']))
+					echo '
+				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
+
 				if ($topic['is_new'])
 					echo '
 				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
 
-				echo $topic['icon'], ' ', $topic['link'], '
-				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>
+				echo $topic['icon'], ' ', $topic['link'];
+
+				if (empty($parameters['show_avatars']))
+					echo '
+				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
+
+				echo '
 				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
 			}

@@ -61,7 +61,7 @@ class TopicRatingBar
 	}
 
 	/**
-	 * Add rating via jQuery
+	 * Show rating as stars
 	 *
 	 * @return void
 	 */

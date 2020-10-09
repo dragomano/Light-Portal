@@ -22,15 +22,6 @@ if (!defined('SMF'))
 class Todays
 {
 	/**
-	 * What is displayed (birthdays|holidays|events|calendar)
-	 *
-	 * Что отображаем (birthdays|holidays|events|calendar)
-	 *
-	 * @var string
-	 */
-	private static $type = 'calendar';
-
-	/**
 	 * Specify an icon (from the FontAwesome Free collection)
 	 *
 	 * Указываем иконку (из коллекции FontAwesome Free)
@@ -38,6 +29,15 @@ class Todays
 	 * @var string
 	 */
 	public static $addon_icon = 'fas fa-calendar-day';
+
+	/**
+	 * What is displayed (birthdays|holidays|events|calendar)
+	 *
+	 * Что отображаем (birthdays|holidays|events|calendar)
+	 *
+	 * @var string
+	 */
+	private static $type = 'calendar';
 
 	/**
 	 * Adding the block options
@@ -119,7 +119,7 @@ class Todays
 	 * @param string $output_method
 	 * @return string
 	 */
-	public static function getTodays($type, $output_method = 'echo')
+	public static function getData($type, $output_method = 'echo')
 	{
 		global $boarddir;
 
@@ -148,17 +148,17 @@ class Todays
 		if ($type !== 'todays')
 			return;
 
-		$result = self::getTodays($parameters['widget_type'], 'array');
+		$result = self::getData($parameters['widget_type'], 'array');
 
 		ob_start();
 
 		if ($parameters['widget_type'] == 'calendar') {
 			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))
-				self::getTodays($parameters['widget_type']);
+				self::getData($parameters['widget_type']);
 			else
 				echo $txt['lp_todays_addon_empty_list'];
 		} elseif (!empty($result)) {
-			self::getTodays($parameters['widget_type']);
+			self::getData($parameters['widget_type']);
 		} else {
 			echo $txt['lp_todays_addon_empty_list'];
 		}

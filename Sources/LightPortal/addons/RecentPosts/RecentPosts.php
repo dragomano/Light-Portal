@@ -376,9 +376,14 @@ class RecentPosts
 				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
 
 				echo '
-				', $post[$parameters['link_type']], '
-				<br class="clear">
-				<span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
+				', $post[$parameters['link_type']];
+
+				if (empty($parameters['show_avatars']))
+					echo '
+				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
+
+				echo '
+				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
 			</li>';
 			}
 
