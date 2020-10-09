@@ -110,12 +110,10 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $context, $modSettings, $txt;
+		global $txt, $context, $modSettings;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
-			$modSettings['minimize_files'] = 0;
+		if (Subs::isPortalMustNotBeLoaded())
 			return;
-		}
 
 		loadLanguage('LightPortal/');
 
@@ -163,12 +161,11 @@ class Integration
 		global $modSettings, $sourcedir;
 
 		if (!empty($_GET['page']))
-			return Page::show((string) $_GET['page']);
+			return Page::show();
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
 			require_once($sourcedir . '/BoardIndex.php');
-			$action = 'BoardIndex';
-			return $action();
+			return BoardIndex();
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
@@ -204,7 +201,8 @@ class Integration
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		$disabled_actions[] = 'home';
-		if (!empty($context['current_board']) || !empty($context['current_topic']))
+
+		if (!empty($context['current_board']) || !empty($context['current_topic']) || in_array($context['current_action'], ['keywords']))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
 
@@ -218,12 +216,10 @@ class Integration
 	 */
 	public static function menuButtons(array &$buttons)
 	{
-		global $context, $modSettings, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
-			$modSettings['minimize_files'] = 0;
+		if (Subs::isPortalMustNotBeLoaded())
 			return;
-		}
 
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
@@ -469,12 +465,12 @@ class Integration
 
 		if (!empty($actions['action']) && $actions['action'] == 'portal') {
 			if ($context['current_subaction'] == 'tags') {
-				if (!empty($_REQUEST['key']))
-					$result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key']);
-				else
-					$result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
-			} else
+				!empty($_REQUEST['key'])
+					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key'])
+					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
+			} else {
 				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
+			}
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'forum')

@@ -202,10 +202,9 @@ class Subs
 	{
 		global $context;
 
-		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
-			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
-		else
-			$parameters = $context['lp_block']['options']['parameters'] ?? [];
+		!empty($block_id) && !empty($context['lp_active_blocks'][$block_id])
+			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
+			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
 		self::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
 	}
@@ -494,7 +493,7 @@ class Subs
 				$context['template_layers'][] = 'debug';
 			} else {
 				$context['template_layers'] = array_merge(
-					array_slice($context['template_layers'], 0, (int) $key, true),
+					array_slice($context['template_layers'], 0, $key, true),
 					array('debug'),
 					array_slice($context['template_layers'], $key, null, true)
 				);
@@ -535,5 +534,22 @@ class Subs
 
 		if (!empty($old_url[1]))
 			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
+	}
+
+	/**
+	 * Check if the portal must not be loaded
+	 *
+	 * @return bool
+	 */
+	public static function isPortalMustNotBeLoaded()
+	{
+		global $context, $modSettings;
+
+		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
+			$modSettings['minimize_files'] = 0;
+			return true;
+		}
+
+		return false;
 	}
 }

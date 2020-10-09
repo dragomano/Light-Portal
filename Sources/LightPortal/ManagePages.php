@@ -70,7 +70,7 @@ class ManagePages
 			$search_params = $smcFunc['json_decode']($search_params, true);
 		}
 
-		$search_params_string = empty($_REQUEST['search']) ? '' : $_REQUEST['search'];
+		$search_params_string = $_REQUEST['search'] ?? '';
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
 		);
@@ -692,12 +692,8 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($post_data)) {
-				if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data[$option] === null)
-					$post_data[$option] = 0;
-
-				/* if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data[$option] === null)
-					$post_data[$option] = []; */
+			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null) {
+				$post_data[$option] = 0;
 			}
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;

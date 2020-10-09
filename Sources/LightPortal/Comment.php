@@ -80,7 +80,6 @@ class Comment
 
 		$temp_start            = (int) $_REQUEST['start'];
 		$context['page_index'] = constructPageIndex($page_index_url, $_REQUEST['start'], $total_comments, $limit);
-		$context['start']      = &$_REQUEST['start'];
 		$start                 = (int) $_REQUEST['start'];
 
 		$context['page_info']['num_pages'] = floor(($total_comments - 1) / $limit) + 1;
@@ -202,10 +201,9 @@ class Comment
 				'commentator' => $commentator
 			);
 
-			if (empty($parent))
-				$this->makeNotify('new_comment', 'page_comment', $result);
-			else
-				$this->makeNotify('new_reply', 'page_comment_reply', $result);
+			empty($parent)
+				? $this->makeNotify('new_comment', 'page_comment', $result)
+				: $this->makeNotify('new_reply', 'page_comment_reply', $result);
 
 			Helpers::getFromCache('page_' . $page_alias . '_comments', null);
 		}
@@ -227,10 +225,9 @@ class Comment
 		$user_avatar = [];
 
 		if ((!empty($modSettings['gravatarEnabled']) && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
-			if (!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url'][12]))
-				$user_avatar['href'] = get_gravatar_url($smcFunc['substr']($user_info['avatar']['url'], 11));
-			else
-				$user_avatar['href'] = get_gravatar_url($user_info['email']);
+			!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url'][12])
+				? $user_avatar['href'] = get_gravatar_url($smcFunc['substr']($user_info['avatar']['url'], 11))
+				: $user_avatar['href'] = get_gravatar_url($user_info['email']);
 		} elseif ($user_info['avatar']['url'] == '' && !empty($user_info['avatar']['id_attach'])) {
 			$user_avatar['href'] = $user_info['avatar']['custom_dir'] ? $modSettings['custom_avatar_url'] . '/' . $user_info['avatar']['filename'] : $scripturl . '?action=dlattach;attach=' . $user_info['avatar']['id_attach'] . ';type=avatar';
 		} elseif (strpos($user_info['avatar']['url'], 'http://') === 0 || strpos($user_info['avatar']['url'], 'https://') === 0) {
@@ -413,10 +410,9 @@ class Comment
 		$tree = [];
 
 		foreach ($data as $id => &$node) {
-			if (empty($node['parent_id']))
-				$tree[$id] = &$node;
-			else
-				$data[$node['parent_id']]['childs'][$id] = &$node;
+			empty($node['parent_id'])
+				? $tree[$id] = &$node
+				: $data[$node['parent_id']]['childs'][$id] = &$node;
 		}
 
 		return $tree;

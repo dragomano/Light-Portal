@@ -169,7 +169,7 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
-					<textarea id="message" tabindex="1" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">

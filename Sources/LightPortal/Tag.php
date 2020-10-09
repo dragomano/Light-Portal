@@ -354,10 +354,9 @@ class Tag
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($items[$row['value']]))
-				$i = 1;
-			else
-				$i++;
+			!isset($items[$row['value']])
+				? $i = 1
+				: $i++;
 
 			$items[$row['value']] = array(
 				'value'     => $row['value'],
