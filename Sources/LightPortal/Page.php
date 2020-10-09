@@ -27,14 +27,15 @@ class Page
 	 *
 	 * Просматриваем страницу по её алиасу
 	 *
-	 * @param string $alias
 	 * @return void
 	 */
-	public static function show(string $alias = '')
+	public static function show()
 	{
 		global $modSettings, $context, $txt, $scripturl;
 
 		isAllowedTo('light_portal_view');
+
+		$alias = filter_input(INPUT_GET, 'page');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
@@ -129,8 +130,8 @@ class Page
 		$context['meta_description']  = $context['lp_page']['description'];
 
 		$context['optimus_og_type']['article'] = array(
-			'published_time' => date('c', $context['lp_page']['created_at']),
-			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null,
+			'published_time' => date('Y-m-d\TH:i:s', $context['lp_page']['created_at']),
+			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']) : null,
 			'author'         => $context['lp_page']['author']
 		);
 

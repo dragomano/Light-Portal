@@ -205,7 +205,7 @@ class Helpers
 	 * @param bool $use_user_offset
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $timestamp, $use_user_offset = false)
+	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false)
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
@@ -432,8 +432,10 @@ class Helpers
 		if (empty($alias))
 			return false;
 
-		return !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1
-		 && !empty($modSettings['lp_frontpage_alias']) && $modSettings['lp_frontpage_alias'] == $alias;
+		return !empty($modSettings['lp_frontpage_mode'])
+			&& $modSettings['lp_frontpage_mode'] == 1
+			&& !empty($modSettings['lp_frontpage_alias'])
+			&& $modSettings['lp_frontpage_alias'] == $alias;
 	}
 
 	/**
@@ -514,7 +516,7 @@ class Helpers
 	 *
 	 * Собираем названия существующих тем оформления
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public static function getForumThemes()
 	{

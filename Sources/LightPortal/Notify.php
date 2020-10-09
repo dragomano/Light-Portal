@@ -30,11 +30,9 @@ class Notify extends \SMF_BackgroundTask
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
 
-		if ($this->_details['content_type'] == 'new_comment') {
-			$members = array_intersect($members, [$this->_details['author_id']]);
-		} else {
-			$members = array_intersect($members, [$this->_details['commentator_id']]);
-		}
+		$this->_details['content_type'] == 'new_comment'
+			? $members = array_intersect($members, [$this->_details['author_id']])
+			: $members = array_intersect($members, [$this->_details['commentator_id']]);
 
 		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
 		if (!empty($this->_details['sender_id']))
@@ -45,10 +43,10 @@ class Notify extends \SMF_BackgroundTask
 
 		if (!empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
 			loadMemberData($this->_details['sender_id'], false, 'minimal');
-			if (!empty($user_profile[$this->_details['sender_id']]))
-				$this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
-			else
-				$this->_details['sender_id'] = 0;
+
+			!empty($user_profile[$this->_details['sender_id']])
+				? $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name']
+				: $this->_details['sender_id'] = 0;
 		}
 
 		$alert_bits = array(
