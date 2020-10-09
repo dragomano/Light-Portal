@@ -50,7 +50,7 @@ function template_show_topics_as_articles()
 						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
 					</span>
 					<h3 class="card__title">
-						<a href="', $topic['link'], '">', $topic['subject'], '</a>
+						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
 					</h3>
 					<div>
 						<span class="card__by">';
@@ -251,7 +251,7 @@ function template_show_boards_as_articles()
 			echo '
 					</span>
 					<h3 class="card__title">
-						<a href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>
+						<a href="', $board['msg_link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>
 					</h3>
 					<div>
 						<span class="card__by">

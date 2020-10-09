@@ -204,7 +204,7 @@ class FrontPage
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(SELECT id_attach FROM {db_prefix}attachments WHERE id_msg = t.id_first_msg AND width <> 0 AND height <> 0 AND approved = {int:is_approved} AND attachment_type = {int:attachment_type} ORDER BY id_attach LIMIT 1) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(SELECT id_attach FROM {db_prefix}attachments WHERE id_msg = t.id_first_msg AND width <> 0 AND height <> 0 AND approved = {int:is_approved} AND attachment_type = {int:attachment_type} ORDER BY id_attach LIMIT 1) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
@@ -255,7 +255,7 @@ class FrontPage
 						'author_id'   => $row['id_member'],
 						'author_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
 						'author_name' => $row['poster_name'],
-						'date'        => $row['poster_time'],
+						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
 						'teaser'      => Helpers::getTeaser($row['body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
@@ -269,6 +269,11 @@ class FrontPage
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
+
+					$topics[$row['id_topic']]['msg_link'] = $topics[$row['id_topic']]['link'];
+
+					if (!empty($topics[$row['id_topic']]['num_replies']))
+						$topics[$row['id_topic']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
 				}
 
 				Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
@@ -401,7 +406,7 @@ class FrontPage
 						'type'          => $row['type'],
 						'num_views'     => $row['num_views'],
 						'num_comments'  => $row['num_comments'],
-						'date'          => $row['created_at'],
+						'date'          => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
 						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'link'          => $scripturl . '?page=' . $row['alias'],
 						'image'         => $image,
@@ -546,8 +551,14 @@ class FrontPage
 
 				if (!empty($row['last_updated'])) {
 					$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
+
 					$boards[$row['id_board']]['date'] = $row['last_updated'];
 				}
+
+				$boards[$row['id_board']]['msg_link'] = $boards[$row['id_board']]['link'];
+
+				if (empty($boards[$row['id_board']]['is_redirect']))
+					$boards[$row['id_board']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
 
 				Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
 			}
