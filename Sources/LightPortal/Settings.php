@@ -348,6 +348,7 @@ class Settings
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('bbc', 'lp_disabled_bbc_in_comments'),
+			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
@@ -361,7 +362,7 @@ class Settings
 			return $config_vars;
 
 		// Show comment block toggle
-		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_num_comments_per_page');
+		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
 
 		$show_comment_block_toggle_dt = [];
 		foreach ($show_comment_block_toggle as $item)

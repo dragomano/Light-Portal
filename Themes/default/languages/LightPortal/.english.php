@@ -72,6 +72,7 @@ $txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Display comments block';
 $txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
 $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => 'Integrated');
+$txt['lp_time_to_change_comments']      = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
 $txt['lp_page_editor_type_default']     = 'The type of page editor by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';

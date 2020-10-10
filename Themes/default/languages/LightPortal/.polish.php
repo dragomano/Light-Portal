@@ -72,6 +72,7 @@ $txt['lp_show_related_pages']           = 'Display related pages block';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
+$txt['lp_time_to_change_comments']      = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page']        = 'Ilość komentarzy na stronę';
 $txt['lp_page_editor_type_default']     = 'Rodzaj domyślnego edytora ';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ukryj aktywne bloki w centrum administracji';

@@ -53,6 +53,9 @@ class Comment
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'new_comment')
 			$this->add();
 
+		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'edit_comment')
+			$this->edit();
+
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'del_comment')
 			$this->remove();
 
@@ -184,7 +187,8 @@ class Comment
 				'avatar'      => $this->getUserAvatar(),
 				'message'     => empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags),
 				'created_at'  => date('Y-m-d', $time),
-				'created'     => Helpers::getFriendlyTime($time)
+				'created'     => Helpers::getFriendlyTime($time),
+				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
 			$comment = ob_get_clean();
@@ -209,6 +213,51 @@ class Comment
 		}
 
 		exit(json_encode($result));
+	}
+
+	/**
+	 * Editing a comment
+	 *
+	 * Редактирование комментария
+	 *
+	 * @return void
+	 */
+	private function edit()
+	{
+		global $smcFunc, $context, $modSettings;
+
+		$json  = file_get_contents('php://input');
+		$data  = json_decode($json, true);
+
+		if (empty($data))
+			return;
+
+		$item    = $data['comment_id'];
+		$message = filter_var($data['message'], FILTER_SANITIZE_STRING);
+
+		if (empty($item) || empty($message))
+			return;
+
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_comments
+			SET message = {string:message}
+			WHERE id = {int:id}
+				AND author_id = {int:user}',
+			array(
+				'message' => $message,
+				'id'      => $item,
+				'user'    => $context['user']['id']
+			)
+		);
+
+		$context['lp_num_queries']++;
+
+		$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+		$message      = empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags);
+
+		Helpers::getFromCache('page_' . $this->alias . '_comments', null);
+
+		exit;
 	}
 
 	/**
@@ -387,7 +436,8 @@ class Comment
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
 				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
-				'created_at'  => $row['created_at']
+				'created_at'  => $row['created_at'],
+				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) ? (time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60) : false
 			);
 		}
 
