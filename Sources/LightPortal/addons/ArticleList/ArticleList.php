@@ -14,7 +14,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.2
  */
 
 if (!defined('SMF'))
