@@ -28,6 +28,21 @@ document.addEventListener('DOMContentLoaded', function () {
 				break;
 			}
 
+			if (target.matches('span.modify_button')) {
+				lpModifyComment.call(target);
+				break;
+			}
+
+			if (target.matches('span.update_button')) {
+				lpUpdateComment.call(target);
+				break;
+			}
+
+			if (target.matches('span.cancel_button')) {
+				lpCancelComment.call(target);
+				break;
+			}
+
 			if (target.matches('span.remove_button')) {
 				lpRemoveComment.call(target);
 				break;
@@ -55,6 +70,68 @@ document.addEventListener('DOMContentLoaded', function () {
 		commentForm.commentator.value = commentator;
 
 		message.focus();
+	}
+
+	function lpModifyComment() {
+		const item = this.getAttribute('data-id'),
+			comment_area = document.querySelector('#comment' + item + ' .content'),
+			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
+			update_button = document.querySelector('#comment' + item + ' .update_button'),
+			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
+
+		modify_button.style.display = 'none';
+		update_button.style.display = 'inline-block';
+		cancel_button.style.display = 'inline-block';
+
+		comment_area.setAttribute('contenteditable', true);
+		comment_area.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
+		comment_area.style.borderRadius = '4px';
+		comment_area.style.padding = '1em';
+		comment_area.focus();
+
+		if (document.queryCommandSupported('selectAll'))
+			document.execCommand('selectAll', false, null);
+	}
+
+	async function lpUpdateComment() {
+		const item = this.getAttribute('data-id'),
+			message = document.querySelector('#comment' + item + ' .content');
+
+		if (!item) return;
+
+		let response = await fetch(PAGE_URL + 'sa=edit_comment', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				comment_id: item,
+				message: message.innerHTML
+			})
+		});
+
+		if (response.ok) {
+			lpCancelComment(this)
+		} else {
+			console.error(response)
+		}
+	}
+
+	function lpCancelComment(e) {
+		const item = (e ? e : this).getAttribute('data-id'),
+			comment_area = document.querySelector('#comment' + item + ' .content'),
+			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
+			update_button = document.querySelector('#comment' + item + ' .update_button'),
+			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
+
+		comment_area.setAttribute('contenteditable', false);
+		comment_area.style.boxShadow = 'none';
+		comment_area.style.borderRadius = 0;
+		comment_area.style.padding = '0 14px';
+
+		cancel_button.style.display = 'none';
+		update_button.style.display = 'none';
+		modify_button.style.display = 'inline-block';
 	}
 
 	async function lpRemoveComment() {

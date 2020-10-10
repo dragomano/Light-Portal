@@ -250,6 +250,13 @@ function show_single_comment($comment, $i = 0, $level = 1)
 				<div class="smalltext">
 					<span class="button reply_button" data-id="', $comment['id'], '">', $txt['reply'], '</span>';
 
+		// Only comment author can edit comments
+		if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
+			echo '
+					<span class="button modify_button" data-id="', $comment['id'], '">', $txt['modify'], '</span>
+					<span class="button update_button" data-id="', $comment['id'], '">', $txt['save'], '</span>
+					<span class="button cancel_button" data-id="', $comment['id'], '">', $txt['modify_cancel'], '</span>';
+
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
