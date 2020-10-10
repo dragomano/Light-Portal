@@ -405,7 +405,7 @@ class Page
 		if (empty($context['lp_page']['id']) || $user_info['possibly_robot'])
 			return;
 
-		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id']) {
+		if (Helpers::session()->isEmpty('light_portal_last_page_viewed') || Helpers::session('light_portal_last_page_viewed') != $context['lp_page']['id']) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
@@ -415,7 +415,7 @@ class Page
 				)
 			);
 
-			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
+			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
 			$context['lp_num_queries']++;
 		}
 	}

@@ -123,7 +123,7 @@ class FrontPage
 				$function = 'ActivePages';
 		}
 
-		$start = (int) $_REQUEST['start'];
+		$start =Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$getTotalFunction = 'getTotal' . $function;
@@ -152,8 +152,8 @@ class FrontPage
 			return $article;
 		}, $articles);
 
-		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', $_REQUEST['start'], $total_items, $limit);
-		$context['start']      = &$_REQUEST['start'];
+		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
+		$context['start']      = Helpers::request()->get('start');
 
 		$context['lp_frontpage_articles'] = $articles;
 

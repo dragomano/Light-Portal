@@ -38,7 +38,7 @@ class Block
 
 		$blocks = self::getFilteredByAreas();
 
-		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && $context['current_action'] == 'admin'))
+		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin')))
 			return;
 
 		// Block placement

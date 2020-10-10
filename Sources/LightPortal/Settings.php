@@ -709,7 +709,7 @@ class Settings
 
 		$defaultAction = $defaultAction ?: key($subActions);
 
-		$subAction = isset($_REQUEST['sa'], $subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : $defaultAction;
+		$subAction = Helpers::request()->has('sa') && isset($subActions[Helpers::request('sa')]) ? Helpers::request('sa') : $defaultAction;
 
 		$context['sub_action'] = $subAction;
 

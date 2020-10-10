@@ -512,7 +512,7 @@ class Subs
 	{
 		global $context, $scripturl;
 
-		if ($context['current_action'] == 'forum')
+		if (Helpers::request()->is('forum'))
 			$context['canonical_url'] = $scripturl . '?action=forum';
 	}
 
@@ -545,7 +545,7 @@ class Subs
 	{
 		global $context, $modSettings;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
+		if (!defined('LP_NAME') || !empty($context['uninstalling']) || Helpers::request()->is('printpage')) {
 			$modSettings['minimize_files'] = 0;
 			return true;
 		}

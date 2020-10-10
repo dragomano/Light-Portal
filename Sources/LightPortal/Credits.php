@@ -32,7 +32,7 @@ class Credits
 
 		$context['credits_modifications'][] = self::getCopyrights();
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
+		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
 			self::getComponentList();
 
 			loadTemplate('LightPortal/ViewCredits');
