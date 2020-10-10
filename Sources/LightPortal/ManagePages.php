@@ -65,12 +65,12 @@ class ManagePages
 		self::doActions();
 		self::massActions();
 
-		if (!empty($_REQUEST['params']) && empty($_REQUEST['is_search'])) {
-			$search_params = base64_decode(strtr($_REQUEST['params'], array(' ' => '+')));
+		if (Helpers::request()->filled('params') && Helpers::request()->isEmpty('is_search')) {
+			$search_params = base64_decode(strtr(Helpers::request('params'), array(' ' => '+')));
 			$search_params = $smcFunc['json_decode']($search_params, true);
 		}
 
-		$search_params_string = $_REQUEST['search'] ?? '';
+		$search_params_string = Helpers::request('search', '');
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
 		);
@@ -381,7 +381,7 @@ class ManagePages
 	 */
 	private static function doActions()
 	{
-		if (!isset($_REQUEST['actions']))
+		if (Helpers::request()->has('actions') === false)
 			return;
 
 		$json = file_get_contents('php://input');
@@ -566,12 +566,12 @@ class ManagePages
 	{
 		global $context, $txt, $scripturl;
 
-		loadTemplate('LightPortal/ManagePages');
-
-		$item = !empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null;
+		$item = Helpers::request('id');
 
 		if (empty($item))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
+
+		loadTemplate('LightPortal/ManagePages');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_edit_title'];
 

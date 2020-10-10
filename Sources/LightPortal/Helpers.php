@@ -2,6 +2,9 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Utils\Request;
+use Bugo\LightPortal\Utils\Session;
+
 /**
  * Helpers.php
  *
@@ -19,6 +22,32 @@ if (!defined('SMF'))
 
 class Helpers
 {
+	/**
+	 * Get the request object
+	 *
+	 * Получаем объект $_REQUEST
+	 *
+	 * @param string|null $key
+	 * @return mixed
+	 */
+	public static function request($key = null)
+	{
+		return $key ? (new Request)($key) : new Request;
+	}
+
+	/**
+	 * Get the session object
+	 *
+	 * Получаем объект $_SESSION
+	 *
+	 * @param string|null $key
+	 * @return mixed
+	 */
+	public static function session($key = null)
+	{
+		return $key ? (new Session)($key) : new Session;
+	}
+
 	/**
 	 * Get the maximum possible length of the message, in accordance with the settings of the forum
 	 *

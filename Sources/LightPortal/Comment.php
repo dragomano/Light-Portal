@@ -50,10 +50,10 @@ class Comment
 		if (empty($this->alias))
 			return;
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'new_comment')
+		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'new_comment')
 			$this->add();
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'del_comment')
+		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'del_comment')
 			$this->remove();
 
 		$comments = Helpers::getFromCache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
@@ -78,9 +78,9 @@ class Comment
 		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']))
 			$page_index_url = $scripturl . '?action=portal';
 
-		$temp_start            = (int) $_REQUEST['start'];
-		$context['page_index'] = constructPageIndex($page_index_url, $_REQUEST['start'], $total_comments, $limit);
-		$start                 = (int) $_REQUEST['start'];
+		$temp_start            = Helpers::request('start');
+		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);
+		$start                 = Helpers::request('start');
 
 		$context['page_info']['num_pages'] = floor(($total_comments - 1) / $limit) + 1;
 		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;

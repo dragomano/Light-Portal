@@ -56,8 +56,9 @@ class Integration
 	 */
 	public static function autoload(array &$classMap)
 	{
-		$classMap['Bugo\\LightPortal\\'] = 'LightPortal/';
+		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
+		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 
 	/**
@@ -127,7 +128,7 @@ class Integration
 	/**
 	 * Add "action=portal"
 	 *
-	 * Подключаем action «portal»
+	 * Добавляем action «portal»
 	 *
 	 * @param array $actions
 	 * @return void
@@ -139,7 +140,7 @@ class Integration
 		$actions['portal'] = array('LightPortal/FrontPage.php', array(__NAMESPACE__ . '\FrontPage', 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
-		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
+		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
 			Tag::show();
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
@@ -187,22 +188,22 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		if (empty($_REQUEST['action'])) {
+		if (Helpers::request()->isEmpty('action')) {
 			$current_action = 'portal';
 
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != $_SERVER['REQUEST_URL'])
 				$current_action = 'forum';
 
-			if (!empty($_REQUEST['page']))
+			if (Helpers::request()->filled('page'))
 				$current_action = 'portal';
 		} else {
-			$current_action = empty($modSettings['lp_standalone_mode']) && $context['current_action'] == 'forum' ? 'home' : $context['current_action'];
+			$current_action = empty($modSettings['lp_standalone_mode']) && Helpers::request()->is('forum') ? 'home' : $context['current_action'];
 		}
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		$disabled_actions[] = 'home';
 
-		if (!empty($context['current_board']) || !empty($context['current_topic']) || in_array($context['current_action'], ['keywords']))
+		if (!empty($context['current_board']) || !empty($context['current_topic']) || Helpers::request()->is(['keywords']))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
 
@@ -464,9 +465,9 @@ class Integration
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'portal') {
-			if ($context['current_subaction'] == 'tags') {
-				!empty($_REQUEST['key'])
-					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key'])
+			if (!empty($actions['sa']) && $actions['sa'] == 'tags') {
+				!empty($actions['key'])
+					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $actions['key'], $actions['key'])
 					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
 			} else {
 				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');

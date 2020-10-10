@@ -422,7 +422,7 @@ class Tag
 	{
 		global $modSettings, $context;
 
-		$start = (int) $_REQUEST['start'];
+		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$total_items = self::getTotalQuantityPagesWithSelectedTag();
@@ -458,8 +458,8 @@ class Tag
 			return $article;
 		}, $articles);
 
-		$context['page_index'] = constructPageIndex($context['canonical_url'], $_REQUEST['start'], $total_items, $limit);
-		$context['start']      = &$_REQUEST['start'];
+		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
+		$context['start']      = Helpers::request()->get('start');
 
 		$context['lp_frontpage_articles'] = $articles;
 

@@ -110,7 +110,7 @@ class ManageBlocks
 	 */
 	public static function doActions()
 	{
-		if (!isset($_REQUEST['actions']))
+		if (Helpers::request()->has('actions') === false)
 			return;
 
 		$json = file_get_contents('php://input');
@@ -327,7 +327,7 @@ class ManageBlocks
 			'description' => $txt['lp_blocks_add_tab_description']
 		);
 
-		$context['current_block']['placement'] = $_REQUEST['placement'] ?? '';
+		$context['current_block']['placement'] = Helpers::request('placement', '');
 
 		$context['sub_template'] = 'block_add';
 
@@ -359,8 +359,7 @@ class ManageBlocks
 	{
 		global $context, $txt, $scripturl;
 
-		$item = !empty($_REQUEST['block_id']) ? (int) $_REQUEST['block_id'] : null;
-		$item = $item ?: (!empty($_REQUEST['id']) ? (int) $_REQUEST['id'] : null);
+		$item = Helpers::request('block_id') ?: Helpers::request('id');
 
 		if (empty($item))
 			fatal_lang_error('lp_block_not_found', false, null, 404);

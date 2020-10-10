@@ -83,7 +83,7 @@ class AdsBlock
 	{
 		global $context;
 
-		if ($context['current_action'] == 'admin' && isset($_REQUEST['area']) && $_REQUEST['area'] == 'lp_blocks') {
+		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
 			require_once(__DIR__ . '/Template.php');
 			ads_block_form();
 		}
