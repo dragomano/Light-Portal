@@ -188,6 +188,7 @@ class Comment
 				'message'     => empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
+				'raw_message' => $message,
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
@@ -226,8 +227,8 @@ class Comment
 	{
 		global $smcFunc, $context, $modSettings;
 
-		$json  = file_get_contents('php://input');
-		$data  = json_decode($json, true);
+		$json = file_get_contents('php://input');
+		$data = json_decode($json, true);
 
 		if (empty($data))
 			return;
@@ -257,7 +258,7 @@ class Comment
 
 		Helpers::getFromCache('page_' . $this->alias . '_comments', null);
 
-		exit;
+		exit(json_encode($message));
 	}
 
 	/**
@@ -436,6 +437,7 @@ class Comment
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
 				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
+				'raw_message' => $row['message'],
 				'created_at'  => $row['created_at'],
 				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) ? (time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60) : false
 			);

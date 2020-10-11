@@ -243,6 +243,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 						</span>
 					</div>
 				</div>
+				<div class="raw_content" style="display: none">', $comment['raw_message'], '</div>
 				<div class="content" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 3em"' : '', '>', $comment['message'], '</div>';
 
 	if ($context['user']['is_logged'] && $level < 5) {

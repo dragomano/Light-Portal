@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		commentForm = document.getElementById('comment_form'),
 		message = document.getElementById('message');
 
+	let current_comment;
+
 	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
 		this.style.height = 'auto';
@@ -72,9 +74,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		message.focus();
 	}
 
-	function lpModifyComment() {
+	async function lpModifyComment() {
 		const item = this.getAttribute('data-id'),
-			comment_area = document.querySelector('#comment' + item + ' .content'),
+			comment_content = document.querySelector('#comment' + item + ' .content'),
+			comment_raw_content = document.querySelector('#comment' + item + ' .raw_content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
 			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
@@ -83,11 +86,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		update_button.style.display = 'inline-block';
 		cancel_button.style.display = 'inline-block';
 
-		comment_area.setAttribute('contenteditable', true);
-		comment_area.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
-		comment_area.style.borderRadius = '4px';
-		comment_area.style.padding = '1em';
-		comment_area.focus();
+		current_comment = comment_content.innerHTML;
+		comment_content.innerText = comment_raw_content.innerText;
+		comment_content.setAttribute('contenteditable', true);
+		comment_content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
+		comment_content.style.borderRadius = '4px';
+		comment_content.style.padding = '1em';
+		comment_content.focus();
 
 		if (document.queryCommandSupported('selectAll'))
 			document.execCommand('selectAll', false, null);
@@ -111,23 +116,26 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 
 		if (response.ok) {
-			lpCancelComment(this)
+			let comment = await response.json();
+
+			lpCancelComment(this, comment)
 		} else {
 			console.error(response)
 		}
 	}
 
-	function lpCancelComment(e) {
+	function lpCancelComment(e, source = current_comment) {
 		const item = (e ? e : this).getAttribute('data-id'),
-			comment_area = document.querySelector('#comment' + item + ' .content'),
+			comment_content = document.querySelector('#comment' + item + ' .content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
 			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
 
-		comment_area.setAttribute('contenteditable', false);
-		comment_area.style.boxShadow = 'none';
-		comment_area.style.borderRadius = 0;
-		comment_area.style.padding = '0 14px';
+		comment_content.innerHTML = source;
+		comment_content.setAttribute('contenteditable', false);
+		comment_content.style.boxShadow = 'none';
+		comment_content.style.borderRadius = 0;
+		comment_content.style.padding = '0 14px';
 
 		cancel_button.style.display = 'none';
 		update_button.style.display = 'none';
@@ -155,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					items: items
+					items
 				})
 			});
 
