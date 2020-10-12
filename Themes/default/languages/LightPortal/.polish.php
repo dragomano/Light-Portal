@@ -199,7 +199,8 @@ $txt['lp_page_alias_subtext']           = 'Alias strony musi zaczynać się od l
 $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
-$txt['lp_page_keywords_after']          = 'Oddzielone przecinkami';
+$txt['lp_page_keywords_only_unique']    = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add']   = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime']        = 'Data i czas publikacji';
 
 $txt['lp_page_options'] = array(

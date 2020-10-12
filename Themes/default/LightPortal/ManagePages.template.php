@@ -78,5 +78,16 @@ function template_page_post()
 		</div>
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>';
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+	<script>
+		const choices = new Choices("#keywords", {
+			removeItemButton: true,
+			duplicateItemsAllowed: false,
+			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
+			addItemText: (value) => {
+				return `' . $txt['lp_page_keywords_enter_to_add'] . '`;
+			},
+		});
+	</script>';
 }

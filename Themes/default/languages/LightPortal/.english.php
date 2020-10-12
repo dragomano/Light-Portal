@@ -199,7 +199,8 @@ $txt['lp_page_alias_subtext']           = 'The page alias must begin with a Lati
 $txt['lp_page_type']                    = 'Page type';
 $txt['lp_page_description']             = 'Description';
 $txt['lp_page_keywords']                = 'Keywords';
-$txt['lp_page_keywords_after']          = 'Use a comma to separate';
+$txt['lp_page_keywords_only_unique']    = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add']   = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime']        = 'Date and time of publication';
 
 $txt['lp_page_options'] = array(

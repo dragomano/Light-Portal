@@ -199,7 +199,8 @@ $txt['lp_page_alias_subtext'] = 'El alias de la página debe comenzar con una le
 $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
-$txt['lp_page_keywords_after'] = 'Usa una coma para separar';
+$txt['lp_page_keywords_only_unique'] = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 
 $txt['lp_page_options'] = array(

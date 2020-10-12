@@ -757,6 +757,16 @@ class ManagePages
 	{
 		global $context, $txt, $modSettings, $language;
 
+		// Improve keywords field ~ https://github.com/jshjohnson/Choices
+		loadCssFile('https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css', array('external' => true));
+		addInlineCss('
+		.choices__list {
+			position: relative;
+		}
+		.choices__input {
+			box-shadow: none;
+		}');
+
 		checkSubmitOnce('register');
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
@@ -828,13 +838,13 @@ class ManagePages
 		);
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
-		$context['posting_fields']['keywords']['label']['after'] = '<br><span class="smalltext">' . $txt['lp_page_keywords_after'] . '</span>';
 		$context['posting_fields']['keywords']['input'] = array(
-			'type' => 'textarea',
+			'type' => 'text',
 			'attributes' => array(
-				'id'        => 'keywords',
-				'maxlength' => 255,
-				'value'     => $context['lp_page']['keywords']
+				'id'    => 'keywords',
+				'value' => $context['lp_page']['keywords'],
+				'style' => 'width: 100%',
+				'dir'   => $context['right_to_left'] ? 'rtl' : 'ltr'
 			),
 			'tab' => 'seo'
 		);
@@ -1514,7 +1524,11 @@ class ManagePages
 		foreach ($items as $item) {
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
-				$xmlName = $xmlElement->appendChild(in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at']) ? $xml->createAttribute($key) : $xml->createElement($key));
+				$xmlName = $xmlElement->appendChild(
+					in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+						? $xml->createAttribute($key)
+						: $xml->createElement($key)
+				);
 
 				if (in_array($key, ['titles', 'params'])) {
 					foreach ($item[$key] as $k => $v) {
