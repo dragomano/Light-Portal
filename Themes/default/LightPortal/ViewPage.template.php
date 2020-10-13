@@ -175,7 +175,6 @@ function show_comment_block()
 					<input type="hidden" name="level" value="1">
 					<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
 					<input type="hidden" name="page_title" value="', $context['page_title'], '">
-					<input type="hidden" name="page_alias" value="', $context['lp_page']['alias'], '">
 					<input type="hidden" name="page_url" value="', $context['lp_current_page_url'], '">
 					<input type="hidden" name="start" value="', $context['page_info']['start'], '">
 					<input type="hidden" name="commentator" value="0">

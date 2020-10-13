@@ -237,9 +237,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			commentForm.reset();
 			commentForm.comment.style.display = 'none';
 			commentForm.parent_id.value = 0;
-			commentForm.start.value = PAGE_START;
 
-			window.location.hash = '#comment' + data.item;
+			if (parseInt(window.location.pathname.match(/\d+/)) == commentForm.start.value) {
+				window.location.hash = '#comment' + data.item;
+			} else {
+				window.location = window.location.origin + window.location.pathname.replace(/(start[=.])\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+			}
+
+			commentForm.start.value = PAGE_START;
 		} else {
 			console.error(response);
 		}
