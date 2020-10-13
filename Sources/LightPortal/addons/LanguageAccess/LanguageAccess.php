@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * LanguageAccess
  *
@@ -108,7 +110,7 @@ class LanguageAccess
 		if (isset($context['lp_block']['options']['parameters']['allowed_languages'])) {
 			$context['lp_block']['options']['parameters']['allowed_languages'] = is_array($context['lp_block']['options']['parameters']['allowed_languages']) ? $context['lp_block']['options']['parameters']['allowed_languages'] : explode(',', $context['lp_block']['options']['parameters']['allowed_languages']);
 		} else
-			$context['lp_block']['options']['parameters']['allowed_languages'] = $_POST['allowed_languages'] ?? [];
+			$context['lp_block']['options']['parameters']['allowed_languages'] = Helpers::post('allowed_languages', []);
 
 		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access_addon_allowed_languages'];
 		$context['posting_fields']['allowed_languages']['input'] = array(
