@@ -30,10 +30,10 @@ class Tag
 	{
 		global $context, $smcFunc, $txt, $scripturl, $modSettings, $sourcedir;
 
-		if (empty($_GET['key']))
+		if (Helpers::request()->isEmpty('key'))
 			self::showAll();
 
-		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim($_GET['key']), ENT_QUOTES);
+		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim(Helpers::request('key')), ENT_QUOTES);
 		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $context['lp_keyword']);
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($context['lp_keyword']);
 		$context['robot_no_index'] = true;
@@ -147,7 +147,7 @@ class Tag
 	{
 		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -443,7 +443,7 @@ class Tag
 			'num_views'        => 'p.num_views'
 		);
 
-		$context['current_sorting'] = $_POST['sort'] ?? 'created;desc';
+		$context['current_sorting'] = Helpers::post('sort', 'created;desc');
 		$sort = $sorting_types[$context['current_sorting']];
 
 		$articles = self::getAllPagesWithSelectedTag($start, $limit, $sort);

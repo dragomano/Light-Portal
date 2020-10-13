@@ -303,22 +303,23 @@ class Settings
 		});', true);
 
 		// Save
-		if (isset($_GET['save'])) {
+		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			if (empty($_POST['lp_frontpage_mode']))
-				$_POST['lp_standalone_url'] = 0;
+			if (Helpers::post()->isEmpty('lp_frontpage_mode'))
+				Helpers::post()->put('lp_standalone_url', 0);
 
-			if (!empty($_POST['lp_image_placeholder']))
-				$_POST['lp_image_placeholder'] = filter_var($_POST['lp_image_placeholder'], FILTER_VALIDATE_URL);
+			if (Helpers::post()->filled('lp_image_placeholder'))
+				Helpers::post()->put('lp_image_placeholder', Helpers::validate(Helpers::post('lp_image_placeholder'), 'url'));
 
-			if (!empty($_POST['lp_standalone_url']))
-				$_POST['lp_standalone_url'] = filter_var($_POST['lp_standalone_url'], FILTER_VALIDATE_URL);
+			if (Helpers::post()->filled('lp_standalone_url'))
+				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);
 
-			clean_cache();
+			Helpers::cache()->flush();
+
 			redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
@@ -384,7 +385,7 @@ class Settings
 		});', true);
 
 		// Save
-		if (isset($_GET['save'])) {
+		if (Helpers::request()->has('save')) {
 			checkSession();
 
 			// Clean up the tags
@@ -392,19 +393,20 @@ class Settings
 			foreach (parse_bbc(false) as $tag)
 				$bbcTags[] = $tag['tag'];
 
-			if (!isset($_POST['lp_disabled_bbc_in_comments_enabledTags']))
-				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = [];
-			elseif (!is_array($_POST['lp_disabled_bbc_in_comments_enabledTags']))
-				$_POST['lp_disabled_bbc_in_comments_enabledTags'] = array($_POST['lp_disabled_bbc_in_comments_enabledTags']);
+			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false)
+				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
+			elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')))
+				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
 
-			$_POST['lp_enabled_bbc_in_comments']  = implode(',', $_POST['lp_disabled_bbc_in_comments_enabledTags']);
-			$_POST['lp_disabled_bbc_in_comments'] = implode(',', array_diff($bbcTags, $_POST['lp_disabled_bbc_in_comments_enabledTags']));
+			Helpers::post()->put('lp_enabled_bbc_in_comments', implode(',', Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
+			Helpers::post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			saveDBSettings($save_vars);
 
-			clean_cache();
+			Helpers::cache()->flush();
+
 			redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
@@ -470,12 +472,12 @@ class Settings
 
 		$context['sub_template'] = 'show_settings';
 
-		if (isset($_GET['save'])) {
+		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			$_POST['lp_left_panel_width']  = json_encode($_POST['lp_left_panel_width']);
-			$_POST['lp_right_panel_width'] = json_encode($_POST['lp_right_panel_width']);
-			$_POST['lp_panel_direction']   = json_encode($_POST['lp_panel_direction']);
+			Helpers::post()->put('lp_left_panel_width', json_encode(Helpers::post('lp_left_panel_width')));
+			Helpers::post()->put('lp_right_panel_width', json_encode(Helpers::post('lp_right_panel_width')));
+			Helpers::post()->put('lp_panel_direction', json_encode(Helpers::post('lp_panel_direction')));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['int', 'lp_header_panel_width'];
@@ -530,28 +532,28 @@ class Settings
 
 		$context['sub_template'] = 'plugin_settings';
 
-		if (isset($_GET['save'])) {
+		if (Helpers::request()->has('save')) {
 			checkSession();
 
 			$plugin_options = [];
 			foreach ($config_vars as $id => $var) {
-				if (isset($_POST[$var[1]])) {
+				if (Helpers::post()->has($var[1])) {
 					if ($var[0] == 'check') {
-						$plugin_options[$var[1]] = (int) filter_var($_POST[$var[1]], FILTER_VALIDATE_BOOLEAN);
+						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
 					} elseif ($var[0] == 'int') {
-						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_VALIDATE_INT);
+						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
 					} elseif ($var[0] == 'multicheck') {
 						$plugin_options[$var[1]] = [];
 
-						foreach ($_POST[$var[1]] as $key => $value) {
-							$plugin_options[$var[1]][(int) $key] = (int) filter_var($value, FILTER_VALIDATE_BOOLEAN);
+						foreach (Helpers::post($var[1]) as $key => $value) {
+							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
 						}
 
 						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 					} elseif ($var[0] == 'url') {
-						$plugin_options[$var[1]] = filter_var($_POST[$var[1]], FILTER_SANITIZE_URL);
+						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
 					} else {
-						$plugin_options[$var[1]] = $_POST[$var[1]];
+						$plugin_options[$var[1]] = Helpers::post($var[1]);
 					}
 				}
 			}
@@ -678,9 +680,9 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main'   => 'ManagePages::main',
-			'add'    => 'ManagePages::add',
-			'edit'   => 'ManagePages::edit'
+			'main' => 'ManagePages::main',
+			'add'  => 'ManagePages::add',
+			'edit' => 'ManagePages::edit'
 		);
 
 		if ($user_info['is_admin']) {
@@ -729,7 +731,7 @@ class Settings
 		global $context, $txt;
 
 		// Check once a week | Проверяем раз в неделю
-		if (LP_VERSION < $new_version = Helpers::getFromCache('last_version', 'getLastVersion', __CLASS__, 604800)) {
+		if (LP_VERSION < $new_version = Helpers::cache('last_version', 'getLastVersion', __CLASS__, 604800)) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)

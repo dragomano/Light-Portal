@@ -294,7 +294,7 @@ class ManagePages
 	{
 		global $smcFunc, $user_info, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
@@ -397,7 +397,8 @@ class ManagePages
 			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
 
-		clean_cache();
+		Helpers::cache()->flush();
+
 		exit;
 	}
 
@@ -460,7 +461,7 @@ class ManagePages
 			)
 		);
 
-		Subs::runAddons('onRemovePages', array(&$items));
+		Subs::runAddons('onPageRemoving', array(&$items));
 
 		$context['lp_num_queries'] += 5;
 	}
@@ -501,12 +502,12 @@ class ManagePages
 	 */
 	public static function massActions()
 	{
-		if (!isset($_POST['mass_actions']) || empty($_POST['items']))
+		if (Helpers::post()->has('mass_actions') === false || Helpers::post()->isEmpty('items'))
 			return;
 
 		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, array('options' => array('default' => 'action=admin;area=lp_pages')));
 
-		$items = $_POST['items'];
+		$items = Helpers::post('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				self::remove($items);
@@ -635,7 +636,7 @@ class ManagePages
 	{
 		global $context, $modSettings, $user_info;
 
-		if (isset($_POST['save']) || isset($_POST['preview'])) {
+		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
@@ -664,7 +665,7 @@ class ManagePages
 			);
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
-			$post_data['id'] = !empty($_GET['id']) ? (int) $_GET['id'] : 0;
+			$post_data['id'] = Helpers::request('id', 0);
 
 			self::findErrors($post_data);
 		}
@@ -728,7 +729,7 @@ class ManagePages
 		$alias_format = array(
 			'options' => array("regexp" => '/' . static::$alias_pattern . '/')
 		);
-		if (!empty($data['alias']) && empty(filter_var($data['alias'], FILTER_VALIDATE_REGEXP, $alias_format)))
+		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
 		if (!empty($data['alias']) && self::isUnique($data))
@@ -738,7 +739,7 @@ class ManagePages
 			$post_errors[] = 'no_content';
 
 		if (!empty($post_errors)) {
-			$_POST['preview'] = true;
+			Helpers::post()->put('preview', true);
 			$context['post_errors'] = [];
 
 			foreach ($post_errors as $error)
@@ -885,7 +886,7 @@ class ManagePages
 				'type' => 'textarea',
 				'attributes' => array(
 					'id'        => 'content',
-					'maxlength' => Helpers::getMaxMessageLength(),
+					'maxlength' => MAX_MSG_LENGTH,
 					'value'     => $context['lp_page']['content'],
 					'required'  => true
 				),
@@ -962,7 +963,7 @@ class ManagePages
 	{
 		global $context, $smcFunc, $txt;
 
-		if (!isset($_POST['preview']))
+		if (Helpers::post()->has('preview') === false)
 			return;
 
 		checkSubmitOnce('free');
@@ -1035,7 +1036,7 @@ class ManagePages
 	{
 		global $context, $smcFunc, $db_type;
 
-		if (!empty($context['post_errors']) || !isset($_POST['save']))
+		if (!empty($context['post_errors']) || Helpers::post()->has('save') === false)
 			return;
 
 		checkSubmitOnce('check');
@@ -1049,7 +1050,7 @@ class ManagePages
 					'author_id'   => 'int',
 					'alias'       => 'string-255',
 					'description' => 'string-255',
-					'content'     => 'string-' . Helpers::getMaxMessageLength(),
+					'content'     => 'string-' . MAX_MSG_LENGTH,
 					'type'        => 'string-4',
 					'permissions' => 'int',
 					'status'      => 'int',
@@ -1071,7 +1072,7 @@ class ManagePages
 
 			$context['lp_num_queries']++;
 
-			Subs::runAddons('onDataSaving', array($item));
+			Subs::runAddons('onPageSaving', array($item));
 
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];
@@ -1257,7 +1258,8 @@ class ManagePages
 			}
 		}
 
-		clean_cache();
+		Helpers::cache()->flush();
+
 		redirectexit('action=admin;area=lp_pages;sa=main');
 	}
 
@@ -1436,10 +1438,10 @@ class ManagePages
 	{
 		global $smcFunc, $context;
 
-		if (empty($_POST['pages']) && !isset($_POST['export_all']))
+		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
 			return false;
 
-		$pages = !empty($_POST['pages']) && !isset($_POST['export_all']) ? $_POST['pages'] : null;
+		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -1772,6 +1774,6 @@ class ManagePages
 		// Restore the cache
 		$db_cache = $db_temp_cache;
 
-		clean_cache();
+		Helpers::cache()->flush();
 	}
 }

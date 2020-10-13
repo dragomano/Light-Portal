@@ -131,7 +131,8 @@ class ManageBlocks
 
 		self::updatePriority();
 
-		clean_cache();
+		Helpers::cache()->flush();
+
 		exit;
 	}
 
@@ -196,7 +197,7 @@ class ManageBlocks
 		if (empty($item))
 			return;
 
-		$_POST['clone']    = true;
+		Helpers::post()->put('clone', true);
 		$result['success'] = false;
 
 		$context['lp_block']         = self::getData($item);
@@ -216,7 +217,7 @@ class ManageBlocks
 			];
 		}
 
-		Helpers::getFromCache('active_blocks', null);
+		Helpers::cache()->forget('active_blocks');
 
 		exit(json_encode($result));
 	}
@@ -331,10 +332,10 @@ class ManageBlocks
 
 		$context['sub_template'] = 'block_add';
 
-		if (!isset($_POST['add_block']))
+		if (Helpers::post()->has('add_block') === false)
 			return;
 
-		$type = (string) $_POST['add_block'];
+		$type = Helpers::post('add_block', '');
 		$context['current_block']['type'] = $type;
 
 		Subs::getForumLanguages();
@@ -425,7 +426,7 @@ class ManageBlocks
 	{
 		global $context, $user_info;
 
-		if (isset($_POST['save']) || isset($_POST['preview'])) {
+		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_SANITIZE_STRING,
@@ -520,11 +521,11 @@ class ManageBlocks
 		$areas_format = array(
 			'options' => array("regexp" => '/' . static::$areas_pattern . '/')
 		);
-		if (!empty($data['areas']) && empty(filter_var($data['areas'], FILTER_VALIDATE_REGEXP, $areas_format)))
+		if (!empty($data['areas']) && empty(Helpers::validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
 
 		if (!empty($post_errors)) {
-			$_POST['preview'] = true;
+			Helpers::post()->put('preview', true);
 			$context['post_errors'] = [];
 
 			foreach ($post_errors as $error)
@@ -738,7 +739,7 @@ class ManageBlocks
 				'type' => 'textarea',
 				'attributes' => array(
 					'id'        => 'content',
-					'maxlength' => Helpers::getMaxMessageLength(),
+					'maxlength' => MAX_MSG_LENGTH,
 					'value'     => $context['lp_block']['content']
 				),
 				'tab' => 'content'
@@ -847,7 +848,7 @@ class ManageBlocks
 	{
 		global $context, $smcFunc, $txt;
 
-		if (!isset($_POST['preview']))
+		if (Helpers::post()->has('preview') === false)
 			return;
 
 		checkSubmitOnce('free');
@@ -909,13 +910,13 @@ class ManageBlocks
 	{
 		global $context, $smcFunc;
 
-		if (!empty($context['post_errors']) || (!isset($_POST['save']) && !isset($_POST['clone'])))
+		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
 			return;
 
 		checkSubmitOnce('check');
 
 		if (empty($item)) {
-			$max_length = Helpers::getMaxMessageLength();
+			$max_length = MAX_MSG_LENGTH;
 			$priority   = self::getPriority();
 
 			$item = $smcFunc['db_insert']('',
@@ -1086,15 +1087,15 @@ class ManageBlocks
 				$context['lp_num_queries']++;
 			}
 
-			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item, null);
-			Helpers::getFromCache($context['lp_block']['type'] . '_addon_u' . $context['user']['id'], null);
-			Helpers::getFromCache($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id'], null);
+			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
+			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_u' . $context['user']['id']);
+			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id']);
 		}
 
-		if (!empty($_POST['clone']))
+		if (Helpers::post()->filled('clone'))
 			return $item;
 
-		Helpers::getFromCache('active_blocks', null);
+		Helpers::cache()->forget('active_blocks');
 
 		redirectexit('action=admin;area=lp_blocks;sa=main');
 	}
@@ -1204,7 +1205,7 @@ class ManageBlocks
 	{
 		global $smcFunc, $context;
 
-		if (empty($_POST['items']))
+		if (Helpers::post()->isEmpty('items'))
 			return [];
 
 		$request = $smcFunc['db_query']('', '
@@ -1217,7 +1218,7 @@ class ManageBlocks
 			WHERE b.block_id IN ({array_int:blocks})',
 			array(
 				'type'  => 'block',
-				'blocks' => $_POST['items']
+				'blocks' => Helpers::post('items')
 			)
 		);
 
@@ -1434,6 +1435,6 @@ class ManageBlocks
 		if (empty($result))
 			fatal_lang_error('lp_import_failed', false);
 
-		clean_cache();
+		Helpers::cache()->flush();
 	}
 }

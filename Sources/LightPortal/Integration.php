@@ -82,7 +82,8 @@ class Integration
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
-			'RC2_CLEAN'       => !defined('JQUERY_VERSION')
+			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
+			'MAX_MSG_LENGTH'  => !empty($modSettings['max_messageLength']) && $modSettings['max_messageLength'] > 65534 ? (int) $modSettings['max_messageLength'] : 65534
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -161,7 +162,7 @@ class Integration
 	{
 		global $modSettings, $sourcedir;
 
-		if (!empty($_GET['page']))
+		if (Helpers::request()->filled('page'))
 			return Page::show();
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
@@ -191,7 +192,7 @@ class Integration
 		if (Helpers::request()->isEmpty('action')) {
 			$current_action = 'portal';
 
-			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != $_SERVER['REQUEST_URL'])
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
 			if (Helpers::request()->filled('page'))
