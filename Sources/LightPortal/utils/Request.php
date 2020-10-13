@@ -20,7 +20,7 @@ class Request extends Arr
 
 	public function __construct()
 	{
-		static::$obj = $_REQUEST;
+		static::$obj = &$_REQUEST;
 	}
 
 	/**
@@ -30,7 +30,7 @@ class Request extends Arr
 	 */
 	public static function path()
 	{
-		return $_SERVER['REQUEST_URI'] ?? '';
+		return Server('REQUEST_URI', '');
 	}
 
 	/**
@@ -50,7 +50,7 @@ class Request extends Arr
 	 */
 	public static function fullUrl()
 	{
-		return $_SERVER['REQUEST_URL'] ?? '';
+		return Server('REQUEST_URL', '');
 	}
 
 	/**

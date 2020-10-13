@@ -353,7 +353,13 @@ class RecentPosts
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::getFromCache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_posts = Helpers::cache(
+			'recent_posts_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time,
+			$parameters
+		);
 
 		if (!empty($recent_posts)) {
 			ob_start();

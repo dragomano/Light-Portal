@@ -310,7 +310,7 @@ class SlickSlider
 		if ($type !== 'slick_slider')
 			return;
 
-		$slick_slider_html = Helpers::getFromCache('slick_slider_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$slick_slider_html = Helpers::cache('slick_slider_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
 		if (!empty($slick_slider_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/slick-carousel@1/slick/slick.css', array('external' => true));

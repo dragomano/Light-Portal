@@ -194,7 +194,7 @@ class BoardNews
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::getFromCache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$board_news = Helpers::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($board_news)) {
 			ob_start();

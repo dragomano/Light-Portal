@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Utils;
 
 /**
- * Session.php
+ * Server.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,12 +14,12 @@ namespace Bugo\LightPortal\Utils;
  * @version 1.2
  */
 
-class Session extends Arr
+class Server extends Arr
 {
 	public static $obj;
 
 	public function __construct()
 	{
-		static::$obj = &$_SESSION;
+		static::$obj = &$_SERVER;
 	}
 }

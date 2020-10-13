@@ -259,7 +259,13 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::getFromCache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_topics = Helpers::cache(
+			'recent_topics_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time,
+			$parameters
+		);
 
 		if (!empty($recent_topics)) {
 			ob_start();

@@ -195,7 +195,7 @@ class TopPosters
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::getFromCache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_posters)) {
 			ob_start();

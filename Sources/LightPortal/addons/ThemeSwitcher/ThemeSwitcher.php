@@ -84,7 +84,7 @@ class ThemeSwitcher
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::getFromCache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::cache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
 		if (!empty($available_themes)) {
 			ob_start();
@@ -111,9 +111,7 @@ class ThemeSwitcher
 						search = search != "" ? search + ";" : "?";
 						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
 					}
-				</script>';
-
-			echo '
+				</script>
 			</div>';
 
 			$content = ob_get_clean();

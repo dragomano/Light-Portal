@@ -49,8 +49,8 @@ class Subs
 		$context['lp_all_content_classes'] = self::getContentClasses();
 		$context['lp_fontawesome_enabled'] = Helpers::doesThisThemeUseFontAwesome();
 
-		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
-		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
+		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', __CLASS__);
+		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;

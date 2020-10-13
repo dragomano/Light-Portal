@@ -270,7 +270,7 @@ class ArticleList
 		if (empty($parameters['ids']))
 			return [];
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
@@ -342,7 +342,7 @@ class ArticleList
 		});
 
 		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
-		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
+		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 

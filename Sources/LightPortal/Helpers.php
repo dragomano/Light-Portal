@@ -2,7 +2,10 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
+use Bugo\LightPortal\Utils\Server;
 use Bugo\LightPortal\Utils\Session;
 
 /**
@@ -23,43 +26,76 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the request object
+	 * Get the cache data or Cache class object
+	 *
+	 * Получаем данные из кэша или объект класса Cache
+	 *
+	 * @param string $key
+	 * @param string|null $funcName
+	 * @param string $class
+	 * @param int $time (in seconds)
+	 * @param mixed $vars
+	 * @return mixed
+	 */
+	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
+	{
+		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+	}
+
+	/**
+	 * Get $_POST object
+	 *
+	 * Получаем объект $_POST
+	 *
+	 * @param string|null $key
+	 * @param mixed|null $default
+	 * @return mixed
+	 */
+	public static function post($key = null, $default = null)
+	{
+		return $key ? (new Post)($key, $default) : new Post;
+	}
+
+	/**
+	 * Get $_REQUEST object
 	 *
 	 * Получаем объект $_REQUEST
 	 *
 	 * @param string|null $key
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public static function request($key = null)
+	public static function request($key = null, $default = null)
 	{
-		return $key ? (new Request)($key) : new Request;
+		return $key ? (new Request)($key, $default) : new Request;
 	}
 
 	/**
-	 * Get the session object
+	 * Get $_SERVER object
+	 *
+	 * Получаем объект $_SERVER
+	 *
+	 * @param string|null $key
+	 * @param mixed|null $default
+	 * @return mixed
+	 */
+	public static function server($key = null, $default = null)
+	{
+		return $key ? (new Server)($key, $default) : new Server;
+	}
+
+	/**
+	 * Get $_SESSION object
 	 *
 	 * Получаем объект $_SESSION
 	 *
 	 * @param string|null $key
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public static function session($key = null)
+	public static function session($key = null, $default = null)
 	{
-		return $key ? (new Session)($key) : new Session;
-	}
-
-	/**
-	 * Get the maximum possible length of the message, in accordance with the settings of the forum
-	 *
-	 * Получаем максимально возможную длину сообщения, в соответствии с настройками форума
-	 *
-	 * @return int
-	 */
-	public static function getMaxMessageLength()
-	{
-		global $modSettings;
-
-		return !empty($modSettings['max_messageLength']) && $modSettings['max_messageLength'] > 65534 ? (int) $modSettings['max_messageLength'] : 65534;
+		return $key ? (new Session)($key, $default) : new Session;
 	}
 
 	/**
@@ -355,6 +391,7 @@ class Helpers
 	 *
 	 * Получаем нужные данные, используя кэш
 	 *
+	 * @deprecated 1.2.1 Function replacement
 	 * @param string $key
 	 * @param string|null $funcName
 	 * @param string $class
@@ -364,25 +401,7 @@ class Helpers
 	 */
 	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
 	{
-		if (empty($key))
-			return false;
-
-		if ($funcName === null || $time === 0)
-			cache_put_data('light_portal_' . $key, null);
-
-		if (($$key = cache_get_data('light_portal_' . $key, $time)) === null) {
-			$$key = null;
-
-			if (method_exists($class, $funcName)) {
-				$$key = $class == 'self' ? self::$funcName(...$vars) : $class::$funcName(...$vars);
-			} elseif (function_exists($funcName)) {
-				$$key = $funcName(...$vars);
-			}
-
-			cache_put_data('light_portal_' . $key, $$key, $time);
-		}
-
-		return $$key;
+		return self::cache($key, $funcName, $class, $time, ...$vars);
 	}
 
 	/**
@@ -568,5 +587,40 @@ class Helpers
 		$context['lp_num_queries']++;
 
 		return $current_themes;
+	}
+
+	/**
+	 * Get the filtered $obj[$key]
+	 *
+	 * Получаем отфильтрованное значение $obj[$key]
+	 *
+	 * @param string $key
+	 * @param string|array $type
+	 * @return mixed
+	 */
+	public static function validate($key, $type = 'string')
+	{
+		if (is_array($type)) {
+			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
+		}
+
+		switch ($type) {
+			case 'string':
+				$filter = FILTER_SANITIZE_STRING;
+				break;
+			case 'int':
+				$filter = FILTER_VALIDATE_INT;
+				break;
+			case 'bool':
+				$filter = FILTER_VALIDATE_BOOLEAN;
+				break;
+			case 'url':
+				$filter = FILTER_VALIDATE_URL;
+				break;
+			default:
+				$filter = FILTER_DEFAULT;
+		}
+
+		return filter_var($key, $filter);
 	}
 }

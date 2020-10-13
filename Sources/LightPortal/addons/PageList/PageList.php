@@ -141,7 +141,7 @@ class PageList
 	{
 		global $smcFunc, $txt, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -210,7 +210,7 @@ class PageList
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 

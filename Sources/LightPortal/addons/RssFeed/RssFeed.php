@@ -154,7 +154,7 @@ class RssFeed
 		if ($type !== 'rss_feed')
 			return;
 
-		$rss_feed = Helpers::getFromCache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
+		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
 
 		if (!empty($rss_feed)) {
 			ob_start();

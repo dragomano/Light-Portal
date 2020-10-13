@@ -183,7 +183,7 @@ class TopTopics
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::getFromCache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_topics)) {
 			ob_start();

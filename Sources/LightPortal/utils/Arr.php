@@ -21,16 +21,20 @@ abstract class Arr
 	/**
 	 * Try run this object as a function
 	 *
+	 * Пытаемся запустить данный объект как функцию
+	 *
 	 * @param string $key
 	 * @return mixed
 	 */
-	public function __invoke($name, $default = null)
+	public function __invoke($key, $default = null)
 	{
-		return static::get($name) ?? $default;
+		return static::get($key) ?? $default;
 	}
 
 	/**
-	 * Get the session key
+	 * Get the $obj[$key] value
+	 *
+	 * Получаем значение $obj[$key]
 	 *
 	 * @param string $key
 	 * @param mixed $default
@@ -42,19 +46,23 @@ abstract class Arr
 	}
 
 	/**
-	 * Put the key into a session
+	 * Put $value into the $obj[$key]
+	 *
+	 * Сохраняем $value в ячейке $obj[$key]
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return void
 	 */
-	public static function put($key, &$value)
+	public static function put($key, $value)
 	{
 		static::$obj[$key] = &$value;
 	}
 
 	/**
-	 * Get all request array
+	 * Get all $obj values
+	 *
+	 * Получаем все содержимое $obj
 	 *
 	 * @return array
 	 */
@@ -65,6 +73,8 @@ abstract class Arr
 
 	/**
 	 * Get only the request keys that defined in $keys
+	 *
+	 * Получаем значения только запрошенных ключей $keys в $obj
 	 *
 	 * @param array|string $keys
 	 * @return array
@@ -87,6 +97,8 @@ abstract class Arr
 	/**
 	 * Get only the request keys that not defined in $keys
 	 *
+	 * Получаем значения только тех ключей в $obj, которые не перечислены в $keys
+	 *
 	 * @param array|string $keys
 	 * @return array
 	 */
@@ -106,7 +118,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Push a value into the session key-array
+	 * Push a value into the key-array
+	 *
+	 * Сохраняем значение $value в переменную-массив $key
 	 *
 	 * @param string $key
 	 * @param mixed $value
@@ -126,7 +140,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Unset the session key
+	 * Unset the $obj key
+	 *
+	 * Очищаем содержимое ячейки $obj[$key]
 	 *
 	 * @param string $key
 	 * @return void
@@ -137,7 +153,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Unset all session array
+	 * Unset all $obj array
+	 *
+	 * Очищаем все содержимое $obj
 	 *
 	 * @return void
 	 */
@@ -147,7 +165,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Get and unset the session key
+	 * Get and unset the key
+	 *
+	 * Получаем значение ячейки $obj[$key] и тут же очищаем её
 	 *
 	 * @param string $key
 	 * @param mixed $default
@@ -163,7 +183,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Check if the session key is set
+	 * Check if the key is set
+	 *
+	 * Проверяем, существует ли ключ $key в $obj
 	 *
 	 * @param string|array $key
 	 * @return bool
@@ -188,7 +210,9 @@ abstract class Arr
 	}
 
 	/**
-	 * Check if the session key exists
+	 * Check if the key is not empty
+	 *
+	 * Проверяем, не пуста ли ячейка $obj[$key]
 	 *
 	 * @param string $key
 	 * @return bool
@@ -198,6 +222,14 @@ abstract class Arr
 		return ! static::isEmpty($key);
 	}
 
+	/**
+	 * Check if the key is empty
+	 *
+	 * Проверяем, пуста ли ячейка $obj[$key]
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
 	public static function isEmpty($key)
 	{
 		return empty(static::$obj[$key]);

@@ -196,7 +196,7 @@ class BoardList
 		if ($type !== 'board_list')
 			return;
 
-		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+		$board_list = Helpers::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($board_list)) {
 			$context['current_board'] = $context['current_board'] ?? 0;

@@ -35,7 +35,7 @@ class Page
 
 		isAllowedTo('light_portal_view');
 
-		$alias = filter_input(INPUT_GET, 'page');
+		$alias = Helpers::request('page');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
@@ -342,7 +342,7 @@ class Page
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
+		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
 		self::prepareData($data);
 
 		return $data;

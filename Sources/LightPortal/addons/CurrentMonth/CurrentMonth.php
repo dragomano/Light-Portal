@@ -188,7 +188,7 @@ class CurrentMonth
 		if ($type !== 'current_month')
 			return;
 
-		$calendar_data = Helpers::getFromCache('current_month_addon_u' . $user_info['id'], 'getData', __CLASS__, $cache_time);
+		$calendar_data = Helpers::cache('current_month_addon_u' . $user_info['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($calendar_data)) {
 			ob_start();

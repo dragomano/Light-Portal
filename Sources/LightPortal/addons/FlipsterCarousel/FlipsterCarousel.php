@@ -245,7 +245,7 @@ class FlipsterCarousel
 		if ($type !== 'flipster_carousel')
 			return;
 
-		$flipster_html = Helpers::getFromCache('flipster_carousel_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$flipster_html = Helpers::cache('flipster_carousel_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
 		if (!empty($flipster_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/jquery.flipster@1/dist/jquery.flipster.min.css', array('external' => true));

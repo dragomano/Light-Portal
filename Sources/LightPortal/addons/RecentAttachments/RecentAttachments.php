@@ -188,7 +188,13 @@ class RecentAttachments
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$attachment_list = Helpers::cache(
+			'recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$cache_time,
+			$parameters
+		);
 
 		if (!empty($attachment_list)) {
 			ob_start();
