@@ -189,7 +189,9 @@ class AdsBlock
 		 *
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
-		$before_every_last_post = empty($options['view_newest_first']) ? $counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0 : ($output['id'] == $context['topic_first_message'] || ($context['total_visible_posts'] - $counter) % $context['messages_per_page'] == 0);
+		$before_every_last_post = empty($options['view_newest_first'])
+			? $counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0
+			: ($output['id'] == $context['topic_first_message'] || ($context['total_visible_posts'] - $counter) % $context['messages_per_page'] == 0);
 		if (!empty($context['lp_ads_blocks']['before_every_last_post']) && $before_every_last_post) {
 			lp_show_blocks('before_every_last_post');
 		}
@@ -220,56 +222,6 @@ class AdsBlock
 		 */
 		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($options['view_newest_first']) ? $context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
-		}
-
-		/**
-		 * Displaying ads after every fifth message on the page
-		 *
-		 * Вывод рекламы после каждого пятого сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_every_five_post']) && abs($current_counter - $counter) == 5) {
-			ob_start();
-
-			lp_show_blocks('after_every_five_post');
-
-			$after_every_five_post = ob_get_clean();
-
-			addInlineJavaScript('
-		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
-		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_five_post) . ');', true);
-		}
-
-		/**
-		 * Displaying ads after each last message on the page
-		 *
-		 * Вывод рекламы после каждого последнего сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
-			ob_start();
-
-			lp_show_blocks('after_every_last_post');
-
-			$after_every_last_post = ob_get_clean();
-
-			addInlineJavaScript('
-		const all_windowbg2 = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
-		all_windowbg2[all_windowbg2.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
-		}
-
-		/**
-		 * Displaying ads after the last message
-		 *
-		 * Вывод рекламы после последнего сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == (empty($options['view_newest_first']) ? $context['topic_last_message'] : $context['topic_first_message'])) {
-			ob_start();
-
-			lp_show_blocks('after_last_post');
-
-			$after_last_post = ob_get_clean();
-
-			addInlineJavaScript('
-		document.getElementById("quickModForm").insertAdjacentHTML("beforeend", ' . JavaScriptEscape($after_last_post) . ');', true);
 		}
 	}
 
