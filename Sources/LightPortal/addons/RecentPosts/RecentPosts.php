@@ -378,8 +378,10 @@ class RecentPosts
 				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
 
 				if ($post['is_new'])
+					/* echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $post['href'], '">', $txt['new'], '1</a>';
 
 				echo '
 				', $post[$parameters['link_type']];

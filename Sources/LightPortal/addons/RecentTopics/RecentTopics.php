@@ -282,8 +282,10 @@ class RecentTopics
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
 				if ($topic['is_new'])
+					/* echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $topic['href'], '">', $txt['new'], '</a>';
 
 				echo $topic['icon'], ' ', $topic['link'];
 

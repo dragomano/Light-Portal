@@ -3,7 +3,6 @@
 namespace Bugo\LightPortal\Addons\UserInfo;
 
 use Bugo\LightPortal\Helpers;
-
 /**
  * UserInfo
  *
