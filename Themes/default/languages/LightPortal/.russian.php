@@ -95,6 +95,7 @@ $txt['lp_panel_layout_note']    = 'Изменяйте ширину окна бр
 $txt['lp_browser_width']        = 'Ширина окна браузера';
 $txt['lp_used_class']           = 'Используемый класс';
 $txt['lp_panel_layout_preview'] = 'На макете ниже можно задать количество колонок для некоторых панелей, в зависимости от ширины окна браузера.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Закрепить';
 $txt['lp_panel_direction_note'] = 'Здесь можно изменить направление блоков для каждой панели.';
 $txt['lp_panel_direction']      = 'Направление блоков в панелях';
 $txt['lp_panel_direction_set']  = array('Вертикальное', 'Горизонтальное');

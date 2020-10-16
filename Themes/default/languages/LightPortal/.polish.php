@@ -95,6 +95,7 @@ $txt['lp_panel_layout_note']    = 'Zmień szerokość przeglądarki i sprawdź k
 $txt['lp_browser_width']        = 'Szerokość okna przeglądarki';
 $txt['lp_used_class']           = 'Uzywana klasa';
 $txt['lp_panel_layout_preview'] = 'Możesz ustawić ilość kolumn dla niektórych panelów w zależnośc iod szerokości okna przeglądarki.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';
 $txt['lp_panel_direction']      = 'Kierunek bloków w panelach';
 $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');

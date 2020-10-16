@@ -95,6 +95,7 @@ $txt['lp_panel_layout_note']    = 'Change the width of the browser window and se
 $txt['lp_browser_width']        = 'Width of the browser window';
 $txt['lp_used_class']           = 'Class used';
 $txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
 $txt['lp_panel_direction']      = 'The direction of blocks in panels';
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');

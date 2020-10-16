@@ -449,6 +449,10 @@ class Settings
 			$add_settings['lp_right_panel_width'] = json_encode($context['lp_right_panel_width']);
 		if (!isset($modSettings['lp_footer_panel_width']))
 			$add_settings['lp_footer_panel_width'] = 12;
+		if (!isset($modSettings['lp_left_panel_sticky']))
+			$add_settings['lp_left_panel_sticky'] = 1;
+		if (!isset($modSettings['lp_right_panel_sticky']))
+			$add_settings['lp_right_panel_sticky'] = 1;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -484,6 +488,8 @@ class Settings
 			$save_vars[] = ['text', 'lp_left_panel_width'];
 			$save_vars[] = ['text', 'lp_right_panel_width'];
 			$save_vars[] = ['int', 'lp_footer_panel_width'];
+			$save_vars[] = ['check', 'lp_left_panel_sticky'];
+			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
 			saveDBSettings($save_vars);
 

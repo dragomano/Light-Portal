@@ -95,6 +95,7 @@ $txt['lp_panel_layout_note'] = 'Cambia el ancho de la ventana del navegador y ve
 $txt['lp_browser_width'] = 'Ancho de la ventana del navegador';
 $txt['lp_used_class'] = 'Clase utilizada';
 $txt['lp_panel_layout_preview'] = 'Aquí puede establecer el número de columnas para algunos paneles, dependiendo del ancho de la ventana del navegador.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Aquí puede cambiar la dirección de los bloques para cada panel.';
 $txt['lp_panel_direction'] = 'La dirección de los bloques en los paneles.';
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
