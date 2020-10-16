@@ -388,7 +388,7 @@ class FrontPage
 
 			$pages = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				Subs::parseContent($row['content'], $row['type']);
+				Helpers::parseContent($row['content'], $row['type']);
 
 				$image = null;
 				if (!empty($modSettings['lp_show_images_in_articles'])) {

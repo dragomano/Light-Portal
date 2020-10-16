@@ -62,7 +62,7 @@ class Page
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
 
-		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
+		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
 			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_portal'];
@@ -196,7 +196,7 @@ class Page
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
-			Subs::parseContent($row['content'], $row['type']);
+			Helpers::parseContent($row['content'], $row['type']);
 			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			$image = !empty($first_post_image) ? array_pop($value) : null;
 			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
@@ -281,7 +281,7 @@ class Page
 			$og_image = null;
 			if (!empty($modSettings['lp_page_og_image'])) {
 				$content = $row['content'];
-				Subs::parseContent($content, $row['type']);
+				Helpers::parseContent($content, $row['type']);
 				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
 
 				if ($image_found && is_array($values)) {

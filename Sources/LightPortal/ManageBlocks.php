@@ -861,8 +861,8 @@ class ManageBlocks
 		censorText($context['preview_content']);
 
 		!empty($context['preview_content'])
-			? Subs::parseContent($context['preview_content'], $context['lp_block']['type'])
-			: Subs::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
+			? Helpers::parseContent($context['preview_content'], $context['lp_block']['type'])
+			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());

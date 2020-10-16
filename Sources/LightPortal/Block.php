@@ -47,8 +47,8 @@ class Block
 				continue;
 
 			empty($data['content'])
-				? Subs::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
-				: Subs::parseContent($data['content'], $data['type']);
+				? Helpers::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
+				: Helpers::parseContent($data['content'], $data['type']);
 
 			if (empty($data['title'][$context['user']['language']]))
 				$data['title'][$context['user']['language']] = $context['lp_active_blocks'][$data['id']]['title'][$context['user']['language']] ?? '';

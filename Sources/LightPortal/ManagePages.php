@@ -179,7 +179,12 @@ class ManagePages
 						'function' => function ($entry) use ($scripturl)
 						{
 							$title = Helpers::getPublicTitle($entry);
-							return '<a class="bbc_link' . ($entry['is_front'] ? ' new_posts" href="' . $scripturl : '" href="' . $scripturl . '?page=' . $entry['alias']) . '">' . $title . '</a>';
+
+							return '<a class="bbc_link' . (
+								$entry['is_front']
+									? ' new_posts" href="' . $scripturl
+									: '" href="' . $scripturl . '?page=' . $entry['alias']
+							) . '">' . $title . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -976,7 +981,7 @@ class ManagePages
 		censorText($context['preview_content']);
 
 		if (!empty($context['preview_content']))
-			Subs::parseContent($context['preview_content'], $context['lp_page']['type']);
+			Helpers::parseContent($context['preview_content'], $context['lp_page']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle();

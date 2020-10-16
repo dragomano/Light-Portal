@@ -3,7 +3,6 @@
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\Subs;
 
 /**
  * ArticleList
@@ -294,7 +293,7 @@ class ArticleList
 				continue;
 
 			if (!empty($parameters['seek_images'])) {
-				Subs::parseContent($row['content'], $row['type']);
+				Helpers::parseContent($row['content'], $row['type']);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			}
 
