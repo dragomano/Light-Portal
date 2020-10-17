@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		commentForm = document.getElementById('comment_form'),
 		message = document.getElementById('message');
 
-	let current_comment;
+	let current_comment, current_comment_text;
 
 	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
@@ -87,7 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		cancel_button.style.display = 'inline-block';
 
 		current_comment = comment_content.innerHTML;
-		comment_content.innerText = comment_raw_content.innerText;
+		comment_content.innerText = !current_comment_text ? comment_raw_content.innerText : current_comment_text;
+
 		comment_content.setAttribute('contenteditable', true);
 		comment_content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
 		comment_content.style.borderRadius = '4px';
@@ -103,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			message = document.querySelector('#comment' + item + ' .content');
 
 		if (!item) return;
+
+		current_comment_text = message.innerText;
 
 		let response = await fetch(PAGE_URL + 'sa=edit_comment', {
 			method: 'POST',
@@ -239,16 +242,17 @@ document.addEventListener('DOMContentLoaded', function () {
 			commentForm.parent_id.value = 0;
 
 			if (! window.location.search) {
-				if (parseInt(window.location.pathname.match(/\d+/) ?? 0) == commentForm.start.value) {
+				if (window.location.pathname.match(/start[\=\.]/i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
 					window.location.hash = '#comment' + data.item;
 				} else {
-					window.location = window.origin + window.location.pathname.replace(/(start[=.])\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+					window.location = window.origin + window.location.pathname.replace(/(start[\=\.])\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
 				}
 			} else {
 				if (parseInt(window.location.search.match(/\d+/)) == commentForm.start.value) {
 					window.location.hash = '#comment' + data.item;
 				} else {
-					window.location = window.location.href.replace(/(start[=.])\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+					window.location.hash = '';
+					window.location = window.location.href.replace(/(start[\=\.])\d+/i, '$1' + PAGE_START) + 'comment' + data.item;
 				}
 			}
 
