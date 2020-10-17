@@ -32,6 +32,7 @@ class Integration
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
 		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
+		add_integration_function('integrate_redirect', __CLASS__ . '::redirect', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
@@ -124,6 +125,25 @@ class Integration
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
 		Subs::runAddons();
+	}
+
+	/**
+	 * Set up a redirect to the main page of the forum, when requesting an action markasread
+	 *
+	 * Настраиваем редирект на главную страницу форума, при запросе действия action=markasread
+	 *
+	 * @param string $setLocation
+	 * @return void
+	 */
+	public static function redirect(&$setLocation)
+	{
+		global $modSettings, $scripturl;
+
+		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])))
+			return;
+
+		if (Helpers::request()->is('markasread'))
+			$setLocation = $scripturl . '?action=forum';
 	}
 
 	/**
