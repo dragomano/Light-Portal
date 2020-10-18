@@ -1,9 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Impex;
 
 /**
- * ShareTools.php
+ * Export.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,19 +14,21 @@ namespace Bugo\LightPortal;
  * @version 1.2
  */
 
-trait ShareTools
+abstract class Export
 {
+	abstract protected static function getData();
+	abstract protected static function getXmlFile();
+
 	/**
 	 * Get an export file via the user browser
 	 *
 	 * Получаем экспортируемый файл через браузер
 	 *
-	 * @param string $file
 	 * @return void
 	 */
-	public static function runExport(string $file)
+	protected static function run()
 	{
-		if (empty($file))
+		if (empty($file = static::getXmlFile()))
 			return;
 
 		// Might take some time.
@@ -56,30 +58,5 @@ trait ShareTools
 		}
 
 		exit;
-	}
-
-	/**
-	 * Getting a part of an SQL expression like "(value1, value2, value3)"
-	 *
-	 * Получаем часть SQL-выражения вида "(value1, value2, value3)"
-	 *
-	 * @param array $items
-	 * @return string
-	 */
-	public static function getValues(array $items)
-	{
-		if (empty($items))
-			return '';
-
-		$result = '';
-		$cnt = count($items);
-		for ($i = 0; $i < $cnt; $i++) {
-			if ($i > 0)
-				$result .= ', ';
-
-			$result .= "('" . implode("', '", $items[$i]) . "')";
-		}
-
-		return $result;
 	}
 }

@@ -59,6 +59,7 @@ class Integration
 	{
 		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
+		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
 		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 

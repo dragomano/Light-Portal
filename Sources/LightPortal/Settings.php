@@ -662,8 +662,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'ManageBlocks::export';
-			$subActions['import'] = 'ManageBlocks::import';
+			$subActions['export'] = 'Impex\BlockExport::prepare';
+			$subActions['import'] = 'Impex\BlockImport::prepare';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -689,8 +689,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'ManagePages::export';
-			$subActions['import'] = 'ManagePages::import';
+			$subActions['export'] = 'Impex\PageExport::prepare';
+			$subActions['import'] = 'Impex\PageImport::prepare';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
