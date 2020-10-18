@@ -111,6 +111,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'comment' => 'Widget de comentarios',
 	'parser' => 'Analizador de contenido',
 	'article' => 'Procesamiento de artículos',
+	'frontpage' => 'The layout of the frontpage',
 	'other' => 'Otro'
 );
 

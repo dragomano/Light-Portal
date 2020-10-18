@@ -106,12 +106,13 @@ $txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, n
 $txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
 
 $txt['lp_plugins_hooks_types'] = array(
-	'block'   => 'Blok',
-	'editor'  => 'Edytor',
-	'comment' => 'Widget komentarzy',
-	'parser'  => 'Parser zawartości',
-	'article' => 'Przetwarzanie artykułów',
-	'other'   => 'Inne'
+	'block'     => 'Blok',
+	'editor'    => 'Edytor',
+	'comment'   => 'Widget komentarzy',
+	'parser'    => 'Parser zawartości',
+	'article'   => 'Przetwarzanie artykułów',
+	'frontpage' => 'The layout of the frontpage',
+	'other'     => 'Inne'
 );
 
 // Actions

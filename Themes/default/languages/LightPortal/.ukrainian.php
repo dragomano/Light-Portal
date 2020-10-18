@@ -106,12 +106,13 @@ $txt['lp_plugins_desc'] = 'Будь-який з плагінів можна вк
 $txt['lp_plugins_info'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
-	'block'   => 'Блок',
-	'editor'  => 'Редактор',
-	'comment' => 'Віджет коментарів',
-	'parser'  => 'Парсер контента',
-	'article' => 'Обробка статей',
-	'other'   => 'Різне'
+	'block'     => 'Блок',
+	'editor'    => 'Редактор',
+	'comment'   => 'Віджет коментарів',
+	'parser'    => 'Парсер контента',
+	'article'   => 'Обробка статей',
+	'frontpage' => 'Макет головної сторінки',
+	'other'     => 'Різне'
 );
 
 // Actions

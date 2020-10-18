@@ -106,12 +106,13 @@ $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And som
 $txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
-	'block'   => 'Block',
-	'editor'  => 'Editor',
-	'comment' => 'Comment widget',
-	'parser'  => 'Content parser',
-	'article' => 'Processing articles',
-	'other'   => 'Other'
+	'block'     => 'Block',
+	'editor'    => 'Editor',
+	'comment'   => 'Comment widget',
+	'parser'    => 'Content parser',
+	'article'   => 'Processing articles',
+	'frontpage' => 'The layout of the frontpage',
+	'other'     => 'Other'
 );
 
 // Actions
