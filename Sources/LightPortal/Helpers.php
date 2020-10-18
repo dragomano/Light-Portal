@@ -692,4 +692,18 @@ class Helpers
 
 		return filter_var($key, $filter);
 	}
+
+	/**
+	 * Check whether need to display dates in lowercase for the current language
+	 *
+	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 *
+	 * @return bool
+	 */
+	public static function isLowerCaseForDates()
+	{
+		global $txt;
+
+		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
+	}
 }
