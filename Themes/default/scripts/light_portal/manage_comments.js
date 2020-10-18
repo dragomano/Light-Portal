@@ -262,22 +262,4 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	// Select text and paste URL to create a text-link (like Slack)
-	message.addEventListener('paste', function(e) {
-		const clipboard = (e.originalEvent || e).clipboardData.getData('text/plain')
-		const regex = RegExp('https?://[^\s/$.?#].[^\s]*')
-		const isUrl = regex.test(clipboard)
-		if (isUrl) {
-			const start = message.selectionStart
-			const finish = message.selectionEnd
-			const allText = message.value
-			const selected = allText.substring(start, finish)
-			if (selected) {
-				const newText = `${allText.substring(0, start)}[url=${clipboard}]${selected}[/url]${allText.substring(finish, allText.length)}`
-				message.value = newText
-				e.preventDefault()
-			}
-		}
-	})
-
 }, false);
