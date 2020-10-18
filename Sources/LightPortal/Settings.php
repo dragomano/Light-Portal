@@ -179,9 +179,6 @@ class Settings
 
 		require_once($sourcedir . '/ManageServer.php');
 
-		addInlineJavaScript('
-		$("p.information").removeClass("information").toggleClass("infobox");', true);
-
 		self::checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
@@ -221,7 +218,7 @@ class Settings
 			array('check', 'lp_frontpage_order_by_num_replies'),
 			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set']),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
-			//array('int', 'lp_teaser_size', 'min' => 0),
+			array('int', 'lp_teaser_size', 'min' => 0),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode'),

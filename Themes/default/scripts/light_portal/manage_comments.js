@@ -242,17 +242,26 @@ document.addEventListener('DOMContentLoaded', function () {
 			commentForm.parent_id.value = 0;
 
 			if (! window.location.search) {
-				if (window.location.pathname.match(/start[\=\.]/i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
+				if (window.location.pathname.match(/start./i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
 					window.location.hash = '#comment' + data.item;
 				} else {
-					window.location = window.origin + window.location.pathname.replace(/(start[\=\.])\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+					window.location = window.origin + window.location.pathname.replace(/(start.)\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
 				}
 			} else {
-				if (parseInt(window.location.search.match(/\d+/)) == commentForm.start.value) {
+				let hasStartParam = window.location.search.match(/start./i);
+
+				if (! hasStartParam) {
+					if (commentForm.start.value == 0) {
+						window.location.hash = '#comment' + data.item;
+					} else {
+						window.location.hash = '';
+						window.location = window.location.origin + window.location.pathname + window.location.search + ';start=' + PAGE_START + '#comment' + data.item;
+					}
+				} else if (hasStartParam && parseInt(window.location.search.split('start=')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
 					window.location.hash = '#comment' + data.item;
 				} else {
 					window.location.hash = '';
-					window.location = window.location.href.replace(/(start[\=\.])\d+/i, '$1' + PAGE_START) + 'comment' + data.item;
+					window.location = window.location.origin + window.location.pathname + window.location.search.replace(/(start.)\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
 				}
 			}
 

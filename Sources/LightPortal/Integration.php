@@ -243,6 +243,7 @@ class Integration
 		if (Subs::isPortalMustNotBeLoaded())
 			return;
 
+		$context['allow_light_portal_view']             = allowedTo('light_portal_view');
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
 

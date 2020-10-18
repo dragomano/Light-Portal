@@ -24,7 +24,9 @@ class Request extends Arr
 	}
 
 	/**
-	 * Get the current path
+	 * Get the current $_SERVER['REQUEST_URI']
+	 *
+	 * Получаем текущий $_SERVER['REQUEST_URI']
 	 *
 	 * @return string
 	 */
@@ -36,6 +38,8 @@ class Request extends Arr
 	/**
 	 * Get the full url without queries
 	 *
+	 * Получаем полный URL без параметров
+	 *
 	 * @return string
 	 */
 	public static function url()
@@ -46,6 +50,8 @@ class Request extends Arr
 	/**
 	 * Get the current page url
 	 *
+	 * Получаем URL текущей страницы
+	 *
 	 * @return string
 	 */
 	public static function fullUrl()
@@ -55,6 +61,8 @@ class Request extends Arr
 
 	/**
 	 * Get the current page url with queries
+	 *
+	 * Получаем URL текущей страницы, вместе с параметрами запроса
 	 *
 	 * @param array $query
 	 * @return string
@@ -72,6 +80,8 @@ class Request extends Arr
 
 	/**
 	 * Check if the current action matches one of given patterns
+	 *
+	 * Проверяем, соответствует ли текущий action одному из указанных в $patterns
 	 *
 	 * @param string|array ...$patterns
 	 * @return bool
