@@ -27,7 +27,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public static $addon_type = 'frontpage';
 
 	/**
 	 * Load custom template for frontpage topics
@@ -47,7 +47,37 @@ class FrontpageFlarumStyle
 
 		require_once(__DIR__ . '/Template.php');
 
+		self::prepareFantomBLock();
+
 		$context['sub_template'] = 'show_topics_as_flarum_style';
+	}
+
+	/**
+	 * Make a fantom block
+	 *
+	 * Создаем фантомный блок
+	 *
+	 * @return void
+	 */
+	private static function prepareFantomBLock()
+	{
+		global $context;
+
+		ob_start();
+
+		show_ffs_sidebar();
+
+		$content = ob_get_clean();
+
+		$context['lp_blocks']['left'][] = [
+			'type'          => 'ffs_sidebar',
+			'content'       => $content,
+			'title_class'   => '',
+			'title_style'   => '',
+			'content_class' => '',
+			'content_style' => '',
+			'title'         => ''
+		];
 	}
 
 	/**
