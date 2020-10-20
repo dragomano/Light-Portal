@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Impex;
  * @version 1.2
  */
 
-abstract class Import
+abstract class Import implements IImport
 {
 	abstract protected static function run();
 

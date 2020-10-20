@@ -15,7 +15,7 @@ function show_ffs_sidebar()
 	<nav>
 		<ul>
 			<li>
-				<div class="roundframe" style="margin-top: 0">
+				<div class="roundframe">
 					<ul>
 						<li>
 							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $txt['lp_frontpage_flarum_style_addon_all_boards'], '</a>
@@ -95,8 +95,8 @@ function template_show_topics_as_flarum_style()
 
 			if (!empty($topic['image'])) {
 				echo '
-				<div class="floatleft" style="width: 64px">
-					<img src="', $topic['image'], '" alt="', $topic['subject'], '">
+				<div class="floatleft">
+					<img class="avatar" src="', $topic['image'], '" alt="', $topic['subject'], '">
 				</div>';
 			 } else {
 				echo '

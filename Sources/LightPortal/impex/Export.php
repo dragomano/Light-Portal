@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Impex;
  * @version 1.2
  */
 
-abstract class Export
+abstract class Export implements IExport
 {
 	abstract protected static function getData();
 	abstract protected static function getXmlFile();

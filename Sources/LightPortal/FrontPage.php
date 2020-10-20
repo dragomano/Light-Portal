@@ -39,6 +39,8 @@ class FrontPage
 
 		isAllowedTo('light_portal_view');
 
+		$context['lp_need_lower_case'] = Helpers::isLowerCaseForDates();
+
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
 				return Page::show();
@@ -140,7 +142,7 @@ class FrontPage
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);
-				$article['date'] = Helpers::getFriendlyTime($article['date']);
+				$article['date']     = Helpers::getFriendlyTime($article['date']);
 			}
 
 			if (isset($article['title']))
@@ -171,7 +173,7 @@ class FrontPage
 	 */
 	public static function getTopicsFromSelectedBoards(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $context;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $context;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
@@ -204,7 +206,17 @@ class FrontPage
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(SELECT id_attach FROM {db_prefix}attachments WHERE id_msg = t.id_first_msg AND width <> 0 AND height <> 0 AND approved = {int:is_approved} AND attachment_type = {int:attachment_type} ORDER BY id_attach LIMIT 1) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
+						SELECT id_attach
+						FROM {db_prefix}attachments
+						WHERE id_msg = t.id_first_msg
+							AND width <> 0
+							AND height <> 0
+							AND approved = {int:is_approved}
+							AND attachment_type = {int:attachment_type}
+						ORDER BY id_attach
+						LIMIT 1
+					) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
@@ -231,6 +243,7 @@ class FrontPage
 					Helpers::cleanBbcode($row['subject']);
 					censorText($row['subject']);
 					censorText($row['body']);
+					censorText($row['last_body']);
 
 					$image = null;
 					if (!empty($row['id_attach']))
@@ -242,27 +255,32 @@ class FrontPage
 						$image = $first_post_image ? array_pop($value) : null;
 					}
 
-					$row['body'] = preg_replace('~\[spoiler].*?\[/spoiler]~Usi', '', $row['body']);
-					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')));
+					$row['body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
+					$row['body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['body']);
+					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), array('blockquote', 'cite'));
+
+					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
+					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
+					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), array('blockquote', 'cite'));
 
 					$colorClass = '';
 					if ($row['is_sticky'])
-						$colorClass .= ' alternative2';
+						$colorClass .= ' sticky';
 
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
-						'author_id'   => $row['id_member'],
-						'author_link' => $scripturl . '?action=profile;u=' . $row['id_member'],
-						'author_name' => $row['poster_name'],
+						'author_id'   => $author_id = empty($row['num_replies']) ? $row['id_member'] : $row['last_poster_id'],
+						'author_link' => $scripturl . '?action=profile;u=' . $author_id,
+						'author_name' => empty($row['num_replies']) ? $row['poster_name'] : $row['last_poster_name'],
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
-						'teaser'      => Helpers::getTeaser($row['body']),
+						'teaser'      => Helpers::getTeaser(empty($row['num_replies']) ? $row['body'] : $row['last_body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
-						'is_new'      => $row['new_from'] <= $row['id_msg_modified'],
+						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
 						'num_views'   => $row['num_views'],
 						'num_replies' => $row['num_replies'],
 						'css_class'   => $colorClass,
@@ -372,7 +390,23 @@ class FrontPage
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-					mem.real_name AS author_name, (SELECT lp.created_at FROM {db_prefix}lp_comments AS lp WHERE lp.page_id = p.page_id ORDER BY lp.created_at DESC LIMIT 1) AS comment_date' . (!empty($custom_columns) ? ',
+					mem.real_name AS author_name, (
+						SELECT created_at
+						FROM {db_prefix}lp_comments
+						WHERE page_id = p.page_id
+						ORDER BY created_at DESC
+						LIMIT 1
+					) AS comment_date, (
+						SELECT author_id
+						FROM {db_prefix}lp_comments
+						WHERE created_at = comment_date
+						LIMIT 1
+					) AS comment_author_id, (
+						SELECT real_name
+						FROM {db_prefix}members
+						WHERE id_member = comment_author_id
+						LIMIT 1
+					) AS comment_author_name' . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
@@ -399,9 +433,9 @@ class FrontPage
 				if (!isset($pages[$row['page_id']])) {
 					$pages[$row['page_id']] = array(
 						'id'            => $row['page_id'],
-						'author_id'     => $row['author_id'],
-						'author_link'   => $scripturl . '?action=profile;u=' . $row['author_id'],
-						'author_name'   => $row['author_name'],
+						'author_id'     => $author_id = empty($row['num_comments']) ? $row['author_id'] : $row['comment_author_id'],
+						'author_link'   => $scripturl . '?action=profile;u=' . $author_id,
+						'author_name'   => empty($row['num_comments']) ? $row['author_name'] : $row['comment_author_name'],
 						'teaser'        => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
 						'type'          => $row['type'],
 						'num_views'     => $row['num_views'],

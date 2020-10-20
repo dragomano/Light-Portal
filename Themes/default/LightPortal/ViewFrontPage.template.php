@@ -55,6 +55,11 @@ function template_show_topics_as_articles()
 					<div>
 						<span class="card__by">';
 
+			if (!empty($topic['num_replies'])) {
+				echo '
+							<i class="fas fa-reply"></i>';
+			}
+
 			if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
 				echo '
 							<a href="', $topic['author_link'], '" class="card__author">', $topic['author_name'], '</a>';
@@ -152,6 +157,11 @@ function template_show_pages_as_articles()
 					</h3>
 					<div>
 						<span class="card__by">';
+
+			if (!empty($page['num_comments'])) {
+				echo '
+							<i class="fas fa-reply"></i>';
+			}
 
 			if (!empty($page['author_id']) && !empty($page['author_name'])) {
 				echo '

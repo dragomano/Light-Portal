@@ -16,7 +16,10 @@ use Bugo\LightPortal\Helpers;
  * @version 1.2
  */
 
-class BlockExport extends Export implements IExport
+if (!defined('SMF'))
+	die('Hacking attempt...');
+
+class BlockExport extends Export
 {
 	/**
 	 * Block export

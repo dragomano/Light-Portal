@@ -69,8 +69,9 @@ class FrontpageFlarumStyle
 
 		$content = ob_get_clean();
 
-		$context['lp_blocks']['left'][] = [
-			'type'          => 'ffs_sidebar',
+		$context['lp_blocks']['left'][time()] = [
+			'id'            => time(),
+			'type'          => 'flarum_style',
 			'content'       => $content,
 			'title_class'   => '',
 			'title_style'   => '',

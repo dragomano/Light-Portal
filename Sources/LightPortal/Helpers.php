@@ -387,24 +387,6 @@ class Helpers
 	}
 
 	/**
-	 * Get needed data using cache
-	 *
-	 * Получаем нужные данные, используя кэш
-	 *
-	 * @deprecated 1.2.1 Function replacement
-	 * @param string $key
-	 * @param string|null $funcName
-	 * @param string $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
-	 * @return mixed
-	 */
-	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
-	{
-		return self::cache($key, $funcName, $class, $time, ...$vars);
-	}
-
-	/**
 	 * Form a list of addons that not installed
 	 *
 	 * Формируем список неустановленных плагинов

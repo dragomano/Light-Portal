@@ -16,7 +16,10 @@ use Bugo\LightPortal\Helpers;
  * @version 1.2
  */
 
-class BlockImport extends Import implements IImport
+if (!defined('SMF'))
+	die('Hacking attempt...');
+
+class BlockImport extends Import
 {
 	/**
 	 * Block import
