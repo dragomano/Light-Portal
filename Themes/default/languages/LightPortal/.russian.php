@@ -19,7 +19,7 @@ $txt['lp_content']  = 'Содержимое';
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
 $txt['lp_base']      = 'Настройки главной страницы и статей';
-$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить баги и фичи портала можно в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-группе</a>.<br>Вы также можете <a class="bbc_link" href="https://boosty.to/bugo">стать спонсором на Boosty.to</a> или <a class="bbc_link" href="https://yasobe.ru/na/light_portal_development">сделать пожертвование через Яндекс.Деньги</a>.';
+$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить на русском баги и фичи портала можно в <a class="bbc_link" href="https://t.me/joinchat/FcgZ0EmYWHPonD4KW5deKQ">Телеграм-группе</a>.<br>Вы также можете <a class="bbc_link" href="https://boosty.to/bugo">стать спонсором на Boosty.to</a> или <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купить разработчику чашку кофе</a>.';
 
 $txt['lp_frontpage_title']                = 'Заголовок главной страницы';
 $txt['lp_frontpage_mode']                 = 'Первая страница портала';
