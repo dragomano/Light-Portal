@@ -355,7 +355,7 @@ class ArticleList
 					if (!empty($topic['image'])) {
 						$content .= '
 				<div class="article_image">
-					<img src="' . $topic['image'] . '" alt="">
+					<img src="' . $topic['image'] . '" loading="lazy" alt="' . $topic['title'] . '">
 				</div>';
 					}
 
@@ -372,7 +372,7 @@ class ArticleList
 					if (!empty($page['image'])) {
 						$content .= '
 				<div class="article_image">
-					<img src="' . $page['image'] . '" alt="">
+					<img src="' . $page['image'] . '" loading="lazy" alt="'. $title . '">
 				</div>';
 					}
 
