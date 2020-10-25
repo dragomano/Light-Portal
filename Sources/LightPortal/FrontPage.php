@@ -20,13 +20,6 @@ if (!defined('SMF'))
 class FrontPage
 {
 	/**
-	 * Number of columns (layout)
-	 *
-	 * @var int
-	 */
-	private static $num_columns = 12;
-
-	/**
 	 * Show articles on the portal frontpage
 	 *
 	 * Выводим статьи на главной странице портала
@@ -81,7 +74,7 @@ class FrontPage
 	{
 		global $modSettings;
 
-		$num_columns = self::$num_columns;
+		$num_columns = 12;
 
 		if (!empty($modSettings['lp_frontpage_layout'])) {
 			switch ($modSettings['lp_frontpage_layout']) {
@@ -125,7 +118,7 @@ class FrontPage
 				$function = 'ActivePages';
 		}
 
-		$start =Helpers::request('start');
+		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$getTotalFunction = 'getTotal' . $function;
@@ -257,11 +250,11 @@ class FrontPage
 
 					$row['body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
 					$row['body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['body']);
-					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), array('blockquote', 'cite'));
+					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
 					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
 					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
-					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), array('blockquote', 'cite'));
+					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
 					$colorClass = '';
 					if ($row['is_sticky'])
