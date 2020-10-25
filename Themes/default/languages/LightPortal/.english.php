@@ -28,14 +28,17 @@ $txt['lp_frontpage_alias']                = 'Portal page to display as the main 
 $txt['lp_frontpage_alias_subtext']        = 'Enter the alias of the page that exist.';
 $txt['lp_frontpage_boards']               = 'Boards as sources of articles for the frontpage';
 $txt['lp_frontpage_card_alt_layout']      = 'Alternative arrangement of the elements in the cards';
+$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']  = array('By the last comment (default)', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout']               = 'Number of columns for displaying articles';
 $txt['lp_frontpage_layout_set']           = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_images_in_articles']        = 'Show images that found in articles';
 $txt['lp_image_placeholder']              = 'URL of the default placeholder image';
 $txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
+$txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Standalone mode';
@@ -103,7 +106,7 @@ $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
 $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And some of them are also customized!';
-$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
+$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Block',

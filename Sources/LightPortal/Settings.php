@@ -157,7 +157,11 @@ class Settings
 					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
 				),
 				'plugins' => array(
-					'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
+					'description' => sprintf(
+						$txt['lp_plugins_info'],
+						'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon',
+						'https://github.com/dragomano/Light-Portal/wiki/Addon-list-for-sponsors'
+					)
 				)
 			)
 		);
@@ -196,6 +200,8 @@ class Settings
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_alias']))
 			$add_settings['lp_frontpage_alias'] = 'home';
+		if (!isset($modSettings['lp_frontpage_article_sorting']))
+			$add_settings['lp_frontpage_article_sorting'] = 1;
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
@@ -214,11 +220,11 @@ class Settings
 			array('boards', 'lp_frontpage_boards'),
 			array('check', 'lp_show_images_in_articles'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
-			array('check', 'lp_frontpage_card_alt_layout'),
+			array('check', 'lp_frontpage_card_alt_layout', 'help' => 'lp_frontpage_card_alt_layout_help'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
-			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set']),
+			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
-			array('int', 'lp_teaser_size', 'min' => 0),
+			array('int', 'lp_teaser_size', 'min' => 0, 'help' => 'lp_teaser_size_help'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode'),
@@ -250,13 +256,13 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item)
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item)
@@ -265,18 +271,35 @@ class Settings
 		addInlineJavaScript('
 		function toggleFrontpageMode() {
 			let change_mode = $("#lp_frontpage_mode").val() > 0;
+			let board_selector = $(".board_selector").parent("dd");
+
 			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
-			$(".board_selector").toggle(change_mode);
+			board_selector.toggle(change_mode);
+
 			let allow_change_title = $("#lp_frontpage_mode").val() > 1;
+
 			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
 			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
-			$(".board_selector").toggle(allow_change_title);
+			board_selector.toggle(allow_change_title);
+
 			let allow_change_alias = $("#lp_frontpage_mode").val() == 1;
+
 			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
 			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
+
+			if ($("#lp_frontpage_mode").val() == 3) {
+				let boards = $("#setting_lp_frontpage_boards").closest("dt");
+
+				boards.hide();
+				boards.next("dd").hide();
+			} else {
+				board_selector.toggle(allow_change_title);
+			}
 		};
+
 		toggleFrontpageMode();
+
 		$("#lp_frontpage_mode").on("click", function () {
 			toggleFrontpageMode()
 		});', true);
@@ -291,10 +314,13 @@ class Settings
 		addInlineJavaScript('
 		function toggleStandaloneMode() {
 			let change_mode = $("#lp_standalone_mode").prop("checked");
+
 			$("#' . implode(', #', $standalone_mode_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $standalone_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
 		};
+
 		toggleStandaloneMode();
+
 		$("#lp_standalone_mode").on("click", function () {
 			toggleStandaloneMode()
 		});', true);
@@ -369,14 +395,18 @@ class Settings
 		addInlineJavaScript('
 		function toggleShowCommentBlock() {
 			let change_mode = $("#lp_show_comment_block").val() != "none";
+
 			$("#' . implode(', #', $show_comment_block_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $show_comment_block_toggle_dt) . '").closest("dt").toggle(change_mode);
+
 			if (change_mode && $("#lp_show_comment_block").val() != "default") {
 				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
 				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
 			}
 		};
+
 		toggleShowCommentBlock();
+
 		$("#lp_show_comment_block").on("click", function () {
 			toggleShowCommentBlock()
 		});', true);

@@ -28,14 +28,17 @@ $txt['lp_frontpage_alias']                = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']        = 'Podaj alias strony.';
 $txt['lp_frontpage_boards']               = 'Działy artykułów strony głównej';
 $txt['lp_frontpage_card_alt_layout']      = 'Alternatywny układ elementów kart';
+$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']  = array('By the last comment (default)', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout']               = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']           = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles']        = 'Wyświetlaj obrazy z artykułów';
 $txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
 $txt['lp_teaser_size']                    = 'Długość podglądu artykułów';
+$txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
@@ -103,7 +106,7 @@ $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
 $txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
+$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Blok',
