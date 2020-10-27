@@ -50,7 +50,7 @@ class FrontPage
 				$context['sub_template'] = 'show_boards_as_articles';
 		}
 
-		Subs::runAddons('frontpageCustomTemplate');
+		Subs::runAddons('frontCustomTemplate');
 
 		$context['lp_frontpage_layout'] = self::getNumColumns();
 		$context['canonical_url']       = $scripturl;
@@ -139,7 +139,7 @@ class FrontPage
 			}
 
 			if (isset($article['title']))
-				$article['title'] = Helpers::getPublicTitle($article);
+				$article['title'] = Helpers::getTitle($article);
 
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];
@@ -152,7 +152,7 @@ class FrontPage
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		Subs::runAddons('frontpageAssets');
+		Subs::runAddons('frontAssets');
 	}
 
 	/**
@@ -425,19 +425,19 @@ class FrontPage
 
 				if (!isset($pages[$row['page_id']])) {
 					$pages[$row['page_id']] = array(
-						'id'            => $row['page_id'],
-						'author_id'     => $author_id = empty($row['num_comments']) ? $row['author_id'] : $row['comment_author_id'],
-						'author_link'   => $scripturl . '?action=profile;u=' . $author_id,
-						'author_name'   => empty($row['num_comments']) ? $row['author_name'] : $row['comment_author_name'],
-						'teaser'        => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
-						'type'          => $row['type'],
-						'num_views'     => $row['num_views'],
-						'num_comments'  => $row['num_comments'],
-						'date'          => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-						'link'          => $scripturl . '?page=' . $row['alias'],
-						'image'         => $image,
-						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+						'id'           => $row['page_id'],
+						'author_id'    => $author_id = empty($row['num_comments']) ? $row['author_id'] : $row['comment_author_id'],
+						'author_link'  => $scripturl . '?action=profile;u=' . $author_id,
+						'author_name'  => empty($row['num_comments']) ? $row['author_name'] : $row['comment_author_name'],
+						'teaser'       => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
+						'type'         => $row['type'],
+						'num_views'    => $row['num_views'],
+						'num_comments' => $row['num_comments'],
+						'date'         => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
+						'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+						'link'         => $scripturl . '?page=' . $row['alias'],
+						'image'        => $image,
+						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 				}
 

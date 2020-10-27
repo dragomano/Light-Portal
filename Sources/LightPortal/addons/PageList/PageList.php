@@ -219,7 +219,7 @@ class PageList
 		<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if (empty($title = Helpers::getPublicTitle($page)))
+				if (empty($title = Helpers::getTitle($page)))
 					continue;
 
 				echo '

@@ -231,7 +231,7 @@ class TopPages
 		<dl class="stats">';
 
 				foreach ($top_pages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getPublicTitle($page)))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getTitle($page)))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

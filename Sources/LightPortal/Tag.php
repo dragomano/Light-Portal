@@ -84,7 +84,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
+							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					)
@@ -450,7 +450,7 @@ class Tag
 
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (isset($article['title']))
-				$article['title'] = Helpers::getPublicTitle($article);
+				$article['title'] = Helpers::getTitle($article);
 
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];

@@ -91,7 +91,7 @@ class PageExport extends Export
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getPublicTitle($entry);
+							$title = Helpers::getTitle($entry);
 
 							return '<a class="bbc_link' . (
 								$entry['is_front']

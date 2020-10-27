@@ -63,7 +63,7 @@ class Cache
 	 *
 	 * @param string $key
 	 * @param int $time
-	 * @return null|mixed
+	 * @return mixed
 	 */
 	public static function get($key, $time)
 	{

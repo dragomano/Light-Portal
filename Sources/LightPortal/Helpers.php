@@ -62,7 +62,7 @@ class Helpers
 	 * Получаем объект $_REQUEST
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function request($key = null, $default = null)
@@ -76,7 +76,7 @@ class Helpers
 	 * Получаем объект $_SERVER
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function server($key = null, $default = null)
@@ -90,7 +90,7 @@ class Helpers
 	 * Получаем объект $_SESSION
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function session($key = null, $default = null)
@@ -469,25 +469,24 @@ class Helpers
 	}
 
 	/**
-	 * Get a public object title, according to the user's language, or the forum's language, or in English
+	 * Get an object title, according to the user's language, or the forum's language, or in English
 	 *
-	 * Получаем публичный заголовок объекта, в соответствии с языком пользователя или форума, или на английском
+	 * Получаем заголовок объекта, в соответствии с языком пользователя или форума, или на английском
 	 *
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getPublicTitle(array $object)
+	public static function getTitle(array $object)
 	{
 		global $user_info, $language;
 
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		$lang1 = $object['title'][$user_info['language']] ?? null;
-		$lang2 = $object['title'][$language] ?? null;
-		$lang3 = $object['title']['english'] ?? null;
-
-		return $lang1 ?: $lang2 ?: $lang3 ?: '';
+		return $object['title'][$user_info['language']]
+			?? $object['title'][$language]
+			?? $object['title']['english']
+			?? '';
 	}
 
 	/**

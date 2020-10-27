@@ -176,7 +176,7 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getPublicTitle($entry);
+							$title = Helpers::getTitle($entry);
 
 							return '<a class="bbc_link' . (
 								$entry['is_front']
@@ -676,8 +676,7 @@ class ManagePages
 		$options = self::getOptions();
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
-		if (!empty($context['lp_current_page']['keywords']))
-			$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
+		$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
 
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,

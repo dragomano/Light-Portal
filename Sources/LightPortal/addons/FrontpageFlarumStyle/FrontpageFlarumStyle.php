@@ -36,7 +36,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @return void
 	 */
-	public static function frontpageCustomTemplate()
+	public static function frontCustomTemplate()
 	{
 		global $modSettings, $context;
 

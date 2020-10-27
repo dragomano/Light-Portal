@@ -55,7 +55,7 @@ function template_show_topics_as_articles()
 					<div>
 						<span class="card__by">';
 
-			if (!empty($topic['num_replies'])) {
+			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
 				echo '
 							<i class="fas fa-reply"></i>';
 			}
@@ -158,7 +158,7 @@ function template_show_pages_as_articles()
 					<div>
 						<span class="card__by">';
 
-			if (!empty($page['num_comments'])) {
+			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($page['num_comments'])) {
 				echo '
 							<i class="fas fa-reply"></i>';
 			}

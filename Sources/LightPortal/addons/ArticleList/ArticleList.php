@@ -365,7 +365,7 @@ class ArticleList
 				}
 			} else {
 				foreach ($article_list as $page) {
-					if (empty($title = Helpers::getPublicTitle($page)))
+					if (empty($title = Helpers::getTitle($page)))
 						continue;
 
 					$content = '';
