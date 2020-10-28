@@ -186,6 +186,7 @@ class Comment
 			show_single_comment([
 				'id'          => $item,
 				'alias'       => $this->alias,
+				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => $this->getUserAvatar(),
