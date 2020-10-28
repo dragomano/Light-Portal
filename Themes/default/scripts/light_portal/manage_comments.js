@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
 		this.style.height = 'auto';
+
+		if (commentForm.querySelector('.toolbar'))
+			commentForm.querySelector('.toolbar').style.display = 'block';
+
 		commentForm.comment.style.display = 'block';
 	}, false);
 
@@ -54,8 +58,62 @@ document.addEventListener('DOMContentLoaded', function () {
 				lpPasteNickname.call(target);
 				break;
 			}
+
+			if (target.matches('.toolbar > .button')) {
+				lpPressButton.call(target);
+				break;
+			}
 		}
 	}, false);
+
+	function insertTags(open, close) {
+		let start = message.selectionStart,
+			end = message.selectionEnd,
+			text = message.value;
+
+		message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
+		message.focus();
+
+		let sel = open.length + end;
+		message.setSelectionRange(sel, sel);
+
+		return false;
+	}
+
+	function lpPressButton() {
+		let button = this.children[0].classList[1];
+
+		if (!button) return;
+
+		switch (button) {
+			case 'fa-bold':
+				return insertTags('[b]', '[/b]');
+
+ 			case 'fa-italic':
+				return insertTags('[i]', '[/i]');
+
+			case 'fa-list-ul':
+				return insertTags(`[list]\n[li]`, `[/li]\n[li][/li]\n[/list]`);
+
+			case 'fa-list-ol':
+				return insertTags(`[list type=decimal]\n[li]`, `[/li]\n[li][/li]\n[/list]`);
+
+			case 'fa-youtube':
+				return insertTags('[youtube]', '[/youtube]');
+
+			case 'fa-image':
+				return insertTags('[img]', '[/img]');
+
+			case 'fa-link':
+				return insertTags('[url]', '[/url]');
+
+			case 'fa-code':
+				return insertTags('[code]', '[/code]');
+
+			case 'fa-quote-right':
+				return insertTags('[quote]', '[/quote]');
+		}
+	}
 
 	function lpLeaveReply() {
 		const parentId = this.getAttribute('data-id'),
@@ -80,7 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			comment_raw_content = document.querySelector('#comment' + item + ' .raw_content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
-			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
+			cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
+			toolbar = document.querySelector('#comment' + item + ' .toolbar');
 
 		modify_button.style.display = 'none';
 		update_button.style.display = 'inline-block';
@@ -132,7 +191,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			comment_content = document.querySelector('#comment' + item + ' .content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
-			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
+			cancel_button = document.querySelector('#comment' + item + ' .cancel_button'),
+			toolbar = document.querySelector('#comment' + item + ' .toolbar');
 
 		comment_content.innerHTML = source;
 		comment_content.setAttribute('contenteditable', false);
@@ -184,7 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			nickname = this.innerText + ', ';
 
 		message.value = commentTextarea.substring(0, position) + nickname + commentTextarea.substring(position);
-		this.parentNode.nextElementSibling.nextElementSibling.children[0].click();
+
+		if (this.parentNode.parentNode.children[4]) {
+			this.parentNode.parentNode.children[4].children[0].click();
+		}
 	}
 
 	// Post a comment on form submitting
@@ -238,6 +301,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			message.style.height = '30px';
 
 			commentForm.reset();
+
+			if (commentForm.querySelector('.toolbar'))
+				commentForm.querySelector('.toolbar').style.display = 'none';
+
 			commentForm.comment.style.display = 'none';
 			commentForm.parent_id.value = 0;
 

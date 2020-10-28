@@ -169,6 +169,7 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
+					', show_toolbar(), '
 					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
@@ -329,4 +330,68 @@ function show_related_pages()
 				</div>
 			</div>
 		</aside>';
+}
+
+function show_toolbar()
+{
+	global $context, $editortxt;
+
+	if (empty($context['lp_allowed_bbc']))
+		return;
+
+	echo '
+	<div class="toolbar descbox">';
+
+	if (in_array('b', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['bold'], '"><i class="fas fa-bold"></i></span>';
+	}
+
+	if (in_array('i', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['italic'], '"><i class="fas fa-italic"></i></span>';
+	}
+
+	if (in_array('b', $context['lp_allowed_bbc']) || in_array('i', $context['lp_allowed_bbc'])) {
+		echo '&nbsp;';
+	}
+
+	if (in_array('list', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['bullet_list'], '"><i class="fas fa-list-ul"></i></span>
+		<span class="button" title="', $editortxt['numbered_list'], '"><i class="fas fa-list-ol"></i></span>
+		&nbsp;';
+	}
+
+	if (in_array('youtube', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_youtube_video'], '"><i class="fab fa-youtube"></i></span>';
+	}
+
+	if (in_array('img', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_image'], '"><i class="fas fa-image"></i></span>';
+	}
+
+	if (in_array('url', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_link'], '"><i class="fas fa-link"></i></span>';
+	}
+
+	if (in_array('youtube', $context['lp_allowed_bbc']) || in_array('img', $context['lp_allowed_bbc']) || in_array('url', $context['lp_allowed_bbc'])) {
+		echo '&nbsp;';
+	}
+
+	if (in_array('code', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['code'], '"><i class="fas fa-code"></i></span>';
+	}
+
+	if (in_array('quote', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_quote'], '"><i class="fas fa-quote-right"></i></span>';
+	}
+
+	echo '
+	</div>';
 }

@@ -45,21 +45,27 @@ class Comment
 	 */
 	public function prepare()
 	{
-		global $context, $txt, $modSettings, $scripturl;
+		global $context, $modSettings, $txt, $scripturl;
 
 		if (empty($this->alias))
 			return;
+
+		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
 
 		if (Helpers::request()->filled('sa')) {
 			switch (Helpers::request('sa')) {
 				case 'new_comment':
 					$this->add();
+
 				case 'edit_comment':
 					$this->edit();
+
 				case 'del_comment':
 					$this->remove();
 			}
 		}
+
+		loadLanguage('Editor');
 
 		$comments = Helpers::cache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
@@ -105,7 +111,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $modSettings, $txt;
+		global $smcFunc, $user_info, $context, $txt;
 
 		$args = array(
 			'parent_id'   => FILTER_VALIDATE_INT,
@@ -177,15 +183,13 @@ class Comment
 
 			ob_start();
 
-			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
-
 			show_single_comment([
 				'id'          => $item,
 				'alias'       => $this->alias,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => $this->getUserAvatar(),
-				'message'     => empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags),
+				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
 				'raw_message' => $message,
@@ -225,7 +229,7 @@ class Comment
 	 */
 	private function edit()
 	{
-		global $smcFunc, $context, $modSettings;
+		global $smcFunc, $context;
 
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
@@ -253,8 +257,7 @@ class Comment
 
 		$context['lp_num_queries']++;
 
-		$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
-		$message      = empty($enabled_tags) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $enabled_tags);
+		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']);
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
@@ -427,8 +430,6 @@ class Comment
 			if (empty($modSettings['gravatarOverride']) && empty($modSettings['gravatarEnabled']) && stristr($memberContext[$row['author_id']]['avatar']['name'], 'gravatar://'))
 				$avatar = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
 
-			$enabled_tags = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
-
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],
 				'page_id'     => $row['page_id'],
@@ -436,7 +437,7 @@ class Comment
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
-				'message'     => empty($enabled_tags) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $enabled_tags),
+				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $context['lp_allowed_bbc']),
 				'raw_message' => $row['message'],
 				'created_at'  => $row['created_at'],
 				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) ? (time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60) : false
