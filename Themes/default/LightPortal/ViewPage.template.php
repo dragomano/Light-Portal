@@ -170,7 +170,7 @@ function show_comment_block()
 		echo '
 				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
 					', show_toolbar(), '
-					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" maxlength="', MAX_MSG_LENGTH, '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
@@ -246,17 +246,23 @@ function show_single_comment($comment, $i = 0, $level = 1)
 				<div class="raw_content" style="display: none">', $comment['raw_message'], '</div>
 				<div class="content" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 3em"' : '', '>', $comment['message'], '</div>';
 
-	if ($context['user']['is_logged'] && $level < 5) {
+	if ($context['user']['is_logged']) {
 		echo '
-				<div class="smalltext">
+				<div class="smalltext">';
+
+		if ($level < 5) {
+			echo '
 					<span class="button reply_button" data-id="', $comment['id'], '">', $txt['reply'], '</span>';
 
-		// Only comment author can edit comments
-		if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
-			echo '
+			// Only comment author can edit comments
+			if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
+				echo '
 					<span class="button modify_button" data-id="', $comment['id'], '">', $txt['modify'], '</span>
 					<span class="button update_button" data-id="', $comment['id'], '">', $txt['save'], '</span>
 					<span class="button cancel_button" data-id="', $comment['id'], '">', $txt['modify_cancel'], '</span>';
+		} else {
+			echo '&nbsp;';
+		}
 
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
@@ -310,7 +316,7 @@ function show_related_pages()
 
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
-					<div>
+					<div class="windowbg">
 						<a href="', $scripturl, '?page=', $page['alias'], '">';
 
 		if (!empty($page['image'])) {
@@ -320,9 +326,9 @@ function show_related_pages()
 							</div>';
 		}
 
-		echo '',
-							$page['title'], '
+		echo '
 						</a>
+						<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a>
 					</div>';
 	}
 
@@ -332,6 +338,13 @@ function show_related_pages()
 		</aside>';
 }
 
+/**
+ * BBCode toolbar
+ *
+ * Панель вставки ББ-кода
+ *
+ * @return void
+ */
 function show_toolbar()
 {
 	global $context, $editortxt;

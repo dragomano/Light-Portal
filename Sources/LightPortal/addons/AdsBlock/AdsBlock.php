@@ -355,7 +355,9 @@ class AdsBlock
 			)
 		);
 
-		$context['lp_block']['options']['parameters']['ads_placement'] = is_array($context['lp_block']['options']['parameters']['ads_placement']) ? $context['lp_block']['options']['parameters']['ads_placement'] : explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+		if (!is_array($context['lp_block']['options']['parameters']['ads_placement'])) {
+			$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+		}
 
 		$context['posting_fields']['ads_placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['ads_placement']['input'] = array(
