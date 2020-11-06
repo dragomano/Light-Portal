@@ -145,37 +145,28 @@ class Tag
 	 */
 	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
+		global $txt, $context, $modSettings, $scripturl, $user_info;
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = $smcFunc['db_query']('', '
-			SELECT
-				p.page_id, p.alias, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				t.value, mem.id_member AS author_id, mem.real_name AS author_name
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-			WHERE t.value = {string:key}
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			array(
-				'guest'        => $txt['guest_title'],
-				'key'          => $context['lp_keyword'],
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $items_per_page
-			)
-		);
+		$request = Helpers::db()->table('lp_tags AS t')
+			->select('p.page_id', 'p.alias', 'p.content', 'p.type', 'p.num_views', 'p.num_comments')
+			->addSelect('GREATEST(p.created_at, p.updated_at) AS date', 't.value', 'mem.id_member AS author_id', 'mem.real_name AS author_name')
+			->join('lp_pages AS p', 't.page_id = p.page_id')
+			->leftJoin('members AS mem', 'p.author_id = mem.id_member')
+			->where([
+				['t.value', $context['lp_keyword']],
+				['p.status', Page::STATUS_ACTIVE],
+				['p.created_at', '<=', time()]
+			])
+			->whereIn('p.permissions', Helpers::getPermissions())
+			->orderBy($sort)
+			->limit($start, $items_per_page)
+			->get();
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			Helpers::parseContent($row['content'], $row['type']);
 
 			$image = null;
@@ -202,9 +193,6 @@ class Tag
 			);
 		}
 
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
 		return $items;
 	}
 
@@ -217,32 +205,18 @@ class Tag
 	 */
 	public static function getTotalQuantityPagesWithSelectedTag()
 	{
-		global $smcFunc, $context;
+		global $context;
 
-		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value = {string:key}
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})',
-			array(
-				'key'          => $context['lp_keyword'],
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
-			)
-		);
-
-		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
-			$items[$row['page_id']] = $row['value'];
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
-		return sizeof($items);
+		return Helpers::db()->table('lp_tags AS t')
+			->select('t.page_id')
+			->join('lp_pages AS p', 't.page_id = p.page_id')
+			->where([
+				['t.value', $context['lp_keyword']],
+				['p.status', Page::STATUS_ACTIVE],
+				['p.created_at', '<=', time()]
+			])
+			->whereIn('p.permissions', Helpers::getPermissions())
+			->count();
 	}
 
 	/**
@@ -330,30 +304,28 @@ class Tag
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $scripturl, $context;
+		global $scripturl, $context;
 
-		$request = $smcFunc['db_query']('', '
-			SELECT t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value IS NOT NULL
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY {raw:sort}' . ($items_per_page ? '
-			LIMIT {int:start}, {int:limit}' : ''),
-			array(
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $items_per_page
-			)
-		);
+		$request = Helpers::db()->table('lp_tags AS t')
+			->select('t.value')
+			->join('lp_pages AS p', 't.page_id = p.page_id')
+			->whereNotNull('t.value')
+			->where([
+				['p.status', Page::STATUS_ACTIVE],
+				['p.created_at', '<=', time()]
+			])
+			->whereIn('p.permissions', Helpers::getPermissions())
+			->orderBy($sort);
+
+		if ($items_per_page) {
+			$request = $request->limit($start, $items_per_page);
+		}
+
+		$request = $request->get();
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			!isset($items[$row['value']])
 				? $i = 1
 				: $i++;
@@ -364,9 +336,6 @@ class Tag
 				'frequency' => $i
 			);
 		}
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
 
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
@@ -384,31 +353,16 @@ class Tag
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc, $context;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value IS NOT NULL
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})',
-			array(
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
-			)
-		);
-
-		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
-			$items[$row['value']] = $row['page_id'];
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
-		return sizeof($items);
+		return Helpers::db()->table('lp_tags AS t')
+			->select('t.page_id')
+			->join('lp_pages AS p', 't.page_id = p.page_id')
+			->whereNotNull('t.value')
+			->where([
+				['p.status', Page::STATUS_ACTIVE],
+				['p.created_at', '<=', time()]
+			])
+			->whereIn('p.permissions', Helpers::getPermissions())
+			->count();
 	}
 
 	/**

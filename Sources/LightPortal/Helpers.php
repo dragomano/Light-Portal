@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\Db;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Server;
@@ -40,6 +41,19 @@ class Helpers
 	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
 	{
 		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+	}
+
+	/**
+	 * Get the data from the forum database
+	 *
+	 * Получаем данные из базы данных форума
+	 *
+	 * @param string $table
+	 * @return mixed
+	 */
+	public static function db($table = null)
+	{
+		return new Db($table);
 	}
 
 	/**
@@ -227,8 +241,8 @@ class Helpers
 			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : (($num % 10 === 0 || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
 		}
 
-		// Plural rule #7 (Croatian, Serbian, Russian, Ukrainian)
-		$rule_seven = array('hr', 'sr', 'ru', 'uk');
+		// Plural rule #7 (Bosnian, Croatian, Serbian, Russian, Ukrainian)
+		$rule_seven = array('bs', 'hr', 'sr', 'ru', 'uk');
 		if (in_array($txt['lang_dictionary'], $rule_seven)) {
 			$cases = array(2, 0, 1, 1, 1, 2);
 			return $num . ' ' . $str[($num % 100 > 4 && $num % 100 < 20) ? 2 : $cases[min($num % 10, 5)]];
@@ -257,7 +271,7 @@ class Helpers
 		if ($txt['lang_dictionary'] == 'ar')
 			return $str[in_array($num, array(0, 1, 2)) ? $num : ($num % 100 >= 3 && $num % 100 <= 10 ? 3 : ($num % 100 >= 11 ? 4 : 5))] . ' ' . $num;
 
-		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
+		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Estonian, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
 		return $num . ' ' . $str[$num == 1 ? 0 : 1];
 	}
 
@@ -417,10 +431,13 @@ class Helpers
 		switch ($permissions) {
 			case 0:
 				return $user_info['is_admin'] == 1;
+
 			case 1:
 				return $user_info['is_guest'] == 1;
+
 			case 2:
 				return !empty($user_info['id']);
+
 			default:
 				return true;
 		}
@@ -537,37 +554,36 @@ class Helpers
 	{
 		global $modSettings;
 
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+		return !empty($modSettings['lp_teaser_size']) ? self::getShortenText(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 
 	/**
-	 * Collecting the names of existing themes
+	 * Get the shorten text cut to the given length
 	 *
-	 * Собираем названия существующих тем оформления
+	 * Получаем обрезанный до заданной длины текст
+	 *
+	 * @param string $text
+	 * @param int $length
+	 * @return string
+	 */
+	public static function getShortenText($text, $length = MAX_MSG_LENGTH)
+	{
+		return shorten_subject($text, $length);
+	}
+
+	/**
+	 * Get an array with names of installed themes
+	 *
+	 * Получаем массив с названиями установленных тем оформления
 	 *
 	 * @return array
 	 */
 	public static function getForumThemes()
 	{
-		global $smcFunc, $context;
-
-		$result = $smcFunc['db_query']('', '
-			SELECT id_theme, variable, value
-			FROM {db_prefix}themes
-			WHERE variable = {string:name}',
-			array(
-				'name' => 'name'
-			)
-		);
-
-		$current_themes = [];
-		while ($row = $smcFunc['db_fetch_assoc']($result))
-			$current_themes[$row['id_theme']] = $row['value'];
-
-		$smcFunc['db_free_result']($result);
-		$context['lp_num_queries']++;
-
-		return $current_themes;
+		return self::db()
+			->table('themes')
+			->where('variable', 'name')
+			->pluck('value', 'id_theme');
 	}
 
 	/**
@@ -613,10 +629,12 @@ class Helpers
 				call_integration_hook('integrate_paragrapher_string', array(&$content));
 
 				break;
+
 			case 'html':
 				$content = un_htmlspecialchars($content);
 
 				break;
+
 			case 'php':
 				$content = trim(un_htmlspecialchars($content));
 				$content = trim($content, '<?php');
@@ -634,6 +652,7 @@ class Helpers
 				$content = ob_get_clean();
 
 				break;
+
 			default:
 				Subs::runAddons('parseContent', array(&$content, $type));
 		}
@@ -658,15 +677,19 @@ class Helpers
 			case 'string':
 				$filter = FILTER_SANITIZE_STRING;
 				break;
+
 			case 'int':
 				$filter = FILTER_VALIDATE_INT;
 				break;
+
 			case 'bool':
 				$filter = FILTER_VALIDATE_BOOLEAN;
 				break;
+
 			case 'url':
 				$filter = FILTER_VALIDATE_URL;
 				break;
+
 			default:
 				$filter = FILTER_DEFAULT;
 		}

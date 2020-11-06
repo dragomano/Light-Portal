@@ -37,14 +37,17 @@ class FrontPage
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
 				return Page::show();
+
 			case 2:
 				self::prepareArticles('topics');
 				$context['sub_template'] = 'show_topics_as_articles';
 				break;
+
 			case 3:
 				self::prepareArticles();
 				$context['sub_template'] = 'show_pages_as_articles';
 				break;
+
 			default:
 				self::prepareArticles('boards');
 				$context['sub_template'] = 'show_boards_as_articles';
@@ -81,12 +84,15 @@ class FrontPage
 				case '1':
 					$num_columns /= 2;
 					break;
+
 				case '2':
 					$num_columns /= 3;
 					break;
+
 				case '3':
 					$num_columns /= 4;
 					break;
+
 				default:
 					$num_columns /= 6;
 			}
@@ -111,9 +117,11 @@ class FrontPage
 			case 'topics':
 				$function = 'TopicsFromSelectedBoards';
 				break;
+
 			case 'boards':
 				$function = 'SelectedBoards';
 				break;
+
 			default:
 				$function = 'ActivePages';
 		}
@@ -166,7 +174,7 @@ class FrontPage
 	 */
 	public static function getTopicsFromSelectedBoards(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $context;
+		global $modSettings, $user_info, $scripturl, $txt;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
@@ -174,20 +182,14 @@ class FrontPage
 			return [];
 
 		if (($topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$custom_columns    = [];
-			$custom_tables     = [];
-			$custom_wheres     = [];
+			// $custom_columns[] = $column or $expression;
+			$custom_columns = [];
 
-			$custom_parameters = [
-				'current_member'    => $user_info['id'],
-				'is_approved'       => 1,
-				'id_poll'           => 0,
-				'id_redirect_topic' => 0,
-				'attachment_type'   => 0,
-				'selected_boards'   => $selected_boards,
-				'start'             => $start,
-				'limit'             => $limit
-			];
+			// $custom_joins[$table_name] = [$on, $type]
+			$custom_joins = [];
+
+			// $custom_wheres[$column] = $value
+			$custom_wheres = [];
 
 			$custom_sorting = [
 				't.id_last_msg DESC',
@@ -195,43 +197,68 @@ class FrontPage
 				'mf.poster_time',
 			];
 
-			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_joins, &$custom_wheres, &$custom_sorting));
 
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
-						SELECT id_attach
-						FROM {db_prefix}attachments
-						WHERE id_msg = t.id_first_msg
-							AND width <> 0
-							AND height <> 0
-							AND approved = {int:is_approved}
-							AND attachment_type = {int:attachment_type}
-						ORDER BY id_attach
-						LIMIT 1
-					) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
-				WHERE t.approved = {int:is_approved}
-					AND t.id_poll = {int:id_poll}
-					AND t.id_redirect_topic = {int:id_redirect_topic}
-					AND t.id_board IN ({array_int:selected_boards})
-					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
-			);
+			$request = Helpers::db()->table('topics AS t')
+				->select('t.id_topic', 't.id_board', 't.num_views', 't.num_replies', 't.is_sticky', 't.id_first_msg', 't.id_member_started', 'mf.subject', 'mf.body', 'mf.smileys_enabled')
+				->addSelect('COALESCE(mem.real_name, mf.poster_name) AS poster_name', 'mf.poster_time', 'mf.id_member', 'ml.id_msg', 'ml.id_member AS last_poster_id')
+				->addSelect('ml.poster_name AS last_poster_name', 'ml.body AS last_body', 'ml.poster_time AS last_msg_time', 'b.name');
+
+			if (!empty($custom_columns)) {
+				$request = $request->addSelect($custom_columns);
+			}
+
+			if (!empty($modSettings['lp_show_images_in_articles'])) {
+				$request = $request->addSelect('(
+					SELECT id_attach
+					FROM {db_prefix}attachments
+					WHERE id_msg = t.id_first_msg
+						AND width <> 0
+						AND height <> 0
+						AND approved = 1
+						AND attachment_type = 0
+					ORDER BY id_attach
+					LIMIT 1
+				) AS id_attach');
+			}
+
+			$request = $request->addSelect(($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from', 'ml.id_msg_modified')
+				->join('messages AS ml', 't.id_last_msg = ml.id_msg')
+				->join('messages AS mf', 't.id_first_msg = mf.id_msg')
+				->join('boards AS b', 't.id_board = b.id_board')
+				->leftJoin('members AS mem', 'mf.id_member = mem.id_member');
+
+			if (empty($user_info['is_guest'])) {
+				$request = $request->leftJoin('log_topics AS lt', 't.id_topic = lt.id_topic AND lt.id_member = ' . $user_info['id'])
+					->leftJoin('log_mark_read AS lmr', 't.id_board = lmr.id_board AND lmr.id_member = ' . $user_info['id']);
+			}
+
+			if (!empty($custom_joins)) {
+				foreach ($custom_joins as $join_table => $join_condition) {
+					$request = $request->join($join_table, $join_condition[0], null, null, $join_condition[1] ?? '');
+				}
+			}
+
+			$request = $request->where([
+					't.approved'          => 1,
+					't.id_poll'           => 0,
+					't.id_redirect_topic' => 0,
+					$user_info['query_wanna_see_board']
+				])
+				->whereIn('t.id_board', $selected_boards);
+
+			if (!empty($custom_wheres)) {
+				$request = $request->where($custom_wheres);
+			}
+
+			$request = $request->orderBy(!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC' : '')
+				->orderBy($custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0])
+				->limit($start, $limit)
+				->get();
 
 			$topics = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+			foreach ($request as $row) {
 				if (!isset($topics[$row['id_topic']])) {
 					Helpers::cleanBbcode($row['subject']);
 					censorText($row['subject']);
@@ -256,10 +283,6 @@ class FrontPage
 					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
 					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
-					$colorClass = '';
-					if ($row['is_sticky'])
-						$colorClass .= ' sticky';
-
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
@@ -276,7 +299,7 @@ class FrontPage
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
 						'num_views'   => $row['num_views'],
 						'num_replies' => $row['num_replies'],
-						'css_class'   => $colorClass,
+						'css_class'   => $row['is_sticky'] ? ' sticky' : '',
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
@@ -289,9 +312,6 @@ class FrontPage
 
 				Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
 			}
-
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
@@ -308,7 +328,7 @@ class FrontPage
 	 */
 	public static function getTotalTopicsFromSelectedBoards()
 	{
-		global $modSettings, $user_info, $smcFunc, $context;
+		global $modSettings, $user_info;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
@@ -316,31 +336,22 @@ class FrontPage
 			return 0;
 
 		if (($num_topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(t.id_topic)
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-				WHERE t.approved = {int:is_approved}
-					AND t.id_poll = {int:id_poll}
-					AND t.id_redirect_topic = {int:id_redirect_topic}
-					AND t.id_board IN ({array_int:selected_boards})
-					AND {query_wanna_see_board}',
-				array(
-					'is_approved'       => 1,
-					'id_poll'           => 0,
-					'id_redirect_topic' => 0,
-					'selected_boards'   => $selected_boards
-				)
-			);
+			$num_topics = Helpers::db()->table('topics AS t')
+				->select('t.id_topic')
+				->join('boards AS b', 't.id_board = b.id_board')
+				->where([
+					['t.approved', 1],
+					['t.id_poll', 0],
+					['t.id_redirect_topic', 0],
+					$user_info['query_wanna_see_board']
+				])
+				->whereIn('t.id_board', $selected_boards)
+				->count();
 
-			[$num_topics] = $smcFunc['db_fetch_row']($request);
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_topics, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
 		}
 
-		return (int) $num_topics;
+		return $num_topics;
 	}
 
 	/**
@@ -354,23 +365,19 @@ class FrontPage
 	 */
 	public static function getActivePages(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $scripturl, $context;
+		global $user_info, $modSettings, $scripturl;
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-			$custom_columns    = [];
-			$custom_tables     = [];
-			$custom_wheres     = [];
+			// $custom_columns[] = $column or $expression;
+			$custom_columns = [];
 
-			$custom_parameters = [
-				'type'         => 'page',
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
-				'start'        => $start,
-				'limit'        => $limit
-			];
+			// $custom_joins[$table_name] = [$on, $type]
+			$custom_joins = [];
+
+			// $custom_wheres[$column] = $value
+			$custom_wheres = [];
 
 			$custom_sorting = [
 				'comment_date DESC',
@@ -378,43 +385,61 @@ class FrontPage
 				'p.created_at',
 			];
 
-			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_joins, &$custom_wheres, &$custom_sorting));
 
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-					mem.real_name AS author_name, (
-						SELECT created_at
-						FROM {db_prefix}lp_comments
-						WHERE page_id = p.page_id
-						ORDER BY created_at DESC
-						LIMIT 1
-					) AS comment_date, (
-						SELECT author_id
-						FROM {db_prefix}lp_comments
-						WHERE created_at = comment_date
-						LIMIT 1
-					) AS comment_author_id, (
-						SELECT real_name
-						FROM {db_prefix}members
-						WHERE id_member = comment_author_id
-						LIMIT 1
-					) AS comment_author_name' . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
-				WHERE p.status = {int:status}
-					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
-			);
+			$request = Helpers::db()->table('lp_pages AS p')
+				->select('p.page_id', 'p.author_id', 'p.alias', 'p.content', 'p.description', 'p.type', 'p.status', 'p.num_views', 'p.num_comments', 'p.created_at')
+				->addSelect('GREATEST(p.created_at, p.updated_at) AS date', 'mem.real_name AS author_name')
+				->addSelect('(
+					SELECT created_at
+					FROM {db_prefix}lp_comments
+					WHERE page_id = p.page_id
+					ORDER BY created_at DESC
+					LIMIT 1
+				) AS comment_date')
+				->addSelect('(
+					SELECT author_id
+					FROM {db_prefix}lp_comments
+					WHERE created_at = comment_date
+					LIMIT 1
+				) AS comment_author_id')
+				->addSelect('(
+					SELECT real_name
+					FROM {db_prefix}members
+					WHERE id_member = comment_author_id
+					LIMIT 1
+				) AS comment_author_name');
+
+			if (!empty($custom_columns)) {
+				$request = $request->addSelect($custom_columns);
+			}
+
+			$request = $request->leftJoin('members AS mem', 'p.author_id = mem.id_member');
+
+			if (!empty($custom_joins)) {
+				foreach ($custom_joins as $join_table => $join_condition) {
+					$request = $request->join($join_table, $join_condition[0], null, null, $join_condition[1] ?? '');
+				}
+			}
+
+			$request = $request->where([
+					['p.status', Page::STATUS_ACTIVE],
+					['p.created_at', '<=', time()]
+				])
+				->whereIn('p.permissions', Helpers::getPermissions());
+
+			if (!empty($custom_wheres)) {
+				$request = $request->where($custom_wheres);
+			}
+
+			$request = $request->orderBy(!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC' : '')
+				->orderBy($custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0])
+				->limit($start, $limit)
+				->get();
 
 			$pages = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+			foreach ($request as $row) {
 				Helpers::parseContent($row['content'], $row['type']);
 
 				$image = null;
@@ -446,9 +471,6 @@ class FrontPage
 				Subs::runAddons('frontPagesOutput', array(&$pages, $row));
 			}
 
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
 
@@ -464,30 +486,22 @@ class FrontPage
 	 */
 	public static function getTotalActivePages()
 	{
-		global $user_info, $smcFunc, $context;
+		global $user_info;
 
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND created_at <= {int:current_time}
-					AND permissions IN ({array_int:permissions})',
-				array(
-					'status'       => Page::STATUS_ACTIVE,
-					'current_time' => time(),
-					'permissions'  => Helpers::getPermissions()
-				)
-			);
+			$num_pages = Helpers::db()->table('lp_pages')
+				->select('page_id')
+				->where([
+					['status', Page::STATUS_ACTIVE],
+					['created_at', '<=', time()],
+				])
+				->whereIn('permissions', Helpers::getPermissions())
+				->count();
 
-			[$num_pages] = $smcFunc['db_fetch_row']($request);
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_pages, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
 		}
 
-		return (int) $num_pages;
+		return $num_pages;
 	}
 
 	/**
@@ -501,7 +515,7 @@ class FrontPage
 	 */
 	public static function getSelectedBoards(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $context, $scripturl;
+		global $modSettings, $user_info, $context, $scripturl;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
@@ -509,17 +523,14 @@ class FrontPage
 			return [];
 
 		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$custom_columns    = [];
-			$custom_tables     = [];
-			$custom_wheres     = [];
+			// $custom_columns[] = $column or $expression;
+			$custom_columns = [];
 
-			$custom_parameters = [
-				'blank_string'    => '',
-				'current_member'  => $user_info['id'],
-				'selected_boards' => $selected_boards,
-				'start'           => $start,
-				'limit'           => $limit
-			];
+			// $custom_joins[$table_name] = [$on, $type]
+			$custom_joins = [];
+
+			// $custom_wheres[$column] = $value
+			$custom_wheres = [];
 
 			$custom_sorting = [
 				'b.id_last_msg DESC',
@@ -527,30 +538,52 @@ class FrontPage
 				'm.poster_time',
 			];
 
-			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_joins, &$custom_wheres, &$custom_sorting));
 
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-					GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
-					(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
-				FROM {db_prefix}boards AS b
-					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
-					LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . ($user_info['is_guest'] ? '' : '
-					LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
-					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
-				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
-			);
+			$request = Helpers::db()->table('boards AS b')
+				->select('b.id_board', 'b.name', 'b.description', 'b.redirect', 'CASE WHEN b.redirect != "" THEN 1 ELSE 0 END AS is_redirect', 'b.num_posts')
+				->addSelect('GREATEST(m.poster_time, m.modified_time) AS last_updated', 'm.id_msg', 'm.id_topic', 'c.name AS cat_name')
+				->addSelect($user_info['is_guest']
+					? '1 AS is_read, 0 AS new_from'
+					: '(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from')
+				->addSelect(!empty($modSettings['lp_show_images_in_articles']) ? 'COALESCE(a.id_attach, 0) AS attach_id' : '');
+
+			if (!empty($custom_columns)) {
+				$request = $request->addSelect($custom_columns);
+			}
+
+			$request = $request->join('categories AS c', 'b.id_cat = c.id_cat')
+				->leftJoin('messages AS m', 'b.id_last_msg = m.id_msg');
+
+			if (empty($user_info['is_guest'])) {
+				$request = $request->leftJoin('log_boards AS lb', 'b.id_board = lb.id_board AND lb.id_member = ' . $user_info['id']);
+			}
+
+			if (!empty($modSettings['lp_show_images_in_articles'])) {
+				$request = $request->leftJoin('attachments AS a', 'b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0');
+			}
+
+			if (!empty($custom_joins)) {
+				foreach ($custom_joins as $join_table => $join_condition) {
+					$request = $request->join($join_table, $join_condition[0], null, null, $join_condition[1] ?? '');
+				}
+			}
+
+			$request = $request->whereIn('b.id_board', $selected_boards)
+				->andWhere($user_info['query_wanna_see_board']);
+
+			if (!empty($custom_wheres)) {
+				$request = $request->where($custom_wheres);
+			}
+
+			$request = $request->orderBy(!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC' : '')
+				->orderBy($custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0])
+				->limit($start, $limit)
+				->get();
 
 			$boards = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+			foreach ($request as $row) {
 				$board_name  = parse_bbc($row['name'], false, '', $context['description_allowed_tags']);
 				$description = parse_bbc($row['description'], false, '', $context['description_allowed_tags']);
 				$cat_name    = parse_bbc($row['cat_name'], false, '', $context['description_allowed_tags']);
@@ -590,9 +623,6 @@ class FrontPage
 				Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
 			}
 
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
 
@@ -608,32 +638,24 @@ class FrontPage
 	 */
 	public static function getTotalSelectedBoards()
 	{
-		global $modSettings, $context, $smcFunc;
+		global $modSettings, $user_info;
 
 		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
 
 		if (empty($selected_boards))
 			return 0;
 
-		if (($num_boards = Helpers::cache()->get('articles_u' . $context['user']['id'] . '_total', LP_CACHE_TIME)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(b.id_board)
-				FROM {db_prefix}boards AS b
-					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
-				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}',
-				array(
-					'selected_boards' => $selected_boards
-				)
-			);
+		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+			$num_boards = Helpers::db()->table('boards AS b')
+				->select('b.id_board')
+				->join('categories AS c', 'b.id_cat = c.id_cat')
+				->whereIn('b.id_board', $selected_boards)
+				->andWhere($user_info['query_wanna_see_board'])
+				->count();
 
-			[$num_boards] = $smcFunc['db_fetch_row']($request);
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
-			Helpers::cache()->put('articles_u' . $context['user']['id'] . '_total', (int) $num_boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_boards, LP_CACHE_TIME);
 		}
 
-		return (int) $num_boards;
+		return $num_boards;
 	}
 }

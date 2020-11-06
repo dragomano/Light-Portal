@@ -34,16 +34,16 @@ class TopicRatingBar
 	 * Выбираем столбцы total_votes и total_value из таблицы topic_ratings при выборке тем-статей
 	 *
 	 * @param array $custom_columns
-	 * @param array $custom_tables
+	 * @param array $custom_joins
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables)
+	public static function frontTopics(&$custom_columns, &$custom_joins)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
 
 		$custom_columns[] = 'tr.total_votes, tr.total_value';
-		$custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+		$custom_joins['topic_ratings AS tr']  = ['t.id_topic = tr.id', 'left'];
 	}
 
 	/**

@@ -115,115 +115,55 @@ class RandomTopics
 	 */
 	public static function getData($num_topics)
 	{
-		global $db_type, $smcFunc, $modSettings, $user_info, $context, $settings, $scripturl;
+		global $db_type, $modSettings, $user_info, $context, $settings, $scripturl;
 
 		if (empty($num_topics))
 			return [];
 
-		if ($db_type == 'postgresql') {
-			$request = $smcFunc['db_query']('', '
-				WITH RECURSIVE r AS (
-					WITH b AS (
-						SELECT min(t.id_topic), (
-							SELECT t.id_topic FROM {db_prefix}topics AS t
-							WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-								AND t.id_board != {int:recycle_board}' : '') . '
-							ORDER BY t.id_topic DESC
-							LIMIT 1 OFFSET {int:limit} - 1
-						) max
-						FROM {db_prefix}topics AS t
-						WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
-					)
-					(
-						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
-						FROM {db_prefix}topics AS t, b
-						WHERE t.id_topic >= min + ((max - min) * random())::int' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
-							AND	t.approved = {int:is_approved}
-						LIMIT 1
-					) UNION ALL (
-						SELECT t.id_topic, min, max, a || t.id_topic, r.n + 1 AS n
-						FROM {db_prefix}topics AS t, r
-						WHERE t.id_topic >= min + ((max - min) * random())::int
-							AND t.id_topic <> all(a)
-							AND r.n + 1 < {int:limit}' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
-							AND t.approved = {int:is_approved}
-						LIMIT 1
-					)
-				)
-				SELECT t.id_topic
-				FROM {db_prefix}topics AS t, r
-				WHERE r.id_topic = t.id_topic',
-				array(
-					'is_approved'   => 1,
-					'recycle_board' => !empty($modSettings['recycle_board']) ? (int) $modSettings['recycle_board'] : null,
-					'limit'         => $num_topics
-				)
-			);
+		$ignore_boards = !empty($modSettings['recycle_board']) ? [(int) $modSettings['recycle_board']] : [];
 
-			$topic_ids = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request))
-				$topic_ids[] = $row['id_topic'];
-
-			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
-
-			if (empty($topic_ids))
-				return self::getData($num_topics - 1);
-
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
-					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
-				WHERE t.id_topic IN ({array_int:topic_ids})' . (!empty($modSettings['allow_ignore_boards']) ? '
-					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : ''),
-				array(
-					'current_member' => $user_info['id'],
-					'topic_ids'      => $topic_ids
-				)
-			);
-		} else {
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
-					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
-				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
-					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
-				WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-					AND t.id_board != {int:recycle_board}' : '') . (!empty($modSettings['allow_ignore_boards']) ? '
-					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : '') . '
-					AND t.id_topic IN (SELECT id_topic FROM {db_prefix}topics)
-				ORDER BY RAND()
-				LIMIT {int:limit}',
-				array(
-					'current_member' => $user_info['id'],
-					'is_approved'    => 1,
-					'recycle_board'  => !empty($modSettings['recycle_board']) ? (int) $modSettings['recycle_board'] : null,
-					'limit'          => $num_topics
-				)
-			);
+		if (!empty($modSettings['allow_ignore_boards'])) {
+			$ignore_boards = array_unique(array_merge($ignore_boards, $user_info['ignoreboards']));
 		}
+
+		$min = Helpers::db()->table('topics')->min('id_topic');
+
+		if (empty($min))
+			return [];
+
+		$max = Helpers::db()->table('topics')->max('id_topic');
+
+		$topic_ids = self::getRandomNumbersFromRange($min, $max, $num_topics);
+
+		$request = Helpers::db()->table('topics AS t')
+			->select('mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg')
+			->addSelect('COALESCE(mem.real_name, mf.poster_name) AS poster_name')
+			->addSelect($user_info['is_guest'] ? '1 AS is_read' : 'COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read', 'mf.icon')
+			->join('messages AS ml', 't.id_last_msg = ml.id_msg')
+			->join('messages AS mf', 't.id_first_msg = mf.id_msg')
+			->leftJoin('members AS mem', 'mf.id_member = mem.id_member');
+
+		if (empty($user_info['is_guest'])) {
+			$request = $request->leftJoin('log_topics AS lt', 't.id_topic = lt.id_topic AND lt.id_member = ' . $user_info['id'])
+				->leftJoin('log_mark_read AS lmr', 't.id_board = lmr.id_board AND lmr.id_member = ' . $user_info['id']);
+		}
+
+		$request = $request->where('t.approved', 1);
+
+		if (!empty($ignore_boards)) {
+			$request = $request->whereNotIn('t.id_board', $ignore_boards);
+		}
+
+		$request = $request->whereIn('t.id_topic', $topic_ids)
+			->get();
 
 		$icon_sources = [];
 		foreach ($context['stable_icons'] as $icon)
 			$icon_sources[$icon] = 'images_url';
 
 		$topics = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			if (!empty($modSettings['messageIconChecks_enable']) && !isset($icon_sources[$row['icon']]))
 				$icon_sources[$row['icon']] = file_exists($settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
 			elseif (!isset($icon_sources[$row['icon']]))
@@ -238,10 +178,30 @@ class RandomTopics
 			);
 		}
 
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		shuffle($topics);
 
 		return $topics;
+	}
+
+	/**
+	 * Get $num random numbers from $min to $max
+	 *
+	 * Получаем $num случайных чисел от $min до $max
+	 *
+	 * @param int $min
+	 * @param int $max
+	 * @param int $num
+	 * @return array
+	 */
+	private static function getRandomNumbersFromRange($min = 0, $max = 0, $num = 0)
+	{
+		$result = [];
+
+		while (count($result) < $num) {
+			$result[mt_rand($min, $max)] = 0;
+		}
+
+		return array_keys($result);
 	}
 
 	/**
@@ -277,7 +237,7 @@ class RandomTopics
 			echo '
 			<ul class="random_topics noup">';
 
-			foreach ($topics as $topic) {
+			foreach ($random_topics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
 					<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '

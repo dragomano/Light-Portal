@@ -22,13 +22,13 @@ if (!defined('SMF'))
 class BlockImport extends Import
 {
 	/**
-	 * Block import
+	 * The page of import blocks
 	 *
-	 * Импорт блоков
+	 * Страница импорта блоков
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -57,8 +57,6 @@ class BlockImport extends Import
 	 */
 	protected static function run()
 	{
-		global $smcFunc, $context;
-
 		if (empty($_FILES['import_file']))
 			return;
 
@@ -125,33 +123,18 @@ class BlockImport extends Import
 		}
 
 		if (!empty($items)) {
-			$sql = "REPLACE INTO {db_prefix}lp_blocks (`block_id`, `icon`, `icon_type`, `type`, `content`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `title_style`, `content_class`, `content_style`)
-				VALUES ";
-
-			$sql .= self::getValues($items);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$result = Helpers::db()->table('lp_blocks')
+				->insert($items, ['block_id'], 'replace');
 		}
 
 		if (!empty($titles) && !empty($result)) {
-			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
-				VALUES ";
-
-			$sql .= self::getValues($titles);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$result = Helpers::db()->table('lp_titles')
+				->insert($titles, ['item_id', 'type', 'lang'], 'replace');
 		}
 
 		if (!empty($params) && !empty($result)) {
-			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
-				VALUES ";
-
-			$sql .= self::getValues($params);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$result = Helpers::db()->table('lp_params')
+				->insert($params, ['item_id', 'type', 'name'], 'replace');
 		}
 
 		if (empty($result))

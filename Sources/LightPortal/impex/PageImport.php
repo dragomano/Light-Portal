@@ -21,7 +21,6 @@ if (!defined('SMF'))
 
 class PageImport extends Import
 {
-
 	/**
 	 * Page import
 	 *
@@ -29,7 +28,7 @@ class PageImport extends Import
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -58,7 +57,7 @@ class PageImport extends Import
 	 */
 	protected static function run()
 	{
-		global $db_temp_cache, $db_cache, $smcFunc, $context;
+		global $db_temp_cache, $db_cache;
 
 		if (empty($_FILES['import_file']))
 			return;
@@ -83,7 +82,7 @@ class PageImport extends Import
 		if (!isset($xml->pages->item[0]['page_id']))
 			fatal_lang_error('lp_wrong_import_file', false);
 
-		$items = $titles = $params = $keywords = $comments = [];
+		$items = $titles = $params = $tags = $comments = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
@@ -130,7 +129,7 @@ class PageImport extends Import
 
 				if (!empty($item->keywords)) {
 					foreach (explode(', ', $item->keywords) as $value) {
-						$keywords[] = [
+						$tags[] = [
 							'page_id' => $page_id,
 							'value'   => $value
 						];
@@ -159,28 +158,18 @@ class PageImport extends Import
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$sql = "REPLACE INTO {db_prefix}lp_pages (`page_id`, `author_id`, `alias`, `description`, `content`, `type`, `permissions`, `status`, `num_views`, `num_comments`, `created_at`, `updated_at`)
-					VALUES ";
-
-				$sql .= self::getValues($items[$i]);
-
-				$result = $smcFunc['db_query']('', $sql);
-				$context['lp_num_queries']++;
+				$result = Helpers::db()->table('lp_pages')
+					->insert($items[$i], ['page_id'], 'replace');
 			}
 		}
 
 		if (!empty($titles) && !empty($result)) {
 			$titles = array_chunk($titles, 100);
-			$count = sizeof($titles);
+			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
-					VALUES ";
-
-				$sql .= self::getValues($titles[$i]);
-
-				$result = $smcFunc['db_query']('', $sql);
-				$context['lp_num_queries']++;
+				$result = Helpers::db()->table('lp_titles')
+					->insert($titles[$i], ['item_id', 'type', 'lang'], 'replace');
 			}
 		}
 
@@ -189,28 +178,18 @@ class PageImport extends Import
 			$count = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
-					VALUES ";
-
-				$sql .= self::getValues($params[$i]);
-
-				$result = $smcFunc['db_query']('', $sql);
-				$context['lp_num_queries']++;
+				$result = Helpers::db()->table('lp_params')
+					->insert($params[$i], ['item_id', 'type', 'name'], 'replace');
 			}
 		}
 
-		if (!empty($keywords) && !empty($result)) {
-			$keywords = array_chunk($keywords, 100);
-			$count = sizeof($keywords);
+		if (!empty($tags) && !empty($result)) {
+			$tags = array_chunk($tags, 100);
+			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {
-				$sql = "REPLACE INTO {db_prefix}lp_tags (`page_id`, `value`)
-					VALUES ";
-
-				$sql .= self::getValues($keywords[$i]);
-
-				$result = $smcFunc['db_query']('', $sql);
-				$context['lp_num_queries']++;
+				$result = Helpers::db()->table('lp_tags')
+					->insert($tags[$i], ['page_id', 'value'], 'replace');
 			}
 		}
 
@@ -219,13 +198,8 @@ class PageImport extends Import
 			$count = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				$sql = "REPLACE INTO {db_prefix}lp_comments (`id`, `parent_id`, `page_id`, `author_id`, `message`, `created_at`)
-					VALUES ";
-
-				$sql .= self::getValues($comments[$i]);
-
-				$result = $smcFunc['db_query']('', $sql);
-				$context['lp_num_queries']++;
+				$result = Helpers::db()->table('lp_comments')
+					->insert($comments[$i], ['id', 'page_id'], 'replace');
 			}
 		}
 

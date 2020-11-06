@@ -39,31 +39,12 @@ class ThemeSwitcher
 	 */
 	public static function getAvailableThemes()
 	{
-		global $modSettings, $smcFunc, $context;
+		global $modSettings;
 
 		if (empty($modSettings['knownThemes']))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT id_theme, value
-			FROM {db_prefix}themes
-			WHERE id_member = 0
-				AND variable = {string:name}
-				AND id_theme IN ({array_int:themes})',
-			array(
-				'name'   => 'name',
-				'themes' => explode(',', $modSettings['knownThemes'])
-			)
-		);
-
-		$available_themes = [];
-		while ($row = $smcFunc['db_fetch_row']($request))
-			$available_themes[$row[0]] = $row[1];
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
-		return $available_themes;
+		return array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
 	}
 
 	/**

@@ -165,34 +165,41 @@ class Page
 	 */
 	public static function getRelatedPages()
 	{
-		global $smcFunc, $modSettings, $context;
+		global $context, $modSettings;
 
 		if (empty($item = $context['lp_page']))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (IF (t.title LIKE {string:title}, 80, 0) + IF (p.alias LIKE {string:alias}, 20, 0)) AS related, t.title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}
-			HAVING related > 0
-			ORDER BY related DESC',
-			array(
-				'title'        => Helpers::getTitle($context['lp_page']),
-				'alias'        => $item['alias'],
-				'current_lang' => $context['user']['language'],
-				'status'       => 1,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
-				'current_page' => $item['id']
-			)
-		);
+		$title_words = explode(' ', $title = Helpers::getTitle($item));
+		$alias_words = explode('_', $item['alias']);
+
+		$search_formula = '';
+		foreach ($title_words as $key => $word) {
+			$search_formula .= ($search_formula ? ' + ' : '') . 'IF (t.title LIKE "%' . $word . '%", ' . (count($title_words) - $key) * 2 . ', 0)';
+		}
+
+		foreach ($alias_words as $key => $word) {
+			$search_formula .= ' + IF (p.alias LIKE "%' . $word . '%", ' . (count($alias_words) - $key) . ', 0)';
+		}
+
+		$request = Helpers::db()->table('lp_pages AS p')
+			->select('p.page_id', 'p.alias', 'p.content', 'p.type', 't.title')
+			->addSelect('(' . $search_formula . ') AS related')
+			->leftJoin('lp_titles AS t', 'p.page_id = t.item_id AND t.lang = "' . $context['user']['language'] . '"')
+			->where([
+				['p.status', 1],
+				['p.created_at', '<=', time()],
+				['p.page_id', '<>', $item['id']]
+			])
+			->whereIN('p.permissions', Helpers::getPermissions())
+			->having('related', '>', 0)
+			->orderBy('related DESC')
+			->limit(4)
+			->get();
 
 		$related_pages = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
@@ -209,9 +216,6 @@ class Page
 				'image' => $image
 			);
 		}
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
 
 		return $related_pages;
 	}
@@ -251,31 +255,22 @@ class Page
 	 */
 	public static function getData(array $params)
 	{
-		global $smcFunc, $txt, $modSettings, $context;
+		global $txt, $modSettings, $smcFunc;
 
 		if (empty($params))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT
-				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
-			WHERE p.' . (!empty($params['alias']) ? 'alias = {string:alias}' : 'page_id = {int:item}'),
-			array_merge(
-				$params,
-				array(
-					'guest' => $txt['guest_title'],
-					'type'  => 'page'
-				)
-			)
-		);
+		$request = Helpers::db()->table('lp_pages AS p')
+			->select('p.page_id', 'p.author_id', 'p.alias', 'p.description', 'p.content', 'p.type', 'p.permissions', 'p.status', 'p.num_views', 'p.created_at', 'p.updated_at')
+			->addSelect('COALESCE(mem.real_name, "' . $txt['guest_title'] . '") AS author_name', 'pt.lang', 'pt.title', 'pp.name', 'pp.value', 't.value AS keyword')
+			->leftJoin('members AS mem', 'p.author_id = mem.id_member')
+			->leftJoin('lp_titles AS pt', 'p.page_id = pt.item_id AND pt.type = "page"')
+			->leftJoin('lp_params AS pp', 'p.page_id = pp.item_id AND pp.type = "page"')
+			->leftJoin('lp_tags AS t', 'p.page_id = t.page_id')
+			->where('p.' . (!empty($params['alias']) ? 'alias' : 'page_id'), !empty($params['alias']) ? $params['alias'] : $params['item'])
+			->get();
 
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+		foreach ($request as $row) {
 			censorText($row['content']);
 
 			$og_image = null;
@@ -322,9 +317,6 @@ class Page
 
 		if (!empty($data['keywords']))
 			$data['keywords'] = array_unique($data['keywords']);
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -400,23 +392,17 @@ class Page
 	 */
 	private static function updateNumViews()
 	{
-		global $context, $user_info, $smcFunc;
+		global $context, $user_info;
 
 		if (empty($context['lp_page']['id']) || $user_info['possibly_robot'])
 			return;
 
 		if (Helpers::session()->isEmpty('light_portal_last_page_viewed') || Helpers::session('light_portal_last_page_viewed') != $context['lp_page']['id']) {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_views = num_views + 1
-				WHERE page_id = {int:item}',
-				array(
-					'item' => $context['lp_page']['id']
-				)
-			);
+			Helpers::db()->table('lp_pages')
+				->where('page_id', $context['lp_page']['id'])
+				->increment('num_views');
 
 			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
-			$context['lp_num_queries']++;
 		}
 	}
 }

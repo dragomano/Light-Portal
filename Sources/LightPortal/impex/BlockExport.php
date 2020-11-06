@@ -22,13 +22,13 @@ if (!defined('SMF'))
 class BlockExport extends Export
 {
 	/**
-	 * Block export
+	 * The page of export blocks
 	 *
-	 * Экспорт блоков
+	 * Страница экспорта блоков
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -60,27 +60,20 @@ class BlockExport extends Export
 	 */
 	protected static function getData()
 	{
-		global $smcFunc, $context;
-
 		if (Helpers::post()->isEmpty('items'))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-				pt.lang, pt.title, pp.name, pp.value
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})
-			WHERE b.block_id IN ({array_int:blocks})',
-			array(
-				'type'  => 'block',
-				'blocks' => Helpers::post('items')
-			)
-		);
+		$request = Helpers::db()->table('lp_blocks AS b')
+			->select('b.block_id', 'b.icon', 'b.icon_type', 'b.type', 'b.content', 'b.placement', 'b.priority', 'b.permissions', 'b.status', 'b.areas')
+			->addSelect('b.title_class', 'b.title_style', 'b.content_class', 'b.content_style',	'pt.lang', 'pt.title', 'pp.name', 'pp.value')
+			->leftJoin('lp_titles AS pt', 'b.block_id = pt.item_id AND pt.type = "block"')
+			->leftJoin('lp_params AS pp', 'b.block_id = pp.item_id AND pp.type = "block"')
+			->whereIn('b.block_id', Helpers::post('items'))
+			->get();
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			if (!isset($items[$row['block_id']]))
 				$items[$row['block_id']] = array(
 					'block_id'      => $row['block_id'],
@@ -105,9 +98,6 @@ class BlockExport extends Export
 			if (!empty($row['name']))
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
 
 		return $items;
 	}

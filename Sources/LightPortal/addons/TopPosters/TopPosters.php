@@ -144,34 +144,30 @@ class TopPosters
 	 */
 	public static function getData($parameters)
 	{
-		global $smcFunc, $scripturl, $modSettings, $context;
+		global $memberContext, $scripturl, $modSettings;
 
-		$request = $smcFunc['db_query']('', '
-			SELECT mem.id_member, mem.real_name, mem.posts' . ($parameters['show_avatars'] ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
-			FROM {db_prefix}members AS mem' . ($parameters['show_avatars'] ? '
-				LEFT JOIN {db_prefix}attachments AS a ON (mem.id_member = a.id_member)' : '') . '
-			WHERE mem.posts > {int:num_posts}
-			ORDER BY mem.posts DESC
-			LIMIT {int:num_posters}',
-			array(
-				'num_posts'   => 0,
-				'num_posters' => $parameters['num_posters']
-			)
-		);
+		$request = Helpers::db()->table('members')
+			->select('id_member, real_name, posts')
+			->where('posts', '>', 0)
+			->orderBy('posts DESC')
+			->limit($parameters['num_posters'])
+			->get();
 
 		$posters = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))	{
+
+		loadMemberData(array_column($request, 'id_member'), false, 'profile');
+
+		foreach ($request as $row) {
+			if (!isset($memberContext[$row['id_member']]))
+				loadMemberContext($row['id_member']);
+
 			$posters[] = array(
 				'name'   => $row['real_name'],
 				'link'   => allowedTo('profile_view') ? '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
-				'avatar' => $parameters['show_avatars'] ? ($row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : $modSettings['avatar_url'] . '/default.png') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar'])) : null,
+				'avatar' => $parameters['show_avatars'] ? $memberContext[$row['id_member']]['avatar']['image'] : null,
 				'posts'  => $row['posts']
 			);
 		}
-
-		$smcFunc['db_free_result']($request);
-
-		$context++;
 
 		return $posters;
 	}
@@ -209,15 +205,12 @@ class TopPosters
 				echo '
 			<dt>';
 
-				if (!empty($poster['avatar'])) {
-					echo '
-				<img src="', $poster['avatar'], '" alt="', $poster['name'], '"> ';
-				}
+				if (!empty($poster['avatar']))
+					echo $poster['avatar'];
 
 				$width = $poster['posts'] * 100 / $max;
 
-				echo '
-					', $poster['link'], '
+				echo $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>

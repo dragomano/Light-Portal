@@ -34,10 +34,10 @@ class KarmaPostRating
 	 * Выбираем столбец rating из таблицы kpr_ratings при выборке тем-статей
 	 *
 	 * @param array $custom_columns
-	 * @param array $custom_tables
+	 * @param array $custom_joins
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables)
+	public static function frontTopics(&$custom_columns, &$custom_joins)
 	{
 		global $modSettings;
 
@@ -45,7 +45,7 @@ class KarmaPostRating
 			return;
 
 		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor']) ? ' + t.num_replies' : '') . ', 0) AS rating';
-		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (t.id_first_msg = kpr.item_id AND kpr.item = "message")';
+		$custom_joins['kpr_ratings AS kpr'] = ['t.id_first_msg = kpr.item_id AND kpr.item = "message"', 'left'];
 	}
 
 	/**

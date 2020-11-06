@@ -65,20 +65,15 @@ class ManageBlocks
 	 */
 	public static function getAll()
 	{
-		global $smcFunc, $context;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-			ORDER BY b.placement DESC, b.priority',
-			array(
-				'type' => 'block'
-			)
-		);
+		$request = Helpers::db()->table('lp_blocks AS b')
+			->select('b.block_id', 'b.icon', 'b.icon_type', 'b.type', 'b.placement', 'b.priority', 'b.permissions', 'b.status', 'b.areas', 'bt.lang', 'bt.title')
+			->leftJoin('lp_titles AS bt', 'b.block_id = bt.item_id AND bt.type = "block"')
+			->orderBy('b.placement DESC, b.priority')
+			->get();
 
 		$current_blocks = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+
+		foreach ($request as $row) {
 			if (!isset($current_blocks[$row['placement']][$row['block_id']]))
 				$current_blocks[$row['placement']][$row['block_id']] = array(
 					'icon'        => Helpers::getIcon($row['icon'], $row['icon_type']),
@@ -92,9 +87,6 @@ class ManageBlocks
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 			Helpers::findMissingBlockTypes($row['type']);
 		}
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
 
 		return $current_blocks;
 	}
@@ -144,40 +136,22 @@ class ManageBlocks
 	 */
 	private static function remove(array $items)
 	{
-		global $smcFunc, $context;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id IN ({array_int:items})',
-			array(
-				'items' => $items
-			)
-		);
+		Helpers::db()->table('lp_blocks')
+			->whereIn('block_id', $items)
+			->delete();
 
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
-			array(
-				'items' => $items,
-				'type'  => 'block'
-			)
-		);
+		Helpers::db()->table('lp_titles')
+			->whereIn('item_id', $items)
+			->andWhere('type', 'block')
+			->delete();
 
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
-			array(
-				'items' => $items,
-				'type'  => 'block'
-			)
-		);
-
-		$context['lp_num_queries'] += 3;
+		Helpers::db()->table('lp_params')
+			->whereIn('item_id', $items)
+			->andWhere('type', 'block')
+			->delete();
 	}
 
 	/**
@@ -231,22 +205,12 @@ class ManageBlocks
 	 */
 	public static function toggleStatus(array $items, int $status = 0)
 	{
-		global $smcFunc, $context;
-
 		if (empty($items))
 			return;
 
-		$smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_blocks
-			SET status = {int:status}
-			WHERE block_id IN ({array_int:items})',
-			array(
-				'status' => $status,
-				'items'  => $items
-			)
-		);
-
-		$context['lp_num_queries']++;
+		Helpers::db()->table('lp_blocks')
+			->whereIn('block_id', $items)
+			->update(['status' => $status]);
 	}
 
 	/**
@@ -258,8 +222,6 @@ class ManageBlocks
 	 */
 	private static function updatePriority()
 	{
-		global $smcFunc, $context;
-
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
 
@@ -276,31 +238,14 @@ class ManageBlocks
 			return;
 
 		if (!empty($blocks) && is_array($blocks)) {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_blocks
-				SET priority = CASE ' . $conditions . '
-					ELSE priority
-					END
-				WHERE block_id IN ({array_int:blocks})',
-				array(
-					'blocks' => $blocks
-				)
-			);
-
-			$context['lp_num_queries']++;
+			Helpers::db()->table('lp_blocks')
+				->whereIn('block_id', $blocks)
+				->update(['priority' => ['CASE ' . $conditions . ' ELSE priority END']]);
 
 			if (!empty($data['update_placement'])) {
-				$smcFunc['db_query']('', '
-					UPDATE {db_prefix}lp_blocks
-					SET placement = {string:placement}
-					WHERE block_id IN ({array_int:blocks})',
-					array(
-						'placement' => $data['update_placement'],
-						'blocks'    => $blocks
-					)
-				);
-
-				$context['lp_num_queries']++;
+				Helpers::db()->table('lp_blocks')
+					->whereIn('block_id', $blocks)
+					->update(['placement' => $data['update_placement']]);
 			}
 		}
 	}
@@ -471,6 +416,7 @@ class ManageBlocks
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
 			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'status'        => $context['current_block']['status'] ?? Block::STATUS_ACTIVE,
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',
@@ -478,6 +424,10 @@ class ManageBlocks
 			'content_style' => $post_data['content_style'] ?? $context['current_block']['content_style'] ?? '',
 			'options'       => $options[$context['current_block']['type']]
 		);
+
+		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? self::getPriority() : $context['lp_block']['priority'];
+
+		$context['lp_block']['content'] = Helpers::getShortenText($context['lp_block']['content']);
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
@@ -875,25 +825,16 @@ class ManageBlocks
 	 */
 	private static function getPriority()
 	{
-		global $context, $smcFunc;
+		global $context;
 
 		if (empty($context['lp_block']['placement']))
 			return 0;
 
-		$request = $smcFunc['db_query']('', '
-			SELECT MAX(priority) + 1
-			FROM {db_prefix}lp_blocks
-			WHERE placement = {string:placement}',
-			array(
-				'placement' => $context['lp_block']['placement']
-			)
-		);
+		$max = Helpers::db()->table('lp_blocks')
+			->where('placement', $context['lp_block']['placement'])
+			->max('priority');
 
-		[$priority] = $smcFunc['db_fetch_row']($request);
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
-		return (int) $priority;
+		return (int) $max + 1;
 	}
 
 	/**
@@ -906,7 +847,7 @@ class ManageBlocks
 	 */
 	private static function setData(int $item = 0)
 	{
-		global $context, $smcFunc;
+		global $context;
 
 		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
 			return;
@@ -914,46 +855,25 @@ class ManageBlocks
 		checkSubmitOnce('check');
 
 		if (empty($item)) {
-			$max_length = MAX_MSG_LENGTH;
-			$priority   = self::getPriority();
-
-			$item = $smcFunc['db_insert']('',
-				'{db_prefix}lp_blocks',
-				array(
-					'icon'          => 'string-60',
-					'icon_type'     => 'string-10',
-					'type'          => 'string',
-					'content'       => 'string-' . $max_length,
-					'placement'     => 'string-10',
-					'priority'      => 'int',
-					'permissions'   => 'int',
-					'status'        => 'int',
-					'areas'         => 'string',
-					'title_class'   => 'string',
-					'title_style'   => 'string',
-					'content_class' => 'string',
-					'content_style' => 'string'
-				),
-				array(
-					$context['lp_block']['icon'],
-					$context['lp_block']['icon_type'],
-					$context['lp_block']['type'],
-					$context['lp_block']['content'],
-					$context['lp_block']['placement'],
-					$context['lp_block']['priority'] ?? $priority ?? 0,
-					$context['lp_block']['permissions'],
-					$context['lp_block']['status'] ?? Block::STATUS_ACTIVE,
-					$context['lp_block']['areas'],
-					$context['lp_block']['title_class'],
-					$context['lp_block']['title_style'],
-					$context['lp_block']['content_class'],
-					$context['lp_block']['content_style']
-				),
-				array('block_id'),
-				1
-			);
-
-			$context['lp_num_queries']++;
+			$item = Helpers::db()->table('lp_blocks')
+				->insert(
+					array(
+						'icon'          => $context['lp_block']['icon'],
+						'icon_type'     => $context['lp_block']['icon_type'],
+						'type'          => $context['lp_block']['type'],
+						'content'       => $context['lp_block']['content'],
+						'placement'     => $context['lp_block']['placement'],
+						'priority'      => $context['lp_block']['priority'],
+						'permissions'   => $context['lp_block']['permissions'],
+						'status'        => $context['lp_block']['status'],
+						'areas'         => $context['lp_block']['areas'],
+						'title_class'   => $context['lp_block']['title_class'],
+						'title_style'   => $context['lp_block']['title_style'],
+						'content_class' => $context['lp_block']['content_class'],
+						'content_style' => $context['lp_block']['content_style']
+					),
+					array('block_id')
+				);
 
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
@@ -966,19 +886,8 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$context['lp_num_queries']++;
+				Helpers::db()->table('lp_titles')
+					->insert($titles, array('item_id', 'type', 'lang'));
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
@@ -994,27 +903,13 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$parameters,
-					array('item_id', 'type', 'name')
-				);
-
-				$context['lp_num_queries']++;
+				Helpers::db()->table('lp_params')
+					->insert($parameters, array('item_id', 'type', 'name'));
 			}
 		} else {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
-				WHERE block_id = {int:block_id}',
-				array(
-					'block_id'      => $item,
+			Helpers::db()->table('lp_blocks')
+				->where('block_id', $item)
+				->update([
 					'icon'          => $context['lp_block']['icon'],
 					'icon_type'     => $context['lp_block']['icon_type'],
 					'type'          => $context['lp_block']['type'],
@@ -1026,10 +921,7 @@ class ManageBlocks
 					'title_style'   => $context['lp_block']['title_style'],
 					'content_class' => $context['lp_block']['content_class'],
 					'content_style' => $context['lp_block']['content_style']
-				)
-			);
-
-			$context['lp_num_queries']++;
+				]);
 
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
@@ -1042,27 +934,16 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$context['lp_num_queries']++;
+				Helpers::db()->table('lp_titles')
+					->insert($titles, ['item_id', 'type', 'lang'], 'replace');
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
-				$parameters = [];
+				$params = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
 
-					$parameters[] = array(
+					$params[] = array(
 						'item_id' => $item,
 						'type'    => 'block',
 						'name'    => $param_name,
@@ -1070,19 +951,8 @@ class ManageBlocks
 					);
 				}
 
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$parameters,
-					array('item_id', 'type', 'name')
-				);
-
-				$context['lp_num_queries']++;
+				Helpers::db()->table('lp_params')
+					->insert($params, ['item_id', 'type', 'name'], 'replace');
 			}
 
 			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
@@ -1113,23 +983,20 @@ class ManageBlocks
 		if (empty($item))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
-			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
-			WHERE b.block_id = {int:item}',
-			array(
-				'type' => 'block',
-				'item' => $item
-			)
-		);
+		$request = Helpers::db()->table('lp_blocks AS b')
+			->select('b.block_id', 'b.icon', 'b.icon_type', 'b.type', 'b.content', 'b.placement', 'b.priority', 'b.permissions', 'b.status', 'b.areas')
+			->addSelect('b.title_class', 'b.title_style', 'b.content_class', 'b.content_style', 'bt.lang', 'bt.title', 'bp.name', 'bp.value')
+			->leftJoin('lp_titles AS bt', 'b.block_id = bt.item_id AND bt.type = "block"')
+			->leftJoin('lp_params AS bp', 'b.block_id = bp.item_id AND bp.type = "block"')
+			->where('b.block_id', $item)
+			->get();
 
-		if ($smcFunc['db_num_rows']($request) == 0)
+		if (empty($request)) {
+			self::changeBackButton();
 			fatal_lang_error('lp_block_not_found', false, null, 404);
+		}
 
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+		foreach ($request as $row) {
 			censorText($row['content']);
 
 			if (!isset($data))
@@ -1156,9 +1023,21 @@ class ManageBlocks
 				$data['options']['parameters'][$row['name']] = $row['value'];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
 		return $data ?? [];
+	}
+
+	/**
+	 * Change back button position and back button href
+	 *
+	 * Меняем положение и href кнопки «Назад»
+	 *
+	 * @return void
+	 */
+	private static function changeBackButton()
+	{
+		addInlineJavaScript('
+		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
+		backButton.setAttribute("href", smf_scripturl + "?action=admin;area=lp_blocks");
+		backButton.className = "button floatnone";', true);
 	}
 }
