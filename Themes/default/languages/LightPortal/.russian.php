@@ -62,7 +62,8 @@ $txt['lp_manage_permissions']                = 'Внимание: некотор
 
 $txt['lp_debug_and_caching']       = 'Отладка и кэширование';
 $txt['lp_show_debug_info']         = 'Отображать время загрузки и количество запросов портала';
-$txt['lp_show_debug_info_subtext'] = 'Информация будет доступна только администраторам!';
+$txt['lp_show_queries']            = 'Отображать SQL-запросы портала и его компонентов';
+$txt['lp_show_debug_info_legend']  = 'Информация будет доступна только администраторам!';
 $txt['lp_cache_update_interval']   = 'Интервал обновления кэша';
 
 // Pages and blocks
@@ -339,4 +340,4 @@ $txt['lp_buddies_set'] = array('друг', 'друга', 'друзей');
 $txt['lp_used_components'] = 'Компоненты портала';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'Загружено за %1$.3f сек. Запросов к базе: %2$d.';
+$txt['lp_load_page_stats'] = 'Загружено за %1$.3f сек. Запросов к базе данных: %2$d.';

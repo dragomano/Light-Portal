@@ -15,6 +15,21 @@ function template_debug_below()
 {
 	global $context;
 
-	echo '
-	<div class="centertext clear noticebox smalltext" style="margin-top: 2px">' . $context['lp_load_page_stats'] . '</div>';
+	if (!empty($context['lp_load_page_stats'])) {
+		echo '
+	<div class="centertext clear noticebox smalltext" style="margin-top: 2px">', $context['lp_load_page_stats'], '</div>';
+	}
+
+	if (!empty($context['lp_current_queries'])) {
+		echo '
+	<div class="lp_queries noticebox smalltext" style="margin-top: 2px">';
+
+		foreach ($context['lp_current_queries'] as $query) {
+			echo '
+		<div class="windowbg">', $query, '</div>';
+		}
+
+		echo '
+	</div>';
+	}
 }

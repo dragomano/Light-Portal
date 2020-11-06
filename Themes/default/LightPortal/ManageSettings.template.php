@@ -1,6 +1,39 @@
 <?php
 
 /**
+ * Callback template to configure debug data
+ *
+ * Callback-шаблон для настройки отладочных данных
+ *
+ * @return void
+ */
+function template_callback_debug_data()
+{
+	global $txt, $modSettings;
+
+	echo '
+	</dl>
+	<fieldset class="roundframe" style="margin: -1em 0 1em">
+		<legend class="infobox">&nbsp;', $txt['lp_show_debug_info_legend'], '&nbsp;</legend>
+		<dl class="settings">
+			<dt>
+				<label for="lp_show_debug_info">', $txt['lp_show_debug_info'], '</label>
+			</dt>
+			<dd>
+				<input type="checkbox" id="lp_show_debug_info" name="lp_show_debug_info"', !empty($modSettings['lp_show_debug_info']) ? ' checked="checked"' : '', '>
+			</dd>
+			<dt>
+				<label for="lp_show_queries">', $txt['lp_show_queries'], '</label>
+			</dt>
+			<dd>
+				<input type="checkbox" id="lp_show_queries" name="lp_show_queries"', !empty($modSettings['lp_show_queries']) ? ' checked="checked"' : '', '>
+			</dd>
+		</dl>
+	</fieldset>
+	<dl class="settings">';
+}
+
+/**
  * Callback template to configure panel layouts
  *
  * Callback-шаблон для настройки макета панелей

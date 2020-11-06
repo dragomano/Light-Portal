@@ -62,7 +62,8 @@ $txt['lp_manage_permissions'] = 'Nota: algunas páginas y bloques pueden contene
 
 $txt['lp_debug_and_caching'] = 'Depuración y almacenamiento en caché';
 $txt['lp_show_debug_info'] = 'Muestra el tiempo de carga y el número de consultas del portal.';
-$txt['lp_show_debug_info_subtext'] = '¡Esta información estará disponible solo para administradores!';
+$txt['lp_show_queries']           = 'Show SQL queries made by the portal and its components';
+$txt['lp_show_debug_info_legend'] = '¡Esta información estará disponible solo para administradores!';
 $txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché';
 
 // Pages and blocks

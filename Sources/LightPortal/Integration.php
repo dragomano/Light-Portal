@@ -74,14 +74,14 @@ class Integration
 	{
 		global $context, $modSettings, $user_info, $sourcedir;
 
-		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
-		$context['lp_num_queries'] = $context['lp_num_queries'] ?? 0;
+		$context['lp_load_time']       = $context['lp_load_time'] ?? microtime(true);
+		$context['lp_current_queries'] = $context['lp_current_queries'] ?? [];
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
 			'LP_VERSION'      => '1.2',
 			'LP_RELEASE_DATE' => '2020-10-10',
-			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
+			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
