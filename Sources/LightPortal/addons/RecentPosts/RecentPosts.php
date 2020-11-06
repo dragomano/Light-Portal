@@ -324,7 +324,7 @@ class RecentPosts
 
 					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
 				} else {
-					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
+					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" loading="lazy" alt="'. $item['poster']['name'] . '">';
 				}
 
 				return $item;
