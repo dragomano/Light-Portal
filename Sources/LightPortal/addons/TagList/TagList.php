@@ -120,27 +120,31 @@ class TagList
 	 */
 	public static function getAllTopicKeywords()
 	{
-		global $scripturl;
+		global $smcFunc, $scripturl, $context;
 
 		if (!class_exists('\Bugo\Optimus\Keywords'))
 			return [];
 
-		$request = Helpers::db()->table('optimus_keywords AS ok')
-			->select('ok.id, ok.name, COUNT(olk.keyword_id) AS frequency')
-			->join('optimus_log_keywords AS olk', 'ok.id = olk.keyword_id')
-			->groupBy('ok.id, ok.name')
-			->orderBy('ok.name DESC')
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
+			FROM {db_prefix}optimus_keywords AS ok
+				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
+			GROUP BY ok.id, ok.name
+			ORDER BY ok.name DESC',
+			array()
+		);
 
 		$keywords = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$keywords[] = array(
 				'value'     => $row['name'],
 				'link'      => $scripturl . '?action=keywords;id=' . $row['id'],
 				'frequency' => $row['frequency']
 			);
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $keywords;
 	}
@@ -177,9 +181,8 @@ class TagList
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
-		} else {
+		} else
 			echo $txt['lp_no_tags'];
-		}
 
 		$content = ob_get_clean();
 	}

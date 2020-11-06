@@ -60,11 +60,10 @@ $txt['groups_light_portal_manage_own_pages'] = 'Хто може керувати
 $txt['groups_light_portal_approve_pages']    = 'Хто може розміщувати свої сторінки без модерації';
 $txt['lp_manage_permissions']                = 'Увага: деякі сторінки i блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
 
-$txt['lp_debug_and_caching']      = 'Налагодження та кешування';
-$txt['lp_show_debug_info']        = 'Відображати час завантаження та кількість запитів порталу';
-$txt['lp_show_queries']           = 'Відображати SQL-запити порталу та його компонентів';
-$txt['lp_show_debug_info_legend'] = 'Інформація буде доступна тільки адміністраторам!';
-$txt['lp_cache_update_interval']  = 'Інтервал оновлення кешу';
+$txt['lp_debug_and_caching']       = 'Налагодження та кешування';
+$txt['lp_show_debug_info']         = 'Відображати час завантаження та кількість запитів порталу';
+$txt['lp_show_debug_info_subtext'] = 'Інформація буде доступна тільки адміністраторам!';
+$txt['lp_cache_update_interval']   = 'Інтервал оновлення кешу';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Сторінки і блоки';

@@ -133,8 +133,7 @@ class ArticleList
 			'attributes' => array(
 				'id' => 'article_body_class'
 			),
-			'options' => array(),
-			'tab' => 'appearance'
+			'options' => array()
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
@@ -210,24 +209,29 @@ class ArticleList
 	 */
 	public static function getTopics(array $parameters)
 	{
-		global $user_info, $modSettings;
+		global $smcFunc, $modSettings, $context;
 
 		if (empty($parameters['ids']))
 			return [];
 
-		$request = Helpers::db()->table('topics AS t')
-			->select('m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled')
-			->join('messages AS m', 't.id_first_msg = m.id_msg')
-			->join('boards AS b', 't.id_board = b.id_board')
-			->whereIn('t.id_topic', $parameters['ids'])
-			->andWhere($user_info['query_wanna_see_board'])
-			->andWhere($modSettings['postmod_active'] ? ['t.approved' => 1, 'ml.approved' => 1] : '')
-			->orderBy('t.id_last_msg DESC')
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
+			FROM {db_prefix}topics AS t
+				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
+				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
+			WHERE t.id_topic IN ({array_int:topics})
+				AND {query_wanna_see_board}' . ($modSettings['postmod_active'] ? '
+				AND t.approved = {int:is_approved}
+				AND ml.approved = {int:is_approved}' : '') . '
+			ORDER BY t.id_last_msg DESC',
+			array(
+				'topics'      => $parameters['ids'],
+				'is_approved' => 1
+			)
+		);
 
 		$topics = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['subject']);
 			censorText($row['body']);
 
@@ -244,6 +248,9 @@ class ArticleList
 			);
 		}
 
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
+
 		return $topics;
 	}
 
@@ -257,27 +264,31 @@ class ArticleList
 	 */
 	public static function getPages(array $parameters)
 	{
-		global $modSettings;
+		global $smcFunc, $modSettings, $context;
 
 		if (empty($parameters['ids']))
 			return [];
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = Helpers::db()->table('lp_pages')
-			->select('page_id, alias, content, description, type')
-			->where([
-				['status', 1],
-				['created_at', '<=', time()]
-			])
-			->whereIn('permissions', Helpers::getPermissions())
-			->whereIn('page_id', $parameters['ids'])
-			->orderBy('page_id DESC')
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT page_id, alias, content, description, type
+			FROM {db_prefix}lp_pages
+			WHERE status = {int:status}
+				AND created_at <= {int:current_time}
+				AND permissions IN ({array_int:permissions})
+				AND page_id IN ({array_int:pages})
+			ORDER BY page_id DESC',
+			array(
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'pages'        => $parameters['ids']
+			)
+		);
 
 		$pages = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
@@ -298,6 +309,9 @@ class ArticleList
 				'image'       => $image
 			);
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $pages;
 	}

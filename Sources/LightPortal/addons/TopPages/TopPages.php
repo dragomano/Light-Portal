@@ -158,24 +158,29 @@ class TopPages
 	 */
 	public static function getData($parameters)
 	{
-		global $scripturl;
+		global $smcFunc, $scripturl, $context;
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = Helpers::db()->table('lp_pages')
-			->select('page_id, alias, type, num_views, num_comments')
-			->where([
-				['status', 1],
-				['created_at', '<=', time()]
-			])
-			->whereIn('permissions', Helpers::getPermissions())
-			->orderBy(($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC')
-			->limit($parameters['num_pages'])
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT page_id, alias, type, num_views, num_comments
+			FROM {db_prefix}lp_pages
+			WHERE status = {int:status}
+				AND created_at <= {int:current_time}
+				AND permissions IN ({array_int:permissions})
+			ORDER BY ' . ($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			LIMIT {int:limit}',
+			array(
+				'type'         => 'page',
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'limit'        => $parameters['num_pages']
+			)
+		);
 
 		$pages = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
@@ -186,6 +191,9 @@ class TopPages
 				'href'         => $scripturl . '?page=' . $row['alias']
 			);
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $pages;
 	}

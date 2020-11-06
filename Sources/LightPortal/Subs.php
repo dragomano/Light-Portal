@@ -71,20 +71,25 @@ class Subs
 	 */
 	public static function getActiveBLocks()
 	{
-		global $context;
+		global $smcFunc, $context;
 
-		$request = Helpers::db()->table('lp_blocks AS b')
-			->select('b.block_id', 'b.icon', 'b.icon_type', 'b.type', 'b.content', 'b.placement', 'b.priority', 'b.permissions', 'b.areas', 'b.title_class')
-			->addSelect('b.title_style', 'b.content_class', 'b.content_style', 'bt.lang', 'bt.title', 'bp.name', 'bp.value')
-			->leftJoin('lp_titles AS bt', 'b.block_id = bt.item_id AND bt.type = "block"')
-			->leftJoin('lp_params AS bp', 'b.block_id = bp.item_id AND bp.type = "block"')
-			->where('b.status', Block::STATUS_ACTIVE)
-			->orderBy('b.placement, b.priority')
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				bt.lang, bt.title, bp.name, bp.value
+			FROM {db_prefix}lp_blocks AS b
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
+			WHERE b.status = {int:status}
+			ORDER BY b.placement, b.priority',
+			array(
+				'type'   => 'block',
+				'status' => Block::STATUS_ACTIVE
+			)
+		);
 
 		$active_blocks = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['content']);
 
 			if (!isset($active_blocks[$row['block_id']]))
@@ -111,28 +116,39 @@ class Subs
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 		}
 
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
+
 		return $active_blocks;
 	}
 
 	/**
-	 * Get the total number of active pages
+	 * Get the total number of active pages of the current user
 	 *
-	 * Подсчитываем общее количество активных страниц
+	 * Подсчитываем общее количество активных страниц текущего пользователя
 	 *
 	 * @return int
 	 */
 	public static function getNumActivePages()
 	{
-		global $context;
+		global $smcFunc, $context;
 
-		$data = Helpers::db()->table('lp_pages')
-			->where('status', Page::STATUS_ACTIVE);
+		$request = $smcFunc['db_query']('', '
+			SELECT COUNT(page_id)
+			FROM {db_prefix}lp_pages
+			WHERE status = {int:status}' . ($context['user']['is_admin'] ? '' : '
+				AND author_id = {int:user_id}'),
+			array(
+				'status'  => Page::STATUS_ACTIVE,
+				'user_id' => $context['user']['id']
+			)
+		);
 
-		if (empty($context['user']['is_admin'])) {
-			$data = $data->andWhere('author_id', $context['user']['id']);
-		}
+		[$num_pages] = $smcFunc['db_fetch_row']($request);
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
-		return $data->count();
+		return (int) $num_pages;
 	}
 
 	/**
@@ -363,16 +379,26 @@ class Subs
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		$request = Helpers::db()->table('lp_titles')
-			->select('item_id', 'lang', 'title')
-			->where('type', $type)
-			->get();
+		global $smcFunc, $context;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT item_id, lang, title
+			FROM {db_prefix}lp_titles
+			WHERE type = {string:type}
+			ORDER BY lang, title',
+			array(
+				'type' => $type
+			)
+		);
 
 		$titles = [];
-
-		foreach ($request as $row) {
-			$titles[$row['item_id']][$row['lang']] = $row['title'];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (!empty($row['lang']))
+				$titles[$row['item_id']][$row['lang']] = $row['title'];
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $titles;
 	}
@@ -386,12 +412,11 @@ class Subs
 	 */
 	public static function showDebugInfo()
 	{
-		global $context, $txt, $modSettings;
+		global $context, $txt;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), count($context['lp_current_queries'])) : false;
-		$context['lp_show_portal_sql'] = !empty($modSettings['lp_show_queries']);
+		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $context['lp_num_queries']) : false;
 
-		if (!empty($context['template_layers']) && (!empty($context['lp_load_page_stats']) || $context['lp_show_portal_sql'])) {
+		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
 			loadTemplate('LightPortal/ViewDebug');
 
 			$key = array_search('portal', $context['template_layers']);
@@ -444,8 +469,6 @@ class Subs
 
 	/**
 	 * Check if the portal must not be loaded
-	 *
-	 * Проверяем, должен портал загружаться или нет
 	 *
 	 * @return bool
 	 */

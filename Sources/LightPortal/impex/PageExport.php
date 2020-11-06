@@ -28,7 +28,7 @@ class PageExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public static function prepare()
 	{
 		global $context, $txt, $scripturl, $sourcedir;
 
@@ -149,31 +149,31 @@ class PageExport extends Export
 	 */
 	protected static function getData()
 	{
+		global $smcFunc, $context;
+
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
 			return false;
 
 		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
 
-		$request = Helpers::db()->table('lp_pages AS p')
-			->select(
-				'p.page_id', 'p.author_id', 'p.alias', 'p.description', 'p.content', 'p.type', 'p.permissions', 'p.status', 'p.num_views', 'p.num_comments', 'p.created_at', 'p.updated_at'
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
+			WHERE p.page_id IN ({array_int:pages})' : ''),
+			array(
+				'type'  => 'page',
+				'pages' => $pages
 			)
-			->addSelect('pt.lang', 'pt.title', 'pp.name', 'pp.value', 't.value AS keyword')
-			->addSelect('com.id', 'com.parent_id', 'com.author_id AS com_author_id', 'com.message', 'com.created_at AS com_created_at')
-			->leftJoin('lp_titles AS pt', 'p.page_id = pt.item_id AND pt.type = "page"')
-			->leftJoin('lp_params AS pp', 'p.page_id = pp.item_id AND pp.type = "page"')
-			->leftJoin('lp_tags AS t', 'p.page_id = t.page_id')
-			->leftJoin('lp_comments AS com', 'p.page_id = com.page_id');
-
-		if (!empty($pages)) {
-			$request = $request->whereIn('p.page_id', $pages);
-		}
-
-		$request = $request->get();
+		);
 
 		$items = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($items[$row['page_id']]))
 				$items[$row['page_id']] = array(
 					'page_id'      => $row['page_id'],
@@ -209,6 +209,9 @@ class PageExport extends Export
 				);
 			}
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $items;
 	}

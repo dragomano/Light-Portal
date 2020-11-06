@@ -60,20 +60,19 @@ $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 
-$txt['lp_debug_and_caching']      = 'Debugging and caching';
-$txt['lp_show_debug_info']        = 'Show the loading time and number of the portal queries';
-$txt['lp_show_queries']           = 'Show SQL queries made by the portal and its components';
-$txt['lp_show_debug_info_legend'] = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval']  = 'The cache update interval';
+$txt['lp_debug_and_caching']       = 'Debugging and caching';
+$txt['lp_show_debug_info']         = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info_subtext'] = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval']   = 'The cache update interval';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
-$txt['lp_show_tags_on_page']            = 'Show keywords at the top of the page';
-$txt['lp_show_tags_as_articles']        = 'Show lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']           = 'Show related pages block';
-$txt['lp_show_comment_block']           = 'Show comments block';
+$txt['lp_show_tags_on_page']            = 'Display keywords at the top of the page';
+$txt['lp_show_tags_as_articles']        = 'Display lists of articles with the same tag as cards';
+$txt['lp_show_related_pages']           = 'Display related pages block';
+$txt['lp_show_comment_block']           = 'Display comments block';
 $txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
 $txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => 'Integrated');
 $txt['lp_time_to_change_comments']      = 'Maximum time after commenting to allow edit';

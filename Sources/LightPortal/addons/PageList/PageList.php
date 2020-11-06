@@ -139,27 +139,36 @@ class PageList
 	 */
 	public static function getData(array $parameters)
 	{
-		global $txt, $context;
+		global $smcFunc, $txt, $context;
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
-		$request = Helpers::db()->table('lp_pages AS p')
-			->select('p.page_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at')
-			->addSelect('COALESCE(mem.real_name, "' . $txt['guest_title'] . '") AS author_name, mem.id_member AS author_id')
-			->leftJoin('members AS mem', 'p.author_id = mem.id_member')
-			->leftJoin('lp_titles AS t', 'p.page_id = t.item_id AND t.type = "page" AND t.lang = "' . $context['user']['language'] . '"')
-			->where([
-				['p.status', 1],
-				['p.created_at', '<=', time()]
-			])
-			->whereIn('p.permissions', Helpers::getPermissions())
-			->orderBy($parameters['sort'] . ' DESC')
-			->limit($parameters['num_pages'])
-			->get();
+		$request = $smcFunc['db_query']('', '
+			SELECT
+				p.page_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})
+			WHERE p.status = {int:status}
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+			ORDER BY {raw:sort} DESC' . (!empty($parameters['num_pages']) ? '
+			LIMIT {int:limit}' : ''),
+			array(
+				'guest'        => $txt['guest_title'],
+				'type'         => 'page',
+				'lang'         => $context['user']['language'],
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => Helpers::getPermissions(),
+				'sort'         => $parameters['sort'],
+				'limit'        => $parameters['num_pages']
+			)
+		);
 
 		$pages = [];
-
-		foreach ($request as $row) {
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
@@ -175,6 +184,9 @@ class PageList
 				'updated_at'   => $row['updated_at']
 			);
 		}
+
+		$smcFunc['db_free_result']($request);
+		$context['lp_num_queries']++;
 
 		return $pages;
 	}

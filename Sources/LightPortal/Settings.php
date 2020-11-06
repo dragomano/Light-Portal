@@ -194,8 +194,6 @@ class Settings
 
 		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
-		loadTemplate('LightPortal/ManageSettings');
-
 		// Initial settings | Первоначальные настройки
 		$add_settings = [];
 		if (!isset($modSettings['lp_frontpage_title']))
@@ -250,7 +248,7 @@ class Settings
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'),
 			array('title', 'lp_debug_and_caching'),
-			array('callback', 'debug_data'),
+			array('check', 'lp_show_debug_info'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
@@ -341,8 +339,6 @@ class Settings
 				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
-			$save_vars[] = ['check', 'lp_show_debug_info'];
-			$save_vars[] = ['check', 'lp_show_queries'];
 			saveDBSettings($save_vars);
 
 			Helpers::cache()->flush();
@@ -696,8 +692,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\BlockExport::main';
-			$subActions['import'] = 'Impex\BlockImport::main';
+			$subActions['export'] = 'Impex\BlockExport::prepare';
+			$subActions['import'] = 'Impex\BlockImport::prepare';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -723,8 +719,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\PageExport::main';
-			$subActions['import'] = 'Impex\PageImport::main';
+			$subActions['export'] = 'Impex\PageExport::prepare';
+			$subActions['import'] = 'Impex\PageImport::prepare';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');

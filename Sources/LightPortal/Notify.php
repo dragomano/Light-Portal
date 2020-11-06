@@ -25,7 +25,7 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir, $user_profile;
+		global $sourcedir, $user_profile, $smcFunc, $context;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
@@ -57,12 +57,10 @@ class Notify extends \SMF_BackgroundTask
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
 				if ($this->_details['content_type'] == 'new_comment') {
-					if ($pref_option['page_comment'] & $bitvalue) {
+					if ($pref_option['page_comment'] & $bitvalue)
 						$notifies[$type][] = $member;
-					}
-				} elseif ($pref_option['page_comment_reply'] & $bitvalue) {
+				} elseif ($pref_option['page_comment_reply'] & $bitvalue)
 					$notifies[$type][] = $member;
-				}
 			}
 		}
 
@@ -83,11 +81,24 @@ class Notify extends \SMF_BackgroundTask
 			}
 
 			if (!empty($insert_rows)) {
-				require_once($sourcedir . '/LightPortal/utils/Db.php');
-				require_once($sourcedir . '/LightPortal/Helpers.php');
+				$smcFunc['db_insert']('',
+					'{db_prefix}user_alerts',
+					array(
+						'alert_time'        => 'int',
+						'id_member'         => 'int',
+						'id_member_started' => 'int',
+						'member_name'       => 'string',
+						'content_type'      => 'string',
+						'content_id'        => 'int',
+						'content_action'    => 'string',
+						'is_read'           => 'int',
+						'extra'             => 'string'
+					),
+					$insert_rows,
+					array('id_alert')
+				);
 
-				\Bugo\LightPortal\Helpers::db()->table('user_alerts')
-					->insert($insert_rows, array('id_alert'));
+				$context['lp_num_queries']++;
 
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}
