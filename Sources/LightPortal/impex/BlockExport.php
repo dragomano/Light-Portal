@@ -22,13 +22,13 @@ if (!defined('SMF'))
 class BlockExport extends Export
 {
 	/**
-	 * Block export
+	 * The page of export blocks
 	 *
-	 * Экспорт блоков
+	 * Страница экспорта блоков
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -60,7 +60,7 @@ class BlockExport extends Export
 	 */
 	protected static function getData()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (Helpers::post()->isEmpty('items'))
 			return [];
@@ -74,7 +74,7 @@ class BlockExport extends Export
 				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})
 			WHERE b.block_id IN ({array_int:blocks})',
 			array(
-				'type'  => 'block',
+				'type'   => 'block',
 				'blocks' => Helpers::post('items')
 			)
 		);
@@ -107,7 +107,7 @@ class BlockExport extends Export
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $items;
 	}

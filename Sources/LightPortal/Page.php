@@ -170,8 +170,20 @@ class Page
 		if (empty($item = $context['lp_page']))
 			return [];
 
+		$title_words = explode(' ', $title = Helpers::getTitle($item));
+		$alias_words = explode('_', $item['alias']);
+
+		$search_formula = '';
+		foreach ($title_words as $key => $word) {
+			$search_formula .= ($search_formula ? ' + ' : '') . 'IF (t.title LIKE "%' . $word . '%", ' . (count($title_words) - $key) * 2 . ', 0)';
+		}
+
+		foreach ($alias_words as $key => $word) {
+			$search_formula .= ' + IF (p.alias LIKE "%' . $word . '%", ' . (count($alias_words) - $key) . ', 0)';
+		}
+
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (IF (t.title LIKE {string:title}, 80, 0) + IF (p.alias LIKE {string:alias}, 20, 0)) AS related, t.title
+			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
 			WHERE p.status = {int:status}
@@ -179,10 +191,9 @@ class Page
 				AND p.permissions IN ({array_int:permissions})
 				AND p.page_id != {int:current_page}
 			HAVING related > 0
-			ORDER BY related DESC',
+			ORDER BY related DESC
+			LIMIT 4',
 			array(
-				'title'        => Helpers::getTitle($context['lp_page']),
-				'alias'        => $item['alias'],
 				'current_lang' => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
@@ -211,7 +222,7 @@ class Page
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $related_pages;
 	}
@@ -324,7 +335,7 @@ class Page
 			$data['keywords'] = array_unique($data['keywords']);
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -416,7 +427,7 @@ class Page
 			);
 
 			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 		}
 	}
 }

@@ -120,7 +120,7 @@ class TagList
 	 */
 	public static function getAllTopicKeywords()
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		if (!class_exists('\Bugo\Optimus\Keywords'))
 			return [];
@@ -144,7 +144,7 @@ class TagList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $keywords;
 	}
@@ -181,8 +181,9 @@ class TagList
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
-		} else
+		} else {
 			echo $txt['lp_no_tags'];
+		}
 
 		$content = ob_get_clean();
 	}

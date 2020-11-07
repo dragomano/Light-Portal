@@ -158,7 +158,7 @@ class TopPages
 	 */
 	public static function getData($parameters)
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
@@ -171,7 +171,6 @@ class TopPages
 			ORDER BY ' . ($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'type'         => 'page',
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -193,7 +192,7 @@ class TopPages
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $pages;
 	}

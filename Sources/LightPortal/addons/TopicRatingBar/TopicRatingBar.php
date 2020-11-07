@@ -65,7 +65,7 @@ class TopicRatingBar
 	 *
 	 * @return void
 	 */
-	public static function frontpageAssets()
+	public static function frontAssets()
 	{
 		global $context;
 

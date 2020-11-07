@@ -60,18 +60,18 @@ $txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 
-$txt['lp_debug_and_caching']       = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']         = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_subtext'] = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval']   = 'Interwał aktualizacji pamięci podręcznej';
+$txt['lp_debug_and_caching']     = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']       = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_help']  = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval'] = 'Interwał aktualizacji pamięci podręcznej';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_tags_as_articles']        = 'Display lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']           = 'Display related pages block';
+$txt['lp_show_tags_as_articles']        = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_related_pages']           = 'Show related pages block';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');

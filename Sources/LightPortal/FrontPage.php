@@ -256,10 +256,6 @@ class FrontPage
 					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
 					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
-					$colorClass = '';
-					if ($row['is_sticky'])
-						$colorClass .= ' sticky';
-
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
@@ -276,7 +272,7 @@ class FrontPage
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
 						'num_views'   => $row['num_views'],
 						'num_replies' => $row['num_replies'],
-						'css_class'   => $colorClass,
+						'css_class'   => $row['is_sticky'] ? ' sticky' : '',
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
@@ -291,7 +287,7 @@ class FrontPage
 			}
 
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
 		}
@@ -335,7 +331,7 @@ class FrontPage
 
 			[$num_topics] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_topics, LP_CACHE_TIME);
 		}
@@ -447,7 +443,7 @@ class FrontPage
 			}
 
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
 		}
@@ -482,7 +478,7 @@ class FrontPage
 
 			[$num_pages] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_pages, LP_CACHE_TIME);
 		}
@@ -591,7 +587,7 @@ class FrontPage
 			}
 
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
 		}
@@ -629,7 +625,7 @@ class FrontPage
 
 			[$num_boards] = $smcFunc['db_fetch_row']($request);
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Helpers::cache()->put('articles_u' . $context['user']['id'] . '_total', (int) $num_boards, LP_CACHE_TIME);
 		}

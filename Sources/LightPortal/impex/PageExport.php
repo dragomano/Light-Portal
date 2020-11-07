@@ -28,7 +28,7 @@ class PageExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl, $sourcedir;
 
@@ -149,7 +149,7 @@ class PageExport extends Export
 	 */
 	protected static function getData()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
 			return false;
@@ -211,7 +211,7 @@ class PageExport extends Export
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $items;
 	}

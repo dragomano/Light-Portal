@@ -117,15 +117,15 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $active_blocks;
 	}
 
 	/**
-	 * Get the total number of active pages of the current user
+	 * Get the total number of active pages
 	 *
-	 * Подсчитываем общее количество активных страниц текущего пользователя
+	 * Подсчитываем общее количество активных страниц
 	 *
 	 * @return int
 	 */
@@ -145,8 +145,9 @@ class Subs
 		);
 
 		[$num_pages] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (int) $num_pages;
 	}
@@ -379,7 +380,7 @@ class Subs
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT item_id, lang, title
@@ -398,7 +399,7 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $titles;
 	}
@@ -412,9 +413,9 @@ class Subs
 	 */
 	public static function showDebugInfo()
 	{
-		global $context, $txt;
+		global $context, $txt, $smcFunc;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $context['lp_num_queries']) : false;
+		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']) : false;
 
 		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
 			loadTemplate('LightPortal/ViewDebug');
@@ -469,6 +470,8 @@ class Subs
 
 	/**
 	 * Check if the portal must not be loaded
+	 *
+	 * Проверяем, должен портал загружаться или нет
 	 *
 	 * @return bool
 	 */

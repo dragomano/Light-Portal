@@ -60,10 +60,10 @@ $txt['groups_light_portal_manage_own_pages'] = 'Кто может управля
 $txt['groups_light_portal_approve_pages']    = 'Кто может размещать свои страницы без модерации';
 $txt['lp_manage_permissions']                = 'Внимание: некоторые страницы и блоки могут содержать опасный HTML/PHP контент, поэтому не предоставляйте это право всем подряд!';
 
-$txt['lp_debug_and_caching']       = 'Отладка и кэширование';
-$txt['lp_show_debug_info']         = 'Отображать время загрузки и количество запросов портала';
-$txt['lp_show_debug_info_subtext'] = 'Информация будет доступна только администраторам!';
-$txt['lp_cache_update_interval']   = 'Интервал обновления кэша';
+$txt['lp_debug_and_caching']     = 'Отладка и кэширование';
+$txt['lp_show_debug_info']       = 'Отображать время загрузки и количество запросов портала';
+$txt['lp_show_debug_info_help']  = 'Информация будет доступна только администраторам!';
+$txt['lp_cache_update_interval'] = 'Интервал обновления кэша';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Страницы и блоки';
@@ -339,4 +339,4 @@ $txt['lp_buddies_set'] = array('друг', 'друга', 'друзей');
 $txt['lp_used_components'] = 'Компоненты портала';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'Загружено за %1$.3f сек. Запросов к базе: %2$d.';
+$txt['lp_load_page_stats'] = 'Загружено за %1$.3f сек. Запросов к базе данных: %2$d.';

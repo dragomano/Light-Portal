@@ -65,7 +65,7 @@ class ManageBlocks
 	 */
 	public static function getAll()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
@@ -94,7 +94,7 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $current_blocks;
 	}
@@ -144,7 +144,7 @@ class ManageBlocks
 	 */
 	private static function remove(array $items)
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (empty($items))
 			return;
@@ -177,7 +177,7 @@ class ManageBlocks
 			)
 		);
 
-		$context['lp_num_queries'] += 3;
+		$smcFunc['lp_num_queries'] += 3;
 	}
 
 	/**
@@ -231,7 +231,7 @@ class ManageBlocks
 	 */
 	public static function toggleStatus(array $items, int $status = 0)
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (empty($items))
 			return;
@@ -246,7 +246,7 @@ class ManageBlocks
 			)
 		);
 
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 	}
 
 	/**
@@ -258,7 +258,7 @@ class ManageBlocks
 	 */
 	private static function updatePriority()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
@@ -278,16 +278,14 @@ class ManageBlocks
 		if (!empty($blocks) && is_array($blocks)) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET priority = CASE ' . $conditions . '
-					ELSE priority
-					END
+				SET priority = CASE ' . $conditions . ' ELSE priority END
 				WHERE block_id IN ({array_int:blocks})',
 				array(
 					'blocks' => $blocks
 				)
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			if (!empty($data['update_placement'])) {
 				$smcFunc['db_query']('', '
@@ -300,7 +298,7 @@ class ManageBlocks
 					)
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 		}
 	}
@@ -471,6 +469,7 @@ class ManageBlocks
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
 			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'status'        => $context['current_block']['status'] ?? Block::STATUS_ACTIVE,
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',
@@ -478,6 +477,10 @@ class ManageBlocks
 			'content_style' => $post_data['content_style'] ?? $context['current_block']['content_style'] ?? '',
 			'options'       => $options[$context['current_block']['type']]
 		);
+
+		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? self::getPriority() : $context['lp_block']['priority'];
+
+		$context['lp_block']['content'] = Helpers::getShortenText($context['lp_block']['content']);
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
@@ -891,7 +894,7 @@ class ManageBlocks
 
 		[$priority] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (int) $priority;
 	}
@@ -914,16 +917,13 @@ class ManageBlocks
 		checkSubmitOnce('check');
 
 		if (empty($item)) {
-			$max_length = MAX_MSG_LENGTH;
-			$priority   = self::getPriority();
-
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_blocks',
 				array(
 					'icon'          => 'string-60',
 					'icon_type'     => 'string-10',
 					'type'          => 'string',
-					'content'       => 'string-' . $max_length,
+					'content'       => 'string-' . MAX_MSG_LENGTH,
 					'placement'     => 'string-10',
 					'priority'      => 'int',
 					'permissions'   => 'int',
@@ -940,9 +940,9 @@ class ManageBlocks
 					$context['lp_block']['type'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
-					$context['lp_block']['priority'] ?? $priority ?? 0,
+					$context['lp_block']['priority'],
 					$context['lp_block']['permissions'],
-					$context['lp_block']['status'] ?? Block::STATUS_ACTIVE,
+					$context['lp_block']['status'],
 					$context['lp_block']['areas'],
 					$context['lp_block']['title_class'],
 					$context['lp_block']['title_style'],
@@ -953,7 +953,7 @@ class ManageBlocks
 				1
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
@@ -978,15 +978,15 @@ class ManageBlocks
 					array('item_id', 'type', 'lang')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
-				$parameters = [];
+				$params = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
 
-					$parameters[] = array(
+					$params[] = array(
 						'item_id' => $item,
 						'type'    => 'block',
 						'name'    => $param_name,
@@ -1002,11 +1002,11 @@ class ManageBlocks
 						'name'    => 'string',
 						'value'   => 'string'
 					),
-					$parameters,
+					$params,
 					array('item_id', 'type', 'name')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 		} else {
 			$smcFunc['db_query']('', '
@@ -1029,7 +1029,7 @@ class ManageBlocks
 				)
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
@@ -1054,15 +1054,15 @@ class ManageBlocks
 					array('item_id', 'type', 'lang')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_block']['options']['parameters'])) {
-				$parameters = [];
+				$params = [];
 				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
 
-					$parameters[] = array(
+					$params[] = array(
 						'item_id' => $item,
 						'type'    => 'block',
 						'name'    => $param_name,
@@ -1078,11 +1078,11 @@ class ManageBlocks
 						'name'    => 'string',
 						'value'   => 'string'
 					),
-					$parameters,
+					$params,
 					array('item_id', 'type', 'name')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
@@ -1126,8 +1126,10 @@ class ManageBlocks
 			)
 		);
 
-		if ($smcFunc['db_num_rows']($request) == 0)
+		if ($smcFunc['db_num_rows']($request) == 0) {
+			self::changeBackButton();
 			fatal_lang_error('lp_block_not_found', false, null, 404);
+		}
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['content']);
@@ -1157,8 +1159,23 @@ class ManageBlocks
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
+	}
+
+	/**
+	 * Change back button position and back button href
+	 *
+	 * Меняем положение и href кнопки «Назад»
+	 *
+	 * @return void
+	 */
+	private static function changeBackButton()
+	{
+		addInlineJavaScript('
+		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
+		backButton.setAttribute("href", smf_scripturl + "?action=admin;area=lp_blocks");
+		backButton.className = "button floatnone";', true);
 	}
 }

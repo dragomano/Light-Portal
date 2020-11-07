@@ -203,7 +203,7 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $items;
 	}
@@ -240,7 +240,7 @@ class Tag
 			$items[$row['page_id']] = $row['value'];
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return sizeof($items);
 	}
@@ -330,19 +330,20 @@ class Tag
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT t.value
 			FROM {db_prefix}lp_tags AS t
 				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value IS NOT NULL
+			WHERE t.value <> {string:blank_string}
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
+				'blank_string' => '',
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -366,7 +367,7 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
@@ -406,7 +407,7 @@ class Tag
 			$items[$row['value']] = $row['page_id'];
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return sizeof($items);
 	}

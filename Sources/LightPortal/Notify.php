@@ -25,7 +25,7 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir, $user_profile, $smcFunc, $context;
+		global $sourcedir, $user_profile, $smcFunc;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
@@ -59,8 +59,9 @@ class Notify extends \SMF_BackgroundTask
 				if ($this->_details['content_type'] == 'new_comment') {
 					if ($pref_option['page_comment'] & $bitvalue)
 						$notifies[$type][] = $member;
-				} elseif ($pref_option['page_comment_reply'] & $bitvalue)
+				} elseif ($pref_option['page_comment_reply'] & $bitvalue) {
 					$notifies[$type][] = $member;
+				}
 			}
 		}
 
@@ -98,7 +99,7 @@ class Notify extends \SMF_BackgroundTask
 					array('id_alert')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}

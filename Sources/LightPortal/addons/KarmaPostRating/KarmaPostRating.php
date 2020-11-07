@@ -37,15 +37,19 @@ class KarmaPostRating
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables)
+	public static function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
 	{
 		global $modSettings;
 
 		if (!class_exists('\Bugo\KarmaPostRating\Subs'))
 			return;
 
-		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor']) ? ' + t.num_replies' : '') . ', 0) AS rating';
-		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (t.id_first_msg = kpr.item_id AND kpr.item = "message")';
+		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (!empty($modSettings['kpr_num_topics_factor'])
+			 ? ' + t.num_replies' : '') . ', 0) AS rating';
+
+		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (t.id_first_msg = kpr.item_id AND kpr.item = {string:kpr_item_type})';
+
+		$custom_parameters['kpr_item_type'] = 'message';
 	}
 
 	/**
@@ -67,7 +71,7 @@ class KarmaPostRating
 	 *
 	 * @return void
 	 */
-	public static function frontpageAssets()
+	public static function frontAssets()
 	{
 		global $context;
 

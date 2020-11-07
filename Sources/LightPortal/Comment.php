@@ -93,7 +93,7 @@ class Comment
 		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);
 		$start                 = Helpers::request('start');
 
-		$context['page_info']['num_pages'] = floor(($total_comments - 1) / $limit) + 1;
+		$context['page_info']['num_pages'] = floor($total_comments / $limit) + 1;
 		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
 
 		if ($temp_start > $total_comments)
@@ -136,7 +136,7 @@ class Comment
 		$page_id     = $data['page_id'];
 		$page_title  = $data['page_title'];
 		$page_url    = $data['page_url'];
-		$message     = $data['message'];
+		$message     = Helpers::getShortenText($data['message']);
 		$start       = $data['start'];
 		$commentator = $data['commentator'];
 
@@ -163,7 +163,7 @@ class Comment
 			1
 		);
 
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		$result['error'] = true;
 
@@ -177,7 +177,7 @@ class Comment
 				)
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			loadTemplate('LightPortal/ViewPage');
 
@@ -239,7 +239,7 @@ class Comment
 			return;
 
 		$item    = $data['comment_id'];
-		$message = Helpers::validate($data['message']);
+		$message = Helpers::validate(Helpers::getShortenText($data['message']));
 
 		if (empty($item) || empty($message))
 			return;
@@ -256,7 +256,7 @@ class Comment
 			)
 		);
 
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']);
 
@@ -266,35 +266,22 @@ class Comment
 	}
 
 	/**
-	 * Get user avatar image (html string)
+	 * Get user avatar image
 	 *
-	 * Получение аватарки пользователя (готовый HTML-код)
+	 * Получение аватарки пользователя
 	 *
 	 * @return string
 	 */
 	private function getUserAvatar()
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl;
+		global $memberContext, $user_info;
 
-		$user_avatar = [];
+		if (!isset($memberContext[$user_info['id']])) {
+			loadMemberData($user_info['id']);
+			loadMemberContext($user_info['id'], true);
+		}
 
-		if ((!empty($modSettings['gravatarEnabled']) && substr($user_info['avatar']['url'], 0, 11) == 'gravatar://') || !empty($modSettings['gravatarOverride'])) {
-			!empty($modSettings['gravatarAllowExtraEmail']) && stristr($user_info['avatar']['url'], 'gravatar://') && isset($user_info['avatar']['url'][12])
-				? $user_avatar['href'] = get_gravatar_url($smcFunc['substr']($user_info['avatar']['url'], 11))
-				: $user_avatar['href'] = get_gravatar_url($user_info['email']);
-		} elseif ($user_info['avatar']['url'] == '' && !empty($user_info['avatar']['id_attach'])) {
-			$user_avatar['href'] = $user_info['avatar']['custom_dir'] ? $modSettings['custom_avatar_url'] . '/' . $user_info['avatar']['filename'] : $scripturl . '?action=dlattach;attach=' . $user_info['avatar']['id_attach'] . ';type=avatar';
-		} elseif (strpos($user_info['avatar']['url'], 'http://') === 0 || strpos($user_info['avatar']['url'], 'https://') === 0) {
-			$user_avatar['href'] = $user_info['avatar']['url'];
-		} elseif ($user_info['avatar']['url'] != '') {
-			$user_avatar['href'] = $modSettings['avatar_url'] . '/' . $smcFunc['htmlspecialchars']($user_info['avatar']['url']);
-		} else
-			$user_avatar['href'] = $modSettings['avatar_url'] . '/default.png';
-
-		if (!empty($user_avatar))
-			$user_avatar['image'] = '<img src="' . $user_avatar['href'] . '" alt="' . $user_info['name'] . '" class="avatar">';
-
-		return $user_avatar['image'];
+		return $memberContext[$user_info['id']]['avatar']['image'];
 	}
 
 	/**
@@ -322,29 +309,27 @@ class Comment
 				'task_data'  => 'string'
 			),
 			array(
-				'$sourcedir/LightPortal/Notify.php',
-				'\Bugo\LightPortal\Notify',
-				$smcFunc['json_encode'](
-					array(
-						'time'           => $options['created'],
-						'sender_id'	     => $user_info['id'],
-						'sender_name'    => $user_info['name'],
-						'author_id'      => $context['lp_page']['author_id'],
-						'commentator_id' => $options['commentator'],
-						'content_type'   => $type,
-						'content_id'     => $options['item'],
-						'content_action' => $action,
-						'extra'          => $smcFunc['json_encode']([
-							'content_subject' => $options['title'],
-							'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
-						])
-					)
-				)
+				'task_file'  => '$sourcedir/LightPortal/Notify.php',
+				'task_class' => '\Bugo\LightPortal\Notify',
+				'task_data'  => $smcFunc['json_encode']([
+					'time'           => $options['created'],
+					'sender_id'	     => $user_info['id'],
+					'sender_name'    => $user_info['name'],
+					'author_id'      => $context['lp_page']['author_id'],
+					'commentator_id' => $options['commentator'],
+					'content_type'   => $type,
+					'content_id'     => $options['item'],
+					'content_action' => $action,
+					'extra'          => $smcFunc['json_encode']([
+						'content_subject' => $options['title'],
+						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
+					])
+				]),
 			),
 			array('id_task')
 		);
 
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 	}
 
 	/**
@@ -356,7 +341,7 @@ class Comment
 	 */
 	private function remove()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$json  = file_get_contents('php://input');
 		$data  = json_decode($json, true);
@@ -384,7 +369,7 @@ class Comment
 			)
 		);
 
-		$context['lp_num_queries'] += 2;
+		$smcFunc['lp_num_queries'] += 2;
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
@@ -446,7 +431,7 @@ class Comment
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $comments;
 	}

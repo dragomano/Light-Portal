@@ -68,7 +68,7 @@ class ManagePages
 			$search_params = $smcFunc['json_decode']($search_params, true);
 		}
 
-		$search_params_string = Helpers::request('search', '');
+		$search_params_string = trim(Helpers::request('search', ''));
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
 		);
@@ -295,7 +295,7 @@ class ManagePages
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
 	{
-		global $smcFunc, $user_info, $context;
+		global $smcFunc, $user_info;
 
 		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
@@ -336,7 +336,7 @@ class ManagePages
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $items;
 	}
@@ -352,7 +352,7 @@ class ManagePages
 	 */
 	public static function getTotalQuantity(string $query_string = '', array $query_params = [])
 	{
-		global $smcFunc, $user_info, $context;
+		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
@@ -370,7 +370,7 @@ class ManagePages
 
 		[$num_entries] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (int) $num_entries;
 	}
@@ -415,7 +415,7 @@ class ManagePages
 	 */
 	private static function remove(array $items)
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (empty($items))
 			return;
@@ -439,20 +439,20 @@ class ManagePages
 		);
 
 		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE page_id IN ({array_int:items})',
+			array(
+				'items' => $items
+			)
+		);
+
+		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {string:type}',
 			array(
 				'items' => $items,
 				'type'  => 'page'
-			)
-		);
-
-		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
-			array(
-				'items' => $items
 			)
 		);
 
@@ -466,7 +466,7 @@ class ManagePages
 
 		Subs::runAddons('onPageRemoving', array(&$items));
 
-		$context['lp_num_queries'] += 5;
+		$smcFunc['lp_num_queries'] += 5;
 	}
 
 	/**
@@ -515,9 +515,11 @@ class ManagePages
 			case 'delete':
 				self::remove($items);
 				break;
+
 			case 'action_on':
 				self::toggleStatus($items, Page::STATUS_ACTIVE);
 				break;
+
 			case 'action_off':
 				self::toggleStatus($items);
 				break;
@@ -676,7 +678,11 @@ class ManagePages
 		$options = self::getOptions();
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
-		$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
+		if (!empty($context['lp_current_page']['keywords'])) {
+			$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
+		} else {
+			$context['lp_current_page']['keywords'] = '';
+		}
 
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
@@ -693,6 +699,8 @@ class ManagePages
 			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
 			'options'     => $options
 		);
+
+		$context['lp_page']['content'] = Helpers::getShortenText($context['lp_page']['content']);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
 			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null) {
@@ -1072,7 +1080,7 @@ class ManagePages
 				1
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Subs::runAddons('onPageSaving', array($item));
 
@@ -1099,15 +1107,15 @@ class ManagePages
 					array('item_id', 'type', 'lang')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['options'])) {
-				$parameters = [];
+				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
 
-					$parameters[] = array(
+					$params[] = array(
 						'item_id' => $item,
 						'type'    => 'page',
 						'name'    => $param_name,
@@ -1123,17 +1131,17 @@ class ManagePages
 						'name'    => 'string',
 						'value'   => 'string'
 					),
-					$parameters,
+					$params,
 					array('item_id', 'type', 'name')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
-				$keywords = [];
+				$tags = [];
 				foreach ($context['lp_page']['keywords'] as $value) {
-					$keywords[] = array(
+					$tags[] = array(
 						'page_id' => $item,
 						'value'   => $value
 					);
@@ -1145,11 +1153,11 @@ class ManagePages
 						'page_id' => 'int',
 						'value'   => 'string'
 					),
-					$keywords,
+					$tags,
 					array('page_id', 'value')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 		} else {
 			$smcFunc['db_query']('', '
@@ -1169,7 +1177,7 @@ class ManagePages
 				)
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			Subs::runAddons('onDataSaving', array($item));
 
@@ -1196,15 +1204,15 @@ class ManagePages
 					array('item_id', 'type', 'lang')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			if (!empty($context['lp_page']['options'])) {
-				$parameters = [];
+				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
 					$value = is_array($value) ? implode(',', $value) : $value;
 
-					$parameters[] = array(
+					$params[] = array(
 						'item_id' => $item,
 						'type'    => 'page',
 						'name'    => $param_name,
@@ -1220,11 +1228,11 @@ class ManagePages
 						'name'    => 'string',
 						'value'   => 'string'
 					),
-					$parameters,
+					$params,
 					array('item_id', 'type', 'name')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 
 			$smcFunc['db_query']('', '
@@ -1235,12 +1243,12 @@ class ManagePages
 				)
 			);
 
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			if (!empty($context['lp_page']['keywords'])) {
-				$keywords = [];
+				$tags = [];
 				foreach ($context['lp_page']['keywords'] as $value) {
-					$keywords[] = array(
+					$tags[] = array(
 						'page_id' => $item,
 						'value'   => $value
 					);
@@ -1252,11 +1260,11 @@ class ManagePages
 						'page_id' => 'int',
 						'value'   => 'string'
 					),
-					$keywords,
+					$tags,
 					array('page_id', 'value')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 			}
 		}
 
@@ -1274,12 +1282,13 @@ class ManagePages
 	 */
 	private static function getAutoIncrementValue()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
 		[$value] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (int) $value + 1;
 	}
@@ -1294,7 +1303,7 @@ class ManagePages
 	 */
 	private static function isUnique(array $data)
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
@@ -1308,8 +1317,9 @@ class ManagePages
 		);
 
 		[$count] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (bool) $count;
 	}

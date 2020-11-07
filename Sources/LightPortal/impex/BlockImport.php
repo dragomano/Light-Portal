@@ -22,13 +22,13 @@ if (!defined('SMF'))
 class BlockImport extends Import
 {
 	/**
-	 * Block import
+	 * The page of import blocks
 	 *
-	 * Импорт блоков
+	 * Страница импорта блоков
 	 *
 	 * @return void
 	 */
-	public static function prepare()
+	public static function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -57,7 +57,7 @@ class BlockImport extends Import
 	 */
 	protected static function run()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (empty($_FILES['import_file']))
 			return;
@@ -125,33 +125,64 @@ class BlockImport extends Import
 		}
 
 		if (!empty($items)) {
-			$sql = "REPLACE INTO {db_prefix}lp_blocks (`block_id`, `icon`, `icon_type`, `type`, `content`, `placement`, `priority`, `permissions`, `status`, `areas`, `title_class`, `title_style`, `content_class`, `content_style`)
-				VALUES ";
+			$result = $smcFunc['db_insert']('replace',
+				'{db_prefix}lp_blocks',
+				array(
+					'block_id'      => 'int',
+					'icon'          => 'string-60',
+					'icon_type'     => 'string-10',
+					'type'          => 'string',
+					'content'       => 'string-' . MAX_MSG_LENGTH,
+					'placement'     => 'string-10',
+					'priority'      => 'int',
+					'permissions'   => 'int',
+					'status'        => 'int',
+					'areas'         => 'string',
+					'title_class'   => 'string',
+					'title_style'   => 'string',
+					'content_class' => 'string',
+					'content_style' => 'string'
+				),
+				$items,
+				array('block_id'),
+				2
+			);
 
-			$sql .= self::getValues($items);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 		}
 
 		if (!empty($titles) && !empty($result)) {
-			$sql = "REPLACE INTO {db_prefix}lp_titles (`item_id`, `type`, `lang`, `title`)
-				VALUES ";
+			$result = $smcFunc['db_insert']('replace',
+				'{db_prefix}lp_titles',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'lang'    => 'string',
+					'title'   => 'string'
+				),
+				$titles,
+				array('item_id', 'type', 'lang'),
+				2
+			);
 
-			$sql .= self::getValues($titles);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 		}
 
 		if (!empty($params) && !empty($result)) {
-			$sql = "REPLACE INTO {db_prefix}lp_params (`item_id`, `type`, `name`, `value`)
-				VALUES ";
+			$result = $smcFunc['db_insert']('replace',
+				'{db_prefix}lp_params',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'name'    => 'string',
+					'value'   => 'string'
+				),
+				$params,
+				array('item_id', 'type', 'name'),
+				2
+			);
 
-			$sql .= self::getValues($params);
-
-			$result = $smcFunc['db_query']('', $sql);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 		}
 
 		if (empty($result))

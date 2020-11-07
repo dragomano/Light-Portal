@@ -16,5 +16,5 @@ namespace Bugo\LightPortal\Impex;
 
 interface IExport
 {
-	public static function prepare();
+	public static function main();
 }

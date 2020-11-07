@@ -248,7 +248,7 @@ class Settings
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'),
 			array('title', 'lp_debug_and_caching'),
-			array('check', 'lp_show_debug_info'),
+			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
@@ -692,8 +692,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\BlockExport::prepare';
-			$subActions['import'] = 'Impex\BlockImport::prepare';
+			$subActions['export'] = 'Impex\BlockExport::main';
+			$subActions['import'] = 'Impex\BlockImport::main';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -719,8 +719,8 @@ class Settings
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\PageExport::prepare';
-			$subActions['import'] = 'Impex\PageImport::prepare';
+			$subActions['export'] = 'Impex\PageExport::main';
+			$subActions['import'] = 'Impex\PageImport::main';
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');

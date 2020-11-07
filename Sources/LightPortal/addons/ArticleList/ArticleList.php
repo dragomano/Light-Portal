@@ -133,7 +133,8 @@ class ArticleList
 			'attributes' => array(
 				'id' => 'article_body_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
@@ -209,7 +210,7 @@ class ArticleList
 	 */
 	public static function getTopics(array $parameters)
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
 			return [];
@@ -249,7 +250,7 @@ class ArticleList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $topics;
 	}
@@ -264,7 +265,7 @@ class ArticleList
 	 */
 	public static function getPages(array $parameters)
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
 			return [];
@@ -311,7 +312,7 @@ class ArticleList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $pages;
 	}
