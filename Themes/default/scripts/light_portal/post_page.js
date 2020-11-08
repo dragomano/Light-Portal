@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				const firstTitle = document.getElementById('content-tab1').querySelector('input').value;
 				document.getElementById('alias').value = slugify(firstTitle, {
 					separator: '_',
-					allowedChars: 'a-zA-Z0-9_'
+					allowedChars: 'a-z0-9_'
 				});
 			}
 		}
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		const formElements = formPage.elements;
 
 		for (let i = 0; i < formElements.length; i++) {
-			if (formElements[i].required && formElements[i].value == '') {
+			if (formElements[i].required && formElements[i].value == '' || !formElements[i].validity.valid) {
 				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;
