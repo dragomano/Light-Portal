@@ -464,7 +464,7 @@ class Tag
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
+		$context['lp_frontpage_layout'] = Front\Article::getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 		loadTemplate('LightPortal/ViewTags');

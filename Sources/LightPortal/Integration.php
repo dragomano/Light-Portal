@@ -59,6 +59,7 @@ class Integration
 	{
 		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
+		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
 		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
 		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
@@ -159,7 +160,7 @@ class Integration
 	{
 		global $context, $modSettings;
 
-		$actions['portal'] = array('LightPortal/FrontPage.php', array(__NAMESPACE__ . '\FrontPage', 'show'));
+		$actions['portal'] = array('LightPortal/front/Article.php', array(__NAMESPACE__ . '\Front\Article', 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
@@ -192,7 +193,7 @@ class Integration
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			return FrontPage::show();
+			return Front\Article::show();
 	}
 
 	/**
