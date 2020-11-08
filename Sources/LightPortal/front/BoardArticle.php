@@ -76,7 +76,7 @@ class BoardArticle extends Article
 				WHERE b.id_board IN ({array_int:selected_boards})
 					AND {query_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (b.num_posts > 0, 0, 1), b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);

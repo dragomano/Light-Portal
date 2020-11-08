@@ -92,7 +92,7 @@ class TopicArticle extends Article
 					AND t.id_board IN ({array_int:selected_boards})
 					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (t.num_replies > 0, 0, 1), t.num_replies DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 't.num_replies DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);

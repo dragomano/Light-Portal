@@ -175,22 +175,22 @@ class Page
 
 		$search_formula = '';
 		foreach ($title_words as $key => $word) {
-			$search_formula .= ($search_formula ? ' + ' : '') . 'IF (t.title LIKE "%' . $word . '%", ' . (count($title_words) - $key) * 2 . ', 0)';
+			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
 		}
 
 		foreach ($alias_words as $key => $word) {
-			$search_formula .= ' + IF (p.alias LIKE "%' . $word . '%", ' . (count($alias_words) - $key) . ', 0)';
+			$search_formula .= ' + CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($alias_words) - $key) . ' ELSE 0 END';
 		}
 
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE p.status = {int:status}
+			WHERE (' . $search_formula . ') > 0
+				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND p.page_id != {int:current_page}
-			HAVING related > 0
 			ORDER BY related DESC
 			LIMIT 4',
 			array(

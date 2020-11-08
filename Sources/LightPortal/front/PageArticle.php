@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Page;
 use Bugo\LightPortal\Subs;
 
 /**
@@ -35,7 +36,7 @@ class PageArticle extends Article
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
-		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		//if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns = [];
@@ -44,7 +45,7 @@ class PageArticle extends Article
 
 			$custom_parameters = [
 				'type'         => 'page',
-				'status'       => \Bugo\LightPortal\Page::STATUS_ACTIVE,
+				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
 				'start'        => $start,
@@ -52,7 +53,7 @@ class PageArticle extends Article
 			];
 
 			$custom_sorting = [
-				'comment_date DESC',
+				'CASE WHEN (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) > 0 THEN 0 ELSE 1 END, comment_date DESC',
 				'p.created_at DESC',
 				'p.created_at',
 			];
@@ -62,24 +63,7 @@ class PageArticle extends Article
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-					mem.real_name AS author_name, (
-						SELECT created_at
-						FROM {db_prefix}lp_comments
-						WHERE page_id = p.page_id
-						ORDER BY created_at DESC
-						LIMIT 1
-					) AS comment_date, (
-						SELECT author_id
-						FROM {db_prefix}lp_comments
-						WHERE created_at = comment_date
-						LIMIT 1
-					) AS comment_author_id, (
-						SELECT real_name
-						FROM {db_prefix}members
-						WHERE id_member = comment_author_id
-						LIMIT 1
-					) AS comment_author_name' . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
+					mem.real_name AS author_name, (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id LIMIT 1) AS comment_author_name' . (!empty($custom_columns) ? ', ' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
 					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
@@ -87,7 +71,7 @@ class PageArticle extends Article
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
 					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'IF (num_comments > 0, 0, 1), num_comments DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
 				$custom_parameters
 			);
@@ -128,8 +112,8 @@ class PageArticle extends Article
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
-		}
+			//Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+		//}
 
 		return $pages;
 	}
@@ -153,7 +137,7 @@ class PageArticle extends Article
 					AND created_at <= {int:current_time}
 					AND permissions IN ({array_int:permissions})',
 				array(
-					'status'       => \Bugo\LightPortal\Page::STATUS_ACTIVE,
+					'status'       => Page::STATUS_ACTIVE,
 					'current_time' => time(),
 					'permissions'  => Helpers::getPermissions()
 				)
