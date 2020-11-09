@@ -127,6 +127,7 @@ class TopBoards
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_topBoards($num_boards, 'array');
 	}
 
@@ -149,7 +150,7 @@ class TopBoards
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_boards']);
 
 		if (!empty($top_boards)) {
 			ob_start();

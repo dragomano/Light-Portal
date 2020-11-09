@@ -16,9 +16,9 @@ $txt['lp_flipster_carousel_addon_show_nav']       = 'Wyświetlaj nawigację';
 $txt['lp_flipster_carousel_addon_show_buttons']   = 'Pokaż przyciski Następny/poprzedni';
 $txt['lp_flipster_carousel_addon_images']         = 'Lista obrazów';
 $txt['lp_flipster_carousel_addon_images_subtext'] = 'Jeden adres URL obrazu na linię. Przykład:<br><pre><code class="bbc_code">
-https://example.com/image1.png|Tytuł obrazu 1|Kategoria obrazu 1
+https://picsum.photos/seed/picsum1/300/200|Tytuł obrazu 1|Kategoria obrazu 1
 <br>
-https://example.com/image2.png|Tytuł obrazu 2|Kategoria obrazu 2
+https://picsum.photos/seed/picsum2/300/200|Tytuł obrazu 2|Kategoria obrazu 2
 </code></pre>';
 
 $txt['lp_flipster_carousel_addon_prev'] = 'Poprzedni';

@@ -158,11 +158,15 @@ class TopPosters
 			)
 		);
 
+		$result = $smcFunc['db_fetch_all']($request);
+
+		if (empty($result))
+			return [];
+
+		loadMemberData(array_column($result, 'id_member'));
+
 		$posters = [];
-
-		loadMemberData(array_column($request, 'id_member'), false, 'profile');
-
-		while ($row = $smcFunc['db_fetch_assoc']($request))	{
+		foreach ($result as $row) {
 			if (!isset($memberContext[$row['id_member']]))
 				loadMemberContext($row['id_member']);
 
@@ -218,7 +222,7 @@ class TopPosters
 
 				$width = $poster['posts'] * 100 / $max;
 
-				echo $poster['link'], '
+				echo ' ', $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>

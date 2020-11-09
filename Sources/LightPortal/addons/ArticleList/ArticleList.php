@@ -385,8 +385,9 @@ class ArticleList
 
 			echo '
 		</div>';
-		} else
-			echo $txt['lp_article_list_addon_no_items'];
+		} else {
+			echo '<div class="errorbox">', $txt['lp_article_list_addon_no_items'], '</div>';
+		}
 
 		$content = ob_get_clean();
 	}

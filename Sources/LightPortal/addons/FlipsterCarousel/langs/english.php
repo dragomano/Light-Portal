@@ -16,9 +16,9 @@ $txt['lp_flipster_carousel_addon_show_nav']       = 'Display the navigation befo
 $txt['lp_flipster_carousel_addon_show_buttons']   = 'Display Previous/Next buttons';
 $txt['lp_flipster_carousel_addon_images']         = 'Image list';
 $txt['lp_flipster_carousel_addon_images_subtext'] = 'One image url per line. Example:<br><pre><code class="bbc_code">
-https://example.com/image1.png|Image 1 title|Image 1 category
+https://picsum.photos/seed/picsum1/300/200|Image 1 title|Image 1 category
 <br>
-https://example.com/image2.png|Image 2 title|Image 2 category
+https://picsum.photos/seed/picsum2/300/200|Image 2 title|Image 2 category
 </code></pre>';
 
 $txt['lp_flipster_carousel_addon_prev'] = 'Previous';
