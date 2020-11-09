@@ -375,6 +375,11 @@ class ManageBlocks
 		$context['sub_template']  = 'block_post';
 		$context['current_block'] = self::getData($item);
 
+		if (Helpers::post()->has('remove')) {
+			self::remove([$item]);
+			redirectexit('action=admin;area=lp_blocks;sa=main');
+		}
+
 		self::validateData();
 
 		$context['canonical_url'] = $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $context['lp_block']['id'];

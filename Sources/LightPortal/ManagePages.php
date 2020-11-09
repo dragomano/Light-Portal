@@ -596,6 +596,11 @@ class ManagePages
 
 		Subs::getForumLanguages();
 
+		if (Helpers::post()->has('remove')) {
+			self::remove([$item]);
+			redirectexit('action=admin;area=lp_pages;sa=main');
+		}
+
 		self::validateData();
 
 		$page_title = $context['lp_page']['title'][$context['user']['language']] ?? '';
