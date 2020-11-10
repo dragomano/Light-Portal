@@ -57,8 +57,9 @@ class Notify extends \SMF_BackgroundTask
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
 				if ($this->_details['content_type'] == 'new_comment') {
-					if ($pref_option['page_comment'] & $bitvalue)
+					if ($pref_option['page_comment'] & $bitvalue) {
 						$notifies[$type][] = $member;
+					}
 				} elseif ($pref_option['page_comment_reply'] & $bitvalue) {
 					$notifies[$type][] = $member;
 				}

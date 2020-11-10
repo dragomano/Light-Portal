@@ -386,7 +386,7 @@ class Comment
 	 */
 	public static function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext, $modSettings, $context;
+		global $smcFunc, $memberContext, $context, $modSettings;
 
 		if (empty($page_id))
 			return [];
@@ -411,10 +411,6 @@ class Comment
 			}
 
 			$avatar = $memberContext[$row['author_id']]['avatar']['image'];
-
-			// Temporaly fix
-			if (empty($modSettings['gravatarOverride']) && empty($modSettings['gravatarEnabled']) && stristr($memberContext[$row['author_id']]['avatar']['name'], 'gravatar://'))
-				$avatar = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],
