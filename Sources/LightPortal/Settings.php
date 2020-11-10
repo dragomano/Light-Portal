@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -656,7 +656,7 @@ class Settings
 	 * @param string $name
 	 * @return array
 	 */
-	private static function getPluginSettings($config_vars, $name = '')
+	private static function getPluginSettings(array $config_vars, $name = '')
 	{
 		if (empty($config_vars))
 			return [];
@@ -732,7 +732,7 @@ class Settings
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 *
 	 * @param array $subActions
-	 * @param string $defaultAction
+	 * @param string|null $defaultAction
 	 * @return void
 	 */
 	private static function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)

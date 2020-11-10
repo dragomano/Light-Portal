@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -157,6 +157,8 @@ class TagList
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -333,7 +333,7 @@ class Comment
 	}
 
 	/**
-	 * Deleting a comment (and all childs)
+	 * Deleting a comment (and all children)
 	 *
 	 * Удаление комментария (и всех дочерних)
 	 *
@@ -433,7 +433,7 @@ class Comment
 	}
 
 	/**
-	 * Get comment tree (parents and childs)
+	 * Get comment tree (parents and children)
 	 *
 	 * Получаем дерево комментариев
 	 *
@@ -447,7 +447,7 @@ class Comment
 		foreach ($data as $id => &$node) {
 			empty($node['parent_id'])
 				? $tree[$id] = &$node
-				: $data[$node['parent_id']]['childs'][$id] = &$node;
+				: $data[$node['parent_id']]['children'][$id] = &$node;
 		}
 
 		return $tree;

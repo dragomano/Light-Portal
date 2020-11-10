@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -144,7 +144,7 @@ class TopPosters
 	 */
 	public static function getData($parameters)
 	{
-		global $smcFunc, $memberContext, $scripturl, $modSettings;
+		global $smcFunc, $memberContext, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id_member, real_name, posts

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -41,7 +41,7 @@ class Integration
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
+		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
@@ -80,8 +80,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.2',
-			'LP_RELEASE_DATE' => '2020-10-10',
+			'LP_VERSION'      => '1.3',
+			'LP_RELEASE_DATE' => '2020-11-11',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
@@ -137,7 +137,7 @@ class Integration
 	 * @param string $setLocation
 	 * @return void
 	 */
-	public static function redirect(&$setLocation)
+	public static function redirect(string &$setLocation)
 	{
 		global $modSettings, $scripturl;
 
@@ -178,22 +178,23 @@ class Integration
 	 *
 	 * Обращаемся к странице портала или вызываем метод по умолчанию
 	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public static function defaultAction()
 	{
 		global $modSettings, $sourcedir;
 
 		if (Helpers::request()->filled('page'))
-			return Page::show();
+			return call_user_func(array(__NAMESPACE__ . '\Page', 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
 			require_once($sourcedir . '/BoardIndex.php');
-			return BoardIndex();
+
+			return call_user_func('BoardIndex');
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			return Front\Article::show();
+			return call_user_func(array(__NAMESPACE__ . '\Front\Article', 'show'));
 	}
 
 	/**
@@ -476,7 +477,7 @@ class Integration
 	 * @param array $actions
 	 * @return string
 	 */
-	public static function whosOnline(array $actions)
+	public static function whoisOnline(array $actions)
 	{
 		global $txt, $scripturl, $modSettings, $context;
 

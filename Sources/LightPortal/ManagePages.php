@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -369,6 +369,7 @@ class ManagePages
 		);
 
 		[$num_entries] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
@@ -763,6 +764,24 @@ class ManagePages
 	}
 
 	/**
+	 * https://github.com/jshjohnson/Choices
+	 *
+	 * @return void
+	 */
+	private static function improveKeywordsField()
+	{
+		loadCssFile('https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css', array('external' => true));
+
+		addInlineCss('
+		.choices__list {
+			position: relative;
+		}
+		.choices__input {
+			box-shadow: none;
+		}');
+	}
+
+	/**
 	 * Adding special fields to the form
 	 *
 	 * Добавляем свои поля для формы
@@ -772,16 +791,6 @@ class ManagePages
 	private static function prepareFormFields()
 	{
 		global $context, $txt, $modSettings, $language;
-
-		// Improve keywords field ~ https://github.com/jshjohnson/Choices
-		loadCssFile('https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css', array('external' => true));
-		addInlineCss('
-		.choices__list {
-			position: relative;
-		}
-		.choices__input {
-			box-shadow: none;
-		}');
 
 		checkSubmitOnce('register');
 
@@ -852,6 +861,8 @@ class ManagePages
 			),
 			'tab' => 'seo'
 		);
+
+		self::improveKeywordsField();
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
 		$context['posting_fields']['keywords']['input'] = array(
@@ -1184,7 +1195,7 @@ class ManagePages
 
 			$smcFunc['lp_num_queries']++;
 
-			Subs::runAddons('onDataSaving', array($item));
+			Subs::runAddons('onPageSaving', array($item));
 
 			if (!empty($context['lp_page']['title'])) {
 				$titles = [];

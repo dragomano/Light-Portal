@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -65,7 +65,7 @@ class Cache
 	 * @param int $time
 	 * @return mixed
 	 */
-	public static function get($key, $time)
+	public static function get(string $key, $time = 120)
 	{
 		return cache_get_data(static::$prefix . $key, $time);
 	}
@@ -80,7 +80,7 @@ class Cache
 	 * @param int $time
 	 * @return void
 	 */
-	public static function put($key, $value, $time = null)
+	public static function put(string $key, $value, $time = 120)
 	{
 		cache_put_data(static::$prefix . $key, $value, $time);
 	}
@@ -93,7 +93,7 @@ class Cache
 	 * @param string $key
 	 * @return void
 	 */
-	public static function forget($key)
+	public static function forget(string $key)
 	{
 		self::put($key, null);
 	}

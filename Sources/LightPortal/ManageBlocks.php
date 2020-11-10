@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -778,7 +778,7 @@ class ManageBlocks
 	{
 		global $context, $txt;
 
-		$exampe_areas = array(
+		$example_areas = array(
 			'all',
 			'custom_action',
 			'pages',
@@ -793,7 +793,7 @@ class ManageBlocks
 			'topic=id3|id7'
 		);
 
-		$context['lp_possible_areas'] = array_combine($exampe_areas, $txt['lp_block_areas_values']);
+		$context['lp_possible_areas'] = array_combine($example_areas, $txt['lp_block_areas_values']);
 
 		ob_start();
 
@@ -898,6 +898,7 @@ class ManageBlocks
 		);
 
 		[$priority] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
@@ -1113,7 +1114,7 @@ class ManageBlocks
 	 */
 	public static function getData(int $item)
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		if (empty($item))
 			return [];

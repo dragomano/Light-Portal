@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 abstract class Arr
@@ -24,9 +24,10 @@ abstract class Arr
 	 * Пытаемся запустить данный объект как функцию
 	 *
 	 * @param string $key
+	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function __invoke($key, $default = null)
+	public function __invoke(string $key, $default = null)
 	{
 		return static::get($key) ?? $default;
 	}
@@ -37,10 +38,9 @@ abstract class Arr
 	 * Получаем значение $obj[$key]
 	 *
 	 * @param string $key
-	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function &get($key)
+	public static function &get(string $key)
 	{
 		return static::$obj[$key];
 	}
@@ -54,7 +54,7 @@ abstract class Arr
 	 * @param mixed $value
 	 * @return void
 	 */
-	public static function put($key, $value)
+	public static function put(string $key, $value)
 	{
 		static::$obj[$key] = &$value;
 	}
@@ -126,7 +126,7 @@ abstract class Arr
 	 * @param mixed $value
 	 * @return void
 	 */
-	public static function push($key, $value)
+	public static function push(string $key, $value)
 	{
 		if (! static::has($key) || ! is_array(static::$obj[$key]))
 			return;
@@ -147,39 +147,9 @@ abstract class Arr
 	 * @param string $key
 	 * @return void
 	 */
-	public static function forget($key)
+	public static function forget(string $key)
 	{
 		unset(static::$obj[$key]);
-	}
-
-	/**
-	 * Unset all $obj array
-	 *
-	 * Очищаем все содержимое $obj
-	 *
-	 * @return void
-	 */
-	public static function flush()
-	{
-		unset(static::$obj);
-	}
-
-	/**
-	 * Get and unset the key
-	 *
-	 * Получаем значение ячейки $obj[$key] и тут же очищаем её
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return void
-	 */
-	public static function pull($key, $default = null)
-	{
-		$result = static::get($key, $default);
-
-		static::forget($key);
-
-		return $result;
 	}
 
 	/**
@@ -204,9 +174,17 @@ abstract class Arr
 		return isset(static::$obj[$key]);
 	}
 
+	/**
+	 * Alias for static::has method
+	 *
+	 * Псевдоним для метода static::has
+	 *
+	 * @param string|array $key
+	 * @return bool
+	 */
 	public static function exists($key)
 	{
-		return static::has(static::$obj, $key);
+		return static::has($key);
 	}
 
 	/**
@@ -217,7 +195,7 @@ abstract class Arr
 	 * @param string $key
 	 * @return bool
 	 */
-	public static function filled($key)
+	public static function filled(string $key)
 	{
 		return ! static::isEmpty($key);
 	}
@@ -230,7 +208,7 @@ abstract class Arr
 	 * @param string $key
 	 * @return bool
 	 */
-	public static function isEmpty($key)
+	public static function isEmpty(string $key)
 	{
 		return empty(static::$obj[$key]);
 	}

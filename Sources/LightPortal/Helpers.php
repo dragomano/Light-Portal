@@ -17,7 +17,7 @@ use Bugo\LightPortal\Utils\Session;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -30,7 +30,7 @@ class Helpers
 	 *
 	 * Получаем данные из кэша или объект класса Cache
 	 *
-	 * @param string $key
+	 * @param string|null $key
 	 * @param string|null $funcName
 	 * @param string $class
 	 * @param int $time (in seconds)
@@ -116,8 +116,8 @@ class Helpers
 	 *
 	 * Получаем иконку блока
 	 *
-	 * @param null|string $icon
-	 * @param null|string $type
+	 * @param string|null $icon
+	 * @param string|null $type
 	 * @return string
 	 */
 	public static function getIcon($icon = null, $type = null)
@@ -161,10 +161,10 @@ class Helpers
 	 *
 	 * Получаем заголовок блока превью
 	 *
-	 * @param string $prefix
+	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle($prefix = null)
+	public static function getPreviewTitle(string $prefix = null)
 	{
 		global $context, $txt;
 
@@ -668,7 +668,7 @@ class Helpers
 	 * @param string|array $type
 	 * @return mixed
 	 */
-	public static function validate($key, $type = 'string')
+	public static function validate(string $key, $type = 'string')
 	{
 		if (is_array($type)) {
 			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);

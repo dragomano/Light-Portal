@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -114,6 +114,7 @@ class AdsBlock
 		if (empty($context['lp_blocks']['ads']))
 			return [];
 
+		$ads_blocks = [];
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump)
 			$ads_blocks[$position] = self::getByPosition($position);
 
@@ -233,14 +234,14 @@ class AdsBlock
 	 * @param string $position
 	 * @return array
 	 */
-	private static function getByPosition($position)
+	private static function getByPosition(string $position)
 	{
 		global $context;
 
 		if (empty($position))
 			return [];
 
-		$blocks = array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
+		return array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
 				if (!array_key_exists($context['current_board'], $boards))
@@ -260,8 +261,6 @@ class AdsBlock
 
 			return false;
 		});
-
-		return $blocks;
 	}
 
 	/**

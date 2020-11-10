@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -106,8 +106,7 @@ class Subs
 					'title_class'   => $row['title_class'],
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
-					'content_style' => $row['content_style'],
-					'permissions'   => $row['permissions']
+					'content_style' => $row['content_style']
 				);
 
 			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
