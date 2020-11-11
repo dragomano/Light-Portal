@@ -178,6 +178,8 @@ class ManageBlocks
 		);
 
 		$smcFunc['lp_num_queries'] += 3;
+
+		Subs::runAddons('onBlockRemoving', array($items));
 	}
 
 	/**
@@ -961,6 +963,8 @@ class ManageBlocks
 
 			$smcFunc['lp_num_queries']++;
 
+			Subs::runAddons('onBlockSaving', array($item));
+
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
 				foreach ($context['lp_block']['title'] as $lang => $title) {
@@ -1036,6 +1040,8 @@ class ManageBlocks
 			);
 
 			$smcFunc['lp_num_queries']++;
+
+			Subs::runAddons('onBlockSaving', array($item));
 
 			if (!empty($context['lp_block']['title'])) {
 				$titles = [];
