@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -158,9 +158,9 @@ class TopPages
 	 */
 	public static function getData($parameters)
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments
@@ -171,7 +171,6 @@ class TopPages
 			ORDER BY ' . ($parameters['popularity_type'] == 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			array(
-				'type'         => 'page',
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -193,7 +192,7 @@ class TopPages
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -217,7 +216,7 @@ class TopPages
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::getFromCache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 
@@ -231,7 +230,7 @@ class TopPages
 		<dl class="stats">';
 
 				foreach ($top_pages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getPublicTitle($page)))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getTitle($page)))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

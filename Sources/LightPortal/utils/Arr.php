@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 abstract class Arr
@@ -21,40 +21,48 @@ abstract class Arr
 	/**
 	 * Try run this object as a function
 	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function __invoke($name, $default = null)
-	{
-		return static::get($name) ?? $default;
-	}
-
-	/**
-	 * Get the session key
+	 * Пытаемся запустить данный объект как функцию
 	 *
 	 * @param string $key
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function &get($key)
+	public function __invoke(string $key, $default = null)
+	{
+		return static::get($key) ?? $default;
+	}
+
+	/**
+	 * Get the $obj[$key] value
+	 *
+	 * Получаем значение $obj[$key]
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
+	public static function &get(string $key)
 	{
 		return static::$obj[$key];
 	}
 
 	/**
-	 * Put the key into a session
+	 * Put $value into the $obj[$key]
+	 *
+	 * Сохраняем $value в ячейке $obj[$key]
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return void
 	 */
-	public static function put($key, &$value)
+	public static function put(string $key, $value)
 	{
 		static::$obj[$key] = &$value;
 	}
 
 	/**
-	 * Get all request array
+	 * Get all $obj values
+	 *
+	 * Получаем все содержимое $obj
 	 *
 	 * @return array
 	 */
@@ -65,6 +73,8 @@ abstract class Arr
 
 	/**
 	 * Get only the request keys that defined in $keys
+	 *
+	 * Получаем значения только запрошенных ключей $keys в $obj
 	 *
 	 * @param array|string $keys
 	 * @return array
@@ -87,6 +97,8 @@ abstract class Arr
 	/**
 	 * Get only the request keys that not defined in $keys
 	 *
+	 * Получаем значения только тех ключей в $obj, которые не перечислены в $keys
+	 *
 	 * @param array|string $keys
 	 * @return array
 	 */
@@ -106,13 +118,15 @@ abstract class Arr
 	}
 
 	/**
-	 * Push a value into the session key-array
+	 * Push a value into the key-array
+	 *
+	 * Сохраняем значение $value в переменную-массив $key
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return void
 	 */
-	public static function push($key, $value)
+	public static function push(string $key, $value)
 	{
 		if (! static::has($key) || ! is_array(static::$obj[$key]))
 			return;
@@ -126,44 +140,22 @@ abstract class Arr
 	}
 
 	/**
-	 * Unset the session key
+	 * Unset the $obj key
+	 *
+	 * Очищаем содержимое ячейки $obj[$key]
 	 *
 	 * @param string $key
 	 * @return void
 	 */
-	public static function forget($key)
+	public static function forget(string $key)
 	{
 		unset(static::$obj[$key]);
 	}
 
 	/**
-	 * Unset all session array
+	 * Check if the key is set
 	 *
-	 * @return void
-	 */
-	public static function flush()
-	{
-		unset(static::$obj);
-	}
-
-	/**
-	 * Get and unset the session key
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return void
-	 */
-	public static function pull($key, $default = null)
-	{
-		$result = static::get($key, $default);
-
-		static::forget($key);
-
-		return $result;
-	}
-
-	/**
-	 * Check if the session key is set
+	 * Проверяем, существует ли ключ $key в $obj
 	 *
 	 * @param string|array $key
 	 * @return bool
@@ -182,23 +174,41 @@ abstract class Arr
 		return isset(static::$obj[$key]);
 	}
 
+	/**
+	 * Alias for static::has method
+	 *
+	 * Псевдоним для метода static::has
+	 *
+	 * @param string|array $key
+	 * @return bool
+	 */
 	public static function exists($key)
 	{
-		return static::has(static::$obj, $key);
+		return static::has($key);
 	}
 
 	/**
-	 * Check if the session key exists
+	 * Check if the key is not empty
+	 *
+	 * Проверяем, не пуста ли ячейка $obj[$key]
 	 *
 	 * @param string $key
 	 * @return bool
 	 */
-	public static function filled($key)
+	public static function filled(string $key)
 	{
 		return ! static::isEmpty($key);
 	}
 
-	public static function isEmpty($key)
+	/**
+	 * Check if the key is empty
+	 *
+	 * Проверяем, пуста ли ячейка $obj[$key]
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public static function isEmpty(string $key)
 	{
 		return empty(static::$obj[$key]);
 	}

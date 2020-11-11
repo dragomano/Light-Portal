@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -230,7 +230,7 @@ class RecentTopics
 
 					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
 				} else {
-					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" alt="">';
+					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" loading="lazy" alt="'. $item['poster']['name'] . '">';
 				}
 
 				return $item;
@@ -259,7 +259,13 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::getFromCache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time, $parameters);
+		$recent_topics = Helpers::cache(
+			'recent_topics_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time,
+			$parameters
+		);
 
 		if (!empty($recent_topics)) {
 			ob_start();
@@ -276,8 +282,10 @@ class RecentTopics
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
 				if ($topic['is_new'])
+					/* echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $topic['href'], '">', $txt['new'], '</a>';
 
 				echo $topic['icon'], ' ', $topic['link'];
 

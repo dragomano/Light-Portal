@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 class Request extends Arr
@@ -20,21 +20,25 @@ class Request extends Arr
 
 	public function __construct()
 	{
-		static::$obj = $_REQUEST;
+		static::$obj = &$_REQUEST;
 	}
 
 	/**
-	 * Get the current path
+	 * Get the current $_SERVER['REQUEST_URI']
+	 *
+	 * Получаем текущий $_SERVER['REQUEST_URI']
 	 *
 	 * @return string
 	 */
 	public static function path()
 	{
-		return $_SERVER['REQUEST_URI'] ?? '';
+		return Server('REQUEST_URI', '');
 	}
 
 	/**
 	 * Get the full url without queries
+	 *
+	 * Получаем полный URL без параметров
 	 *
 	 * @return string
 	 */
@@ -46,15 +50,19 @@ class Request extends Arr
 	/**
 	 * Get the current page url
 	 *
+	 * Получаем URL текущей страницы
+	 *
 	 * @return string
 	 */
 	public static function fullUrl()
 	{
-		return $_SERVER['REQUEST_URL'] ?? '';
+		return Server('REQUEST_URL', '');
 	}
 
 	/**
 	 * Get the current page url with queries
+	 *
+	 * Получаем URL текущей страницы, вместе с параметрами запроса
 	 *
 	 * @param array $query
 	 * @return string
@@ -72,6 +80,8 @@ class Request extends Arr
 
 	/**
 	 * Check if the current action matches one of given patterns
+	 *
+	 * Проверяем, соответствует ли текущий action одному из указанных в $patterns
 	 *
 	 * @param string|array ...$patterns
 	 * @return bool

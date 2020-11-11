@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardIndex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -56,6 +56,10 @@ class BoardIndex
 	 */
 	public static function init()
 	{
+		global $txt, $scripturl;
+
+		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
+
 		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex', false, __FILE__);
 	}
 

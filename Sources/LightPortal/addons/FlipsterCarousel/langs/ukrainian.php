@@ -16,9 +16,9 @@ $txt['lp_flipster_carousel_addon_show_nav']       = 'Відображати на
 $txt['lp_flipster_carousel_addon_show_buttons']   = 'Відображати кнопки «Попередня» і «Наступна»';
 $txt['lp_flipster_carousel_addon_images']         = 'Список зображень';
 $txt['lp_flipster_carousel_addon_images_subtext'] = 'Одна картинка в рядку. Приклад:<br><pre><code class="bbc_code">
-https://example.com/image1.png|Заголовок 1|Категорія 1
+https://picsum.photos/seed/picsum1/300/200|Заголовок 1|Категорія 1
 <br>
-https://example.com/image2.png|Заголовок 2|Категорія 2
+https://picsum.photos/seed/picsum2/300/200|Заголовок 2|Категорія 2
 </code></pre>';
 
 $txt['lp_flipster_carousel_addon_prev'] = 'Попередня';

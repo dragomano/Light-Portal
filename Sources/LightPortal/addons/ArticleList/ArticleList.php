@@ -3,7 +3,6 @@
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\Subs;
 
 /**
  * ArticleList
@@ -14,7 +13,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -134,7 +133,8 @@ class ArticleList
 			'attributes' => array(
 				'id' => 'article_body_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
@@ -210,7 +210,7 @@ class ArticleList
 	 */
 	public static function getTopics(array $parameters)
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
 			return [];
@@ -250,7 +250,7 @@ class ArticleList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $topics;
 	}
@@ -265,12 +265,12 @@ class ArticleList
 	 */
 	public static function getPages(array $parameters)
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
 			return [];
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
@@ -294,7 +294,7 @@ class ArticleList
 				continue;
 
 			if (!empty($parameters['seek_images'])) {
-				Subs::parseContent($row['content'], $row['type']);
+				Helpers::parseContent($row['content'], $row['type']);
 				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			}
 
@@ -312,7 +312,7 @@ class ArticleList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -342,7 +342,7 @@ class ArticleList
 		});
 
 		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
-		$article_list = Helpers::getFromCache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
+		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 
@@ -356,7 +356,7 @@ class ArticleList
 					if (!empty($topic['image'])) {
 						$content .= '
 				<div class="article_image">
-					<img src="' . $topic['image'] . '" alt="">
+					<img src="' . $topic['image'] . '" loading="lazy" alt="' . $topic['title'] . '">
 				</div>';
 					}
 
@@ -366,14 +366,14 @@ class ArticleList
 				}
 			} else {
 				foreach ($article_list as $page) {
-					if (empty($title = Helpers::getPublicTitle($page)))
+					if (empty($title = Helpers::getTitle($page)))
 						continue;
 
 					$content = '';
 					if (!empty($page['image'])) {
 						$content .= '
 				<div class="article_image">
-					<img src="' . $page['image'] . '" alt="">
+					<img src="' . $page['image'] . '" loading="lazy" alt="'. $title . '">
 				</div>';
 					}
 
@@ -385,8 +385,9 @@ class ArticleList
 
 			echo '
 		</div>';
-		} else
-			echo $txt['lp_article_list_addon_no_items'];
+		} else {
+			echo '<div class="errorbox">', $txt['lp_article_list_addon_no_items'], '</div>';
+		}
 
 		$content = ob_get_clean();
 	}

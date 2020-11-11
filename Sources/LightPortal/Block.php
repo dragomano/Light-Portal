@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -33,7 +33,7 @@ class Block
 	{
 		global $context, $modSettings;
 
-		if (empty($context['template_layers']) || empty($context['lp_active_blocks']))
+		if (empty($context['allow_light_portal_view']) || empty($context['template_layers']) || empty($context['lp_active_blocks']))
 			return;
 
 		$blocks = self::getFilteredByAreas();
@@ -47,13 +47,13 @@ class Block
 				continue;
 
 			empty($data['content'])
-				? Subs::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
-				: Subs::parseContent($data['content'], $data['type']);
+				? Helpers::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
+				: Helpers::parseContent($data['content'], $data['type']);
 
 			if (empty($data['title'][$context['user']['language']]))
 				$data['title'][$context['user']['language']] = $context['lp_active_blocks'][$data['id']]['title'][$context['user']['language']] ?? '';
 
-			if (empty($title = Helpers::getPublicTitle($data)))
+			if (empty($title = Helpers::getTitle($data)))
 				$data['title_class'] = '';
 
 			$context['lp_blocks'][$data['placement']][$item] = $data;
@@ -91,14 +91,14 @@ class Block
 		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
 
 		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
-			if (!empty($_SERVER['REQUEST_URL']) && $modSettings['lp_standalone_url'] == $_SERVER['REQUEST_URL']) {
+			if (Helpers::server()->filled('REQUEST_URL') && $modSettings['lp_standalone_url'] == Helpers::server('REQUEST_URL')) {
 				$area = 'portal';
 			} elseif (empty($context['current_action'])) {
 				$area = 'forum';
 			}
 		}
 
-		if (!empty($context['current_board']))
+		if (!empty($context['current_board']) || !empty($context['lp_page']))
 			$area = '';
 
 		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
@@ -108,7 +108,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if (empty($context['current_action']) && !empty($_GET['page']) && (isset($block['areas']['page=' . (string) $_GET['page']]) || isset($block['areas']['pages'])))
+			if (empty($context['current_action']) && Helpers::request()->filled('page') && (isset($block['areas']['page=' . Helpers::request('page')]) || isset($block['areas']['pages'])))
 				return true;
 
 			if (empty($context['current_board']))

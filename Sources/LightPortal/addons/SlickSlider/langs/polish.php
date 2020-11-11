@@ -13,7 +13,11 @@ $txt['lp_slick_slider_addon_autoplay_speed']   = 'Interwał odtwarzania, ms';
 $txt['lp_slick_slider_addon_speed']            = 'Prędkość przejścia, ms';
 $txt['lp_slick_slider_addon_images']           = 'Lista obrazów';
 $txt['lp_slick_slider_addon_images_subtext']   = 'Jeden URL obrazu w linii. Przykład:<br><pre><code class="bbc_code">
-https://example.com/image1.png
+https://picsum.photos/seed/picsum1/300/200
 <br>
-https://example.com/image2.png
+https://picsum.photos/seed/picsum2/300/200
+<br>
+https://picsum.photos/seed/picsum3/300/200
+<br>
+https://picsum.photos/seed/picsum4/300/200
 </code></pre>';

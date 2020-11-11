@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\FrontpageFlarumStyle;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -27,7 +27,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public static $addon_type = 'frontpage';
 
 	/**
 	 * Load custom template for frontpage topics
@@ -36,7 +36,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @return void
 	 */
-	public static function frontpageCustomTemplate()
+	public static function frontCustomTemplate()
 	{
 		global $modSettings, $context;
 
@@ -47,7 +47,38 @@ class FrontpageFlarumStyle
 
 		require_once(__DIR__ . '/Template.php');
 
+		self::prepareFantomBLock();
+
 		$context['sub_template'] = 'show_topics_as_flarum_style';
+	}
+
+	/**
+	 * Make a fantom block
+	 *
+	 * Создаем фантомный блок
+	 *
+	 * @return void
+	 */
+	private static function prepareFantomBLock()
+	{
+		global $context;
+
+		ob_start();
+
+		show_ffs_sidebar();
+
+		$content = ob_get_clean();
+
+		$context['lp_blocks']['left'][time()] = [
+			'id'            => time(),
+			'type'          => 'flarum_style',
+			'content'       => $content,
+			'title_class'   => '',
+			'title_style'   => '',
+			'content_class' => '',
+			'content_style' => '',
+			'title'         => ''
+		];
 	}
 
 	/**

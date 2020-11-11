@@ -71,12 +71,30 @@ function template_page_post()
 			<br class="clear">
 			<div class="centertext">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
+				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
+
+	if (!empty($context['lp_page']['id'])) {
+		echo '
+				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
+	}
+
+	echo '
 				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
 				<button type="submit" class="button" name="save">', $txt['save'], '</button>
 			</div>
 		</div>
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>';
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+	<script>
+		const choices = new Choices("#keywords", {
+			removeItemButton: true,
+			duplicateItemsAllowed: false,
+			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
+			addItemText: (value) => {
+				return `' . $txt['lp_page_keywords_enter_to_add'] . '`;
+			},
+		});
+	</script>';
 }

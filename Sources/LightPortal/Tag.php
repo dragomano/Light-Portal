@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -30,10 +30,10 @@ class Tag
 	{
 		global $context, $smcFunc, $txt, $scripturl, $modSettings, $sourcedir;
 
-		if (empty($_GET['key']))
+		if (Helpers::request()->isEmpty('key'))
 			self::showAll();
 
-		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim($_GET['key']), ENT_QUOTES);
+		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim(Helpers::request('key')), ENT_QUOTES);
 		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $context['lp_keyword']);
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($context['lp_keyword']);
 		$context['robot_no_index'] = true;
@@ -84,7 +84,7 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getPublicTitle($entry) . '</a>';
+							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getTitle($entry) . '</a>';
 						},
 						'class' => 'centertext'
 					)
@@ -147,7 +147,7 @@ class Tag
 	{
 		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -176,7 +176,7 @@ class Tag
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			Subs::parseContent($row['content'], $row['type']);
+			Helpers::parseContent($row['content'], $row['type']);
 
 			$image = null;
 			if (!empty($modSettings['lp_show_images_in_articles'])) {
@@ -203,7 +203,7 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $items;
 	}
@@ -240,7 +240,7 @@ class Tag
 			$items[$row['page_id']] = $row['value'];
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return sizeof($items);
 	}
@@ -330,19 +330,20 @@ class Tag
 	 */
 	public static function getAll(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT t.value
 			FROM {db_prefix}lp_tags AS t
 				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value IS NOT NULL
+			WHERE t.value <> {string:blank_string}
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
+				'blank_string' => '',
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -366,7 +367,7 @@ class Tag
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		uasort($items, function ($a, $b) {
 			return $a['frequency'] < $b['frequency'];
@@ -384,7 +385,7 @@ class Tag
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT t.page_id, t.value
@@ -406,7 +407,7 @@ class Tag
 			$items[$row['value']] = $row['page_id'];
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return sizeof($items);
 	}
@@ -443,14 +444,14 @@ class Tag
 			'num_views'        => 'p.num_views'
 		);
 
-		$context['current_sorting'] = $_POST['sort'] ?? 'created;desc';
+		$context['current_sorting'] = Helpers::post('sort', 'created;desc');
 		$sort = $sorting_types[$context['current_sorting']];
 
 		$articles = self::getAllPagesWithSelectedTag($start, $limit, $sort);
 
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (isset($article['title']))
-				$article['title'] = Helpers::getPublicTitle($article);
+				$article['title'] = Helpers::getTitle($article);
 
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];
@@ -463,7 +464,7 @@ class Tag
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
+		$context['lp_frontpage_layout'] = Front\Article::getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 		loadTemplate('LightPortal/ViewTags');

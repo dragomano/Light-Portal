@@ -2,7 +2,10 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
+use Bugo\LightPortal\Utils\Server;
 use Bugo\LightPortal\Utils\Session;
 
 /**
@@ -14,7 +17,7 @@ use Bugo\LightPortal\Utils\Session;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -23,43 +26,76 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the request object
+	 * Get the cache data or Cache class object
+	 *
+	 * Получаем данные из кэша или объект класса Cache
+	 *
+	 * @param string|null $key
+	 * @param string|null $funcName
+	 * @param string $class
+	 * @param int $time (in seconds)
+	 * @param mixed $vars
+	 * @return mixed
+	 */
+	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
+	{
+		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+	}
+
+	/**
+	 * Get $_POST object
+	 *
+	 * Получаем объект $_POST
+	 *
+	 * @param string|null $key
+	 * @param mixed|null $default
+	 * @return mixed
+	 */
+	public static function post($key = null, $default = null)
+	{
+		return $key ? (new Post)($key, $default) : new Post;
+	}
+
+	/**
+	 * Get $_REQUEST object
 	 *
 	 * Получаем объект $_REQUEST
 	 *
 	 * @param string|null $key
+	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function request($key = null)
+	public static function request($key = null, $default = null)
 	{
-		return $key ? (new Request)($key) : new Request;
+		return $key ? (new Request)($key, $default) : new Request;
 	}
 
 	/**
-	 * Get the session object
+	 * Get $_SERVER object
+	 *
+	 * Получаем объект $_SERVER
+	 *
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public static function server($key = null, $default = null)
+	{
+		return $key ? (new Server)($key, $default) : new Server;
+	}
+
+	/**
+	 * Get $_SESSION object
 	 *
 	 * Получаем объект $_SESSION
 	 *
 	 * @param string|null $key
+	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function session($key = null)
+	public static function session($key = null, $default = null)
 	{
-		return $key ? (new Session)($key) : new Session;
-	}
-
-	/**
-	 * Get the maximum possible length of the message, in accordance with the settings of the forum
-	 *
-	 * Получаем максимально возможную длину сообщения, в соответствии с настройками форума
-	 *
-	 * @return int
-	 */
-	public static function getMaxMessageLength()
-	{
-		global $modSettings;
-
-		return !empty($modSettings['max_messageLength']) && $modSettings['max_messageLength'] > 65534 ? (int) $modSettings['max_messageLength'] : 65534;
+		return $key ? (new Session)($key, $default) : new Session;
 	}
 
 	/**
@@ -80,8 +116,8 @@ class Helpers
 	 *
 	 * Получаем иконку блока
 	 *
-	 * @param null|string $icon
-	 * @param null|string $type
+	 * @param string|null $icon
+	 * @param string|null $type
 	 * @return string
 	 */
 	public static function getIcon($icon = null, $type = null)
@@ -125,10 +161,10 @@ class Helpers
 	 *
 	 * Получаем заголовок блока превью
 	 *
-	 * @param string $prefix
+	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle($prefix = null)
+	public static function getPreviewTitle(string $prefix = null)
 	{
 		global $context, $txt;
 
@@ -191,8 +227,8 @@ class Helpers
 			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : (($num % 10 === 0 || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
 		}
 
-		// Plural rule #7 (Croatian, Serbian, Russian, Ukrainian)
-		$rule_seven = array('hr', 'sr', 'ru', 'uk');
+		// Plural rule #7 (Bosnian, Croatian, Serbian, Russian, Ukrainian)
+		$rule_seven = array('bs', 'hr', 'sr', 'ru', 'uk');
 		if (in_array($txt['lang_dictionary'], $rule_seven)) {
 			$cases = array(2, 0, 1, 1, 1, 2);
 			return $num . ' ' . $str[($num % 100 > 4 && $num % 100 < 20) ? 2 : $cases[min($num % 10, 5)]];
@@ -221,7 +257,7 @@ class Helpers
 		if ($txt['lang_dictionary'] == 'ar')
 			return $str[in_array($num, array(0, 1, 2)) ? $num : ($num % 100 >= 3 && $num % 100 <= 10 ? 3 : ($num % 100 >= 11 ? 4 : 5))] . ' ' . $num;
 
-		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
+		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Estonian, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
 		return $num . ' ' . $str[$num == 1 ? 0 : 1];
 	}
 
@@ -351,41 +387,6 @@ class Helpers
 	}
 
 	/**
-	 * Get needed data using cache
-	 *
-	 * Получаем нужные данные, используя кэш
-	 *
-	 * @param string $key
-	 * @param string|null $funcName
-	 * @param string $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
-	 * @return mixed
-	 */
-	public static function getFromCache(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
-	{
-		if (empty($key))
-			return false;
-
-		if ($funcName === null || $time === 0)
-			cache_put_data('light_portal_' . $key, null);
-
-		if (($$key = cache_get_data('light_portal_' . $key, $time)) === null) {
-			$$key = null;
-
-			if (method_exists($class, $funcName)) {
-				$$key = $class == 'self' ? self::$funcName(...$vars) : $class::$funcName(...$vars);
-			} elseif (function_exists($funcName)) {
-				$$key = $funcName(...$vars);
-			}
-
-			cache_put_data('light_portal_' . $key, $$key, $time);
-		}
-
-		return $$key;
-	}
-
-	/**
 	 * Form a list of addons that not installed
 	 *
 	 * Формируем список неустановленных плагинов
@@ -416,10 +417,13 @@ class Helpers
 		switch ($permissions) {
 			case 0:
 				return $user_info['is_admin'] == 1;
+
 			case 1:
 				return $user_info['is_guest'] == 1;
+
 			case 2:
 				return !empty($user_info['id']);
+
 			default:
 				return true;
 		}
@@ -468,25 +472,24 @@ class Helpers
 	}
 
 	/**
-	 * Get a public object title, according to the user's language, or the forum's language, or in English
+	 * Get an object title, according to the user's language, or the forum's language, or in English
 	 *
-	 * Получаем публичный заголовок объекта, в соответствии с языком пользователя или форума, или на английском
+	 * Получаем заголовок объекта, в соответствии с языком пользователя или форума, или на английском
 	 *
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getPublicTitle(array $object)
+	public static function getTitle(array $object)
 	{
 		global $user_info, $language;
 
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		$lang1 = $object['title'][$user_info['language']] ?? null;
-		$lang2 = $object['title'][$language] ?? null;
-		$lang3 = $object['title']['english'] ?? null;
-
-		return $lang1 ?: $lang2 ?: $lang3 ?: '';
+		return $object['title'][$user_info['language']]
+			?? $object['title'][$language]
+			?? $object['title']['english']
+			?? '';
 	}
 
 	/**
@@ -537,22 +540,36 @@ class Helpers
 	{
 		global $modSettings;
 
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+		return !empty($modSettings['lp_teaser_size']) ? self::getShortenText(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 
 	/**
-	 * Collecting the names of existing themes
+	 * Get the shorten text cut to the given length
 	 *
-	 * Собираем названия существующих тем оформления
+	 * Получаем обрезанный до заданной длины текст
+	 *
+	 * @param string $text
+	 * @param int $length
+	 * @return string
+	 */
+	public static function getShortenText($text, $length = MAX_MSG_LENGTH)
+	{
+		return shorten_subject($text, $length);
+	}
+
+	/**
+	 * Get an array with names of installed themes
+	 *
+	 * Получаем массив с названиями установленных тем оформления
 	 *
 	 * @return array
 	 */
 	public static function getForumThemes()
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$result = $smcFunc['db_query']('', '
-			SELECT id_theme, variable, value
+			SELECT id_theme, value
 			FROM {db_prefix}themes
 			WHERE variable = {string:name}',
 			array(
@@ -565,8 +582,133 @@ class Helpers
 			$current_themes[$row['id_theme']] = $row['value'];
 
 		$smcFunc['db_free_result']($result);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $current_themes;
+	}
+
+	/**
+	 * Prepare content to display
+	 *
+	 * Готовим контент к отображению в браузере
+	 *
+	 * @param string $content
+	 * @param string $type
+	 * @param int $block_id
+	 * @param int $cache_time
+	 * @return void
+	 */
+	public static function prepareContent(string &$content, string $type = 'bbc', int $block_id = 0, int $cache_time = 0)
+	{
+		global $context;
+
+		!empty($block_id) && !empty($context['lp_active_blocks'][$block_id])
+			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
+			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
+
+		Subs::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+	}
+
+	/**
+	 * Parse content depending on the type
+	 *
+	 * Парсим контент в зависимости от типа
+	 *
+	 * @param string $content
+	 * @param string $type
+	 * @return void
+	 */
+	public static function parseContent(string &$content, string $type = 'bbc')
+	{
+		global $context;
+
+		switch ($type) {
+			case 'bbc':
+				$content = parse_bbc($content);
+
+				// Integrate with the Paragrapher mod
+				call_integration_hook('integrate_paragrapher_string', array(&$content));
+
+				break;
+
+			case 'html':
+				$content = un_htmlspecialchars($content);
+
+				break;
+
+			case 'php':
+				$content = trim(un_htmlspecialchars($content));
+				$content = trim($content, '<?php');
+				$content = trim($content, '?>');
+
+				ob_start();
+
+				try {
+					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
+					eval($content);
+				} catch (\ParseError $p) {
+					echo $p->getMessage();
+				}
+
+				$content = ob_get_clean();
+
+				break;
+
+			default:
+				Subs::runAddons('parseContent', array(&$content, $type));
+		}
+	}
+
+	/**
+	 * Get the filtered $obj[$key]
+	 *
+	 * Получаем отфильтрованное значение $obj[$key]
+	 *
+	 * @param string $key
+	 * @param string|array $type
+	 * @return mixed
+	 */
+	public static function validate(string $key, $type = 'string')
+	{
+		if (is_array($type)) {
+			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
+		}
+
+		switch ($type) {
+			case 'string':
+				$filter = FILTER_SANITIZE_STRING;
+				break;
+
+			case 'int':
+				$filter = FILTER_VALIDATE_INT;
+				break;
+
+			case 'bool':
+				$filter = FILTER_VALIDATE_BOOLEAN;
+				break;
+
+			case 'url':
+				$filter = FILTER_VALIDATE_URL;
+				break;
+
+			default:
+				$filter = FILTER_DEFAULT;
+		}
+
+		return filter_var($key, $filter);
+	}
+
+	/**
+	 * Check whether need to display dates in lowercase for the current language
+	 *
+	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 *
+	 * @return bool
+	 */
+	public static function isLowerCaseForDates()
+	{
+		global $txt;
+
+		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
 	}
 }

@@ -19,7 +19,7 @@ $txt['lp_content'] = 'Contenido';
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
 $txt['lp_base'] = 'Configuraciones para la portada y los artículos';
-$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
+$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
@@ -27,15 +27,18 @@ $txt['lp_frontpage_mode_set'] = array('Desactivar', 'Página especificada', 'Tod
 $txt['lp_frontpage_alias'] = 'Página del portal para mostrar como página principal';
 $txt['lp_frontpage_alias_subtext'] = 'Ingrese el alias de la página que existen.';
 $txt['lp_frontpage_boards'] = 'Foros como fuentes de artículos para la portada';
-$txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elementos en las tarjetas.';
+$txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elementos en las tarjetas';
+$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting'] = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set'] = array('By the last comment (default)', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set'] = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
 $txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';
 $txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
+$txt['lp_teaser_size_help'] = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
 $txt['lp_standalone_mode'] = $txt['lp_standalone_mode_title'] = 'Modo independiente';
@@ -59,7 +62,7 @@ $txt['lp_manage_permissions'] = 'Nota: algunas páginas y bloques pueden contene
 
 $txt['lp_debug_and_caching'] = 'Depuración y almacenamiento en caché';
 $txt['lp_show_debug_info'] = 'Muestra el tiempo de carga y el número de consultas del portal.';
-$txt['lp_show_debug_info_subtext'] = '¡Esta información estará disponible solo para administradores!';
+$txt['lp_show_debug_info_help'] = '¡Esta información estará disponible solo para administradores!';
 $txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché';
 
 // Pages and blocks
@@ -95,6 +98,7 @@ $txt['lp_panel_layout_note'] = 'Cambia el ancho de la ventana del navegador y ve
 $txt['lp_browser_width'] = 'Ancho de la ventana del navegador';
 $txt['lp_used_class'] = 'Clase utilizada';
 $txt['lp_panel_layout_preview'] = 'Aquí puede establecer el número de columnas para algunos paneles, dependiendo del ancho de la ventana del navegador.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Aquí puede cambiar la dirección de los bloques para cada panel.';
 $txt['lp_panel_direction'] = 'La dirección de los bloques en los paneles.';
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
@@ -102,7 +106,7 @@ $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_desc'] = 'Puede activar o desactivar cualquiera de los plugins. ¡Y algunos de ellos también están personalizados!';
-$txt['lp_plugins_info'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>.';
+$txt['lp_plugins_info'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block' => 'Bloque',
@@ -110,6 +114,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'comment' => 'Widget de comentarios',
 	'parser' => 'Analizador de contenido',
 	'article' => 'Procesamiento de artículos',
+	'frontpage' => 'The layout of the frontpage',
 	'other' => 'Otro'
 );
 
@@ -199,7 +204,8 @@ $txt['lp_page_alias_subtext'] = 'El alias de la página debe comenzar con una le
 $txt['lp_page_type'] = 'Tipo de página';
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
-$txt['lp_page_keywords_after'] = 'Usa una coma para separar';
+$txt['lp_page_keywords_only_unique'] = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 
 $txt['lp_page_options'] = array(

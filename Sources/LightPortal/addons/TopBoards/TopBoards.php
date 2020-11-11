@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -127,6 +127,7 @@ class TopBoards
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_topBoards($num_boards, 'array');
 	}
 
@@ -149,7 +150,7 @@ class TopBoards
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_boards']);
 
 		if (!empty($top_boards)) {
 			ob_start();

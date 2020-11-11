@@ -5,9 +5,15 @@ document.addEventListener('DOMContentLoaded', function () {
 		commentForm = document.getElementById('comment_form'),
 		message = document.getElementById('message');
 
+	let current_comment, current_comment_text;
+
 	// Increase a message height on focusing
 	message.addEventListener('focus', function () {
 		this.style.height = 'auto';
+
+		if (commentForm.querySelector('.toolbar'))
+			commentForm.querySelector('.toolbar').style.display = 'block';
+
 		commentForm.comment.style.display = 'block';
 	}, false);
 
@@ -52,8 +58,62 @@ document.addEventListener('DOMContentLoaded', function () {
 				lpPasteNickname.call(target);
 				break;
 			}
+
+			if (target.matches('.toolbar > .button')) {
+				lpPressButton.call(target);
+				break;
+			}
 		}
 	}, false);
+
+	function insertTags(open, close) {
+		let start = message.selectionStart,
+			end = message.selectionEnd,
+			text = message.value;
+
+		message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
+		message.focus();
+
+		let sel = open.length + end;
+		message.setSelectionRange(sel, sel);
+
+		return false;
+	}
+
+	function lpPressButton() {
+		let button = this.children[0].classList[1];
+
+		if (!button) return;
+
+		switch (button) {
+			case 'fa-bold':
+				return insertTags('[b]', '[/b]');
+
+ 			case 'fa-italic':
+				return insertTags('[i]', '[/i]');
+
+			case 'fa-list-ul':
+				return insertTags(`[list]\n[li]`, `[/li]\n[li][/li]\n[/list]`);
+
+			case 'fa-list-ol':
+				return insertTags(`[list type=decimal]\n[li]`, `[/li]\n[li][/li]\n[/list]`);
+
+			case 'fa-youtube':
+				return insertTags('[youtube]', '[/youtube]');
+
+			case 'fa-image':
+				return insertTags('[img]', '[/img]');
+
+			case 'fa-link':
+				return insertTags('[url]', '[/url]');
+
+			case 'fa-code':
+				return insertTags('[code]', '[/code]');
+
+			case 'fa-quote-right':
+				return insertTags('[quote]', '[/quote]');
+		}
+	}
 
 	function lpLeaveReply() {
 		const parentId = this.getAttribute('data-id'),
@@ -72,9 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
 		message.focus();
 	}
 
-	function lpModifyComment() {
+	async function lpModifyComment() {
 		const item = this.getAttribute('data-id'),
-			comment_area = document.querySelector('#comment' + item + ' .content'),
+			comment_content = document.querySelector('#comment' + item + ' .content'),
+			comment_raw_content = document.querySelector('#comment' + item + ' .raw_content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
 			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
@@ -83,11 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
 		update_button.style.display = 'inline-block';
 		cancel_button.style.display = 'inline-block';
 
-		comment_area.setAttribute('contenteditable', true);
-		comment_area.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
-		comment_area.style.borderRadius = '4px';
-		comment_area.style.padding = '1em';
-		comment_area.focus();
+		current_comment = comment_content.innerHTML;
+		comment_content.innerText = !current_comment_text ? comment_raw_content.innerText : current_comment_text;
+
+		comment_content.setAttribute('contenteditable', true);
+		comment_content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
+		comment_content.style.borderRadius = '4px';
+		comment_content.style.padding = '1em';
+		comment_content.focus();
 
 		if (document.queryCommandSupported('selectAll'))
 			document.execCommand('selectAll', false, null);
@@ -98,6 +162,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			message = document.querySelector('#comment' + item + ' .content');
 
 		if (!item) return;
+
+		current_comment_text = message.innerText;
 
 		let response = await fetch(PAGE_URL + 'sa=edit_comment', {
 			method: 'POST',
@@ -111,23 +177,26 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 
 		if (response.ok) {
-			lpCancelComment(this)
+			let comment = await response.json();
+
+			lpCancelComment(this, comment)
 		} else {
 			console.error(response)
 		}
 	}
 
-	function lpCancelComment(e) {
+	function lpCancelComment(e, source = current_comment) {
 		const item = (e ? e : this).getAttribute('data-id'),
-			comment_area = document.querySelector('#comment' + item + ' .content'),
+			comment_content = document.querySelector('#comment' + item + ' .content'),
 			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
 			update_button = document.querySelector('#comment' + item + ' .update_button'),
 			cancel_button = document.querySelector('#comment' + item + ' .cancel_button');
 
-		comment_area.setAttribute('contenteditable', false);
-		comment_area.style.boxShadow = 'none';
-		comment_area.style.borderRadius = 0;
-		comment_area.style.padding = '0 14px';
+		comment_content.innerHTML = source;
+		comment_content.setAttribute('contenteditable', false);
+		comment_content.style.boxShadow = 'none';
+		comment_content.style.borderRadius = 0;
+		comment_content.style.padding = '0 14px';
 
 		cancel_button.style.display = 'none';
 		update_button.style.display = 'none';
@@ -155,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					items: items
+					items
 				})
 			});
 
@@ -173,7 +242,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			nickname = this.innerText + ', ';
 
 		message.value = commentTextarea.substring(0, position) + nickname + commentTextarea.substring(position);
-		this.parentNode.nextElementSibling.nextElementSibling.children[0].click();
+
+		if (this.parentNode.parentNode.children[3]) {
+			this.parentNode.parentNode.children[3].children[0].click();
+		} else {
+			pageComments.querySelector('span[data-id="' + this.getAttribute('data-parent') + '"]').click();
+		}
 	}
 
 	// Post a comment on form submitting
@@ -227,11 +301,38 @@ document.addEventListener('DOMContentLoaded', function () {
 			message.style.height = '30px';
 
 			commentForm.reset();
+
+			if (commentForm.querySelector('.toolbar'))
+				commentForm.querySelector('.toolbar').style.display = 'none';
+
 			commentForm.comment.style.display = 'none';
 			commentForm.parent_id.value = 0;
-			commentForm.start.value = PAGE_START;
 
-			window.location.hash = '#comment' + data.item;
+			if (! window.location.search) {
+				if (window.location.pathname.match(/start./i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
+					window.location.hash = '#comment' + data.item;
+				} else {
+					window.location = window.origin + window.location.pathname.replace(/(start.)\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+				}
+			} else {
+				let hasStartParam = window.location.search.match(/start./i);
+
+				if (! hasStartParam) {
+					if (commentForm.start.value == 0) {
+						window.location.hash = '#comment' + data.item;
+					} else {
+						window.location.hash = '';
+						window.location = window.location.origin + window.location.pathname + window.location.search + ';start=' + PAGE_START + '#comment' + data.item;
+					}
+				} else if (hasStartParam && parseInt(window.location.search.split('start=')[1].match(/\d+/) ?? 0) == commentForm.start.value) {
+					window.location.hash = '#comment' + data.item;
+				} else {
+					window.location.hash = '';
+					window.location = window.location.origin + window.location.pathname + window.location.search.replace(/(start.)\d+/i, '$1' + PAGE_START) + '#comment' + data.item;
+				}
+			}
+
+			commentForm.start.value = PAGE_START;
 		} else {
 			console.error(response);
 		}

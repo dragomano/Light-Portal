@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -188,7 +188,13 @@ class RecentAttachments
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$attachment_list = Helpers::cache(
+			'recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$cache_time,
+			$parameters
+		);
 
 		if (!empty($attachment_list)) {
 			ob_start();

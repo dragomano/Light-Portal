@@ -307,7 +307,14 @@ function template_block_post()
 				<input type="hidden" name="block_id" value="', $context['lp_block']['id'], '">
 				<input type="hidden" name="add_block" value="', $context['lp_block']['type'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
+				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
+
+	if (!empty($context['lp_block']['id'])) {
+		echo '
+				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
+	}
+
+	echo '
 				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
 				<button type="submit" class="button" name="save">', $txt['save'], '</button>
 			</div>

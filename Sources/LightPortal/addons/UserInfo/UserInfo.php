@@ -3,7 +3,6 @@
 namespace Bugo\LightPortal\Addons\UserInfo;
 
 use Bugo\LightPortal\Helpers;
-
 /**
  * UserInfo
  *
@@ -13,7 +12,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -70,7 +69,7 @@ class UserInfo
 		ob_start();
 
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::getFromCache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 			echo '
 			<ul class="centertext">
@@ -78,7 +77,7 @@ class UserInfo
 
 			if (!empty($userData['avatar'])) {
 				echo '
-				<li style="margin: 1em">', $userData['avatar']['image'], '</li>';
+				<li>', $userData['avatar']['image'], '</li>';
 			}
 
 			$fa = false;

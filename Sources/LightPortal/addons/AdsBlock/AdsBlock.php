@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -91,7 +91,7 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::getFromCache('ads_block_addon', 'getData', __CLASS__);
+		$context['lp_ads_blocks'] = Helpers::cache('ads_block_addon', 'getData', __CLASS__);
 
 		if (!empty($context['lp_ads_blocks']))
 			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
@@ -114,6 +114,7 @@ class AdsBlock
 		if (empty($context['lp_blocks']['ads']))
 			return [];
 
+		$ads_blocks = [];
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump)
 			$ads_blocks[$position] = self::getByPosition($position);
 
@@ -189,7 +190,9 @@ class AdsBlock
 		 *
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
-		$before_every_last_post = empty($options['view_newest_first']) ? $counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0 : ($output['id'] == $context['topic_first_message'] || ($context['total_visible_posts'] - $counter) % $context['messages_per_page'] == 0);
+		$before_every_last_post = empty($options['view_newest_first'])
+			? $counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0
+			: ($output['id'] == $context['topic_first_message'] || ($context['total_visible_posts'] - $counter) % $context['messages_per_page'] == 0);
 		if (!empty($context['lp_ads_blocks']['before_every_last_post']) && $before_every_last_post) {
 			lp_show_blocks('before_every_last_post');
 		}
@@ -221,56 +224,6 @@ class AdsBlock
 		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($options['view_newest_first']) ? $context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
 		}
-
-		/**
-		 * Displaying ads after every fifth message on the page
-		 *
-		 * Вывод рекламы после каждого пятого сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_every_five_post']) && abs($current_counter - $counter) == 5) {
-			ob_start();
-
-			lp_show_blocks('after_every_five_post');
-
-			$after_every_five_post = ob_get_clean();
-
-			addInlineJavaScript('
-		const all_windowbg = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
-		all_windowbg[all_windowbg.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_five_post) . ');', true);
-		}
-
-		/**
-		 * Displaying ads after each last message on the page
-		 *
-		 * Вывод рекламы после каждого последнего сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
-			ob_start();
-
-			lp_show_blocks('after_every_last_post');
-
-			$after_every_last_post = ob_get_clean();
-
-			addInlineJavaScript('
-		const all_windowbg2 = document.getElementById("quickModForm").querySelectorAll("div.windowbg");
-		all_windowbg2[all_windowbg2.length - 1].insertAdjacentHTML("afterend", ' . JavaScriptEscape($after_every_last_post) . ');', true);
-		}
-
-		/**
-		 * Displaying ads after the last message
-		 *
-		 * Вывод рекламы после последнего сообщения
-		 */
-		if (!empty($context['lp_ads_blocks']['after_last_post']) && $output['id'] == (empty($options['view_newest_first']) ? $context['topic_last_message'] : $context['topic_first_message'])) {
-			ob_start();
-
-			lp_show_blocks('after_last_post');
-
-			$after_last_post = ob_get_clean();
-
-			addInlineJavaScript('
-		document.getElementById("quickModForm").insertAdjacentHTML("beforeend", ' . JavaScriptEscape($after_last_post) . ');', true);
-		}
 	}
 
 	/**
@@ -281,14 +234,14 @@ class AdsBlock
 	 * @param string $position
 	 * @return array
 	 */
-	private static function getByPosition($position)
+	private static function getByPosition(string $position)
 	{
 		global $context;
 
 		if (empty($position))
 			return [];
 
-		$blocks = array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
+		return array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
 				if (!array_key_exists($context['current_board'], $boards))
@@ -308,8 +261,6 @@ class AdsBlock
 
 			return false;
 		});
-
-		return $blocks;
 	}
 
 	/**
@@ -403,7 +354,9 @@ class AdsBlock
 			)
 		);
 
-		$context['lp_block']['options']['parameters']['ads_placement'] = is_array($context['lp_block']['options']['parameters']['ads_placement']) ? $context['lp_block']['options']['parameters']['ads_placement'] : explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+		if (!is_array($context['lp_block']['options']['parameters']['ads_placement'])) {
+			$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+		}
 
 		$context['posting_fields']['ads_placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['ads_placement']['input'] = array(

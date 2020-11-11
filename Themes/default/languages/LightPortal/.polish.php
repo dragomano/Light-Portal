@@ -19,7 +19,7 @@ $txt['lp_content']  = 'Zawartość';
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
-$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>, or <a class="bbc_link" href="https://paypal.me/bugo">make one-time donation via PayPal</a>.';
+$txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title']                = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']                 = 'Strona główna portalu';
@@ -28,14 +28,17 @@ $txt['lp_frontpage_alias']                = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']        = 'Podaj alias strony.';
 $txt['lp_frontpage_boards']               = 'Działy artykułów strony głównej';
 $txt['lp_frontpage_card_alt_layout']      = 'Alternatywny układ elementów kart';
+$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']  = array('By the last comment (default)', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout']               = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']           = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles']        = 'Wyświetlaj obrazy z artykułów';
 $txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
 $txt['lp_teaser_size']                    = 'Długość podglądu artykułów';
+$txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
 $txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
@@ -57,18 +60,18 @@ $txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 
-$txt['lp_debug_and_caching']       = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']         = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_subtext'] = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval']   = 'Interwał aktualizacji pamięci podręcznej';
+$txt['lp_debug_and_caching']     = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']       = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_help']  = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval'] = 'Interwał aktualizacji pamięci podręcznej';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
 $txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_tags_as_articles']        = 'Display lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']           = 'Display related pages block';
+$txt['lp_show_tags_as_articles']        = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_related_pages']           = 'Show related pages block';
 $txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
 $txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
@@ -95,6 +98,7 @@ $txt['lp_panel_layout_note']    = 'Zmień szerokość przeglądarki i sprawdź k
 $txt['lp_browser_width']        = 'Szerokość okna przeglądarki';
 $txt['lp_used_class']           = 'Uzywana klasa';
 $txt['lp_panel_layout_preview'] = 'Możesz ustawić ilość kolumn dla niektórych panelów w zależnośc iod szerokości okna przeglądarki.';
+$txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';
 $txt['lp_panel_direction']      = 'Kierunek bloków w panelach';
 $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
@@ -102,15 +106,16 @@ $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
 $txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu.';
+$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
 
 $txt['lp_plugins_hooks_types'] = array(
-	'block'   => 'Blok',
-	'editor'  => 'Edytor',
-	'comment' => 'Widget komentarzy',
-	'parser'  => 'Parser zawartości',
-	'article' => 'Przetwarzanie artykułów',
-	'other'   => 'Inne'
+	'block'     => 'Blok',
+	'editor'    => 'Edytor',
+	'comment'   => 'Widget komentarzy',
+	'parser'    => 'Parser zawartości',
+	'article'   => 'Przetwarzanie artykułów',
+	'frontpage' => 'The layout of the frontpage',
+	'other'     => 'Inne'
 );
 
 // Actions
@@ -199,7 +204,8 @@ $txt['lp_page_alias_subtext']           = 'Alias strony musi zaczynać się od l
 $txt['lp_page_type']                    = 'Typ strony';
 $txt['lp_page_description']             = 'Opis';
 $txt['lp_page_keywords']                = 'Słowa kluczowe';
-$txt['lp_page_keywords_after']          = 'Oddzielone przecinkami';
+$txt['lp_page_keywords_only_unique']    = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add']   = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime']        = 'Data i czas publikacji';
 
 $txt['lp_page_options'] = array(

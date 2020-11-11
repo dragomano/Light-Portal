@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * HidingBlocks
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\HidingBlocks;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.2
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -122,7 +124,7 @@ class HidingBlocks
 		if (isset($context['lp_block']['options']['parameters']['hidden_breakpoints'])) {
 			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
 		} else
-			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = $_POST['hidden_breakpoints'] ?? [];
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = Helpers::post('hidden_breakpoints', []);
 
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
