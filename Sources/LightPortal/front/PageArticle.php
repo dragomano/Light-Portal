@@ -32,7 +32,7 @@ class PageArticle extends Article
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit): array
+	public static function getData(int $start, int $limit)
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
@@ -125,7 +125,7 @@ class PageArticle extends Article
 	 *
 	 * @return int
 	 */
-	public static function getTotal(): int
+	public static function getTotal()
 	{
 		global $user_info, $smcFunc;
 

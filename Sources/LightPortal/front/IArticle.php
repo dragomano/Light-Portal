@@ -18,6 +18,6 @@ interface IArticle
 {
 	public static function show();
 	public static function prepare(string $source);
-	public static function getData(int $start, int $limit): array;
-	public static function getTotal(): int;
+	public static function getData(int $start, int $limit);
+	public static function getTotal();
 }

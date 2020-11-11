@@ -31,7 +31,7 @@ class TopicArticle extends Article
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit): array
+	public static function getData(int $start, int $limit)
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
 
@@ -169,7 +169,7 @@ class TopicArticle extends Article
 	 *
 	 * @return int
 	 */
-	public static function getTotal(): int
+	public static function getTotal()
 	{
 		global $modSettings, $user_info, $smcFunc;
 
