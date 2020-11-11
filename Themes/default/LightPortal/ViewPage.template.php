@@ -276,12 +276,12 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	echo '
 			</div>';
 
-	if (!empty($comment['childs'])) {
+	if (!empty($comment['children'])) {
 		echo '
 			<ul class="comment_list row">';
 
-		foreach ($comment['childs'] as $children_comment)
-			show_single_comment($children_comment, $i + 1, $level + 1);
+		foreach ($comment['children'] as $child_comment)
+			show_single_comment($child_comment, $i + 1, $level + 1);
 
 		echo '
 			</ul>';
