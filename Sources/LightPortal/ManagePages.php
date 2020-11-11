@@ -465,9 +465,9 @@ class ManagePages
 			)
 		);
 
-		Subs::runAddons('onPageRemoving', array(&$items));
-
 		$smcFunc['lp_num_queries'] += 5;
+
+		Subs::runAddons('onPageRemoving', array($items));
 	}
 
 	/**
