@@ -115,7 +115,7 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $txt, $context, $modSettings;
+		global $txt, $context, $modSettings, $settings;
 
 		if (Subs::isPortalMustNotBeLoaded())
 			return;
@@ -123,6 +123,13 @@ class Integration
 		loadLanguage('LightPortal/');
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
+
+		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
+			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
+			: false;
+
+		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', __NAMESPACE__ . '\Subs');
+		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __NAMESPACE__ . '\Subs');
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();

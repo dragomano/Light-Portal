@@ -60,11 +60,6 @@ $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
 
-$txt['lp_debug_and_caching']     = 'Debugging and caching';
-$txt['lp_show_debug_info']       = 'Show the loading time and number of the portal queries';
-$txt['lp_show_debug_info_help']  = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval'] = 'The cache update interval';
-
 // Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
@@ -117,6 +112,16 @@ $txt['lp_plugins_hooks_types'] = array(
 	'frontpage' => 'The layout of the frontpage',
 	'other'     => 'Other'
 );
+
+// Misc
+$txt['lp_misc']                           = 'Miscellaneous';
+$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes that support (include) Font Awesome icons';
+$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
+$txt['lp_debug_and_caching']              = 'Debugging and caching';
+$txt['lp_show_debug_info']                = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info_help']           = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval']          = 'The cache update interval';
 
 // Actions
 $txt['lp_title']        = 'Title';

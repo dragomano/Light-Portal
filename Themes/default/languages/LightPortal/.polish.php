@@ -60,11 +60,6 @@ $txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
 
-$txt['lp_debug_and_caching']     = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']       = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_help']  = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval'] = 'Interwał aktualizacji pamięci podręcznej';
-
 // Pages and blocks
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
@@ -117,6 +112,16 @@ $txt['lp_plugins_hooks_types'] = array(
 	'frontpage' => 'The layout of the frontpage',
 	'other'     => 'Inne'
 );
+
+// Misc
+$txt['lp_misc']                           = 'Miscellaneous';
+$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes that support (include) Font Awesome icons';
+$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
+$txt['lp_debug_and_caching']              = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']                = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_help']           = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval']          = 'Interwał aktualizacji pamięci podręcznej';
 
 // Actions
 $txt['lp_title']        = 'Tytuł';

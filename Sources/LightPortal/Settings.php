@@ -56,7 +56,8 @@ class Settings
 								'basic'   => array($txt['mods_cat_features']),
 								'extra'   => array($txt['lp_extra']),
 								'panels'  => array($txt['lp_panels']),
-								'plugins' => array($txt['lp_plugins'])
+								'plugins' => array($txt['lp_plugins']),
+								'misc'    => array($txt['lp_misc'])
 							)
 						),
 						'lp_blocks' => array(
@@ -119,6 +120,8 @@ class Settings
 		$settings_search[] = array(__CLASS__ . '::basic', 'area=lp_settings;sa=basic');
 		$settings_search[] = array(__CLASS__ . '::extra', 'area=lp_settings;sa=extra');
 		$settings_search[] = array(__CLASS__ . '::panels', 'area=lp_settings;sa=panels');
+		$settings_search[] = array(__CLASS__ . '::misc', 'area=lp_settings;sa=misc');
+
 	}
 
 	/**
@@ -138,7 +141,8 @@ class Settings
 			'basic'   => 'Settings::basic',
 			'extra'   => 'Settings::extra',
 			'panels'  => 'Settings::panels',
-			'plugins' => 'Settings::plugins'
+			'plugins' => 'Settings::plugins',
+			'misc'    => 'Settings::misc'
 		);
 
 		db_extend();
@@ -162,6 +166,9 @@ class Settings
 						'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon',
 						'https://github.com/dragomano/Light-Portal/wiki/Addon-list-for-sponsors'
 					)
+				),
+				'misc' => array(
+					'description' => $txt['lp_misc_info']
 				)
 			)
 		);
@@ -208,8 +215,6 @@ class Settings
 			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
-		if (!isset($modSettings['lp_cache_update_interval']))
-			$add_settings['lp_cache_update_interval'] = 3600;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -246,10 +251,7 @@ class Settings
 			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
 			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
-			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'),
-			array('title', 'lp_debug_and_caching'),
-			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
-			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
+			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);
 
 		if ($return_config)
@@ -613,6 +615,67 @@ class Settings
 			}
 
 			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
+		}
+
+		prepareDBSettingContext($config_vars);
+	}
+
+	/**
+	 * Output additional settings
+	 *
+	 * Выводим дополнительные настройки
+	 *
+	 * @param bool $return_config
+	 * @return array|void
+	 */
+	public static function misc(bool $return_config = false)
+	{
+		global $sourcedir, $context, $txt, $scripturl, $modSettings;
+
+		loadTemplate('LightPortal/ManageSettings');
+
+		require_once($sourcedir . '/ManageServer.php');
+
+		$context['page_title'] = $context['settings_title'] = $txt['lp_misc'];
+		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
+
+		// Initial settings | Первоначальные настройки
+		$add_settings = [];
+		if (!isset($modSettings['lp_cache_update_interval']))
+			$add_settings['lp_cache_update_interval'] = 3600;
+		if (!empty($add_settings))
+			updateSettings($add_settings);
+
+		$context['lp_fontawesome_compat_themes'] = Helpers::getForumThemes();
+
+		$config_vars = array(
+			array('callback', 'compat_themes'),
+			array('title', 'lp_debug_and_caching'),
+			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
+		);
+
+		if ($return_config)
+			return $config_vars;
+
+		$context['sub_template'] = 'show_settings';
+
+		if (Helpers::request()->has('save')) {
+			checkSession();
+
+			$compat_themes = [];
+			foreach (Helpers::post('lp_fontawesome_compat_themes') as $theme => $check) {
+				$theme = (int) $theme;
+				$compat_themes[$theme] = (int) $check;
+			}
+
+			Helpers::post()->put('lp_fontawesome_compat_themes', json_encode($compat_themes));
+
+			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_fontawesome_compat_themes'];
+			saveDBSettings($save_vars);
+
+			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
 		prepareDBSettingContext($config_vars);

@@ -60,11 +60,6 @@ $txt['groups_light_portal_manage_own_pages'] = 'Хто може керувати
 $txt['groups_light_portal_approve_pages']    = 'Хто може розміщувати свої сторінки без модерації';
 $txt['lp_manage_permissions']                = 'Увага: деякі сторінки i блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
 
-$txt['lp_debug_and_caching']     = 'Налагодження та кешування';
-$txt['lp_show_debug_info']       = 'Відображати час завантаження та кількість запитів порталу';
-$txt['lp_show_debug_info_help']  = 'Інформація буде доступна тільки адміністраторам!';
-$txt['lp_cache_update_interval'] = 'Інтервал оновлення кешу';
-
 // Pages and blocks
 $txt['lp_extra']      = 'Сторінки і блоки';
 $txt['lp_extra_info'] = 'Тут знаходяться загальні налаштування сторінок і блоків.';
@@ -117,6 +112,16 @@ $txt['lp_plugins_hooks_types'] = array(
 	'frontpage' => 'Макет головної сторінки',
 	'other'     => 'Різне'
 );
+
+// Misc
+$txt['lp_misc']                           = 'Додатково';
+$txt['lp_misc_info']                      = 'Тут знаходяться додаткові налаштування порталу, які стануть в нагоді розробникам шаблонів і плагінів.';
+$txt['lp_fontawesome_compat_themes']      = 'Відзначте теми, які підтримують (включають в себе) іконки Font Awesome';
+$txt['lp_fontawesome_compat_themes_help'] = 'Опція сумісності з шаблонами, що використовують іконки Font Awesome.';
+$txt['lp_debug_and_caching']              = 'Налагодження та кешування';
+$txt['lp_show_debug_info']                = 'Відображати час завантаження та кількість запитів порталу';
+$txt['lp_show_debug_info_help']           = 'Інформація буде доступна тільки адміністраторам!';
+$txt['lp_cache_update_interval']          = 'Інтервал оновлення кешу';
 
 // Actions
 $txt['lp_title']        = 'Заголовок';
