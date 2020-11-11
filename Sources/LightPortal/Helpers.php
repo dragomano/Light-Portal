@@ -133,30 +133,6 @@ class Helpers
 		return '';
 	}
 
-	/**
-	 * Checking whether the current theme contains a set of FontAwesome icons
-	 *
-	 * Проверяем, содержит ли текущая тема набор иконок FontAwesome
-	 *
-	 * @return bool
-	 */
-	public static function doesThisThemeUseFontAwesome()
-	{
-		global $settings;
-
-		$supported_themes = [
-			'Badem',
-			'Endless',
-			'Lunarfall',
-			'Wide'
-		];
-
-		// Add ability to manually change the list of themes that support FontAwesome | Возможность вручную изменить список тем, поддерживающих FontAwesome
-		Subs::runAddons('fontAwesomeThemes', array(&$supported_themes));
-
-		return in_array(explode('_', $settings['name'])[0], $supported_themes);
-	}
-
 	/**	 * Get a title for preview block
 	 *
 	 * Получаем заголовок блока превью
