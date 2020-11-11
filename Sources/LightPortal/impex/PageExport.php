@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\ManagePages;
 
 /**
  * PageExport.php
@@ -45,7 +46,7 @@ class PageExport extends Export
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => \Bugo\LightPortal\ManagePages::$num_pages,
+			'items_per_page' => ManagePages::$num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',

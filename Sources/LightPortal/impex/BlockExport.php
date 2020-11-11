@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\ManageBlocks;
 
 /**
  * BlockExport.php
@@ -45,7 +46,7 @@ class BlockExport extends Export
 
 		self::run();
 
-		$context['lp_current_blocks'] = \Bugo\LightPortal\ManageBlocks::getAll();
+		$context['lp_current_blocks'] = ManageBlocks::getAll();
 		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_export_blocks';
