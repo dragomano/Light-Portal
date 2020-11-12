@@ -115,12 +115,12 @@ class TopicArticle extends Article
 						$image = $first_post_image ? array_pop($value) : null;
 					}
 
-					$row['body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
-					$row['body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['body']);
+					$row['body'] = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
+					$row['body'] = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $row['body']);
 					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
-					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
-					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
+					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
+					$row['last_body'] = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $row['last_body']);
 					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
 
 					$topics[$row['id_topic']] = array(

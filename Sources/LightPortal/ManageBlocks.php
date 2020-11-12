@@ -819,6 +819,7 @@ class ManageBlocks
 		if (empty($data))
 			return false;
 
+		$result = [];
 		foreach (new \RecursiveIteratorIterator(new \RecursiveArrayIterator($data), \RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
 			if ($check_key === $key) {
 				$result[] = $value;

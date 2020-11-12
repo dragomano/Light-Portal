@@ -139,7 +139,7 @@ class Polls
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info, $boardurl, $context, $txt, $scripturl;
+		global $boardurl, $context, $txt, $scripturl;
 
 		if ($type !== 'polls')
 			return;

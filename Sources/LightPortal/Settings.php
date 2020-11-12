@@ -689,7 +689,7 @@ class Settings
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private static function getPluginTypes($snake_name)
+	private static function getPluginTypes(string $snake_name)
 	{
 		global $txt;
 

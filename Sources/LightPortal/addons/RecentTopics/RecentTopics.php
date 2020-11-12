@@ -254,7 +254,7 @@ class RecentTopics
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info, $scripturl, $txt;
+		global $user_info, $txt;
 
 		if ($type !== 'recent_topics')
 			return;
@@ -282,8 +282,6 @@ class RecentTopics
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
 				if ($topic['is_new'])
-					/* echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
 				<a class="new_posts" href="', $topic['href'], '">', $txt['new'], '</a>';
 

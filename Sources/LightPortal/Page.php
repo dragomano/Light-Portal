@@ -262,7 +262,7 @@ class Page
 	 */
 	public static function getData(array $params)
 	{
-		global $smcFunc, $txt, $modSettings, $context;
+		global $smcFunc, $txt, $modSettings;
 
 		if (empty($params))
 			return [];

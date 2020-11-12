@@ -237,7 +237,7 @@ class ArticleList
 			censorText($row['body']);
 
 			if (!empty($parameters['seek_images']))
-				$first_post_image = preg_match('/\[img.*]([^\]\[]+)\[\/img\]/U', $row['body'], $value);
+				$first_post_image = preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 
 			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
 

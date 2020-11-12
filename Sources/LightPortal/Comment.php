@@ -56,12 +56,15 @@ class Comment
 			switch (Helpers::request('sa')) {
 				case 'new_comment':
 					$this->add();
+					break;
 
 				case 'edit_comment':
 					$this->edit();
+					break;
 
 				case 'del_comment':
 					$this->remove();
+					break;
 			}
 		}
 

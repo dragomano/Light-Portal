@@ -37,7 +37,8 @@ abstract class Article implements IArticle
 
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
-				return Page::show();
+				call_user_func(array('\Bugo\LightPortal\Page', 'show'));
+				break;
 
 			case 2:
 				self::prepare('topics');

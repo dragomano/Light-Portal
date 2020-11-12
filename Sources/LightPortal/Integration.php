@@ -185,7 +185,7 @@ class Integration
 	 *
 	 * Обращаемся к странице портала или вызываем метод по умолчанию
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	public static function defaultAction()
 	{

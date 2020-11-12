@@ -512,7 +512,7 @@ class Helpers
 	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text)
+	public static function getTeaser(string $text)
 	{
 		global $modSettings;
 
@@ -528,7 +528,7 @@ class Helpers
 	 * @param int $length
 	 * @return string
 	 */
-	public static function getShortenText($text, $length = MAX_MSG_LENGTH)
+	public static function getShortenText(string $text, int $length = MAX_MSG_LENGTH)
 	{
 		return shorten_subject($text, $length);
 	}
@@ -621,6 +621,7 @@ class Helpers
 
 				try {
 					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
+
 					eval($content);
 				} catch (\ParseError $p) {
 					echo $p->getMessage();

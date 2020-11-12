@@ -35,6 +35,8 @@ class KarmaPostRating
 	 *
 	 * @param array $custom_columns
 	 * @param array $custom_tables
+	 * @param array $custom_wheres
+	 * @param array $custom_parameters
 	 * @return void
 	 */
 	public static function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)

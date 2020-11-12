@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\News;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * News
  *
@@ -35,7 +33,7 @@ class News
 	 *
 	 * Порядковый номер новости для отображения (0 - случайная новость)
 	 *
-	 * @var string
+	 * @var int
 	 */
 	private static $selected_item = 0;
 
@@ -63,8 +61,6 @@ class News
 	 */
 	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
 		if ($type !== 'news')
 			return;
 
@@ -161,7 +157,9 @@ class News
 		$news = self::getData($parameters['selected_item']);
 
 		ob_start();
+
 		echo $news ?: $txt['lp_news_addon_no_items'];
+
 		$content = ob_get_clean();
 	}
 }
