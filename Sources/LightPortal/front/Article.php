@@ -152,6 +152,9 @@ abstract class Article implements IArticle
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];
 
+			if (isset($article['num_views']))
+				$article['num_views'] = Helpers::getFriendlyNumber($article['num_views']);
+
 			return $article;
 		}, $articles);
 
