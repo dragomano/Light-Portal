@@ -195,7 +195,9 @@ $txt['lp_block_types_descriptions'] = array(
 // Pages
 $txt['lp_pages']                        = 'Strony';
 $txt['lp_pages_manage']                 = 'Zarządzaj stronami';
-$txt['lp_pages_manage_tab_description'] = 'Tutaj znajdują się wszystkie utworzone strony. W celu dodania nowej strony kliknij w odpowiednią opcję.';
+$txt['lp_pages_manage_all_pages']       = 'Tutaj znajdują się wszystkie utworzone strony.';
+$txt['lp_pages_manage_own_pages']       = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_tab_description'] = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
 $txt['lp_pages_add']                    = 'Dodaj stronę';
 $txt['lp_pages_add_title']              = 'Dodawanie strony';
 $txt['lp_pages_add_tab_description']    = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';

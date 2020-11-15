@@ -195,7 +195,9 @@ $txt['lp_block_types_descriptions'] = array(
 // Pages
 $txt['lp_pages']                        = 'Сторінки';
 $txt['lp_pages_manage']                 = 'Керування сторінками';
-$txt['lp_pages_manage_tab_description'] = 'Тут перераховані всі сторінки порталу. Для додавання нової сторінки скористайтеся відповідною кнопкою.';
+$txt['lp_pages_manage_all_pages']       = 'Тут перераховані всі сторінки порталу.';
+$txt['lp_pages_manage_own_pages']       = 'Тут перераховані всі створені вами сторінки.';
+$txt['lp_pages_manage_tab_description'] = 'Для додавання нової сторінки скористайтеся відповідною кнопкою.';
 $txt['lp_pages_add']                    = 'Додати сторінку';
 $txt['lp_pages_add_title']              = 'Додавання сторінки';
 $txt['lp_pages_add_tab_description']    = 'Заповніть заголовок сторінки. Після цього можна буде змінити її тип, використовувати попередній перегляд і збереження.';

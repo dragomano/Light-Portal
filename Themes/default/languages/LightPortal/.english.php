@@ -195,7 +195,9 @@ $txt['lp_block_types_descriptions'] = array(
 // Pages
 $txt['lp_pages']                        = 'Pages';
 $txt['lp_pages_manage']                 = 'Manage pages';
-$txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
+$txt['lp_pages_manage_all_pages']       = 'Here you can view all portal pages.';
+$txt['lp_pages_manage_own_pages']       = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_tab_description'] = 'Use the corresponding button to add a new page.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
 $txt['lp_pages_add_tab_description']    = 'Fill the page title. After that, you can change its type, use preview and save.';

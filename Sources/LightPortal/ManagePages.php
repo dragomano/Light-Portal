@@ -55,7 +55,7 @@ class ManagePages
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_manage_tab_description']
+			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_tab_description']
 		);
 
 		loadJavaScriptFile('light_portal/manage_pages.js');
