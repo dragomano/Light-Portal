@@ -101,7 +101,7 @@ $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
 $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And some of them are also customized!';
-$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
+$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Block',

@@ -161,11 +161,7 @@ class Settings
 					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
 				),
 				'plugins' => array(
-					'description' => sprintf(
-						$txt['lp_plugins_info'],
-						'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon',
-						'https://github.com/dragomano/Light-Portal/wiki/Addon-list-for-sponsors'
-					)
+					'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 				),
 				'misc' => array(
 					'description' => $txt['lp_misc_info']

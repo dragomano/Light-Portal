@@ -101,7 +101,7 @@ $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
 $txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
+$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Blok',
