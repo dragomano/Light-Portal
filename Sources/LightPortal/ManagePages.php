@@ -1017,14 +1017,15 @@ class ManagePages
 	 */
 	private static function prepareKeywords()
 	{
-		global $context;
+		global $context, $smcFunc;
 
 		$keywords = !empty($context['lp_page']['keywords']) ? explode(',', $context['lp_page']['keywords']) : [];
-		$context['lp_page']['keywords'] = array_map(function ($item) {
+
+		$context['lp_page']['keywords'] = array_map(function ($item) use ($smcFunc) {
 			$stop_chars = ['-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '='];
 			$new_item   = str_replace($stop_chars, '', $item);
 
-			return trim($new_item);
+			return trim($smcFunc['strtolower']($new_item));
 		}, $keywords);
 	}
 
