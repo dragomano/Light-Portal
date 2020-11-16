@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -39,31 +39,12 @@ class ThemeSwitcher
 	 */
 	public static function getAvailableThemes()
 	{
-		global $modSettings, $smcFunc, $context;
+		global $modSettings;
 
 		if (empty($modSettings['knownThemes']))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
-			SELECT id_theme, value
-			FROM {db_prefix}themes
-			WHERE id_member = 0
-				AND variable = {string:name}
-				AND id_theme IN ({array_int:themes})',
-			array(
-				'name'   => 'name',
-				'themes' => explode(',', $modSettings['knownThemes'])
-			)
-		);
-
-		$available_themes = [];
-		while ($row = $smcFunc['db_fetch_row']($request))
-			$available_themes[$row[0]] = $row[1];
-
-		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
-
-		return $available_themes;
+		return array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
 	}
 
 	/**
@@ -84,7 +65,7 @@ class ThemeSwitcher
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::getFromCache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::cache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
 
 		if (!empty($available_themes)) {
 			ob_start();
@@ -111,9 +92,7 @@ class ThemeSwitcher
 						search = search != "" ? search + ";" : "?";
 						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
 					}
-				</script>';
-
-			echo '
+				</script>
 			</div>';
 
 			$content = ob_get_clean();

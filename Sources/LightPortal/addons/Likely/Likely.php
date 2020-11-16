@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -65,13 +65,9 @@ class Likely
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['likely'] = array(
-			'parameters' => array(
-				'size'    => static::$size,
-				'skin'    => static::$skin,
-				'buttons' => static::$buttons
-			)
-		);
+		$options['likely']['parameters']['size']    = static::$size;
+		$options['likely']['parameters']['skin']    = static::$skin;
+		$options['likely']['parameters']['buttons'] = static::$buttons;
 	}
 
 	/**
@@ -79,21 +75,18 @@ class Likely
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'likely')
+		if ($type !== 'likely')
 			return;
 
-		$args['parameters'] = array(
-			'size'    => FILTER_SANITIZE_STRING,
-			'skin'    => FILTER_SANITIZE_STRING,
-			'buttons' => FILTER_SANITIZE_STRING
-		);
+		$parameters['size']    = FILTER_SANITIZE_STRING;
+		$parameters['skin']    = FILTER_SANITIZE_STRING;
+		$parameters['buttons'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**

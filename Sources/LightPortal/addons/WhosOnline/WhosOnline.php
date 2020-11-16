@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -49,11 +49,7 @@ class WhosOnline
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['whos_online'] = array(
-			'parameters' => array(
-				'update_interval' => static::$update_interval
-			)
-		);
+		$options['whos_online']['parameters']['update_interval'] = static::$update_interval;
 	}
 
 	/**
@@ -61,19 +57,16 @@ class WhosOnline
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'whos_online')
+		if ($type !== 'whos_online')
 			return;
 
-		$args['parameters'] = array(
-			'update_interval' => FILTER_VALIDATE_INT
-		);
+		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -135,7 +128,12 @@ class WhosOnline
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helpers::getFromCache('whos_online_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $parameters['update_interval'] ?? $cache_time);
+		$whos_online = Helpers::cache(
+			'whos_online_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$parameters['update_interval'] ?? $cache_time
+		);
 
 		if (!empty($whos_online)) {
 			ob_start();

@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * HidingBlocks
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\HidingBlocks;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -19,7 +21,6 @@ if (!defined('SMF'))
 
 class HidingBlocks
 {
-
 	/**
 	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
@@ -43,9 +44,9 @@ class HidingBlocks
 	 *
 	 * Включенные скрытые классы по умолчанию
 	 *
-	 * @var string
+	 * @var array
 	 */
-	private static $hidden_breakpoints = '';
+	private static $hidden_breakpoints = [];
 
 	/**
 	 * Fill additional block classes
@@ -97,12 +98,12 @@ class HidingBlocks
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters)
 	{
-		$args['parameters']['hidden_breakpoints'] = array(
+		$parameters['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
@@ -123,11 +124,12 @@ class HidingBlocks
 		if (isset($context['lp_block']['options']['parameters']['hidden_breakpoints'])) {
 			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
 		} else
-			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = $_POST['hidden_breakpoints'] ?? [];
+			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = Helpers::post('hidden_breakpoints', []);
 
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
 			'type' => 'select',
+			'after' => $txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'],
 			'attributes' => array(
 				'id'       => 'hidden_breakpoints',
 				'name'     => 'hidden_breakpoints[]',

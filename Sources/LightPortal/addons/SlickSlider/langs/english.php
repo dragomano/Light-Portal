@@ -13,7 +13,11 @@ $txt['lp_slick_slider_addon_autoplay_speed']   = 'Auto play change interval, ms'
 $txt['lp_slick_slider_addon_speed']            = 'Transition speed, ms';
 $txt['lp_slick_slider_addon_images']           = 'Image list';
 $txt['lp_slick_slider_addon_images_subtext']   = 'One image url per line. Example:<br><pre><code class="bbc_code">
-https://example.com/image1.png
+https://picsum.photos/seed/picsum1/300/200
 <br>
-https://example.com/image2.png
+https://picsum.photos/seed/picsum2/300/200
+<br>
+https://picsum.photos/seed/picsum3/300/200
+<br>
+https://picsum.photos/seed/picsum4/300/200
 </code></pre>';

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -58,12 +58,8 @@ class BoardNews
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['board_news'] = array(
-			'parameters' => array(
-				'board_id'  => static::$board_id,
-				'num_posts' => static::$num_posts
-			)
-		);
+		$options['board_news']['parameters']['board_id']  = static::$board_id;
+		$options['board_news']['parameters']['num_posts'] = static::$num_posts;
 	}
 
 	/**
@@ -71,20 +67,17 @@ class BoardNews
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'board_news')
+		if ($type !== 'board_news')
 			return;
 
-		$args['parameters'] = array(
-			'board_id'  => FILTER_VALIDATE_INT,
-			'num_posts' => FILTER_VALIDATE_INT
-		);
+		$parameters['board_id']  = FILTER_VALIDATE_INT;
+		$parameters['num_posts'] = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -201,7 +194,7 @@ class BoardNews
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::getFromCache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$board_news = Helpers::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($board_news)) {
 			ob_start();

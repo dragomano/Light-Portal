@@ -121,6 +121,9 @@ echo '
 								</select>
 							</li>
 						</ul>
+						<hr>
+						<label for="lp_left_panel_sticky">', $txt['lp_left_panel_sticky'], '</label>
+						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', !empty($modSettings['lp_left_panel_sticky']) ? ' checked="checked"' : '', '>
 					</div>
 				</div>
 				<div class="col-xs">
@@ -208,6 +211,9 @@ echo '
 								</select>
 							</li>
 						</ul>
+						<hr>
+						<label for="lp_right_panel_sticky">', $txt['lp_right_panel_sticky'], '</label>
+						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', !empty($modSettings['lp_right_panel_sticky']) ? ' checked="checked"' : '', '>
 					</div>
 				</div>
 			</div>
@@ -444,7 +450,7 @@ function template_post_tab($tab = 'content')
 
 					foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
 						if (is_bool($value))
-							echo $value ? ' ' . $attribute : '';
+							echo $value ? (' ' . $attribute) : '';
 						else
 							echo ' ', $attribute, '="', $value, '"';
 					}

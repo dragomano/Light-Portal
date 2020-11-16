@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -67,13 +67,10 @@ class BoardList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['board_list'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'category_class' => static::$category_class,
-				'board_class'    => static::$board_class
-			)
-		);
+		$options['board_list']['no_content_class'] = static::$no_content_class;
+
+		$options['board_list']['parameters']['category_class'] = static::$category_class;
+		$options['board_list']['parameters']['board_class']    = static::$board_class;
 	}
 
 	/**
@@ -81,20 +78,17 @@ class BoardList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'board_list')
+		if ($type !== 'board_list')
 			return;
 
-		$args['parameters'] = array(
-			'category_class' => FILTER_SANITIZE_STRING,
-			'board_class'    => FILTER_SANITIZE_STRING
-		);
+		$parameters['category_class'] = FILTER_SANITIZE_STRING;
+		$parameters['board_class']    = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -202,10 +196,10 @@ class BoardList
 		if ($type !== 'board_list')
 			return;
 
-		$board_list = Helpers::getFromCache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+		$board_list = Helpers::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
 
 		if (!empty($board_list)) {
-			$context['current_board']     = $context['current_board'] ?? 0;
+			$context['current_board'] = $context['current_board'] ?? 0;
 
 			ob_start();
 

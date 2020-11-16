@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			body: formData
 		});
 
+		const [infobox, errorbox] = document.getElementById(this.id).parentElement.nextElementSibling.children;
+
 		if (response.ok) {
-			const infobox = document.getElementById(this.id).parentElement.nextElementSibling.children[0];
 			infobox.style.display = 'block';
 			lpFadeOut(infobox);
 		} else {
-			const errorbox = document.getElementById(this.id).parentElement.nextElementSibling.children[1];
 			errorbox.style.display = 'block';
 			lpFadeOut(errorbox);
 			console.error(response);

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -58,12 +58,8 @@ class RssFeed
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['rss_feed'] = array(
-			'parameters' => array(
-				'url'       => static::$url,
-				'show_text' => static::$show_text
-			)
-		);
+		$options['rss_feed']['parameters']['url']       = static::$url;
+		$options['rss_feed']['parameters']['show_text'] = static::$show_text;
 	}
 
 	/**
@@ -71,20 +67,17 @@ class RssFeed
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'rss_feed')
+		if ($type !== 'rss_feed')
 			return;
 
-		$args['parameters'] = array(
-			'url'       => FILTER_VALIDATE_URL,
-			'show_text' => FILTER_VALIDATE_BOOLEAN
-		);
+		$parameters['url']       = FILTER_VALIDATE_URL;
+		$parameters['show_text'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -161,7 +154,7 @@ class RssFeed
 		if ($type !== 'rss_feed')
 			return;
 
-		$rss_feed = Helpers::getFromCache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
+		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
 
 		if (!empty($rss_feed)) {
 			ob_start();

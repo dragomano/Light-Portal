@@ -34,7 +34,7 @@ function template_portal_above()
 	if (!empty($context['lp_blocks']['left'])) {
 		echo '
 			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
-				<div class="sticky_sidebar">';
+				<div', !empty($modSettings['lp_left_panel_sticky']) ? ' class="sticky_sidebar"' : '', '>';
 
 		lp_show_blocks('left');
 
@@ -80,7 +80,7 @@ function template_portal_above()
  */
 function template_portal_below()
 {
-	global $context;
+	global $context, $modSettings;
 
 	echo '
 						</main>
@@ -108,7 +108,7 @@ function template_portal_below()
 	if (!empty($context['lp_blocks']['right'])) {
 		echo '
 			<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
-				<div class="sticky_sidebar">';
+				<div', !empty($modSettings['lp_right_panel_sticky']) ? ' class="sticky_sidebar"' : '', '>';
 
 		lp_show_blocks('right');
 

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -49,11 +49,7 @@ class TagList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['tag_list'] = array(
-			'parameters' => array(
-				'source' => static::$source
-			)
-		);
+		$options['tag_list']['parameters']['source'] = static::$source;
 	}
 
 	/**
@@ -61,19 +57,16 @@ class TagList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'tag_list')
+		if ($type !== 'tag_list')
 			return;
 
-		$args['parameters'] = array(
-			'source' => FILTER_SANITIZE_STRING
-		);
+		$parameters['source'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -127,7 +120,7 @@ class TagList
 	 */
 	public static function getAllTopicKeywords()
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		if (!class_exists('\Bugo\Optimus\Keywords'))
 			return [];
@@ -151,7 +144,7 @@ class TagList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $keywords;
 	}
@@ -164,6 +157,8 @@ class TagList
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
+	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
 	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
@@ -174,9 +169,11 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::getFromCache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', '\Bugo\LightPortal\Tag', $cache_time, ...array(0, 0, 'value'));
+			$tag_list = Helpers::cache(
+				'tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', '\Bugo\LightPortal\Tag', $cache_time, ...array(0, 0, 'value')
+			);
 		} else {
-			$tag_list = Helpers::getFromCache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);
+			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);
 		}
 
 		ob_start();
@@ -186,8 +183,9 @@ class TagList
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
-		} else
+		} else {
 			echo $txt['lp_no_tags'];
+		}
 
 		$content = ob_get_clean();
 	}

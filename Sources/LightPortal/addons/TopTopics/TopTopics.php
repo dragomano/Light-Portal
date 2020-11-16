@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -67,13 +67,9 @@ class TopTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_topics'] = array(
-			'parameters' => array(
-				'popularity_type'   => static::$type,
-				'num_topics'        => static::$num_topics,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_topics']['parameters']['popularity_type']   = static::$type;
+		$options['top_topics']['parameters']['num_topics']        = static::$num_topics;
+		$options['top_topics']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -81,21 +77,18 @@ class TopTopics
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'top_topics')
+		if ($type !== 'top_topics')
 			return;
 
-		$args['parameters'] = array(
-			'popularity_type'   => FILTER_SANITIZE_STRING,
-			'num_topics'        => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$parameters['popularity_type']   = FILTER_SANITIZE_STRING;
+		$parameters['num_topics']        = FILTER_VALIDATE_INT;
+		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -190,7 +183,7 @@ class TopTopics
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::getFromCache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_topics)) {
 			ob_start();

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -58,12 +58,8 @@ class PageList
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['page_list'] = array(
-			'parameters' => array(
-				'sort'      => static::$sort,
-				'num_pages' => static::$num_pages
-			)
-		);
+		$options['page_list']['parameters']['sort']      = static::$sort;
+		$options['page_list']['parameters']['num_pages'] = static::$num_pages;
 	}
 
 	/**
@@ -71,20 +67,17 @@ class PageList
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'page_list')
+		if ($type !== 'page_list')
 			return;
 
-		$args['parameters'] = array(
-			'sort'      => FILTER_SANITIZE_STRING,
-			'num_pages' => FILTER_VALIDATE_INT
-		);
+		$parameters['sort']      = FILTER_SANITIZE_STRING;
+		$parameters['num_pages'] = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -148,7 +141,7 @@ class PageList
 	{
 		global $smcFunc, $txt, $context;
 
-		$titles = Helpers::getFromCache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -193,7 +186,7 @@ class PageList
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -217,7 +210,7 @@ class PageList
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::getFromCache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		ob_start();
 
@@ -226,7 +219,7 @@ class PageList
 		<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if (empty($title = Helpers::getPublicTitle($page)))
+				if (empty($title = Helpers::getTitle($page)))
 					continue;
 
 				echo '
@@ -242,8 +235,9 @@ class PageList
 
 			echo '
 		</ul>';
-		} else
-			echo $txt['lp_page_list_addon_no_items'];
+		} else {
+			echo '<div class="errorbox">', $txt['lp_page_list_addon_no_items'], '</div>';
+		}
 
 		$content = ob_get_clean();
 	}

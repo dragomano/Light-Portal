@@ -50,10 +50,15 @@ function template_show_topics_as_articles()
 						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
 					</span>
 					<h3 class="card__title">
-						<a href="', $topic['link'], '">', $topic['subject'], '</a>
+						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
 					</h3>
 					<div>
 						<span class="card__by">';
+
+			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
+				echo '
+							<i class="fas fa-reply"></i>';
+			}
 
 			if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
 				echo '
@@ -153,6 +158,11 @@ function template_show_pages_as_articles()
 					<div>
 						<span class="card__by">';
 
+			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($page['num_comments'])) {
+				echo '
+							<i class="fas fa-reply"></i>';
+			}
+
 			if (!empty($page['author_id']) && !empty($page['author_name'])) {
 				echo '
 							<a href="', $page['author_link'], '" class="card__author">', $page['author_name'], '</a>';
@@ -251,7 +261,7 @@ function template_show_boards_as_articles()
 			echo '
 					</span>
 					<h3 class="card__title">
-						<a href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>
+						<a href="', $board['msg_link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>
 					</h3>
 					<div>
 						<span class="card__by">
@@ -284,155 +294,4 @@ function template_show_boards_as_articles()
 		echo '
 	</div>';
 	}
-}
-
-/**
- * Topics from selected boards as sources of articles (пользовательский шаблон)
- *
- * Темы из выбранных разделов в виде статей (пользовательский шаблон)
- *
- * @return void
- */
-function template_show_topics_as_custom_style()
-{
-	global $scripturl, $context, $txt;
-
-	echo '
-	<div class="row">
-		<div class="col-xs-12 col-sm-3">
-			<nav>
-				<ul>
-					<li>
-						<div class="roundframe" style="margin-top: 0">
-							<ul>
-								<li>
-									<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">Все разделы</a>
-								</li>
-								<li>
-									<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=portal;sa=tags">Теги</a>
-								</li>
-							</ul>
-						</div>
-					</li>';
-
-	if (!empty($context['lp_all_categories'])) {
-		foreach ($context['lp_all_categories'] as $category) {
-			echo '
-					<li>
-						<div class="title_bar">
-							<h4 class="titlebg">', $category['name'], '</h4>
-						</div>
-						<div class="roundframe">
-							<ul>';
-
-			foreach ($category['boards'] as $board) {
-				echo '
-								<li>';
-
-				if ($board['child_level']) {
-					echo '
-									<ul>
-										<li style="margin-left: 1em">
-											<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>
-										</li>
-									</ul>';
-				} else {
-					echo '
-									<i class="far fa-circle"></i> <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>';
-				}
-
-				echo '
-								</li>';
-			}
-
-			echo '
-							</ul>
-						</div>
-					</li>';
-		}
-
-	}
-
-	echo '
-				</ul>
-			</nav>
-		</div>
-		<div class="col-xs-12 col-sm-8 col-md-9">
-			<div class="title_bar" style="margin-bottom: 1px">
-				<h2 class="titlebg">', $context['page_title'], '</h2>
-			</div>';
-
-	if (!empty($context['lp_frontpage_articles'])) {
-		foreach ($context['lp_frontpage_articles'] as $topic) {
-			echo '
-			<div class="windowbg', $topic['css_class'], '">';
-
-			if (!empty($topic['image'])) {
-				echo '
-				<div class="floatleft" style="width: 64px">
-					<img src="', $topic['image'], '" alt="', $topic['subject'], '">
-				</div>';
-			 } else {
-				echo '
-				<div class="floatleft" style="width: 64px">
-					<i class="far fa-image fa-5x"></i>
-				</div>';
-			}
-
-			echo '
-				<div class="floatleft" style="margin-left: 20px; width: 70%">
-					<h3>
-						<a href="', $topic['link'], '">', $topic['subject'], '</a>', $topic['is_new'] ? '
-						 <span class="new_posts">' . $txt['new'] . '</span> ' : '', '
-					</h3>
-					<div class="smalltext" style="opacity: .5">';
-
-			if (!empty($topic['author_id'])) {
-				echo '
-						<a href="', $topic['author_link'], '" title="', $txt['profile_of'], ' ', $topic['author_name'], '">', $topic['author_name'], '</a>, ';
-			} else
-				echo $topic['author_name'], ', ';
-
-			echo $topic['date'], '
-					</div>';
-
-			if (!empty($topic['teaser'])) {
-				echo '
-					<p>
-						', $topic['teaser'], '
-					</p>';
-			}
-
-			echo '
-				</div>
-				<div class="floatright smalltext">
-					<a class="new_posts" href="', $topic['board_link'], '">', $topic['board_name'], '</a>
-					<div class="righttext">
-						<i class="fas fa-eye"></i> ', $topic['num_views'];
-
-			if (!empty($topic['num_replies'])) {
-				echo '
-						<i class="fas fa-comment"></i> ', $topic['num_replies'];
-			}
-
-			echo '
-					</div>
-				</div>
-			</div>';
-		}
-	}
-
-	echo '
-		</div>';
-
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
-
-	echo '
-	</div>';
 }

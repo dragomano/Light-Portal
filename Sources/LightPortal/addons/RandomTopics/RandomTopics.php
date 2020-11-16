@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -58,12 +58,9 @@ class RandomTopics
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['random_topics'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'num_topics' => static::$num_topics
-			)
-		);
+		$options['random_topics']['no_content_class'] = static::$no_content_class;
+
+		$options['random_topics']['parameters']['num_topics'] = static::$num_topics;
 	}
 
 	/**
@@ -71,19 +68,16 @@ class RandomTopics
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'random_topics')
+		if ($type !== 'random_topics')
 			return;
 
-		$args['parameters'] = array(
-			'num_topics' => FILTER_VALIDATE_INT
-		);
+		$parameters['num_topics'] = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -121,10 +115,16 @@ class RandomTopics
 	 */
 	public static function getData($num_topics)
 	{
-		global $db_type, $smcFunc, $modSettings, $user_info, $context, $settings, $scripturl;
+		global $modSettings, $user_info, $db_type, $smcFunc, $context, $settings, $scripturl;
 
 		if (empty($num_topics))
 			return [];
+
+		$ignore_boards = !empty($modSettings['recycle_board']) ? [(int) $modSettings['recycle_board']] : [];
+
+		if (!empty($modSettings['allow_ignore_boards'])) {
+			$ignore_boards = array_unique(array_merge($ignore_boards, $user_info['ignoreboards']));
+		}
 
 		if ($db_type == 'postgresql') {
 			$request = $smcFunc['db_query']('', '
@@ -132,20 +132,20 @@ class RandomTopics
 					WITH b AS (
 						SELECT min(t.id_topic), (
 							SELECT t.id_topic FROM {db_prefix}topics AS t
-							WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-								AND t.id_board != {int:recycle_board}' : '') . '
+							WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
+								AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
 							ORDER BY t.id_topic DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
-						WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
+						WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
+							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
 					)
 					(
 						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
 						FROM {db_prefix}topics AS t, b
-						WHERE t.id_topic >= min + ((max - min) * random())::int' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
+						WHERE t.id_topic >= min + ((max - min) * random())::int' . (!empty($ignore_boards) ? '
+							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
 							AND	t.approved = {int:is_approved}
 						LIMIT 1
 					) UNION ALL (
@@ -153,8 +153,8 @@ class RandomTopics
 						FROM {db_prefix}topics AS t, r
 						WHERE t.id_topic >= min + ((max - min) * random())::int
 							AND t.id_topic <> all(a)
-							AND r.n + 1 < {int:limit}' . (!empty($modSettings['recycle_board']) ? '
-							AND t.id_board != {int:recycle_board}' : '') . '
+							AND r.n + 1 < {int:limit}' . (!empty($ignore_boards) ? '
+							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
 							AND t.approved = {int:is_approved}
 						LIMIT 1
 					)
@@ -164,7 +164,7 @@ class RandomTopics
 				WHERE r.id_topic = t.id_topic',
 				array(
 					'is_approved'   => 1,
-					'recycle_board' => !empty($modSettings['recycle_board']) ? (int) $modSettings['recycle_board'] : null,
+					'ignore_boards' => $ignore_boards,
 					'limit'         => $num_topics
 				)
 			);
@@ -174,7 +174,7 @@ class RandomTopics
 				$topic_ids[] = $row['id_topic'];
 
 			$smcFunc['db_free_result']($request);
-			$context['lp_num_queries']++;
+			$smcFunc['lp_num_queries']++;
 
 			if (empty($topic_ids))
 				return self::getData($num_topics - 1);
@@ -187,11 +187,10 @@ class RandomTopics
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
-				WHERE t.id_topic IN ({array_int:topic_ids})' . (!empty($modSettings['allow_ignore_boards']) ? '
-					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : ''),
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
+				WHERE t.id_topic IN ({array_int:topic_ids})',
 				array(
 					'current_member' => $user_info['id'],
 					'topic_ids'      => $topic_ids
@@ -206,19 +205,17 @@ class RandomTopics
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (!$user_info['is_guest'] ? '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})' : '') . '
-				WHERE t.approved = {int:is_approved}' . (!empty($modSettings['recycle_board']) ? '
-					AND t.id_board != {int:recycle_board}' : '') . (!empty($modSettings['allow_ignore_boards']) ? '
-					AND t.id_board NOT IN (SELECT ignore_boards FROM {db_prefix}members WHERE id_member = {int:current_member})' : '') . '
-					AND t.id_topic IN (SELECT id_topic FROM {db_prefix}topics)
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
+				WHERE t.approved = {int:is_approved}
+					AND t.id_board NOT IN ({array_int:ignore_boards})
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				array(
 					'current_member' => $user_info['id'],
 					'is_approved'    => 1,
-					'recycle_board'  => !empty($modSettings['recycle_board']) ? (int) $modSettings['recycle_board'] : null,
+					'ignore_boards'  => $ignore_boards,
 					'limit'          => $num_topics
 				)
 			);
@@ -230,10 +227,11 @@ class RandomTopics
 
 		$topics = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!empty($modSettings['messageIconChecks_enable']) && !isset($icon_sources[$row['icon']]))
+			if (!empty($modSettings['messageIconChecks_enable']) && !isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = file_exists($settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
-			elseif (!isset($icon_sources[$row['icon']]))
+			} elseif (!isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = 'images_url';
+			}
 
 			$topics[] = array(
 				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
@@ -245,7 +243,7 @@ class RandomTopics
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $topics;
 	}
@@ -269,7 +267,13 @@ class RandomTopics
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::getFromCache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_topics']);
+		$random_topics = Helpers::cache(
+			'random_topics_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$cache_time,
+			$parameters['num_topics']
+		);
 
 		if (!empty($random_topics)) {
 			ob_start();
@@ -277,7 +281,7 @@ class RandomTopics
 			echo '
 			<ul class="random_topics noup">';
 
-			foreach ($topics as $topic) {
+			foreach ($random_topics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
 					<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '

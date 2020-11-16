@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\TopicRatingBar;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -61,11 +61,11 @@ class TopicRatingBar
 	}
 
 	/**
-	 * Add rating via jQuery
+	 * Show rating as stars
 	 *
 	 * @return void
 	 */
-	public static function frontpageAssets()
+	public static function frontAssets()
 	{
 		global $context;
 

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -121,19 +121,15 @@ class SlickSlider
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['slick_slider'] = array(
-			'parameters' => array(
-				'show_arrows'      => static::$show_arrows,
-				'show_dots'        => static::$show_dots,
-				'adaptive_height'  => static::$adaptive_height,
-				'slides_to_show'   => static::$slides_to_show,
-				'slides_to_scroll' => static::$slides_to_scroll,
-				'autoplay'         => static::$autoplay,
-				'autoplay_speed'   => static::$autoplay_speed,
-				'speed'            => static::$speed,
-				'images'           => static::$images
-			)
-		);
+		$options['slick_slider']['parameters']['show_arrows']      = static::$show_arrows;
+		$options['slick_slider']['parameters']['show_dots']        = static::$show_dots;
+		$options['slick_slider']['parameters']['adaptive_height']  = static::$adaptive_height;
+		$options['slick_slider']['parameters']['slides_to_show']   = static::$slides_to_show;
+		$options['slick_slider']['parameters']['slides_to_scroll'] = static::$slides_to_scroll;
+		$options['slick_slider']['parameters']['autoplay']         = static::$autoplay;
+		$options['slick_slider']['parameters']['autoplay_speed']   = static::$autoplay_speed;
+		$options['slick_slider']['parameters']['speed']            = static::$speed;
+		$options['slick_slider']['parameters']['images']           = static::$images;
 	}
 
 	/**
@@ -141,27 +137,24 @@ class SlickSlider
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'slick_slider')
+		if ($type !== 'slick_slider')
 			return;
 
-		$args['parameters'] = array(
-			'show_arrows'      => FILTER_VALIDATE_BOOLEAN,
-			'show_dots'        => FILTER_VALIDATE_BOOLEAN,
-			'adaptive_height'  => FILTER_VALIDATE_BOOLEAN,
-			'slides_to_show'   => FILTER_VALIDATE_INT,
-			'slides_to_scroll' => FILTER_VALIDATE_INT,
-			'autoplay'         => FILTER_VALIDATE_BOOLEAN,
-			'autoplay_speed'   => FILTER_VALIDATE_INT,
-			'speed'            => FILTER_VALIDATE_INT,
-			'images'           => FILTER_SANITIZE_STRING
-		);
+		$parameters['show_arrows']      = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_dots']        = FILTER_VALIDATE_BOOLEAN;
+		$parameters['adaptive_height']  = FILTER_VALIDATE_BOOLEAN;
+		$parameters['slides_to_show']   = FILTER_VALIDATE_INT;
+		$parameters['slides_to_scroll'] = FILTER_VALIDATE_INT;
+		$parameters['autoplay']         = FILTER_VALIDATE_BOOLEAN;
+		$parameters['autoplay_speed']   = FILTER_VALIDATE_INT;
+		$parameters['speed']            = FILTER_VALIDATE_INT;
+		$parameters['images']           = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -317,7 +310,7 @@ class SlickSlider
 		if ($type !== 'slick_slider')
 			return;
 
-		$slick_slider_html = Helpers::getFromCache('slick_slider_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$slick_slider_html = Helpers::cache('slick_slider_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
 		if (!empty($slick_slider_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/slick-carousel@1/slick/slick.css', array('external' => true));

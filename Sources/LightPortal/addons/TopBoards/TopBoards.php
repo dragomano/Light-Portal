@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -58,12 +58,8 @@ class TopBoards
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_boards'] = array(
-			'parameters' => array(
-				'num_boards'        => static::$num_boards,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_boards']['parameters']['num_boards']        = static::$num_boards;
+		$options['top_boards']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -71,20 +67,17 @@ class TopBoards
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'top_boards')
+		if ($type !== 'top_boards')
 			return;
 
-		$args['parameters'] = array(
-			'num_boards'        => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$parameters['num_boards']        = FILTER_VALIDATE_INT;
+		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -134,6 +127,7 @@ class TopBoards
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_topBoards($num_boards, 'array');
 	}
 
@@ -156,7 +150,7 @@ class TopBoards
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::getFromCache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_boards']);
 
 		if (!empty($top_boards)) {
 			ob_start();

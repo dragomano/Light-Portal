@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -85,15 +85,11 @@ class FlipsterCarousel
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['flipster_carousel'] = array(
-			'parameters' => array(
-				'autoplay'     => static::$autoplay,
-				'style'        => static::$style,
-				'show_nav'     => static::$show_nav,
-				'show_buttons' => static::$show_buttons,
-				'images'       => static::$images
-			)
-		);
+		$options['flipster_carousel']['parameters']['autoplay']     = static::$autoplay;
+		$options['flipster_carousel']['parameters']['style']        = static::$style;
+		$options['flipster_carousel']['parameters']['show_nav']     = static::$show_nav;
+		$options['flipster_carousel']['parameters']['show_buttons'] = static::$show_buttons;
+		$options['flipster_carousel']['parameters']['images']       = static::$images;
 	}
 
 	/**
@@ -101,23 +97,20 @@ class FlipsterCarousel
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'flipster_carousel')
+		if ($type !== 'flipster_carousel')
 			return;
 
-		$args['parameters'] = array(
-			'autoplay'     => FILTER_VALIDATE_INT,
-			'style'        => FILTER_SANITIZE_STRING,
-			'show_nav'     => FILTER_VALIDATE_BOOLEAN,
-			'show_buttons' => FILTER_VALIDATE_BOOLEAN,
-			'images'       => FILTER_SANITIZE_STRING
-		);
+		$parameters['autoplay']     = FILTER_VALIDATE_INT;
+		$parameters['style']        = FILTER_SANITIZE_STRING;
+		$parameters['show_nav']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_buttons'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['images']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -252,7 +245,7 @@ class FlipsterCarousel
 		if ($type !== 'flipster_carousel')
 			return;
 
-		$flipster_html = Helpers::getFromCache('flipster_carousel_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$flipster_html = Helpers::cache('flipster_carousel_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
 
 		if (!empty($flipster_html)) {
 			loadCSSFile('https://cdn.jsdelivr.net/npm/jquery.flipster@1/dist/jquery.flipster.min.css', array('external' => true));

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -32,7 +32,7 @@ class Credits
 
 		$context['credits_modifications'][] = self::getCopyrights();
 
-		if (!empty($_REQUEST['sa']) && $_REQUEST['sa'] == 'light_portal') {
+		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
 			self::getComponentList();
 
 			loadTemplate('LightPortal/ViewCredits');
@@ -70,40 +70,51 @@ class Credits
 	{
 		global $context;
 
-		$links = [];
+		isAllowedTo('light_portal_view');
 
-		$links[] = array(
-			'title' => 'Flexbox Grid',
-			'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
-			'author' => 'Kristofer Joseph',
-			'license' => array(
-				'name' => 'the Apache License',
-				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
-			)
-		);
-		$links[] = array(
-			'title' => 'Font Awesome Free',
-			'link' => 'https://fontawesome.com/cheatsheet/free',
-			'license' => array(
-				'name' => 'the Font Awesome Free License',
-				'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
-			)
-		);
-		$links[] = array(
-			'title' => 'Sortable.js',
-			'link' => 'https://github.com/SortableJS/Sortable',
-			'author' => 'All contributors to Sortable',
-			'license' => array(
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
-			)
-		);
-		$links[] = array(
-			'title' => 'Transliteration',
-			'link' => 'https://github.com/dzcpy/transliteration',
-			'license' => array(
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/dzcpy/transliteration/blob/master/LICENSE.txt'
+		$links = array(
+			array(
+				'title' => 'Flexbox Grid',
+				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
+				'author' => 'Kristofer Joseph',
+				'license' => array(
+					'name' => 'the Apache License',
+					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
+				)
+			),
+			array(
+				'title' => 'Font Awesome Free',
+				'link' => 'https://fontawesome.com/cheatsheet/free',
+				'license' => array(
+					'name' => 'the Font Awesome Free License',
+					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
+				)
+			),
+			array(
+				'title' => 'Sortable.js',
+				'link' => 'https://github.com/SortableJS/Sortable',
+				'author' => 'All contributors to Sortable',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/SortableJS/Sortable/blob/master/LICENSE'
+				)
+			),
+			array(
+				'title' => 'Transliteration',
+				'link' => 'https://github.com/dzcpy/transliteration',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/dzcpy/transliteration/blob/master/LICENSE.txt'
+				)
+			),
+			array(
+				'title' => 'Choices',
+				'link' => 'https://github.com/jshjohnson/Choices',
+				'author' => 'Josh Johnson',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/jshjohnson/Choices/blob/master/LICENSE'
+				)
 			)
 		);
 

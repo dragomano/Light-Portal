@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Translator;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -74,14 +74,11 @@ class Translator
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['translator'] = array(
-			'no_content_class' => static::$no_content_class,
-			'parameters' => array(
-				'engine'       => static::$engine,
-				'widget_theme' => static::$widget_theme,
-				'auto_mode'    => static::$auto_mode
-			)
-		);
+		$options['translator']['no_content_class'] = static::$no_content_class;
+
+		$options['translator']['parameters']['engine']       = static::$engine;
+		$options['translator']['parameters']['widget_theme'] = static::$widget_theme;
+		$options['translator']['parameters']['auto_mode']    = static::$auto_mode;
 	}
 
 	/**
@@ -89,21 +86,18 @@ class Translator
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'translator')
+		if ($type !== 'translator')
 			return;
 
-		$args['parameters'] = array(
-			'engine'       => FILTER_SANITIZE_STRING,
-			'widget_theme' => FILTER_SANITIZE_STRING,
-			'auto_mode'    => FILTER_VALIDATE_BOOLEAN
-		);
+		$parameters['engine']       = FILTER_SANITIZE_STRING;
+		$parameters['widget_theme'] = FILTER_SANITIZE_STRING;
+		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**

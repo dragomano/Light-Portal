@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -32,6 +32,7 @@ class Integration
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
 		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
+		add_integration_function('integrate_redirect', __CLASS__ . '::redirect', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
@@ -40,7 +41,7 @@ class Integration
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whosOnline', false, __FILE__);
+		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
@@ -56,8 +57,11 @@ class Integration
 	 */
 	public static function autoload(array &$classMap)
 	{
-		$classMap['Bugo\\LightPortal\\'] = 'LightPortal/';
+		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
+		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
+		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
+		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 
 	/**
@@ -69,19 +73,20 @@ class Integration
 	 */
 	public static function userInfo()
 	{
-		global $context, $modSettings, $user_info, $sourcedir;
+		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
-		$context['lp_num_queries'] = $context['lp_num_queries'] ?? 0;
+		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.1',
-			'LP_RELEASE_DATE' => '2020-09-08',
-			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && $user_info['is_admin'],
+			'LP_VERSION'      => '1.3',
+			'LP_RELEASE_DATE' => '2020-11-11',
+			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
-			'RC2_CLEAN'       => !defined('JQUERY_VERSION')
+			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
+			'MAX_MSG_LENGTH'  => 65535
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -110,12 +115,10 @@ class Integration
 	 */
 	public static function loadTheme()
 	{
-		global $context, $modSettings, $txt;
+		global $txt, $context, $modSettings;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
-			$modSettings['minimize_files'] = 0;
+		if (Subs::isPortalMustNotBeLoaded())
 			return;
-		}
 
 		loadLanguage('LightPortal/');
 
@@ -127,9 +130,28 @@ class Integration
 	}
 
 	/**
+	 * Set up a redirect to the main page of the forum, when requesting an action markasread
+	 *
+	 * Настраиваем редирект на главную страницу форума, при запросе действия action=markasread
+	 *
+	 * @param string $setLocation
+	 * @return void
+	 */
+	public static function redirect(string &$setLocation)
+	{
+		global $modSettings, $scripturl;
+
+		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])))
+			return;
+
+		if (Helpers::request()->is('markasread'))
+			$setLocation = $scripturl . '?action=forum';
+	}
+
+	/**
 	 * Add "action=portal"
 	 *
-	 * Подключаем action «portal»
+	 * Добавляем action «portal»
 	 *
 	 * @param array $actions
 	 * @return void
@@ -138,10 +160,10 @@ class Integration
 	{
 		global $context, $modSettings;
 
-		$actions['portal'] = array('LightPortal/FrontPage.php', array(__NAMESPACE__ . '\FrontPage', 'show'));
+		$actions['portal'] = array('LightPortal/front/Article.php', array(__NAMESPACE__ . '\Front\Article', 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
-		if (!empty($context['current_action']) && $context['current_action'] == 'portal' && $context['current_subaction'] == 'tags')
+		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
 			Tag::show();
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
@@ -156,23 +178,23 @@ class Integration
 	 *
 	 * Обращаемся к странице портала или вызываем метод по умолчанию
 	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public static function defaultAction()
 	{
 		global $modSettings, $sourcedir;
 
-		if (!empty($_GET['page']))
-			return Page::show((string) $_GET['page']);
+		if (Helpers::request()->filled('page'))
+			return call_user_func(array(__NAMESPACE__ . '\Page', 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
 			require_once($sourcedir . '/BoardIndex.php');
-			$action = 'BoardIndex';
-			return $action();
+
+			return call_user_func('BoardIndex');
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			return FrontPage::show();
+			return call_user_func(array(__NAMESPACE__ . '\Front\Article', 'show'));
 	}
 
 	/**
@@ -190,21 +212,22 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		if (empty($_REQUEST['action'])) {
+		if (Helpers::request()->isEmpty('action')) {
 			$current_action = 'portal';
 
-			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != $_SERVER['REQUEST_URL'])
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
-			if (!empty($_REQUEST['page']))
+			if (Helpers::request()->filled('page'))
 				$current_action = 'portal';
 		} else {
-			$current_action = empty($modSettings['lp_standalone_mode']) && $context['current_action'] == 'forum' ? 'home' : $context['current_action'];
+			$current_action = empty($modSettings['lp_standalone_mode']) && Helpers::request()->is('forum') ? 'home' : $context['current_action'];
 		}
 
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		$disabled_actions[] = 'home';
-		if (!empty($context['current_board']) || !empty($context['current_topic']))
+
+		if (!empty($context['current_board']) || Helpers::request()->is(['keywords']))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
 	}
 
@@ -218,13 +241,12 @@ class Integration
 	 */
 	public static function menuButtons(array &$buttons)
 	{
-		global $context, $modSettings, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings;
 
-		if (!defined('LP_NAME') || !empty($context['uninstalling']) || $context['current_action'] == 'printpage') {
-			$modSettings['minimize_files'] = 0;
+		if (Subs::isPortalMustNotBeLoaded())
 			return;
-		}
 
+		$context['allow_light_portal_view']             = allowedTo('light_portal_view');
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
 
@@ -455,7 +477,7 @@ class Integration
 	 * @param array $actions
 	 * @return string
 	 */
-	public static function whosOnline(array $actions)
+	public static function whoisOnline(array $actions)
 	{
 		global $txt, $scripturl, $modSettings, $context;
 
@@ -468,13 +490,13 @@ class Integration
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'portal') {
-			if ($context['current_subaction'] == 'tags') {
-				if (!empty($_REQUEST['key']))
-					$result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $_REQUEST['key'], $_REQUEST['key']);
-				else
-					$result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
-			} else
+			if (!empty($actions['sa']) && $actions['sa'] == 'tags') {
+				!empty($actions['key'])
+					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $actions['key'], $actions['key'])
+					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
+			} else {
 				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
+			}
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'forum')

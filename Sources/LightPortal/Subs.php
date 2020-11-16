@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -49,8 +49,8 @@ class Subs
 		$context['lp_all_content_classes'] = self::getContentClasses();
 		$context['lp_fontawesome_enabled'] = Helpers::doesThisThemeUseFontAwesome();
 
-		$context['lp_active_blocks']    = Helpers::getFromCache('active_blocks', 'getActiveBlocks', __CLASS__);
-		$context['lp_num_active_pages'] = Helpers::getFromCache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
+		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', __CLASS__);
+		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __CLASS__);
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -106,8 +106,7 @@ class Subs
 					'title_class'   => $row['title_class'],
 					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
-					'content_style' => $row['content_style'],
-					'permissions'   => $row['permissions']
+					'content_style' => $row['content_style']
 				);
 
 			$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
@@ -117,15 +116,15 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $active_blocks;
 	}
 
 	/**
-	 * Get the total number of active pages of the current user
+	 * Get the total number of active pages
 	 *
-	 * Подсчитываем общее количество активных страниц текущего пользователя
+	 * Подсчитываем общее количество активных страниц
 	 *
 	 * @return int
 	 */
@@ -145,8 +144,9 @@ class Subs
 		);
 
 		[$num_pages] = $smcFunc['db_fetch_row']($request);
+
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return (int) $num_pages;
 	}
@@ -188,76 +188,6 @@ class Subs
 	}
 
 	/**
-	 * Prepare content to display
-	 *
-	 * Готовим контент к отображению в браузере
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @return void
-	 */
-	public static function prepareContent(string &$content, string $type = 'bbc', int $block_id = 0, int $cache_time = 0)
-	{
-		global $context;
-
-		if (!empty($block_id) && !empty($context['lp_active_blocks'][$block_id]))
-			$parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? [];
-		else
-			$parameters = $context['lp_block']['options']['parameters'] ?? [];
-
-		self::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
-	}
-
-	/**
-	 * Parse content depending on the type
-	 *
-	 * Парсим контент в зависимости от типа
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @return void
-	 */
-	public static function parseContent(string &$content, string $type = 'bbc')
-	{
-		global $context;
-
-		switch ($type) {
-			case 'bbc':
-				$content = parse_bbc($content);
-
-				// Integrate with the Paragrapher mod
-				call_integration_hook('integrate_paragrapher_string', array(&$content));
-
-				break;
-			case 'html':
-				$content = un_htmlspecialchars($content);
-
-				break;
-			case 'php':
-				$content = trim(un_htmlspecialchars($content));
-				$content = trim($content, '<?php');
-				$content = trim($content, '?>');
-
-				ob_start();
-
-				try {
-					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
-					eval($content);
-				} catch (\ParseError $p) {
-					echo $p->getMessage();
-				}
-
-				$content = ob_get_clean();
-
-				break;
-			default:
-				self::runAddons('parseContent', array(&$content, $type));
-		}
-	}
-
-	/**
 	 * Get names of the current addons
 	 *
 	 * Получаем имена имеющихся аддонов
@@ -276,6 +206,29 @@ class Subs
 			$addons[] = basename($dir);
 
 		return $addons;
+	}
+
+	/**
+	 * Require the language file of the addon
+	 *
+	 * Подключаем языковой файл аддона
+	 *
+	 * @param string $addon
+	 * @return void
+	 */
+	public static function loadAddonLanguage(string $addon = '')
+	{
+		global $user_info, $txt;
+
+		$base_dir  = LP_ADDONS . '/' . $addon . '/langs/';
+		$languages = array_merge(['english'], [$user_info['language']]);
+
+		foreach ($languages as $lang) {
+			$lang_file = $base_dir . $lang . '.php';
+
+			if (is_file($lang_file))
+				require_once($lang_file);
+		}
 	}
 
 	/**
@@ -298,13 +251,13 @@ class Subs
 		$txt['lp_html_icon'] = 'fab fa-html5';
 		$txt['lp_php_icon']  = 'fab fa-php';
 
-		$light_portal_addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
+		$addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
 
-		if (empty($light_portal_addons))
+		if (empty($addons))
 			return false;
 
 		$results = [];
-		foreach ($light_portal_addons as $id => $addon) {
+		foreach ($addons as $id => $addon) {
 			$class = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 			self::loadAddonLanguage($addon);
 
@@ -319,29 +272,6 @@ class Subs
 		}
 
 		return $results[$hook] ?? null;
-	}
-
-	/**
-	 * Require the language file of the addon
-	 *
-	 * Подключаем языковой файл аддона
-	 *
-	 * @param string $addon
-	 * @return void
-	 */
-	public static function loadAddonLanguage(string $addon = '')
-	{
-		global $user_info, $txt;
-
-		$base_dir = LP_ADDONS . '/' . $addon . '/langs/';
-
-		$languages = array_merge(['english'], [$user_info['language']]);
-
-		foreach ($languages as $lang) {
-			$lang_file = $base_dir . $lang . '.php';
-			if (is_file($lang_file))
-				require_once($lang_file);
-		}
 	}
 
 	/**
@@ -449,7 +379,7 @@ class Subs
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		global $smcFunc, $context;
+		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT item_id, lang, title
@@ -468,76 +398,9 @@ class Subs
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $titles;
-	}
-
-	/**
-	 * Get an export file via the user browser
-	 *
-	 * Получаем экспортируемый файл через браузер
-	 *
-	 * @param string $file
-	 * @return void
-	 */
-	public static function runExport(string $file)
-	{
-		if (empty($file))
-			return;
-
-		// Might take some time.
-		@set_time_limit(600);
-
-		if (file_exists($file)) {
-			if (ob_get_level())
-				ob_end_clean();
-
-			header('Content-Description: File Transfer');
-			header('Content-Type: application/octet-stream');
-			header('Content-Disposition: attachment; filename=' . basename($file));
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($file));
-
-			if ($fd = fopen($file, 'rb')) {
-				while (!feof($fd))
-					print fread($fd, 1024);
-
-				fclose($fd);
-			}
-
-			unlink($file);
-		}
-
-		exit;
-	}
-
-	/**
-	 * Getting a part of an SQL expression like "(value1, value2, value3)"
-	 *
-	 * Получаем часть SQL-выражения вида "(value1, value2, value3)"
-	 *
-	 * @param array $items
-	 * @return string
-	 */
-	public static function getValues(array $items)
-	{
-		if (empty($items))
-			return '';
-
-		$result = '';
-		$cnt = count($items);
-		for ($i = 0; $i < $cnt; $i++) {
-			if ($i > 0)
-				$result .= ', ';
-
-			$result .= "('" . implode("', '", $items[$i]) . "')";
-		}
-
-		return $result;
 	}
 
 	/**
@@ -549,9 +412,9 @@ class Subs
 	 */
 	public static function showDebugInfo()
 	{
-		global $context, $txt;
+		global $context, $txt, $smcFunc;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $context['lp_num_queries']) : false;
+		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']) : false;
 
 		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
 			loadTemplate('LightPortal/ViewDebug');
@@ -561,7 +424,7 @@ class Subs
 				$context['template_layers'][] = 'debug';
 			} else {
 				$context['template_layers'] = array_merge(
-					array_slice($context['template_layers'], 0, (int) $key, true),
+					array_slice($context['template_layers'], 0, $key, true),
 					array('debug'),
 					array_slice($context['template_layers'], $key, null, true)
 				);
@@ -580,7 +443,7 @@ class Subs
 	{
 		global $context, $scripturl;
 
-		if ($context['current_action'] == 'forum')
+		if (Helpers::request()->is('forum'))
 			$context['canonical_url'] = $scripturl . '?action=forum';
 	}
 
@@ -602,5 +465,24 @@ class Subs
 
 		if (!empty($old_url[1]))
 			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
+	}
+
+	/**
+	 * Check if the portal must not be loaded
+	 *
+	 * Проверяем, должен портал загружаться или нет
+	 *
+	 * @return bool
+	 */
+	public static function isPortalMustNotBeLoaded()
+	{
+		global $context, $modSettings;
+
+		if (!defined('LP_NAME') || !empty($context['uninstalling']) || Helpers::request()->is('printpage')) {
+			$modSettings['minimize_files'] = 0;
+			return true;
+		}
+
+		return false;
 	}
 }

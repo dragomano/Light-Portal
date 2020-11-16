@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -27,14 +27,15 @@ class Page
 	 *
 	 * Просматриваем страницу по её алиасу
 	 *
-	 * @param string $alias
 	 * @return void
 	 */
-	public static function show(string $alias = '')
+	public static function show()
 	{
 		global $modSettings, $context, $txt, $scripturl;
 
 		isAllowedTo('light_portal_view');
+
+		$alias = Helpers::request('page');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
@@ -61,17 +62,17 @@ class Page
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
 
-		Subs::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
+		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
-			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_portal'];
+			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_portal'];
 			$context['canonical_url']       = $scripturl;
 			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
 			$context['linktree'][] = array(
 				'name' => $txt['lp_portal']
 			);
 		} else {
-			$context['page_title']          = Helpers::getPublicTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
+			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
 			$context['canonical_url']       = $scripturl . '?page=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 			$context['linktree'][] = array(
@@ -129,8 +130,8 @@ class Page
 		$context['meta_description']  = $context['lp_page']['description'];
 
 		$context['optimus_og_type']['article'] = array(
-			'published_time' => date('c', $context['lp_page']['created_at']),
-			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('c', $context['lp_page']['updated_at']) : null,
+			'published_time' => date('Y-m-d\TH:i:s', $context['lp_page']['created_at']),
+			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']) : null,
 			'author'         => $context['lp_page']['author']
 		);
 
@@ -169,19 +170,30 @@ class Page
 		if (empty($item = $context['lp_page']))
 			return [];
 
+		$title_words = explode(' ', $title = Helpers::getTitle($item));
+		$alias_words = explode('_', $item['alias']);
+
+		$search_formula = '';
+		foreach ($title_words as $key => $word) {
+			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
+		}
+
+		foreach ($alias_words as $key => $word) {
+			$search_formula .= ' + CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($alias_words) - $key) . ' ELSE 0 END';
+		}
+
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (IF (t.title LIKE {string:title}, 80, 0) + IF (p.alias LIKE {string:alias}, 20, 0)) AS related, t.title
+			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE p.status = {int:status}
+			WHERE (' . $search_formula . ') > 0
+				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND p.page_id != {int:current_page}
-			HAVING related > 0
-			ORDER BY related DESC',
+			ORDER BY related DESC
+			LIMIT 4',
 			array(
-				'title'        => Helpers::getPublicTitle($context['lp_page']),
-				'alias'        => $item['alias'],
 				'current_lang' => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
@@ -195,7 +207,7 @@ class Page
 			if (Helpers::isFrontpage($row['alias']))
 				continue;
 
-			Subs::parseContent($row['content'], $row['type']);
+			Helpers::parseContent($row['content'], $row['type']);
 			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			$image = !empty($first_post_image) ? array_pop($value) : null;
 			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
@@ -210,7 +222,7 @@ class Page
 		}
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $related_pages;
 	}
@@ -280,7 +292,7 @@ class Page
 			$og_image = null;
 			if (!empty($modSettings['lp_page_og_image'])) {
 				$content = $row['content'];
-				Subs::parseContent($content, $row['type']);
+				Helpers::parseContent($content, $row['type']);
 				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
 
 				if ($image_found && is_array($values)) {
@@ -323,7 +335,7 @@ class Page
 			$data['keywords'] = array_unique($data['keywords']);
 
 		$smcFunc['db_free_result']($request);
-		$context['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -341,7 +353,7 @@ class Page
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::getFromCache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
+		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
 		self::prepareData($data);
 
 		return $data;
@@ -404,7 +416,7 @@ class Page
 		if (empty($context['lp_page']['id']) || $user_info['possibly_robot'])
 			return;
 
-		if (empty($_SESSION['light_portal_last_page_viewed']) || $_SESSION['light_portal_last_page_viewed'] != $context['lp_page']['id']) {
+		if (Helpers::session()->isEmpty('light_portal_last_page_viewed') || Helpers::session('light_portal_last_page_viewed') != $context['lp_page']['id']) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
@@ -414,8 +426,8 @@ class Page
 				)
 			);
 
-			$_SESSION['light_portal_last_page_viewed'] = $context['lp_page']['id'];
-			$context['lp_num_queries']++;
+			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
+			$smcFunc['lp_num_queries']++;
 		}
 	}
 }

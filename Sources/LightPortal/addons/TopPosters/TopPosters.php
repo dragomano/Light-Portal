@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -67,13 +67,9 @@ class TopPosters
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['top_posters'] = array(
-			'parameters' => array(
-				'show_avatars'      => static::$show_avatars,
-				'num_posters'       => static::$num_posters,
-				'show_numbers_only' => static::$show_numbers_only
-			)
-		);
+		$options['top_posters']['parameters']['show_avatars']      = static::$show_avatars;
+		$options['top_posters']['parameters']['num_posters']       = static::$num_posters;
+		$options['top_posters']['parameters']['show_numbers_only'] = static::$show_numbers_only;
 	}
 
 	/**
@@ -81,21 +77,18 @@ class TopPosters
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'top_posters')
+		if ($type !== 'top_posters')
 			return;
 
-		$args['parameters'] = array(
-			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
-			'num_posters'       => FILTER_VALIDATE_INT,
-			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN
-		);
+		$parameters['show_avatars']      = FILTER_VALIDATE_BOOLEAN;
+		$parameters['num_posters']       = FILTER_VALIDATE_INT;
+		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -151,14 +144,13 @@ class TopPosters
 	 */
 	public static function getData($parameters)
 	{
-		global $smcFunc, $scripturl, $modSettings, $context;
+		global $smcFunc, $memberContext, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT mem.id_member, mem.real_name, mem.posts' . ($parameters['show_avatars'] ? ', mem.avatar, a.id_attach, a.attachment_type, a.filename' : '') . '
-			FROM {db_prefix}members AS mem' . ($parameters['show_avatars'] ? '
-				LEFT JOIN {db_prefix}attachments AS a ON (mem.id_member = a.id_member)' : '') . '
-			WHERE mem.posts > {int:num_posts}
-			ORDER BY mem.posts DESC
+			SELECT id_member, real_name, posts
+			FROM {db_prefix}members
+			WHERE posts > {int:num_posts}
+			ORDER BY posts DESC
 			LIMIT {int:num_posters}',
 			array(
 				'num_posts'   => 0,
@@ -166,19 +158,28 @@ class TopPosters
 			)
 		);
 
+		$result = $smcFunc['db_fetch_all']($request);
+
+		if (empty($result))
+			return [];
+
+		loadMemberData(array_column($result, 'id_member'));
+
 		$posters = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))	{
+		foreach ($result as $row) {
+			if (!isset($memberContext[$row['id_member']]))
+				loadMemberContext($row['id_member']);
+
 			$posters[] = array(
 				'name'   => $row['real_name'],
 				'link'   => allowedTo('profile_view') ? '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
-				'avatar' => $parameters['show_avatars'] ? ($row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : $modSettings['avatar_url'] . '/default.png') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar'])) : null,
+				'avatar' => $parameters['show_avatars'] ? $memberContext[$row['id_member']]['avatar']['image'] : null,
 				'posts'  => $row['posts']
 			);
 		}
 
 		$smcFunc['db_free_result']($request);
-
-		$context++;
+		$smcFunc['lp_num_queries']++;
 
 		return $posters;
 	}
@@ -202,7 +203,7 @@ class TopPosters
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::getFromCache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
 
 		if (!empty($top_posters)) {
 			ob_start();
@@ -216,15 +217,12 @@ class TopPosters
 				echo '
 			<dt>';
 
-				if (!empty($poster['avatar'])) {
-					echo '
-				<img src="', $poster['avatar'], '" alt="', $poster['name'], '"> ';
-				}
+				if (!empty($poster['avatar']))
+					echo $poster['avatar'];
 
 				$width = $poster['posts'] * 100 / $max;
 
-				echo '
-					', $poster['link'], '
+				echo ' ', $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>

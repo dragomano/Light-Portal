@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -67,13 +67,9 @@ class RecentAttachments
 	 */
 	public static function blockOptions(&$options)
 	{
-		$options['recent_attachments'] = array(
-			'parameters' => array(
-				'num_attachments' => static::$num_attachments,
-				'extensions'      => static::$extensions,
-				'direction'       => static::$direction
-			)
-		);
+		$options['recent_attachments']['parameters']['num_attachments'] = static::$num_attachments;
+		$options['recent_attachments']['parameters']['extensions']      = static::$extensions;
+		$options['recent_attachments']['parameters']['direction']       = static::$direction;
 	}
 
 	/**
@@ -81,21 +77,18 @@ class RecentAttachments
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
+	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
-		if ($context['current_block']['type'] !== 'recent_attachments')
+		if ($type !== 'recent_attachments')
 			return;
 
-		$args['parameters'] = array(
-			'num_attachments' => FILTER_VALIDATE_INT,
-			'extensions'      => FILTER_SANITIZE_STRING,
-			'direction'       => FILTER_SANITIZE_STRING
-		);
+		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
+		$parameters['extensions']      = FILTER_SANITIZE_STRING;
+		$parameters['direction']       = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -195,7 +188,13 @@ class RecentAttachments
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::getFromCache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$attachment_list = Helpers::cache(
+			'recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'],
+			'getData',
+			__CLASS__,
+			$cache_time,
+			$parameters
+		);
 
 		if (!empty($attachment_list)) {
 			ob_start();

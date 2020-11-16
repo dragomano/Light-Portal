@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 class Notify extends \SMF_BackgroundTask
@@ -25,16 +25,14 @@ class Notify extends \SMF_BackgroundTask
 	 */
 	public function execute()
 	{
-		global $sourcedir, $user_profile, $smcFunc, $context;
+		global $sourcedir, $user_profile, $smcFunc;
 
 		require_once($sourcedir . '/Subs-Members.php');
 		$members = membersAllowedTo('light_portal_view');
 
-		if ($this->_details['content_type'] == 'new_comment') {
-			$members = array_intersect($members, [$this->_details['author_id']]);
-		} else {
-			$members = array_intersect($members, [$this->_details['commentator_id']]);
-		}
+		$this->_details['content_type'] == 'new_comment'
+			? $members = array_intersect($members, [$this->_details['author_id']])
+			: $members = array_intersect($members, [$this->_details['commentator_id']]);
 
 		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
 		if (!empty($this->_details['sender_id']))
@@ -45,10 +43,10 @@ class Notify extends \SMF_BackgroundTask
 
 		if (!empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
 			loadMemberData($this->_details['sender_id'], false, 'minimal');
-			if (!empty($user_profile[$this->_details['sender_id']]))
-				$this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
-			else
-				$this->_details['sender_id'] = 0;
+
+			!empty($user_profile[$this->_details['sender_id']])
+				? $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name']
+				: $this->_details['sender_id'] = 0;
 		}
 
 		$alert_bits = array(
@@ -59,10 +57,12 @@ class Notify extends \SMF_BackgroundTask
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
 				if ($this->_details['content_type'] == 'new_comment') {
-					if ($pref_option['page_comment'] & $bitvalue)
+					if ($pref_option['page_comment'] & $bitvalue) {
 						$notifies[$type][] = $member;
-				} elseif ($pref_option['page_comment_reply'] & $bitvalue)
+					}
+				} elseif ($pref_option['page_comment_reply'] & $bitvalue) {
 					$notifies[$type][] = $member;
+				}
 			}
 		}
 
@@ -100,7 +100,7 @@ class Notify extends \SMF_BackgroundTask
 					array('id_alert')
 				);
 
-				$context['lp_num_queries']++;
+				$smcFunc['lp_num_queries']++;
 
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}

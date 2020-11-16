@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardIndex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -30,15 +30,6 @@ class BoardIndex
 	public static $addon_type = 'other';
 
 	/**
-	 * Allow indexing of the forum home page (true|false)
-	 *
-	 * Разрешить индексацию главной страницы форума
-	 *
-	 * @var bool
-	 */
-	private static $allow_for_spiders = false;
-
-	/**
 	 * Add settings
 	 *
 	 * Добавляем настройки
@@ -50,11 +41,8 @@ class BoardIndex
 	{
 		global $modSettings;
 
-		$addSettings = [];
 		if (!isset($modSettings['lp_board_index_addon_allow_for_spiders']))
-			$addSettings['lp_board_index_addon_allow_for_spiders'] = static::$allow_for_spiders;
-		if (!empty($addSettings))
-			updateSettings($addSettings);
+			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);
 
 		$config_vars[] = array('check', 'lp_board_index_addon_allow_for_spiders');
 	}
@@ -68,7 +56,11 @@ class BoardIndex
 	 */
 	public static function init()
 	{
-		add_integration_function('integrate_mark_read_button', __CLASS__ . '::markReadButton', false, __FILE__);
+		global $txt, $scripturl;
+
+		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
+
+		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex', false, __FILE__);
 	}
 
 	/**
@@ -78,13 +70,11 @@ class BoardIndex
 	 *
 	 * @return void
 	 */
-	public static function markReadButton()
+	public static function toggleRobotNoIndex()
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']))
-			return;
-
-		$context['robot_no_index'] = empty($modSettings['lp_board_index_addon_allow_for_spiders']);
+		if (!empty($modSettings['lp_frontpage_mode']))
+			$context['robot_no_index'] = empty($modSettings['lp_board_index_addon_allow_for_spiders']);
 	}
 }

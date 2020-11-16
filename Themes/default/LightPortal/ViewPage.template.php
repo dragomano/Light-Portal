@@ -169,13 +169,13 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '">
-					<textarea id="message" tabindex="1" name="message" class="content" cols="20" rows="5" placeholder="', $txt['lp_comment_placeholder'], '" required></textarea>
+					', show_toolbar(), '
+					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" maxlength="', MAX_MSG_LENGTH, '" required></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
 					<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
 					<input type="hidden" name="page_title" value="', $context['page_title'], '">
-					<input type="hidden" name="page_alias" value="', $context['lp_page']['alias'], '">
 					<input type="hidden" name="page_url" value="', $context['lp_current_page_url'], '">
 					<input type="hidden" name="start" value="', $context['page_info']['start'], '">
 					<input type="hidden" name="commentator" value="0">
@@ -222,7 +222,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 
 	echo '
 	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" data-commentator="', $comment['author_id'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
-		<div class="comment_avatar">
+		<div class="comment_avatar"', $context['right_to_left'] ? ' style="padding: 0 0 0 10px"' : '', '>
 			', $comment['avatar'];
 
 	if (!empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['author_id'])
@@ -231,10 +231,10 @@ function show_single_comment($comment, $i = 0, $level = 1)
 
 	echo '
 		</div>
-		<div class="comment_wrapper">
+		<div class="comment_wrapper"', $context['right_to_left'] ? ' style="padding: 0 55px 0 0"' : '', '>
 			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', '">
 				<div class="title">
-					<span class="bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? ' style="cursor: pointer"' : '', '>
+					<span class="bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? (' style="cursor: pointer" data-parent="' . $comment['parent_id'] . '"') : '', '>
 						', $comment['author_name'], '
 					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
@@ -243,12 +243,26 @@ function show_single_comment($comment, $i = 0, $level = 1)
 						</span>
 					</div>
 				</div>
+				<div class="raw_content" style="display: none">', $comment['raw_message'], '</div>
 				<div class="content" itemprop="text"', $context['user']['is_guest'] || $level >= 5 ? ' style="min-height: 3em"' : '', '>', $comment['message'], '</div>';
 
-	if ($context['user']['is_logged'] && $level < 5) {
+	if ($context['user']['is_logged']) {
 		echo '
-				<div class="smalltext">
+				<div class="smalltext">';
+
+		if ($level < 5) {
+			echo '
 					<span class="button reply_button" data-id="', $comment['id'], '">', $txt['reply'], '</span>';
+
+			// Only comment author can edit comments
+			if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
+				echo '
+					<span class="button modify_button" data-id="', $comment['id'], '">', $txt['modify'], '</span>
+					<span class="button update_button" data-id="', $comment['id'], '">', $txt['save'], '</span>
+					<span class="button cancel_button" data-id="', $comment['id'], '">', $txt['modify_cancel'], '</span>';
+		} else {
+			echo '&nbsp;';
+		}
 
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
@@ -302,7 +316,7 @@ function show_related_pages()
 
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
-					<div>
+					<div class="windowbg">
 						<a href="', $scripturl, '?page=', $page['alias'], '">';
 
 		if (!empty($page['image'])) {
@@ -312,9 +326,9 @@ function show_related_pages()
 							</div>';
 		}
 
-		echo '',
-							$page['title'], '
+		echo '
 						</a>
+						<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a>
 					</div>';
 	}
 
@@ -322,4 +336,75 @@ function show_related_pages()
 				</div>
 			</div>
 		</aside>';
+}
+
+/**
+ * BBCode toolbar
+ *
+ * Панель вставки ББ-кода
+ *
+ * @return void
+ */
+function show_toolbar()
+{
+	global $context, $editortxt;
+
+	if (empty($context['lp_allowed_bbc']))
+		return;
+
+	echo '
+	<div class="toolbar descbox">';
+
+	if (in_array('b', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['bold'], '"><i class="fas fa-bold"></i></span>';
+	}
+
+	if (in_array('i', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['italic'], '"><i class="fas fa-italic"></i></span>';
+	}
+
+	if (in_array('b', $context['lp_allowed_bbc']) || in_array('i', $context['lp_allowed_bbc'])) {
+		echo '&nbsp;';
+	}
+
+	if (in_array('list', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['bullet_list'], '"><i class="fas fa-list-ul"></i></span>
+		<span class="button" title="', $editortxt['numbered_list'], '"><i class="fas fa-list-ol"></i></span>
+		&nbsp;';
+	}
+
+	if (in_array('youtube', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_youtube_video'], '"><i class="fab fa-youtube"></i></span>';
+	}
+
+	if (in_array('img', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_image'], '"><i class="fas fa-image"></i></span>';
+	}
+
+	if (in_array('url', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_link'], '"><i class="fas fa-link"></i></span>';
+	}
+
+	if (in_array('youtube', $context['lp_allowed_bbc']) || in_array('img', $context['lp_allowed_bbc']) || in_array('url', $context['lp_allowed_bbc'])) {
+		echo '&nbsp;';
+	}
+
+	if (in_array('code', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['code'], '"><i class="fas fa-code"></i></span>';
+	}
+
+	if (in_array('quote', $context['lp_allowed_bbc'])) {
+		echo '
+		<span class="button" title="', $editortxt['insert_quote'], '"><i class="fas fa-quote-right"></i></span>';
+	}
+
+	echo '
+	</div>';
 }

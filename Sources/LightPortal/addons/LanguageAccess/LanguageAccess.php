@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * LanguageAccess
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\LanguageAccess;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.1
+ * @version 1.3
  */
 
 if (!defined('SMF'))
@@ -19,7 +21,6 @@ if (!defined('SMF'))
 
 class LanguageAccess
 {
-
 	/**
 	 * Specifying the addon type (if 'block', you do not need to specify it)
 	 *
@@ -83,12 +84,12 @@ class LanguageAccess
 	 *
 	 * Валидируем параметры
 	 *
-	 * @param array $args
+	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$args)
+	public static function validateBlockData(&$parameters)
 	{
-		$args['parameters']['allowed_languages'] = array(
+		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
@@ -109,7 +110,7 @@ class LanguageAccess
 		if (isset($context['lp_block']['options']['parameters']['allowed_languages'])) {
 			$context['lp_block']['options']['parameters']['allowed_languages'] = is_array($context['lp_block']['options']['parameters']['allowed_languages']) ? $context['lp_block']['options']['parameters']['allowed_languages'] : explode(',', $context['lp_block']['options']['parameters']['allowed_languages']);
 		} else
-			$context['lp_block']['options']['parameters']['allowed_languages'] = $_POST['allowed_languages'] ?? [];
+			$context['lp_block']['options']['parameters']['allowed_languages'] = Helpers::post('allowed_languages', []);
 
 		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access_addon_allowed_languages'];
 		$context['posting_fields']['allowed_languages']['input'] = array(

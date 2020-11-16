@@ -19,8 +19,5 @@ $txt['lp_ads_block_addon_placement_set'] = array(
 	'before_every_last_post'  => 'Przed ostatnią wiadomością na każdej stronie wątku',
 	'before_last_post'        => 'Przed ostatnią wiadomością',
 	'after_first_post'        => 'Po pierwszej wiadomości',
-	'after_every_first_post'  => 'Po pierwszej wiadomości  na każdej stronie wątku',
-	'after_every_five_post'   => 'Po piątej wiadomości  na każdej stronie wątku',
-	'after_every_last_post'   => 'Po ostatniej wiadomości na każdej stronie wątku',
-	'after_last_post'         => 'Po ostatniej wiadomości'
+	'after_every_first_post'  => 'Po pierwszej wiadomości  na każdej stronie wątku'
 );
