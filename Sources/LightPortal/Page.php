@@ -388,7 +388,7 @@ class Page
 	 */
 	private static function prepareData(?array &$data)
 	{
-		global $user_info;
+		global $user_info, $modSettings;
 
 		if (empty($data))
 			return;
@@ -400,6 +400,100 @@ class Page
 		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
 		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
 		$data['keywords'] = $data['keywords'] ?? [];
+
+		if (!empty($modSettings['enable_likes'])) {
+			$user_likes = $user_info['is_guest'] ? [] : self::prepareLikesContext($data['id']);
+
+			$data['likes'] = array(
+				'count'    => self::getLikesCount($data['id']),
+				'you'      => in_array($data['id'], $user_likes),
+				'can_like' => !$user_info['is_guest'] && !$is_author && allowedTo('likes_like')
+			);
+		}
+	}
+
+	/**
+	 * Get an array of "likes" info for the $page and the current user
+	 *
+	 * Получаем массив лайков для страницы $page и текущего пользователя
+	 *
+	 * @param int $page
+	 * @return array
+	 */
+	private static function prepareLikesContext($page)
+	{
+		global $user_info, $smcFunc;
+
+		if (empty($page))
+			return [];
+
+		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
+
+		if (($liked_pages = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT content_id
+				FROM {db_prefix}user_likes AS l
+					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
+				WHERE l.id_member = {int:current_user}
+					AND l.content_type = {literal:lpp}
+					AND p.page_id = {int:page}',
+				array(
+					'current_user' => $user_info['id'],
+					'page'         => $page
+				)
+			);
+
+			$liked_pages = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request))
+				$liked_pages[] = (int) $row['content_id'];
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put($cache_key, $liked_pages, LP_CACHE_TIME);
+		}
+
+		return $liked_pages;
+	}
+
+	/**
+	 * Get number of likes for the $page
+	 *
+	 * Получаем количество лайков для страницы $page
+	 *
+	 * @param int $page
+	 * @return int
+	 */
+	private static function getLikesCount($page)
+	{
+		global $smcFunc;
+
+		if (empty($page))
+			return 0;
+
+		$cache_key = 'likes_page_' . $page . '_count';
+
+		if (($num_likes = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(content_id)
+				FROM {db_prefix}user_likes AS l
+					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
+				WHERE l.content_type = {literal:lpp}
+					AND p.page_id = {int:page}',
+				array(
+					'page' => $page
+				)
+			);
+
+			[$num_likes] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put($cache_key, $num_likes, LP_CACHE_TIME);
+		}
+
+		return (int) $num_likes;
 	}
 
 	/**

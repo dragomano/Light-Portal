@@ -39,6 +39,8 @@ class Integration
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
+		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes', false, __FILE__);
+		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline', false, __FILE__);
@@ -417,6 +419,66 @@ class Integration
 		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
+	}
+
+	/**
+	 * Validating data when like/unlike pages
+	 *
+	 * Валидируем данные при лайке/дизлайке страниц
+	 *
+	 * @param string $type
+	 * @param int $content
+	 * @return bool|array
+	 */
+	public static function validLikes($type, $content)
+	{
+		global $smcFunc, $user_info;
+
+		if ($type !== 'lpp')
+			return false;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT alias, author_id
+			FROM {db_prefix}lp_pages
+			WHERE page_id = {int:id}
+			LIMIT 1',
+			array(
+				'id' => $content
+			)
+		);
+
+		[$alias, $author] = $smcFunc['db_fetch_row']($request);
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		if (empty($alias))
+			return false;
+
+		$result = [
+			'type'        => $type,
+			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
+			'redirect'    => 'page=' . $alias,
+			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
+		];
+
+		return $result;
+	}
+
+	/**
+	 * Update cache on like/unlike pages
+	 *
+	 * Обновляем кэш при лайке/дизлайке страниц
+	 *
+	 * @param \Likes $obj
+	 * @return void
+	 */
+	public static function issueLike($obj)
+	{
+		if ($obj->get('type') !== 'lpp')
+			return;
+
+		Helpers::cache()->put('likes_page_' . $obj->get('content') . '_count', $obj->get('numLikes'));
 	}
 
 	/**

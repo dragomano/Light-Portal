@@ -85,7 +85,11 @@ function template_show_page()
 			<meta itemprop="image" content="', $settings['og_image'], '">';
 
 	echo '
-			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>
+			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
+
+	show_likes_block();
+
+	echo '
 		</article>';
 
 	show_related_pages();
@@ -94,6 +98,58 @@ function template_show_page()
 
 	echo '
 	</section>';
+}
+
+/**
+ * Likes block template
+ *
+ * Шаблон блока лайков
+ *
+ * @return void
+ */
+function show_likes_block()
+{
+	global $modSettings, $context, $scripturl, $txt, $settings;
+
+	if (empty($modSettings['enable_likes']))
+		return;
+
+	if (empty($context['lp_page']['likes']['can_like']) && empty($context['lp_page']['likes']['count']))
+		return;
+
+	echo '
+		<hr>
+		<ul class="likes_area floatleft">';
+
+	if (!empty($context['lp_page']['likes']['can_like'])) {
+		echo '
+			<li>
+				<a href="', $scripturl, '?action=likes;sa=like;ltype=lpp;like=', $context['lp_page']['id'], ';', $context['session_var'], '=', $context['session_id'], '" class="like_page">
+					<span class="main_icons ', $context['lp_page']['likes']['you'] ? 'unlike' : 'like', '"></span> ', $context['lp_page']['likes']['you'] ? $txt['unlike'] : $txt['like'], '
+				</a>
+			</li>';
+	}
+
+	if (!empty($context['lp_page']['likes']['count'])) {
+		$count = $context['lp_page']['likes']['count'];
+		$base  = 'likes_';
+
+		if ($context['lp_page']['likes']['you']) {
+			$base = 'you_' . $base;
+			$count--;
+		}
+
+		$base .= (isset($txt[$base . $count])) ? $count : 'n';
+
+		echo '
+			<li class="num_likes smalltext">
+				', sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=lpp;like=' . $context['lp_page']['id'] . ';' . $context['session_var'] . '=' . $context['session_id'], comma_format($count)), '
+			</li>';
+	}
+
+	echo '
+		</ul>
+		<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_likes.js"></script>';
 }
 
 /**

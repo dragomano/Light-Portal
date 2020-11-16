@@ -465,7 +465,16 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['lp_num_queries'] += 5;
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_likes
+			WHERE content_id IN ({array_int:items})
+				AND content_type = {literal:lpp}',
+			array(
+				'items' => $items
+			)
+		);
+
+		$smcFunc['lp_num_queries'] += 6;
 
 		Subs::runAddons('onPageRemoving', array($items));
 	}
