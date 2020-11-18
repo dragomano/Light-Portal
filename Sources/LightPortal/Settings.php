@@ -843,25 +843,15 @@ class Settings
 	 */
 	public static function getLastVersion()
 	{
-		if (!extension_loaded('curl'))
-			return LP_VERSION;
-
-		$ch = curl_init('https://api.github.com/repos/dragomano/light-portal/releases/latest');
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, [
-			"User-Agent: dragomano"
-		]);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		$data = curl_exec($ch);
-		curl_close($ch);
+		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 
 		if (empty($data))
 			return LP_VERSION;
 
-		$data = json_decode($data);
+		$data = json_decode($data, true);
 
-		if (LP_RELEASE_DATE < $data->published_at)
-			return str_replace('v', '', $data->tag_name);
+		if (LP_RELEASE_DATE < $data['published_at'])
+			return str_replace('v', '', $data['tag_name']);
 
 		return LP_VERSION;
 	}
