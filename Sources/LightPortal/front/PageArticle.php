@@ -36,7 +36,7 @@ class PageArticle extends Article
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
-		//if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
 
 			$custom_columns = [];
@@ -112,8 +112,8 @@ class PageArticle extends Article
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			//Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
-		//}
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+		}
 
 		return $pages;
 	}
