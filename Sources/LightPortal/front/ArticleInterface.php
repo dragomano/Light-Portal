@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 /**
- * IArticle.php
+ * ArticleInterface.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,10 +14,8 @@ namespace Bugo\LightPortal\Front;
  * @version 1.3
  */
 
-interface IArticle
+interface ArticleInterface
 {
-	public static function show();
-	public static function prepare(string $source);
 	public static function getData(int $start, int $limit);
 	public static function getTotal();
 }

@@ -198,8 +198,9 @@ class Subs
 		$dirs = glob(rtrim(LP_ADDONS, "/") . "/*", GLOB_ONLYDIR) or array();
 
 		$addons = [];
-		foreach ($dirs as $dir)
+		foreach ($dirs as $dir) {
 			$addons[] = basename($dir);
+		}
 
 		return $addons;
 	}

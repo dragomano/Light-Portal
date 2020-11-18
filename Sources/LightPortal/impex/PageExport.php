@@ -20,7 +20,7 @@ use Bugo\LightPortal\ManagePages;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageExport extends Export
+class PageExport extends AbstractExport
 {
 	/**
 	 * Prepare to export
@@ -52,10 +52,10 @@ class PageExport extends Export
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getAll'
+				'function' => array(ManagePages::class, 'getAll')
 			),
 			'get_count' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getTotalQuantity'
+				'function' => array(ManagePages::class, 'getTotalQuantity')
 			),
 			'columns' => array(
 				'id' => array(

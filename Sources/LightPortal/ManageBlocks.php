@@ -271,8 +271,9 @@ class ManageBlocks
 		$blocks = $data['update_priority'];
 
 		$conditions = '';
-		foreach ($blocks as $priority => $item)
+		foreach ($blocks as $priority => $item) {
 			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
+		}
 
 		if (empty($conditions))
 			return;
@@ -446,8 +447,9 @@ class ManageBlocks
 				'content_style' => FILTER_SANITIZE_STRING
 			);
 
-			foreach ($context['languages'] as $lang)
+			foreach ($context['languages'] as $lang) {
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+			}
 
 			$parameters = [];
 
@@ -487,8 +489,6 @@ class ManageBlocks
 
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? self::getPriority() : $context['lp_block']['priority'];
 
-		$context['lp_block']['content'] = Helpers::getShortenText($context['lp_block']['content']);
-
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
 				if (!empty($post_data['parameters'])) {
@@ -503,8 +503,9 @@ class ManageBlocks
 			}
 		}
 
-		foreach ($context['languages'] as $lang)
+		foreach ($context['languages'] as $lang) {
 			$context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_block']['title'][$lang['filename']] ?? '';
+		}
 
 		Helpers::cleanBbcode($context['lp_block']['title']);
 	}

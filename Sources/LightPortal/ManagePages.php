@@ -297,7 +297,7 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
@@ -668,8 +668,9 @@ class ManagePages
 				'content'     => FILTER_UNSAFE_RAW
 			);
 
-			foreach ($context['languages'] as $lang)
+			foreach ($context['languages'] as $lang) {
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+			}
 
 			$parameters = [];
 
@@ -715,8 +716,6 @@ class ManagePages
 			'options'     => $options
 		);
 
-		$context['lp_page']['content'] = Helpers::getShortenText($context['lp_page']['content']);
-
 		foreach ($context['lp_page']['options'] as $option => $value) {
 			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null) {
 				$post_data[$option] = 0;
@@ -725,8 +724,9 @@ class ManagePages
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
-		foreach ($context['languages'] as $lang)
+		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
+		}
 
 		Helpers::cleanBbcode($context['lp_page']['title']);
 	}

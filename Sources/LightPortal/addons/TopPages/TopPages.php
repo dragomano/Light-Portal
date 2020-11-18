@@ -160,7 +160,7 @@ class TopPages
 	{
 		global $smcFunc, $scripturl;
 
-		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments

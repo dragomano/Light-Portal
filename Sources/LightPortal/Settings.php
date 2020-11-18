@@ -47,9 +47,7 @@ class Settings
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
-							'function' => function () {
-								self::settingArea();
-							},
+							'function' => array(__CLASS__, 'settingArea'),
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
@@ -62,9 +60,7 @@ class Settings
 						),
 						'lp_blocks' => array(
 							'label' => $txt['lp_blocks'],
-							'function' => function () {
-								self::blockArea();
-							},
+							'function' => array(__CLASS__, 'blockArea'),
 							'icon' => 'modifications',
 							'amt' => count($context['lp_active_blocks']),
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
@@ -75,9 +71,7 @@ class Settings
 						),
 						'lp_pages' => array(
 							'label' => $txt['lp_pages'],
-							'function' => function () {
-								self::pageArea();
-							},
+							'function' => array(__CLASS__, 'pageArea'),
 							'icon' => 'posts',
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
@@ -138,11 +132,11 @@ class Settings
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'basic'   => 'Settings::basic',
-			'extra'   => 'Settings::extra',
-			'panels'  => 'Settings::panels',
-			'plugins' => 'Settings::plugins',
-			'misc'    => 'Settings::misc'
+			'basic'   => array(__CLASS__, 'basic'),
+			'extra'   => array(__CLASS__, 'extra'),
+			'panels'  => array(__CLASS__, 'panels'),
+			'plugins' => array(__CLASS__, 'plugins'),
+			'misc'    => array(__CLASS__, 'misc')
 		);
 
 		db_extend();
@@ -257,14 +251,16 @@ class Settings
 		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
-		foreach ($frontpage_mode_toggle as $item)
+		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+		}
 
 		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
-		foreach ($frontpage_alias_toggle as $item)
+		foreach ($frontpage_alias_toggle as $item) {
 			$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+		}
 
 		addInlineJavaScript('
 		function toggleFrontpageMode() {
@@ -306,8 +302,9 @@ class Settings
 		$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
 
 		$standalone_mode_toggle_dt = [];
-		foreach ($standalone_mode_toggle as $item)
+		foreach ($standalone_mode_toggle as $item) {
 			$standalone_mode_toggle_dt[] = 'setting_' . $item;
+		}
 
 		addInlineJavaScript('
 		function toggleStandaloneMode() {
@@ -387,8 +384,9 @@ class Settings
 		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
 
 		$show_comment_block_toggle_dt = [];
-		foreach ($show_comment_block_toggle as $item)
+		foreach ($show_comment_block_toggle as $item) {
 			$show_comment_block_toggle_dt[] = 'setting_' . $item;
+		}
 
 		addInlineJavaScript('
 		function toggleShowCommentBlock() {
@@ -415,13 +413,17 @@ class Settings
 
 			// Clean up the tags
 			$bbcTags = [];
-			foreach (parse_bbc(false) as $tag)
-				$bbcTags[] = $tag['tag'];
+			$parse_tags = parse_bbc(false);
 
-			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false)
+			foreach ($parse_tags as $tag) {
+				$bbcTags[] = $tag['tag'];
+			}
+
+			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
 				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
-			elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')))
+			} elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))) {
 				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
+			}
 
 			Helpers::post()->put('lp_enabled_bbc_in_comments', implode(',', Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
 			Helpers::post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))));
@@ -699,8 +701,9 @@ class Settings
 
 		if (is_array($data)) {
 			$all_types = [];
-			foreach ($data as $type)
+			foreach ($data as $type) {
 				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
+			}
 
 			return implode(' + ', $all_types);
 		}
@@ -745,14 +748,14 @@ class Settings
 		isAllowedTo('light_portal_manage_blocks');
 
 		$subActions = array(
-			'main' => 'ManageBlocks::main',
-			'add'  => 'ManageBlocks::add',
-			'edit' => 'ManageBlocks::edit'
+			'main' => array(ManageBlocks::class, 'main'),
+			'add'  => array(ManageBlocks::class, 'add'),
+			'edit' => array(ManageBlocks::class, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\BlockExport::main';
-			$subActions['import'] = 'Impex\BlockImport::main';
+			$subActions['export'] = array(Impex\BlockExport::class, 'main');
+			$subActions['import'] = array(Impex\BlockImport::class, 'main');
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -772,14 +775,14 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => 'ManagePages::main',
-			'add'  => 'ManagePages::add',
-			'edit' => 'ManagePages::edit'
+			'main' => array(ManagePages::class, 'main'),
+			'add'  => array(ManagePages::class, 'add'),
+			'edit' => array(ManagePages::class, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\PageExport::main';
-			$subActions['import'] = 'Impex\PageImport::main';
+			$subActions['export'] = array(Impex\PageExport::class, 'main');
+			$subActions['import'] = array(Impex\PageImport::class, 'main');
 		}
 
 		self::loadGeneralSettingParameters($subActions, 'main');
@@ -808,7 +811,7 @@ class Settings
 
 		$context['sub_action'] = $subAction;
 
-		call_helper(__NAMESPACE__ . '\\' . $subActions[$subAction]);
+		call_helper($subActions[$subAction]);
 	}
 
 	/**

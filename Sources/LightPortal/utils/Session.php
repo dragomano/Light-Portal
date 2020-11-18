@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Utils;
  * @version 1.3
  */
 
-class Session extends Arr
+class Session extends AbstractArray
 {
 	public static $obj;
 

@@ -147,7 +147,7 @@ class Tag
 	{
 		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
 
-		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -464,7 +464,7 @@ class Tag
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		$context['lp_frontpage_layout'] = Front\Article::getNumColumns();
+		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 		loadTemplate('LightPortal/ViewTags');

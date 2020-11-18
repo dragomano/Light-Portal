@@ -21,7 +21,7 @@ use Bugo\LightPortal\Subs;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageArticle extends Article
+class PageArticle implements ArticleInterface
 {
 	/**
 	 * Get active pages of the portal
@@ -37,7 +37,7 @@ class PageArticle extends Article
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+			$titles = Helpers::getAllTitles();
 
 			$custom_columns = [];
 			$custom_tables  = [];

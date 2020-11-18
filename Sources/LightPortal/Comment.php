@@ -123,7 +123,7 @@ class Comment
 			'page_id'     => FILTER_VALIDATE_INT,
 			'page_title'  => FILTER_SANITIZE_STRING,
 			'page_url'    => FILTER_SANITIZE_STRING,
-			'message'     => FILTER_SANITIZE_STRING,
+			'message'     => FILTER_DEFAULT,
 			'start'       => FILTER_VALIDATE_INT,
 			'commentator' => FILTER_VALIDATE_INT
 		);
@@ -139,7 +139,7 @@ class Comment
 		$page_id     = $data['page_id'];
 		$page_title  = $data['page_title'];
 		$page_url    = $data['page_url'];
-		$message     = Helpers::getShortenText($data['message']);
+		$message     = $smcFunc['htmlspecialchars']($data['message']);
 		$start       = $data['start'];
 		$commentator = $data['commentator'];
 
@@ -242,7 +242,7 @@ class Comment
 			return;
 
 		$item    = $data['comment_id'];
-		$message = Helpers::validate(Helpers::getShortenText($data['message']));
+		$message = Helpers::validate($data['message']);
 
 		if (empty($item) || empty($message))
 			return;
@@ -313,7 +313,7 @@ class Comment
 			),
 			array(
 				'task_file'  => '$sourcedir/LightPortal/Notify.php',
-				'task_class' => '\Bugo\LightPortal\Notify',
+				'task_class' => Notify::class,
 				'task_data'  => $smcFunc['json_encode']([
 					'time'           => $options['created'],
 					'sender_id'	     => $user_info['id'],

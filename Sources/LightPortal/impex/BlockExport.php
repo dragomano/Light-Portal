@@ -20,7 +20,7 @@ use Bugo\LightPortal\ManageBlocks;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class BlockExport extends Export
+class BlockExport extends AbstractExport
 {
 	/**
 	 * The page of export blocks

@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageImport extends Import
+class PageImport extends AbstractImport
 {
 	/**
 	 * Page import

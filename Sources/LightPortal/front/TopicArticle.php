@@ -20,7 +20,7 @@ use Bugo\LightPortal\Subs;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class TopicArticle extends Article
+class TopicArticle implements ArticleInterface
 {
 	/**
 	 * Get topics from selected boards

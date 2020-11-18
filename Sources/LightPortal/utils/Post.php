@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Utils;
  * @version 1.3
  */
 
-class Post extends Arr
+class Post extends AbstractArray
 {
 	public static $obj;
 

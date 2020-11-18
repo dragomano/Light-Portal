@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 /**
- * Import.php
+ * AbstractImport.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Impex;
  * @version 1.3
  */
 
-abstract class Import implements IImport
+abstract class AbstractImport implements ImportInterface
 {
 	abstract protected static function run();
 }

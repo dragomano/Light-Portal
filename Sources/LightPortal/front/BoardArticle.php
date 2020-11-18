@@ -20,7 +20,7 @@ use Bugo\LightPortal\Subs;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class BoardArticle extends Article
+class BoardArticle implements ArticleInterface
 {
 	/**
 	 * Get selected boards

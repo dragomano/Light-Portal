@@ -170,7 +170,7 @@ class TagList
 
 		if ($parameters['source'] == 'lp_tags') {
 			$tag_list = Helpers::cache(
-				'tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', '\Bugo\LightPortal\Tag', $cache_time, ...array(0, 0, 'value')
+				'tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', \Bugo\LightPortal\Tag::class, $cache_time, ...array(0, 0, 'value')
 			);
 		} else {
 			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);

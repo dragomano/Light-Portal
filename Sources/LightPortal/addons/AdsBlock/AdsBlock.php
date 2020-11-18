@@ -115,8 +115,9 @@ class AdsBlock
 			return [];
 
 		$ads_blocks = [];
-		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump)
+		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump) {
 			$ads_blocks[$position] = self::getByPosition($position);
+		}
 
 		return $ads_blocks;
 	}

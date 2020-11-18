@@ -48,7 +48,7 @@ class Helpers
 	 * Получаем объект $_POST
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function post($key = null, $default = null)
@@ -140,7 +140,7 @@ class Helpers
 	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle(string $prefix = null)
+	public static function getPreviewTitle($prefix = null)
 	{
 		global $context, $txt;
 
@@ -516,21 +516,7 @@ class Helpers
 	{
 		global $modSettings;
 
-		return !empty($modSettings['lp_teaser_size']) ? self::getShortenText(trim($text), $modSettings['lp_teaser_size']) : trim($text);
-	}
-
-	/**
-	 * Get the shorten text cut to the given length
-	 *
-	 * Получаем обрезанный до заданной длины текст
-	 *
-	 * @param string $text
-	 * @param int $length
-	 * @return string
-	 */
-	public static function getShortenText(string $text, int $length = MAX_MSG_LENGTH)
-	{
-		return shorten_subject($text, $length);
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 
 	/**
@@ -714,5 +700,18 @@ class Helpers
 			return number_format($value / $k, 1) . 'K';
 
 		return $value;
+	}
+
+	/**
+	 * Get array of titles for page/block object type from cache
+	 *
+	 * Получаем из кэша массив всех заголовков для объекта типа page/block
+	 *
+	 * @param string $type
+	 * @return array
+	 */
+	public static function getAllTitles(string $type = 'page')
+	{
+		return Helpers::cache('all_titles', 'getAllTitles', Subs::class, LP_CACHE_TIME, $type);
 	}
 }

@@ -130,8 +130,8 @@ class Integration
 			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
 			: false;
 
-		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', __NAMESPACE__ . '\Subs');
-		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', __NAMESPACE__ . '\Subs');
+		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', Subs::class);
+		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', Subs::class);
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
@@ -169,7 +169,7 @@ class Integration
 	{
 		global $context, $modSettings;
 
-		$actions['portal'] = array('LightPortal/front/Article.php', array(__NAMESPACE__ . '\Front\Article', 'show'));
+		$actions['portal'] = array('LightPortal/FrontPage.php', array(FrontPage::class, 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
@@ -194,7 +194,7 @@ class Integration
 		global $modSettings, $sourcedir;
 
 		if (Helpers::request()->filled('page'))
-			return call_user_func(array(__NAMESPACE__ . '\Page', 'show'));
+			return call_user_func(array(Page::class, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
 			require_once($sourcedir . '/BoardIndex.php');
@@ -203,7 +203,7 @@ class Integration
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			return call_user_func(array(__NAMESPACE__ . '\Front\Article', 'show'));
+			return call_user_func(array(FrontPage::class, 'show'));
 	}
 
 	/**
