@@ -101,6 +101,9 @@ class Block
 		if (!empty($context['current_board']) || !empty($context['lp_page']))
 			$area = '';
 
+		if (!empty($context['lp_page']) && Helpers::isFrontPage($context['lp_page']['alias']))
+			$area = 'portal';
+
 		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
@@ -108,7 +111,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if (empty($context['current_action']) && Helpers::request()->filled('page') && (isset($block['areas']['page=' . Helpers::request('page')]) || isset($block['areas']['pages'])))
+			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas']['page=' . $context['lp_page']['alias']])))
 				return true;
 
 			if (empty($context['current_board']))
