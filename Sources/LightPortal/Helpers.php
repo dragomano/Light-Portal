@@ -712,6 +712,6 @@ class Helpers
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		return Helpers::cache('all_titles', 'getAllTitles', Subs::class, LP_CACHE_TIME, $type);
+		return self::cache('all_titles', 'getAllTitles', Subs::class, LP_CACHE_TIME, $type);
 	}
 }

@@ -115,7 +115,6 @@ class Settings
 		$settings_search[] = array(__CLASS__ . '::extra', 'area=lp_settings;sa=extra');
 		$settings_search[] = array(__CLASS__ . '::panels', 'area=lp_settings;sa=panels');
 		$settings_search[] = array(__CLASS__ . '::misc', 'area=lp_settings;sa=misc');
-
 	}
 
 	/**
@@ -826,7 +825,7 @@ class Settings
 		global $context, $txt;
 
 		// Check once a week | Проверяем раз в неделю
-		if (LP_VERSION < $new_version = Helpers::cache('last_version', 'getLastVersion', __CLASS__, 604800)) {
+		if (version_compare(LP_VERSION, $new_version = Helpers::cache('last_version', 'getLastVersion', __CLASS__, 604800), '<')) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)

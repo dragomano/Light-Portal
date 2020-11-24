@@ -178,6 +178,8 @@ class PageImport extends AbstractImport
 					array('page_id'),
 					2
 				);
+
+				$smcFunc['lp_num_queries']++;
 			}
 		}
 
@@ -205,7 +207,7 @@ class PageImport extends AbstractImport
 
 		if (!empty($comments) && !empty($result)) {
 			$comments = array_chunk($comments, 100);
-			$count = sizeof($comments);
+			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
 				$result = $smcFunc['db_insert']('replace',
@@ -229,7 +231,7 @@ class PageImport extends AbstractImport
 
 		if (!empty($params) && !empty($result)) {
 			$params = array_chunk($params, 100);
-			$count = sizeof($params);
+			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
 				$result = $smcFunc['db_insert']('replace',
@@ -250,7 +252,7 @@ class PageImport extends AbstractImport
 		}
 
 		if (!empty($tags) && !empty($result)) {
-			$tags = array_chunk($tags, 100);
+			$tags  = array_chunk($tags, 100);
 			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {

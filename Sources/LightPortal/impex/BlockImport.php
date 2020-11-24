@@ -57,10 +57,17 @@ class BlockImport extends AbstractImport
 	 */
 	protected static function run()
 	{
-		global $smcFunc;
+		global $db_temp_cache, $db_cache, $smcFunc;
 
 		if (empty($_FILES['import_file']))
 			return;
+
+		// Might take some time.
+		@set_time_limit(600);
+
+		// Don't allow the cache to get too full
+		$db_temp_cache = $db_cache;
+		$db_cache = [];
 
 		$file = $_FILES['import_file'];
 
@@ -125,68 +132,86 @@ class BlockImport extends AbstractImport
 		}
 
 		if (!empty($items)) {
-			$result = $smcFunc['db_insert']('replace',
-				'{db_prefix}lp_blocks',
-				array(
-					'block_id'      => 'int',
-					'icon'          => 'string-60',
-					'icon_type'     => 'string-10',
-					'type'          => 'string',
-					'content'       => 'string-' . MAX_MSG_LENGTH,
-					'placement'     => 'string-10',
-					'priority'      => 'int',
-					'permissions'   => 'int',
-					'status'        => 'int',
-					'areas'         => 'string',
-					'title_class'   => 'string',
-					'title_style'   => 'string',
-					'content_class' => 'string',
-					'content_style' => 'string'
-				),
-				$items,
-				array('block_id'),
-				2
-			);
+			$items = array_chunk($items, 100);
+			$count = sizeof($items);
 
-			$smcFunc['lp_num_queries']++;
+			for ($i = 0; $i < $count; $i++) {
+				$result = $smcFunc['db_insert']('replace',
+					'{db_prefix}lp_blocks',
+					array(
+						'block_id'      => 'int',
+						'icon'          => 'string-60',
+						'icon_type'     => 'string-10',
+						'type'          => 'string',
+						'content'       => 'string-' . MAX_MSG_LENGTH,
+						'placement'     => 'string-10',
+						'priority'      => 'int',
+						'permissions'   => 'int',
+						'status'        => 'int',
+						'areas'         => 'string',
+						'title_class'   => 'string',
+						'title_style'   => 'string',
+						'content_class' => 'string',
+						'content_style' => 'string'
+					),
+					$items[$i],
+					array('block_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
 		}
 
 		if (!empty($titles) && !empty($result)) {
-			$result = $smcFunc['db_insert']('replace',
-				'{db_prefix}lp_titles',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'title'   => 'string'
-				),
-				$titles,
-				array('item_id', 'type', 'lang'),
-				2
-			);
+			$titles = array_chunk($titles, 100);
+			$count  = sizeof($titles);
 
-			$smcFunc['lp_num_queries']++;
+			for ($i = 0; $i < $count; $i++) {
+				$result = $smcFunc['db_insert']('replace',
+					'{db_prefix}lp_titles',
+					array(
+						'item_id' => 'int',
+						'type'    => 'string',
+						'lang'    => 'string',
+						'title'   => 'string'
+					),
+					$titles[$i],
+					array('item_id', 'type', 'lang'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
 		}
 
 		if (!empty($params) && !empty($result)) {
-			$result = $smcFunc['db_insert']('replace',
-				'{db_prefix}lp_params',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string'
-				),
-				$params,
-				array('item_id', 'type', 'name'),
-				2
-			);
+			$params = array_chunk($params, 100);
+			$count  = sizeof($params);
 
-			$smcFunc['lp_num_queries']++;
+			for ($i = 0; $i < $count; $i++) {
+				$result = $smcFunc['db_insert']('replace',
+					'{db_prefix}lp_params',
+					array(
+						'item_id' => 'int',
+						'type'    => 'string',
+						'name'    => 'string',
+						'value'   => 'string'
+					),
+					$params[$i],
+					array('item_id', 'type', 'name'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
 		}
 
 		if (empty($result))
 			fatal_lang_error('lp_import_failed', false);
+
+		// Restore the cache
+		$db_cache = $db_temp_cache;
 
 		Helpers::cache()->flush();
 	}

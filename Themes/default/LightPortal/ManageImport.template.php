@@ -19,7 +19,7 @@ function template_manage_import()
 		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
 				<input name="import_file" type="file" accept="text/xml">
-				<button class="button" type="submit" style="float: none">', $txt['lp_import_run'], '</button>
+				<button class="button floatnone" type="submit">', $txt['lp_import_run'], '</button>
 			</div>
 		</form>
 	</div>';
