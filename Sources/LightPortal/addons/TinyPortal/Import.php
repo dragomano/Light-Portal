@@ -144,7 +144,12 @@ class Import extends AbstractImport
 	 */
 	public static function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
 	{
-		global $smcFunc;
+		global $smcFunc, $db_prefix;
+
+		db_extend();
+
+		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'tp_articles')))
+			return [];
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id, date, subject, author_id, off, views, shortname, type
@@ -187,7 +192,12 @@ class Import extends AbstractImport
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc;
+		global $smcFunc, $db_prefix;
+
+		db_extend();
+
+		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'tp_articles')))
+			return 0;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(*)
@@ -232,6 +242,8 @@ class Import extends AbstractImport
 
 		$titles = $params = [];
 		foreach ($items as $page_id => $item) {
+			$items[$page_id]['num_comments'] = sizeof($comments[$page_id]);
+
 			$titles[] = [
 				'item_id' => $page_id,
 				'type'    => 'page',
@@ -312,30 +324,6 @@ class Import extends AbstractImport
 			}
 		}
 
-		if (!empty($comments) && !empty($result)) {
-			$comments = array_chunk($comments, 100);
-			$count    = sizeof($comments);
-
-			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
-					'{db_prefix}lp_comments',
-					array(
-						'id'         => 'int',
-						'parent_id'  => 'int',
-						'page_id'    => 'int',
-						'author_id'  => 'int',
-						'message'    => 'string-' . MAX_MSG_LENGTH,
-						'created_at' => 'int'
-					),
-					$comments[$i],
-					array('id', 'page_id'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-		}
-
 		if (!empty($params) && !empty($result)) {
 			$params = array_chunk($params, 100);
 			$count  = sizeof($params);
@@ -351,6 +339,38 @@ class Import extends AbstractImport
 					),
 					$params[$i],
 					array('item_id', 'type', 'name'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
+		}
+
+		if (!empty($comments) && !empty($result)) {
+			$temp = [];
+
+			foreach ($comments as $item_id => $comment) {
+				foreach ($comment as $com) {
+					$temp[] = $com;
+				}
+			}
+
+			$comments = array_chunk($temp, 100);
+			$count    = sizeof($comments);
+
+			for ($i = 0; $i < $count; $i++) {
+				$result = $smcFunc['db_insert']('replace',
+					'{db_prefix}lp_comments',
+					array(
+						'id'         => 'int',
+						'parent_id'  => 'int',
+						'page_id'    => 'int',
+						'author_id'  => 'int',
+						'message'    => 'string-' . MAX_MSG_LENGTH,
+						'created_at' => 'int'
+					),
+					$comments[$i],
+					array('id', 'page_id'),
 					2
 				);
 
@@ -376,16 +396,13 @@ class Import extends AbstractImport
 		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3, COUNT(c.id) AS num_comments
+			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
 			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})
-				LEFT JOIN {db_prefix}tp_comments AS c ON (a.id = c.item_id) AND c.item_type = {string:comment_type}' . (!empty($pages) ? '
-			WHERE a.id IN ({array_int:pages})' : '') . '
-			GROUP BY a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3',
+				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (!empty($pages) ? '
+			WHERE a.id IN ({array_int:pages})' : ''),
 			array(
-				'type'         => 'category',
-				'comment_type' => 'article_comment',
-				'pages'        => $pages
+				'type'  => 'category',
+				'pages' => $pages
 			)
 		);
 
@@ -414,7 +431,7 @@ class Import extends AbstractImport
 				'permissions'  => $perm,
 				'status'       => (int) empty($row['off']),
 				'num_views'    => $row['views'],
-				'num_comments' => $row['num_comments'],
+				'num_comments' => 0,
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
 				'subject'      => $row['subject'],
@@ -449,7 +466,7 @@ class Import extends AbstractImport
 
 		$comments = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$comments[] = array(
+			$comments[$row['item_id']][] = array(
 				'id'         => $row['id'],
 				'parent_id'  => 0,
 				'page_id'    => $row['item_id'],

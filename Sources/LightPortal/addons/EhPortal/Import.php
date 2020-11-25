@@ -144,7 +144,12 @@ class Import extends AbstractImport
 	 */
 	public static function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page')
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc, $db_prefix, $user_info;
+
+		db_extend();
+
+		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'sp_pages')))
+			return [];
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
@@ -187,7 +192,12 @@ class Import extends AbstractImport
 	 */
 	public static function getTotalQuantity()
 	{
-		global $smcFunc;
+		global $smcFunc, $db_prefix;
+
+		db_extend();
+
+		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'sp_pages')))
+			return 0;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(*)
