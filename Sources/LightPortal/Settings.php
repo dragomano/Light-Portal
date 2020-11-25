@@ -757,6 +757,8 @@ class Settings
 			$subActions['import'] = array(Impex\BlockImport::class, 'main');
 		}
 
+		Subs::runAddons('addBlockAreas', array(&$subActions));
+
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
 
@@ -783,6 +785,8 @@ class Settings
 			$subActions['export'] = array(Impex\PageExport::class, 'main');
 			$subActions['import'] = array(Impex\PageImport::class, 'main');
 		}
+
+		Subs::runAddons('addPageAreas', array(&$subActions));
 
 		self::loadGeneralSettingParameters($subActions, 'main');
 	}
