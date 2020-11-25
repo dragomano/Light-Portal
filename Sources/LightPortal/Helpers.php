@@ -473,35 +473,19 @@ class Helpers
 	 *
 	 * Получаем строку, преобразованную в snake_case
 	 *
-	 * @param string $str
-	 * @param string $glue
+	 * @param string $value
+	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $str, string $glue = '_')
+	public static function getSnakeName(string $value, string $delimiter = '_')
 	{
-		$counter  = 0;
-		$uc_chars = '';
-		$new_str  = [];
-		$str_len  = strlen($str);
+		if (!ctype_lower($value)) {
+			$value = preg_replace('/\s+/u', '', ucwords($value));
 
-		for ($x = 0; $x < $str_len; ++$x) {
-			$ascii_val = ord($str[$x]);
-
-			if ($ascii_val >= 65 && $ascii_val <= 90)
-				$uc_chars .= $str[$x];
+			$value = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
 		}
 
-		$tok = strtok($str, $uc_chars);
-
-		while ($tok !== false) {
-			$new_char  = chr(ord($uc_chars[$counter]) + 32);
-			$new_str[] = $new_char . $tok;
-			$tok       = strtok($uc_chars);
-
-			++$counter;
-		}
-
-		return implode($glue, $new_str);
+		return $value;
 	}
 
 	/**
