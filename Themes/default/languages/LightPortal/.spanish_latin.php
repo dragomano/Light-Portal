@@ -110,6 +110,7 @@ $txt['lp_plugins_hooks_types'] = array(
 	'parser' => 'Analizador de contenido',
 	'article' => 'Procesamiento de artículos',
 	'frontpage' => 'The layout of the frontpage',
+	'impex' => 'Import and export',
 	'other' => 'Otro'
 );
 
