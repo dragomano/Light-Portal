@@ -73,7 +73,7 @@ class UserInfo
 
 			echo '
 			<ul class="centertext">
-				<li>', $txt['hello_member'], ' <strong>', $userData['name_color'], '</strong></li>';
+				<li>', $txt['hello_member'], ' <strong style="word-break: break-all">', $userData['name_color'], '</strong></li>';
 
 			if (!empty($userData['avatar'])) {
 				echo '
