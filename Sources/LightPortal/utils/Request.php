@@ -48,4 +48,24 @@ class Request extends AbstractArray
 
 		return false;
 	}
+
+	/**
+	 * Get the JSON payload for the request
+	 *
+	 * Получаем данные JSON из запроса
+	 *
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public static function json($key = null, $default = null)
+	{
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if (isset($data[$key])) {
+			return $data[$key] ?: $default;
+		}
+
+		return $data;
+	}
 }

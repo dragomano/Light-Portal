@@ -235,8 +235,7 @@ class Comment
 	{
 		global $smcFunc, $context;
 
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
+		$data = Helpers::request()->json();
 
 		if (empty($data))
 			return;
@@ -347,9 +346,7 @@ class Comment
 	{
 		global $smcFunc;
 
-		$json  = file_get_contents('php://input');
-		$data  = json_decode($json, true);
-		$items = $data['items'];
+		$items = Helpers::request()->json('items');
 
 		if (empty($items))
 			return;

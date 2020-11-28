@@ -388,8 +388,7 @@ class ManagePages
 		if (Helpers::request()->has('actions') === false)
 			return;
 
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
+		$data = Helpers::request()->json();
 
 		if (!empty($data['del_item']))
 			$this->remove([(int) $data['del_item']]);

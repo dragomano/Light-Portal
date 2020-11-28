@@ -595,8 +595,7 @@ class Settings
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
+		$data = Helpers::request()->json();
 
 		if (isset($data['toggle_plugin'])) {
 			$plugin_id = (int) $data['toggle_plugin'];
