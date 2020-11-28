@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Delete page, toggle status
 	lpPages.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.del_page')) {
 				lpDeletePage.call(target);
 				break;
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Toggle a spinner for "plus" icon
 	lpPages.onmouseover = lpPages.onmouseout = e => {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.fa-plus')) {
 				target.classList.toggle('fa-spin')
 			}

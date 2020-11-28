@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			const nextElem = e.item.nextElementSibling,
 				prevElem = e.item.previousElementSibling;
 
-			if (nextElem && nextElem.className == 'windowbg centertext') {
+			if (nextElem && nextElem.className === 'windowbg centertext') {
 				nextElem.remove()
-			} else if (prevElem && prevElem.className == 'windowbg centertext') {
+			} else if (prevElem && prevElem.className === 'windowbg centertext') {
 				prevElem.remove()
 			}
 		} else {
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Toggle status, clone/delete block
 	lpBlockActions.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.actions .toggle_status')) {
 				lpToggleStatus.call(target);
 				break;
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Toggle a spinner for "plus" icon
 	if (lpControlForm) {
 		lpControlForm.onmouseover = lpControlForm.onmouseout = e => {
-			for (let target = e.target; target && target != this; target = target.parentNode) {
+			for (let target = e.target; target && target !== this; target = target.parentNode) {
 				if (target.matches('.fa-plus')) {
 					target.classList.toggle('fa-spin')
 				}

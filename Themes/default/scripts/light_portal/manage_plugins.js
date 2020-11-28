@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Save plugin settings
 	lpPlugins.addEventListener('submit', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.form_settings')) {
 				lpSubmitForm.call(target, e);
 				break;
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Toggle plugin, show/close settings
 	lpPlugins.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.lp_plugin_toggle')) {
 				lpTogglePlugin.call(target, e);
 				break;
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error(response)
 		}
 
-		if (this.getAttribute('data-toggle') == 'on') {
+		if (this.getAttribute('data-toggle') === 'on') {
 			this.classList.toggle('fa-toggle-on');
 			this.classList.toggle('fa-toggle-off');
 			this.setAttribute('data-toggle', 'off');

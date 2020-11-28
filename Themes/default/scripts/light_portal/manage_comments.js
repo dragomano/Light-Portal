@@ -19,16 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Disabled/enabled a submit button on textarea changing
 	message.addEventListener('keyup', function () {
-		if (this.value) {
-			commentForm.comment.disabled = false
-		} else {
-			commentForm.comment.disabled = true
-		}
+		commentForm.comment.disabled = !this.value;
 	}, false);
 
 	// Post/remove comments & paste nickname to comment reply form
 	pageComments.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('span.reply_button')) {
 				lpLeaveReply.call(target);
 				break;
@@ -252,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Post a comment on form submitting
 	pageComments.addEventListener('submit', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('[id="comment_form"]')) {
 				lpSubmitForm.call(target, e);
 				break;
@@ -272,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			let data = await response.json(),
 				comment = data.comment;
 
-			if (data.parent != 0) {
+			if (data.parent) {
 				const liElem = document.querySelector('li[data-id="' + data.parent + '"]'),
 					commentList = liElem.querySelector('ul.comment_list'),
 					commentWrap = liElem.querySelector('.comment_wrapper');
@@ -318,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				let hasStartParam = window.location.search.match(/start./i);
 
 				if (! hasStartParam) {
-					if (commentForm.start.value == 0) {
+					if (! commentForm.start.value) {
 						window.location.hash = '#comment' + data.item;
 					} else {
 						window.location.hash = '';

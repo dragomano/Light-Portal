@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		pageContent = document.getElementById('content');
 
 	formPage.addEventListener('change', function (e) {
-		if (e.target.required && e.target.value == '') {
+		if (e.target.required && e.target.value === '') {
 			pageType.disabled = true
 		} else {
 			pageType.disabled = false;
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const aliasField = document.getElementById('alias').value;
 
 			// Create a page alias on page type changing
-			if (aliasField == '' && typeof (slugify) === 'function') {
+			if (aliasField === '' && typeof (slugify) === 'function') {
 				const firstTitle = document.getElementById('content-tab1').querySelector('input').value;
 				document.getElementById('alias').value = slugify(firstTitle, {
 					separator: '_',
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Goto a required form element on page posting
 	formPage.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('button')) {
 				lpPostPage.call(target);
 				break;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		const formElements = formPage.elements;
 
 		for (let i = 0; i < formElements.length; i++) {
-			if (formElements[i].required && formElements[i].value == '' || !formElements[i].validity.valid) {
+			if (formElements[i].required && formElements[i].value === '' || !formElements[i].validity.valid) {
 				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;

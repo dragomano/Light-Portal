@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	"use strict";
 
 	document.addEventListener('click', function (e) {
-		for (let target = e.target; target && target != this; target = target.parentNode) {
+		for (let target = e.target; target && target !== this; target = target.parentNode) {
 			if (target.matches('.num_likes a')) {
 				lpShowLikes.call(target, e);
 				break;
