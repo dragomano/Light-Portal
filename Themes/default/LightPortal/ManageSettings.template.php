@@ -251,7 +251,7 @@ echo '
  */
 function template_callback_panel_direction()
 {
-	global $txt, $context, $modSettings;
+	global $txt, $context;
 
 	echo '
 	<dt style="width: 0"></dt>

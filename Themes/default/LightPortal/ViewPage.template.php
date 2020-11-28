@@ -56,7 +56,7 @@ function template_show_page()
 			<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '" content="', $context['canonical_url'], '">
 			<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
 				<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
-					<img itemprop="url image" src="', $context['header_logo_url_html_safe'] ?: ($settings['images_url'] . '/thumbnail.png'), '" style="display:none" alt="">
+					<img alt="" itemprop="url image" src="', $context['header_logo_url_html_safe'] ?: ($settings['images_url'] . '/thumbnail.png'), '" style="display:none">
 				</span>
 				<meta itemprop="name" content="', $context['forum_name_html_safe'], '">
 				<meta itemprop="address" content="', !empty($modSettings['lp_page_itemprop_address']) ? $modSettings['lp_page_itemprop_address'] : $boardurl, '">
@@ -252,7 +252,7 @@ function show_comment_block()
 
 	echo '
 		<script>
-			const isCurrentlyCollapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
+			let isCurrentlyCollapsed = ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggleAltExpandedTitle = ', JavaScriptEscape($txt['hide']), ',
 				toggleAltCollapsedTitle = ', JavaScriptEscape($txt['show']), ',
 				toggleMsgBlockTitle = ', JavaScriptEscape($txt['lp_comments']), ',
@@ -378,7 +378,7 @@ function show_related_pages()
 		if (!empty($page['image'])) {
 			echo '
 							<div class="article_image">
-								<img src="', $page['image'], '" alt="">
+								<img alt="" src="', $page['image'], '">
 							</div>';
 		}
 

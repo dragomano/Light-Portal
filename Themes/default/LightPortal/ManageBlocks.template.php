@@ -37,9 +37,9 @@ function show_block_table()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
-			$bloсk_group_type = 'default';
+			$block_group_type = 'default';
 			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
-				$bloсk_group_type = 'additional';
+				$block_group_type = 'additional';
 
 			echo '
 	<div class="cat_bar">
@@ -52,7 +52,7 @@ function show_block_table()
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
-	<table class="lp_', $bloсk_group_type, '_blocks table_grid centertext">';
+	<table class="lp_', $block_group_type, '_blocks table_grid centertext">';
 
 			if (is_array($blocks)) {
 				echo '
@@ -113,7 +113,7 @@ function show_block_table()
  */
 function show_block_entry($id, $data)
 {
-	global $modSettings, $context, $language, $txt, $settings, $scripturl;
+	global $modSettings, $context, $language, $txt, $scripturl;
 
 	if (empty($id) || empty($data))
 		return;
@@ -151,13 +151,25 @@ function show_block_entry($id, $data)
 
 		if ($context['lp_fontawesome_enabled']) {
 			echo '
-			<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
+			<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
+
+			if (isset($txt['lp_block_types'][$data['type']])) {
+				echo '
+			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>';
+			}
+
+			echo '
 			<span class="fas fa-trash del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 		} else {
 			echo '
-			<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
+			<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
+
+			if (isset($txt['lp_block_types'][$data['type']])) {
+				echo '
+			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>';
+			}
+
+			echo '
 			<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
 		}
 
@@ -191,7 +203,7 @@ function template_block_add()
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
 					<div class="item roundframe" data-type="', $type, '">
-						<i class="', $txt['lp_' . $type . '_icon'], '"></i>
+						<i class="', $context['lp_' . $type . '_icon'], '"></i>
 						<strong>', $title, '</strong>
 						<hr>
 						<p>', $txt['lp_block_types_descriptions'][$type], '</p>

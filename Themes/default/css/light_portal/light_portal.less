@@ -136,10 +136,6 @@
 	}
 }
 
-#admin_content {
-	overflow-x: auto;
-}
-
 #lp_layout {
 	h3, h4 {
 		&:hover {
@@ -647,7 +643,7 @@ section {
 
 /* Tabs for settings */
 .lp_tabs {
-	padding: 0px;
+	padding: 0;
 	margin: 0 auto;
 
 	> input {
@@ -675,8 +671,7 @@ section {
 		font-weight: 600;
 		text-align: center;
 		color: @tabs-label-color;
-		border: 0px solid @color-light-gray;
-		border-width: 1px 1px 1px 1px;
+		border: 1px solid @color-light-gray;
 		border-radius: 3px 3px 0 0;
 
 		&:hover {
@@ -1046,7 +1041,7 @@ dl {
 	}
 }
 .slider__item {
-	padding: 0px 15px;
+	padding: 0 15px;
 
 	img {
 		max-width: 100%;
