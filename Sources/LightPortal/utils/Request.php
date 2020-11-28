@@ -24,61 +24,6 @@ class Request extends AbstractArray
 	}
 
 	/**
-	 * Get the current $_SERVER['REQUEST_URI']
-	 *
-	 * Получаем текущий $_SERVER['REQUEST_URI']
-	 *
-	 * @return string
-	 */
-	public static function path()
-	{
-		return Server('REQUEST_URI', '');
-	}
-
-	/**
-	 * Get the full url without queries
-	 *
-	 * Получаем полный URL без параметров
-	 *
-	 * @return string
-	 */
-	public static function url()
-	{
-		return explode(';', static::fullUrl())[0];
-	}
-
-	/**
-	 * Get the current page url
-	 *
-	 * Получаем URL текущей страницы
-	 *
-	 * @return string
-	 */
-	public static function fullUrl()
-	{
-		return Server('REQUEST_URL', '');
-	}
-
-	/**
-	 * Get the current page url with queries
-	 *
-	 * Получаем URL текущей страницы, вместе с параметрами запроса
-	 *
-	 * @param array $query
-	 * @return string
-	 */
-	public static function fullUrlWithQuery(array $query = [])
-	{
-		$queries = '';
-
-		foreach ($query as $key => $value) {
-			$queries .= ";{$key}={$value}";
-		}
-
-		return static::fullUrl() . $queries;
-	}
-
-	/**
 	 * Check if the current action matches one of given patterns
 	 *
 	 * Проверяем, соответствует ли текущий action одному из указанных в $patterns
