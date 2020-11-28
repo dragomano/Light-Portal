@@ -29,7 +29,7 @@ class BlockExport extends AbstractExport
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -44,9 +44,9 @@ class BlockExport extends AbstractExport
 			'description' => $txt['lp_blocks_export_tab_description']
 		);
 
-		self::run();
+		$this->run();
 
-		$context['lp_current_blocks'] = ManageBlocks::getAll();
+		$context['lp_current_blocks'] = (new ManageBlocks)->getAll();
 		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_export_blocks';
@@ -59,7 +59,7 @@ class BlockExport extends AbstractExport
 	 *
 	 * @return array
 	 */
-	protected static function getData()
+	protected function getData()
 	{
 		global $smcFunc;
 
@@ -120,9 +120,9 @@ class BlockExport extends AbstractExport
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
+	protected function getXmlFile()
 	{
-		if (empty($items = self::getData()))
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');

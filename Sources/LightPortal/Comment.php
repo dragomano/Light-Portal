@@ -70,7 +70,7 @@ class Comment
 
 		loadLanguage('Editor');
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
+		$comments = Helpers::cache('page_' . $this->alias . '_comments', 'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
@@ -192,7 +192,7 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => $this->getUserAvatar(),
+				'avatar'      => $this->getUserAvatar($user_info['id']),
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
@@ -273,18 +273,19 @@ class Comment
 	 *
 	 * Получение аватарки пользователя
 	 *
+	 * @param $user_id
 	 * @return string
 	 */
-	private function getUserAvatar()
+	private function getUserAvatar($user_id)
 	{
-		global $memberContext, $user_info;
+		global $memberContext;
 
-		if (!isset($memberContext[$user_info['id']])) {
-			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id'], true);
+		if (!isset($memberContext[$user_id])) {
+			loadMemberData($user_id);
+			loadMemberContext($user_id, true);
 		}
 
-		return $memberContext[$user_info['id']]['avatar']['image'];
+		return $memberContext[$user_id]['avatar']['image'];
 	}
 
 	/**
@@ -387,9 +388,9 @@ class Comment
 	 * @param int $page_id
 	 * @return array
 	 */
-	public static function getAll(int $page_id = 0)
+	public function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext, $context, $modSettings;
+		global $smcFunc, $context, $modSettings;
 
 		if (empty($page_id))
 			return [];
@@ -408,12 +409,7 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			if (!isset($memberContext[$row['author_id']])) {
-				loadMemberData($row['author_id']);
-				loadMemberContext($row['author_id']);
-			}
-
-			$avatar = $memberContext[$row['author_id']]['avatar']['image'];
+			$avatar = $this->getUserAvatar($row['author_id']);
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],

@@ -36,19 +36,18 @@ $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, t
 $txt['lp_frontpage_layout']               = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']           = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles']        = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
 $txt['lp_teaser_size']                    = 'Długość podglądu artykułów';
 $txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
-$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
-$txt['lp_standalone_url_help'] = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']        = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help']   = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" jeśli plik <em>portal.php</em> jest zlokalizowany poza katalogiem forum (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';

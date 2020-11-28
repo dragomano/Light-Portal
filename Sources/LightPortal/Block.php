@@ -29,14 +29,14 @@ class Block
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $context, $modSettings;
 
 		if (empty($context['allow_light_portal_view']) || empty($context['template_layers']) || empty($context['lp_active_blocks']))
 			return;
 
-		$blocks = self::getFilteredByAreas();
+		$blocks = $this->getFilteredByAreas();
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin')))
 			return;
@@ -66,6 +66,7 @@ class Block
 		$counter = 0;
 		foreach ($context['template_layers'] as $position => $name) {
 			$counter++;
+
 			if ($name == 'body')
 				break;
 		}
@@ -84,7 +85,7 @@ class Block
 	 *
 	 * @return array
 	 */
-	private static function getFilteredByAreas()
+	private function getFilteredByAreas()
 	{
 		global $context, $modSettings;
 
@@ -125,9 +126,10 @@ class Block
 				$entity = explode('=', $areas);
 
 				if ($entity[0] === 'board')
-					$boards = self::getAllowedIds($entity[1]);
+					$boards = $this->getAllowedIds($entity[1]);
+
 				if ($entity[0] === 'topic')
-					$topics = self::getAllowedIds($entity[1]);
+					$topics = $this->getAllowedIds($entity[1]);
 			}
 
 			return in_array($context['current_board'], $boards) || (!empty($context['current_topic']) && in_array($context['current_topic'], $topics));
@@ -135,14 +137,14 @@ class Block
 	}
 
 	/**
-	 * Get allowed identifiers for $entity string
+	 * Get allowed identifiers from $entity string
 	 *
 	 * Получаем разрешенные идентификаторы из строки $entity
 	 *
 	 * @param string $entity
 	 * @return array
 	 */
-	private static function getAllowedIds(string $entity = '')
+	private function getAllowedIds(string $entity = '')
 	{
 		$ids = [];
 

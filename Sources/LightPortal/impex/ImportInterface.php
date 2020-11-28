@@ -16,5 +16,5 @@ namespace Bugo\LightPortal\Impex;
 
 interface ImportInterface
 {
-	public static function main();
+	public function main();
 }

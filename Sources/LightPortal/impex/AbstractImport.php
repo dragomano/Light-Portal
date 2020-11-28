@@ -16,5 +16,5 @@ namespace Bugo\LightPortal\Impex;
 
 abstract class AbstractImport implements ImportInterface
 {
-	abstract protected static function run();
+	abstract protected function run();
 }

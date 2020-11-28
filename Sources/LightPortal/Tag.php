@@ -26,12 +26,12 @@ class Tag
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
-		global $context, $smcFunc, $txt, $scripturl, $modSettings, $sourcedir;
+		global $context, $smcFunc, $txt, $scripturl, $modSettings;
 
 		if (Helpers::request()->isEmpty('key'))
-			self::showAll();
+			$this->showAll();
 
 		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim(Helpers::request('key')), ENT_QUOTES);
 		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $context['lp_keyword']);
@@ -48,7 +48,7 @@ class Tag
 		);
 
 		if (!empty($modSettings['lp_show_tags_as_articles']))
-			self::showAsArticles();
+			$this->showAsArticles();
 
 		$listOptions = array(
 			'id' => 'tags',
@@ -58,10 +58,10 @@ class Tag
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'date',
 			'get_items' => array(
-				'function' => __CLASS__ . '::getAllPagesWithSelectedTag'
+				'function' => array($this, 'getAllPagesWithSelectedTag')
 			),
 			'get_count' => array(
-				'function' => __CLASS__ . '::getTotalQuantityPagesWithSelectedTag'
+				'function' => array($this, 'getTotalQuantityPagesWithSelectedTag')
 			),
 			'columns' => array(
 				'date' => array(
@@ -124,7 +124,7 @@ class Tag
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -143,7 +143,7 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
+	public function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
 	{
 		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
 
@@ -215,7 +215,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public static function getTotalQuantityPagesWithSelectedTag()
+	public function getTotalQuantityPagesWithSelectedTag()
 	{
 		global $smcFunc, $context;
 
@@ -252,9 +252,9 @@ class Tag
 	 *
 	 * @return void
 	 */
-	public static function showAll()
+	public function showAll()
 	{
-		global $context, $txt, $scripturl, $modSettings, $sourcedir;
+		global $context, $txt, $scripturl, $modSettings;
 
 		$context['page_title']     = $txt['lp_all_page_tags'];
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags';
@@ -272,10 +272,10 @@ class Tag
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'value',
 			'get_items' => array(
-				'function' => __CLASS__ . '::getAll'
+				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => __CLASS__ . '::getTotalQuantity'
+				'function' => array($this, 'getTotalQuantity')
 			),
 			'columns' => array(
 				'value' => array(
@@ -309,7 +309,7 @@ class Tag
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -328,7 +328,7 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAll(int $start, int $items_per_page, string $sort)
+	public function getAll(int $start, int $items_per_page, string $sort)
 	{
 		global $smcFunc, $scripturl;
 
@@ -383,7 +383,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public static function getTotalQuantity()
+	public function getTotalQuantity()
 	{
 		global $smcFunc;
 
@@ -419,14 +419,14 @@ class Tag
 	 *
 	 * @return void
 	 */
-	private static function showAsArticles()
+	private function showAsArticles()
 	{
 		global $modSettings, $context;
 
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = self::getTotalQuantityPagesWithSelectedTag();
+		$total_items = $this->getTotalQuantityPagesWithSelectedTag();
 
 		if ($start >= $total_items) {
 			send_http_status(404);
@@ -447,7 +447,7 @@ class Tag
 		$context['current_sorting'] = Helpers::post('sort', 'created;desc');
 		$sort = $sorting_types[$context['current_sorting']];
 
-		$articles = self::getAllPagesWithSelectedTag($start, $limit, $sort);
+		$articles = $this->getAllPagesWithSelectedTag($start, $limit, $sort);
 
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (isset($article['title']))
@@ -464,7 +464,7 @@ class Tag
 
 		$context['lp_frontpage_articles'] = $articles;
 
-		$context['lp_frontpage_layout'] = FrontPage::getNumColumns();
+		$context['lp_frontpage_layout'] = (new FrontPage)->getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 		loadTemplate('LightPortal/ViewTags');

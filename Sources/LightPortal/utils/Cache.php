@@ -26,26 +26,26 @@ class Cache
 	 *
 	 * Получаем данные из кэша
 	 *
-	 * @param string $key
+	 * @param string|null $key
 	 * @param string|null $funcName
-	 * @param string $class
+	 * @param string|null $class
 	 * @param int $time (in seconds)
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public function __invoke(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
+	public function __invoke(?string $key, ?string $funcName, ?string $class, int $time = 3600, ...$vars)
 	{
 		if (empty($key))
 			return false;
 
-		if ($funcName === null || $time === 0)
+		if ($funcName === null || $class === null || $time === 0)
 			static::forget($key);
 
 		if (($$key = static::get($key, $time)) === null) {
 			$$key = null;
 
 			if (method_exists($class, $funcName)) {
-				$$key = $class == 'self' ? self::$funcName(...$vars) : $class::$funcName(...$vars);
+				$$key = (new $class)->$funcName(...$vars);
 			} elseif (function_exists($funcName)) {
 				$$key = $funcName(...$vars);
 			}

@@ -36,19 +36,18 @@ $txt['lp_frontpage_article_sorting_help'] = 'При выборе первого 
 $txt['lp_frontpage_layout']               = 'Количество колонок для вывода статей';
 $txt['lp_frontpage_layout_set']           = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
 $txt['lp_show_images_in_articles']        = 'Показывать изображения, найденные в статьях';
+$txt['lp_show_images_in_articles_help']   = 'Сначала проверяется, есть ли в статье вложение (если статья основана на теме форума), затем — есть ли в статье тег IMG с картинкой.';
 $txt['lp_image_placeholder']              = 'URL-адрес картинки-заглушки по умолчанию';
 $txt['lp_teaser_size']                    = 'Размер тизера статей (в символах)';
 $txt['lp_teaser_size_help']               = 'Используется в некоторых аддонах, а также может использоваться в пользовательских макетах главной страницы.';
 $txt['lp_num_items_per_page']             = 'Количество элементов на странице (для пагинации)';
 
-$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Автономный режим';
-$txt['lp_standalone_url']      = 'URL-адрес главной страницы портала в автономном режиме';
-$txt['lp_standalone_url_help'] = 'Можно указать свой URL-адрес для отображения в качестве главной страницы портала (например, <strong>https://yourforum/portal.php</strong>).<br>В этом случае главная страница форума останется доступной по адресу <strong>https://yourforum/index.php</strong>.<br><br>Чтобы вывести главную страницу портала, в файле <em>portal.php</em> должен быть примерно такой код:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Автономный режим';
+$txt['lp_standalone_url']        = 'URL-адрес главной страницы портала в автономном режиме';
+$txt['lp_standalone_url_help']   = 'Можно указать свой URL-адрес для отображения в качестве главной страницы портала (например, <strong>https://yourforum/portal.php</strong>).<br>В этом случае главная страница форума останется доступной по адресу <strong>https://yourforum/index.php</strong>.<br><br>Чтобы вывести главную страницу портала, в файле <em>portal.php</em> должен быть примерно такой код:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Отключите параметр «<strong>Использовать локальное хранение куки</strong>», если файл <em>portal.php</em> находится вне директории форума (Обслуживание => Настройки сервера => Куки и сессии).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Отключаемые области';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Укажите области, которые должны быть ОТКЛЮЧЕНЫ в автономном режиме.';

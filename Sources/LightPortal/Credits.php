@@ -26,14 +26,14 @@ class Credits
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = self::getCopyrights();
+		$context['credits_modifications'][] = $this->getCopyrights();
 
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
-			self::getComponentList();
+			$this->getComponentList();
 
 			loadTemplate('LightPortal/ViewCredits');
 
@@ -52,7 +52,7 @@ class Credits
 	 *
 	 * @return string
 	 */
-	public static function getCopyrights()
+	public function getCopyrights()
 	{
 		global $scripturl;
 
@@ -66,7 +66,7 @@ class Credits
 	 *
 	 * @return void
 	 */
-	public static function getComponentList()
+	public function getComponentList()
 	{
 		global $context;
 

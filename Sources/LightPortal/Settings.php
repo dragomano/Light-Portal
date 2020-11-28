@@ -27,12 +27,15 @@ class Settings
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public static function adminAreas(array &$admin_areas)
+	public function adminAreas(array &$admin_areas)
 	{
-		global $sourcedir, $txt, $context;
+		global $context, $modSettings, $settings, $txt;
 
-		require_once($sourcedir . '/ManageSettings.php');
 		loadLanguage('ManageSettings');
+
+		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
+			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
+			: false;
 
 		// Looking for the "Forum" section... | Ищем раздел "Форум"...
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
@@ -47,7 +50,7 @@ class Settings
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
-							'function' => array(__CLASS__, 'settingArea'),
+							'function' => array($this, 'settingArea'),
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
@@ -60,7 +63,7 @@ class Settings
 						),
 						'lp_blocks' => array(
 							'label' => $txt['lp_blocks'],
-							'function' => array(__CLASS__, 'blockArea'),
+							'function' => array($this, 'blockArea'),
 							'icon' => 'modifications',
 							'amt' => count($context['lp_active_blocks']),
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
@@ -71,7 +74,7 @@ class Settings
 						),
 						'lp_pages' => array(
 							'label' => $txt['lp_pages'],
-							'function' => array(__CLASS__, 'pageArea'),
+							'function' => array($this, 'pageArea'),
 							'icon' => 'posts',
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
@@ -109,12 +112,12 @@ class Settings
 	 * @param array $settings_search
 	 * @return void
 	 */
-	public static function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
+	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
-		$settings_search[] = array(__CLASS__ . '::basic', 'area=lp_settings;sa=basic');
-		$settings_search[] = array(__CLASS__ . '::extra', 'area=lp_settings;sa=extra');
-		$settings_search[] = array(__CLASS__ . '::panels', 'area=lp_settings;sa=panels');
-		$settings_search[] = array(__CLASS__ . '::misc', 'area=lp_settings;sa=misc');
+		$settings_search[] = array(array($this, 'basic'), 'area=lp_settings;sa=basic');
+		$settings_search[] = array(array($this, 'extra'), 'area=lp_settings;sa=extra');
+		$settings_search[] = array(array($this, 'panels'), 'area=lp_settings;sa=panels');
+		$settings_search[] = array(array($this, 'misc'), 'area=lp_settings;sa=misc');
 	}
 
 	/**
@@ -124,18 +127,18 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function settingArea()
+	public function settingArea()
 	{
 		global $context, $txt, $smcFunc;
 
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'basic'   => array(__CLASS__, 'basic'),
-			'extra'   => array(__CLASS__, 'extra'),
-			'panels'  => array(__CLASS__, 'panels'),
-			'plugins' => array(__CLASS__, 'plugins'),
-			'misc'    => array(__CLASS__, 'misc')
+			'basic'   => array($this, 'basic'),
+			'extra'   => array($this, 'extra'),
+			'panels'  => array($this, 'panels'),
+			'plugins' => array($this, 'plugins'),
+			'misc'    => array($this, 'misc')
 		);
 
 		db_extend();
@@ -162,7 +165,7 @@ class Settings
 			)
 		);
 
-		self::loadGeneralSettingParameters($subActions, 'basic');
+		$this->loadGeneralSettingParameters($subActions, 'basic');
 	}
 
 	/**
@@ -173,13 +176,11 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function basic(bool $return_config = false)
+	public function basic(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
+		global $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
 
-		require_once($sourcedir . '/ManageServer.php');
-
-		self::checkNewVersion();
+		$this->checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
@@ -212,7 +213,7 @@ class Settings
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
 			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
 			array('boards', 'lp_frontpage_boards'),
-			array('check', 'lp_show_images_in_articles'),
+			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
 			array('check', 'lp_frontpage_card_alt_layout', 'help' => 'lp_frontpage_card_alt_layout_help'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
@@ -221,7 +222,7 @@ class Settings
 			array('int', 'lp_teaser_size', 'min' => 0, 'help' => 'lp_teaser_size_help'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
-			array('check', 'lp_standalone_mode'),
+			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
 			array(
 				'text',
 				'lp_standalone_url',
@@ -351,7 +352,7 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function extra(bool $return_config = false)
+	public function extra(bool $return_config = false)
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
@@ -447,13 +448,11 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function panels(bool $return_config = false)
+	public function panels(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
 		loadTemplate('LightPortal/ManageSettings');
-
-		require_once($sourcedir . '/ManageServer.php');
 
 		addInlineCss('
 		dl.settings {
@@ -532,13 +531,11 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function plugins()
+	public function plugins()
 	{
-		global $sourcedir, $context, $txt, $scripturl;
+		global $context, $txt, $scripturl;
 
 		loadTemplate('LightPortal/ManagePlugins');
-
-		require_once($sourcedir . '/ManageServer.php');
 
 		$context['lp_plugins'] = Subs::getAddons();
 		asort($context['lp_plugins']);
@@ -557,8 +554,8 @@ class Settings
 				'snake_name' => $snake_name = Helpers::getSnakeName($item),
 				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => self::getPluginTypes($snake_name),
-				'settings'   => self::getPluginSettings($config_vars, $item)
+				'types'      => $this->getPluginTypes($snake_name),
+				'settings'   => $this->getPluginSettings($config_vars, $item)
 			];
 		}, $context['lp_plugins']);
 
@@ -625,13 +622,11 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function misc(bool $return_config = false)
+	public function misc(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
 		loadTemplate('LightPortal/ManageSettings');
-
-		require_once($sourcedir . '/ManageServer.php');
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
@@ -688,12 +683,12 @@ class Settings
 	 */
 	private static function getPluginTypes(string $snake_name)
 	{
-		global $txt;
+		global $txt, $context;
 
 		if (empty($snake_name))
 			return $txt['not_applicable'];
 
-		$data = $txt['lp_' . $snake_name . '_type'] ?? '';
+		$data = $context['lp_' . $snake_name . '_type'] ?? '';
 
 		if (empty($data))
 			return $txt['not_applicable'];
@@ -726,6 +721,7 @@ class Settings
 		foreach ($config_vars as $var) {
 			$plugin_id   = explode('_addon_', substr($var[1], 3))[0];
 			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
+
 			if ($plugin_name == $name)
 				$settings[] = $var;
 		}
@@ -740,26 +736,26 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function blockArea()
+	public function blockArea()
 	{
 		global $user_info;
 
 		isAllowedTo('light_portal_manage_blocks');
 
 		$subActions = array(
-			'main' => array(ManageBlocks::class, 'main'),
-			'add'  => array(ManageBlocks::class, 'add'),
-			'edit' => array(ManageBlocks::class, 'edit')
+			'main' => array(new ManageBlocks, 'main'),
+			'add'  => array(new ManageBlocks, 'add'),
+			'edit' => array(new ManageBlocks, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = array(Impex\BlockExport::class, 'main');
-			$subActions['import'] = array(Impex\BlockImport::class, 'main');
+			$subActions['export'] = array(new Impex\BlockExport, 'main');
+			$subActions['import'] = array(new Impex\BlockImport, 'main');
 		}
 
 		Subs::runAddons('addBlockAreas', array(&$subActions));
 
-		self::loadGeneralSettingParameters($subActions, 'main');
+		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
 	/**
@@ -769,26 +765,26 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function pageArea()
+	public function pageArea()
 	{
 		global $user_info;
 
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => array(ManagePages::class, 'main'),
-			'add'  => array(ManagePages::class, 'add'),
-			'edit' => array(ManagePages::class, 'edit')
+			'main' => array(new ManagePages, 'main'),
+			'add'  => array(new ManagePages, 'add'),
+			'edit' => array(new ManagePages, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = array(Impex\PageExport::class, 'main');
-			$subActions['import'] = array(Impex\PageImport::class, 'main');
+			$subActions['export'] = array(new Impex\PageExport, 'main');
+			$subActions['import'] = array(new Impex\PageImport, 'main');
 		}
 
 		Subs::runAddons('addPageAreas', array(&$subActions));
 
-		self::loadGeneralSettingParameters($subActions, 'main');
+		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
 	/**
@@ -800,11 +796,11 @@ class Settings
 	 * @param string|null $defaultAction
 	 * @return void
 	 */
-	private static function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
+	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
 	{
-		global $sourcedir, $context;
+		global $context;
 
-		require_once($sourcedir . '/ManageServer.php');
+		Helpers::require('ManageServer');
 
 		$context['sub_template'] = 'show_settings';
 
@@ -824,7 +820,7 @@ class Settings
 	 *
 	 * @return void
 	 */
-	private static function checkNewVersion()
+	private function checkNewVersion()
 	{
 		global $context, $txt;
 
@@ -844,7 +840,7 @@ class Settings
 	 *
 	 * @return string
 	 */
-	public static function getLastVersion()
+	public function getLastVersion()
 	{
 		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 

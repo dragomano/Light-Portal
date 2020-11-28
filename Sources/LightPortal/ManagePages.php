@@ -26,7 +26,7 @@ class ManagePages
 	 *
 	 * @var int
 	 */
-	public static $num_pages = 20;
+	public $num_pages = 20;
 
 	/**
 	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
@@ -35,7 +35,7 @@ class ManagePages
 	 *
 	 * @var string
 	 */
-	private static $alias_pattern = '^[a-z][a-z0-9_]+$';
+	private $alias_pattern = '^[a-z][a-z0-9_]+$';
 
 	/**
 	 * Manage pages
@@ -44,9 +44,9 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
-		global $context, $txt, $smcFunc, $scripturl, $sourcedir;
+		global $context, $txt, $smcFunc, $scripturl;
 
 		loadLanguage('Packages');
 		loadTemplate('LightPortal/ManagePages');
@@ -60,8 +60,8 @@ class ManagePages
 
 		loadJavaScriptFile('light_portal/manage_pages.js');
 
-		self::doActions();
-		self::massActions();
+		$this->doActions();
+		$this->massActions();
 
 		if (Helpers::request()->filled('params') && Helpers::request()->isEmpty('is_search')) {
 			$search_params = base64_decode(strtr(Helpers::request('params'), array(' ' => '+')));
@@ -80,20 +80,20 @@ class ManagePages
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => self::$num_pages,
+			'items_per_page' => $this->num_pages,
 			'title' => $txt['lp_extra_pages'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
 			'default_sort_col' => 'date',
 			'get_items' => array(
-				'function' => __CLASS__ . '::getAll',
+				'function' => array($this, 'getAll'),
 				'params' => array(
 					(!empty($search_params['string']) ? ' INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
 				)
 			),
 			'get_count' => array(
-				'function' => __CLASS__ . '::getTotalQuantity',
+				'function' => array($this, 'getTotalQuantity'),
 				'params' => array(
 					(!empty($search_params['string']) ? ' INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0' : ''),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
@@ -273,7 +273,7 @@ class ManagePages
 
 
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['pages']['title'] .= ' (' . $context['pages']['total_num_items'] . ')';
@@ -293,7 +293,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return array
 	 */
-	public static function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
+	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
 	{
 		global $smcFunc, $user_info;
 
@@ -350,7 +350,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return int
 	 */
-	public static function getTotalQuantity(string $query_string = '', array $query_params = [])
+	public function getTotalQuantity(string $query_string = '', array $query_params = [])
 	{
 		global $smcFunc, $user_info;
 
@@ -383,7 +383,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function doActions()
+	private function doActions()
 	{
 		if (Helpers::request()->has('actions') === false)
 			return;
@@ -392,13 +392,13 @@ class ManagePages
 		$data = json_decode($json, true);
 
 		if (!empty($data['del_item']))
-			self::remove([(int) $data['del_item']]);
+			$this->remove([(int) $data['del_item']]);
 
 		if (!empty($data['toggle_status']) && !empty($data['item'])) {
 			$item   = (int) $data['item'];
 			$status = $data['toggle_status'];
 
-			self::toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
+			$this->toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 		}
 
 		Helpers::cache()->flush();
@@ -414,7 +414,7 @@ class ManagePages
 	 * @param array $items
 	 * @return void
 	 */
-	private static function remove(array $items)
+	private function remove(array $items)
 	{
 		global $smcFunc;
 
@@ -488,7 +488,7 @@ class ManagePages
 	 * @param int $status
 	 * @return void
 	 */
-	public static function toggleStatus(array $items, int $status = 0)
+	public function toggleStatus(array $items, int $status = 0)
 	{
 		global $smcFunc;
 
@@ -513,7 +513,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	public static function massActions()
+	public function massActions()
 	{
 		if (Helpers::post()->has('mass_actions') === false || Helpers::post()->isEmpty('items'))
 			return;
@@ -523,15 +523,15 @@ class ManagePages
 		$items = Helpers::post('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
-				self::remove($items);
+				$this->remove($items);
 				break;
 
 			case 'action_on':
-				self::toggleStatus($items, Page::STATUS_ACTIVE);
+				$this->toggleStatus($items, Page::STATUS_ACTIVE);
 				break;
 
 			case 'action_off':
-				self::toggleStatus($items);
+				$this->toggleStatus($items);
 				break;
 		}
 
@@ -545,7 +545,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	public static function add()
+	public function add()
 	{
 		global $context, $txt, $scripturl;
 
@@ -560,13 +560,13 @@ class ManagePages
 			'description' => $txt['lp_pages_add_tab_description']
 		);
 
-		Subs::getForumLanguages();
+		Helpers::prepareForumLanguages();
 
-		self::validateData();
-		self::prepareFormFields();
-		self::prepareEditor();
-		self::preparePreview();
-		self::setData();
+		$this->validateData();
+		$this->prepareFormFields();
+		$this->prepareEditor();
+		$this->preparePreview();
+		$this->setData();
 
 		$context['sub_template'] = 'page_post';
 	}
@@ -578,7 +578,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	public static function edit()
+	public function edit()
 	{
 		global $context, $txt, $scripturl;
 
@@ -596,7 +596,7 @@ class ManagePages
 			'description' => $txt['lp_pages_edit_tab_description']
 		);
 
-		$context['lp_current_page'] = Page::getDataByItem($item);
+		$context['lp_current_page'] = (new Page)->getDataByItem($item);
 
 		if (empty($context['lp_current_page']))
 			fatal_lang_error('lp_page_not_found', false, null, 404);
@@ -604,23 +604,23 @@ class ManagePages
 		if ($context['lp_current_page']['can_edit'] === false)
 			fatal_lang_error('lp_page_not_editable', false);
 
-		Subs::getForumLanguages();
+		Helpers::prepareForumLanguages();
 
 		if (Helpers::post()->has('remove')) {
-			self::remove([$item]);
+			$this->remove([$item]);
 			redirectexit('action=admin;area=lp_pages;sa=main');
 		}
 
-		self::validateData();
+		$this->validateData();
 
 		$page_title = $context['lp_page']['title'][$context['user']['language']] ?? '';
 		$context['page_area_title'] = $txt['lp_pages_edit_title'] . (!empty($page_title) ? ' - ' . $page_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'];
 
-		self::prepareFormFields();
-		self::prepareEditor();
-		self::preparePreview();
-		self::setData($context['lp_page']['id']);
+		$this->prepareFormFields();
+		$this->prepareEditor();
+		$this->preparePreview();
+		$this->setData($context['lp_page']['id']);
 
 		$context['sub_template'] = 'page_post';
 	}
@@ -632,7 +632,7 @@ class ManagePages
 	 *
 	 * @return array
 	 */
-	private static function getOptions()
+	private function getOptions()
 	{
 		$options = [
 			'show_author_and_date' => true,
@@ -652,7 +652,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function validateData()
+	private function validateData()
 	{
 		global $context, $modSettings, $user_info;
 
@@ -688,10 +688,10 @@ class ManagePages
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 			$post_data['id'] = Helpers::request('id', 0);
 
-			self::findErrors($post_data);
+			$this->findErrors($post_data);
 		}
 
-		$options = self::getOptions();
+		$options = $this->getOptions();
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
 		if (!empty($context['lp_current_page']['keywords'])) {
@@ -734,12 +734,12 @@ class ManagePages
 	/**
 	 * Check that the fields are filled in correctly
 	 *
-	 * Проверям правильность заполнения полей
+	 * Проверяем правильность заполнения полей
 	 *
 	 * @param array $data
 	 * @return void
 	 */
-	private static function findErrors(array $data)
+	private function findErrors(array $data)
 	{
 		global $modSettings, $context, $txt;
 
@@ -752,12 +752,12 @@ class ManagePages
 			$post_errors[] = 'no_alias';
 
 		$alias_format = array(
-			'options' => array("regexp" => '/' . static::$alias_pattern . '/')
+			'options' => array("regexp" => '/' . $this->alias_pattern . '/')
 		);
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
-		if (!empty($data['alias']) && self::isUnique($data))
+		if (!empty($data['alias']) && $this->isUnique($data))
 			$post_errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
@@ -773,13 +773,13 @@ class ManagePages
 	}
 
 	/**
-	 * https://github.com/jshjohnson/Choices
+	 * @see https://github.com/jshjohnson/Choices
 	 *
 	 * @return void
 	 */
-	private static function improveKeywordsField()
+	private function improveKeywordsField()
 	{
-		loadCssFile('https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css', array('external' => true));
+		loadCssFile('light_portal/choices.min.css');
 
 		addInlineCss('
 		.choices__list {
@@ -797,7 +797,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function prepareFormFields()
+	private function prepareFormFields()
 	{
 		global $context, $txt, $modSettings, $language;
 
@@ -829,7 +829,7 @@ class ManagePages
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['alias'],
 				'required'  => true,
-				'pattern'   => static::$alias_pattern,
+				'pattern'   => $this->alias_pattern,
 				'style'     => 'width: 100%'
 			),
 			'tab' => 'seo'
@@ -871,7 +871,7 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
-		self::improveKeywordsField();
+		$this->improveKeywordsField();
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
 		$context['posting_fields']['keywords']['input'] = array(
@@ -977,12 +977,12 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function prepareEditor()
+	private function prepareEditor()
 	{
 		global $context;
 
 		if ($context['lp_page']['type'] === 'bbc')
-			Subs::createBbcEditor($context['lp_page']['content']);
+			Helpers::createBbcEditor($context['lp_page']['content']);
 
 		Subs::runAddons('prepareEditor', array($context['lp_page']));
 	}
@@ -994,7 +994,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function preparePreview()
+	private function preparePreview()
 	{
 		global $context, $smcFunc, $txt;
 
@@ -1024,7 +1024,7 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private static function prepareKeywords()
+	private function prepareKeywords()
 	{
 		global $context, $smcFunc;
 
@@ -1045,7 +1045,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private static function getPublishTime()
+	private function getPublishTime()
 	{
 		global $context;
 
@@ -1068,7 +1068,7 @@ class ManagePages
 	 * @param int $item
 	 * @return void
 	 */
-	private static function setData(int $item = 0)
+	private function setData(int $item = 0)
 	{
 		global $context, $smcFunc, $db_type;
 
@@ -1077,7 +1077,7 @@ class ManagePages
 
 		checkSubmitOnce('check');
 
-		self::prepareKeywords();
+		$this->prepareKeywords();
 
 		if (empty($item)) {
 			$item = $smcFunc['db_insert']('',
@@ -1100,8 +1100,8 @@ class ManagePages
 					$context['lp_page']['type'],
 					$context['lp_page']['permissions'],
 					$context['lp_page']['status'],
-					self::getPublishTime()
-				), $db_type == 'postgresql' ? array(self::getAutoIncrementValue()) : array()),
+					$this->getPublishTime()
+				), $db_type == 'postgresql' ? array($this->getAutoIncrementValue()) : array()),
 				array('page_id'),
 				1
 			);
@@ -1198,7 +1198,7 @@ class ManagePages
 					'type'        => $context['lp_page']['type'],
 					'permissions' => $context['lp_page']['permissions'],
 					'status'      => $context['lp_page']['status'],
-					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? self::getPublishTime() : $context['lp_page']['created_at'],
+					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
 					'updated_at'  => time()
 				)
 			);
@@ -1306,7 +1306,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private static function getAutoIncrementValue()
+	private function getAutoIncrementValue()
 	{
 		global $smcFunc;
 
@@ -1327,7 +1327,7 @@ class ManagePages
 	 * @param array $data
 	 * @return bool
 	 */
-	private static function isUnique(array $data)
+	private function isUnique(array $data)
 	{
 		global $smcFunc;
 

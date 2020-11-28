@@ -36,19 +36,18 @@ $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, t
 $txt['lp_frontpage_layout'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
+$txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';
 $txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
 $txt['lp_teaser_size_help'] = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
-$txt['lp_standalone_mode'] = $txt['lp_standalone_mode_title'] = 'Modo independiente';
-$txt['lp_standalone_url']      = 'La URL de la página principal en el modo independiente';
-$txt['lp_standalone_url_help'] = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>Pegue este código en el <em>portal.php</em> archivo:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Modo independiente';
+$txt['lp_standalone_url']        = 'La URL de la página principal en el modo independiente';
+$txt['lp_standalone_url_help']   = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>Pegue este código en el <em>portal.php</em> archivo:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" si el archivo <em>portal.php</em> se encuentra fuera del directorio del foro (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
 $txt['lp_standalone_mode_disabled_actions'] = 'Acciones desactivadas';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Especifique las áreas que deben DESACTIVARSE en el modo independiente.';

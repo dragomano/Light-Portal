@@ -132,8 +132,8 @@ abstract class AbstractArray
 			return;
 
 		if (strpos($key, '.') !== false) {
-			$subkey = explode('.', $key)[0];
-			static::$obj[$key][$subkey] = $value;
+			$subKey = explode('.', $key)[0];
+			static::$obj[$key][$subKey] = $value;
 		} else {
 			static::$obj[$key][] = $value;
 		}

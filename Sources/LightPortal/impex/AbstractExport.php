@@ -16,8 +16,8 @@ namespace Bugo\LightPortal\Impex;
 
 abstract class AbstractExport implements ExportInterface
 {
-	abstract protected static function getData();
-	abstract protected static function getXmlFile();
+	abstract protected function getData();
+	abstract protected function getXmlFile();
 
 	/**
 	 * Get an export file via the user browser
@@ -26,9 +26,9 @@ abstract class AbstractExport implements ExportInterface
 	 *
 	 * @return void
 	 */
-	protected static function run()
+	protected function run()
 	{
-		if (empty($file = static::getXmlFile()))
+		if (empty($file = $this->getXmlFile()))
 			return;
 
 		// Might take some time.

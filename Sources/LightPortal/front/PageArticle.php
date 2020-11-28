@@ -32,7 +32,7 @@ class PageArticle implements ArticleInterface
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit)
+	public function getData(int $start, int $limit)
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
@@ -125,7 +125,7 @@ class PageArticle implements ArticleInterface
 	 *
 	 * @return int
 	 */
-	public static function getTotal()
+	public function getTotal()
 	{
 		global $user_info, $smcFunc;
 

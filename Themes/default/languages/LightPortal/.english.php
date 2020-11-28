@@ -36,19 +36,18 @@ $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, t
 $txt['lp_frontpage_layout']               = 'Number of columns for displaying articles';
 $txt['lp_frontpage_layout_set']           = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_images_in_articles']        = 'Show images that found in articles';
+$txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']              = 'URL of the default placeholder image';
 $txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
 $txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Number of items per page (for pagination)';
 
-$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Standalone mode';
-$txt['lp_standalone_url']      = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Standalone mode';
+$txt['lp_standalone_url']        = 'The frontpage URL in the standalone mode';
+$txt['lp_standalone_url_help']   = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';

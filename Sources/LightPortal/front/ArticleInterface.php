@@ -16,6 +16,6 @@ namespace Bugo\LightPortal\Front;
 
 interface ArticleInterface
 {
-	public static function getData(int $start, int $limit);
-	public static function getTotal();
+	public function getData(int $start, int $limit);
+	public function getTotal();
 }

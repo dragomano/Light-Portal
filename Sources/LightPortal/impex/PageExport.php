@@ -29,9 +29,9 @@ class PageExport extends AbstractExport
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
-		global $context, $txt, $scripturl, $sourcedir;
+		global $context, $txt, $scripturl;
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_export'];
 		$context['page_area_title'] = $txt['lp_pages_export'];
@@ -42,20 +42,20 @@ class PageExport extends AbstractExport
 			'description' => $txt['lp_pages_export_tab_description']
 		);
 
-		self::run();
+		$this->run();
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => ManagePages::$num_pages,
+			'items_per_page' => ($pages = new ManagePages)->num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => array(
-				'function' => array(ManagePages::class, 'getAll')
+				'function' => array($pages, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array(ManagePages::class, 'getTotalQuantity')
+				'function' => array($pages, 'getTotalQuantity')
 			),
 			'columns' => array(
 				'id' => array(
@@ -134,7 +134,7 @@ class PageExport extends AbstractExport
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -148,7 +148,7 @@ class PageExport extends AbstractExport
 	 *
 	 * @return mixed
 	 */
-	protected static function getData()
+	protected function getData()
 	{
 		global $smcFunc;
 
@@ -224,9 +224,9 @@ class PageExport extends AbstractExport
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
+	protected function getXmlFile()
 	{
-		if (empty($items = self::getData()))
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');

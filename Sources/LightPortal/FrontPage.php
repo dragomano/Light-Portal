@@ -28,37 +28,37 @@ class FrontPage
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
-		global $modSettings, $context, $scripturl, $txt;
+		global $context, $modSettings, $scripturl, $txt;
 
 		isAllowedTo('light_portal_view');
 
-		$context['lp_need_lower_case'] = Helpers::isLowerCaseForDates();
+		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
-				call_user_func(array(Page::class, 'show'));
+				call_user_func(array(new Page, 'show'));
 				break;
 
 			case 2:
-				self::prepare(new TopicArticle);
+				$this->prepare(new TopicArticle);
 				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
 			case 3:
-				self::prepare(new PageArticle);
+				$this->prepare(new PageArticle);
 				$context['sub_template'] = 'show_pages_as_articles';
 				break;
 
 			default:
-				self::prepare(new BoardArticle);
+				$this->prepare(new BoardArticle);
 				$context['sub_template'] = 'show_boards_as_articles';
 		}
 
 		Subs::runAddons('frontCustomTemplate');
 
-		$context['lp_frontpage_layout'] = self::getNumColumns();
+		$context['lp_frontpage_layout'] = $this->getNumColumns();
 		$context['canonical_url']       = $scripturl;
 
 		loadTemplate('LightPortal/ViewFrontPage');
@@ -67,6 +67,8 @@ class FrontPage
 		$context['linktree'][] = array(
 			'name' => $txt['lp_portal']
 		);
+
+		obExit();
 	}
 
 	/**
@@ -74,17 +76,17 @@ class FrontPage
 	 *
 	 * Формируем массив статей
 	 *
-	 * @param ArticleInterface $article_entity
+	 * @param ArticleInterface $entity
 	 * @return void
 	 */
-	public static function prepare(ArticleInterface $article_entity)
+	public function prepare(ArticleInterface $entity)
 	{
 		global $modSettings, $context, $scripturl;
 
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $article_entity::getTotal();
+		$total_items = $entity->getTotal();
 
 		if ($start >= $total_items) {
 			send_http_status(404);
@@ -92,7 +94,7 @@ class FrontPage
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
 
-		$articles = $article_entity::getData($start, $limit);
+		$articles = $entity->getData($start, $limit);
 
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (!empty($article['date'])) {
@@ -121,13 +123,27 @@ class FrontPage
 	}
 
 	/**
+	 * Check whether need to display dates in lowercase for the current language
+	 *
+	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 *
+	 * @return bool
+	 */
+	public function isLowerCaseForDates()
+	{
+		global $txt;
+
+		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
+	}
+
+	/**
 	 * Get the number columns for the frontpage layout
 	 *
 	 * Получаем количество колонок для макета главной страницы
 	 *
 	 * @return int
 	 */
-	public static function getNumColumns()
+	public function getNumColumns()
 	{
 		global $modSettings;
 

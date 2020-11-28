@@ -31,7 +31,7 @@ class BoardArticle implements ArticleInterface
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit)
+	public function getData(int $start, int $limit)
 	{
 		global $modSettings, $user_info, $smcFunc, $context, $scripturl;
 
@@ -138,7 +138,7 @@ class BoardArticle implements ArticleInterface
 	 *
 	 * @return int
 	 */
-	public static function getTotal()
+	public function getTotal()
 	{
 		global $modSettings, $user_info, $smcFunc;
 

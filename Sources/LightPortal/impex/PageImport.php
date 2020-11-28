@@ -28,7 +28,7 @@ class PageImport extends AbstractImport
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -45,7 +45,7 @@ class PageImport extends AbstractImport
 
 		$context['sub_template'] = 'manage_import';
 
-		self::run();
+		$this->run();
 	}
 
 	/**
@@ -55,7 +55,7 @@ class PageImport extends AbstractImport
 	 *
 	 * @return void
 	 */
-	protected static function run()
+	protected function run()
 	{
 		global $db_temp_cache, $db_cache, $smcFunc;
 

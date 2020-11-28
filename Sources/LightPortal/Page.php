@@ -29,7 +29,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $modSettings, $context, $txt, $scripturl;
 
@@ -38,24 +38,24 @@ class Page
 		$alias = Helpers::request('page');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
-			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
+			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
-			$context['lp_page'] = self::getDataByAlias($alias);
+			$context['lp_page'] = $this->getDataByAlias($alias);
 		}
 
 		if (empty($context['lp_page'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('lp_page_not_found', false, null, 404);
 		}
 
 		if (empty($context['lp_page']['can_view'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('lp_page_not_activated', false);
 		}
 
@@ -83,10 +83,10 @@ class Page
 		loadTemplate('LightPortal/ViewPage');
 		$context['sub_template'] = 'show_page';
 
-		self::setMeta();
-		self::prepareRelatedPages();
-		self::prepareComments();
-		self::updateNumViews();
+		$this->setMeta();
+		$this->prepareRelatedPages();
+		$this->prepareComments();
+		$this->updateNumViews();
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function changeBackButton()
+	private function changeBackButton()
 	{
 		global $modSettings, $txt;
 
@@ -119,7 +119,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function setMeta()
+	private function setMeta()
 	{
 		global $context, $modSettings, $settings;
 
@@ -146,14 +146,14 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function prepareRelatedPages()
+	private function prepareRelatedPages()
 	{
 		global $context, $modSettings;
 
 		if (empty($context['lp_page']['options']['show_related_pages']) || empty($modSettings['lp_show_related_pages']))
 			return;
 
-		$context['lp_page']['related_pages'] = self::getRelatedPages();
+		$context['lp_page']['related_pages'] = $this->getRelatedPages();
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Page
 	 *
 	 * @return array
 	 */
-	public static function getRelatedPages()
+	public function getRelatedPages()
 	{
 		global $smcFunc, $modSettings, $context;
 
@@ -234,7 +234,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function prepareComments()
+	private function prepareComments()
 	{
 		global $modSettings, $context;
 
@@ -260,7 +260,7 @@ class Page
 	 * @param array $params
 	 * @return array
 	 */
-	public static function getData(array $params)
+	public function getData(array $params)
 	{
 		global $smcFunc, $txt, $modSettings;
 
@@ -348,13 +348,14 @@ class Page
 	 * @param string $alias
 	 * @return array
 	 */
-	public static function getDataByAlias(string $alias)
+	public function getDataByAlias(string $alias)
 	{
 		if (empty($alias))
 			return [];
 
 		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
-		self::prepareData($data);
+
+		$this->prepareData($data);
 
 		return $data;
 	}
@@ -367,13 +368,14 @@ class Page
 	 * @param int $item
 	 * @return array
 	 */
-	public static function getDataByItem(int $item)
+	public function getDataByItem(int $item)
 	{
 		if (empty($item))
 			return [];
 
-		$data = self::getData(array('item' => $item));
-		self::prepareData($data);
+		$data = $this->getData(array('item' => $item));
+
+		$this->prepareData($data);
 
 		return $data;
 	}
@@ -386,7 +388,7 @@ class Page
 	 * @param array|null $data
 	 * @return void
 	 */
-	private static function prepareData(?array &$data)
+	private function prepareData(?array &$data)
 	{
 		global $user_info, $modSettings;
 
@@ -402,10 +404,10 @@ class Page
 		$data['keywords'] = $data['keywords'] ?? [];
 
 		if (!empty($modSettings['enable_likes'])) {
-			$user_likes = $user_info['is_guest'] ? [] : self::prepareLikesContext($data['id']);
+			$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
 
 			$data['likes'] = array(
-				'count'    => self::getLikesCount($data['id']),
+				'count'    => $this->getLikesCount($data['id']),
 				'you'      => in_array($data['id'], $user_likes),
 				'can_like' => !$user_info['is_guest'] && !$is_author && allowedTo('likes_like')
 			);
@@ -420,7 +422,7 @@ class Page
 	 * @param int $page
 	 * @return array
 	 */
-	private static function prepareLikesContext($page)
+	private function prepareLikesContext(int $page)
 	{
 		global $user_info, $smcFunc;
 
@@ -464,7 +466,7 @@ class Page
 	 * @param int $page
 	 * @return int
 	 */
-	private static function getLikesCount($page)
+	private function getLikesCount(int $page)
 	{
 		global $smcFunc;
 
@@ -503,7 +505,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function updateNumViews()
+	private function updateNumViews()
 	{
 		global $context, $user_info, $smcFunc;
 
@@ -520,8 +522,9 @@ class Page
 				)
 			);
 
-			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
 			$smcFunc['lp_num_queries']++;
+
+			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
 		}
 	}
 }

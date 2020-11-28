@@ -26,27 +26,27 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function hooks()
+	public function hooks()
 	{
-		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
-		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
-		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
-		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
-		add_integration_function('integrate_redirect', __CLASS__ . '::redirect', false, __FILE__);
-		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
-		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
-		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
-		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
-		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes', false, __FILE__);
-		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike', false, __FILE__);
-		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
-		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline', false, __FILE__);
-		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show', false, '$sourcedir/LightPortal/Credits.php');
-		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_autoload', __CLASS__ . '::autoload#', false, __FILE__);
+		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
+		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
+		add_integration_function('integrate_redirect', __CLASS__ . '::redirect#', false, __FILE__);
+		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
+		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
+		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
+		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
+		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
+		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
+		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
+		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
+		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
+		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
 	}
 
 	/**
@@ -57,7 +57,7 @@ class Integration
 	 * @param array $classMap
 	 * @return void
 	 */
-	public static function autoload(array &$classMap)
+	public function autoload(array &$classMap)
 	{
 		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
@@ -73,9 +73,9 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function userInfo()
+	public function userInfo()
 	{
-		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
+		global $context, $smcFunc, $modSettings, $user_info;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
 		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
@@ -85,7 +85,6 @@ class Integration
 			'LP_VERSION'      => '1.3',
 			'LP_RELEASE_DATE' => '2020-11-11',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
-			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
 			'MAX_MSG_LENGTH'  => 65535
@@ -102,7 +101,7 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function preCssOutput()
+	public function preCssOutput()
 	{
 		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
 		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
@@ -115,23 +114,18 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function loadTheme()
+	public function loadTheme()
 	{
-		global $txt, $context, $modSettings, $settings;
+		global $context, $modSettings;
 
-		if (Subs::isPortalMustNotBeLoaded())
+		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
 		loadLanguage('LightPortal/');
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
-		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
-			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
-			: false;
-
-		$context['lp_active_blocks']    = Helpers::cache('active_blocks', 'getActiveBlocks', Subs::class);
-		$context['lp_num_active_pages'] = Helpers::cache('num_active_pages_u' . $context['user']['id'], 'getNumActivePages', Subs::class);
+		$context['lp_num_active_pages'] = Subs::getNumActivePages();
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
@@ -146,7 +140,7 @@ class Integration
 	 * @param string $setLocation
 	 * @return void
 	 */
-	public static function redirect(string &$setLocation)
+	public function redirect(string &$setLocation)
 	{
 		global $modSettings, $scripturl;
 
@@ -165,18 +159,19 @@ class Integration
 	 * @param array $actions
 	 * @return void
 	 */
-	public static function actions(array &$actions)
+	public function actions(array &$actions)
 	{
 		global $context, $modSettings;
 
-		$actions['portal'] = array('LightPortal/FrontPage.php', array(FrontPage::class, 'show'));
+		$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
-			Tag::show();
+			return call_user_func(array(new Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$disabled_actions = Subs::unsetDisabledActions($actions);
+
 			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $disabled_actions))
 				redirectexit();
 		}
@@ -189,21 +184,21 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function defaultAction()
+	public function defaultAction()
 	{
-		global $modSettings, $sourcedir;
+		global $modSettings;
 
 		if (Helpers::request()->filled('page'))
-			return call_user_func(array(Page::class, 'show'));
+			return call_user_func(array(new Page, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
-			require_once($sourcedir . '/BoardIndex.php');
+			Helpers::require('BoardIndex');
 
 			return call_user_func('BoardIndex');
 		}
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			return call_user_func(array(FrontPage::class, 'show'));
+			return call_user_func(array(new FrontPage, 'show'));
 	}
 
 	/**
@@ -214,7 +209,7 @@ class Integration
 	 * @param string $current_action
 	 * @return void
 	 */
-	public static function currentAction(string &$current_action)
+	public function currentAction(string &$current_action)
 	{
 		global $modSettings, $context;
 
@@ -248,25 +243,27 @@ class Integration
 	 * @param array $buttons
 	 * @return void
 	 */
-	public static function menuButtons(array &$buttons)
+	public function menuButtons(array &$buttons)
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		if (Subs::isPortalMustNotBeLoaded())
+		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
 		$context['allow_light_portal_view']             = allowedTo('light_portal_view');
 		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
 		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
 
-		Block::show();
+		(new Block)->show();
 
 		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
 		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
 			$buttons['admin']['show'] = true;
+
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
 				$counter++;
+
 				if ($area == 'featuresettings')
 					break;
 			}
@@ -381,7 +378,7 @@ class Integration
 	 *
 	 * @return void
 	 */
-	public static function loadIllegalGuestPermissions()
+	public function loadIllegalGuestPermissions()
 	{
 		global $context;
 
@@ -405,7 +402,7 @@ class Integration
 	 * @param array $leftPermissionGroups
 	 * @return void
 	 */
-	public static function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		global $context;
 
@@ -430,7 +427,7 @@ class Integration
 	 * @param int $content
 	 * @return bool|array
 	 */
-	public static function validLikes($type, $content)
+	public function validLikes(string $type, int $content)
 	{
 		global $smcFunc, $user_info;
 
@@ -473,7 +470,7 @@ class Integration
 	 * @param \Likes $obj
 	 * @return void
 	 */
-	public static function issueLike($obj)
+	public function issueLike(\Likes $obj)
 	{
 		if ($obj->get('type') !== 'lpp')
 			return;
@@ -489,7 +486,7 @@ class Integration
 	 * @param array $alert_types
 	 * @return void
 	 */
-	public static function alertTypes(array &$alert_types)
+	public function alertTypes(array &$alert_types)
 	{
 		global $modSettings;
 
@@ -509,7 +506,7 @@ class Integration
 	 * @param array $formats
 	 * @return void
 	 */
-	public static function fetchAlerts(array &$alerts, array &$formats)
+	public function fetchAlerts(array &$alerts, array &$formats)
 	{
 		global $user_info;
 
@@ -546,7 +543,7 @@ class Integration
 	 * @param array $actions
 	 * @return string
 	 */
-	public static function whoisOnline(array $actions)
+	public function whoisOnline(array $actions)
 	{
 		global $txt, $scripturl, $modSettings, $context;
 

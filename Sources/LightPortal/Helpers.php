@@ -32,12 +32,12 @@ class Helpers
 	 *
 	 * @param string|null $key
 	 * @param string|null $funcName
-	 * @param string $class
+	 * @param string|null $class
 	 * @param int $time (in seconds)
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
+	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = 3600, ...$vars)
 	{
 		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
 	}
@@ -96,6 +96,24 @@ class Helpers
 	public static function session($key = null, $default = null)
 	{
 		return $key ? (new Session)($key, $default) : new Session;
+	}
+
+	/**
+	 * Require $filename only once
+	 *
+	 * Подключаем $filename единожды
+	 *
+	 * @param string $filename
+	 * @return void
+	 */
+	public static function require(string $filename)
+	{
+		global $sourcedir;
+
+		if (empty($filename))
+			return;
+
+		require_once($sourcedir . '/' . $filename . '.php');
 	}
 
 	/**
@@ -379,6 +397,36 @@ class Helpers
 	}
 
 	/**
+	 * Load BBCode editor
+	 *
+	 * Подключаем редактор ББ-кода
+	 *
+	 * @param string $content
+	 * @return void
+	 */
+	public static function createBbcEditor(string $content = '')
+	{
+		global $context;
+
+		$editorOptions = array(
+			'id'           => 'content',
+			'value'        => $content,
+			'height'       => '1px',
+			'width'        => '100%',
+			'preview_type' => 2,
+			'required'     => true
+		);
+
+		Helpers::require('Subs-Editor');
+		create_control_richedit($editorOptions);
+
+		$context['post_box_name'] = $editorOptions['id'];
+
+		addJavaScriptVar('oEditorID', $context['post_box_name'], true);
+		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $context['post_box_name'], true);
+	}
+
+	/**
 	 * Check whether the current user can view the portal item according to their access rights
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
@@ -534,6 +582,26 @@ class Helpers
 	}
 
 	/**
+	 * Prepare a list of all localizations of the forum
+	 *
+	 * Формируем список всех локализаций форума
+	 *
+	 * @return void
+	 */
+	public static function prepareForumLanguages()
+	{
+		global $modSettings, $context, $language;
+
+		getLanguages();
+
+		if (empty($modSettings['userLanguage'])) {
+			$default_lang = $context['languages'][$language];
+			$context['languages'] = [];
+			$context['languages'][$language] = $default_lang;
+		}
+	}
+
+	/**
 	 * Prepare content to display
 	 *
 	 * Готовим контент к отображению в браузере
@@ -566,8 +634,6 @@ class Helpers
 	 */
 	public static function parseContent(string &$content, string $type = 'bbc')
 	{
-		global $context;
-
 		switch ($type) {
 			case 'bbc':
 				$content = parse_bbc($content);
@@ -646,20 +712,6 @@ class Helpers
 	}
 
 	/**
-	 * Check whether need to display dates in lowercase for the current language
-	 *
-	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
-	 *
-	 * @return bool
-	 */
-	public static function isLowerCaseForDates()
-	{
-		global $txt;
-
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
-	}
-
-	/**
 	 * Get a number in friendly format ("1K" instead "1000", etc)
 	 *
 	 * Получаем число в приятном глазу формате (для чисел более 10к)
@@ -687,15 +739,40 @@ class Helpers
 	}
 
 	/**
-	 * Get array of titles for page/block object type from cache
+	 * Get array of titles for page/block object type
 	 *
-	 * Получаем из кэша массив всех заголовков для объекта типа page/block
+	 * Получаем массив всех заголовков для объекта типа page/block
 	 *
 	 * @param string $type
 	 * @return array
 	 */
 	public static function getAllTitles(string $type = 'page')
 	{
-		return self::cache('all_titles', 'getAllTitles', Subs::class, LP_CACHE_TIME, $type);
+		global $smcFunc;
+
+		if (($titles = self::cache()->get('all_titles', LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT item_id, lang, title
+				FROM {db_prefix}lp_titles
+				WHERE type = {string:type}
+				ORDER BY lang, title',
+				array(
+					'type' => $type
+				)
+			);
+
+			$titles = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				if (!empty($row['lang']))
+					$titles[$row['item_id']][$row['lang']] = $row['title'];
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			self::cache()->put('all_titles', $titles, LP_CACHE_TIME);
+		}
+
+		return $titles;
 	}
 }
