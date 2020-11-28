@@ -26,7 +26,7 @@ class PrettyUrls
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
 
 	/**
 	 * Give a hint to the PrettyUrls about action=portal
@@ -35,7 +35,7 @@ class PrettyUrls
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $context;
 

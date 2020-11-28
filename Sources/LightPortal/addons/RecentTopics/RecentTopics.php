@@ -28,7 +28,7 @@ class RecentTopics
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-book-open';
+	public $addon_icon = 'fas fa-book-open';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class RecentTopics
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * The maximum number of topics to output
@@ -46,7 +46,7 @@ class RecentTopics
 	 *
 	 * @var int
 	 */
-	private static $num_topics = 10;
+	private $num_topics = 10;
 
 	/**
 	 * If set, does NOT show topics from the specified boards
@@ -55,7 +55,7 @@ class RecentTopics
 	 *
 	 * @var string
 	 */
-	private static $exclude_boards = '';
+	private $exclude_boards = '';
 
 	/**
 	 * If set, ONLY includes topics from the specified boards
@@ -64,7 +64,7 @@ class RecentTopics
 	 *
 	 * @var string
 	 */
-	private static $include_boards = '';
+	private $include_boards = '';
 
 	/**
 	 * Display user avatars (true|false)
@@ -73,7 +73,7 @@ class RecentTopics
 	 *
 	 * @var bool
 	 */
-	private static $show_avatars = false;
+	private $show_avatars = false;
 
 	/**
 	 * Online list update interval, in seconds
@@ -82,7 +82,7 @@ class RecentTopics
 	 *
 	 * @var int
 	 */
-	private static $update_interval = 600;
+	private $update_interval = 600;
 
 	/**
 	 * Adding the block options
@@ -92,15 +92,15 @@ class RecentTopics
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['recent_topics']['no_content_class'] = static::$no_content_class;
+		$options['recent_topics']['no_content_class'] = $this->no_content_class;
 
-		$options['recent_topics']['parameters']['num_topics']      = static::$num_topics;
-		$options['recent_topics']['parameters']['exclude_boards']  = static::$exclude_boards;
-		$options['recent_topics']['parameters']['include_boards']  = static::$include_boards;
-		$options['recent_topics']['parameters']['show_avatars']    = static::$show_avatars;
-		$options['recent_topics']['parameters']['update_interval'] = static::$update_interval;
+		$options['recent_topics']['parameters']['num_topics']      = $this->num_topics;
+		$options['recent_topics']['parameters']['exclude_boards']  = $this->exclude_boards;
+		$options['recent_topics']['parameters']['include_boards']  = $this->include_boards;
+		$options['recent_topics']['parameters']['show_avatars']    = $this->show_avatars;
+		$options['recent_topics']['parameters']['update_interval'] = $this->update_interval;
 	}
 
 	/**
@@ -112,7 +112,7 @@ class RecentTopics
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'recent_topics')
 			return;
@@ -131,7 +131,7 @@ class RecentTopics
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -198,7 +198,7 @@ class RecentTopics
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData($parameters)
 	{
 		global $boarddir;
 
@@ -252,7 +252,7 @@ class RecentTopics
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

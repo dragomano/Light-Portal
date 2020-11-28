@@ -28,7 +28,7 @@ class TopPages
 	 *
 	 * @var string
 	 */
-	private static $type = 'comments';
+	private $type = 'comments';
 
 	/**
 	 * Specify an icon (from the FontAwesome Free collection)
@@ -37,7 +37,7 @@ class TopPages
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-balance-scale-left';
+	public $addon_icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * The maximum number of pages to output
@@ -46,7 +46,7 @@ class TopPages
 	 *
 	 * @var int
 	 */
-	private static $num_pages = 10;
+	private $num_pages = 10;
 
 	/**
 	 * Display only numbers (true|false)
@@ -55,7 +55,7 @@ class TopPages
 	 *
 	 * @var bool
 	 */
-	private static $show_numbers_only = false;
+	private $show_numbers_only = false;
 
 	/**
 	 * Adding the block options
@@ -65,11 +65,11 @@ class TopPages
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['top_pages']['parameters']['popularity_type']   = static::$type;
-		$options['top_pages']['parameters']['num_pages']         = static::$num_pages;
-		$options['top_pages']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_pages']['parameters']['popularity_type']   = $this->type;
+		$options['top_pages']['parameters']['num_pages']         = $this->num_pages;
+		$options['top_pages']['parameters']['show_numbers_only'] = $this->show_numbers_only;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TopPages
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'top_pages')
 			return;
@@ -98,7 +98,7 @@ class TopPages
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -156,7 +156,7 @@ class TopPages
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData($parameters)
 	{
 		global $smcFunc, $scripturl;
 
@@ -209,7 +209,7 @@ class TopPages
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

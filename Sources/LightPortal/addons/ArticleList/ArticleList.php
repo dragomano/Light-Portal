@@ -28,7 +28,7 @@ class ArticleList
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-file-alt';
+	public $addon_icon = 'far fa-file-alt';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class ArticleList
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * Default class for article blocks
@@ -46,7 +46,7 @@ class ArticleList
 	 *
 	 * @var string
 	 */
-	private static $article_body_class = 'div.descbox';
+	private $article_body_class = 'div.descbox';
 
 	/**
 	 * Articles type (0 - topics, 1 - pages)
@@ -55,7 +55,7 @@ class ArticleList
 	 *
 	 * @var int
 	 */
-	private static $article_type = 0;
+	private $article_type = 0;
 
 	/**
 	 * IDs of topics or pages to display
@@ -64,7 +64,7 @@ class ArticleList
 	 *
 	 * @var string
 	 */
-	private static $ids = '';
+	private $ids = '';
 
 	/**
 	 * Display article images (true|false)
@@ -73,7 +73,7 @@ class ArticleList
 	 *
 	 * @var bool
 	 */
-	private static $seek_images = false;
+	private $seek_images = false;
 
 	/**
 	 * Adding the block options
@@ -83,14 +83,14 @@ class ArticleList
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['article_list']['no_content_class'] = static::$no_content_class;
+		$options['article_list']['no_content_class'] = $this->no_content_class;
 
-		$options['article_list']['parameters']['article_body_class'] = static::$article_body_class;
-		$options['article_list']['parameters']['article_type']       = static::$article_type;
-		$options['article_list']['parameters']['ids']                = static::$ids;
-		$options['article_list']['parameters']['seek_images']        = static::$seek_images;
+		$options['article_list']['parameters']['article_body_class'] = $this->article_body_class;
+		$options['article_list']['parameters']['article_type']       = $this->article_type;
+		$options['article_list']['parameters']['ids']                = $this->ids;
+		$options['article_list']['parameters']['seek_images']        = $this->seek_images;
 	}
 
 	/**
@@ -102,7 +102,7 @@ class ArticleList
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'article_list')
 			return;
@@ -120,7 +120,7 @@ class ArticleList
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -208,7 +208,7 @@ class ArticleList
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getTopics(array $parameters)
+	public function getTopics(array $parameters)
 	{
 		global $smcFunc, $modSettings;
 
@@ -263,7 +263,7 @@ class ArticleList
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getPages(array $parameters)
+	public function getPages(array $parameters)
 	{
 		global $smcFunc, $modSettings;
 
@@ -329,7 +329,7 @@ class ArticleList
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $scripturl, $context, $txt;
 
@@ -360,7 +360,7 @@ class ArticleList
 				</div>';
 					}
 
-					$content = '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
+					$content .= '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
 				}

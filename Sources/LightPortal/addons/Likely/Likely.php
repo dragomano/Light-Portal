@@ -26,7 +26,7 @@ class Likely
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-share-square';
+	public $addon_icon = 'far fa-share-square';
 
 	/**
 	 * Button size (small|big)
@@ -35,7 +35,7 @@ class Likely
 	 *
 	 * @var string
 	 */
-	private static $size = 'small';
+	private $size = 'small';
 
 	/**
 	 * Button skin (normal|light)
@@ -44,7 +44,7 @@ class Likely
 	 *
 	 * @var string
 	 */
-	private static $skin = 'normal';
+	private $skin = 'normal';
 
 	/**
 	 * List of displayed buttons
@@ -53,7 +53,7 @@ class Likely
 	 *
 	 * @var string
 	 */
-	private static $buttons = 'facebook,twitter,vkontakte,pinterest,odnoklassniki,telegram,linkedin,whatsapp';
+	private $buttons = 'facebook,twitter,vkontakte,pinterest,odnoklassniki,telegram,linkedin,whatsapp';
 
 	/**
 	 * Adding the block options
@@ -63,11 +63,11 @@ class Likely
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['likely']['parameters']['size']    = static::$size;
-		$options['likely']['parameters']['skin']    = static::$skin;
-		$options['likely']['parameters']['buttons'] = static::$buttons;
+		$options['likely']['parameters']['size']    = $this->size;
+		$options['likely']['parameters']['skin']    = $this->skin;
+		$options['likely']['parameters']['buttons'] = $this->buttons;
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Likely
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'likely')
 			return;
@@ -96,7 +96,7 @@ class Likely
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -178,7 +178,7 @@ class Likely
 		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely_addon_buttons'];
 		$context['posting_fields']['buttons']['input'] = array(
 			'type' => 'textarea',
-			'after' => sprintf($txt['lp_likely_addon_buttons_subtext'], static::$buttons),
+			'after' => sprintf($txt['lp_likely_addon_buttons_subtext'], $this->buttons),
 			'attributes' => array(
 				'id'        => 'buttons',
 				'maxlength' => 255,
@@ -200,7 +200,7 @@ class Likely
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $txt, $modSettings, $settings;
 
@@ -242,7 +242,7 @@ class Likely
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'Likely',

@@ -26,7 +26,7 @@ class KarmaPostRating
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $addon_type = 'article';
 
 	/**
 	 * Select rating column from kpr_ratings table for the frontpage topics
@@ -39,7 +39,7 @@ class KarmaPostRating
 	 * @param array $custom_parameters
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
+	public function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
 	{
 		global $modSettings;
 
@@ -63,7 +63,7 @@ class KarmaPostRating
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(&$topics, $row)
 	{
 		$topics[$row['id_topic']]['kpr_rating'] = $row['rating'] ?? 0;
 	}
@@ -73,7 +73,7 @@ class KarmaPostRating
 	 *
 	 * @return void
 	 */
-	public static function frontAssets()
+	public function frontAssets()
 	{
 		global $context;
 

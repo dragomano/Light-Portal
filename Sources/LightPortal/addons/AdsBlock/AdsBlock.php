@@ -28,7 +28,7 @@ class AdsBlock
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-ad';
+	public $addon_icon = 'fas fa-ad';
 
 	/**
 	 * Default placement of ads block
@@ -37,7 +37,7 @@ class AdsBlock
 	 *
 	 * @var string
 	 */
-	private static $placement = '';
+	private $placement = '';
 
 	/**
 	 * Board ids for block output
@@ -46,7 +46,7 @@ class AdsBlock
 	 *
 	 * @var string
 	 */
-	private static $boards = '';
+	private $boards = '';
 
 	/**
 	 * Topic ids for block output
@@ -55,7 +55,7 @@ class AdsBlock
 	 *
 	 * @var string
 	 */
-	private static $topics = '';
+	private $topics = '';
 
 	/**
 	 * Run necessary hooks
@@ -64,12 +64,12 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function __construct()
 	{
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
-		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons', false, __FILE__);
-		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons', false, __FILE__);
-		add_integration_function('integrate_prepare_display_context', __CLASS__ . '::prepareDisplayContext', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
+		add_integration_function('integrate_prepare_display_context', __CLASS__ . '::prepareDisplayContext#', false, __FILE__);
 	}
 
 	/**
@@ -79,13 +79,14 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function menuButtons()
+	public function menuButtons()
 	{
 		global $context;
 
 		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
 			require_once(__DIR__ . '/Template.php');
-			ads_block_form();
+
+			$context['template_layers'][] = 'ads_block';
 		}
 
 		if (empty($context['current_board']))
@@ -107,7 +108,7 @@ class AdsBlock
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
 		global $context, $txt;
 
@@ -116,7 +117,7 @@ class AdsBlock
 
 		$ads_blocks = [];
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump) {
-			$ads_blocks[$position] = self::getByPosition($position);
+			$ads_blocks[$position] = $this->getByPosition($position);
 		}
 
 		return $ads_blocks;
@@ -129,11 +130,12 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function messageindexButtons()
+	public function messageindexButtons()
 	{
 		global $context;
 
 		require_once(__DIR__ . '/Template.php');
+
 		$context['template_layers'][] = 'ads_placement_board';
 	}
 
@@ -144,11 +146,12 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function displayButtons()
+	public function displayButtons()
 	{
 		global $context;
 
 		require_once(__DIR__ . '/Template.php');
+
 		$context['template_layers'][] = 'ads_placement_topic';
 	}
 
@@ -162,7 +165,7 @@ class AdsBlock
 	 * @param int $counter
 	 * @return void
 	 */
-	public static function prepareDisplayContext(&$output, &$message, $counter)
+	public function prepareDisplayContext(&$output, &$message, $counter)
 	{
 		global $options, $context;
 
@@ -235,7 +238,7 @@ class AdsBlock
 	 * @param string $position
 	 * @return array
 	 */
-	private static function getByPosition(string $position)
+	private function getByPosition(string $position)
 	{
 		global $context;
 
@@ -245,18 +248,21 @@ class AdsBlock
 		return array_filter($context['lp_blocks']['ads'], function ($block) use ($position, $context) {
 			if (!empty($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
+
 				if (!array_key_exists($context['current_board'], $boards))
 					return false;
 			}
 
 			if (!empty($block['parameters']['ads_topics']) && !empty($context['current_topic'])) {
 				$topics = array_flip(explode(',', $block['parameters']['ads_topics']));
+
 				if (!array_key_exists($context['current_topic'], $topics))
 					return false;
 			}
 
 			if (!empty($block['parameters']['ads_placement'])) {
 				$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+
 				return array_key_exists($position, $placements);
 			}
 
@@ -271,11 +277,12 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function addPanels()
+	public function addPanels()
 	{
 		global $context, $txt;
 
 		unset($context['lp_panels']['ads']);
+
 		$context['lp_panels'] += $txt['lp_ads_block_addon_placement_set'];
 	}
 
@@ -287,13 +294,13 @@ class AdsBlock
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
 		$options['ads_block']['content'] = 'html';
 
-		$options['ads_block']['parameters']['ads_placement'] = static::$placement;
-		$options['ads_block']['parameters']['ads_boards']    = static::$boards;
-		$options['ads_block']['parameters']['ads_topics']    = static::$topics;
+		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
+		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
+		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
 	}
 
 	/**
@@ -305,7 +312,7 @@ class AdsBlock
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'ads_block')
 			return;
@@ -326,7 +333,7 @@ class AdsBlock
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 

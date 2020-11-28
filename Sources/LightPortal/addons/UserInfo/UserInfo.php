@@ -27,7 +27,7 @@ class UserInfo
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-user';
+	public $addon_icon = 'fas fa-user';
 
 	/**
 	 * Get the current user info
@@ -36,7 +36,7 @@ class UserInfo
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
 		global $memberContext, $user_info;
 
@@ -59,7 +59,7 @@ class UserInfo
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
 		global $context, $txt, $scripturl, $boarddir;
 

@@ -26,7 +26,7 @@ class FaBoardIcons
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $addon_type = 'article';
 
 	/**
 	 * Select columns with icon and color
@@ -36,7 +36,7 @@ class FaBoardIcons
 	 * @param array $custom_columns
 	 * @return void
 	 */
-	public static function frontBoards(&$custom_columns)
+	public function frontBoards(&$custom_columns)
 	{
 		global $sourcedir;
 
@@ -55,7 +55,7 @@ class FaBoardIcons
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontBoardsOutput(&$boards, $row)
+	public function frontBoardsOutput(&$boards, $row)
 	{
 		global $sourcedir, $modSettings;
 

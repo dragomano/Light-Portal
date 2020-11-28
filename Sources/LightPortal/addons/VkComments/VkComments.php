@@ -26,7 +26,7 @@ class VkComments
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'comment';
+	public $addon_type = 'comment';
 
 	/**
 	 * Allow attachments in comments (true|false)
@@ -35,7 +35,7 @@ class VkComments
 	 *
 	 * @var bool
 	 */
-	private static $allow_attachments = true;
+	private $allow_attachments = true;
 
 	/**
 	 * Automatically publish the comment to the user's VK page (true|false)
@@ -44,7 +44,7 @@ class VkComments
 	 *
 	 * @var bool
 	 */
-	private static $auto_publish = false;
+	private $auto_publish = false;
 
 	/**
 	 * Adding the new comment type
@@ -53,7 +53,7 @@ class VkComments
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $txt;
 
@@ -68,14 +68,14 @@ class VkComments
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
-			updateSettings(array('lp_vk_comments_addon_allow_attachments' => static::$allow_attachments));
+			updateSettings(array('lp_vk_comments_addon_allow_attachments' => $this->allow_attachments));
 		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
-			updateSettings(array('lp_vk_comments_addon_auto_publish' => static::$auto_publish));
+			updateSettings(array('lp_vk_comments_addon_auto_publish' => $this->auto_publish));
 
 		$config_vars[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
 		$config_vars[] = array('check', 'lp_vk_comments_addon_allow_attachments');
@@ -89,14 +89,14 @@ class VkComments
 	 *
 	 * @return void
 	 */
-	public static function comments()
+	public function comments()
 	{
 		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
 			$num_comments      = $modSettings['lp_num_comments_per_page'] ?? 10;
-			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? static::$allow_attachments;
-			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? static::$auto_publish;
+			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? $this->allow_attachments;
+			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? $this->auto_publish;
 
 			$context['lp_vk_comment_block'] = '
 				<script src="https://vk.com/js/api/openapi.js?167"></script>

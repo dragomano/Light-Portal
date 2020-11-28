@@ -28,7 +28,7 @@ class TagList
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-tags';
+	public $addon_icon = 'fas fa-tags';
 
 	/**
 	 * The source of tags (lp_tags|keywords)
@@ -37,7 +37,7 @@ class TagList
 	 *
 	 * @var string
 	 */
-	private static $source = 'lp_tags';
+	private $source = 'lp_tags';
 
 	/**
 	 * Adding the block options
@@ -47,9 +47,9 @@ class TagList
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['tag_list']['parameters']['source'] = static::$source;
+		$options['tag_list']['parameters']['source'] = $this->source;
 	}
 
 	/**
@@ -61,7 +61,7 @@ class TagList
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'tag_list')
 			return;
@@ -76,7 +76,7 @@ class TagList
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -114,11 +114,11 @@ class TagList
 	/**
 	 * Get all topic keywords
 	 *
-	 * Получаем ключевики всех тем
+	 * Получаем ключевые слова всех тем
 	 *
 	 * @return array
 	 */
-	public static function getAllTopicKeywords()
+	public function getAllTopicKeywords()
 	{
 		global $smcFunc, $scripturl;
 
@@ -161,7 +161,7 @@ class TagList
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

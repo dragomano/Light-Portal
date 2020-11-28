@@ -26,7 +26,7 @@ class Polls
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-poll';
+	public $addon_icon = 'fas fa-poll';
 
 	/**
 	 * The topic-poll ID
@@ -35,7 +35,7 @@ class Polls
 	 *
 	 * @var int
 	 */
-	private static $selected_item = 0;
+	private $selected_item = 0;
 
 	/**
 	 * Adding the block options
@@ -45,9 +45,9 @@ class Polls
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['polls']['parameters']['selected_item'] = static::$selected_item;
+		$options['polls']['parameters']['selected_item'] = $this->selected_item;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Polls
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'polls')
 			return;
@@ -74,7 +74,7 @@ class Polls
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -91,7 +91,7 @@ class Polls
 			'tab' => 'content'
 		);
 
-		$polls = self::getAll();
+		$polls = $this->getAll();
 
 		foreach ($polls as $key => $value) {
 			if (RC2_CLEAN) {
@@ -116,7 +116,7 @@ class Polls
 	 * @param int $topic
 	 * @return array
 	 */
-	public static function getData($topic = 0)
+	public function getData($topic = 0)
 	{
 		global $boarddir;
 
@@ -137,14 +137,14 @@ class Polls
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $boardurl, $context, $txt, $scripturl;
 
 		if ($type !== 'polls')
 			return;
 
-		$poll = self::getData($parameters['selected_item']);
+		$poll = $this->getData($parameters['selected_item']);
 
 		ob_start();
 
@@ -207,7 +207,7 @@ class Polls
 	 *
 	 * @return array
 	 */
-	private static function getAll()
+	private function getAll()
 	{
 		global $smcFunc;
 

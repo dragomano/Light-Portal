@@ -28,7 +28,7 @@ class BoardList
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-list-alt';
+	public $addon_icon = 'far fa-list-alt';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class BoardList
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * Default class for category headers
@@ -46,7 +46,7 @@ class BoardList
 	 *
 	 * @var string
 	 */
-	private static $category_class = 'div.title_bar > h4.titlebg';
+	private $category_class = 'div.title_bar > h4.titlebg';
 
 	/**
 	 * Default class for areas with board lists
@@ -55,7 +55,7 @@ class BoardList
 	 *
 	 * @var string
 	 */
-	private static $board_class = 'div.roundframe';
+	private $board_class = 'div.roundframe';
 
 	/**
 	 * Adding the block options
@@ -65,12 +65,12 @@ class BoardList
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['board_list']['no_content_class'] = static::$no_content_class;
+		$options['board_list']['no_content_class'] = $this->no_content_class;
 
-		$options['board_list']['parameters']['category_class'] = static::$category_class;
-		$options['board_list']['parameters']['board_class']    = static::$board_class;
+		$options['board_list']['parameters']['category_class'] = $this->category_class;
+		$options['board_list']['parameters']['board_class']    = $this->board_class;
 	}
 
 	/**
@@ -82,7 +82,7 @@ class BoardList
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'board_list')
 			return;
@@ -98,7 +98,7 @@ class BoardList
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -162,11 +162,9 @@ class BoardList
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
-		global $sourcedir;
-
-		require_once($sourcedir . '/Subs-MessageIndex.php');
+		Helpers::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
 			'ignore_boards'   => true,
@@ -189,7 +187,7 @@ class BoardList
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $scripturl;
 

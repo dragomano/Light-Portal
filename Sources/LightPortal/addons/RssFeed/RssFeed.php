@@ -28,7 +28,7 @@ class RssFeed
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-rss';
+	public $addon_icon = 'fas fa-rss';
 
 	/**
 	 * RSS Feed Url
@@ -37,7 +37,7 @@ class RssFeed
 	 *
 	 * @var string
 	 */
-	private static $url = '';
+	private $url = '';
 
 	/**
 	 * Show text (true|false)
@@ -46,7 +46,7 @@ class RssFeed
 	 *
 	 * @var bool
 	 */
-	private static $show_text = false;
+	private $show_text = false;
 
 	/**
 	 * Adding the block options
@@ -56,10 +56,10 @@ class RssFeed
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['rss_feed']['parameters']['url']       = static::$url;
-		$options['rss_feed']['parameters']['show_text'] = static::$show_text;
+		$options['rss_feed']['parameters']['url']       = $this->url;
+		$options['rss_feed']['parameters']['show_text'] = $this->show_text;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class RssFeed
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'rss_feed')
 			return;
@@ -87,7 +87,7 @@ class RssFeed
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt, $scripturl;
 
@@ -126,7 +126,7 @@ class RssFeed
 	 * @param string $url
 	 * @return mixed
 	 */
-	public static function getData($url)
+	public function getData($url)
 	{
 		if (empty($url))
 			return '';
@@ -149,7 +149,7 @@ class RssFeed
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		if ($type !== 'rss_feed')
 			return;

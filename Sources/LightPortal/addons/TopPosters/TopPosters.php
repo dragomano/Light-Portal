@@ -28,7 +28,7 @@ class TopPosters
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-users';
+	public $addon_icon = 'fas fa-users';
 
 	/**
 	 * Display user avatars (true|false)
@@ -37,7 +37,7 @@ class TopPosters
 	 *
 	 * @var bool
 	 */
-	private static $show_avatars = true;
+	private $show_avatars = true;
 
 	/**
 	 * The maximum number of users to output
@@ -46,7 +46,7 @@ class TopPosters
 	 *
 	 * @var int
 	 */
-	private static $num_posters = 10;
+	private $num_posters = 10;
 
 	/**
 	 * Display only numbers (true|false)
@@ -55,7 +55,7 @@ class TopPosters
 	 *
 	 * @var bool
 	 */
-	private static $show_numbers_only = false;
+	private $show_numbers_only = false;
 
 	/**
 	 * Adding the block options
@@ -65,11 +65,11 @@ class TopPosters
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['top_posters']['parameters']['show_avatars']      = static::$show_avatars;
-		$options['top_posters']['parameters']['num_posters']       = static::$num_posters;
-		$options['top_posters']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_posters']['parameters']['show_avatars']      = $this->show_avatars;
+		$options['top_posters']['parameters']['num_posters']       = $this->num_posters;
+		$options['top_posters']['parameters']['show_numbers_only'] = $this->show_numbers_only;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TopPosters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -98,7 +98,7 @@ class TopPosters
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -142,7 +142,7 @@ class TopPosters
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData($parameters)
 	{
 		global $smcFunc, $memberContext, $scripturl;
 
@@ -196,7 +196,7 @@ class TopPosters
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\FrontpageFlarumStyle;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * FrontpageFlarumStyle
  *
@@ -27,7 +29,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'frontpage';
+	public $addon_type = 'frontpage';
 
 	/**
 	 * Load custom template for frontpage topics
@@ -36,18 +38,18 @@ class FrontpageFlarumStyle
 	 *
 	 * @return void
 	 */
-	public static function frontCustomTemplate()
+	public function frontCustomTemplate()
 	{
 		global $modSettings, $context;
 
 		if (empty($modSettings['lp_frontpage_mode']) || $modSettings['lp_frontpage_mode'] != 2)
 			return;
 
-		$context['lp_all_categories'] = self::getListSelectedBoards();
+		$context['lp_all_categories'] = $this->getListSelectedBoards();
 
 		require_once(__DIR__ . '/Template.php');
 
-		self::prepareFantomBLock();
+		$this->prepareFantomBLock();
 
 		$context['sub_template'] = 'show_topics_as_flarum_style';
 	}
@@ -59,7 +61,7 @@ class FrontpageFlarumStyle
 	 *
 	 * @return void
 	 */
-	private static function prepareFantomBLock()
+	private function prepareFantomBLock()
 	{
 		global $context;
 
@@ -88,11 +90,11 @@ class FrontpageFlarumStyle
 	 *
 	 * @return array
 	 */
-	private static function getListSelectedBoards()
+	private function getListSelectedBoards()
 	{
-		global $sourcedir, $modSettings;
+		global $modSettings;
 
-		require_once($sourcedir . '/Subs-MessageIndex.php');
+		Helpers::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
 			'ignore_boards'   => true,

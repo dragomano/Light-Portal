@@ -26,7 +26,17 @@ class Markdown
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'parser';
+	public $addon_type = 'parser';
+
+	/**
+	 * @return void
+	 */
+	public function __construct()
+	{
+		global $context;
+
+		$context['lp_md_icon'] = 'fab fa-markdown';
+	}
 
 	/**
 	 * Parse 'md' content
@@ -37,10 +47,10 @@ class Markdown
 	 * @param string $type
 	 * @return void
 	 */
-	public static function parseContent(&$content, $type)
+	public function parseContent(&$content, $type)
 	{
 		if ($type == 'md')
-			$content = self::getParsedMarkdown($content);
+			$content = $this->getParsedMarkdown($content);
 	}
 
 	/**
@@ -51,7 +61,7 @@ class Markdown
 	 * @param string $text
 	 * @return string
 	 */
-	private static function getParsedMarkdown($text)
+	private function getParsedMarkdown($text)
 	{
 		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
 		require_once(__DIR__ . '/Michelf/Markdown.php');
@@ -69,7 +79,7 @@ class Markdown
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'PHP Markdown',

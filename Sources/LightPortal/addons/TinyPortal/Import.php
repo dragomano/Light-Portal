@@ -29,9 +29,9 @@ class Import extends AbstractImport
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
-		global $context, $txt, $scripturl, $sourcedir;
+		global $context, $txt, $scripturl;
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal_addon_label_name'];
 		$context['page_area_title'] = $txt['lp_pages_import'];
@@ -42,7 +42,7 @@ class Import extends AbstractImport
 			'description' => $txt['lp_tiny_portal_addon_description']
 		);
 
-		self::run();
+		$this->run();
 
 		$listOptions = array(
 			'id' => 'pages',
@@ -52,10 +52,10 @@ class Import extends AbstractImport
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'id',
 			'get_items' => array(
-				'function' => __CLASS__ . '::getAll'
+				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => __CLASS__ . '::getTotalQuantity'
+				'function' => array($this, 'getTotalQuantity')
 			),
 			'columns' => array(
 				'id' => array(
@@ -125,7 +125,7 @@ class Import extends AbstractImport
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -142,7 +142,7 @@ class Import extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
 	{
 		global $smcFunc, $db_prefix;
 
@@ -190,7 +190,7 @@ class Import extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public static function getTotalQuantity()
+	public function getTotalQuantity()
 	{
 		global $smcFunc, $db_prefix;
 
@@ -220,7 +220,7 @@ class Import extends AbstractImport
 	 *
 	 * @return void
 	 */
-	protected static function run()
+	protected function run()
 	{
 		global $db_temp_cache, $db_cache, $language, $smcFunc;
 
@@ -236,9 +236,9 @@ class Import extends AbstractImport
 
 		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
 
-		$items = self::getItems($pages);
+		$items = $this->getItems($pages);
 
-		$comments = self::getComments($pages);
+		$comments = $this->getComments($pages);
 
 		$titles = $params = [];
 		foreach ($items as $page_id => $item) {
@@ -391,7 +391,7 @@ class Import extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private static function getItems($pages)
+	private function getItems($pages)
 	{
 		global $smcFunc;
 
@@ -449,7 +449,7 @@ class Import extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private static function getComments($pages)
+	private function getComments($pages)
 	{
 		global $smcFunc;
 

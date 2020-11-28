@@ -26,7 +26,7 @@ class TopicRatingBar
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $addon_type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics
@@ -37,7 +37,7 @@ class TopicRatingBar
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(&$custom_columns, &$custom_tables)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
@@ -55,7 +55,7 @@ class TopicRatingBar
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(&$topics, $row)
 	{
 		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
 	}
@@ -65,7 +65,7 @@ class TopicRatingBar
 	 *
 	 * @return void
 	 */
-	public static function frontAssets()
+	public function frontAssets()
 	{
 		global $context;
 

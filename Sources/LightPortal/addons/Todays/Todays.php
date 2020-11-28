@@ -26,7 +26,7 @@ class Todays
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-calendar-day';
+	public $addon_icon = 'fas fa-calendar-day';
 
 	/**
 	 * What is displayed (birthdays|holidays|events|calendar)
@@ -35,7 +35,7 @@ class Todays
 	 *
 	 * @var string
 	 */
-	private static $type = 'calendar';
+	private $type = 'calendar';
 
 	/**
 	 * Adding the block options
@@ -45,9 +45,9 @@ class Todays
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['todays']['parameters']['widget_type'] = static::$type;
+		$options['todays']['parameters']['widget_type'] = $this->type;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Todays
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'todays')
 			return;
@@ -74,7 +74,7 @@ class Todays
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -115,7 +115,7 @@ class Todays
 	 * @param string $output_method
 	 * @return string
 	 */
-	public static function getData($type, $output_method = 'echo')
+	public function getData($type, $output_method = 'echo')
 	{
 		global $boarddir;
 
@@ -138,24 +138,24 @@ class Todays
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $txt;
 
 		if ($type !== 'todays')
 			return;
 
-		$result = self::getData($parameters['widget_type'], 'array');
+		$result = $this->getData($parameters['widget_type'], 'array');
 
 		ob_start();
 
 		if ($parameters['widget_type'] == 'calendar') {
 			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))
-				self::getData($parameters['widget_type']);
+				$this->getData($parameters['widget_type']);
 			else
 				echo $txt['lp_todays_addon_empty_list'];
 		} elseif (!empty($result)) {
-			self::getData($parameters['widget_type']);
+			$this->getData($parameters['widget_type']);
 		} else {
 			echo $txt['lp_todays_addon_empty_list'];
 		}

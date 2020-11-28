@@ -26,7 +26,7 @@ class EhPortal
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'impex';
+	public $addon_type = 'impex';
 
 	/**
 	 * Add hooks for the admin panel
@@ -35,9 +35,9 @@ class EhPortal
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function __construct()
 	{
-		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas', false, __FILE__);
+		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class EhPortal
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public static function adminAreas(array &$admin_areas)
+	public function adminAreas(array &$admin_areas)
 	{
 		global $txt;
 
@@ -63,11 +63,11 @@ class EhPortal
 	 * @param array $subActions
 	 * @return void
 	 */
-	public static function addPageAreas(&$subActions)
+	public function addPageAreas(&$subActions)
 	{
 		global $user_info;
 
 		if ($user_info['is_admin'])
-			$subActions['import_from_ep'] = array(Import::class, 'main');
+			$subActions['import_from_ep'] = array(new Import, 'main');
 	}
 }

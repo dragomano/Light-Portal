@@ -28,7 +28,7 @@ class TopTopics
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-balance-scale-left';
+	public $addon_icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * Type of popularity calculation (replies|views)
@@ -37,7 +37,7 @@ class TopTopics
 	 *
 	 * @var string
 	 */
-	private static $type = 'replies';
+	private $type = 'replies';
 
 	/**
 	 * The maximum number of topics to output
@@ -46,7 +46,7 @@ class TopTopics
 	 *
 	 * @var int
 	 */
-	private static $num_topics = 10;
+	private $num_topics = 10;
 
 	/**
 	 * Display only numbers (true|false)
@@ -55,7 +55,7 @@ class TopTopics
 	 *
 	 * @var bool
 	 */
-	private static $show_numbers_only = false;
+	private $show_numbers_only = false;
 
 	/**
 	 * Adding the block options
@@ -65,11 +65,11 @@ class TopTopics
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['top_topics']['parameters']['popularity_type']   = static::$type;
-		$options['top_topics']['parameters']['num_topics']        = static::$num_topics;
-		$options['top_topics']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_topics']['parameters']['popularity_type']   = $this->type;
+		$options['top_topics']['parameters']['num_topics']        = $this->num_topics;
+		$options['top_topics']['parameters']['show_numbers_only'] = $this->show_numbers_only;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TopTopics
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'top_topics')
 			return;
@@ -98,7 +98,7 @@ class TopTopics
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -156,7 +156,7 @@ class TopTopics
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData($parameters)
 	{
 		global $boarddir;
 
@@ -176,7 +176,7 @@ class TopTopics
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

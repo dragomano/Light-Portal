@@ -28,7 +28,7 @@ class LanguageAccess
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
 
 	/**
 	 * Allowed forum languages for a specific block
@@ -37,7 +37,7 @@ class LanguageAccess
 	 *
 	 * @var array
 	 */
-	public static $allowed_languages = [];
+	public $allowed_languages = [];
 
 	/**
 	 * Fill additional block classes
@@ -46,7 +46,7 @@ class LanguageAccess
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $context;
 
@@ -72,11 +72,11 @@ class LanguageAccess
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
 		global $context;
 
-		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = static::$allowed_languages;
+		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = $this->allowed_languages;
 	}
 
 	/**
@@ -87,7 +87,7 @@ class LanguageAccess
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters)
+	public function validateBlockData(&$parameters)
 	{
 		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
@@ -103,7 +103,7 @@ class LanguageAccess
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 

@@ -28,7 +28,7 @@ class FacebookComments
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'comment';
+	public $addon_type = 'comment';
 
 	/**
 	 * The IDs list of dark themes
@@ -37,7 +37,7 @@ class FacebookComments
 	 *
 	 * @var string
 	 */
-	private static $dark_themes = '';
+	private $dark_themes = '';
 
 	/**
 	 * Adding the new comment type
@@ -46,7 +46,7 @@ class FacebookComments
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $txt;
 
@@ -61,12 +61,12 @@ class FacebookComments
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
 		global $modSettings, $context;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
-			updateSettings(array('lp_facebook_comments_addon_dark_themes' => static::$dark_themes));
+			updateSettings(array('lp_facebook_comments_addon_dark_themes' => $this->dark_themes));
 
 		$context['lp_facebook_comments_addon_dark_themes_options'] = Helpers::getForumThemes();
 
@@ -80,7 +80,7 @@ class FacebookComments
 	 *
 	 * @return void
 	 */
-	public static function comments()
+	public function comments()
 	{
 		global $modSettings, $context, $txt, $settings;
 

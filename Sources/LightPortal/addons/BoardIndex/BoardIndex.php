@@ -27,7 +27,23 @@ class BoardIndex
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
+
+	/**
+	 * Add used hooks
+	 *
+	 * Добавляем используемые хуки
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		global $txt, $scripturl;
+
+		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
+
+		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex#', false, __FILE__);
+	}
 
 	/**
 	 * Add settings
@@ -37,7 +53,7 @@ class BoardIndex
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
 		global $modSettings;
 
@@ -48,29 +64,13 @@ class BoardIndex
 	}
 
 	/**
-	 * Add used hooks
-	 *
-	 * Добавляем используемые хуки
-	 *
-	 * @return void
-	 */
-	public static function init()
-	{
-		global $txt, $scripturl;
-
-		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
-
-		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex', false, __FILE__);
-	}
-
-	/**
 	 * Toggle indexing of the main forum page
 	 *
 	 * Переключаем возможность индексации главной страницы форума
 	 *
 	 * @return void
 	 */
-	public static function toggleRobotNoIndex()
+	public function toggleRobotNoIndex()
 	{
 		global $modSettings, $context;
 
