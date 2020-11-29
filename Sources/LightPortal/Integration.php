@@ -525,7 +525,7 @@ class Integration
 					);
 					$formats['page_comment_reply_new_reply'] = array(
 						'required' => array('content_subject', 'content_link'),
-						'link'     => '<a href="%2$s">%1s</a>',
+						'link'     => '<a href="%2$s">%1$s</a>',
 						'text'     => '<strong>%1$s</strong>'
 					);
 				} else {

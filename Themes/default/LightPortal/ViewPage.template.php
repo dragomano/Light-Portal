@@ -277,7 +277,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	global $context, $txt;
 
 	echo '
-	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" data-commentator="', $comment['author_id'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" style="list-style: none">
+	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" data-commentator="', $comment['author_id'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment">
 		<div class="comment_avatar"', $context['right_to_left'] ? ' style="padding: 0 0 0 10px"' : '', '>
 			', $comment['avatar'];
 
