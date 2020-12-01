@@ -87,6 +87,9 @@ class Page
 		$this->prepareRelatedPages();
 		$this->prepareComments();
 		$this->updateNumViews();
+
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
 	}
 
 	/**

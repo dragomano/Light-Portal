@@ -56,7 +56,7 @@ class Credits
 	{
 		global $scripturl;
 
-		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
+		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
 	}
 
 	/**
@@ -88,6 +88,14 @@ class Credits
 				'license' => array(
 					'name' => 'the Font Awesome Free License',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
+				)
+			),
+			array(
+				'title' => 'Alpine.js',
+				'link' => 'https://github.com/alpinejs/alpine',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
 				)
 			),
 			array(

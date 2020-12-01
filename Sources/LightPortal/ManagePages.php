@@ -199,19 +199,21 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$actions = '';
+							$actions = '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" data-id="' . $entry['id'] . '" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">';
 
-							if (allowedTo('light_portal_approve_pages'))
-								$actions .= (empty($entry['status']) ? '
-							<span class="toggle_status off" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_on'] . '"></span>&nbsp;' : '<span class="toggle_status on" data-id="' . $entry['id'] . '" title="' . $txt['lp_action_off'] . '"></span>&nbsp;');
+							if (allowedTo('light_portal_approve_pages')) {
+								$actions .= '<span :class="{\'on\': status, \'off\': !status}" title="' . $txt['lp_action_' . (empty($data['status']) ? 'on' : 'off')] . '" @click="status = !status"></span> ';
+							}
 
 							if ($context['lp_fontawesome_enabled']) {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>' . '
-							<span class="fas fa-trash del_page" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '"></span>';
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>
+							<span class="fas fa-trash" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
 							} else {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>' . '
-							<span class="main_icons unread_button del_page" data-id="' . $entry['id'] . '" data-alias="' . $entry['alias'] . '" title="' . $txt['remove'] . '"></span>';
+								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>
+							<span class="main_icons unread_button" data-id="' . $entry['id'] . '" data-alias="' . $entry['alias'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
 							}
+
+							$actions .= '</div>';
 
 							return $actions;
 						},
@@ -266,8 +268,8 @@ class ManagePages
 
 		$listOptions['title'] = '
 			<span class="floatright">
-				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '">
-					<i class="fas fa-plus" title="' . $txt['lp_pages_add'] . '"></i>
+				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '" x-data>
+					<i class="fas fa-plus" @mouseover="page.toggleSpin($el.children[0])" @mouseout="page.toggleSpin($el.children[0])" title="' . $txt['lp_pages_add'] . '"></i>
 				</a>
 			</span>' . $listOptions['title'];
 
@@ -393,12 +395,8 @@ class ManagePages
 		if (!empty($data['del_item']))
 			$this->remove([(int) $data['del_item']]);
 
-		if (!empty($data['toggle_status']) && !empty($data['item'])) {
-			$item   = (int) $data['item'];
-			$status = $data['toggle_status'];
-
-			$this->toggleStatus([$item], $status == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
-		}
+		if (!empty($data['status']) && !empty($data['item']))
+			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
 
 		Helpers::cache()->flush();
 
@@ -813,7 +811,8 @@ class ManagePages
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%'
+					'style'     => 'width: 100%',
+					'x-ref'     => 'title_' . $lang['filename']
 				),
 				'tab' => 'content'
 			);
@@ -829,7 +828,8 @@ class ManagePages
 				'value'     => $context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => $this->alias_pattern,
-				'style'     => 'width: 100%'
+				'style'     => 'width: 100%',
+				'x-ref'     => 'alias'
 			),
 			'tab' => 'seo'
 		);
@@ -839,7 +839,9 @@ class ManagePages
 			'type' => 'select',
 			'attributes' => array(
 				'id'       => 'type',
-				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias'])
+				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
+				'x-ref'    => 'type',
+				'@change'  => 'page.toggleType($el)'
 			),
 			'options' => array(),
 			'tab' => 'content'

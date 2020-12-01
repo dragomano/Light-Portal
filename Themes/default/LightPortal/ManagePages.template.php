@@ -42,8 +42,8 @@ function template_page_post()
 	}
 
 	echo '
-	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
-		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">
+	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($event.target, $refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
@@ -79,13 +79,12 @@ function template_page_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save">', $txt['save'], '</button>
+				<button type="submit" class="button" name="preview" @click="page.post($el)">', $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="page.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
 	</form>
-	<script async defer src="', $settings['default_theme_url'], '/scripts/light_portal/transliteration.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>
+	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/choices.min.js"></script>
 	<script>
 		const choices = new Choices("#keywords", {

@@ -39,6 +39,9 @@ class ManageBlocks
 	{
 		global $context, $txt;
 
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/change_priority.js', array('minimize' => true));
+
 		loadTemplate('LightPortal/ManageBlocks');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_manage'];
@@ -120,12 +123,8 @@ class ManageBlocks
 		if (!empty($data['clone_block']))
 			$this->makeCopy((int) $data['clone_block']);
 
-		if (!empty($data['toggle_status']) && !empty($data['item'])) {
-			$item   = (int) $data['item'];
-			$status = $data['toggle_status'];
-
-			$this->toggleStatus([$item], $status == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
-		}
+		if (!empty($data['status']) && !empty($data['item']))
+			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
 
 		$this->updatePriority();
 
@@ -571,11 +570,13 @@ class ManageBlocks
 		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
-			'after' => '<span id="block_icon">' . Helpers::getIcon() . '</span>',
+			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
 			'attributes' => array(
 				'id'        => 'icon',
 				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon']
+				'value'     => $context['lp_block']['icon'],
+				'x-ref'     => 'icon',
+				'@change'   => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
 			),
 			'tab' => 'appearance'
 		);
@@ -584,7 +585,9 @@ class ManageBlocks
 		$context['posting_fields']['icon_type']['input'] = array(
 			'type' => 'radio_select',
 			'attributes' => array(
-				'id' => 'icon_type'
+				'id'      => 'icon_type',
+				'x-ref'   => 'icon_type',
+				'@change' => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
 			),
 			'options' => array(),
 			'tab' => 'appearance'

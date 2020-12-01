@@ -9,24 +9,6 @@
  */
 function template_manage_blocks()
 {
-	global $settings;
-
-	show_block_table();
-
-	echo '
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_blocks.js"></script>';
-}
-
-/**
- * Displaying a table with blocks
- *
- * Отображение таблицы с блоками
- *
- * @return void
- */
-function show_block_table()
-{
 	global $context, $txt, $scripturl, $modSettings;
 
 	if (empty($context['lp_current_blocks'])) {
@@ -45,8 +27,8 @@ function show_block_table()
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
-				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '">
-					<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>
+				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
+					<i class="fas fa-plus" @mouseover="block.toggleSpin($el.children[0])" @mouseout="block.toggleSpin($el.children[0])" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -140,18 +122,12 @@ function show_block_entry($id, $data)
 		<td class="priority">
 			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td class="actions">';
-
-		if (empty($data['status']))
-			echo '
-			<span class="toggle_status off" data-id="', $id, '" title="', $txt['lp_action_on'], '"></span>';
-		else
-			echo '
-			<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
+		<td class="actions" x-data="{status: ', empty($data['status']) ? 'false' : 'true', '}" data-id="', $id, '" x-init="$watch(\'status\', value => block.toggleStatus($el, value))">
+			<span :class="{\'on\': status, \'off\': !status}" title="', $txt['lp_action_' . (empty($data['status']) ? 'on' : 'off')], '" @click="status = !status"></span>';
 
 		if ($context['lp_fontawesome_enabled']) {
 			echo '
-			<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
+			<span class="fas fa-clone" title="', $txt['lp_action_clone'], '" @click="block.clone($el)"></span>';
 
 			if (isset($txt['lp_block_types'][$data['type']])) {
 				echo '
@@ -159,10 +135,10 @@ function show_block_entry($id, $data)
 			}
 
 			echo '
-			<span class="fas fa-trash del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+			<span class="fas fa-trash" title="', $txt['remove'], '" @click="block.remove($el)"></span>';
 		} else {
 			echo '
-			<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>';
+			<span class="main_icons reports" title="', $txt['lp_action_clone'], '" @click="block.clone($el)"></span>';
 
 			if (isset($txt['lp_block_types'][$data['type']])) {
 				echo '
@@ -170,7 +146,7 @@ function show_block_entry($id, $data)
 			}
 
 			echo '
-			<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
+			<span class="main_icons unread_button" title="', $txt['remove'], '" @click="block.remove($el)"></span>';
 		}
 
 		echo '
@@ -187,7 +163,7 @@ function show_block_entry($id, $data)
  */
 function template_block_add()
 {
-	global $txt, $context, $settings;
+	global $txt, $context;
 
 	echo '
 	<div class="cat_bar">
@@ -201,8 +177,8 @@ function template_block_add()
 	asort($txt['lp_block_types']);
 	foreach ($txt['lp_block_types'] as $type => $title) {
 		echo '
-				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-					<div class="item roundframe" data-type="', $type, '">
+				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
+					<div class="item roundframe" data-type="', $type, '" @click="block.add($el.children[0])">
 						<i class="', $context['lp_' . $type . '_icon'], '"></i>
 						<strong>', $title, '</strong>
 						<hr>
@@ -216,7 +192,6 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>
 	</div>';
 }
 
@@ -229,7 +204,7 @@ function template_block_add()
  */
 function template_block_post()
 {
-	global $context, $txt, $settings;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		if (!empty($context['lp_block']['title_style']))
@@ -271,7 +246,7 @@ function template_block_post()
 	}
 
 	echo '
-	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
+	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
@@ -327,12 +302,11 @@ function template_block_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save">', $txt['save'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>';
+	</form>';
 }
 
 /**

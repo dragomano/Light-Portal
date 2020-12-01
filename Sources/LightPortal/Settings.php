@@ -535,6 +535,9 @@ class Settings
 	{
 		global $context, $txt, $scripturl;
 
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/manage_plugins.js', array('defer' => true));
+
 		loadTemplate('LightPortal/ManagePlugins');
 
 		$context['lp_plugins'] = Subs::getAddons();
@@ -592,6 +595,8 @@ class Settings
 
 			// Additional actions after settings saving | Дополнительные действия после сохранения настроек
 			Subs::runAddons('onSettingsSaving');
+
+			exit(json_encode('ok'));
 		}
 
 		// Enable/disable plugins | Включаем/выключаем плагины
@@ -608,6 +613,8 @@ class Settings
 			}
 
 			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
+
+			exit(json_encode('ok'));
 		}
 
 		prepareDBSettingContext($config_vars);
@@ -741,6 +748,9 @@ class Settings
 
 		isAllowedTo('light_portal_manage_blocks');
 
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
+
 		$subActions = array(
 			'main' => array(new ManageBlocks, 'main'),
 			'add'  => array(new ManageBlocks, 'add'),
@@ -769,6 +779,9 @@ class Settings
 		global $user_info;
 
 		isAllowedTo('light_portal_manage_own_pages');
+
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
 
 		$subActions = array(
 			'main' => array(new ManagePages, 'main'),

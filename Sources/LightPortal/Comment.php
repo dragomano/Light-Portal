@@ -103,6 +103,11 @@ class Comment
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+
+		if ($context['user']['is_logged']) {
+			addInlineJavaScript('
+		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');');
+		}
 	}
 
 	/**

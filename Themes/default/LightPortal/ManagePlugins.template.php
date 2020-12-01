@@ -21,7 +21,7 @@ function template_plugin_settings()
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
-		<div class="features" data-id="', $id, '">
+		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
 				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
@@ -35,11 +35,11 @@ function template_plugin_settings()
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
 		echo '
-				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '"></i>
+				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>
 			</div>';
 
 		if (!empty($plugin['settings']))
@@ -49,9 +49,6 @@ function template_plugin_settings()
 		</div>
 	</div>';
 	}
-
-	echo '
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_plugins.js"></script>';
 }
 
 /**
@@ -74,7 +71,7 @@ function show_plugin_settings($plugin_name, $settings)
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
 		<div class="noticebox">
-			<form id="', $plugin_name, '_form" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '">
+			<form id="', $plugin_name, '_form" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="plugin.saveSettings($event.target)">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
 
@@ -162,7 +159,7 @@ function show_plugin_settings($plugin_name, $settings)
 		<div class="footer">
 			<span class="infobox floatleft">', $txt['settings_saved'], '</span>
 			<span class="errorbox floatleft">', $txt['error_occured'], '</span>
-			<button type="button" class="close_settings button">', $txt['find_close'], '</button>
+			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $txt['find_close'], '</button>
 			<button form="', $plugin_name, '_form" type="submit" class="button">', $txt['save'], '</button>
 		</div>
 	</div>';
