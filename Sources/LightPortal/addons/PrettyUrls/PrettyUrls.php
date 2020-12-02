@@ -29,7 +29,7 @@ class PrettyUrls
 	public $addon_type = 'other';
 
 	/**
-	 * Give a hint to the PrettyUrls about action=portal
+	 * Give a hint about action=portal to PrettyUrls mod
 	 *
 	 * Подсказываем PrettyUrls про action=portal
 	 *
@@ -39,9 +39,7 @@ class PrettyUrls
 	{
 		global $context;
 
-		if (!empty($context['pretty']['action_array'])) {
-			if (!in_array('portal', array_values($context['pretty']['action_array'])))
-				$context['pretty']['action_array'][] = 'portal';
-		}
+		if (!empty($context['pretty']['action_array']) && !in_array('portal', array_values($context['pretty']['action_array'])))
+			$context['pretty']['action_array'][] = 'portal';
 	}
 }

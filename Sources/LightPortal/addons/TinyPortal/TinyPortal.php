@@ -35,7 +35,7 @@ class TinyPortal
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function init()
 	{
 		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
 	}

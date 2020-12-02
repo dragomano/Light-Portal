@@ -37,9 +37,11 @@ class EasyMarkdownEditor
 	 */
 	public function init()
 	{
-		global $txt;
+		global $txt, $context;
 
 		$txt['lp_page_types']['md'] = 'Markdown';
+
+		$context['lp_md_icon'] = 'fab fa-markdown';
 	}
 
 	/**

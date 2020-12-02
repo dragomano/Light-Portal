@@ -29,16 +29,6 @@ class Markdown
 	public $addon_type = 'parser';
 
 	/**
-	 * @return void
-	 */
-	public function __construct()
-	{
-		global $context;
-
-		$context['lp_md_icon'] = 'fab fa-markdown';
-	}
-
-	/**
 	 * Parse 'md' content
 	 *
 	 * Парсим контент типа 'md'

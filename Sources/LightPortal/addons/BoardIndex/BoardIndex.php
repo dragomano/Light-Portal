@@ -36,12 +36,8 @@ class BoardIndex
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function init()
 	{
-		global $txt, $scripturl;
-
-		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
-
 		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex#', false, __FILE__);
 	}
 
@@ -55,7 +51,9 @@ class BoardIndex
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $modSettings;
+		global $txt, $scripturl, $modSettings;
+
+		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
 
 		if (!isset($modSettings['lp_board_index_addon_allow_for_spiders']))
 			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);

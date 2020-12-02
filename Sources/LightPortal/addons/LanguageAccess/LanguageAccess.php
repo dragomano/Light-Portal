@@ -122,8 +122,7 @@ class LanguageAccess
 				'multiple' => true,
 				'style'    => 'height: auto'
 			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'options' => array()
 		);
 
 		foreach ($context['languages'] as $lang) {

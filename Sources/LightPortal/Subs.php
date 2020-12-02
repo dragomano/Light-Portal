@@ -268,7 +268,7 @@ class Subs
 	 * @param array $plugins
 	 * @return void
 	 */
-	public static function runAddons(string $hook = 'init', array $vars = [], array $plugins = [])
+	public static function runAddons(string $hook = '', array $vars = [], array $plugins = [])
 	{
 		global $context;
 
@@ -284,14 +284,23 @@ class Subs
 		foreach ($addons as $id => $addon) {
 			self::loadAddonLanguage($addon);
 
-			$class = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
-			$class = new $class;
+			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
+
+			if (!class_exists($className)) {
+				continue;
+			}
+
+			$class = new $className;
 
 			if (!isset($snake_name[$id])) {
 				$snake_name[$id] = Helpers::getSnakeName($addon);
 
 				$context['lp_' . $snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class->addon_type : 'block';
 				$context['lp_' . $snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class->addon_icon : 'fas fa-puzzle-piece';
+			}
+
+			if (method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
+				$class->init();
 			}
 
 			if (method_exists($class, $hook)) {

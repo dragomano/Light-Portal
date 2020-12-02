@@ -49,9 +49,7 @@ class CurrentMonth
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['current_month'] = array(
-			'no_content_class' => $this->no_content_class
-		);
+		$options['current_month']['no_content_class'] = $this->no_content_class;
 	}
 
 	/**

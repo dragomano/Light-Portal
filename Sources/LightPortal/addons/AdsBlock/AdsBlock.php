@@ -58,13 +58,163 @@ class AdsBlock
 	private $topics = '';
 
 	/**
+	 * Add advertising areas to panel settings
+	 *
+	 * Добавляем рекламные области в настройки панелей
+	 *
+	 * @return void
+	 */
+	public function addPanels()
+	{
+		global $context, $txt;
+
+		unset($context['lp_panels']['ads']);
+
+		$context['lp_panels'] += $txt['lp_ads_block_addon_placement_set'];
+	}
+
+	/**
+	 * Adding the block options
+	 *
+	 * Добавляем параметры блока
+	 *
+	 * @param array $options
+	 * @return void
+	 */
+	public function blockOptions(&$options)
+	{
+		$options['ads_block']['content'] = 'html';
+
+		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
+		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
+		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
+	}
+
+	/**
+	 * Validate options
+	 *
+	 * Валидируем параметры
+	 *
+	 * @param array $parameters
+	 * @param string $type
+	 * @return void
+	 */
+	public function validateBlockData(&$parameters, $type)
+	{
+		if ($type !== 'ads_block')
+			return;
+
+		$parameters['ads_placement'] = array(
+			'name'   => 'ads_placement',
+			'filter' => FILTER_SANITIZE_STRING,
+			'flags'  => FILTER_REQUIRE_ARRAY
+		);
+		$parameters['ads_boards'] = FILTER_SANITIZE_STRING;
+		$parameters['ads_topics'] = FILTER_SANITIZE_STRING;
+	}
+
+	/**
+	 * Override some standard fields
+	 *
+	 * Переопределяем некоторые стандартные поля
+	 *
+	 * @return void
+	 */
+	public function prepareBlockFields()
+	{
+		global $context, $txt;
+
+		if ($context['lp_block']['type'] !== 'ads_block')
+			return;
+
+		$context['posting_fields']['placement']['label']['text'] = '';
+		$context['posting_fields']['placement']['input'] = array(
+			'type' => 'text',
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => 'ads',
+				'required'  => true,
+				'style'     => 'display: none'
+			),
+			'tab' => 'content'
+		);
+
+		$context['posting_fields']['areas']['label']['text'] = '';
+		$context['posting_fields']['areas']['input'] = array(
+			'type' => 'text',
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => 'all',
+				'required'  => true,
+				'style'     => 'display: none'
+			),
+			'tab' => 'content'
+		);
+
+		if (!is_array($context['lp_block']['options']['parameters']['ads_placement'])) {
+			$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+		}
+
+		$context['posting_fields']['ads_placement']['label']['text'] = $txt['lp_block_placement'];
+		$context['posting_fields']['ads_placement']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'id'       => 'ads_placement',
+				'name'     => 'ads_placement[]',
+				'multiple' => true,
+				'style'    => 'height: auto'
+			),
+			'options' => array(),
+			'tab' => 'access_placement'
+		);
+
+		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
+			if (RC2_CLEAN) {
+				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
+					'value'    => $position,
+					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
+				);
+			} else {
+				$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
+					'value'    => $position,
+					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
+				);
+			}
+		}
+
+		$context['posting_fields']['ads_boards']['label']['text'] = $txt['lp_ads_block_addon_ads_boards'];
+		$context['posting_fields']['ads_boards']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_ads_block_addon_ads_boards_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['ads_boards'] ?? '',
+				'style'     => 'width: 100%'
+			),
+			'tab' => 'access_placement'
+		);
+
+		$context['posting_fields']['ads_topics']['label']['text'] = $txt['lp_ads_block_addon_ads_topics'];
+		$context['posting_fields']['ads_topics']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_ads_block_addon_ads_topics_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['options']['parameters']['ads_topics'] ?? '',
+				'style'     => 'width: 100%'
+			),
+			'tab' => 'access_placement'
+		);
+	}
+
+	/**
 	 * Run necessary hooks
 	 *
 	 * Запускаем необходимые хуки
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function init()
 	{
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
 		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
@@ -99,28 +249,6 @@ class AdsBlock
 
 		if (!function_exists('lp_show_blocks'))
 			loadTemplate('LightPortal/ViewBlock');
-	}
-
-	/**
-	 * Get all ads blocks
-	 *
-	 * Получаем все рекламные блоки
-	 *
-	 * @return array
-	 */
-	public function getData()
-	{
-		global $context, $txt;
-
-		if (empty($context['lp_blocks']['ads']))
-			return [];
-
-		$ads_blocks = [];
-		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump) {
-			$ads_blocks[$position] = $this->getByPosition($position);
-		}
-
-		return $ads_blocks;
 	}
 
 	/**
@@ -231,6 +359,28 @@ class AdsBlock
 	}
 
 	/**
+	 * Get all ads blocks
+	 *
+	 * Получаем все рекламные блоки
+	 *
+	 * @return array
+	 */
+	public function getData()
+	{
+		global $context, $txt;
+
+		if (empty($context['lp_blocks']['ads']))
+			return [];
+
+		$ads_blocks = [];
+		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump) {
+			$ads_blocks[$position] = $this->getByPosition($position);
+		}
+
+		return $ads_blocks;
+	}
+
+	/**
 	 * Get ads blocks by selected position
 	 *
 	 * Получаем рекламные блоки в указанной позиции
@@ -268,153 +418,5 @@ class AdsBlock
 
 			return false;
 		});
-	}
-
-	/**
-	 * Add advertising areas to panel settings
-	 *
-	 * Добавляем рекламные области в настройки панелей
-	 *
-	 * @return void
-	 */
-	public function addPanels()
-	{
-		global $context, $txt;
-
-		unset($context['lp_panels']['ads']);
-
-		$context['lp_panels'] += $txt['lp_ads_block_addon_placement_set'];
-	}
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
-	 * @param array $options
-	 * @return void
-	 */
-	public function blockOptions(&$options)
-	{
-		$options['ads_block']['content'] = 'html';
-
-		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
-		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
-		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
-	}
-
-	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
-	public function validateBlockData(&$parameters, $type)
-	{
-		if ($type !== 'ads_block')
-			return;
-
-		$parameters['ads_placement'] = array(
-			'name'   => 'ads_placement',
-			'filter' => FILTER_SANITIZE_STRING,
-			'flags'  => FILTER_REQUIRE_ARRAY
-		);
-		$parameters['ads_boards'] = FILTER_SANITIZE_STRING;
-		$parameters['ads_topics'] = FILTER_SANITIZE_STRING;
-	}
-
-	/**
-	 * Override some standard fields
-	 *
-	 * Переопределяем некоторые стандартные поля
-	 *
-	 * @return void
-	 */
-	public function prepareBlockFields()
-	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'ads_block')
-			return;
-
-		$context['posting_fields']['placement']['label']['text'] = '';
-		$context['posting_fields']['placement']['input'] = array(
-			'type' => 'text',
-			'attributes' => array(
-				'maxlength' => 255,
-				'value'     => 'ads',
-				'required'  => true,
-				'style'     => 'display: none'
-			)
-		);
-
-		$context['posting_fields']['areas']['label']['text'] = '';
-		$context['posting_fields']['areas']['input'] = array(
-			'type' => 'text',
-			'attributes' => array(
-				'maxlength' => 255,
-				'value'     => 'all',
-				'required'  => true,
-				'style'     => 'display: none'
-			)
-		);
-
-		if (!is_array($context['lp_block']['options']['parameters']['ads_placement'])) {
-			$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
-		}
-
-		$context['posting_fields']['ads_placement']['label']['text'] = $txt['lp_block_placement'];
-		$context['posting_fields']['ads_placement']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'       => 'ads_placement',
-				'name'     => 'ads_placement[]',
-				'multiple' => true,
-				'style'    => 'height: auto'
-			),
-			'options' => array(),
-			'tab' => 'access_placement'
-		);
-
-		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			} else {
-				$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			}
-		}
-
-		$context['posting_fields']['ads_boards']['label']['text'] = $txt['lp_ads_block_addon_ads_boards'];
-		$context['posting_fields']['ads_boards']['input'] = array(
-			'type' => 'text',
-			'after' => $txt['lp_ads_block_addon_ads_boards_subtext'],
-			'attributes' => array(
-				'maxlength' => 255,
-				'value'     => $context['lp_block']['options']['parameters']['ads_boards'] ?? '',
-				'style'     => 'width: 100%'
-			),
-			'tab' => 'access_placement'
-		);
-
-		$context['posting_fields']['ads_topics']['label']['text'] = $txt['lp_ads_block_addon_ads_topics'];
-		$context['posting_fields']['ads_topics']['input'] = array(
-			'type' => 'text',
-			'after' => $txt['lp_ads_block_addon_ads_topics_subtext'],
-			'attributes' => array(
-				'maxlength' => 255,
-				'value'     => $context['lp_block']['options']['parameters']['ads_topics'] ?? '',
-				'style'     => 'width: 100%'
-			),
-			'tab' => 'access_placement'
-		);
 	}
 }
