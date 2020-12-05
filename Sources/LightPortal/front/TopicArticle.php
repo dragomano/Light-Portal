@@ -101,6 +101,7 @@ class TopicArticle implements ArticleInterface
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
 				if (!isset($topics[$row['id_topic']])) {
 					Helpers::cleanBbcode($row['subject']);
+
 					censorText($row['subject']);
 					censorText($row['body']);
 					censorText($row['last_body']);
@@ -115,23 +116,19 @@ class TopicArticle implements ArticleInterface
 						$image = $first_post_image ? array_pop($value) : null;
 					}
 
-					$row['body'] = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
-					$row['body'] = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $row['body']);
-					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite>');
+					self::parseBody($row['body'], $row);
 
-					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
-					$row['last_body'] = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $row['last_body']);
-					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
+					self::parseBody($row['last_body'], $row);
 
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
-						'author_id'   => $author_id = empty($row['num_replies']) ? $row['id_member'] : $row['last_poster_id'],
+						'author_id'   => $author_id = !empty($modSettings['lp_frontpage_article_sorting']) ? $row['id_member'] : $row['last_poster_id'],
 						'author_link' => $scripturl . '?action=profile;u=' . $author_id,
-						'author_name' => empty($row['num_replies']) ? $row['poster_name'] : $row['last_poster_name'],
+						'author_name' => !empty($modSettings['lp_frontpage_article_sorting']) ? $row['poster_name'] : $row['last_poster_name'],
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
-						'teaser'      => Helpers::getTeaser(empty($row['num_replies']) ? $row['body'] : $row['last_body']),
+						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
@@ -205,5 +202,23 @@ class TopicArticle implements ArticleInterface
 		}
 
 		return (int) $num_topics;
+	}
+
+	/**
+	 * Removing unnecessary tags from the article text
+	 *
+	 * Избавляем текст статьи от ненужных тегов
+	 *
+	 * @param string $body
+	 * @param array $row
+	 * @return void
+	 */
+	protected function parseBody(&$body, $row)
+	{
+		global $txt;
+
+		$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $body);
+		$body = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $body);
+		$body = strip_tags(strtr(parse_bbc($body, $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite><ul><li>');
 	}
 }
