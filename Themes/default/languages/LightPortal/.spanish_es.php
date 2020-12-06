@@ -240,6 +240,7 @@ $txt['lp_blocks_import_tab_description'] = 'Aquí puede importar bloques del por
 $txt['lp_export_run'] = 'Exportar selección';
 $txt['lp_import_run'] = 'Ejecutar importación';
 $txt['lp_export_all'] = 'Exportar todo';
+$txt['lp_impex_warning'] = 'Attention! Data with the same IDs in the database will be overwritten with import data!';
 
 // Tags
 $txt['lp_all_page_tags'] = 'Todas las etiquetas de página del portal';
