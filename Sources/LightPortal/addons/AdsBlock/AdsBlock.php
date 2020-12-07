@@ -252,7 +252,7 @@ class AdsBlock
 	}
 
 	/**
-	 * Displaying ads within boards
+	 * Display ads within boards
 	 *
 	 * Отображение рекламы в разделах
 	 *
@@ -268,7 +268,7 @@ class AdsBlock
 	}
 
 	/**
-	 * Displaying ads within topics
+	 * Display ads within topics
 	 *
 	 * Отображение рекламы в темах
 	 *
@@ -284,7 +284,7 @@ class AdsBlock
 	}
 
 	/**
-	 * Displaying ads within posts
+	 * Display ads within posts
 	 *
 	 * Отображение рекламы в сообщениях
 	 *
@@ -300,7 +300,7 @@ class AdsBlock
 		$current_counter = empty($options['view_newest_first']) ? $context['start'] : $context['total_visible_posts'] - $context['start'];
 
 		/**
-		 * Displaying ads before the first message
+		 * Display ads before the first message
 		 *
 		 * Вывод рекламы перед первым сообщением
 		 */
@@ -309,7 +309,7 @@ class AdsBlock
 		}
 
 		/**
-		 * Displaying ads before each first message on the page
+		 * Display ads before each first message on the page
 		 *
 		 * Вывод рекламы перед каждым первым сообщением
 		 */
@@ -318,7 +318,25 @@ class AdsBlock
 		}
 
 		/**
-		 * Displaying ads before each last message on the page
+		 * Display ads after the first message
+		 *
+		 * Вывод рекламы после первого сообщения
+		 */
+		if (!empty($context['lp_ads_blocks']['after_first_post']) && ($counter == (empty($options['view_newest_first']) ? 2 : $context['total_visible_posts'] - 2))) {
+			lp_show_blocks('after_first_post');
+		}
+
+		/**
+		 * Display ads after each first message on the page
+		 *
+		 * Вывод рекламы после каждого первого сообщения
+		 */
+		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($options['view_newest_first']) ? $context['start'] + 1 : $current_counter - 1))) {
+			lp_show_blocks('after_every_first_post');
+		}
+
+		/**
+		 * Display ads before each last message on the page
 		 *
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
@@ -330,7 +348,7 @@ class AdsBlock
 		}
 
 		/**
-		 * Displaying ads before the last message
+		 * Display ads before the last message
 		 *
 		 * Вывод рекламы перед последним сообщением
 		 */
@@ -340,21 +358,40 @@ class AdsBlock
 		}
 
 		/**
-		 * Displaying ads after the first message
+		 * Display ads after each last message on the page
 		 *
-		 * Вывод рекламы после первого сообщения
+		 * Вывод рекламы после каждого последнего сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_first_post']) && ($counter == (empty($options['view_newest_first']) ? 2 : $context['total_visible_posts'] - 2))) {
-			lp_show_blocks('after_first_post');
+		if (!empty($context['lp_ads_blocks']['after_every_last_post']) && ($counter == $context['total_visible_posts'] || $counter % $context['messages_per_page'] == 0)) {
+			ob_start();
+
+			lp_show_blocks('after_every_last_post');
+
+			$after_every_last_post = ob_get_clean();
+
+			addInlineJavaScript('
+		jQuery(document).ready(function ($) {
+			$(' . JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
+		});', true);
 		}
 
 		/**
-		 * Displaying ads after each first message on the page
+		 * Display ads after the last message
 		 *
-		 * Вывод рекламы после каждого первого сообщения
+		 * Вывод рекламы после последнего сообщения
 		 */
-		if (!empty($context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($options['view_newest_first']) ? $context['start'] + 1 : $current_counter - 1))) {
-			lp_show_blocks('after_every_first_post');
+		if (!empty($context['lp_ads_blocks']['after_last_post']) &&
+			$output['id'] == (empty($options['view_newest_first']) ? $context['topic_last_message'] : $context['topic_first_message'])) {
+			ob_start();
+
+			lp_show_blocks('after_last_post');
+
+			$after_last_post = ob_get_clean();
+
+			addInlineJavaScript('
+		jQuery(document).ready(function ($) {
+			$("#quickModForm").append(' . JavaScriptEscape($after_last_post) . ');
+		});', true);
 		}
 	}
 
