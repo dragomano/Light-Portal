@@ -15,8 +15,7 @@ function template_manage_import()
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['page_area_title'], '</h3>
 	</div>
-	<div class="errorbox">', $txt['lp_impex_warning'], '</div>
-	<div class="roundframe">
+	<div class="roundframe noup">
 		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
 				<input name="import_file" type="file" accept="text/xml">

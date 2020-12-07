@@ -241,7 +241,6 @@ $txt['lp_blocks_import_tab_description'] = 'Тут можна імпортува
 $txt['lp_export_run']                    = 'Експортувати виділені';
 $txt['lp_import_run']                    = 'Імпортувати';
 $txt['lp_export_all']                    = 'Експортувати всі';
-$txt['lp_impex_warning']                 = 'Увага! Дані з аналогічними ідентифікаторами в базі будуть перезаписані даними імпорту!';
 
 // Tags
 $txt['lp_all_page_tags']          = 'Всі теги сторінок порталу';

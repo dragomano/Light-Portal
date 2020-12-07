@@ -241,7 +241,6 @@ $txt['lp_blocks_import_tab_description'] = 'Here you can import previously saved
 $txt['lp_export_run']                    = 'Export selection';
 $txt['lp_import_run']                    = 'Run import';
 $txt['lp_export_all']                    = 'Export all';
-$txt['lp_impex_warning']                 = 'Attention! Data with the same IDs in the database will be overwritten with import data!';
 
 // Tags
 $txt['lp_all_page_tags']          = 'All portal page tags';

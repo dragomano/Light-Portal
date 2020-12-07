@@ -116,10 +116,6 @@ class Import extends AbstractImport
 			),
 			'additional_rows' => array(
 				array(
-					'position' => 'above_column_headers',
-					'value' => '<div class="errorbox" style="margin-top: -.4em">' . $txt['lp_impex_warning'] . '</div>'
-				),
-				array(
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="submit" name="import_selection" value="' . $txt['lp_eh_portal_addon_button_run'] . '" class="button">
