@@ -71,7 +71,7 @@ class ManageBlocks
 		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.icon_type, b.type, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.icon, b.icon_type, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
 			ORDER BY b.placement DESC, b.priority',
@@ -86,6 +86,7 @@ class ManageBlocks
 				$current_blocks[$row['placement']][$row['block_id']] = array(
 					'icon'        => Helpers::getIcon($row['icon'], $row['icon_type']),
 					'type'        => $row['type'],
+					'note'        => $row['note'],
 					'priority'    => $row['priority'],
 					'permissions' => $row['permissions'],
 					'status'      => $row['status'],
@@ -434,6 +435,7 @@ class ManageBlocks
 				'icon'          => FILTER_SANITIZE_STRING,
 				'icon_type'     => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
+				'note'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
 				'placement'     => FILTER_SANITIZE_STRING,
 				'priority'      => FILTER_VALIDATE_INT,
@@ -472,6 +474,7 @@ class ManageBlocks
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
 			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
+			'note'          => $post_data['note'] ?? $context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
@@ -565,6 +568,17 @@ class ManageBlocks
 				'tab' => 'content'
 			);
 		}
+
+		$context['posting_fields']['note']['label']['text'] = $txt['lp_block_note'];
+		$context['posting_fields']['note']['input'] = array(
+			'type' => 'text',
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_block']['note'] ?? '',
+				'style'     => 'width: 100%'
+			),
+			'tab' => 'content'
+		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
 		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
@@ -935,6 +949,7 @@ class ManageBlocks
 					'icon'          => 'string-60',
 					'icon_type'     => 'string-10',
 					'type'          => 'string',
+					'note'          => 'string',
 					'content'       => 'string-' . MAX_MSG_LENGTH,
 					'placement'     => 'string-10',
 					'priority'      => 'int',
@@ -950,6 +965,7 @@ class ManageBlocks
 					$context['lp_block']['icon'],
 					$context['lp_block']['icon_type'],
 					$context['lp_block']['type'],
+					$context['lp_block']['note'],
 					$context['lp_block']['content'],
 					$context['lp_block']['placement'],
 					$context['lp_block']['priority'],
@@ -1025,13 +1041,14 @@ class ManageBlocks
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
 				array(
 					'block_id'      => $item,
 					'icon'          => $context['lp_block']['icon'],
 					'icon_type'     => $context['lp_block']['icon_type'],
 					'type'          => $context['lp_block']['type'],
+					'note'          => $context['lp_block']['note'],
 					'content'       => $context['lp_block']['content'],
 					'placement'     => $context['lp_block']['placement'],
 					'permissions'   => $context['lp_block']['permissions'],
@@ -1131,7 +1148,7 @@ class ManageBlocks
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
@@ -1156,6 +1173,7 @@ class ManageBlocks
 					'icon'          => $row['icon'],
 					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
+					'note'          => $row['note'],
 					'content'       => $row['content'],
 					'placement'     => $row['placement'],
 					'priority'      => $row['priority'],

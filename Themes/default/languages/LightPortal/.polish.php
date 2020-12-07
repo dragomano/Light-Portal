@@ -144,6 +144,7 @@ $txt['lp_blocks_edit_title']             = 'Edytowanie bloku';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_icon_cheatsheet']         = 'Ikony';
 $txt['lp_block_type']                    = 'Typ bloku';
+$txt['lp_block_note']                    = 'Note';
 $txt['lp_block_priority']                = 'Priorytet';
 $txt['lp_block_icon_type']               = 'Typ ikony';
 $txt['lp_block_icon_type_set']           = array('fas' => 'Wypełnione', 'far' => 'Normalne', 'fab' => 'Marki');

@@ -144,6 +144,7 @@ $txt['lp_blocks_edit_title']             = 'Редагування блоку';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_icon_cheatsheet']         = 'Список іконок';
 $txt['lp_block_type']                    = 'Тип блоку';
+$txt['lp_block_note']                    = 'Примітка';
 $txt['lp_block_priority']                = 'Пріоритет';
 $txt['lp_block_icon_type']               = 'Тип іконки';
 $txt['lp_block_icon_type_set']           = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');

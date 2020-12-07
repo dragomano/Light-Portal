@@ -49,7 +49,7 @@ function template_manage_blocks()
 
 				echo '
 				<th scope="col" class="title">
-					', $txt['lp_title'], '
+					', $txt['lp_title'], ' / ', $txt['lp_block_note'], '
 				</th>
 				<th scope="col" class="type">
 					', $txt['lp_block_type'], '
@@ -111,7 +111,7 @@ function show_block_entry($id, $data)
 
 	echo '
 		<td class="title">
-			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
+			', $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'] ?: $data['note'], '
 		</td>
 		<td class="type">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '

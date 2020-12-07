@@ -42,6 +42,12 @@ $tables[] = array(
 			'null' => false
 		),
 		array(
+			'name' => 'note',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
 			'name' => 'content',
 			'type' => 'text',
 			'null' => true

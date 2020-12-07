@@ -44,7 +44,6 @@ class PageArticle implements ArticleInterface
 			$custom_wheres  = [];
 
 			$custom_parameters = [
-				'type'         => 'page',
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
