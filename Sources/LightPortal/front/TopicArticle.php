@@ -60,13 +60,14 @@ class TopicArticle implements ArticleInterface
 				't.id_last_msg DESC',
 				'mf.poster_time DESC',
 				'mf.poster_time',
+				'date DESC'
 			];
 
 			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
 						SELECT id_attach
 						FROM {db_prefix}attachments
 						WHERE id_msg = t.id_first_msg
@@ -145,6 +146,9 @@ class TopicArticle implements ArticleInterface
 
 					if (!empty($topics[$row['id_topic']]['num_replies']))
 						$topics[$row['id_topic']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
+
+					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
+						$topics[$row['id_topic']]['date'] = $row['date'];
 				}
 
 				Subs::runAddons('frontTopicsOutput', array(&$topics, $row));

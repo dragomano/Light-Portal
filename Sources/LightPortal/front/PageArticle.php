@@ -55,6 +55,7 @@ class PageArticle implements ArticleInterface
 				'CASE WHEN (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) > 0 THEN 0 ELSE 1 END, comment_date DESC',
 				'p.created_at DESC',
 				'p.created_at',
+				'date DESC'
 			];
 
 			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
@@ -91,7 +92,6 @@ class PageArticle implements ArticleInterface
 						'author_id'    => $author_id = empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id'],
 						'author_link'  => $scripturl . '?action=profile;u=' . $author_id,
 						'author_name'  => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name'],
-						'teaser'       => Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_message'] : ($row['description'] ?: strip_tags($row['content']))),
 						'type'         => $row['type'],
 						'num_views'    => $row['num_views'],
 						'num_comments' => $row['num_comments'],
@@ -101,6 +101,11 @@ class PageArticle implements ArticleInterface
 						'image'        => $image,
 						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
+
+					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_message'] : ($row['description'] ?: strip_tags($row['content'])));
+
+					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
+						$pages[$row['page_id']]['date'] = $row['date'];
 				}
 
 				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];

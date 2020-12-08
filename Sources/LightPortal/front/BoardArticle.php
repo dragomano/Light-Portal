@@ -57,6 +57,7 @@ class BoardArticle implements ArticleInterface
 				'b.id_last_msg DESC',
 				'm.poster_time DESC',
 				'm.poster_time',
+				'last_updated DESC'
 			];
 
 			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
@@ -64,8 +65,7 @@ class BoardArticle implements ArticleInterface
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-					GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
-					(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
+					m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
 					' . implode(', ', $custom_columns) : '') . '
 				FROM {db_prefix}boards AS b
 					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
@@ -98,6 +98,7 @@ class BoardArticle implements ArticleInterface
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
 					'name'        => $board_name,
+					'date'        => $row['poster_time'],
 					'teaser'      => Helpers::getTeaser($description),
 					'category'    => $cat_name,
 					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
@@ -108,7 +109,7 @@ class BoardArticle implements ArticleInterface
 					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards')
 				);
 
-				if (!empty($row['last_updated'])) {
+				if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3 && !empty($row['last_updated'])) {
 					$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
 
 					$boards[$row['id_board']]['date'] = $row['last_updated'];
