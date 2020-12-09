@@ -50,9 +50,10 @@ class TinyPortal
 	 */
 	public function adminAreas(array &$admin_areas)
 	{
-		global $txt;
+		global $user_info, $txt;
 
-		$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
+		if ($user_info['is_admin'])
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
 	}
 
 	/**

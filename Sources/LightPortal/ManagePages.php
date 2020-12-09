@@ -88,14 +88,14 @@ class ManagePages
 			'get_items' => array(
 				'function' => array($this, 'getAll'),
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)' : ''),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
 				)
 			),
 			'get_count' => array(
 				'function' => array($this, 'getTotalQuantity'),
 				'params' => array(
-					(!empty($search_params['string']) ? ' INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0' : ''),
+					(!empty($search_params['string']) ? ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)' : ''),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
 				)
 			),

@@ -254,7 +254,7 @@ class RecentTopics
 	 */
 	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info, $txt;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'recent_topics')
 			return;
@@ -283,7 +283,7 @@ class RecentTopics
 
 				if ($topic['is_new'])
 					echo '
-				<a class="new_posts" href="', $topic['href'], '">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
 
 				echo $topic['icon'], ' ', $topic['link'];
 

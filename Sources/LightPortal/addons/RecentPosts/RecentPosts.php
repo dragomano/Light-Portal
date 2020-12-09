@@ -348,7 +348,7 @@ class RecentPosts
 	 */
 	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info, $txt;
+		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'recent_posts')
 			return;
@@ -379,7 +379,7 @@ class RecentPosts
 
 				if ($post['is_new'])
 					echo '
-				<a class="new_posts" href="', $post['href'], '">', $txt['new'], '1</a>';
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
 
 				echo '
 				', $post[$parameters['link_type']];

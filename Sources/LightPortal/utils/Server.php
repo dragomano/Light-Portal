@@ -22,4 +22,18 @@ class Server extends AbstractArray
 	{
 		static::$obj = &$_SERVER;
 	}
+
+	/**
+	 * Try run this object as a function
+	 *
+	 * Пытаемся запустить данный объект как функцию
+	 *
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function __invoke(string $key, $default = null)
+	{
+		return static::get($key) ?? getenv($key) ?? $default;
+	}
 }
