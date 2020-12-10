@@ -80,11 +80,23 @@ class UserInfo
 				<li>', $userData['avatar']['image'], '</li>';
 			}
 
-			$fa = false;
+			$fa = true;
 
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
-				<li>', $userData['group_icons'], '</li>
+				<li>', $userData['group_icons'], '</li>';
+
+			if ($context['allow_light_portal_manage_own_pages']) {
+				echo '
+				<li>
+					<hr>
+					<i class="fas fa-plus-circle"></i> <a href="', $scripturl, '?action=admin;area=lp_pages;sa=add;', $context['session_var'], '=', $context['session_id'], '">
+						', $txt['lp_pages_add'], '
+					</a>
+				</li>';
+			}
+
+			echo '
 				<li>
 					<hr>
 					<span class="floatleft">
