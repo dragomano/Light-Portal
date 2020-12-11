@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -82,8 +82,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.3',
-			'LP_RELEASE_DATE' => '2020-11-11',
+			'LP_VERSION'      => '1.4',
+			'LP_RELEASE_DATE' => '2020-12-12',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
@@ -345,7 +345,7 @@ class Integration
 		// Standalone mode | Автономный режим
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
-			$buttons['portal']['href']    = $modSettings['lp_standalone_url'] ?: $scripturl;
+			$buttons['portal']['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
 			$buttons['portal']['icon']    = 'home';
 			$buttons['portal']['is_last'] = $context['right_to_left'];
 
