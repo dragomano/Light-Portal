@@ -11,6 +11,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: ApiGen Docs
-      uses: varunsridharan/action-apigen@1.0
+      uses: varunsridharan/action-apigen@2.0
+      with:
+        cached_apigen: 'yes'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
