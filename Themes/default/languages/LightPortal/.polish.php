@@ -116,7 +116,7 @@ $txt['lp_plugins_hooks_types'] = array(
 // Misc
 $txt['lp_misc']                           = 'Miscellaneous';
 $txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
-$txt['lp_fontawesome_compat_themes']      = 'Check themes that support (include) Font Awesome icons';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
 $txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
 $txt['lp_debug_and_caching']              = 'Debugowanie i pamięć podręczna';
 $txt['lp_show_debug_info']                = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';

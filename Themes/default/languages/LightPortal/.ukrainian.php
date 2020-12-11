@@ -116,7 +116,7 @@ $txt['lp_plugins_hooks_types'] = array(
 // Misc
 $txt['lp_misc']                           = 'Додатково';
 $txt['lp_misc_info']                      = 'Тут знаходяться додаткові налаштування порталу, які стануть в нагоді розробникам шаблонів і плагінів.';
-$txt['lp_fontawesome_compat_themes']      = 'Відзначте теми, які підтримують (включають в себе) іконки Font Awesome';
+$txt['lp_fontawesome_compat_themes']      = 'Позначте теми, які використовують іконки Font Awesome';
 $txt['lp_fontawesome_compat_themes_help'] = 'Опція сумісності з шаблонами, що використовують іконки Font Awesome.';
 $txt['lp_debug_and_caching']              = 'Налагодження та кешування';
 $txt['lp_show_debug_info']                = 'Відображати час завантаження та кількість запитів порталу';
