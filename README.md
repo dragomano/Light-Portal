@@ -54,6 +54,10 @@ The portal supports BBC, HTML, PHP, and Markdown content within pages and bloc
 * Автономный режим.
 * Кэширование.
 
+### Sponsors
+
+[![](sponsors/jetbrains.svg)](https://www.jetbrains.com/?from=LightPortal)
+
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 
