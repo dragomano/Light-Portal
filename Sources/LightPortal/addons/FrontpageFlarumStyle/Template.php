@@ -122,7 +122,8 @@ function template_show_topics_as_flarum_style()
 				echo '
 						<a href="', $topic['author_link'], '" title="', $txt['profile_of'], ' ', $topic['author_name'], '">', $topic['author_name'], '</a>, ';
 			} else {
-				echo $topic['author_name'], ', ';
+				echo '
+						', $topic['author_name'], ', ';
 			}
 
 			echo '

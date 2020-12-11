@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,14 +26,14 @@ class Credits
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = self::getCopyrights();
+		$context['credits_modifications'][] = $this->getCopyrights();
 
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
-			self::getComponentList();
+			$this->getComponentList();
 
 			loadTemplate('LightPortal/ViewCredits');
 
@@ -52,11 +52,11 @@ class Credits
 	 *
 	 * @return string
 	 */
-	public static function getCopyrights()
+	public function getCopyrights()
 	{
 		global $scripturl;
 
-		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
+		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Credits
 	 *
 	 * @return void
 	 */
-	public static function getComponentList()
+	public function getComponentList()
 	{
 		global $context;
 
@@ -88,6 +88,14 @@ class Credits
 				'license' => array(
 					'name' => 'the Font Awesome Free License',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
+				)
+			),
+			array(
+				'title' => 'Alpine.js',
+				'link' => 'https://github.com/alpinejs/alpine',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
 				)
 			),
 			array(

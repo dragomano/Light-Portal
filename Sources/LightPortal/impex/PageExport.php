@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\ManagePages;
 
 /**
  * PageExport.php
@@ -13,13 +14,13 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageExport extends Export
+class PageExport extends AbstractExport
 {
 	/**
 	 * Prepare to export
@@ -28,9 +29,9 @@ class PageExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
-		global $context, $txt, $scripturl, $sourcedir;
+		global $context, $txt, $scripturl;
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_export'];
 		$context['page_area_title'] = $txt['lp_pages_export'];
@@ -41,20 +42,20 @@ class PageExport extends Export
 			'description' => $txt['lp_pages_export_tab_description']
 		);
 
-		self::run();
+		$this->run();
 
 		$listOptions = array(
 			'id' => 'pages',
-			'items_per_page' => \Bugo\LightPortal\ManagePages::$num_pages,
+			'items_per_page' => ($pages = new ManagePages)->num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getAll'
+				'function' => array($pages, 'getAll')
 			),
 			'get_count' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getTotalQuantity'
+				'function' => array($pages, 'getTotalQuantity')
 			),
 			'columns' => array(
 				'id' => array(
@@ -133,7 +134,7 @@ class PageExport extends Export
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -147,7 +148,7 @@ class PageExport extends Export
 	 *
 	 * @return mixed
 	 */
-	protected static function getData()
+	protected function getData()
 	{
 		global $smcFunc;
 
@@ -223,9 +224,9 @@ class PageExport extends Export
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
+	protected function getXmlFile()
 	{
-		if (empty($items = self::getData()))
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class Trumbowyg
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'editor';
+	public $addon_type = 'editor';
 
 	/**
 	 * The IDs list of dark themes
@@ -37,7 +37,7 @@ class Trumbowyg
 	 *
 	 * @var string
 	 */
-	private static $dark_themes = '';
+	private $dark_themes = '';
 
 	/**
 	 * Automatically extend of an editor area (0|1|2)
@@ -46,7 +46,7 @@ class Trumbowyg
 	 *
 	 * @var bool
 	 */
-	private static $auto_grow = 0;
+	private $auto_grow = 0;
 
 	/**
 	 * Add settings
@@ -56,14 +56,14 @@ class Trumbowyg
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
 		global $modSettings, $context, $txt;
 
 		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
-			updateSettings(array('lp_trumbowyg_addon_dark_themes' => static::$dark_themes));
+			updateSettings(array('lp_trumbowyg_addon_dark_themes' => $this->dark_themes));
 		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
-			updateSettings(array('lp_trumbowyg_addon_auto_grow' => static::$auto_grow));
+			updateSettings(array('lp_trumbowyg_addon_auto_grow' => $this->auto_grow));
 
 		$context['lp_trumbowyg_addon_dark_themes_options'] = Helpers::getForumThemes();
 
@@ -79,7 +79,7 @@ class Trumbowyg
 	 * @param array $object
 	 * @return void
 	 */
-	public static function prepareEditor($object)
+	public function prepareEditor($object)
 	{
 		global $modSettings, $txt, $editortxt, $settings;
 
@@ -150,7 +150,7 @@ class Trumbowyg
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'Trumbowyg',

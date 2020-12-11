@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class CurrentMonth
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-calendar-check';
+	public $addon_icon = 'fas fa-calendar-check';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class CurrentMonth
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * Adding the block options
@@ -47,11 +47,9 @@ class CurrentMonth
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['current_month'] = array(
-			'no_content_class' => static::$no_content_class
-		);
+		$options['current_month']['no_content_class'] = $this->no_content_class;
 	}
 
 	/**
@@ -61,11 +59,11 @@ class CurrentMonth
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
-		global $sourcedir, $options, $modSettings;
+		global $options, $modSettings;
 
-		require_once($sourcedir . '/Subs-Calendar.php');
+		Helpers::require('Subs-Calendar');
 
 		$today = getTodayInfo();
 		$year  = $today['year'];
@@ -101,7 +99,7 @@ class CurrentMonth
 	 * @param array $data
 	 * @return void|bool Returns false if the grid doesn't exist
 	 */
-	private static function showCurrentMonthGrid($data)
+	private function showCurrentMonthGrid($data)
 	{
 		global $txt, $modSettings, $scripturl;
 
@@ -181,7 +179,7 @@ class CurrentMonth
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
 		global $user_info, $txt, $context;
 
@@ -203,7 +201,7 @@ class CurrentMonth
 			elseif (empty($context['lp_active_blocks'][$block_id]['title'][$user_info['language']]))
 				$context['lp_active_blocks'][$block_id]['title'][$user_info['language']] = $title;
 
-			self::showCurrentMonthGrid($calendar_data);
+			$this->showCurrentMonthGrid($calendar_data);
 
 			$content = ob_get_clean();
 		}

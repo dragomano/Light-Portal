@@ -42,6 +42,12 @@ $tables[] = array(
 			'null' => false
 		),
 		array(
+			'name' => 'note',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
 			'name' => 'content',
 			'type' => 'text',
 			'null' => true
@@ -399,8 +405,17 @@ $tables[] = array(
 
 db_extend('packages');
 
-foreach($tables as $table) {
+foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+
+	if ($table['name'] == 'lp_blocks') {
+		foreach ($table['columns'] as $columns) {
+			if ($columns['name'] == 'note') {
+				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $columns, [], 'ignore');
+				break;
+			}
+		}
+	}
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);

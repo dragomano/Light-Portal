@@ -16,8 +16,6 @@ function template_show_topics_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $topic) {
-			$alt = $topic['subject'];
-
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe', $topic['css_class'], '">
@@ -119,8 +117,6 @@ function template_show_pages_as_articles()
 	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 		foreach ($context['lp_frontpage_articles'] as $page) {
-			$alt = $page['title'];
-
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
@@ -222,8 +218,6 @@ function template_show_boards_as_articles()
 	<div class="lp_frontpage_articles row">';
 
 		foreach ($context['lp_frontpage_articles'] as $board) {
-			$alt = $board['name'];
-
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">

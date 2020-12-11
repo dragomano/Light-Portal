@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class EasyMarkdownEditor
 	 *
 	 * @var array
 	 */
-	public static $addon_type = array('block', 'editor');
+	public $addon_type = array('block', 'editor');
 
 	/**
 	 * Adding the new content type
@@ -35,11 +35,13 @@ class EasyMarkdownEditor
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
-		global $txt;
+		global $txt, $context;
 
 		$txt['lp_page_types']['md'] = 'Markdown';
+
+		$context['lp_md_icon'] = 'fab fa-markdown';
 	}
 
 	/**
@@ -50,7 +52,7 @@ class EasyMarkdownEditor
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
 		$options['md'] = array(
 			'content' => true
@@ -65,7 +67,7 @@ class EasyMarkdownEditor
 	 * @param array $object
 	 * @return void
 	 */
-	public static function prepareEditor($object)
+	public function prepareEditor($object)
 	{
 		global $txt, $editortxt;
 
@@ -239,7 +241,7 @@ class EasyMarkdownEditor
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'EasyMDE',

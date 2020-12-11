@@ -11,10 +11,10 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-class Post extends Request
+class Post extends AbstractArray
 {
 	public static $obj;
 

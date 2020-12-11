@@ -21,6 +21,9 @@ function template_manage_export_blocks()
 				<tr class="title_bar">
 					<th scope="col">#</th>
 					<th scope="col" class="type">
+						', $txt['lp_title'], ' / ', $txt['lp_block_note'], '
+					</th>
+					<th scope="col" class="type">
 						', $txt['lp_block_type'], '
 					</th>
 					<th scope="col" class="placement">
@@ -48,10 +51,13 @@ function template_manage_export_blocks()
 						', $id, '
 					</td>
 					<td class="type centertext">
+						', $data['title'][$context['user']['language']] ?: $data['note'], '
+					</td>
+					<td class="type centertext">
 						', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
-						', $txt['lp_block_placement_set'][$placement], '
+						', $txt['lp_block_placement_set'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
 					</td>
 					<td class="actions centertext">
 						<input type="checkbox" value="' . $id . '" name="items[]" checked>

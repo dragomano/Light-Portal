@@ -11,71 +11,16 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-class Request extends Arr
+class Request extends AbstractArray
 {
 	public static $obj;
 
 	public function __construct()
 	{
 		static::$obj = &$_REQUEST;
-	}
-
-	/**
-	 * Get the current $_SERVER['REQUEST_URI']
-	 *
-	 * Получаем текущий $_SERVER['REQUEST_URI']
-	 *
-	 * @return string
-	 */
-	public static function path()
-	{
-		return Server('REQUEST_URI', '');
-	}
-
-	/**
-	 * Get the full url without queries
-	 *
-	 * Получаем полный URL без параметров
-	 *
-	 * @return string
-	 */
-	public static function url()
-	{
-		return explode(';', static::fullUrl())[0];
-	}
-
-	/**
-	 * Get the current page url
-	 *
-	 * Получаем URL текущей страницы
-	 *
-	 * @return string
-	 */
-	public static function fullUrl()
-	{
-		return Server('REQUEST_URL', '');
-	}
-
-	/**
-	 * Get the current page url with queries
-	 *
-	 * Получаем URL текущей страницы, вместе с параметрами запроса
-	 *
-	 * @param array $query
-	 * @return string
-	 */
-	public static function fullUrlWithQuery(array $query = [])
-	{
-		$queries = '';
-
-		foreach ($query as $key => $value) {
-			$queries .= ";{$key}={$value}";
-		}
-
-		return static::fullUrl() . $queries;
 	}
 
 	/**
@@ -102,5 +47,25 @@ class Request extends Arr
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the JSON payload for the request
+	 *
+	 * Получаем данные JSON из запроса
+	 *
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public static function json($key = null, $default = null)
+	{
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if (isset($data[$key])) {
+			return $data[$key] ?: $default;
+		}
+
+		return $data;
 	}
 }

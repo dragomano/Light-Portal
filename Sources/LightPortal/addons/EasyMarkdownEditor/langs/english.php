@@ -9,6 +9,3 @@ $txt['lp_easy_markdown_editor_addon_lines']  = 'lines: ';
 $txt['lp_easy_markdown_editor_addon_words']  = 'words: ';
 $txt['lp_easy_markdown_editor_addon_toggle'] = 'Toggle Side by Side';
 $txt['lp_easy_markdown_editor_addon_guide']  = 'Markdown Guide';
-
-// Do not translate and do not include into your files
-$txt['lp_md_icon'] = 'fab fa-markdown';

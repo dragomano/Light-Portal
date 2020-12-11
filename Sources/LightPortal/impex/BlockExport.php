@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\ManageBlocks;
 
 /**
  * BlockExport.php
@@ -13,13 +14,13 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class BlockExport extends Export
+class BlockExport extends AbstractExport
 {
 	/**
 	 * The page of export blocks
@@ -28,7 +29,7 @@ class BlockExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -43,9 +44,9 @@ class BlockExport extends Export
 			'description' => $txt['lp_blocks_export_tab_description']
 		);
 
-		self::run();
+		$this->run();
 
-		$context['lp_current_blocks'] = \Bugo\LightPortal\ManageBlocks::getAll();
+		$context['lp_current_blocks'] = (new ManageBlocks)->getAll();
 		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_export_blocks';
@@ -58,7 +59,7 @@ class BlockExport extends Export
 	 *
 	 * @return array
 	 */
-	protected static function getData()
+	protected function getData()
 	{
 		global $smcFunc;
 
@@ -67,7 +68,7 @@ class BlockExport extends Export
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 				pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {string:type})
@@ -87,6 +88,7 @@ class BlockExport extends Export
 					'icon'          => $row['icon'],
 					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
+					'note'          => $row['note'],
 					'content'       => $row['content'],
 					'placement'     => $row['placement'],
 					'priority'      => $row['priority'],
@@ -119,9 +121,9 @@ class BlockExport extends Export
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
+	protected function getXmlFile()
 	{
-		if (empty($items = self::getData()))
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');

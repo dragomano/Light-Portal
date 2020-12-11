@@ -13,13 +13,13 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageImport extends Import
+class PageImport extends AbstractImport
 {
 	/**
 	 * Page import
@@ -28,7 +28,7 @@ class PageImport extends Import
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
 		global $context, $txt, $scripturl;
 
@@ -45,7 +45,7 @@ class PageImport extends Import
 
 		$context['sub_template'] = 'manage_import';
 
-		self::run();
+		$this->run();
 	}
 
 	/**
@@ -55,7 +55,7 @@ class PageImport extends Import
 	 *
 	 * @return void
 	 */
-	protected static function run()
+	protected function run()
 	{
 		global $db_temp_cache, $db_cache, $smcFunc;
 
@@ -178,6 +178,8 @@ class PageImport extends Import
 					array('page_id'),
 					2
 				);
+
+				$smcFunc['lp_num_queries']++;
 			}
 		}
 
@@ -205,7 +207,7 @@ class PageImport extends Import
 
 		if (!empty($comments) && !empty($result)) {
 			$comments = array_chunk($comments, 100);
-			$count = sizeof($comments);
+			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
 				$result = $smcFunc['db_insert']('replace',
@@ -229,7 +231,7 @@ class PageImport extends Import
 
 		if (!empty($params) && !empty($result)) {
 			$params = array_chunk($params, 100);
-			$count = sizeof($params);
+			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
 				$result = $smcFunc['db_insert']('replace',
@@ -250,7 +252,7 @@ class PageImport extends Import
 		}
 
 		if (!empty($tags) && !empty($result)) {
-			$tags = array_chunk($tags, 100);
+			$tags  = array_chunk($tags, 100);
 			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {

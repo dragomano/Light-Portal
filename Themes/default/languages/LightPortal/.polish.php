@@ -31,24 +31,23 @@ $txt['lp_frontpage_card_alt_layout']      = 'Alternatywny układ elementów kart
 $txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout']               = 'Liczba kolumn artykułów';
 $txt['lp_frontpage_layout_set']           = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_show_images_in_articles']        = 'Wyświetlaj obrazy z artykułów';
+$txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
 $txt['lp_teaser_size']                    = 'Długość podglądu artykułów';
 $txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
-$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_url']      = 'Adres strony głównej w trybie portalu osobnym';
-$txt['lp_standalone_url_help'] = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']        = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help']   = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>Skopiuj i wklej ten kod do pliku <em>portal.php</em>:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" jeśli plik <em>portal.php</em> jest zlokalizowany poza katalogiem forum (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
@@ -59,11 +58,6 @@ $txt['groups_light_portal_manage_blocks']    = 'Kto może zarządzać blokami';
 $txt['groups_light_portal_manage_own_pages'] = 'Kto może zarządzać stronami';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki mogą zawierać szkodliwą zawartość HTML/PHP, przyznaj te uprawnienia tylko zaufanym użytkownikom!';
-
-$txt['lp_debug_and_caching']     = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']       = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_help']  = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval'] = 'Interwał aktualizacji pamięci podręcznej';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Strony i bloki';
@@ -106,7 +100,7 @@ $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 // Plugins
 $txt['lp_plugins']      = 'Wtyczki';
 $txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
+$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Blok',
@@ -115,8 +109,19 @@ $txt['lp_plugins_hooks_types'] = array(
 	'parser'    => 'Parser zawartości',
 	'article'   => 'Przetwarzanie artykułów',
 	'frontpage' => 'The layout of the frontpage',
+	'impex'     => 'Import and export',
 	'other'     => 'Inne'
 );
+
+// Misc
+$txt['lp_misc']                           = 'Miscellaneous';
+$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
+$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
+$txt['lp_debug_and_caching']              = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']                = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_help']           = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval']          = 'Interwał aktualizacji pamięci podręcznej';
 
 // Actions
 $txt['lp_title']        = 'Tytuł';
@@ -139,6 +144,7 @@ $txt['lp_blocks_edit_title']             = 'Edytowanie bloku';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_icon_cheatsheet']         = 'Ikony';
 $txt['lp_block_type']                    = 'Typ bloku';
+$txt['lp_block_note']                    = 'Note';
 $txt['lp_block_priority']                = 'Priorytet';
 $txt['lp_block_icon_type']               = 'Typ ikony';
 $txt['lp_block_icon_type_set']           = array('fas' => 'Wypełnione', 'far' => 'Normalne', 'fab' => 'Marki');
@@ -190,7 +196,9 @@ $txt['lp_block_types_descriptions'] = array(
 // Pages
 $txt['lp_pages']                        = 'Strony';
 $txt['lp_pages_manage']                 = 'Zarządzaj stronami';
-$txt['lp_pages_manage_tab_description'] = 'Tutaj znajdują się wszystkie utworzone strony. W celu dodania nowej strony kliknij w odpowiednią opcję.';
+$txt['lp_pages_manage_all_pages']       = 'Tutaj znajdują się wszystkie utworzone strony.';
+$txt['lp_pages_manage_own_pages']       = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_tab_description'] = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
 $txt['lp_pages_add']                    = 'Dodaj stronę';
 $txt['lp_pages_add_title']              = 'Dodawanie strony';
 $txt['lp_pages_add_tab_description']    = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';

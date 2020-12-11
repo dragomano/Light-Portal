@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Translator;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class Translator
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-language';
+	public $addon_icon = 'fas fa-language';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -35,7 +35,7 @@ class Translator
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * Used translation engine (google|yandex)
@@ -44,7 +44,7 @@ class Translator
 	 *
 	 * @var string
 	 */
-	private static $engine = 'google';
+	private $engine = 'google';
 
 	/**
 	 * The widget color theme (light|dark)
@@ -53,7 +53,7 @@ class Translator
 	 *
 	 * @var string
 	 */
-	private static $widget_theme = 'light';
+	private $widget_theme = 'light';
 
 	/**
 	 * Automatic translation (true|false)
@@ -62,7 +62,7 @@ class Translator
 	 *
 	 * @var bool
 	 */
-	private static $auto_mode = false;
+	private $auto_mode = false;
 
 	/**
 	 * Adding the block options
@@ -72,13 +72,13 @@ class Translator
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['translator']['no_content_class'] = static::$no_content_class;
+		$options['translator']['no_content_class'] = $this->no_content_class;
 
-		$options['translator']['parameters']['engine']       = static::$engine;
-		$options['translator']['parameters']['widget_theme'] = static::$widget_theme;
-		$options['translator']['parameters']['auto_mode']    = static::$auto_mode;
+		$options['translator']['parameters']['engine']       = $this->engine;
+		$options['translator']['parameters']['widget_theme'] = $this->widget_theme;
+		$options['translator']['parameters']['auto_mode']    = $this->auto_mode;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Translator
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'translator')
 			return;
@@ -107,7 +107,7 @@ class Translator
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -197,7 +197,7 @@ class Translator
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $language;
 

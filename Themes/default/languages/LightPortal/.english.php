@@ -31,24 +31,23 @@ $txt['lp_frontpage_card_alt_layout']      = 'Alternative arrangement of the elem
 $txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)');
+$txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
 $txt['lp_frontpage_layout']               = 'Number of columns for displaying articles';
 $txt['lp_frontpage_layout_set']           = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_images_in_articles']        = 'Show images that found in articles';
+$txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']              = 'URL of the default placeholder image';
 $txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
 $txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Number of items per page (for pagination)';
 
-$txt['lp_standalone_mode']     = $txt['lp_standalone_mode_title'] = 'Standalone mode';
-$txt['lp_standalone_url']      = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
+$txt['lp_standalone_mode_title'] = 'Standalone mode';
+$txt['lp_standalone_url']        = 'The frontpage URL in the standalone mode';
+$txt['lp_standalone_url_help']   = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>Paste this code into the <em>portal.php</em> file:<br><pre><code class="bbc_code">
 require(dirname(__FILE__) . \'/SSI.php\');
 <br>
-Bugo\LightPortal\FrontPage::show();
-<br>
-obExit(true);</code></pre><br>
+(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
 Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
@@ -59,11 +58,6 @@ $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
 $txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
-
-$txt['lp_debug_and_caching']     = 'Debugging and caching';
-$txt['lp_show_debug_info']       = 'Show the loading time and number of the portal queries';
-$txt['lp_show_debug_info_help']  = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval'] = 'The cache update interval';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';
@@ -106,7 +100,7 @@ $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 // Plugins
 $txt['lp_plugins']      = 'Plugins';
 $txt['lp_plugins_desc'] = 'You can enable or disable any of the plugins. And some of them are also customized!';
-$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.<br>There are several <a href="%2$s" target="_blank" rel="noopener">exclusive plugins</a> for the portal sponsors.';
+$txt['lp_plugins_info'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 
 $txt['lp_plugins_hooks_types'] = array(
 	'block'     => 'Block',
@@ -115,8 +109,19 @@ $txt['lp_plugins_hooks_types'] = array(
 	'parser'    => 'Content parser',
 	'article'   => 'Processing articles',
 	'frontpage' => 'The layout of the frontpage',
+	'impex'     => 'Import and export',
 	'other'     => 'Other'
 );
+
+// Misc
+$txt['lp_misc']                           = 'Miscellaneous';
+$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
+$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
+$txt['lp_debug_and_caching']              = 'Debugging and caching';
+$txt['lp_show_debug_info']                = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info_help']           = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval']          = 'The cache update interval';
 
 // Actions
 $txt['lp_title']        = 'Title';
@@ -139,6 +144,7 @@ $txt['lp_blocks_edit_title']             = 'Editing block';
 $txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
 $txt['lp_block_icon_cheatsheet']         = 'List of icons';
 $txt['lp_block_type']                    = 'Block type';
+$txt['lp_block_note']                    = 'Note';
 $txt['lp_block_priority']                = 'Priority';
 $txt['lp_block_icon_type']               = 'Icon type';
 $txt['lp_block_icon_type_set']           = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');
@@ -190,7 +196,9 @@ $txt['lp_block_types_descriptions'] = array(
 // Pages
 $txt['lp_pages']                        = 'Pages';
 $txt['lp_pages_manage']                 = 'Manage pages';
-$txt['lp_pages_manage_tab_description'] = 'All created portal pages are listed here. To add a new page, use the corresponding button.';
+$txt['lp_pages_manage_all_pages']       = 'Here you can view all portal pages.';
+$txt['lp_pages_manage_own_pages']       = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_tab_description'] = 'Use the corresponding button to add a new page.';
 $txt['lp_pages_add']                    = 'Add page';
 $txt['lp_pages_add_title']              = 'Adding page';
 $txt['lp_pages_add_tab_description']    = 'Fill the page title. After that, you can change its type, use preview and save.';

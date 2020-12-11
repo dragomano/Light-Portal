@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -56,18 +56,21 @@ class Comment
 			switch (Helpers::request('sa')) {
 				case 'new_comment':
 					$this->add();
+					break;
 
 				case 'edit_comment':
 					$this->edit();
+					break;
 
 				case 'del_comment':
 					$this->remove();
+					break;
 			}
 		}
 
 		loadLanguage('Editor');
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
+		$comments = Helpers::cache('page_' . $this->alias . '_comments', 'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
@@ -100,6 +103,11 @@ class Comment
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+
+		if ($context['user']['is_logged']) {
+			addInlineJavaScript('
+		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');');
+		}
 	}
 
 	/**
@@ -120,7 +128,7 @@ class Comment
 			'page_id'     => FILTER_VALIDATE_INT,
 			'page_title'  => FILTER_SANITIZE_STRING,
 			'page_url'    => FILTER_SANITIZE_STRING,
-			'message'     => FILTER_SANITIZE_STRING,
+			'message'     => FILTER_DEFAULT,
 			'start'       => FILTER_VALIDATE_INT,
 			'commentator' => FILTER_VALIDATE_INT
 		);
@@ -136,7 +144,7 @@ class Comment
 		$page_id     = $data['page_id'];
 		$page_title  = $data['page_title'];
 		$page_url    = $data['page_url'];
-		$message     = Helpers::getShortenText($data['message']);
+		$message     = $smcFunc['htmlspecialchars']($data['message']);
 		$start       = $data['start'];
 		$commentator = $data['commentator'];
 
@@ -189,7 +197,7 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => $this->getUserAvatar(),
+				'avatar'      => $this->getUserAvatar($user_info['id']),
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
@@ -232,14 +240,13 @@ class Comment
 	{
 		global $smcFunc, $context;
 
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
+		$data = Helpers::request()->json();
 
 		if (empty($data))
 			return;
 
 		$item    = $data['comment_id'];
-		$message = Helpers::validate(Helpers::getShortenText($data['message']));
+		$message = Helpers::validate($data['message']);
 
 		if (empty($item) || empty($message))
 			return;
@@ -270,18 +277,19 @@ class Comment
 	 *
 	 * Получение аватарки пользователя
 	 *
+	 * @param $user_id
 	 * @return string
 	 */
-	private function getUserAvatar()
+	private function getUserAvatar($user_id)
 	{
-		global $memberContext, $user_info;
+		global $memberContext;
 
-		if (!isset($memberContext[$user_info['id']])) {
-			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id'], true);
+		if (!isset($memberContext[$user_id])) {
+			loadMemberData($user_id);
+			loadMemberContext($user_id, true);
 		}
 
-		return $memberContext[$user_info['id']]['avatar']['image'];
+		return $memberContext[$user_id]['avatar']['image'];
 	}
 
 	/**
@@ -310,7 +318,7 @@ class Comment
 			),
 			array(
 				'task_file'  => '$sourcedir/LightPortal/Notify.php',
-				'task_class' => '\Bugo\LightPortal\Notify',
+				'task_class' => Notify::class,
 				'task_data'  => $smcFunc['json_encode']([
 					'time'           => $options['created'],
 					'sender_id'	     => $user_info['id'],
@@ -343,9 +351,7 @@ class Comment
 	{
 		global $smcFunc;
 
-		$json  = file_get_contents('php://input');
-		$data  = json_decode($json, true);
-		$items = $data['items'];
+		$items = Helpers::request()->json('items');
 
 		if (empty($items))
 			return;
@@ -384,9 +390,9 @@ class Comment
 	 * @param int $page_id
 	 * @return array
 	 */
-	public static function getAll(int $page_id = 0)
+	public function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $memberContext, $context, $modSettings;
+		global $smcFunc, $context, $modSettings;
 
 		if (empty($page_id))
 			return [];
@@ -405,12 +411,7 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			if (!isset($memberContext[$row['author_id']])) {
-				loadMemberData($row['author_id']);
-				loadMemberContext($row['author_id']);
-			}
-
-			$avatar = $memberContext[$row['author_id']]['avatar']['image'];
+			$avatar = $this->getUserAvatar($row['author_id']);
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],

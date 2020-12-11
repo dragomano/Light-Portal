@@ -12,7 +12,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -27,7 +27,7 @@ class UserInfo
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-user';
+	public $addon_icon = 'fas fa-user';
 
 	/**
 	 * Get the current user info
@@ -36,7 +36,7 @@ class UserInfo
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
 		global $memberContext, $user_info;
 
@@ -59,7 +59,7 @@ class UserInfo
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
 		global $context, $txt, $scripturl, $boarddir;
 
@@ -73,18 +73,30 @@ class UserInfo
 
 			echo '
 			<ul class="centertext">
-				<li>', $txt['hello_member'], ' <strong>', $userData['name_color'], '</strong></li>';
+				<li>', $txt['hello_member'], ' <strong style="word-break: break-all">', $userData['name_color'], '</strong></li>';
 
 			if (!empty($userData['avatar'])) {
 				echo '
 				<li>', $userData['avatar']['image'], '</li>';
 			}
 
-			$fa = false;
+			$fa = true;
 
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
-				<li>', $userData['group_icons'], '</li>
+				<li>', $userData['group_icons'], '</li>';
+
+			if ($context['allow_light_portal_manage_own_pages']) {
+				echo '
+				<li>
+					<hr>
+					<i class="fas fa-plus-circle"></i> <a href="', $scripturl, '?action=admin;area=lp_pages;sa=add;', $context['session_var'], '=', $context['session_id'], '">
+						', $txt['lp_pages_add'], '
+					</a>
+				</li>';
+			}
+
+			echo '
 				<li>
 					<hr>
 					<span class="floatleft">

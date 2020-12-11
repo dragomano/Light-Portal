@@ -17,7 +17,7 @@ use Bugo\LightPortal\Utils\Session;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -32,12 +32,12 @@ class Helpers
 	 *
 	 * @param string|null $key
 	 * @param string|null $funcName
-	 * @param string $class
+	 * @param string|null $class
 	 * @param int $time (in seconds)
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
+	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = 3600, ...$vars)
 	{
 		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
 	}
@@ -48,7 +48,7 @@ class Helpers
 	 * Получаем объект $_POST
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function post($key = null, $default = null)
@@ -99,6 +99,24 @@ class Helpers
 	}
 
 	/**
+	 * Require $filename only once
+	 *
+	 * Подключаем $filename единожды
+	 *
+	 * @param string $filename
+	 * @return void
+	 */
+	public static function require(string $filename)
+	{
+		global $sourcedir;
+
+		if (empty($filename))
+			return;
+
+		require_once($sourcedir . '/' . $filename . '.php');
+	}
+
+	/**
 	 * Remove BBCode from transmitted data
 	 *
 	 * Убираем ББ-код из переданных данных
@@ -133,30 +151,6 @@ class Helpers
 		return '';
 	}
 
-	/**
-	 * Checking whether the current theme contains a set of FontAwesome icons
-	 *
-	 * Проверяем, содержит ли текущая тема набор иконок FontAwesome
-	 *
-	 * @return bool
-	 */
-	public static function doesThisThemeUseFontAwesome()
-	{
-		global $settings;
-
-		$supported_themes = [
-			'Badem',
-			'Endless',
-			'Lunarfall',
-			'Wide'
-		];
-
-		// Add ability to manually change the list of themes that support FontAwesome | Возможность вручную изменить список тем, поддерживающих FontAwesome
-		Subs::runAddons('fontAwesomeThemes', array(&$supported_themes));
-
-		return in_array(explode('_', $settings['name'])[0], $supported_themes);
-	}
-
 	/**	 * Get a title for preview block
 	 *
 	 * Получаем заголовок блока превью
@@ -164,7 +158,7 @@ class Helpers
 	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle(string $prefix = null)
+	public static function getPreviewTitle($prefix = null)
 	{
 		global $context, $txt;
 
@@ -403,6 +397,36 @@ class Helpers
 	}
 
 	/**
+	 * Load BBCode editor
+	 *
+	 * Подключаем редактор ББ-кода
+	 *
+	 * @param string $content
+	 * @return void
+	 */
+	public static function createBbcEditor(string $content = '')
+	{
+		global $context;
+
+		$editorOptions = array(
+			'id'           => 'content',
+			'value'        => $content,
+			'height'       => '1px',
+			'width'        => '100%',
+			'preview_type' => 2,
+			'required'     => true
+		);
+
+		Helpers::require('Subs-Editor');
+		create_control_richedit($editorOptions);
+
+		$context['post_box_name'] = $editorOptions['id'];
+
+		addJavaScriptVar('oEditorID', $context['post_box_name'], true);
+		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $context['post_box_name'], true);
+	}
+
+	/**
 	 * Check whether the current user can view the portal item according to their access rights
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
@@ -497,35 +521,19 @@ class Helpers
 	 *
 	 * Получаем строку, преобразованную в snake_case
 	 *
-	 * @param string $str
-	 * @param string $glue
+	 * @param string $value
+	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $str, string $glue = '_')
+	public static function getSnakeName(string $value, string $delimiter = '_')
 	{
-		$counter  = 0;
-		$uc_chars = '';
-		$new_str  = [];
-		$str_len  = strlen($str);
+		if (!ctype_lower($value)) {
+			$value = preg_replace('/\s+/u', '', ucwords($value));
 
-		for ($x = 0; $x < $str_len; ++$x) {
-			$ascii_val = ord($str[$x]);
-
-			if ($ascii_val >= 65 && $ascii_val <= 90)
-				$uc_chars .= $str[$x];
+			$value = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
 		}
 
-		$tok = strtok($str, $uc_chars);
-
-		while ($tok !== false) {
-			$new_char  = chr(ord($uc_chars[$counter]) + 32);
-			$new_str[] = $new_char . $tok;
-			$tok       = strtok($uc_chars);
-
-			++$counter;
-		}
-
-		return implode($glue, $new_str);
+		return $value;
 	}
 
 	/**
@@ -536,25 +544,11 @@ class Helpers
 	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text)
+	public static function getTeaser(string $text)
 	{
 		global $modSettings;
 
-		return !empty($modSettings['lp_teaser_size']) ? self::getShortenText(trim($text), $modSettings['lp_teaser_size']) : trim($text);
-	}
-
-	/**
-	 * Get the shorten text cut to the given length
-	 *
-	 * Получаем обрезанный до заданной длины текст
-	 *
-	 * @param string $text
-	 * @param int $length
-	 * @return string
-	 */
-	public static function getShortenText($text, $length = MAX_MSG_LENGTH)
-	{
-		return shorten_subject($text, $length);
+		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
 
 	/**
@@ -585,6 +579,26 @@ class Helpers
 		$smcFunc['lp_num_queries']++;
 
 		return $current_themes;
+	}
+
+	/**
+	 * Prepare a list of all localizations of the forum
+	 *
+	 * Формируем список всех локализаций форума
+	 *
+	 * @return void
+	 */
+	public static function prepareForumLanguages()
+	{
+		global $modSettings, $context, $language;
+
+		getLanguages();
+
+		if (empty($modSettings['userLanguage'])) {
+			$default_lang = $context['languages'][$language];
+			$context['languages'] = [];
+			$context['languages'][$language] = $default_lang;
+		}
 	}
 
 	/**
@@ -620,8 +634,6 @@ class Helpers
 	 */
 	public static function parseContent(string &$content, string $type = 'bbc')
 	{
-		global $context;
-
 		switch ($type) {
 			case 'bbc':
 				$content = parse_bbc($content);
@@ -645,6 +657,7 @@ class Helpers
 
 				try {
 					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
+
 					eval($content);
 				} catch (\ParseError $p) {
 					echo $p->getMessage();
@@ -699,16 +712,67 @@ class Helpers
 	}
 
 	/**
-	 * Check whether need to display dates in lowercase for the current language
+	 * Get a number in friendly format ("1K" instead "1000", etc)
 	 *
-	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 * Получаем число в приятном глазу формате (для чисел более 10к)
 	 *
-	 * @return bool
+	 * @param int $value
+	 * @return float
 	 */
-	public static function isLowerCaseForDates()
+	public static function getFriendlyNumber(int $value = 0)
 	{
-		global $txt;
+		if ($value < 10000)
+			return $value;
 
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
+		$k   = pow(10, 3);
+		$mil = pow(10, 6);
+		$bil = pow(10, 9);
+
+		if ($value >= $bil)
+			return number_format($value / $bil, 1) . 'B';
+		else if ($value >= $mil)
+			return number_format($value / $mil, 1) . 'M';
+		else if ($value >= $k)
+			return number_format($value / $k, 1) . 'K';
+
+		return $value;
+	}
+
+	/**
+	 * Get array of titles for page/block object type
+	 *
+	 * Получаем массив всех заголовков для объекта типа page/block
+	 *
+	 * @param string $type
+	 * @return array
+	 */
+	public static function getAllTitles(string $type = 'page')
+	{
+		global $smcFunc;
+
+		if (($titles = self::cache()->get('all_titles', LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT item_id, lang, title
+				FROM {db_prefix}lp_titles
+				WHERE type = {string:type}
+				ORDER BY lang, title',
+				array(
+					'type' => $type
+				)
+			);
+
+			$titles = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				if (!empty($row['lang']))
+					$titles[$row['item_id']][$row['lang']] = $row['title'];
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			self::cache()->put('all_titles', $titles, LP_CACHE_TIME);
+		}
+
+		return $titles;
 	}
 }

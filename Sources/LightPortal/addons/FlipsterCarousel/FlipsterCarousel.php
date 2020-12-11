@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class FlipsterCarousel
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-images';
+	public $addon_icon = 'far fa-images';
 
 	/**
 	 * The slider autoplay, in ms
@@ -37,7 +37,7 @@ class FlipsterCarousel
 	 *
 	 * @var int
 	 */
-	private static $autoplay = 0;
+	private $autoplay = 0;
 
 	/**
 	 * The slider style
@@ -46,7 +46,7 @@ class FlipsterCarousel
 	 *
 	 * @var string
 	 */
-	private static $style = 'coverflow';
+	private $style = 'coverflow';
 
 	/**
 	 * Display the navigation (true|false)
@@ -55,7 +55,7 @@ class FlipsterCarousel
 	 *
 	 * @var bool
 	 */
-	private static $show_nav = true;
+	private $show_nav = true;
 
 	/**
 	 * Display Previous/Next buttons
@@ -64,7 +64,7 @@ class FlipsterCarousel
 	 *
 	 * @var bool
 	 */
-	private static $show_buttons = false;
+	private $show_buttons = false;
 
 	/**
 	 * Image list for slider
@@ -73,7 +73,7 @@ class FlipsterCarousel
 	 *
 	 * @var string
 	 */
-	private static $images = '';
+	private $images = '';
 
 	/**
 	 * Adding the block options
@@ -83,13 +83,13 @@ class FlipsterCarousel
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['flipster_carousel']['parameters']['autoplay']     = static::$autoplay;
-		$options['flipster_carousel']['parameters']['style']        = static::$style;
-		$options['flipster_carousel']['parameters']['show_nav']     = static::$show_nav;
-		$options['flipster_carousel']['parameters']['show_buttons'] = static::$show_buttons;
-		$options['flipster_carousel']['parameters']['images']       = static::$images;
+		$options['flipster_carousel']['parameters']['autoplay']     = $this->autoplay;
+		$options['flipster_carousel']['parameters']['style']        = $this->style;
+		$options['flipster_carousel']['parameters']['show_nav']     = $this->show_nav;
+		$options['flipster_carousel']['parameters']['show_buttons'] = $this->show_buttons;
+		$options['flipster_carousel']['parameters']['images']       = $this->images;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class FlipsterCarousel
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'flipster_carousel')
 			return;
@@ -120,7 +120,7 @@ class FlipsterCarousel
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -200,7 +200,7 @@ class FlipsterCarousel
 	 * @param array $parameters
 	 * @return string
 	 */
-	public static function getHtml($block_id, $parameters)
+	public function getHtml($block_id, $parameters)
 	{
 		if (empty($parameters['images']))
 			return '';
@@ -238,7 +238,7 @@ class FlipsterCarousel
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $txt;
 
@@ -283,7 +283,7 @@ class FlipsterCarousel
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'jQuery.Flipster',

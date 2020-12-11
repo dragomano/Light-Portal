@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\PrettyUrls;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,22 +26,20 @@ class PrettyUrls
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
 
 	/**
-	 * Give a hint to the PrettyUrls about action=portal
+	 * Give a hint about action=portal to PrettyUrls mod
 	 *
 	 * Подсказываем PrettyUrls про action=portal
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $context;
 
-		if (!empty($context['pretty']['action_array'])) {
-			if (!in_array('portal', array_values($context['pretty']['action_array'])))
-				$context['pretty']['action_array'][] = 'portal';
-		}
+		if (!empty($context['pretty']['action_array']) && !in_array('portal', array_values($context['pretty']['action_array'])))
+			$context['pretty']['action_array'][] = 'portal';
 	}
 }

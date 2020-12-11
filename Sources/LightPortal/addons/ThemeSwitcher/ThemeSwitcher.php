@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class ThemeSwitcher
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-desktop';
+	public $addon_icon = 'fas fa-desktop';
 
 	/**
 	 * Get the list of active themes
@@ -37,7 +37,7 @@ class ThemeSwitcher
 	 *
 	 * @return array
 	 */
-	public static function getAvailableThemes()
+	public function getAvailableThemes()
 	{
 		global $modSettings;
 
@@ -58,7 +58,7 @@ class ThemeSwitcher
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type, $block_id, $cache_time)
 	{
 		global $settings;
 

@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 /**
- * IImport.php
+ * ExportInterface.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -11,10 +11,10 @@ namespace Bugo\LightPortal\Impex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-interface IImport
+interface ExportInterface
 {
-	public static function main();
+	public function main();
 }

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -29,7 +29,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $modSettings, $context, $txt, $scripturl;
 
@@ -38,24 +38,24 @@ class Page
 		$alias = Helpers::request('page');
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias'])) {
-			$context['lp_page'] = self::getDataByAlias($modSettings['lp_frontpage_alias']);
+			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
-			$context['lp_page'] = self::getDataByAlias($alias);
+			$context['lp_page'] = $this->getDataByAlias($alias);
 		}
 
 		if (empty($context['lp_page'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('lp_page_not_found', false, null, 404);
 		}
 
 		if (empty($context['lp_page']['can_view'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit'])) {
-			self::changeBackButton();
+			$this->changeBackButton();
 			fatal_lang_error('lp_page_not_activated', false);
 		}
 
@@ -83,10 +83,13 @@ class Page
 		loadTemplate('LightPortal/ViewPage');
 		$context['sub_template'] = 'show_page';
 
-		self::setMeta();
-		self::prepareRelatedPages();
-		self::prepareComments();
-		self::updateNumViews();
+		$this->setMeta();
+		$this->prepareRelatedPages();
+		$this->prepareComments();
+		$this->updateNumViews();
+
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
 	}
 
 	/**
@@ -96,7 +99,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function changeBackButton()
+	private function changeBackButton()
 	{
 		global $modSettings, $txt;
 
@@ -119,7 +122,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function setMeta()
+	private function setMeta()
 	{
 		global $context, $modSettings, $settings;
 
@@ -146,14 +149,14 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function prepareRelatedPages()
+	private function prepareRelatedPages()
 	{
 		global $context, $modSettings;
 
 		if (empty($context['lp_page']['options']['show_related_pages']) || empty($modSettings['lp_show_related_pages']))
 			return;
 
-		$context['lp_page']['related_pages'] = self::getRelatedPages();
+		$context['lp_page']['related_pages'] = $this->getRelatedPages();
 	}
 
 	/**
@@ -163,7 +166,7 @@ class Page
 	 *
 	 * @return array
 	 */
-	public static function getRelatedPages()
+	public function getRelatedPages()
 	{
 		global $smcFunc, $modSettings, $context;
 
@@ -234,7 +237,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function prepareComments()
+	private function prepareComments()
 	{
 		global $modSettings, $context;
 
@@ -260,9 +263,9 @@ class Page
 	 * @param array $params
 	 * @return array
 	 */
-	public static function getData(array $params)
+	public function getData(array $params)
 	{
-		global $smcFunc, $txt, $modSettings, $context;
+		global $smcFunc, $txt, $modSettings;
 
 		if (empty($params))
 			return [];
@@ -348,13 +351,14 @@ class Page
 	 * @param string $alias
 	 * @return array
 	 */
-	public static function getDataByAlias(string $alias)
+	public function getDataByAlias(string $alias)
 	{
 		if (empty($alias))
 			return [];
 
 		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
-		self::prepareData($data);
+
+		$this->prepareData($data);
 
 		return $data;
 	}
@@ -367,13 +371,14 @@ class Page
 	 * @param int $item
 	 * @return array
 	 */
-	public static function getDataByItem(int $item)
+	public function getDataByItem(int $item)
 	{
 		if (empty($item))
 			return [];
 
-		$data = self::getData(array('item' => $item));
-		self::prepareData($data);
+		$data = $this->getData(array('item' => $item));
+
+		$this->prepareData($data);
 
 		return $data;
 	}
@@ -386,9 +391,9 @@ class Page
 	 * @param array|null $data
 	 * @return void
 	 */
-	private static function prepareData(?array &$data)
+	private function prepareData(?array &$data)
 	{
-		global $user_info;
+		global $user_info, $modSettings;
 
 		if (empty($data))
 			return;
@@ -400,6 +405,100 @@ class Page
 		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
 		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
 		$data['keywords'] = $data['keywords'] ?? [];
+
+		if (!empty($modSettings['enable_likes'])) {
+			$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
+
+			$data['likes'] = array(
+				'count'    => $this->getLikesCount($data['id']),
+				'you'      => in_array($data['id'], $user_likes),
+				'can_like' => !$user_info['is_guest'] && !$is_author && allowedTo('likes_like')
+			);
+		}
+	}
+
+	/**
+	 * Get an array of "likes" info for the $page and the current user
+	 *
+	 * Получаем массив лайков для страницы $page и текущего пользователя
+	 *
+	 * @param int $page
+	 * @return array
+	 */
+	private function prepareLikesContext(int $page)
+	{
+		global $user_info, $smcFunc;
+
+		if (empty($page))
+			return [];
+
+		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
+
+		if (($liked_pages = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT content_id
+				FROM {db_prefix}user_likes AS l
+					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
+				WHERE l.id_member = {int:current_user}
+					AND l.content_type = {literal:lpp}
+					AND p.page_id = {int:page}',
+				array(
+					'current_user' => $user_info['id'],
+					'page'         => $page
+				)
+			);
+
+			$liked_pages = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request))
+				$liked_pages[] = (int) $row['content_id'];
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put($cache_key, $liked_pages, LP_CACHE_TIME);
+		}
+
+		return $liked_pages;
+	}
+
+	/**
+	 * Get number of likes for the $page
+	 *
+	 * Получаем количество лайков для страницы $page
+	 *
+	 * @param int $page
+	 * @return int
+	 */
+	private function getLikesCount(int $page)
+	{
+		global $smcFunc;
+
+		if (empty($page))
+			return 0;
+
+		$cache_key = 'likes_page_' . $page . '_count';
+
+		if (($num_likes = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(content_id)
+				FROM {db_prefix}user_likes AS l
+					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
+				WHERE l.content_type = {literal:lpp}
+					AND p.page_id = {int:page}',
+				array(
+					'page' => $page
+				)
+			);
+
+			[$num_likes] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put($cache_key, $num_likes, LP_CACHE_TIME);
+		}
+
+		return (int) $num_likes;
 	}
 
 	/**
@@ -409,7 +508,7 @@ class Page
 	 *
 	 * @return void
 	 */
-	private static function updateNumViews()
+	private function updateNumViews()
 	{
 		global $context, $user_info, $smcFunc;
 
@@ -426,8 +525,9 @@ class Page
 				)
 			);
 
-			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
 			$smcFunc['lp_num_queries']++;
+
+			Helpers::session()->put('light_portal_last_page_viewed', $context['lp_page']['id']);
 		}
 	}
 }

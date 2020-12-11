@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\News;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * News
  *
@@ -13,7 +11,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,16 +26,16 @@ class News
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-newspaper';
+	public $addon_icon = 'far fa-newspaper';
 
 	/**
 	 * The news index to be displayed (0 - random news)
 	 *
 	 * Порядковый номер новости для отображения (0 - случайная новость)
 	 *
-	 * @var string
+	 * @var int
 	 */
-	private static $selected_item = 0;
+	private $selected_item = 0;
 
 	/**
 	 * Adding the block options
@@ -47,9 +45,9 @@ class News
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['news']['parameters']['selected_item'] = static::$selected_item;
+		$options['news']['parameters']['selected_item'] = $this->selected_item;
 	}
 
 	/**
@@ -61,10 +59,8 @@ class News
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
-		global $context;
-
 		if ($type !== 'news')
 			return;
 
@@ -78,7 +74,7 @@ class News
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -95,7 +91,7 @@ class News
 			'tab' => 'content'
 		);
 
-		self::getData();
+		$this->getData();
 
 		$news = [$txt['lp_news_addon_random_news']];
 		if (!empty($context['news_lines'])) {
@@ -126,7 +122,7 @@ class News
 	 * @param int $item
 	 * @return string
 	 */
-	public static function getData($item = 0)
+	public function getData($item = 0)
 	{
 		global $boarddir, $context;
 
@@ -151,17 +147,19 @@ class News
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $txt;
 
 		if ($type !== 'news')
 			return;
 
-		$news = self::getData($parameters['selected_item']);
+		$news = $this->getData($parameters['selected_item']);
 
 		ob_start();
+
 		echo $news ?: $txt['lp_news_addon_no_items'];
+
 		$content = ob_get_clean();
 	}
 }

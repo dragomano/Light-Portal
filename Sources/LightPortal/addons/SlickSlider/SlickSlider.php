@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class SlickSlider
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fab fa-slideshare';
+	public $addon_icon = 'fab fa-slideshare';
 
 	/**
 	 * Display arrows (true|false)
@@ -37,7 +37,7 @@ class SlickSlider
 	 *
 	 * @var bool
 	 */
-	private static $show_arrows = true;
+	private $show_arrows = true;
 
 	/**
 	 * Display slider dots
@@ -46,7 +46,7 @@ class SlickSlider
 	 *
 	 * @var bool
 	 */
-	private static $show_dots = true;
+	private $show_dots = true;
 
 	/**
 	 * Adapts slider height to the current slide
@@ -55,7 +55,7 @@ class SlickSlider
 	 *
 	 * @var bool
 	 */
-	private static $adaptive_height = true;
+	private $adaptive_height = true;
 
 	/**
 	 * The number of slides to show at a time
@@ -64,7 +64,7 @@ class SlickSlider
 	 *
 	 * @var int
 	 */
-	private static $slides_to_show = 3;
+	private $slides_to_show = 3;
 
 	/**
 	 * Number of slides to scroll at a time
@@ -73,7 +73,7 @@ class SlickSlider
 	 *
 	 * @var int
 	 */
-	private static $slides_to_scroll = 1;
+	private $slides_to_scroll = 1;
 
 	/**
 	 * The slider autoplay
@@ -82,7 +82,7 @@ class SlickSlider
 	 *
 	 * @var bool
 	 */
-	private static $autoplay = true;
+	private $autoplay = true;
 
 	/**
 	 * Auto play change interval
@@ -91,7 +91,7 @@ class SlickSlider
 	 *
 	 * @var int
 	 */
-	private static $autoplay_speed = 800;
+	private $autoplay_speed = 800;
 
 	/**
 	 * Transition speed
@@ -100,7 +100,7 @@ class SlickSlider
 	 *
 	 * @var int
 	 */
-	private static $speed = 1000;
+	private $speed = 1000;
 
 	/**
 	 * Image list for slider
@@ -109,7 +109,7 @@ class SlickSlider
 	 *
 	 * @var string
 	 */
-	private static $images = '';
+	private $images = '';
 
 	/**
 	 * Adding the block options
@@ -119,17 +119,17 @@ class SlickSlider
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['slick_slider']['parameters']['show_arrows']      = static::$show_arrows;
-		$options['slick_slider']['parameters']['show_dots']        = static::$show_dots;
-		$options['slick_slider']['parameters']['adaptive_height']  = static::$adaptive_height;
-		$options['slick_slider']['parameters']['slides_to_show']   = static::$slides_to_show;
-		$options['slick_slider']['parameters']['slides_to_scroll'] = static::$slides_to_scroll;
-		$options['slick_slider']['parameters']['autoplay']         = static::$autoplay;
-		$options['slick_slider']['parameters']['autoplay_speed']   = static::$autoplay_speed;
-		$options['slick_slider']['parameters']['speed']            = static::$speed;
-		$options['slick_slider']['parameters']['images']           = static::$images;
+		$options['slick_slider']['parameters']['show_arrows']      = $this->show_arrows;
+		$options['slick_slider']['parameters']['show_dots']        = $this->show_dots;
+		$options['slick_slider']['parameters']['adaptive_height']  = $this->adaptive_height;
+		$options['slick_slider']['parameters']['slides_to_show']   = $this->slides_to_show;
+		$options['slick_slider']['parameters']['slides_to_scroll'] = $this->slides_to_scroll;
+		$options['slick_slider']['parameters']['autoplay']         = $this->autoplay;
+		$options['slick_slider']['parameters']['autoplay_speed']   = $this->autoplay_speed;
+		$options['slick_slider']['parameters']['speed']            = $this->speed;
+		$options['slick_slider']['parameters']['images']           = $this->images;
 	}
 
 	/**
@@ -141,7 +141,7 @@ class SlickSlider
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'slick_slider')
 			return;
@@ -164,7 +164,7 @@ class SlickSlider
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -269,7 +269,7 @@ class SlickSlider
 	 * @param array $parameters
 	 * @return string
 	 */
-	public static function getHtml($block_id, $parameters)
+	public function getHtml($block_id, $parameters)
 	{
 		if (empty($parameters['images']))
 			return '';
@@ -305,7 +305,7 @@ class SlickSlider
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		if ($type !== 'slick_slider')
 			return;
@@ -321,11 +321,11 @@ class SlickSlider
 				arrows: ' . (!empty($parameters['show_arrows']) ? 'true' : 'false') . ',
 				dots: ' . (!empty($parameters['show_dots']) ? 'true' : 'false') . ',
 				adaptiveHeight: ' . (!empty($parameters['adaptive_height']) ? 'true' : 'false') . ',
-				slidesToShow: ' . (!empty($parameters['slides_to_show']) ? $parameters['slides_to_show'] : static::$slides_to_show) . ',
-				slidesToScroll: ' . (!empty($parameters['slides_to_scroll']) ? $parameters['slides_to_scroll'] : static::$slides_to_scroll) . ',
+				slidesToShow: ' . (!empty($parameters['slides_to_show']) ? $parameters['slides_to_show'] : $this->slides_to_show) . ',
+				slidesToScroll: ' . (!empty($parameters['slides_to_scroll']) ? $parameters['slides_to_scroll'] : $this->slides_to_scroll) . ',
 				autoplay: ' . (!empty($parameters['autoplay']) ? 'true' : 'false') . ',
-				autoplaySpeed: ' . (!empty($parameters['autoplay_speed']) ? $parameters['autoplay_speed'] : static::$autoplay_speed) . ',
-				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : static::$speed) . ',
+				autoplaySpeed: ' . (!empty($parameters['autoplay_speed']) ? $parameters['autoplay_speed'] : $this->autoplay_speed) . ',
+				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : $this->speed) . ',
 				responsive: [
 					{
 						breakpoint: 768,
@@ -356,7 +356,7 @@ class SlickSlider
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'slick',

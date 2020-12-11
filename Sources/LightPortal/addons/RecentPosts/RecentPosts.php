@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-comment-alt';
+	public $addon_icon = 'far fa-comment-alt';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class RecentPosts
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * The maximum number of posts to output
@@ -46,7 +46,7 @@ class RecentPosts
 	 *
 	 * @var int
 	 */
-	private static $num_posts = 10;
+	private $num_posts = 10;
 
 	/**
 	 * The link type (link|preview)
@@ -55,7 +55,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	private static $type = 'link';
+	private $type = 'link';
 
 	/**
 	 * If set, does NOT show posts from the specified boards
@@ -64,7 +64,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	private static $exclude_boards = '';
+	private $exclude_boards = '';
 
 	/**
 	 * If set, ONLY includes posts from the specified boards
@@ -73,7 +73,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	private static $include_boards = '';
+	private $include_boards = '';
 
 	/**
 	 * If set, does NOT show posts from the specified topics
@@ -82,7 +82,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	private static $exclude_topics = '';
+	private $exclude_topics = '';
 
 	/**
 	 * If set, ONLY includes posts from the specified topics
@@ -91,7 +91,7 @@ class RecentPosts
 	 *
 	 * @var string
 	 */
-	private static $include_topics = '';
+	private $include_topics = '';
 
 	/**
 	 * Display user avatars (true|false)
@@ -100,7 +100,7 @@ class RecentPosts
 	 *
 	 * @var bool
 	 */
-	private static $show_avatars = false;
+	private $show_avatars = false;
 
 	/**
 	 * Online list update interval, in seconds
@@ -109,7 +109,7 @@ class RecentPosts
 	 *
 	 * @var int
 	 */
-	private static $update_interval = 600;
+	private $update_interval = 600;
 
 	/**
 	 * Adding the block options
@@ -119,18 +119,18 @@ class RecentPosts
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['recent_posts']['no_content_class'] = static::$no_content_class;
+		$options['recent_posts']['no_content_class'] = $this->no_content_class;
 
-		$options['recent_posts']['parameters']['num_posts']       = static::$num_posts;
-		$options['recent_posts']['parameters']['link_type']       = static::$type;
-		$options['recent_posts']['parameters']['exclude_boards' ] = static::$exclude_boards;
-		$options['recent_posts']['parameters']['include_boards']  = static::$include_boards;
-		$options['recent_posts']['parameters']['exclude_topics']  = static::$exclude_topics;
-		$options['recent_posts']['parameters']['include_topics']  = static::$include_topics;
-		$options['recent_posts']['parameters']['show_avatars']    = static::$show_avatars;
-		$options['recent_posts']['parameters']['update_interval'] = static::$update_interval;
+		$options['recent_posts']['parameters']['num_posts']       = $this->num_posts;
+		$options['recent_posts']['parameters']['link_type']       = $this->type;
+		$options['recent_posts']['parameters']['exclude_boards' ] = $this->exclude_boards;
+		$options['recent_posts']['parameters']['include_boards']  = $this->include_boards;
+		$options['recent_posts']['parameters']['exclude_topics']  = $this->exclude_topics;
+		$options['recent_posts']['parameters']['include_topics']  = $this->include_topics;
+		$options['recent_posts']['parameters']['show_avatars']    = $this->show_avatars;
+		$options['recent_posts']['parameters']['update_interval'] = $this->update_interval;
 	}
 
 	/**
@@ -142,7 +142,7 @@ class RecentPosts
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'recent_posts')
 			return;
@@ -164,7 +164,7 @@ class RecentPosts
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -276,7 +276,7 @@ class RecentPosts
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData($parameters)
 	{
 		global $boarddir;
 
@@ -346,7 +346,7 @@ class RecentPosts
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 
@@ -378,10 +378,8 @@ class RecentPosts
 				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
 
 				if ($post['is_new'])
-					/* echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
-				<a class="new_posts" href="', $post['href'], '">', $txt['new'], '1</a>';
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
 
 				echo '
 				', $post[$parameters['link_type']];

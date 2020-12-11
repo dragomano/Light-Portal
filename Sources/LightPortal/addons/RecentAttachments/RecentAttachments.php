@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class RecentAttachments
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-paperclip';
+	public $addon_icon = 'fas fa-paperclip';
 
 	/**
 	 * The maximum number of attachments to output
@@ -37,7 +37,7 @@ class RecentAttachments
 	 *
 	 * @var int
 	 */
-	private static $num_attachments = 5;
+	private $num_attachments = 5;
 
 	/**
 	 * Attachment extensions to display
@@ -46,7 +46,7 @@ class RecentAttachments
 	 *
 	 * @var string
 	 */
-	private static $extensions = '';
+	private $extensions = '';
 
 	/**
 	 * The attachment list direction (horizontal|vertical)
@@ -55,7 +55,7 @@ class RecentAttachments
 	 *
 	 * @var string
 	 */
-	private static $direction = 'horizontal';
+	private $direction = 'horizontal';
 
 	/**
 	 * Adding the block options
@@ -65,11 +65,11 @@ class RecentAttachments
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['recent_attachments']['parameters']['num_attachments'] = static::$num_attachments;
-		$options['recent_attachments']['parameters']['extensions']      = static::$extensions;
-		$options['recent_attachments']['parameters']['direction']       = static::$direction;
+		$options['recent_attachments']['parameters']['num_attachments'] = $this->num_attachments;
+		$options['recent_attachments']['parameters']['extensions']      = $this->extensions;
+		$options['recent_attachments']['parameters']['direction']       = $this->direction;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class RecentAttachments
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'recent_attachments')
 			return;
@@ -98,7 +98,7 @@ class RecentAttachments
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -159,7 +159,7 @@ class RecentAttachments
 	 * @param array $parameters
 	 * @return string
 	 */
-	public static function getData(array $parameters)
+	public function getData(array $parameters)
 	{
 		global $boarddir;
 
@@ -181,7 +181,7 @@ class RecentAttachments
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $settings;
 

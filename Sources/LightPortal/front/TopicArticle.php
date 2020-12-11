@@ -14,13 +14,13 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class TopicArticle extends Article
+class TopicArticle implements ArticleInterface
 {
 	/**
 	 * Get topics from selected boards
@@ -31,7 +31,7 @@ class TopicArticle extends Article
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit)
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
 
@@ -60,13 +60,14 @@ class TopicArticle extends Article
 				't.id_last_msg DESC',
 				'mf.poster_time DESC',
 				'mf.poster_time',
+				'date DESC'
 			];
 
 			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
 						SELECT id_attach
 						FROM {db_prefix}attachments
 						WHERE id_msg = t.id_first_msg
@@ -101,6 +102,7 @@ class TopicArticle extends Article
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
 				if (!isset($topics[$row['id_topic']])) {
 					Helpers::cleanBbcode($row['subject']);
+
 					censorText($row['subject']);
 					censorText($row['body']);
 					censorText($row['last_body']);
@@ -115,23 +117,19 @@ class TopicArticle extends Article
 						$image = $first_post_image ? array_pop($value) : null;
 					}
 
-					$row['body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['body']);
-					$row['body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['body']);
-					$row['body'] = strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite>');
+					self::parseBody($row['body'], $row);
 
-					$row['last_body'] = preg_replace('~\[spoiler.*].*?\[\/spoiler]~Usi', $txt['spoiler'] ?? '', $row['last_body']);
-					$row['last_body'] = preg_replace('~\[code.*].*?\[\/code]~Usi', $txt['code'], $row['last_body']);
-					$row['last_body'] = strip_tags(strtr(parse_bbc($row['last_body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => ' ')), '<blockquote><cite>');
+					self::parseBody($row['last_body'], $row);
 
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
 						'id_msg'      => $row['id_first_msg'],
-						'author_id'   => $author_id = empty($row['num_replies']) ? $row['id_member'] : $row['last_poster_id'],
+						'author_id'   => $author_id = !empty($modSettings['lp_frontpage_article_sorting']) ? $row['id_member'] : $row['last_poster_id'],
 						'author_link' => $scripturl . '?action=profile;u=' . $author_id,
-						'author_name' => empty($row['num_replies']) ? $row['poster_name'] : $row['last_poster_name'],
+						'author_name' => !empty($modSettings['lp_frontpage_article_sorting']) ? $row['poster_name'] : $row['last_poster_name'],
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
-						'teaser'      => Helpers::getTeaser(empty($row['num_replies']) ? $row['body'] : $row['last_body']),
+						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
@@ -148,6 +146,9 @@ class TopicArticle extends Article
 
 					if (!empty($topics[$row['id_topic']]['num_replies']))
 						$topics[$row['id_topic']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
+
+					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
+						$topics[$row['id_topic']]['date'] = $row['date'];
 				}
 
 				Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
@@ -169,7 +170,7 @@ class TopicArticle extends Article
 	 *
 	 * @return int
 	 */
-	public static function getTotal(): int
+	public function getTotal()
 	{
 		global $modSettings, $user_info, $smcFunc;
 
@@ -205,5 +206,23 @@ class TopicArticle extends Article
 		}
 
 		return (int) $num_topics;
+	}
+
+	/**
+	 * Removing unnecessary tags from the article text
+	 *
+	 * Избавляем текст статьи от ненужных тегов
+	 *
+	 * @param string $body
+	 * @param array $row
+	 * @return void
+	 */
+	protected function parseBody(&$body, $row)
+	{
+		global $txt;
+
+		$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $body);
+		$body = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $body);
+		$body = strip_tags(strtr(parse_bbc($body, $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite><ul><li>');
 	}
 }

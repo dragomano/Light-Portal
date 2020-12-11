@@ -48,6 +48,8 @@ function template_ads_placement_topic_below()
 	lp_show_blocks('topic_bottom');
 }
 
+function template_ads_block_above() {}
+
 /**
  * Adding hiding ads block form and change "+" link
  *
@@ -55,12 +57,12 @@ function template_ads_placement_topic_below()
  *
  * @return void
  */
-function ads_block_form()
+function template_ads_block_below()
 {
-	global $context, $scripturl;
+	global $scripturl, $context;
 
-	$context['insert_after_template'] .= '
-	<form name="ads_block_add_form" action="' . $scripturl . '?action=admin;area=lp_blocks;sa=add" method="post" accept-charset="' . $context['character_set'] . '" style="display: none">
+	echo '
+	<form name="ads_block_form" action="' . $scripturl . '?action=admin;area=lp_blocks;sa=add" method="post" accept-charset="' . $context['character_set'] . '" style="display: none">
 		<input type="hidden" name="add_block" value="ads_block">
 		<input type="hidden" name="placement" value="ads">
 	</form>
@@ -68,7 +70,7 @@ function ads_block_form()
 		const addButton = document.querySelector(\'h3 a[href$="placement=ads"]\');
 		if (addButton) {
 			addButton.removeAttribute("href");
-			addButton.addEventListener("click", () => document.forms.ads_block_add_form.submit());
+			addButton.addEventListener("click", () => document.forms.ads_block_form.submit());
 		}
 	</script>';
 }

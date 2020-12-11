@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -29,14 +29,14 @@ class Block
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $context, $modSettings;
 
 		if (empty($context['allow_light_portal_view']) || empty($context['template_layers']) || empty($context['lp_active_blocks']))
 			return;
 
-		$blocks = self::getFilteredByAreas();
+		$blocks = $this->getFilteredByAreas();
 
 		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin')))
 			return;
@@ -57,7 +57,9 @@ class Block
 				$data['title_class'] = '';
 
 			$context['lp_blocks'][$data['placement']][$item] = $data;
+
 			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon'], $context['lp_blocks'][$data['placement']][$item]['icon_type']);
+
 			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
@@ -66,6 +68,7 @@ class Block
 		$counter = 0;
 		foreach ($context['template_layers'] as $position => $name) {
 			$counter++;
+
 			if ($name == 'body')
 				break;
 		}
@@ -84,7 +87,7 @@ class Block
 	 *
 	 * @return array
 	 */
-	private static function getFilteredByAreas()
+	private function getFilteredByAreas()
 	{
 		global $context, $modSettings;
 
@@ -101,6 +104,9 @@ class Block
 		if (!empty($context['current_board']) || !empty($context['lp_page']))
 			$area = '';
 
+		if (!empty($context['lp_page']) && Helpers::isFrontPage($context['lp_page']['alias']))
+			$area = 'portal';
+
 		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
@@ -108,7 +114,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if (empty($context['current_action']) && Helpers::request()->filled('page') && (isset($block['areas']['page=' . Helpers::request('page')]) || isset($block['areas']['pages'])))
+			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas']['page=' . $context['lp_page']['alias']])))
 				return true;
 
 			if (empty($context['current_board']))
@@ -122,9 +128,10 @@ class Block
 				$entity = explode('=', $areas);
 
 				if ($entity[0] === 'board')
-					$boards = self::getAllowedIds($entity[1]);
+					$boards = $this->getAllowedIds($entity[1]);
+
 				if ($entity[0] === 'topic')
-					$topics = self::getAllowedIds($entity[1]);
+					$topics = $this->getAllowedIds($entity[1]);
 			}
 
 			return in_array($context['current_board'], $boards) || (!empty($context['current_topic']) && in_array($context['current_topic'], $topics));
@@ -132,14 +139,14 @@ class Block
 	}
 
 	/**
-	 * Get allowed identifiers for $entity string
+	 * Get allowed identifiers from $entity string
 	 *
 	 * Получаем разрешенные идентификаторы из строки $entity
 	 *
 	 * @param string $entity
 	 * @return array
 	 */
-	private static function getAllowedIds(string $entity = '')
+	private function getAllowedIds(string $entity = '')
 	{
 		$ids = [];
 

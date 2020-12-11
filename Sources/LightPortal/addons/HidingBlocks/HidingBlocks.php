@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class HidingBlocks
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
 
 	/**
 	 * Supported screen sizes
@@ -37,7 +37,7 @@ class HidingBlocks
 	 *
 	 * @var array
 	 */
-	public static $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
+	public $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
 	/**
 	 * Hidden classes that enabled by default
@@ -46,7 +46,7 @@ class HidingBlocks
 	 *
 	 * @var array
 	 */
-	private static $hidden_breakpoints = [];
+	private $hidden_breakpoints = [];
 
 	/**
 	 * Fill additional block classes
@@ -55,7 +55,7 @@ class HidingBlocks
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $context;
 
@@ -67,7 +67,7 @@ class HidingBlocks
 				continue;
 
 			$breakpoints = array_flip(explode(',', $block['parameters']['hidden_breakpoints']));
-			foreach (self::$classes as $class) {
+			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
 					if (empty($context['lp_active_blocks'][$id]['custom_class']))
 						$context['lp_active_blocks'][$id]['custom_class'] = '';
@@ -86,11 +86,11 @@ class HidingBlocks
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
 		global $context;
 
-		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = static::$hidden_breakpoints;
+		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = $this->hidden_breakpoints;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class HidingBlocks
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters)
+	public function validateBlockData(&$parameters)
 	{
 		$parameters['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
@@ -117,7 +117,7 @@ class HidingBlocks
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 

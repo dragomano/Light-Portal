@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class BoardNews
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-newspaper';
+	public $addon_icon = 'fas fa-newspaper';
 
 	/**
 	 * Board id by default
@@ -37,7 +37,7 @@ class BoardNews
 	 *
 	 * @var int
 	 */
-	private static $board_id = 0;
+	private $board_id = 0;
 
 	/**
 	 * The maximum number of posts to output
@@ -46,7 +46,7 @@ class BoardNews
 	 *
 	 * @var int
 	 */
-	private static $num_posts = 5;
+	private $num_posts = 5;
 
 	/**
 	 * Adding the block options
@@ -56,10 +56,10 @@ class BoardNews
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['board_news']['parameters']['board_id']  = static::$board_id;
-		$options['board_news']['parameters']['num_posts'] = static::$num_posts;
+		$options['board_news']['parameters']['board_id']  = $this->board_id;
+		$options['board_news']['parameters']['num_posts'] = $this->num_posts;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class BoardNews
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'board_news')
 			return;
@@ -87,11 +87,11 @@ class BoardNews
 	 *
 	 * @return array
 	 */
-	private static function getBoardList()
+	private function getBoardList()
 	{
-		global $sourcedir, $modSettings, $context;
+		global $modSettings, $context;
 
-		require_once($sourcedir . '/Subs-MessageIndex.php');
+		Helpers::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
 			'ignore_boards'   => false,
@@ -111,7 +111,7 @@ class BoardNews
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -127,7 +127,7 @@ class BoardNews
 			'options' => array()
 		);
 
-		$board_list = self::getBoardList();
+		$board_list = $this->getBoardList();
 		foreach ($board_list as $category) {
 			$context['posting_fields']['board_id']['input']['options'][$category['name']] = array('options' => array());
 
@@ -167,7 +167,7 @@ class BoardNews
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData(array $parameters)
+	public function getData(array $parameters)
 	{
 		global $boarddir;
 
@@ -187,7 +187,7 @@ class BoardNews
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt, $modSettings, $scripturl, $context;
 

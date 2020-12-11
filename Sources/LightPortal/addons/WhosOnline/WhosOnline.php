@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class WhosOnline
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-eye';
+	public $addon_icon = 'far fa-eye';
 
 	/**
 	 * Online list update interval, in seconds
@@ -37,7 +37,7 @@ class WhosOnline
 	 *
 	 * @var int
 	 */
-	private static $update_interval = 600;
+	private $update_interval = 600;
 
 	/**
 	 * Adding the block options
@@ -47,9 +47,9 @@ class WhosOnline
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['whos_online']['parameters']['update_interval'] = static::$update_interval;
+		$options['whos_online']['parameters']['update_interval'] = $this->update_interval;
 	}
 
 	/**
@@ -61,7 +61,7 @@ class WhosOnline
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'whos_online')
 			return;
@@ -76,7 +76,7 @@ class WhosOnline
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -101,7 +101,7 @@ class WhosOnline
 	 *
 	 * @return array
 	 */
-	public static function getData()
+	public function getData()
 	{
 		global $boarddir;
 
@@ -121,7 +121,7 @@ class WhosOnline
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt, $settings;
 

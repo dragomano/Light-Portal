@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class TopBoards
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-balance-scale-left';
+	public $addon_icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * The maximum number of boards to output
@@ -37,7 +37,7 @@ class TopBoards
 	 *
 	 * @var int
 	 */
-	private static $num_boards = 10;
+	private $num_boards = 10;
 
 	/**
 	 * Display only numbers (true|false)
@@ -46,7 +46,7 @@ class TopBoards
 	 *
 	 * @var bool
 	 */
-	private static $show_numbers_only = false;
+	private $show_numbers_only = false;
 
 	/**
 	 * Adding the block options
@@ -56,10 +56,10 @@ class TopBoards
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['top_boards']['parameters']['num_boards']        = static::$num_boards;
-		$options['top_boards']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_boards']['parameters']['num_boards']        = $this->num_boards;
+		$options['top_boards']['parameters']['show_numbers_only'] = $this->show_numbers_only;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class TopBoards
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'top_boards')
 			return;
@@ -87,7 +87,7 @@ class TopBoards
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -122,7 +122,7 @@ class TopBoards
 	 * @param int $num_boards
 	 * @return array
 	 */
-	public static function getData($num_boards)
+	public function getData($num_boards)
 	{
 		global $boarddir;
 
@@ -143,7 +143,7 @@ class TopBoards
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

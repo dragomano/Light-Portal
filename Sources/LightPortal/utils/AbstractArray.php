@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Utils;
 
 /**
- * Arr.php
+ * AbstractArray.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -11,10 +11,10 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-abstract class Arr
+abstract class AbstractArray
 {
 	private static $obj;
 
@@ -128,12 +128,12 @@ abstract class Arr
 	 */
 	public static function push(string $key, $value)
 	{
-		if (! static::has($key) || ! is_array(static::$obj[$key]))
+		if (!static::has($key) || !is_array(static::$obj[$key]))
 			return;
 
 		if (strpos($key, '.') !== false) {
-			$subkey = explode('.', $key)[0];
-			static::$obj[$key][$subkey] = $value;
+			$subKey = explode('.', $key)[0];
+			static::$obj[$key][$subKey] = $value;
 		} else {
 			static::$obj[$key][] = $value;
 		}
@@ -164,7 +164,7 @@ abstract class Arr
 	{
 		if (is_array($key)) {
 			foreach ($key as $k) {
-				if (! isset(static::$obj[$k]))
+				if (!isset(static::$obj[$k]))
 					return false;
 			}
 
@@ -197,7 +197,7 @@ abstract class Arr
 	 */
 	public static function filled(string $key)
 	{
-		return ! static::isEmpty($key);
+		return !static::isEmpty($key);
 	}
 
 	/**

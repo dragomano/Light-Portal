@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class PageList
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'far fa-file-alt';
+	public $addon_icon = 'far fa-file-alt';
 
 	/**
 	 * The sort method of pages
@@ -37,7 +37,7 @@ class PageList
 	 *
 	 * @var string
 	 */
-	private static $sort = 'page_id';
+	private $sort = 'page_id';
 
 	/**
 	 * The maximum number of pages to output
@@ -46,7 +46,7 @@ class PageList
 	 *
 	 * @var int
 	 */
-	private static $num_pages = 10;
+	private $num_pages = 10;
 
 	/**
 	 * Adding the block options
@@ -56,10 +56,10 @@ class PageList
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['page_list']['parameters']['sort']      = static::$sort;
-		$options['page_list']['parameters']['num_pages'] = static::$num_pages;
+		$options['page_list']['parameters']['sort']      = $this->sort;
+		$options['page_list']['parameters']['num_pages'] = $this->num_pages;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class PageList
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'page_list')
 			return;
@@ -87,7 +87,7 @@ class PageList
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -137,11 +137,11 @@ class PageList
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData(array $parameters)
+	public function getData(array $parameters)
 	{
 		global $smcFunc, $txt, $context;
 
-		$titles = Helpers::cache('all_titles', 'getAllTitles', '\Bugo\LightPortal\Subs', LP_CACHE_TIME, 'page');
+		$titles = Helpers::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -203,7 +203,7 @@ class PageList
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 

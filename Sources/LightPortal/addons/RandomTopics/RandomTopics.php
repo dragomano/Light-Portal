@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -28,7 +28,7 @@ class RandomTopics
 	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-random';
+	public $addon_icon = 'fas fa-random';
 
 	/**
 	 * You cannot select a class for the content of this block
@@ -37,7 +37,7 @@ class RandomTopics
 	 *
 	 * @var bool
 	 */
-	private static $no_content_class = true;
+	private $no_content_class = true;
 
 	/**
 	 * The maximum number of random topics to output
@@ -46,7 +46,7 @@ class RandomTopics
 	 *
 	 * @var int
 	 */
-	private static $num_topics = 10;
+	private $num_topics = 10;
 
 	/**
 	 * Adding the block options
@@ -56,11 +56,11 @@ class RandomTopics
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(&$options)
 	{
-		$options['random_topics']['no_content_class'] = static::$no_content_class;
+		$options['random_topics']['no_content_class'] = $this->no_content_class;
 
-		$options['random_topics']['parameters']['num_topics'] = static::$num_topics;
+		$options['random_topics']['parameters']['num_topics'] = $this->num_topics;
 	}
 
 	/**
@@ -72,7 +72,7 @@ class RandomTopics
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(&$parameters, $type)
 	{
 		if ($type !== 'random_topics')
 			return;
@@ -87,7 +87,7 @@ class RandomTopics
 	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
@@ -113,7 +113,7 @@ class RandomTopics
 	 * @param int $num_topics
 	 * @return array
 	 */
-	public static function getData($num_topics)
+	public function getData($num_topics)
 	{
 		global $modSettings, $user_info, $db_type, $smcFunc, $context, $settings, $scripturl;
 
@@ -177,7 +177,7 @@ class RandomTopics
 			$smcFunc['lp_num_queries']++;
 
 			if (empty($topic_ids))
-				return self::getData($num_topics - 1);
+				return $this->getData($num_topics - 1);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -260,7 +260,7 @@ class RandomTopics
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $user_info, $txt;
 

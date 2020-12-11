@@ -1,9 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal\Impex;
+namespace Bugo\LightPortal\Front;
 
 /**
- * Import.php
+ * ArticleInterface.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -11,10 +11,11 @@ namespace Bugo\LightPortal\Impex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-abstract class Import implements IImport
+interface ArticleInterface
 {
-	abstract protected static function run();
+	public function getData(int $start, int $limit);
+	public function getTotal();
 }

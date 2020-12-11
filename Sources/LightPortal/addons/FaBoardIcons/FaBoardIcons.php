@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\FaBoardIcons;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class FaBoardIcons
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $addon_type = 'article';
 
 	/**
 	 * Select columns with icon and color
@@ -36,7 +36,7 @@ class FaBoardIcons
 	 * @param array $custom_columns
 	 * @return void
 	 */
-	public static function frontBoards(&$custom_columns)
+	public function frontBoards(&$custom_columns)
 	{
 		global $sourcedir;
 
@@ -55,7 +55,7 @@ class FaBoardIcons
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontBoardsOutput(&$boards, $row)
+	public function frontBoardsOutput(&$boards, $row)
 	{
 		global $sourcedir, $modSettings;
 

@@ -21,5 +21,7 @@ $txt['lp_ads_block_addon_placement_set'] = array(
 	'before_every_last_post' => 'Antes de cada último mensaje en la página',
 	'before_last_post' => 'Antes del último mensaje',
 	'after_first_post' => 'Después del primer mensaje',
-	'after_every_first_post' => 'Después de cada primer mensaje en la página'
+	'after_every_first_post' => 'Después de cada primer mensaje en la página',
+	'after_every_last_post' => 'Después de cada último mensaje en la página.',
+	'after_last_post' => 'Después del último mensaje'
 );

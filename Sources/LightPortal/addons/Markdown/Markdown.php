@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Markdown;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class Markdown
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'parser';
+	public $addon_type = 'parser';
 
 	/**
 	 * Parse 'md' content
@@ -37,10 +37,10 @@ class Markdown
 	 * @param string $type
 	 * @return void
 	 */
-	public static function parseContent(&$content, $type)
+	public function parseContent(&$content, $type)
 	{
 		if ($type == 'md')
-			$content = self::getParsedMarkdown($content);
+			$content = $this->getParsedMarkdown($content);
 	}
 
 	/**
@@ -51,7 +51,7 @@ class Markdown
 	 * @param string $text
 	 * @return string
 	 */
-	private static function getParsedMarkdown($text)
+	private function getParsedMarkdown($text)
 	{
 		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
 		require_once(__DIR__ . '/Michelf/Markdown.php');
@@ -69,7 +69,7 @@ class Markdown
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'PHP Markdown',

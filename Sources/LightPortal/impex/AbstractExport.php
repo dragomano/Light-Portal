@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Impex;
 
 /**
- * Export.php
+ * AbstractExport.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -11,13 +11,13 @@ namespace Bugo\LightPortal\Impex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
-abstract class Export implements IExport
+abstract class AbstractExport implements ExportInterface
 {
-	abstract protected static function getData();
-	abstract protected static function getXmlFile();
+	abstract protected function getData();
+	abstract protected function getXmlFile();
 
 	/**
 	 * Get an export file via the user browser
@@ -26,9 +26,9 @@ abstract class Export implements IExport
 	 *
 	 * @return void
 	 */
-	protected static function run()
+	protected function run()
 	{
-		if (empty($file = static::getXmlFile()))
+		if (empty($file = $this->getXmlFile()))
 			return;
 
 		// Might take some time.

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\CodeMirror;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class CodeMirror
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'editor';
+	public $addon_type = 'editor';
 
 	/**
 	 * Adding syntax highlighting for 'php' content
@@ -36,7 +36,7 @@ class CodeMirror
 	 * @param array $object
 	 * @return void
 	 */
-	public static function prepareEditor($object)
+	public function prepareEditor($object)
 	{
 		global $context, $txt;
 
@@ -92,7 +92,7 @@ class CodeMirror
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(&$links)
 	{
 		$links[] = array(
 			'title' => 'CodeMirror',

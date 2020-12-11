@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\BoardIndex;
  * @copyright 2019-2020 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.4
  */
 
 if (!defined('SMF'))
@@ -27,7 +27,19 @@ class BoardIndex
 	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
+	public $addon_type = 'other';
+
+	/**
+	 * Add used hooks
+	 *
+	 * Добавляем используемые хуки
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex#', false, __FILE__);
+	}
 
 	/**
 	 * Add settings
@@ -37,30 +49,16 @@ class BoardIndex
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
-		global $modSettings;
+		global $txt, $scripturl, $modSettings;
+
+		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
 
 		if (!isset($modSettings['lp_board_index_addon_allow_for_spiders']))
 			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);
 
 		$config_vars[] = array('check', 'lp_board_index_addon_allow_for_spiders');
-	}
-
-	/**
-	 * Add used hooks
-	 *
-	 * Добавляем используемые хуки
-	 *
-	 * @return void
-	 */
-	public static function init()
-	{
-		global $txt, $scripturl;
-
-		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
-
-		add_integration_function('integrate_mark_read_button', __CLASS__ . '::toggleRobotNoIndex', false, __FILE__);
 	}
 
 	/**
@@ -70,7 +68,7 @@ class BoardIndex
 	 *
 	 * @return void
 	 */
-	public static function toggleRobotNoIndex()
+	public function toggleRobotNoIndex()
 	{
 		global $modSettings, $context;
 
