@@ -434,7 +434,7 @@ class Import extends AbstractImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => $row['intro'],
+				'description'  => strip_tags($row['intro']),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,
@@ -464,9 +464,10 @@ class Import extends AbstractImport
 
 		$request = $smcFunc['db_query']('', '
 			SELECT *
-			FROM {db_prefix}tp_comments
-			WHERE item_type = {string:type}' . (!empty($pages) ? '
-				AND item_id IN ({array_int:pages})' : ''),
+			FROM {db_prefix}tp_comments AS com
+				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
+			WHERE com.item_type = {string:type}' . (!empty($pages) ? '
+				AND com.item_id IN ({array_int:pages})' : ''),
 			array(
 				'type'  => 'article_comment',
 				'pages' => $pages
@@ -475,6 +476,9 @@ class Import extends AbstractImport
 
 		$comments = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if ($row['item_id'] < 0 || empty($row['comment']))
+				continue;
+
 			$comments[$row['item_id']][] = array(
 				'id'         => $row['id'],
 				'parent_id'  => 0,
