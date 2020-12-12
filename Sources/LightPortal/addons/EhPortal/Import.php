@@ -222,7 +222,7 @@ class Import extends AbstractImport
 	 */
 	protected function run()
 	{
-		global $db_temp_cache, $db_cache, $language, $smcFunc;
+		global $db_temp_cache, $db_cache, $language, $modSettings, $smcFunc;
 
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('import_all') === false)
 			return;
@@ -234,7 +234,7 @@ class Import extends AbstractImport
 		$db_temp_cache = $db_cache;
 		$db_cache = [];
 
-		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
+		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('import_all') === false ? Helpers::post('pages') : null;
 
 		$items = $this->getItems($pages);
 
@@ -246,6 +246,15 @@ class Import extends AbstractImport
 				'lang'    => $language,
 				'title'   => $item['title']
 			];
+
+			if ($language != 'english' && !empty($modSettings['userLanguage'])) {
+				$titles[] = [
+					'item_id' => $page_id,
+					'type'    => 'page',
+					'lang'    => 'english',
+					'title'   => $item['title']
+				];
+			}
 
 			unset($items[$page_id]['title']);
 		}
