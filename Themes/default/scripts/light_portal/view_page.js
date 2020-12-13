@@ -101,9 +101,9 @@ class Comment {
 				allComments.insertAdjacentHTML('beforeend', comment);
 				allComments.style.transition = 'height 3s';
 			} else {
-				pageComments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>');
-				pageComments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
-				pageComments.querySelector('ul.comment_list').style.transition = 'height 3s';
+				refs.page_comments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>');
+				refs.page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment);
+				refs.page_comments.querySelector('ul.comment_list').style.transition = 'height 3s';
 			}
 		}
 
