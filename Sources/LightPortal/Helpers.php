@@ -541,12 +541,15 @@ class Helpers
 	 *
 	 * Получаем тизер статьи
 	 *
-	 * @param string $text
+	 * @param string|null $text
 	 * @return string
 	 */
-	public static function getTeaser(string $text)
+	public static function getTeaser($text = '')
 	{
 		global $modSettings;
+
+		if (empty($text))
+			return '';
 
 		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
 	}
