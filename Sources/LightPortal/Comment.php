@@ -375,7 +375,17 @@ class Comment
 			)
 		);
 
-		$smcFunc['lp_num_queries'] += 2;
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_alerts
+			WHERE content_type = {string:type}
+				AND content_id IN ({array_int:items})',
+			array(
+				'type'  => 'new_comment',
+				'items' => $items
+			)
+		);
+
+		$smcFunc['lp_num_queries'] += 3;
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
