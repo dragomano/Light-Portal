@@ -222,7 +222,7 @@ class Import extends AbstractImport
 	 */
 	protected function run()
 	{
-		global $db_temp_cache, $db_cache, $language, $smcFunc;
+		global $db_temp_cache, $db_cache, $language, $modSettings, $smcFunc;
 
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('import_all') === false)
 			return;
@@ -234,7 +234,7 @@ class Import extends AbstractImport
 		$db_temp_cache = $db_cache;
 		$db_cache = [];
 
-		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
+		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('import_all') === false ? Helpers::post('pages') : null;
 
 		$items = $this->getItems($pages);
 
@@ -242,7 +242,7 @@ class Import extends AbstractImport
 
 		$titles = $params = [];
 		foreach ($items as $page_id => $item) {
-			$items[$page_id]['num_comments'] = sizeof($comments[$page_id]);
+			$items[$page_id]['num_comments'] = !empty($comments[$page_id]) ? sizeof($comments[$page_id]) : 0;
 
 			$titles[] = [
 				'item_id' => $page_id,
@@ -250,6 +250,15 @@ class Import extends AbstractImport
 				'lang'    => $language,
 				'title'   => $item['subject']
 			];
+
+			if ($language != 'english' && !empty($modSettings['userLanguage'])) {
+				$titles[] = [
+					'item_id' => $page_id,
+					'type'    => 'page',
+					'lang'    => 'english',
+					'title'   => $item['subject']
+				];
+			}
 
 			unset($items[$page_id]['subject']);
 
@@ -425,7 +434,7 @@ class Import extends AbstractImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => $row['intro'],
+				'description'  => strip_tags($row['intro']),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,
@@ -455,9 +464,10 @@ class Import extends AbstractImport
 
 		$request = $smcFunc['db_query']('', '
 			SELECT *
-			FROM {db_prefix}tp_comments
-			WHERE item_type = {string:type}' . (!empty($pages) ? '
-				AND item_id IN ({array_int:pages})' : ''),
+			FROM {db_prefix}tp_comments AS com
+				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
+			WHERE com.item_type = {string:type}' . (!empty($pages) ? '
+				AND com.item_id IN ({array_int:pages})' : ''),
 			array(
 				'type'  => 'article_comment',
 				'pages' => $pages
@@ -466,6 +476,9 @@ class Import extends AbstractImport
 
 		$comments = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if ($row['item_id'] < 0 || empty($row['comment']))
+				continue;
+
 			$comments[$row['item_id']][] = array(
 				'id'         => $row['id'],
 				'parent_id'  => 0,

@@ -100,8 +100,6 @@ class Notify extends \SMF_BackgroundTask
 					array('id_alert')
 				);
 
-				$smcFunc['lp_num_queries']++;
-
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}
 		}

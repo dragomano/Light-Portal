@@ -82,8 +82,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.4',
-			'LP_RELEASE_DATE' => '2020-12-12',
+			'LP_VERSION'      => '1.4.1',
+			'LP_RELEASE_DATE' => '2020-12-14',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
