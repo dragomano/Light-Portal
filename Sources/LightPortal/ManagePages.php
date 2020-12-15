@@ -796,7 +796,7 @@ class ManagePages
 	 */
 	private function prepareFormFields()
 	{
-		global $context, $txt, $modSettings, $language;
+		global $modSettings, $language, $context, $txt;
 
 		checkSubmitOnce('register');
 

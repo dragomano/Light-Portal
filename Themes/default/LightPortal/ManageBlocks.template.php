@@ -245,6 +245,8 @@ function template_block_post()
 	</div>';
 	}
 
+	$fields = $context['posting_fields'];
+
 	echo '
 	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe">
@@ -264,7 +266,7 @@ function template_block_post()
 
 	echo '
 				<section id="content-tab1" class="bg even">
-					', template_post_tab();
+					', template_post_tab($fields);
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
@@ -274,16 +276,16 @@ function template_block_post()
 	echo '
 				</section>
 				<section id="content-tab2" class="bg even">
-					', template_post_tab('access_placement'), '
+					', template_post_tab($fields, 'access_placement'), '
 				</section>
 				<section id="content-tab3" class="bg even">
-					', template_post_tab('appearance'), '
+					', template_post_tab($fields, 'appearance'), '
 				</section>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
 				<section id="content-tab4" class="bg even">
-					', template_post_tab('tuning'), '
+					', template_post_tab($fields, 'tuning'), '
 				</section>';
 	}
 
