@@ -9,7 +9,7 @@
  */
 function template_manage_export_blocks()
 {
-	global $context, $txt;
+	global $context, $txt, $language;
 
 	echo '
 	<form action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
@@ -21,7 +21,7 @@ function template_manage_export_blocks()
 				<tr class="title_bar">
 					<th scope="col">#</th>
 					<th scope="col" class="type">
-						', $txt['lp_title'], ' / ', $txt['lp_block_note'], '
+						', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 					</th>
 					<th scope="col" class="type">
 						', $txt['lp_block_type'], '
@@ -51,7 +51,7 @@ function template_manage_export_blocks()
 						', $id, '
 					</td>
 					<td class="type centertext">
-						', $data['title'][$context['user']['language']] ?: $data['note'], '
+						', $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'], '
 					</td>
 					<td class="type centertext">
 						', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
