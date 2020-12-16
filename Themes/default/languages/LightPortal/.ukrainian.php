@@ -44,11 +44,7 @@ $txt['lp_num_items_per_page']             = 'Кількість елементі
 
 $txt['lp_standalone_mode_title'] = 'Автономний режим';
 $txt['lp_standalone_url']        = 'URL-адреса головної сторінки порталу в автономному режимі';
-$txt['lp_standalone_url_help']   = 'Можна вказати свою URL-адресу для відображення в якості головної сторінки порталу (наприклад, <strong>https://yourforum/portal.php</strong>).<br>У цьому випадку головна сторінка форуму залишиться доступною за адресою <strong>https://yourforum/index.php</strong>.<br><br>Щоб вивести головну сторінку порталу, у файлі <em>portal.php</em> повинен бути приблизно такий код:<br><pre><code class="bbc_code">
-require(dirname(__FILE__) . \'/SSI.php\');
-<br>
-(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
-Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо файл <em>portal.php</em> знаходиться поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
+$txt['lp_standalone_url_help']   = 'Можна вказати свою URL-адресу для відображення в якості головної сторінки порталу (наприклад, <strong>https://yourforum/portal.php</strong>).<br>У цьому випадку головна сторінка форуму залишиться доступною за адресою <strong>https://yourforum/index.php</strong>.<br><br>Як приклад в комплекті з порталом йде файл <em>portal.php</em> — можете використовувати його.<br><br>Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо файл <em>portal.php</em> знаходиться поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Області, що відключаються';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Вкажіть області, які повинні бути ВІДКЛЮЧЕНІ в автономному режимі';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Наприклад, якщо потрібно відключити область "Пошук" (index.php?action=<strong>search</strong>), додайте <strong>search</strong> в текстове поле.';

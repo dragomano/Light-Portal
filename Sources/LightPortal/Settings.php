@@ -205,6 +205,8 @@ class Settings
 			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
+		if (!isset($modSettings['lp_standalone_url']))
+			$add_settings['lp_standalone_url'] = $boardurl . '/portal.php';
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
