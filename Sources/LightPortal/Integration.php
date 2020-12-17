@@ -37,6 +37,7 @@ class Integration
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
 		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
@@ -369,6 +370,41 @@ class Integration
 		// Other fixes
 		Subs::fixCanonicalUrl();
 		Subs::fixLinktree();
+	}
+
+	/**
+	 * Remove comments and alerts on deleting members
+	 *
+	 * Удаляем комментарии и оповещения при удалении пользователей
+	 *
+	 * @param array $users
+	 * @return void
+	 */
+	public function deleteMembers(array $users)
+	{
+		global $smcFunc;
+
+		if (empty($users))
+			return;
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE author_id IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_alerts
+			WHERE id_member IN ({array_int:users})
+				OR id_member_started IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		Helpers::cache()->flush();
 	}
 
 	/**
