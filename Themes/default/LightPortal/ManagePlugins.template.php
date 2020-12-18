@@ -71,7 +71,7 @@ function show_plugin_settings($plugin_name, $settings)
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
 		<div class="noticebox">
-			<form id="', $plugin_name, '_form" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="plugin.saveSettings($event.target)">
+			<form id="', $plugin_name, '_form_', $context['session_id'], '" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="plugin.saveSettings($event.target)">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
 
@@ -160,7 +160,7 @@ function show_plugin_settings($plugin_name, $settings)
 			<span class="infobox floatleft">', $txt['settings_saved'], '</span>
 			<span class="errorbox floatleft">', $txt['error_occured'], '</span>
 			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $txt['find_close'], '</button>
-			<button form="', $plugin_name, '_form" type="submit" class="button">', $txt['save'], '</button>
+			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $txt['save'], '</button>
 		</div>
 	</div>';
 }
