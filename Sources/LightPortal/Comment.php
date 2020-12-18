@@ -119,7 +119,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $txt;
+		global $smcFunc, $sourcedir, $user_info, $context, $txt;
 
 		$args = array(
 			'parent_id'   => FILTER_VALIDATE_INT,
@@ -150,6 +150,9 @@ class Comment
 
 		if (empty($page_id) || empty($message))
 			return;
+
+		require_once($sourcedir . '/Subs-Post.php');
+		preparsecode($message);
 
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_comments',
@@ -201,7 +204,7 @@ class Comment
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
-				'raw_message' => $message,
+				'raw_message' => un_preparsecode($message),
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
@@ -238,7 +241,7 @@ class Comment
 	 */
 	private function edit()
 	{
-		global $smcFunc, $context;
+		global $sourcedir, $smcFunc, $context;
 
 		$data = Helpers::request()->json();
 
@@ -250,6 +253,9 @@ class Comment
 
 		if (empty($item) || empty($message))
 			return;
+
+		require_once($sourcedir . '/Subs-Post.php');
+		preparsecode($message);
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_comments
@@ -402,10 +408,12 @@ class Comment
 	 */
 	public function getAll(int $page_id = 0)
 	{
-		global $smcFunc, $context, $modSettings;
+		global $sourcedir, $smcFunc, $context, $modSettings;
 
 		if (empty($page_id))
 			return [];
+
+		require_once($sourcedir . '/Subs-Post.php');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
@@ -431,7 +439,7 @@ class Comment
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
 				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $context['lp_allowed_bbc']),
-				'raw_message' => $row['message'],
+				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => $row['created_at'],
 				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) ? (time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60) : false
 			);
