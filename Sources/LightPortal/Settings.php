@@ -215,6 +215,8 @@ class Settings
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
 			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
 			array('boards', 'lp_frontpage_boards'),
+			array('large_text', 'lp_frontpage_topics', 'subtext' => $txt['lp_frontpage_topics_subtext']),
+			array('large_text', 'lp_frontpage_pages', 'subtext' => $txt['lp_frontpage_pages_subtext']),
 			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
 			array('check', 'lp_frontpage_card_alt_layout', 'help' => 'lp_frontpage_card_alt_layout_help'),
@@ -250,14 +252,14 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {
@@ -266,25 +268,36 @@ class Settings
 
 		addInlineJavaScript('
 		function toggleFrontpageMode() {
-			let change_mode = $("#lp_frontpage_mode").val() > 0;
+			let front_mode = $("#lp_frontpage_mode").val();
+			let change_mode = front_mode > 0;
 			let board_selector = $(".board_selector").parent("dd");
 
 			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
 			board_selector.toggle(change_mode);
 
-			let allow_change_title = $("#lp_frontpage_mode").val() > 1;
+			let allow_change_title = front_mode > 1;
 
 			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
 			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
 			board_selector.toggle(allow_change_title);
 
-			let allow_change_alias = $("#lp_frontpage_mode").val() == 1;
+			let allow_change_alias = front_mode == 1;
 
 			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
 			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
 
-			if ($("#lp_frontpage_mode").val() == 3) {
+			let allow_change_chosen_topics = front_mode == 5;
+
+			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
+			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
+
+			let allow_change_chosen_pages = front_mode == 6;
+
+			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
+			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
+
+			if (front_mode == 3 || front_mode == 5 || front_mode == 6) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();

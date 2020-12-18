@@ -23,10 +23,14 @@ $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <st
 
 $txt['lp_frontpage_title']                = 'The frontpage title';
 $txt['lp_frontpage_mode']                 = 'The portal frontpage';
-$txt['lp_frontpage_mode_set']             = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards');
+$txt['lp_frontpage_mode_set']             = array('Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards', 'Selected topics', 'Selected pages');
 $txt['lp_frontpage_alias']                = 'Portal page to display as the main page';
 $txt['lp_frontpage_alias_subtext']        = 'Enter the alias of the page that exist.';
 $txt['lp_frontpage_boards']               = 'Boards as sources of articles for the frontpage';
+$txt['lp_frontpage_topics']               = 'Topics as sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']       = 'IDs of the required topics, separated by commas.';
+$txt['lp_frontpage_pages']                = 'Pages as sources of articles for the frontpage';
+$txt['lp_frontpage_pages_subtext']        = 'IDs of the required pages, separated by commas.';
 $txt['lp_frontpage_card_alt_layout']      = 'Alternative arrangement of the elements in the cards';
 $txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';

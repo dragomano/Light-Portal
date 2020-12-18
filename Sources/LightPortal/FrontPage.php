@@ -4,8 +4,10 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Front\ArticleInterface;
 use Bugo\LightPortal\Front\BoardArticle;
-use Bugo\LightPortal\Front\TopicArticle;
+use Bugo\LightPortal\Front\ChosenPageArticle;
+use Bugo\LightPortal\Front\ChosenTopicArticle;
 use Bugo\LightPortal\Front\PageArticle;
+use Bugo\LightPortal\Front\TopicArticle;
 
 /**
  * FrontPage.php
@@ -38,7 +40,7 @@ class FrontPage
 
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
-				call_user_func(array(new Page, 'show'));
+				return call_user_func(array(new Page, 'show'));
 				break;
 
 			case 2:
@@ -51,9 +53,19 @@ class FrontPage
 				$context['sub_template'] = 'show_pages_as_articles';
 				break;
 
-			default:
+			case 4:
 				$this->prepare(new BoardArticle);
 				$context['sub_template'] = 'show_boards_as_articles';
+				break;
+
+			case 5:
+				$this->prepare(new ChosenTopicArticle);
+				$context['sub_template'] = 'show_topics_as_articles';
+				break;
+
+			default:
+				$this->prepare(new ChosenPageArticle);
+				$context['sub_template'] = 'show_pages_as_articles';
 		}
 
 		Subs::runAddons('frontCustomTemplate');

@@ -23,10 +23,14 @@ $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <
 
 $txt['lp_frontpage_title']                = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']                 = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']             = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy');
+$txt['lp_frontpage_mode_set']             = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy', 'Selected topics', 'Selected pages');
 $txt['lp_frontpage_alias']                = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']        = 'Podaj alias strony.';
 $txt['lp_frontpage_boards']               = 'Działy artykułów strony głównej';
+$txt['lp_frontpage_topics']               = 'Topics as sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']       = 'IDs of the required topics, separated by commas.';
+$txt['lp_frontpage_pages']                = 'Pages as sources of articles for the frontpage';
+$txt['lp_frontpage_pages_subtext']        = 'IDs of the required pages, separated by commas.';
 $txt['lp_frontpage_card_alt_layout']      = 'Alternatywny układ elementów kart';
 $txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
