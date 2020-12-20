@@ -109,7 +109,7 @@ class ChosenPageArticle implements ArticleInterface
 						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
-					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_message'] : ($row['description'] ?: strip_tags($row['content'])));
+					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? strip_tags(parse_bbc($row['comment_message'])) : ($row['description'] ?: strip_tags($row['content'])));
 
 					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
 						$pages[$row['page_id']]['date'] = $row['date'];
