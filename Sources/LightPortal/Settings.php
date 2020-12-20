@@ -199,6 +199,8 @@ class Settings
 			$add_settings['lp_frontpage_alias'] = 'home';
 		if (!isset($modSettings['lp_frontpage_article_sorting']))
 			$add_settings['lp_frontpage_article_sorting'] = 1;
+		if (!isset($modSettings['lp_show_num_views_and_comments']))
+			$add_settings['lp_show_num_views_and_comments'] = 1;
 		if (!isset($modSettings['lp_teaser_size']))
 			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
@@ -219,11 +221,13 @@ class Settings
 			array('large_text', 'lp_frontpage_pages', 'subtext' => $txt['lp_frontpage_pages_subtext']),
 			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
-			array('check', 'lp_frontpage_card_alt_layout', 'help' => 'lp_frontpage_card_alt_layout_help'),
+			array('check', 'lp_show_author', 'help' => 'lp_show_author_help'),
+			array('check', 'lp_show_num_views_and_comments'),
+			array('check', 'lp_show_teaser'),
+			array('int', 'lp_teaser_size', 'min' => 0, 'help' => 'lp_teaser_size_help'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
 			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'),
 			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
-			array('int', 'lp_teaser_size', 'min' => 0, 'help' => 'lp_teaser_size_help'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
@@ -252,14 +256,14 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_show_teaser', 'lp_teaser_size', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_show_teaser', 'lp_teaser_size', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {

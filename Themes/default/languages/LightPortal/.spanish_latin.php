@@ -31,8 +31,12 @@ $txt['lp_frontpage_topics']               = 'Topics as sources of articles for t
 $txt['lp_frontpage_topics_subtext']       = 'IDs of the required topics, separated by commas.';
 $txt['lp_frontpage_pages']                = 'Pages as sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']        = 'IDs of the required pages, separated by commas.';
-$txt['lp_frontpage_card_alt_layout'] = 'Disposición alternativa de los elementos en las tarjetas';
-$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
+$txt['lp_show_author']                    = 'Show the article author';
+$txt['lp_show_author_help']               = 'If the board card is displayed, it will be information about the category.';
+$txt['lp_show_num_views_and_comments']    = 'Show the number of views and comments';
+$txt['lp_show_teaser']                    = 'Show the article teaser';
+$txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
+$txt['lp_teaser_size_help'] = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting'] = 'Sorting articles';
 $txt['lp_frontpage_article_sorting_set'] = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
@@ -42,13 +46,11 @@ $txt['lp_frontpage_layout_set'] = array('1 columna', '2 columnas', '3 columnas',
 $txt['lp_show_images_in_articles'] = 'Mostrar las imágenes que se encuentran en los artículos';
 $txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL de la imagen del marcador de posición por defecto';
-$txt['lp_teaser_size'] = 'El tamaño máximo de los avances de artículos (en símbolos)';
-$txt['lp_teaser_size_help'] = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
 $txt['lp_standalone_mode_title'] = 'Modo independiente';
 $txt['lp_standalone_url']        = 'La URL de la página principal en el modo independiente';
-$txt['lp_standalone_url_help']   = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" si el archivo <em>portal.php</em> se encuentra fuera del directorio del foro (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
+$txt['lp_standalone_url_help']   = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" if you want to place <em>portal.php</em> outside the forum directory (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
 $txt['lp_standalone_mode_disabled_actions'] = 'Acciones desactivadas';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Especifique las áreas que deben DESACTIVARSE en el modo independiente.';
 $txt['lp_standalone_mode_disabled_actions_help'] = 'Por ejemplo, si necesita desactivar el área de búsqueda (index.php?action=<strong>search</strong>), Agregar <strong>búsqueda</strong> en el campo de texto.';

@@ -31,8 +31,12 @@ $txt['lp_frontpage_topics']               = 'Topics as sources of articles for t
 $txt['lp_frontpage_topics_subtext']       = 'IDs of the required topics, separated by commas.';
 $txt['lp_frontpage_pages']                = 'Pages as sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']        = 'IDs of the required pages, separated by commas.';
-$txt['lp_frontpage_card_alt_layout']      = 'Alternative arrangement of the elements in the cards';
-$txt['lp_frontpage_card_alt_layout_help'] = 'The date and author are reversed.';
+$txt['lp_show_author']                    = 'Show the article author';
+$txt['lp_show_author_help']               = 'If the board card is displayed, it will be information about the category.';
+$txt['lp_show_num_views_and_comments']    = 'Show the number of views and comments';
+$txt['lp_show_teaser']                    = 'Show the article teaser';
+$txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
+$txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']      = 'Sorting articles';
 $txt['lp_frontpage_article_sorting_set']  = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
@@ -42,16 +46,14 @@ $txt['lp_frontpage_layout_set']           = array('1 column', '2 columns', '3 co
 $txt['lp_show_images_in_articles']        = 'Show images that found in articles';
 $txt['lp_show_images_in_articles_help']   = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']              = 'URL of the default placeholder image';
-$txt['lp_teaser_size']                    = 'The max size of article teasers (in symbols)';
-$txt['lp_teaser_size_help']               = 'Used in some addons and can also be used in custom frontpage layouts.';
 $txt['lp_num_items_per_page']             = 'Number of items per page (for pagination)';
 
-$txt['lp_standalone_mode_title'] = 'Standalone mode';
-$txt['lp_standalone_url']        = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help']   = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if the <em>portal.php</em> file is located outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_mode_title']                    = 'Standalone mode';
+$txt['lp_standalone_url']                           = 'The frontpage URL in the standalone mode';
+$txt['lp_standalone_url_help']                      = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
-$txt['lp_standalone_mode_disabled_actions_help']    = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
+$txt['lp_standalone_mode_disabled_actions_help']    =  'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
 $txt['groups_light_portal_view']             = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';

@@ -19,11 +19,11 @@ function template_show_topics_as_articles()
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe', $topic['css_class'], '">
-				<div class="card__info-hover">';
+				<div class="card-info-hover">';
 
 			if ($topic['can_edit']) {
 				echo '
-					<div class="card__edit-icon">
+					<div class="card-edit-icon">
 						<a href="', $scripturl, '?action=post;msg=', $topic['id_msg'], ';topic=', $topic['id'], '.0">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -35,49 +35,66 @@ function template_show_topics_as_articles()
 
 			if (!empty($topic['image'])) {
 				echo '
-				<div class="card__img" style="background-image: url(\'' . $topic['image'] . '\')"></div>
+				<div class="card-img" style="background-image: url(\'' . $topic['image'] . '\')"></div>
 				<a href="', $topic['link'], '">
-					<div class="card__img--hover" style="background-image: url(\'', $topic['image'], '\')"></div>
+					<div class="card-img-hover" style="background-image: url(\'', $topic['image'], '\')"></div>
 				</a>';
 			}
 
 			echo '
-				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
-					<span class="card__category smalltext">
+				<div class="card-info">
+					<span class="card-date smalltext">
 						', $topic['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
 						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
 					</span>
-					<h3 class="card__title">
+					<h3 class="card-title">
 						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
-					</h3>
-					<div>
-						<span class="card__by">';
+					</h3>';
 
-			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
+			if (!empty($modSettings['lp_show_teaser'])) {
 				echo '
-							<i class="fas fa-reply"></i>';
-			}
-
-			if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
-				echo '
-							<a href="', $topic['author_link'], '" class="card__author">', $topic['author_name'], '</a>';
-			} else {
-				echo '
-							<span class="card__author">', $txt['guest_title'], '</span>';
+					<p>', $topic['teaser'], '</p>';
 			}
 
 			echo '
-						</span>
-						<span>
+					<div>';
+
+			if (!empty($modSettings['lp_show_author'])) {
+				echo '
+						<span class="card-by">';
+
+				if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
+					echo '
+							<i class="fas fa-reply"></i>';
+				}
+
+				if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
+					echo '
+							<a href="', $topic['author_link'], '" class="card-author">', $topic['author_name'], '</a>';
+				} else {
+					echo '
+							<span class="card-author">', $txt['guest_title'], '</span>';
+				}
+
+				echo '
+						</span>';
+			}
+
+			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+				echo '
+						<span class="floatright">
 							<i class="fas fa-eye"></i> ', $topic['num_views'];
 
-			if (!empty($topic['num_replies'])) {
-				echo '
+				if (!empty($topic['num_replies'])) {
+					echo '
 							<i class="fas fa-comment"></i> ', $topic['num_replies'];
+				}
+
+				echo '
+						</span>';
 			}
 
 			echo '
-						</span>
 					</div>
 				</div>
 			</article>
@@ -120,11 +137,11 @@ function template_show_pages_as_articles()
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
-				<div class="card__info-hover">';
+				<div class="card-info-hover">';
 
 			if ($page['can_edit']) {
 				echo '
-					<div class="card__edit-icon">
+					<div class="card-edit-icon">
 						<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $page['id'], '">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -136,49 +153,67 @@ function template_show_pages_as_articles()
 
 			if (!empty($page['image'])) {
 				echo '
-				<div class="card__img" style="background-image: url(\'' . $page['image'] . '\')"></div>
+				<div class="card-img" style="background-image: url(\'' . $page['image'] . '\')"></div>
 				<a href="', $page['link'], '">
-					<div class="card__img--hover" style="background-image: url(\'', $page['image'], '\')"></div>
+					<div class="card-img-hover" style="background-image: url(\'', $page['image'], '\')"></div>
 				</a>';
 			}
 
 			echo '
-				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
-					<span class="card__category smalltext">
+				<div class="card-info">
+					<span class="card-date smalltext">
 						', $page['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
 						<time datetime="', $page['datetime'], '">', $page['date'], '</time>
 					</span>
-					<h3 class="card__title">
+					<h3 class="card-title">
 						<a href="', $page['link'], '">', $page['title'], '</a>
-					</h3>
-					<div>
-						<span class="card__by">';
+					</h3>';
 
-			if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($page['num_comments'])) {
+			if (!empty($modSettings['lp_show_teaser'])) {
 				echo '
-							<i class="fas fa-reply"></i>';
-			}
-
-			if (!empty($page['author_id']) && !empty($page['author_name'])) {
-				echo '
-							<a href="', $page['author_link'], '" class="card__author">', $page['author_name'], '</a>';
-			} else {
-				echo '
-							<span class="card__author">', $txt['guest_title'], '</span>';
+					<p>', $page['teaser'], '</p>';
 			}
 
 			echo '
-						</span>
-						<span>
+					<div>';
+
+			if (!empty($modSettings['lp_show_author'])) {
+				echo '
+
+						<span class="card-by">';
+
+				if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($page['num_comments'])) {
+					echo '
+							<i class="fas fa-reply"></i>';
+				}
+
+				if (!empty($page['author_id']) && !empty($page['author_name'])) {
+					echo '
+							<a href="', $page['author_link'], '" class="card-author">', $page['author_name'], '</a>';
+				} else {
+					echo '
+							<span class="card-author">', $txt['guest_title'], '</span>';
+				}
+
+				echo '
+						</span>';
+			}
+
+			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+				echo '
+						<span class="floatright">
 							<i class="fas fa-eye"></i> ', $page['num_views'];
 
-			if (!empty($page['num_comments'])) {
-				echo '
+				if (!empty($page['num_comments'])) {
+					echo '
 							<i class="fas fa-comment"></i> ', $page['num_comments'];
+				}
+
+				echo '
+						</span>';
 			}
 
 			echo '
-						</span>
 					</div>
 				</div>
 			</article>
@@ -221,11 +256,11 @@ function template_show_boards_as_articles()
 			echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
 			<article class="card roundframe">
-				<div class="card__info-hover">';
+				<div class="card-info-hover">';
 
 			if ($board['can_edit']) {
 				echo '
-					<div class="card__edit-icon">
+					<div class="card-edit-icon">
 						<a href="', $scripturl, '?action=admin;area=manageboards;sa=board;boardid=', $board['id'], '">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -237,15 +272,15 @@ function template_show_boards_as_articles()
 
 			if (!empty($board['image'])) {
 				echo '
-				<div class="card__img" style="background-image: url(\'' . $board['image'] . '\')"></div>
+				<div class="card-img" style="background-image: url(\'' . $board['image'] . '\')"></div>
 				<a href="', $board['link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>
-					<div class="card__img--hover" style="background-image: url(\'', $board['image'], '\')"></div>
+					<div class="card-img-hover" style="background-image: url(\'', $board['image'], '\')"></div>
 				</a>';
 			}
 
 			echo '
-				<div class="card__info', !empty($modSettings['lp_frontpage_card_alt_layout']) ? ' alt_style' : '', '">
-					<span class="card__category smalltext">
+				<div class="card-info">
+					<span class="card-date smalltext">
 						', $board['is_updated'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '';
 
 			if (!empty($board['date']))
@@ -254,23 +289,40 @@ function template_show_boards_as_articles()
 
 			echo '
 					</span>
-					<h3 class="card__title">
+					<h3 class="card-title">
 						<a href="', $board['msg_link'], '"', $board['is_redirect'] ? ' rel="nofollow noopener"' : '', '>', $board['name'], '</a>
-					</h3>
-					<div>
-						<span class="card__by">
-							<span class="card__author">', $board['category'], '</span>
-						</span>
-						<span>';
+					</h3>';
 
-			if ($board['is_redirect']) {
-				echo '<i class="fas fa-directions"></i>';
-			} else {
-				echo '<i class="fas fa-comment"></i> ', $board['num_posts'];
+			if (!empty($modSettings['lp_show_teaser'])) {
+				echo '
+					<p>', $board['teaser'], '</p>';
 			}
 
 			echo '
-						</span>
+					<div>';
+
+			if (!empty($modSettings['lp_show_author'])) {
+				echo '
+						<span class="card-by">
+							<span class="card-author">', $board['category'], '</span>
+						</span>';
+			}
+
+			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+				echo '
+						<span class="floatright">';
+
+				if ($board['is_redirect']) {
+					echo '<i class="fas fa-directions"></i>';
+				} else {
+					echo '<i class="fas fa-comment"></i> ', $board['num_posts'];
+				}
+
+				echo '
+						</span>';
+			}
+
+			echo '
 					</div>
 				</div>
 			</article>

@@ -247,36 +247,36 @@ section {
 				display: none;
 			}
 
-			.card__info-hover {
+			.card-info-hover {
 				opacity: 1;
 				z-index: 1;
 			}
 
-			.card__img--hover {
+			.card-img-hover {
 				height: 100%;
 				opacity: 0.3;
 			}
 
-			.card__info {
+			.card-info {
 				background-color: transparent;
 				position: relative;
 			}
 		}
 
-		.card__info-hover {
+		.card-info-hover {
 			position: absolute;
 			padding: 16px;
 			opacity: 0;
 			top: 0;
 			right: 0;
 
-			.card__edit-icon {
+			.card-edit-icon {
 				position: relative;
 				z-index: 2;
 			}
 		}
 
-		.card__img {
+		.card-img {
 			visibility: hidden;
 			background-size: cover;
 			background-position: center;
@@ -287,7 +287,7 @@ section {
 			border-top-right-radius: 12px;
 		}
 
-		.card__img--hover {
+		.card-img-hover {
 			transition: 0.2s all ease-out;
 			background-size: cover;
 			background-position: center;
@@ -300,23 +300,19 @@ section {
 			top: 0;
 		}
 
-		.card__info {
+		.card-info {
 			border-bottom-left-radius: 12px;
 			border-bottom-right-radius: 12px;
 			padding: 16px 24px 24px 24px;
 			display: flex;
 			flex-direction: column;
 
-			&.alt_style {
-				flex-direction: column-reverse;
-			}
-
-			.card__category {
+			.card-date {
 				font-weight: 500;
 				color: @article-category-color;
 			}
 
-			.card__title {
+			.card-title {
 				text-transform: uppercase;
 				margin-top: 5px;
 				margin-bottom: 10px;
@@ -330,11 +326,16 @@ section {
 				}
 			}
 
-			.card__by {
+			p {
+				line-height: 22.4px;
+				opacity: .9;
+			}
+
+			.card-by {
 				font-weight: 500;
 			}
 
-			.card__author {
+			.card-author {
 				font-weight: 600;
 				text-decoration: none;
 				color: @article-author-color;
