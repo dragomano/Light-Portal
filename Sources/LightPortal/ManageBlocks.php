@@ -888,7 +888,7 @@ class ManageBlocks
 
 		!empty($context['preview_content'])
 			? Helpers::parseContent($context['preview_content'], $context['lp_block']['type'])
-			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
+			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());

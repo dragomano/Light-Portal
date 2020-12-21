@@ -33,7 +33,7 @@ class Cache
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public function __invoke(?string $key, ?string $funcName, ?string $class, int $time = 3600, ...$vars)
+	public function __invoke($key, $funcName, $class, $time = 3600, ...$vars)
 	{
 		if (empty($key))
 			return false;

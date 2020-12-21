@@ -65,16 +65,17 @@ $txt['lp_manage_permissions']                = 'Внимание: некотор
 $txt['lp_extra']      = 'Страницы и блоки';
 $txt['lp_extra_info'] = 'Здесь находятся общие настройки страниц и блоков.';
 
-$txt['lp_show_tags_on_page']            = 'Отображать ключевые слова в верхней части страницы';
-$txt['lp_show_tags_as_articles']        = 'Отображать списки статей с одинаковым тегом в виде карточек';
-$txt['lp_show_related_pages']           = 'Отображать блок похожих страниц';
-$txt['lp_show_comment_block']           = 'Отображать блок комментариев';
-$txt['lp_disabled_bbc_in_comments']     = 'Разрешённые ББ-теги в комментариях';
-$txt['lp_show_comment_block_set']       = array('none' => 'Нет', 'default' => 'Встроенный');
-$txt['lp_time_to_change_comments']      = 'Время, в течение которого можно изменить свой комментарий';
-$txt['lp_num_comments_per_page']        = 'Количество родительских комментариев на странице';
-$txt['lp_page_editor_type_default']     = 'Тип редактора страниц по умолчанию';
-$txt['lp_hide_blocks_in_admin_section'] = 'Скрывать активные блоки в админке';
+$txt['lp_show_tags_on_page']                = 'Отображать ключевые слова в верхней части страницы';
+$txt['lp_show_tags_as_articles']            = 'Отображать списки статей с одинаковым тегом в виде карточек';
+$txt['lp_show_related_pages']               = 'Отображать блок похожих страниц';
+$txt['lp_show_comment_block']               = 'Отображать блок комментариев';
+$txt['lp_disabled_bbc_in_comments']         = 'Разрешённые ББ-теги в комментариях';
+$txt['lp_disabled_bbc_in_comments_subtext'] = 'Можно задействовать любые теги, <a class="bbc_link" href="%1$s">разрешённые для использования</a> на форуме.';
+$txt['lp_show_comment_block_set']           = array('none' => 'Нет', 'default' => 'Встроенный');
+$txt['lp_time_to_change_comments']          = 'Время, в течение которого можно изменить свой комментарий';
+$txt['lp_num_comments_per_page']            = 'Количество родительских комментариев на странице';
+$txt['lp_page_editor_type_default']         = 'Тип редактора страниц по умолчанию';
+$txt['lp_hide_blocks_in_admin_section']     = 'Скрывать активные блоки в админке';
 
 $txt['lp_open_graph']            = 'Разметка Open Graph';
 $txt['lp_page_og_image']         = 'Использовать изображение из текста статьи';

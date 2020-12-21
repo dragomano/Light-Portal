@@ -70,6 +70,7 @@ $txt['lp_show_tags_as_articles'] = 'Display lists of articles with the same tag 
 $txt['lp_show_related_pages'] = 'Display related pages block';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
+$txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = array('none' => 'None', 'default' => 'Integrated');
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Número de comentarios de los foros por página';

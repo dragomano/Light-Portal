@@ -51,6 +51,7 @@ class Comment
 			return;
 
 		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+		$context['lp_allowed_bbc'] = array_diff($context['lp_allowed_bbc'], array_intersect(explode(',', $modSettings['disabledBBC']), $context['lp_allowed_bbc']));
 
 		if (Helpers::request()->filled('sa')) {
 			switch (Helpers::request('sa')) {

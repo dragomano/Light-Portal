@@ -65,16 +65,17 @@ $txt['lp_manage_permissions']                = 'Uwaga: niektóre strony i bloki 
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
-$txt['lp_show_tags_on_page']            = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_tags_as_articles']        = 'Show lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']           = 'Show related pages block';
-$txt['lp_show_comment_block']           = 'Wyświetlaj blok komentarzy';
-$txt['lp_disabled_bbc_in_comments']     = 'Dozwolone tagi BBC';
-$txt['lp_show_comment_block_set']       = array('none' => 'Brak', 'default' => 'Zintegrowany');
-$txt['lp_time_to_change_comments']      = 'Maximum time after commenting to allow edit';
-$txt['lp_num_comments_per_page']        = 'Ilość komentarzy na stronę';
-$txt['lp_page_editor_type_default']     = 'Rodzaj domyślnego edytora ';
-$txt['lp_hide_blocks_in_admin_section'] = 'Ukryj aktywne bloki w centrum administracji';
+$txt['lp_show_tags_on_page']                = 'Wyświetlaj słowa kluczowe na górze strony';
+$txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_related_pages']               = 'Show related pages block';
+$txt['lp_show_comment_block']               = 'Wyświetlaj blok komentarzy';
+$txt['lp_disabled_bbc_in_comments']         = 'Dozwolone tagi BBC';
+$txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
+$txt['lp_show_comment_block_set']           = array('none' => 'Brak', 'default' => 'Zintegrowany');
+$txt['lp_time_to_change_comments']          = 'Maximum time after commenting to allow edit';
+$txt['lp_num_comments_per_page']            = 'Ilość komentarzy na stronę';
+$txt['lp_page_editor_type_default']         = 'Rodzaj domyślnego edytora ';
+$txt['lp_hide_blocks_in_admin_section']     = 'Ukryj aktywne bloki w centrum administracji';
 
 $txt['lp_open_graph']                   = 'Open Graph';
 $txt['lp_page_og_image']                = 'Użyj obrazu z treści';

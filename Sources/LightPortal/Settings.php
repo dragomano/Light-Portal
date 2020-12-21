@@ -379,13 +379,16 @@ class Settings
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
 		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
+		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = array_merge($modSettings['bbc_disabled_lp_disabled_bbc_in_comments'], explode(',', $modSettings['disabledBBC']));
+
+		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
 
 		$config_vars = array(
 			array('check', 'lp_show_tags_on_page'),
 			array('check', 'lp_show_tags_as_articles'),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-			array('bbc', 'lp_disabled_bbc_in_comments'),
+			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),

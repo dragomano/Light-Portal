@@ -65,16 +65,17 @@ $txt['lp_manage_permissions']                = 'Note: some pages and blocks may 
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
-$txt['lp_show_tags_on_page']            = 'Show keywords at the top of the page';
-$txt['lp_show_tags_as_articles']        = 'Show lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']           = 'Show related pages block';
-$txt['lp_show_comment_block']           = 'Show comments block';
-$txt['lp_disabled_bbc_in_comments']     = 'Allowed BBC in comments';
-$txt['lp_show_comment_block_set']       = array('none' => 'None', 'default' => 'Integrated');
-$txt['lp_time_to_change_comments']      = 'Maximum time after commenting to allow edit';
-$txt['lp_num_comments_per_page']        = 'Number of parent comments per page';
-$txt['lp_page_editor_type_default']     = 'The type of page editor by default';
-$txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
+$txt['lp_show_tags_on_page']                = 'Show keywords at the top of the page';
+$txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_related_pages']               = 'Show related pages block';
+$txt['lp_show_comment_block']               = 'Show comments block';
+$txt['lp_disabled_bbc_in_comments']         = 'Allowed BBC in comments';
+$txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
+$txt['lp_show_comment_block_set']           = array('none' => 'None', 'default' => 'Integrated');
+$txt['lp_time_to_change_comments']          = 'Maximum time after commenting to allow edit';
+$txt['lp_num_comments_per_page']            = 'Number of parent comments per page';
+$txt['lp_page_editor_type_default']         = 'The type of page editor by default';
+$txt['lp_hide_blocks_in_admin_section']     = 'Hide active blocks in the admin area';
 
 $txt['lp_open_graph']            = 'Open Graph';
 $txt['lp_page_og_image']         = 'Use an image from the page content';
