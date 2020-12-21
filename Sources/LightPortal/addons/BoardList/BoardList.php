@@ -111,7 +111,8 @@ class BoardList
 			'attributes' => array(
 				'id' => 'category_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
@@ -134,7 +135,8 @@ class BoardList
 			'attributes' => array(
 				'id' => 'board_class'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'appearance'
 		);
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {

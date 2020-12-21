@@ -30,6 +30,70 @@ class UserInfo
 	public $addon_icon = 'fas fa-user';
 
 	/**
+	 * Use Font Awesome icons for decoration
+	 *
+	 * Использовать иконки Font Awesome для оформления
+	 *
+	 * @var bool
+	 */
+	private $use_fa_icons = true;
+
+	/**
+	 * Adding the block options
+	 *
+	 * Добавляем параметры блока
+	 *
+	 * @param array $options
+	 * @return void
+	 */
+	public function blockOptions(&$options)
+	{
+		$options['user_info']['parameters']['use_fa_icons'] = $this->use_fa_icons;
+	}
+
+	/**
+	 * Validate options
+	 *
+	 * Валидируем параметры
+	 *
+	 * @param array $parameters
+	 * @param string $type
+	 * @return void
+	 */
+	public function validateBlockData(&$parameters, $type)
+	{
+		if ($type !== 'user_info')
+			return;
+
+		$parameters['use_fa_icons'] = FILTER_VALIDATE_BOOLEAN;
+	}
+
+	/**
+	 * Adding fields specifically for this block
+	 *
+	 * Добавляем поля конкретно для этого блока
+	 *
+	 * @return void
+	 */
+	public function prepareBlockFields()
+	{
+		global $context, $txt;
+
+		if ($context['lp_block']['type'] !== 'user_info')
+			return;
+
+		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_user_info_addon_use_fa_icons'];
+		$context['posting_fields']['use_fa_icons']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'use_fa_icons',
+				'checked' => !empty($context['lp_block']['options']['parameters']['use_fa_icons'])
+			),
+			'tab' => 'appearance'
+		);
+	}
+
+	/**
 	 * Get the current user info
 	 *
 	 * Получаем информацию о пользователе
@@ -57,9 +121,10 @@ class UserInfo
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
+	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
 		global $context, $txt, $scripturl, $boarddir;
 
@@ -80,7 +145,7 @@ class UserInfo
 				<li>', $userData['avatar']['image'], '</li>';
 			}
 
-			$fa = true;
+			$fa = !empty($parameters['use_fa_icons']);
 
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
@@ -90,7 +155,7 @@ class UserInfo
 				echo '
 				<li>
 					<hr>
-					<i class="fas fa-plus-circle"></i> <a href="', $scripturl, '?action=admin;area=lp_pages;sa=add;', $context['session_var'], '=', $context['session_id'], '">
+					', $fa ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $scripturl, '?action=admin;area=lp_pages;sa=add;', $context['session_var'], '=', $context['session_id'], '">
 						', $txt['lp_pages_add'], '
 					</a>
 				</li>';

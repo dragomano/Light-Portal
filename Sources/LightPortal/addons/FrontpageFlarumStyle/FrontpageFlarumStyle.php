@@ -42,7 +42,7 @@ class FrontpageFlarumStyle
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']) || $modSettings['lp_frontpage_mode'] != 2)
+		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], [2, 5]))
 			return;
 
 		$context['lp_all_categories'] = $this->getListSelectedBoards();
