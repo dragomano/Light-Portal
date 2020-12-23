@@ -1104,3 +1104,27 @@ dl {
 		position: inherit !important;
 	}
 }
+
+/* BoardStats */
+.block_board_stats {
+	.board_stats_areas {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		grid-gap: 0 10px;
+
+		div {
+			display: flex;
+			flex-direction: column;
+			margin-top: 2px;
+
+			h4 {
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
+
+			ul {
+				margin-left: -1em;
+			}
+		}
+	}
+}
