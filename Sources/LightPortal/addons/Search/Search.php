@@ -40,10 +40,6 @@ class Search
 	private $dark_themes = '';
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */
@@ -63,10 +59,6 @@ class Search
 	}
 
 	/**
-	 * Connect the used hooks
-	 *
-	 * Подключаем используемые хуки
-	 *
 	 * @return void
 	 */
 	public function init()
@@ -299,10 +291,6 @@ class Search
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

@@ -208,10 +208,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Run necessary hooks
-	 *
-	 * Запускаем необходимые хуки
-	 *
 	 * @return void
 	 */
 	public function init()

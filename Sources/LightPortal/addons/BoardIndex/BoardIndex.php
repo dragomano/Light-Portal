@@ -30,10 +30,6 @@ class BoardIndex
 	public $addon_type = 'other';
 
 	/**
-	 * Add used hooks
-	 *
-	 * Добавляем используемые хуки
-	 *
 	 * @return void
 	 */
 	public function init()
@@ -42,10 +38,6 @@ class BoardIndex
 	}
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */

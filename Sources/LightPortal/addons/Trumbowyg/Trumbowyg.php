@@ -49,10 +49,6 @@ class Trumbowyg
 	private $auto_grow = 0;
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */
@@ -143,10 +139,6 @@ class Trumbowyg
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

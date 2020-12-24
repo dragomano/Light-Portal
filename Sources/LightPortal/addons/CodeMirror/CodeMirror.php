@@ -85,10 +85,6 @@ class CodeMirror
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

@@ -164,7 +164,7 @@ class WhosOnline
 
 			$online_list = [];
 
-			if (!empty($user_info['buddies']))
+			if (!empty($user_info['buddies']) && !empty($whos_online['num_buddies']))
 				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
 
 			if (!empty($whos_online['num_spiders']))

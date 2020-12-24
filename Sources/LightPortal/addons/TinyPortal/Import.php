@@ -118,9 +118,9 @@ class Import extends AbstractImport
 				array(
 					'position' => 'below_table_data',
 					'value' => '
+						<input type="hidden">
 						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal_addon_button_all'] . '" class="button">',
-					'class' => 'floatright'
+						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal_addon_button_all'] . '" class="button">'
 				)
 			)
 		);

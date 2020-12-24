@@ -54,10 +54,6 @@ class FacebookComments
 	}
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */

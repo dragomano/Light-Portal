@@ -29,9 +29,9 @@ class EasyMarkdownEditor
 	public $addon_type = array('block', 'editor');
 
 	/**
-	 * Adding the new content type
+	 * Adding the new content type and block icon
 	 *
-	 * Добавляем новый тип контента
+	 * Добавляем новый тип контента и иконку блока
 	 *
 	 * @return void
 	 */
@@ -234,10 +234,6 @@ class EasyMarkdownEditor
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

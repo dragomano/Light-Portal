@@ -29,10 +29,6 @@ class EhPortal
 	public $addon_type = 'impex';
 
 	/**
-	 * Add hooks for the admin panel
-	 *
-	 * Добавляем хуки для связи с админкой
-	 *
 	 * @return void
 	 */
 	public function init()

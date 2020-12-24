@@ -38,6 +38,44 @@ class Todays
 	private $type = 'calendar';
 
 	/**
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+	}
+
+	/**
+	 * Hide Calendar in the main menu
+	 *
+	 * Убираем Календарь из главного меню
+	 *
+	 * @param array $buttons
+	 * @return void
+	 */
+	public function menuButtons(&$buttons)
+	{
+		global $modSettings;
+
+		$buttons['calendar']['show'] = empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+	}
+
+	/**
+	 * @param array $config_vars
+	 * @return void
+	 */
+	public function addSettings(&$config_vars)
+	{
+		global $txt, $scripturl;
+
+		$config_vars[] = array(
+			'check',
+			'lp_todays_addon_hide_calendar_in_menu',
+			'subtext' => sprintf($txt['lp_todays_addon_hide_calendar_in_menu_subtext'], $scripturl . '?action=admin;area=managecalendar;sa=settings')
+		);
+	}
+
+	/**
 	 * Adding the block options
 	 *
 	 * Добавляем параметры блока
