@@ -41,7 +41,6 @@ class FrontPage
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 1:
 				return call_user_func(array(new Page, 'show'));
-				break;
 
 			case 2:
 				$this->prepare(new TopicArticle);
@@ -98,7 +97,9 @@ class FrontPage
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $entity->getTotal();
+		$entity->init();
+
+		$total_items = $entity->getTotalCount();
 
 		if ($start >= $total_items) {
 			send_http_status(404);

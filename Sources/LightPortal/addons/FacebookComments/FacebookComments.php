@@ -22,19 +22,11 @@ if (!defined('SMF'))
 class FacebookComments
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'comment';
 
 	/**
-	 * The IDs list of dark themes
-	 *
-	 * Список идентификаторов тёмных тем оформления
-	 *
 	 * @var string
 	 */
 	private $dark_themes = '';

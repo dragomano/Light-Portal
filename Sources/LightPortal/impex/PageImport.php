@@ -40,7 +40,7 @@ class PageImport extends AbstractImport
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_import_tab_description']
+			'description' => $txt['lp_pages_import_description']
 		);
 
 		$context['sub_template'] = 'manage_import';

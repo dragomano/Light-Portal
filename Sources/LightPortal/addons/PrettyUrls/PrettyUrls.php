@@ -20,18 +20,14 @@ if (!defined('SMF'))
 class PrettyUrls
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'other';
 
 	/**
-	 * Give a hint about action=portal to PrettyUrls mod
+	 * Give a hint to PrettyUrls mod about "action=portal"
 	 *
-	 * Подсказываем PrettyUrls про action=portal
+	 * Подсказываем PrettyUrls про "action=portal"
 	 *
 	 * @return void
 	 */

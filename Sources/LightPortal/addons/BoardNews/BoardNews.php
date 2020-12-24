@@ -22,37 +22,21 @@ if (!defined('SMF'))
 class BoardNews
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-newspaper';
 
 	/**
-	 * Board id by default
-	 *
-	 * Идентификатор раздела по умолчанию
-	 *
 	 * @var int
 	 */
 	private $board_id = 0;
 
 	/**
-	 * The maximum number of posts to output
-	 *
-	 * Максимальное количество сообщений для вывода
-	 *
 	 * @var int
 	 */
 	private $num_posts = 5;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -63,10 +47,6 @@ class BoardNews
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -81,10 +61,6 @@ class BoardNews
 	}
 
 	/**
-	 * Get board list
-	 *
-	 * Получаем список разделов
-	 *
 	 * @return array
 	 */
 	private function getBoardList()
@@ -105,10 +81,6 @@ class BoardNews
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -176,10 +148,6 @@ class BoardNews
 	}
 
 	/**
-	 * Form the content block
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

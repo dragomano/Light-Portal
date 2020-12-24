@@ -22,28 +22,16 @@ if (!defined('SMF'))
 class Trumbowyg
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'editor';
 
 	/**
-	 * The IDs list of dark themes
-	 *
-	 * Список идентификаторов тёмных тем оформления
-	 *
 	 * @var string
 	 */
 	private $dark_themes = '';
 
 	/**
-	 * Automatically extend of an editor area (0|1|2)
-	 *
-	 * Автоматическое расширение окна редактора (0|1|2)
-	 *
 	 * @var bool
 	 */
 	private $auto_grow = 0;

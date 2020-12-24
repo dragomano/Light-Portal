@@ -21,28 +21,16 @@ if (!defined('SMF'))
 class UserInfo
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-user';
 
 	/**
-	 * Use Font Awesome icons for decoration
-	 *
-	 * Использовать иконки Font Awesome для оформления
-	 *
 	 * @var bool
 	 */
 	private $use_fa_icons = true;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -52,10 +40,6 @@ class UserInfo
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -69,10 +53,6 @@ class UserInfo
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -113,10 +93,6 @@ class UserInfo
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

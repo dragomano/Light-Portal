@@ -20,19 +20,11 @@ if (!defined('SMF'))
 class Todays
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-calendar-day';
 
 	/**
-	 * What is displayed (birthdays|holidays|events|calendar)
-	 *
-	 * Что отображаем (birthdays|holidays|events|calendar)
-	 *
 	 * @var string
 	 */
 	private $type = 'calendar';
@@ -76,10 +68,6 @@ class Todays
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -89,10 +77,6 @@ class Todays
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -106,10 +90,6 @@ class Todays
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -165,10 +145,6 @@ class Todays
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

@@ -22,64 +22,36 @@ if (!defined('SMF'))
 class BoardStats
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-chart-pie';
 
 	/**
-	 * Display the latest member name (true|false)
-	 *
-	 * Отображать имя последнего пользователя
-	 *
 	 * @var bool
 	 */
 	private $show_latest_member = false;
 
 	/**
-	 * Display basic forum stats (true|false)
-	 *
-	 * Отображать базовую статистику
-	 *
 	 * @var bool
 	 */
 	private $show_basic_info = true;
 
 	/**
-	 * Display the who is online list (true|false)
-	 *
-	 * Отображать список пользователей онлайн
-	 *
 	 * @var bool
 	 */
 	private $show_whos_online = true;
 
 	/**
-	 * Use Font Awesome icons for decoration (true|false)
-	 *
-	 * Использовать иконки Font Awesome для оформления
-	 *
 	 * @var bool
 	 */
 	private $use_fa_icons = true;
 
 	/**
-	 * Date update interval, in seconds
-	 *
-	 * Интервал обновления данных, в секундах
-	 *
 	 * @var int
 	 */
 	private $update_interval = 600;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -93,10 +65,6 @@ class BoardStats
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -114,10 +82,6 @@ class BoardStats
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -210,10 +174,6 @@ class BoardStats
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

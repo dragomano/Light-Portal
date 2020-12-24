@@ -20,28 +20,16 @@ if (!defined('SMF'))
 class VkComments
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'comment';
 
 	/**
-	 * Allow attachments in comments (true|false)
-	 *
-	 * Разрешить вложения в комментариях (true|false)
-	 *
 	 * @var bool
 	 */
 	private $allow_attachments = true;
 
 	/**
-	 * Automatically publish the comment to the user's VK page (true|false)
-	 *
-	 * Автоматическая публикация комментария на странице пользователя (true|false)
-	 *
 	 * @var bool
 	 */
 	private $auto_publish = false;

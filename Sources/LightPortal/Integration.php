@@ -76,17 +76,18 @@ class Integration
 	 */
 	public function userInfo()
 	{
-		global $context, $smcFunc, $modSettings, $user_info;
+		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
 		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.4.1',
-			'LP_RELEASE_DATE' => '2020-12-14',
+			'LP_VERSION'      => '1.5 alpha',
+			'LP_RELEASE_DATE' => '2020-12-24',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
+			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
 			'MAX_MSG_LENGTH'  => 65535
 		];
@@ -126,7 +127,7 @@ class Integration
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
-		$context['lp_num_active_pages'] = Subs::getNumActivePages();
+		$context['lp_num_active_pages'] = Helpers::getNumActivePages();
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
@@ -277,12 +278,6 @@ class Integration
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
 						'show'  => true,
 						'sub_buttons' => array(
-							'plugins' => array(
-								'title' => $txt['lp_plugins'],
-								'href'  => $scripturl . '?action=admin;area=lp_settings;sa=plugins',
-								'amt'   => count($context['lp_enabled_plugins']),
-								'show'  => true
-							),
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
@@ -295,6 +290,12 @@ class Integration
 								'amt'     => $context['lp_num_active_pages'],
 								'show'    => true,
 								'is_last' => true
+							),
+							'plugins' => array(
+								'title' => $txt['lp_plugins'],
+								'href'  => $scripturl . '?action=admin;area=lp_plugins',
+								'amt'   => count($context['lp_enabled_plugins']),
+								'show'  => true
 							)
 						)
 					)

@@ -23,6 +23,35 @@ if (!defined('SMF'))
 class BoardArticle implements ArticleInterface
 {
 	/**
+	 * Initialize class properties
+	 *
+	 * Инициализируем свойства класса
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		global $modSettings, $user_info;
+
+		$this->selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+
+		$this->params = [
+			'blank_string'    => '',
+			'current_member'  => $user_info['id'],
+			'selected_boards' => $this->selected_boards
+		];
+
+		$this->orders = [
+			'b.id_last_msg DESC',
+			'm.poster_time DESC',
+			'm.poster_time',
+			'last_updated DESC'
+		];
+
+		Subs::runAddons('frontBoards', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+	}
+
+	/**
 	 * Get selected boards
 	 *
 	 * Получаем выбранные разделы
@@ -33,52 +62,34 @@ class BoardArticle implements ArticleInterface
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $context, $scripturl;
+		global $user_info, $smcFunc, $modSettings, $context, $scripturl;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return [];
 
 		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$custom_columns = [];
-			$custom_tables  = [];
-			$custom_wheres  = [];
-
-			$custom_parameters = [
-				'blank_string'    => '',
-				'current_member'  => $user_info['id'],
-				'selected_boards' => $selected_boards,
-				'start'           => $start,
-				'limit'           => $limit
-			];
-
-			$custom_sorting = [
-				'b.id_last_msg DESC',
-				'm.poster_time DESC',
-				'm.poster_time',
-				'last_updated DESC'
-			];
-
-			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			$this->params += array(
+				'start' => $start,
+				'limit' => $limit
+			);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-					m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
+					m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($this->columns) ? ',
+					' . implode(', ', $this->columns) : '') . '
 				FROM {db_prefix}boards AS b
 					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
 					LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
-					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
+					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+					AND {query_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'b.num_posts DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
+				$this->params
 			);
 
 			$boards = [];
@@ -139,25 +150,23 @@ class BoardArticle implements ArticleInterface
 	 *
 	 * @return int
 	 */
-	public function getTotal()
+	public function getTotalCount()
 	{
-		global $modSettings, $user_info, $smcFunc;
+		global $user_info, $smcFunc;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return 0;
 
 		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
-					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
+					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}',
-				array(
-					'selected_boards' => $selected_boards
-				)
+					AND {query_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
+				$this->params
 			);
 
 			[$num_boards] = $smcFunc['db_fetch_row']($request);

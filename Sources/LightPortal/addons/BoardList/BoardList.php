@@ -22,46 +22,26 @@ if (!defined('SMF'))
 class BoardList
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-list-alt';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * Default class for category headers
-	 *
-	 * Класс (по умолчанию) для оформления заголовков категорий
-	 *
 	 * @var string
 	 */
 	private $category_class = 'div.title_bar > h4.titlebg';
 
 	/**
-	 * Default class for areas with board lists
-	 *
-	 * Класс (по умолчанию) для оформления блока со списком разделов
-	 *
 	 * @var string
 	 */
 	private $board_class = 'div.roundframe';
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -74,10 +54,6 @@ class BoardList
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -92,10 +68,6 @@ class BoardList
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -178,10 +150,6 @@ class BoardList
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 /**
- * ArticleInterface.php
+ * AbstractArticle.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,9 +14,14 @@ namespace Bugo\LightPortal\Front;
  * @version 1.4
  */
 
-interface ArticleInterface
+if (!defined('SMF'))
+	die('Hacking attempt...');
+
+abstract class AbstractArticle implements ArticleInterface
 {
-	public function init();
-	public function getData(int $start, int $limit);
-	public function getTotalCount();
+	protected $columns = [];
+	protected $tables  = [];
+	protected $wheres  = [];
+	protected $params  = [];
+	protected $orders  = [];
 }

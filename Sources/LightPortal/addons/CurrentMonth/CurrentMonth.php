@@ -22,28 +22,16 @@ if (!defined('SMF'))
 class CurrentMonth
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-calendar-check';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -169,10 +157,6 @@ class CurrentMonth
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

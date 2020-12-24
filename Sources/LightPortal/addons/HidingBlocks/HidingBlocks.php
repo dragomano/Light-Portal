@@ -22,28 +22,16 @@ if (!defined('SMF'))
 class HidingBlocks
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'other';
 
 	/**
-	 * Supported screen sizes
-	 *
-	 * Поддерживаемые размеры экранов
-	 *
 	 * @var array
 	 */
 	public $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
 	/**
-	 * Hidden classes that enabled by default
-	 *
-	 * Включенные скрытые классы по умолчанию
-	 *
 	 * @var array
 	 */
 	private $hidden_breakpoints = [];
@@ -79,10 +67,6 @@ class HidingBlocks
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -94,10 +78,6 @@ class HidingBlocks
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @return void
 	 */
@@ -111,10 +91,6 @@ class HidingBlocks
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()

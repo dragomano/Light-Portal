@@ -40,7 +40,7 @@ class BlockImport extends AbstractImport
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_import_tab_description']
+			'description' => $txt['lp_blocks_import_description']
 		);
 
 		$context['sub_template'] = 'manage_import';

@@ -22,73 +22,41 @@ if (!defined('SMF'))
 class RecentTopics
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-book-open';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * The maximum number of topics to output
-	 *
-	 * Максимальное количество тем для вывода
-	 *
 	 * @var int
 	 */
 	private $num_topics = 10;
 
 	/**
-	 * If set, does NOT show topics from the specified boards
-	 *
-	 * Идентификаторы разделов, темы из которых НЕ нужно показывать
-	 *
 	 * @var string
 	 */
 	private $exclude_boards = '';
 
 	/**
-	 * If set, ONLY includes topics from the specified boards
-	 *
-	 * Идентификаторы разделов, для отображения тем ТОЛЬКО из них
-	 *
 	 * @var string
 	 */
 	private $include_boards = '';
 
 	/**
-	 * Display user avatars (true|false)
-	 *
-	 * Отображать аватарки (true|false)
-	 *
 	 * @var bool
 	 */
 	private $show_avatars = false;
 
 	/**
-	 * Online list update interval, in seconds
-	 *
-	 * Интервал обновления списка онлайн, в секундах
-	 *
 	 * @var int
 	 */
 	private $update_interval = 600;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -104,10 +72,6 @@ class RecentTopics
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -125,10 +89,6 @@ class RecentTopics
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -241,10 +201,6 @@ class RecentTopics
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

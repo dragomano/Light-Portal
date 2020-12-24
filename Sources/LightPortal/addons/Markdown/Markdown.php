@@ -20,10 +20,6 @@ if (!defined('SMF'))
 class Markdown
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'parser';
@@ -40,18 +36,18 @@ class Markdown
 	public function parseContent(&$content, $type)
 	{
 		if ($type == 'md')
-			$content = $this->getParsedMarkdown($content);
+			$content = $this->getParsedContent($content);
 	}
 
 	/**
-	 * Parse Markdown content
+	 * Get Markdown content
 	 *
-	 * Парсим Markdown-контент
+	 * Получаем Markdown-контент
 	 *
 	 * @param string $text
 	 * @return string
 	 */
-	private function getParsedMarkdown($text)
+	private function getParsedContent($text)
 	{
 		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
 		require_once(__DIR__ . '/Michelf/Markdown.php');

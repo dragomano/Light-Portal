@@ -20,55 +20,31 @@ if (!defined('SMF'))
 class Translator
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-language';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * Used translation engine (google|yandex)
-	 *
-	 * Используемый движок для перевода (google|yandex)
-	 *
 	 * @var string
 	 */
 	private $engine = 'google';
 
 	/**
-	 * The widget color theme (light|dark)
-	 *
-	 * Цветовая тема виджета (light|dark)
-	 *
 	 * @var string
 	 */
 	private $widget_theme = 'light';
 
 	/**
-	 * Automatic translation (true|false)
-	 *
-	 * Автоматический перевод (если выключен, то требуется нажатие на кнопку «Перевести»)
-	 *
 	 * @var bool
 	 */
 	private $auto_mode = false;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -82,10 +58,6 @@ class Translator
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -101,10 +73,6 @@ class Translator
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -186,10 +154,6 @@ class Translator
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

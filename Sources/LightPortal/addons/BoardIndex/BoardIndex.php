@@ -19,12 +19,7 @@ if (!defined('SMF'))
 
 class BoardIndex
 {
-
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'other';

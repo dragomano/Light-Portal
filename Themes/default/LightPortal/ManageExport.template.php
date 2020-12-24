@@ -60,7 +60,7 @@ function template_manage_export_blocks()
 						', $txt['lp_block_placement_set'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
 					</td>
 					<td class="actions centertext">
-						<input type="checkbox" value="' . $id . '" name="items[]" checked>
+						<input type="checkbox" value="' . $id . '" name="blocks[]" checked>
 					</td>
 				</tr>';
 					}
@@ -71,8 +71,10 @@ function template_manage_export_blocks()
 		echo '
 			</tbody>
 		</table>
-		<div class="additional_row floatright">
+		<div class="additional_row">
+			<input type="hidden">
 			<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
+			<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">
 		</div>
 	</form>';
 }

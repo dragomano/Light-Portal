@@ -61,7 +61,7 @@ class Tag
 				'function' => array($this, 'getAllPagesWithSelectedTag')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalQuantityPagesWithSelectedTag')
+				'function' => array($this, 'getTotalCountPagesWithSelectedTag')
 			),
 			'columns' => array(
 				'date' => array(
@@ -215,7 +215,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public function getTotalQuantityPagesWithSelectedTag()
+	public function getTotalCountPagesWithSelectedTag()
 	{
 		global $smcFunc, $context;
 
@@ -275,7 +275,7 @@ class Tag
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalQuantity')
+				'function' => array($this, 'getTotalCount')
 			),
 			'columns' => array(
 				'value' => array(
@@ -354,6 +354,8 @@ class Tag
 		);
 
 		$items = [];
+		$i = 1;
+
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			!isset($items[$row['value']])
 				? $i = 1
@@ -383,7 +385,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public function getTotalQuantity()
+	public function getTotalCount()
 	{
 		global $smcFunc;
 
@@ -426,7 +428,7 @@ class Tag
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $this->getTotalQuantityPagesWithSelectedTag();
+		$total_items = $this->getTotalCountPagesWithSelectedTag();
 
 		if ($start >= $total_items) {
 			send_http_status(404);

@@ -28,7 +28,7 @@ function template_manage_blocks()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					<i class="fas fa-plus" @mouseover="block.toggleSpin($el.children[0])" @mouseout="block.toggleSpin($el.children[0])" title="' . $txt['lp_blocks_add'] . '"></i>
+					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -248,7 +248,7 @@ function template_block_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>

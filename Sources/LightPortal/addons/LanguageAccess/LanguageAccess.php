@@ -22,19 +22,11 @@ if (!defined('SMF'))
 class LanguageAccess
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'other';
 
 	/**
-	 * Allowed forum languages for a specific block
-	 *
-	 * Разрешенные языки форума для конкретного блока
-	 *
 	 * @var array
 	 */
 	public $allowed_languages = [];
@@ -65,10 +57,6 @@ class LanguageAccess
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -80,10 +68,6 @@ class LanguageAccess
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @return void
 	 */
@@ -97,10 +81,6 @@ class LanguageAccess
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()

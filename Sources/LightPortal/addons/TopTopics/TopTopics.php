@@ -22,46 +22,26 @@ if (!defined('SMF'))
 class TopTopics
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-balance-scale-left';
 
 	/**
-	 * Type of popularity calculation (replies|views)
-	 *
-	 * Тип расчёта популярности (replies|views)
-	 *
 	 * @var string
 	 */
 	private $type = 'replies';
 
 	/**
-	 * The maximum number of topics to output
-	 *
-	 * Максимальное количество тем для вывода
-	 *
 	 * @var int
 	 */
 	private $num_topics = 10;
 
 	/**
-	 * Display only numbers (true|false)
-	 *
-	 * Отображать только цифры (true|false)
-	 *
 	 * @var bool
 	 */
 	private $show_numbers_only = false;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -73,10 +53,6 @@ class TopTopics
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -92,10 +68,6 @@ class TopTopics
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -165,10 +137,6 @@ class TopTopics
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

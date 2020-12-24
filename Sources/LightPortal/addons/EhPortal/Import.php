@@ -55,7 +55,7 @@ class Import extends AbstractImport
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalQuantity')
+				'function' => array($this, 'getTotalCount')
 			),
 			'columns' => array(
 				'id' => array(
@@ -190,7 +190,7 @@ class Import extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalQuantity()
+	public function getTotalCount()
 	{
 		global $smcFunc, $db_prefix;
 

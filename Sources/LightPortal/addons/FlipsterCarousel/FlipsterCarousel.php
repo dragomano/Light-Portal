@@ -22,64 +22,36 @@ if (!defined('SMF'))
 class FlipsterCarousel
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-images';
 
 	/**
-	 * The slider autoplay, in ms
-	 *
-	 * Автозапуск слайдера, в мс
-	 *
 	 * @var int
 	 */
 	private $autoplay = 0;
 
 	/**
-	 * The slider style
-	 *
-	 * Стиль слайдера
-	 *
 	 * @var string
 	 */
 	private $style = 'coverflow';
 
 	/**
-	 * Display the navigation (true|false)
-	 *
-	 * Отображать навигацию (заголовки и категории)
-	 *
 	 * @var bool
 	 */
 	private $show_nav = true;
 
 	/**
-	 * Display Previous/Next buttons
-	 *
-	 * Отображать кнопки «Предыдущая» и «Следующая»
-	 *
 	 * @var bool
 	 */
 	private $show_buttons = false;
 
 	/**
-	 * Image list for slider
-	 *
-	 * Список изображений для слайдера
-	 *
 	 * @var string
 	 */
 	private $images = '';
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -93,10 +65,6 @@ class FlipsterCarousel
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -114,10 +82,6 @@ class FlipsterCarousel
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -192,10 +156,6 @@ class FlipsterCarousel
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
 	 * @param int $block_id
 	 * @param array $parameters
 	 * @return string
@@ -227,10 +187,6 @@ class FlipsterCarousel
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

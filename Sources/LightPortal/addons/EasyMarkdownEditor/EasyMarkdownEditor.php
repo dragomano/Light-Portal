@@ -20,10 +20,6 @@ if (!defined('SMF'))
 class EasyMarkdownEditor
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var array
 	 */
 	public $addon_type = array('block', 'editor');
@@ -45,10 +41,6 @@ class EasyMarkdownEditor
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */

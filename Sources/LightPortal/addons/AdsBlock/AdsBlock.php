@@ -22,37 +22,21 @@ if (!defined('SMF'))
 class AdsBlock
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-ad';
 
 	/**
-	 * Default placement of ads block
-	 *
-	 * Размещение рекламного блока по умолчанию
-	 *
 	 * @var string
 	 */
 	private $placement = '';
 
 	/**
-	 * Board ids for block output
-	 *
-	 * Идентификаторы разделов для вывода блока
-	 *
 	 * @var string
 	 */
 	private $boards = '';
 
 	/**
-	 * Topic ids for block output
-	 *
-	 * Идентификаторы тем для вывода блока
-	 *
 	 * @var string
 	 */
 	private $topics = '';
@@ -74,10 +58,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -91,10 +71,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -114,10 +90,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Override some standard fields
-	 *
-	 * Переопределяем некоторые стандартные поля
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()

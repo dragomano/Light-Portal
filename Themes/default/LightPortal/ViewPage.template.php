@@ -109,7 +109,7 @@ function template_show_page()
  */
 function show_likes_block()
 {
-	global $modSettings, $context, $scripturl, $txt, $settings;
+	global $modSettings, $context, $scripturl, $txt;
 
 	if (empty($modSettings['enable_likes']))
 		return;
@@ -160,7 +160,7 @@ function show_likes_block()
  */
 function show_comment_block()
 {
-	global $modSettings, $context, $options, $txt, $settings;
+	global $modSettings, $context, $options, $txt;
 
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;

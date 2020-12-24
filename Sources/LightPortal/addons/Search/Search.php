@@ -22,19 +22,11 @@ if (!defined('SMF'))
 class Search
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-search';
 
 	/**
-	 * The IDs list of dark themes
-	 *
-	 * Список идентификаторов тёмных тем оформления
-	 *
 	 * @var string
 	 */
 	private $dark_themes = '';
@@ -67,14 +59,13 @@ class Search
 	}
 
 	/**
-	 * Add support for the ?action=portal;sa=search, and ?action=portal;sa=qsearch
+	 * Add support for the "?action=portal;sa=search", and "?action=portal;sa=qsearch"
 	 *
-	 * Добавляем поддержку действия ?action=portal;sa=search и ?action=portal;sa=qsearch
+	 * Добавляем поддержку действия "?action=portal;sa=search" и "?action=portal;sa=qsearch"
 	 *
-	 * @param array $actions
 	 * @return void
 	 */
-	public function actions(array &$actions)
+	public function actions()
 	{
 		global $context;
 
@@ -94,7 +85,7 @@ class Search
 	 */
 	public function showResults()
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt;
 
 		$context['page_title']     = $txt['lp_block_types']['search'];
 		$context['robot_no_index'] = true;
@@ -121,7 +112,7 @@ class Search
 	 */
 	private function prepareQuickResults()
 	{
-		global $smcFunc, $context, $scripturl;
+		global $smcFunc;
 
 		if (Helpers::request()->filled('phrase') === false)
 			return;
@@ -218,17 +209,11 @@ class Search
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(&$content, $type)
 	{
 		global $modSettings, $scripturl, $context, $txt, $settings;
 

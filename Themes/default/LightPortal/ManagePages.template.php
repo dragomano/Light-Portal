@@ -44,7 +44,7 @@ function template_page_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($event.target, $refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>

@@ -144,40 +144,6 @@ class Subs
 	}
 
 	/**
-	 * Get the total number of active pages
-	 *
-	 * Подсчитываем общее количество активных страниц
-	 *
-	 * @return int
-	 */
-	public static function getNumActivePages()
-	{
-		global $user_info, $smcFunc;
-
-		if (($num_pages = Helpers::cache()->get('num_active_pages_u' . $user_info['id'], LP_CACHE_TIME)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}' . ($user_info['is_admin'] ? '' : '
-					AND author_id = {int:user_id}'),
-				array(
-					'status'  => Page::STATUS_ACTIVE,
-					'user_id' => $user_info['id']
-				)
-			);
-
-			[$num_pages] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('num_active_pages_u' . $user_info['id'], $num_pages, LP_CACHE_TIME);
-		}
-
-		return (int) $num_pages;
-	}
-
-	/**
 	 * Remove unnecessary areas for the standalone mode and return the list of these areas
 	 *
 	 * Удаляем ненужные в автономном режиме области и возвращаем список этих областей
@@ -222,7 +188,7 @@ class Subs
 	 */
 	public static function getAddons()
 	{
-		$dirs = glob(__DIR__ . '/addons/*', GLOB_ONLYDIR) or array();
+		$dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR) or array();
 
 		$addons = [];
 		foreach ($dirs as $dir) {
@@ -244,7 +210,7 @@ class Subs
 	{
 		global $user_info, $txt;
 
-		$addon_dir = __DIR__ . '/addons/' . $addon . '/langs/';
+		$addon_dir = LP_ADDON_DIR . '/' . $addon . '/langs/';
 		$languages = array_merge(['english'], [$user_info['language']]);
 
 		foreach ($languages as $lang) {
