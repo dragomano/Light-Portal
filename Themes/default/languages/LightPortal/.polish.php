@@ -23,7 +23,9 @@ $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <
 
 $txt['lp_frontpage_title']                = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']                 = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']             = array('Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy', 'Selected topics', 'Selected pages');
+$txt['lp_frontpage_mode_set']             = array(
+	'Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy', 'Selected topics', 'Selected pages'
+);
 $txt['lp_frontpage_alias']                = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']        = 'Podaj alias strony.';
 $txt['lp_frontpage_boards']               = 'Działy artykułów strony głównej';
@@ -48,9 +50,9 @@ $txt['lp_show_images_in_articles_help']   = 'First, it checks whether the articl
 $txt['lp_image_placeholder']              = 'Adres domyślnego obrazu';
 $txt['lp_num_items_per_page']             = 'Ilość artykułów na stronę';
 
-$txt['lp_standalone_mode_title'] = 'Tryb portalu';
-$txt['lp_standalone_url']        = 'Adres strony głównej w trybie portalu osobnym';
-$txt['lp_standalone_url_help']   = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
+$txt['lp_standalone_mode_title']                    = 'Tryb portalu';
+$txt['lp_standalone_url']                           = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help']                      = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Na przykład, jeśli chcesz wyłączyć akcję wyszukiwania (index.php?action=<strong>search</strong>), dodaj w polu <strong>search</strong>.';
@@ -75,13 +77,14 @@ $txt['lp_show_comment_block_set']           = array('none' => 'Brak', 'default' 
 $txt['lp_time_to_change_comments']          = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page']            = 'Ilość komentarzy na stronę';
 $txt['lp_page_editor_type_default']         = 'Rodzaj domyślnego edytora ';
+$txt['lp_permissions_default']              = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section']     = 'Ukryj aktywne bloki w centrum administracji';
 
-$txt['lp_open_graph']                   = 'Open Graph';
-$txt['lp_page_og_image']                = 'Użyj obrazu z treści';
-$txt['lp_page_og_image_set']            = array('Brak', 'Pierwszy', 'Ostatni');
-$txt['lp_page_itemprop_address']        = 'Adres Twojej organizacji';
-$txt['lp_page_itemprop_phone']          = 'Numer telefonu';
+$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_page_og_image']         = 'Użyj obrazu z treści';
+$txt['lp_page_og_image_set']     = array('Brak', 'Pierwszy', 'Ostatni');
+$txt['lp_page_itemprop_address'] = 'Adres Twojej organizacji';
+$txt['lp_page_itemprop_phone']   = 'Numer telefonu';
 
 $txt['lp_permissions'] = array('Pokaż administratorom', 'Pokaż gościom', 'Pokaż użytkownikom', 'Pokaż wszystkim');
 
@@ -99,22 +102,6 @@ $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';
 $txt['lp_panel_direction']      = 'Kierunek bloków w panelach';
 $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
-
-// Plugins
-$txt['lp_plugins']      = 'Wtyczki';
-$txt['lp_plugins_desc'] = 'Możesz włączyć lub wyłączyć dowolne wtyczki, niektóre z nich są również edytowalne!';
-$txt['lp_plugins_info'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
-
-$txt['lp_plugins_hooks_types'] = array(
-	'block'     => 'Blok',
-	'editor'    => 'Edytor',
-	'comment'   => 'Widget komentarzy',
-	'parser'    => 'Parser zawartości',
-	'article'   => 'Przetwarzanie artykułów',
-	'frontpage' => 'The layout of the frontpage',
-	'impex'     => 'Import and export',
-	'other'     => 'Inne'
-);
 
 // Misc
 $txt['lp_misc']                           = 'Miscellaneous';
@@ -136,23 +123,23 @@ $txt['lp_action_move']  = 'Przenieś';
 $txt['lp_read_more']    = 'Czytaj dalej...';
 
 // Blocks
-$txt['lp_blocks']                        = 'Bloki';
-$txt['lp_blocks_manage']                 = 'Zarządzaj blokami';
-$txt['lp_blocks_manage_tab_description'] = 'Tutaj znajdują się wszystkie utworzone bloki. W celu dodania nowego bloku kliknij w odpowiednią opcję.';
-$txt['lp_blocks_add']                    = 'Dodaj blok';
-$txt['lp_blocks_add_title']              = 'Dodawanie nowego bloku';
-$txt['lp_blocks_add_tab_description']    = 'Nie ma jeszcze zbyt wielu bloków, ale najbardziej uniwersalne już istnieją :)';
-$txt['lp_blocks_add_instruction']        = 'Wybierz blok przez kliknięcie.';
-$txt['lp_blocks_edit_title']             = 'Edytowanie bloku';
-$txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_icon_cheatsheet']         = 'Ikony';
-$txt['lp_block_type']                    = 'Typ bloku';
-$txt['lp_block_note']                    = 'Note';
-$txt['lp_block_priority']                = 'Priorytet';
-$txt['lp_block_icon_type']               = 'Typ ikony';
-$txt['lp_block_icon_type_set']           = array('fas' => 'Wypełnione', 'far' => 'Normalne', 'fab' => 'Marki');
-$txt['lp_block_placement']               = 'Umieszczenie';
-$txt['lp_block_placement_set']           = array(
+$txt['lp_blocks']                    = 'Bloki';
+$txt['lp_blocks_manage']             = 'Zarządzaj blokami';
+$txt['lp_blocks_manage_description'] = 'Tutaj znajdują się wszystkie utworzone bloki. W celu dodania nowego bloku kliknij w odpowiednią opcję.';
+$txt['lp_blocks_add']                = 'Dodaj blok';
+$txt['lp_blocks_add_title']          = 'Dodawanie nowego bloku';
+$txt['lp_blocks_add_description']    = 'Nie ma jeszcze zbyt wielu bloków, ale najbardziej uniwersalne już istnieją :)';
+$txt['lp_blocks_add_instruction']    = 'Wybierz blok przez kliknięcie.';
+$txt['lp_blocks_edit_title']         = 'Edytowanie bloku';
+$txt['lp_blocks_edit_description']   = $txt['lp_blocks_add_description'];
+$txt['lp_block_icon_cheatsheet']     = 'Ikony';
+$txt['lp_block_type']                = 'Typ bloku';
+$txt['lp_block_note']                = 'Note';
+$txt['lp_block_priority']            = 'Priorytet';
+$txt['lp_block_icon_type']           = 'Typ ikony';
+$txt['lp_block_icon_type_set']       = array('fas' => 'Wypełnione', 'far' => 'Normalne', 'fab' => 'Marki');
+$txt['lp_block_placement']           = 'Umieszczenie';
+$txt['lp_block_placement_set']       = array(
 	'header' => 'Nagłówek',
 	'top'    => 'Centralny (na górze)',
 	'left'   => 'Lewa strona',
@@ -197,27 +184,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                        = 'Strony';
-$txt['lp_pages_manage']                 = 'Zarządzaj stronami';
-$txt['lp_pages_manage_all_pages']       = 'Tutaj znajdują się wszystkie utworzone strony.';
-$txt['lp_pages_manage_own_pages']       = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_tab_description'] = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
-$txt['lp_pages_add']                    = 'Dodaj stronę';
-$txt['lp_pages_add_title']              = 'Dodawanie strony';
-$txt['lp_pages_add_tab_description']    = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
-$txt['lp_pages_edit_title']             = 'Edytowanie strony';
-$txt['lp_pages_edit_tab_description']   = $txt['lp_pages_add_tab_description'];
-$txt['lp_extra_pages']                  = 'Strony portalu';
-$txt['lp_search_pages']                 = 'Alias lub tytuł';
-$txt['lp_page_types']                   = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                   = 'Alias';
-$txt['lp_page_alias_subtext']           = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
-$txt['lp_page_type']                    = 'Typ strony';
-$txt['lp_page_description']             = 'Opis';
-$txt['lp_page_keywords']                = 'Słowa kluczowe';
-$txt['lp_page_keywords_only_unique']    = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add']   = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']        = 'Data i czas publikacji';
+$txt['lp_pages']                      = 'Strony';
+$txt['lp_pages_manage']               = 'Zarządzaj stronami';
+$txt['lp_pages_manage_all_pages']     = 'Tutaj znajdują się wszystkie utworzone strony.';
+$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']   = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
+$txt['lp_pages_add']                  = 'Dodaj stronę';
+$txt['lp_pages_add_title']            = 'Dodawanie strony';
+$txt['lp_pages_add_description']      = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
+$txt['lp_pages_edit_title']           = 'Edytowanie strony';
+$txt['lp_pages_edit_description']     = $txt['lp_pages_add_description'];
+$txt['lp_pages_extra']                = 'Strony portalu';
+$txt['lp_pages_search']               = 'Alias lub tytuł';
+$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                 = 'Alias';
+$txt['lp_page_alias_subtext']         = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
+$txt['lp_page_type']                  = 'Typ strony';
+$txt['lp_page_description']           = 'Opis';
+$txt['lp_page_keywords']              = 'Słowa kluczowe';
+$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
+$txt['lp_page_publish_datetime']      = 'Data i czas publikacji';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
@@ -233,17 +220,75 @@ $txt['lp_tab_appearance']       = 'Wygląd';
 $txt['lp_tab_tuning']           = 'Tuning';
 
 // Import and Export
-$txt['lp_pages_export']                  = 'Eksport stron';
-$txt['lp_pages_import']                  = 'Import stron';
-$txt['lp_pages_export_tab_description']  = 'W tym miejscu możesz eksportować strony w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
-$txt['lp_pages_import_tab_description']  = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe stron.';
-$txt['lp_blocks_export']                 = 'Eksport bloków';
-$txt['lp_blocks_import']                 = 'Import bloków';
-$txt['lp_blocks_export_tab_description'] = 'W tym miejscu możesz eksportować bloki w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
-$txt['lp_blocks_import_tab_description'] = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe bloków.';
-$txt['lp_export_run']                    = 'Wybór eksportu';
-$txt['lp_import_run']                    = 'Importuj';
-$txt['lp_export_all']                    = 'Eksportuj wszystko';
+$txt['lp_pages_export']              = 'Eksport stron';
+$txt['lp_pages_import']              = 'Import stron';
+$txt['lp_pages_export_description']  = 'W tym miejscu możesz eksportować strony w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_pages_import_description']  = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe stron.';
+$txt['lp_blocks_export']             = 'Eksport bloków';
+$txt['lp_blocks_import']             = 'Import bloków';
+$txt['lp_blocks_export_description'] = 'W tym miejscu możesz eksportować bloki w celu wykonania kopii zapasowej lub w celu wykorzystania ich na innym forum.';
+$txt['lp_blocks_import_description'] = 'W tym miejscu możesz importować wcześniej utworzone kopie zapasowe bloków.';
+$txt['lp_export_run']                = 'Wybór eksportu';
+$txt['lp_import_run']                = 'Importuj';
+$txt['lp_export_all']                = 'Eksportuj wszystko';
+
+// Plugins
+$txt['lp_plugins']                    = 'Wtyczki';
+$txt['lp_plugins_manage']             = 'Manage plugins';
+$txt['lp_plugins_manage_description'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a> or the "+" button below.';
+$txt['lp_plugins_desc']               = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
+$txt['lp_plugins_add']                = 'Add plugin';
+$txt['lp_plugins_add_title']          = 'Adding a plugin';
+$txt['lp_plugins_add_description']    = 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.';
+$txt['lp_plugins_add_information']    = 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.';
+
+$txt['lp_plugins_tab_content']    = 'Basic information';
+$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
+$txt['lp_plugins_tab_settings']   = 'Settings';
+$txt['lp_plugins_tab_tuning']     = 'Additional';
+
+$txt['lp_plugins_hooks_types'] = array(
+	'block'     => 'Blok',
+	'editor'    => 'Edytor',
+	'comment'   => 'Widget komentarzy',
+	'parser'    => 'Parser zawartości',
+	'article'   => 'Przetwarzanie artykułów',
+	'frontpage' => 'The layout of the frontpage',
+	'impex'     => 'Import and export',
+	'other'     => 'Inne'
+);
+
+$txt['lp_plugin_name']              = 'The plugin name';
+$txt['lp_plugin_name_subtext']      = 'In Latin letters, without spaces!';
+$txt['lp_plugin_type']              = 'The plugin type';
+$txt['lp_plugin_site_subtext']      = 'Website where you can download new versions of this plugin.';
+$txt['lp_plugin_license']           = 'The plugin license';
+$txt['lp_plugin_license_own']       = 'Own license';
+$txt['lp_plugin_license_name']      = 'The license name';
+$txt['lp_plugin_license_link']      = 'The license link';
+$txt['lp_plugin_smf_hooks']         = 'Are you using SMF hooks?';
+$txt['lp_plugin_components']        = 'Are you using third-party scripts?';
+$txt['lp_plugin_components_name']   = 'Component name';
+$txt['lp_plugin_components_link']   = 'Link to component site';
+$txt['lp_plugin_components_author'] = 'Component author';
+
+$txt['lp_plugin_option_name']  = 'Option name (Latin)';
+$txt['lp_plugin_option_type']  = 'Option type';
+$txt['lp_plugin_option_types'] = array(
+	'text'       => 'Text field',
+	'url'        => 'Web address',
+	'color'      => 'Input color',
+	'int'        => 'Input number',
+	'check'      => 'Checkbox',
+	'multicheck' => 'Multiple select',
+	'select'     => 'Select'
+);
+
+$txt['lp_plugin_option_default_value']        = 'Default value';
+$txt['lp_plugin_option_variants']             = 'Possible values';
+$txt['lp_plugin_option_variants_placeholder'] = 'Multiple options separated by commas';
+$txt['lp_plugin_option_translations']         = 'Localization';
+$txt['lp_plugin_new_option']                  = 'Add option';
 
 // Tags
 $txt['lp_all_page_tags']          = 'Wszystkie tagi stron portalu';
@@ -289,7 +334,12 @@ $txt['lp_post_error_no_unique_alias'] = 'Alias jest używany już przez inną st
 $txt['lp_post_error_no_content']      = 'Nie wpisano zawartości!';
 $txt['lp_post_error_no_areas']        = 'Pole <strong>Akcje</strong> nie zostało wypełnione.';
 $txt['lp_post_error_no_valid_areas']  = 'W polu <strong>Akcje</strong> podano niewłaściwą akcję!';
+$txt['lp_post_error_no_name']         = 'The <strong>name</strong> field was not filled out. It is required.';
+$txt['lp_post_error_no_valid_name']   = 'The specified name does not match the rules!';
+$txt['lp_post_error_no_unique_name']  = 'A plugin with this name already exists!';
+$txt['lp_post_error_no_description']  = 'The description not specified! It is required.';
 $txt['lp_addon_not_installed']        = 'Wtyczka %1$s nie jest zainstalowana';
+$txt['lp_addon_add_failed']           = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file']          = 'Nie można importować tego pliku...';
 $txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania...';
 

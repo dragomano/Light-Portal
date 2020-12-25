@@ -29,7 +29,15 @@ class Settings
 	 */
 	public function adminAreas(array &$admin_areas)
 	{
-		global $context, $modSettings, $settings, $txt;
+		global $settings, $context, $modSettings, $txt;
+
+		if (strpos($settings['name'], 'potato') === false)
+			addInlineCss('
+		#lp_post #post_header dt,
+		#lp_post #post_header dd {
+			float: none;
+			width: auto;
+		}');
 
 		loadLanguage('ManageSettings');
 
@@ -37,10 +45,8 @@ class Settings
 			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
 			: false;
 
-		// Looking for the "Forum" section... | Ищем раздел "Форум"...
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
-		// ... and add a "Portal" section from the right | ... и добавляем справа раздел "Портал"
 		$admin_areas = array_merge(
 			array_slice($admin_areas, 0, (int) $counter, true),
 			array(
@@ -57,7 +63,6 @@ class Settings
 								'basic'   => array($txt['mods_cat_features']),
 								'extra'   => array($txt['lp_extra']),
 								'panels'  => array($txt['lp_panels']),
-								'plugins' => array($txt['lp_plugins']),
 								'misc'    => array($txt['lp_misc'])
 							)
 						),
@@ -69,18 +74,29 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
 								'main' => array($txt['lp_blocks_manage']),
-								'add'  => array($txt['lp_blocks_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
 							'label' => $txt['lp_pages'],
 							'function' => array($this, 'pageArea'),
-							'icon' => 'posts',
+							'icon' => 'reports',
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array($txt['lp_pages_manage']),
-								'add'  => array($txt['lp_pages_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
+							)
+						),
+						'lp_plugins' => array(
+							'label' => $txt['lp_plugins'],
+							'function' => array($this, 'pluginArea'),
+							'icon' => 'maintain',
+							'amt' => count($context['lp_enabled_plugins']),
+							'permission' => array('admin_forum'),
+							'subsections' => array(
+								'main' => array($txt['lp_plugins_manage']),
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_plugins_add'])
 							)
 						)
 					)
@@ -134,11 +150,10 @@ class Settings
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'basic'   => array($this, 'basic'),
-			'extra'   => array($this, 'extra'),
-			'panels'  => array($this, 'panels'),
-			'plugins' => array($this, 'plugins'),
-			'misc'    => array($this, 'misc')
+			'basic'  => array($this, 'basic'),
+			'extra'  => array($this, 'extra'),
+			'panels' => array($this, 'panels'),
+			'misc'   => array($this, 'misc')
 		);
 
 		db_extend();
@@ -155,9 +170,6 @@ class Settings
 				),
 				'panels' => array(
 					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
-				),
-				'plugins' => array(
-					'description' => sprintf($txt['lp_plugins_info'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 				),
 				'misc' => array(
 					'description' => $txt['lp_misc_info']
@@ -392,6 +404,7 @@ class Settings
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
+			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
 			array('title', 'lp_open_graph'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
@@ -547,102 +560,6 @@ class Settings
 	}
 
 	/**
-	 * Output the list and settings of plugins
-	 *
-	 * Выводим список и настройки плагинов
-	 *
-	 * @return void
-	 */
-	public function plugins()
-	{
-		global $context, $txt, $scripturl;
-
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/manage_plugins.js', array('defer' => true));
-
-		loadTemplate('LightPortal/ManagePlugins');
-
-		$context['lp_plugins'] = Subs::getAddons();
-		asort($context['lp_plugins']);
-
-		$context['page_title'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
-		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=plugins;save';
-
-		$config_vars = [];
-
-		// The mod authors can add their own settings | Авторы модов модут добавлять собственные настройки
-		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
-
-		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			return [
-				'name'       => $item,
-				'snake_name' => $snake_name = Helpers::getSnakeName($item),
-				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
-				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $this->getPluginTypes($snake_name),
-				'settings'   => $this->getPluginSettings($config_vars, $item)
-			];
-		}, $context['lp_plugins']);
-
-		$context['sub_template'] = 'plugin_settings';
-
-		if (Helpers::request()->has('save')) {
-			checkSession();
-
-			$plugin_options = [];
-			foreach ($config_vars as $id => $var) {
-				if (Helpers::post()->has($var[1])) {
-					if ($var[0] == 'check') {
-						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
-					} elseif ($var[0] == 'int') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
-					} elseif ($var[0] == 'multicheck') {
-						$plugin_options[$var[1]] = [];
-
-						foreach (Helpers::post($var[1]) as $key => $value) {
-							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
-						}
-
-						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
-					} elseif ($var[0] == 'url') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
-					} else {
-						$plugin_options[$var[1]] = Helpers::post($var[1]);
-					}
-				}
-			}
-
-			if (!empty($plugin_options))
-				updateSettings($plugin_options);
-
-			// Additional actions after settings saving | Дополнительные действия после сохранения настроек
-			Subs::runAddons('onSettingsSaving');
-
-			exit(json_encode('ok'));
-		}
-
-		// Enable/disable plugins | Включаем/выключаем плагины
-		$data = Helpers::request()->json();
-
-		if (isset($data['toggle_plugin'])) {
-			$plugin_id = (int) $data['toggle_plugin'];
-
-			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
-				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
-				unset($context['lp_enabled_plugins'][$key]);
-			} else {
-				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
-			}
-
-			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
-
-			exit(json_encode('ok'));
-		}
-
-		prepareDBSettingContext($config_vars);
-	}
-
-	/**
 	 * Output additional settings
 	 *
 	 * Выводим дополнительные настройки
@@ -699,62 +616,6 @@ class Settings
 		}
 
 		prepareDBSettingContext($config_vars);
-	}
-
-	/**
-	 * Get all types of the plugin
-	 *
-	 * Получаем все типы плагина
-	 *
-	 * @param string $snake_name
-	 * @return string
-	 */
-	private static function getPluginTypes(string $snake_name)
-	{
-		global $txt, $context;
-
-		if (empty($snake_name))
-			return $txt['not_applicable'];
-
-		$data = $context['lp_' . $snake_name . '_type'] ?? '';
-
-		if (empty($data))
-			return $txt['not_applicable'];
-
-		if (is_array($data)) {
-			$all_types = [];
-			foreach ($data as $type) {
-				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
-			}
-
-			return implode(' + ', $all_types);
-		}
-
-		return $txt['lp_plugins_hooks_types'][$data];
-	}
-
-	/**
-	 * Undocumented function
-	 *
-	 * @param array $config_vars
-	 * @param string $name
-	 * @return array
-	 */
-	private static function getPluginSettings(array $config_vars, $name = '')
-	{
-		if (empty($config_vars))
-			return [];
-
-		$settings = [];
-		foreach ($config_vars as $var) {
-			$plugin_id   = explode('_addon_', substr($var[1], 3))[0];
-			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
-
-			if ($plugin_name == $name)
-				$settings[] = $var;
-		}
-
-		return $settings;
 	}
 
 	/**
@@ -822,29 +683,49 @@ class Settings
 	}
 
 	/**
-	 * Calls the requested subaction if it does exist; otherwise, calls the default action
+	 * The list of available fields to control the plugins
 	 *
-	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
+	 * Список доступных областей для управления плагинами
 	 *
-	 * @param array $subActions
-	 * @param string|null $defaultAction
 	 * @return void
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
+	public function pluginArea()
 	{
-		global $context;
+		isAllowedTo('admin_forum');
 
-		Helpers::require('ManageServer');
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
 
-		$context['sub_template'] = 'show_settings';
+		$subActions = array(
+			'main' => array(new ManagePlugins, 'main'),
+			'add'  => array(new ManagePlugins, 'add')
+		);
 
-		$defaultAction = $defaultAction ?: key($subActions);
+		Subs::runAddons('addPluginAreas', array(&$subActions));
 
-		$subAction = Helpers::request()->has('sa') && isset($subActions[Helpers::request('sa')]) ? Helpers::request('sa') : $defaultAction;
+		$this->loadGeneralSettingParameters($subActions, 'main');
+	}
 
-		$context['sub_action'] = $subAction;
+	/**
+	 * Get the number of the last version
+	 *
+	 * Получаем номер последней версии LP
+	 *
+	 * @return string
+	 */
+	public function getLastVersion()
+	{
+		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 
-		call_helper($subActions[$subAction]);
+		if (empty($data))
+			return LP_VERSION;
+
+		$data = json_decode($data, true);
+
+		if (LP_RELEASE_DATE < $data['published_at'])
+			return str_replace('v', '', $data['tag_name']);
+
+		return LP_VERSION;
 	}
 
 	/**
@@ -868,24 +749,28 @@ class Settings
 	}
 
 	/**
-	 * Get the number of the last version
+	 * Calls the requested subaction if it does exist; otherwise, calls the default action
 	 *
-	 * Получаем номер последней версии LP
+	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 *
-	 * @return string
+	 * @param array $subActions
+	 * @param string|null $defaultAction
+	 * @return void
 	 */
-	public function getLastVersion()
+	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
 	{
-		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
+		global $context;
 
-		if (empty($data))
-			return LP_VERSION;
+		Helpers::require('ManageServer');
 
-		$data = json_decode($data, true);
+		$context['sub_template'] = 'show_settings';
 
-		if (LP_RELEASE_DATE < $data['published_at'])
-			return str_replace('v', '', $data['tag_name']);
+		$defaultAction = $defaultAction ?: key($subActions);
 
-		return LP_VERSION;
+		$subAction = Helpers::request()->has('sa') && isset($subActions[Helpers::request('sa')]) ? Helpers::request('sa') : $defaultAction;
+
+		$context['sub_action'] = $subAction;
+
+		call_helper($subActions[$subAction]);
 	}
 }

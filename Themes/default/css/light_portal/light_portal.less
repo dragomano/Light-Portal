@@ -518,23 +518,6 @@ section {
 	}
 }
 
-.footer {
-	.infobox,
-	.errorbox {
-		display: none;
-	}
-}
-
-#postpage,
-#postblock {
-	#post_header {
-		dt,dd {
-			float: none;
-			width: auto;
-		}
-	}
-}
-
 @media (max-width: 480px) {
 	.lp_default_blocks,
 	.lp_additional_blocks {
@@ -569,14 +552,6 @@ section {
 			}
 		}
 	}
-	#postpage,
-	#postblock {
-		.button {
-			float: none !important;
-			width: 100%;
-			margin-left: 0 !important;
-		}
-	}
 	.related_pages {
 		.article_list {
 			grid-template-columns: repeat(2, 1fr);
@@ -601,6 +576,13 @@ section {
 		.col-xs-12 {
 			flex-basis: 95%;
 			margin-left: 10px;
+		}
+	}
+	#lp_post {
+		.button {
+			float: none !important;
+			width: 100%;
+			margin-left: 0 !important;
 		}
 	}
 }
@@ -775,6 +757,15 @@ section {
 #tab3:checked~#content-tab3,
 #tab4:checked~#content-tab4 {
 	display: block;
+}
+
+.add_option {
+	width: 100%;
+
+	select,
+	input {
+		width: 100%;
+	}
 }
 
 @media screen and (max-width: 680px) {
