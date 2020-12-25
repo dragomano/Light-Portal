@@ -83,11 +83,11 @@ function template_show_topics_as_articles()
 			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
 				echo '
 						<span class="floatright">
-							<i class="fas fa-eye"></i> ', $topic['num_views'];
+							<i class="fas fa-eye" title="', $txt['views'], '"></i> ', $topic['num_views'];
 
 				if (!empty($topic['num_replies'])) {
 					echo '
-							<i class="fas fa-comment"></i> ', $topic['num_replies'];
+							<i class="fas fa-comment" title="', $txt['replies'], '"></i> ', $topic['num_replies'];
 				}
 
 				echo '
@@ -111,6 +111,9 @@ function template_show_topics_as_articles()
 
 		echo '
 	</div>';
+	} else {
+		echo '
+	<div class="infobox">', $txt['lp_no_items'], '</div>';
 	}
 }
 
@@ -202,11 +205,11 @@ function template_show_pages_as_articles()
 			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
 				echo '
 						<span class="floatright">
-							<i class="fas fa-eye"></i> ', $page['num_views'];
+							<i class="fas fa-eye" title="', $txt['views'], '"></i> ', $page['num_views'];
 
 				if (!empty($page['num_comments'])) {
 					echo '
-							<i class="fas fa-comment"></i> ', $page['num_comments'];
+							<i class="fas fa-comment" title="', $txt['lp_comments'], '"></i> ', $page['num_comments'];
 				}
 
 				echo '
@@ -234,6 +237,9 @@ function template_show_pages_as_articles()
 		if (empty($context['lp_active_blocks']))
 			echo '
 	</div>';
+	} else {
+		echo '
+	<div class="infobox">', $txt['lp_no_items'], '</div>';
 	}
 }
 
@@ -315,7 +321,7 @@ function template_show_boards_as_articles()
 				if ($board['is_redirect']) {
 					echo '<i class="fas fa-directions"></i>';
 				} else {
-					echo '<i class="fas fa-comment"></i> ', $board['num_posts'];
+					echo '<i class="fas fa-comment" title="', $txt['replies'], '"></i> ', $board['num_posts'];
 				}
 
 				echo '
@@ -339,5 +345,8 @@ function template_show_boards_as_articles()
 
 		echo '
 	</div>';
+	} else {
+		echo '
+	<div class="infobox">', $txt['lp_no_items'], '</div>';
 	}
 }
