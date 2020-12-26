@@ -270,7 +270,7 @@ class Helpers
 
 		$current_time = time();
 
-		$tm = date('H:i', $timestamp);
+		$tm = date('H:i', $timestamp); // Use 'g:i a' for am/pm
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);

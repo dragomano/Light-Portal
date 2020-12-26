@@ -20,7 +20,7 @@ use Bugo\LightPortal\Subs;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class TopicArticle implements ArticleInterface
+class TopicArticle extends AbstractArticle
 {
 	/**
 	 * Initialize class properties

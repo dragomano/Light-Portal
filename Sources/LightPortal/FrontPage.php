@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Front\ArticleInterface;
+use Bugo\LightPortal\Front\AbstractArticle;
 use Bugo\LightPortal\Front\BoardArticle;
 use Bugo\LightPortal\Front\ChosenPageArticle;
 use Bugo\LightPortal\Front\ChosenTopicArticle;
@@ -87,10 +87,10 @@ class FrontPage
 	 *
 	 * Формируем массив статей
 	 *
-	 * @param ArticleInterface $entity
+	 * @param AbstractArticle $entity
 	 * @return void
 	 */
-	public function prepare(ArticleInterface $entity)
+	public function prepare(AbstractArticle $entity)
 	{
 		global $modSettings, $context, $scripturl;
 
@@ -112,7 +112,16 @@ class FrontPage
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);
-				$article['date']     = Helpers::getFriendlyTime($article['date']);
+
+				if (!empty($modSettings['lp_frontpage_time_format'])) {
+					if ($modSettings['lp_frontpage_time_format'] == 1) {
+						$article['date'] = timeformat($article['date'], true);
+					} else {
+						$article['date'] = date($modSettings['lp_frontpage_custom_time_format'] ?? 'F j, Y', $article['date']);
+					}
+				} else {
+					$article['date'] = Helpers::getFriendlyTime($article['date']);
+				}
 			}
 
 			if (isset($article['title']))
