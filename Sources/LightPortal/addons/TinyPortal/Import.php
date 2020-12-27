@@ -434,7 +434,7 @@ class Import extends AbstractImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags($row['intro']),
+				'description'  => strip_tags(parse_bbc($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,
