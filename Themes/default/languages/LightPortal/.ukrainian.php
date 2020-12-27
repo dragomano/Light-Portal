@@ -15,6 +15,7 @@ $txt['lp_article']  = 'Стаття';
 $txt['lp_no_items'] = 'Немає елементів для відображення.';
 $txt['lp_example']  = 'Приклад: ';
 $txt['lp_content']  = 'Вміст';
+$txt['lp_my_pages'] = 'Мої сторінки';
 
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';

@@ -44,6 +44,8 @@ class Integration
 		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
@@ -258,10 +260,8 @@ class Integration
 
 		(new Block)->show();
 
-		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
-		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
-			$buttons['admin']['show'] = true;
-
+		// Display "Portal settings" in Main Menu => Admin
+		if ($context['user']['is_admin']) {
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
 				$counter++;
@@ -272,11 +272,11 @@ class Integration
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				$context['user']['is_admin'] ? array(
+				array(
 					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
-						'show'  => true,
+						'show'  => !empty($modSettings['lp_show_portal_settings_in_menu']),
 						'sub_buttons' => array(
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
@@ -298,19 +298,6 @@ class Integration
 								'show'  => true
 							)
 						)
-					)
-				) : array(
-					'portal_blocks' => array(
-						'title' => $txt['lp_blocks'],
-						'href'  => $scripturl . '?action=admin;area=lp_blocks',
-						'amt'   => count($context['lp_active_blocks']),
-						'show'  => $context['allow_light_portal_manage_blocks']
-					),
-					'portal_pages' => array(
-						'title' => $txt['lp_pages'],
-						'href'  => $scripturl . '?action=admin;area=lp_pages',
-						'amt'   => $context['lp_num_active_pages'],
-						'show'  => $context['allow_light_portal_manage_own_pages']
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
@@ -570,6 +557,68 @@ class Integration
 				}
 			}
 		}
+	}
+
+	/**
+	 * Add the "My pages" item in the profile popup window
+	 *
+	 * Добавляем пункт «Мои страницы» в попап-окне профиля
+	 *
+	 * @param array $profile_areas
+	 * @return void
+	 */
+	public function preProfileAreas(&$profile_areas)
+	{
+		global $context, $txt, $scripturl;
+
+		if (!empty($context['user']['is_admin']))
+			return;
+
+		$profile_areas['info']['areas']['lp_my_pages'] = array(
+			'label' => $txt['lp_my_pages'],
+			'custom_url' => $scripturl . '?action=admin;area=lp_pages',
+			'icon' => 'reports',
+			'enabled' => Helpers::request('area') === 'popup',
+			'permission' => array(
+				'own' => array('light_portal_manage_own_pages'),
+				'any' => array()
+			)
+		);
+	}
+
+	/**
+	 * Register the "My pages" item in the profile popup window
+	 *
+	 * Регистрируем пункт «Мои страницы» в попап-окне профиля
+	 *
+	 * @param array $profile_items
+	 * @return void
+	 */
+	public function profilePopup(&$profile_items)
+	{
+		global $context, $txt;
+
+		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_pages'))
+			return;
+
+		$counter = 0;
+		foreach ($profile_items as $item) {
+			$counter++;
+
+			if ($item['area'] == 'showdrafts')
+				break;
+		}
+
+		$profile_items = array_merge(
+			array_slice($profile_items, 0, $counter, true),
+			array(
+				array(
+					'menu' => 'info',
+					'area' => 'lp_my_pages'
+				)
+			),
+			array_slice($profile_items, $counter, null, true)
+		);
 	}
 
 	/**
