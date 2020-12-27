@@ -56,7 +56,7 @@ class Settings
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
-							'function' => array($this, 'settingArea'),
+							'function' => array($this, 'settingAreas'),
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
@@ -68,7 +68,7 @@ class Settings
 						),
 						'lp_blocks' => array(
 							'label' => $txt['lp_blocks'],
-							'function' => array($this, 'blockArea'),
+							'function' => array($this, 'blockAreas'),
 							'icon' => 'modifications',
 							'amt' => count($context['lp_active_blocks']),
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
@@ -79,7 +79,7 @@ class Settings
 						),
 						'lp_pages' => array(
 							'label' => $txt['lp_pages'],
-							'function' => array($this, 'pageArea'),
+							'function' => array($this, 'pageAreas'),
 							'icon' => 'reports',
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
@@ -90,7 +90,7 @@ class Settings
 						),
 						'lp_plugins' => array(
 							'label' => $txt['lp_plugins'],
-							'function' => array($this, 'pluginArea'),
+							'function' => array($this, 'pluginAreas'),
 							'icon' => 'maintain',
 							'amt' => count($context['lp_enabled_plugins']),
 							'permission' => array('admin_forum'),
@@ -143,7 +143,7 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public function settingArea()
+	public function settingAreas()
 	{
 		global $context, $txt, $smcFunc;
 
@@ -543,8 +543,6 @@ class Settings
 		$context['lp_left_right_width_values']    = [2, 3, 4];
 		$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
 
-		Subs::runAddons('addPanels');
-
 		$config_vars = array(
 			array('check', 'lp_swap_header_footer'),
 			array('check', 'lp_swap_left_right'),
@@ -552,6 +550,8 @@ class Settings
 			array('callback', 'panel_layout'),
 			array('callback', 'panel_direction')
 		);
+
+		Subs::runAddons('addPanels', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -614,6 +614,8 @@ class Settings
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
+		Subs::runAddons('addMisc', array(&$config_vars));
+
 		if ($return_config)
 			return $config_vars;
 
@@ -647,7 +649,7 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public function blockArea()
+	public function blockAreas()
 	{
 		global $user_info;
 
@@ -679,7 +681,7 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public function pageArea()
+	public function pageAreas()
 	{
 		global $user_info;
 
@@ -711,7 +713,7 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public function pluginArea()
+	public function pluginAreas()
 	{
 		isAllowedTo('admin_forum');
 

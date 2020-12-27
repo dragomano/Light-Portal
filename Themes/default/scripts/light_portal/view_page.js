@@ -304,7 +304,7 @@ class Toolbar {
 	}
 }
 
-class blockToggle {
+class Toggler {
 	constructor(options) {
 		this.options = options
 		this.create()

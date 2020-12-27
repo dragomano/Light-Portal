@@ -241,7 +241,7 @@ function show_comment_block()
 			</div>
 		</aside>
 		<script>
-			let commentBlockToggle = new blockToggle({
+			new Toggler({
 				isCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggleAltExpandedTitle: ', JavaScriptEscape($txt['hide']), ',
 				toggleAltCollapsedTitle: ', JavaScriptEscape($txt['show']), ',

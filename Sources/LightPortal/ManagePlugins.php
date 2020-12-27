@@ -103,7 +103,7 @@ class ManagePlugins
 				updateSettings($plugin_options);
 
 			// You can do additional actions after settings saving
-			Subs::runAddons('onSettingsSaving');
+			Subs::runAddons('saveSettings');
 
 			exit(json_encode('ok'));
 		}
