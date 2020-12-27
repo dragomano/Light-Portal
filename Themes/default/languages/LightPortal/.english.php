@@ -65,7 +65,7 @@ $txt['groups_light_portal_view']             = 'Who can view the portal elements
 $txt['groups_light_portal_manage_blocks']    = 'Who can manage blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages']    = 'Who can post the portal pages without approval';
-$txt['lp_manage_permissions']                = 'Note: some pages and blocks may contain dangerous HTML/PHP content, so do not grant this right to everyone!';
+$txt['lp_manage_permissions']                = 'Some pages may contain dangerous HTML/PHP content, so do not allow their creation to everyone!';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Pages and blocks';

@@ -197,7 +197,7 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
 
-		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
+		//$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
@@ -259,7 +259,7 @@ class Settings
 			array('title', 'edit_permissions'),
 			array('desc', 'lp_manage_permissions'),
 			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
-			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
+			//array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);

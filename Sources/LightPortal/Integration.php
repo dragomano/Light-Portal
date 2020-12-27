@@ -413,7 +413,7 @@ class Integration
 		$context['non_guest_permissions'] = array_merge(
 			$context['non_guest_permissions'],
 			array(
-				'light_portal_manage_blocks',
+				//'light_portal_manage_blocks',
 				'light_portal_manage_own_pages',
 				'light_portal_approve_pages'
 			)
@@ -434,12 +434,12 @@ class Integration
 	{
 		global $context;
 
-		$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
+		//$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
 		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
 
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
+		//$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
 
