@@ -139,6 +139,8 @@ class FrontPage
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
+		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
+
 		$context['lp_frontpage_articles'] = $articles;
 
 		Subs::runAddons('frontAssets');

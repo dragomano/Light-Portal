@@ -107,8 +107,12 @@ class Integration
 	 */
 	public function preCssOutput()
 	{
-		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
-		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
+		global $context;
+
+		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
+
+		if (!empty($context['portal_next_page']))
+			echo "\n\t" . '<link rel="prerender" href="', $context['portal_next_page'], '">';
 	}
 
 	/**
