@@ -174,7 +174,7 @@ class BoardArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_boards, LP_CACHE_TIME);
 		}
 
 		return (int) $num_boards;

@@ -86,7 +86,7 @@ class Integration
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
 			'LP_VERSION'      => '1.5 alpha',
-			'LP_RELEASE_DATE' => '2020-12-24',
+			'LP_RELEASE_DATE' => '2020-12-28',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
@@ -280,7 +280,7 @@ class Integration
 					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
-						'show'  => !empty($modSettings['lp_show_portal_settings_in_menu']),
+						'show'  => true,
 						'sub_buttons' => array(
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
@@ -292,14 +292,14 @@ class Integration
 								'title'   => $txt['lp_pages'],
 								'href'    => $scripturl . '?action=admin;area=lp_pages',
 								'amt'     => $context['lp_num_active_pages'],
-								'show'    => true,
-								'is_last' => true
+								'show'    => true
 							),
 							'plugins' => array(
-								'title' => $txt['lp_plugins'],
-								'href'  => $scripturl . '?action=admin;area=lp_plugins',
-								'amt'   => count($context['lp_enabled_plugins']),
-								'show'  => true
+								'title'   => $txt['lp_plugins'],
+								'href'    => $scripturl . '?action=admin;area=lp_plugins',
+								'amt'     => count($context['lp_enabled_plugins']),
+								'show'    => true,
+								'is_last' => true
 							)
 						)
 					)

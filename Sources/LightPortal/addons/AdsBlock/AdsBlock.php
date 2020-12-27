@@ -210,7 +210,7 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::cache('ads_block_addon', 'getData', __CLASS__);
+		$context['lp_ads_blocks'] = $this->getData();
 
 		if (!empty($context['lp_ads_blocks']))
 			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);

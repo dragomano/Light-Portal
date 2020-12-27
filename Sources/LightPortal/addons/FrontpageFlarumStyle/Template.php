@@ -96,7 +96,7 @@ function template_show_topics_as_flarum_style()
 			if (!empty($topic['image'])) {
 				echo '
 				<div class="floatleft">
-					<img class="avatar" src="', $topic['image'], '" alt="', $topic['subject'], '">
+					<img class="avatar" src="', $topic['image'], '" alt="', $topic['subject'], '" loading="lazy">
 				</div>';
 			 } else {
 				echo '
