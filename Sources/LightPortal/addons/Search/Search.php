@@ -32,6 +32,14 @@ class Search
 	private $dark_themes = '';
 
 	/**
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
+	}
+
+	/**
 	 * @param array $config_vars
 	 * @return void
 	 */
@@ -48,14 +56,6 @@ class Search
 		$context['lp_search_addon_dark_themes_options'] = Helpers::getForumThemes();
 
 		$config_vars[] = array('multicheck', 'lp_search_addon_dark_themes');
-	}
-
-	/**
-	 * @return void
-	 */
-	public function init()
-	{
-		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
 	}
 
 	/**

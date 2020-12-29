@@ -42,6 +42,15 @@ class AdsBlock
 	private $topics = '';
 
 	/**
+	 * @param array $config_vars
+	 * @return void
+	 */
+	public function addSettings(&$config_vars)
+	{
+		$config_vars[] = array('int', 'lp_ads_block_addon_min_replies');
+	}
+
+	/**
 	 * Add advertising areas to panel settings
 	 *
 	 * Добавляем рекламные области в настройки панелей
@@ -244,7 +253,10 @@ class AdsBlock
 	 */
 	public function displayButtons()
 	{
-		global $context;
+		global $modSettings, $context;
+
+		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
+			return;
 
 		require_once(__DIR__ . '/Template.php');
 
@@ -263,7 +275,10 @@ class AdsBlock
 	 */
 	public function prepareDisplayContext(&$output, &$message, $counter)
 	{
-		global $options, $context;
+		global $modSettings, $options, $context;
+
+		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
+			return;
 
 		$current_counter = empty($options['view_newest_first']) ? $context['start'] : $context['total_visible_posts'] - $context['start'];
 

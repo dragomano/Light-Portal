@@ -3,6 +3,8 @@
 $txt['lp_block_types']['ads_block']              = 'Рекламний блок';
 $txt['lp_block_types_descriptions']['ads_block'] = 'Відображає довільний HTML-код в розділах і темах.';
 
+$txt['lp_ads_block_addon_min_replies'] = 'Не відображати рекламу, якщо в темі менше заданої кількості відповідей';
+
 $txt['lp_block_placement_set']['ads']         = 'Розділи і теми';
 $txt['lp_ads_block_addon_ads_boards']         = 'Розділи';
 $txt['lp_ads_block_addon_ads_boards_subtext'] = 'Перерахуйте ідентифікатори розділів, щоб виводити рекламу тільки там. Інакше блок буде відображатися у всіх розділах.';
