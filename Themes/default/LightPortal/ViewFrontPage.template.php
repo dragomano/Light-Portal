@@ -352,7 +352,9 @@ function template_show_boards_as_articles()
 }
 
 /**
- * Кастомный вывод 5 страниц
+ * Example #1 of custom page view
+ *
+ * Пример #1 кастомного отображения страниц
  *
  * @return void
  */
@@ -463,6 +465,122 @@ function template_show_five_pages_as_articles()
 			</article>
 		</div>';
 		}
+
+		echo '
+	</div>';
+
+		if (empty($context['lp_active_blocks']))
+			echo '
+	</div>';
+	} else {
+		echo '
+	<div class="infobox">', $txt['lp_no_items'], '</div>';
+	}
+}
+
+/**
+ * Example #2 of custom page view
+ *
+ * Пример #2 кастомного отображения страниц
+ *
+ * @return void
+ */
+function template_alt_show_pages_as_articles()
+{
+	global $context, $scripturl, $txt, $modSettings;
+
+	if (!empty($context['lp_frontpage_articles'])) {
+		if (empty($context['lp_active_blocks']))
+			echo '
+	<div class="col-xs">';
+
+		echo '
+	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+
+		foreach ($context['lp_frontpage_articles'] as $page) {
+			echo '
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
+			<article style="transition: all .4s cubic-bezier(.175, .885, 0, 1); position: relative; padding: 0; display: flex; flex-direction: column; justify-content: space-between; height: 96%">
+				<div class="title_bar article_header" style="padding: 8px 12px">
+					<h3 class="floatleft">
+						<a href="', $page['link'], '">', $page['title'], '</a>', $page['is_new'] ? (' <span class="new_posts">' . $txt['new'] . '</span>') : '', '
+					</h3>';
+
+			if ($page['can_edit']) {
+				echo '
+					<span class="floatright">
+						<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $page['id'], '">
+							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+						</a>
+					</span>';
+			}
+
+			echo '
+				</div>
+				<div class="article_body roundframe" style="overflow: hidden">';
+
+			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+				echo '
+					<span class="floatleft">
+						<i class="fas fa-eye" title="', $txt['views'], '"></i> ', $page['num_views'];
+
+				if (!empty($page['num_comments'])) {
+					echo '
+						<i class="fas fa-comment" title="', $txt['lp_comments'], '"></i> ', $page['num_comments'];
+				}
+
+				echo '
+					</span>';
+			}
+
+			if (!empty($page['image'])) {
+				echo '
+					<img src="' . $page['image'] . '" alt="">';
+			}
+
+			if (!empty($modSettings['lp_show_teaser'])) {
+				echo '
+					<p>', $page['teaser'], '</p>';
+			}
+
+			echo '
+					<div class="article_footer">
+						<div class="centertext" style="padding: 4px">
+							<a class="bbc_link" href="', $page['link'], '">', $txt['lp_read_more'], '</a>
+						</div>
+						<div class="centertext" style="padding: 4px">
+							<time datetime="', $page['datetime'], '">', $page['date'], '</time>';
+
+			if (!empty($modSettings['lp_show_author'])) {
+				if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($page['num_comments'])) {
+					echo '
+							<i class="fas fa-reply"></i>';
+				}
+
+				if (!empty($page['author_id']) && !empty($page['author_name'])) {
+					echo '
+							<a href="', $page['author_link'], '" class="card-author">', $page['author_name'], '</a>';
+				} else {
+					echo '
+							<span class="card-author">', $txt['guest_title'], '</span>';
+				}
+			}
+
+			echo '
+						</div>
+					</div>
+				</div>
+			</article>
+		</div>';
+		}
+
+		if (!empty($context['page_index']))
+			echo '
+		<div class="col-xs-12 centertext">
+			<div class="pagesection">
+				<div class="pagelinks">', $context['page_index'], '</div>
+			</div>
+		</div>';
 
 		echo '
 	</div>';
