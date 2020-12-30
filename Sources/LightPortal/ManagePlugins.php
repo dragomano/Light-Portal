@@ -61,10 +61,15 @@ class ManagePlugins
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
+			$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
+			$comments = explode('* ', $addonClass->getDocComment());
+
 			return [
 				'name'       => $item,
 				'snake_name' => $snake_name = Helpers::getSnakeName($item),
 				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
+				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
+				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => $this->getTypes($snake_name),
 				'settings'   => $this->getSettings($config_vars, $item)

@@ -211,7 +211,7 @@ class Subs
 		global $user_info, $txt;
 
 		$addon_dir = LP_ADDON_DIR . '/' . $addon . '/langs/';
-		$languages = array_merge(['english'], [$user_info['language']]);
+		$languages = array_unique(['english', $user_info['language']]);
 
 		foreach ($languages as $lang) {
 			$lang_file = $addon_dir . $lang . '.php';

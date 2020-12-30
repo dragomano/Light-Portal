@@ -35,7 +35,14 @@ function template_manage_plugins()
 					<p>
 						<strong class="new_posts">', $plugin['types'], '</strong>
 						', $plugin['desc'], '
-					</p>
+					</p>';
+
+		if (!empty($plugin['author']) && $plugin['author'] !== 'Bugo') {
+			echo '
+					<p>', $plugin['author'], (!empty($plugin['link']) && $plugin['link'] !== 'https://dragomano.ru/mods/light-portal' ? (' | ' . $plugin['link']) : ''), '</p>';
+		}
+
+		echo '
 				</div>
 			</div>
 			<div class="floatright">';
@@ -249,7 +256,7 @@ function template_plugin_post()
 													</td>
 													<td>
 														<button type="button" class="button floatnone" @click="removeOption(index)">
-															<span class="main_icons delete"></span>
+															<span class="main_icons delete"></span> ', $txt['remove'], '
 														</button>
 													</td>
 												</tr>
@@ -329,7 +336,7 @@ function template_plugin_post()
 						<tfoot>
 							<tr class="windowbg">
 								<td colspan="4">
-									<button type="button" class="button" @click="addNewOption()">+ ', $txt['lp_plugin_new_option'] , '</button>
+									<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', $txt['lp_plugin_new_option'] , '</button>
 								</td>
 							</tr>
 						</tfoot>

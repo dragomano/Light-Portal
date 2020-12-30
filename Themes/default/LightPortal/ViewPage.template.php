@@ -64,7 +64,7 @@ function template_show_page()
 			</span>
 		</div>
 		<article class="roundframe" itemprop="articleBody">
-			<h3 style="display: none;">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
+			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 
 	if (!empty($context['lp_page']['keywords']) && !empty($modSettings['lp_show_tags_on_page'])) {
 		echo '
