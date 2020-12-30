@@ -90,7 +90,7 @@ class Comment
 		$total_comments = sizeof($comment_tree);
 
 		$page_index_url = $context['canonical_url'];
-		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']))
+		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
 			$page_index_url = $scripturl . '?action=portal';
 
 		$temp_start            = Helpers::request('start');

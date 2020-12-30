@@ -292,28 +292,28 @@ class Settings
 			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
 			board_selector.toggle(change_mode);
 
-			let allow_change_title = front_mode > 1;
+			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
 
 			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
 			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
 			board_selector.toggle(allow_change_title);
 
-			let allow_change_alias = front_mode == 1;
+			let allow_change_alias = front_mode == "chosen_page";
 
 			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
 			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
 
-			let allow_change_chosen_topics = front_mode == 5;
+			let allow_change_chosen_topics = front_mode == "chosen_topics";
 
 			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
 			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
 
-			let allow_change_chosen_pages = front_mode == 6;
+			let allow_change_chosen_pages = front_mode == "chosen_pages";
 
 			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
 			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
 
-			if (front_mode == 3 || front_mode == 5 || front_mode == 6) {
+			if (["all_pages", "chosen_topics", "chosen_pages"].includes(front_mode)) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();

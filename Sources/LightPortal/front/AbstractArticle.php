@@ -25,6 +25,11 @@ abstract class AbstractArticle
 	protected $params  = [];
 	protected $orders  = [];
 
+	public static function load($class)
+	{
+		return new $class;
+	}
+
 	abstract public function init();
 	abstract public function getData(int $start, int $limit);
 	abstract public function getTotalCount();

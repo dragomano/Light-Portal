@@ -490,7 +490,7 @@ class Helpers
 			return false;
 
 		return !empty($modSettings['lp_frontpage_mode'])
-			&& $modSettings['lp_frontpage_mode'] == 1
+			&& $modSettings['lp_frontpage_mode'] == 'chosen_page'
 			&& !empty($modSettings['lp_frontpage_alias'])
 			&& $modSettings['lp_frontpage_alias'] == $alias;
 	}

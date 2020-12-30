@@ -25,7 +25,13 @@ $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <st
 $txt['lp_frontpage_title']                   = 'The frontpage title';
 $txt['lp_frontpage_mode']                    = 'The portal frontpage';
 $txt['lp_frontpage_mode_set']                = array(
-	'Disabled', 'Specified page', 'All topics from selected boards', 'All active pages', 'Selected boards', 'Selected topics', 'Selected pages'
+	'Disabled',
+	'chosen_page'   => 'Specified page',
+	'all_topics'    => 'All topics from selected boards',
+	'all_pages'     => 'All active pages',
+	'chosen_boards' => 'Selected boards',
+	'chosen_topics' => 'Selected topics',
+	'chosen_pages'  => 'Selected pages'
 );
 $txt['lp_frontpage_alias']                   = 'Portal page to display as the main page';
 $txt['lp_frontpage_alias_subtext']           = 'Enter the alias of the page that exist.';

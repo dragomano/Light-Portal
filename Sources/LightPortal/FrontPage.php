@@ -3,11 +3,6 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Front\AbstractArticle;
-use Bugo\LightPortal\Front\BoardArticle;
-use Bugo\LightPortal\Front\ChosenPageArticle;
-use Bugo\LightPortal\Front\ChosenTopicArticle;
-use Bugo\LightPortal\Front\PageArticle;
-use Bugo\LightPortal\Front\TopicArticle;
 
 /**
  * FrontPage.php
@@ -39,31 +34,32 @@ class FrontPage
 		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
 		switch ($modSettings['lp_frontpage_mode']) {
-			case 1:
+			case 'chosen_page':
 				return call_user_func(array(new Page, 'show'));
 
-			case 2:
-				$this->prepare(new TopicArticle);
+			case 'all_topics':
+				$this->prepare('TopicArticle');
 				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
-			case 3:
-				$this->prepare(new PageArticle);
+			case 'all_pages':
+				$this->prepare('PageArticle');
 				$context['sub_template'] = 'show_pages_as_articles';
 				break;
 
-			case 4:
-				$this->prepare(new BoardArticle);
+			case 'chosen_boards':
+				$this->prepare('BoardArticle');
 				$context['sub_template'] = 'show_boards_as_articles';
 				break;
 
-			case 5:
-				$this->prepare(new ChosenTopicArticle);
+			case 'chosen_topics':
+				$this->prepare('ChosenTopicArticle');
 				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
+			case 'chosen_pages':
 			default:
-				$this->prepare(new ChosenPageArticle);
+				$this->prepare('ChosenPageArticle');
 				$context['sub_template'] = 'show_pages_as_articles';
 		}
 
@@ -87,12 +83,22 @@ class FrontPage
 	 *
 	 * Формируем массив статей
 	 *
-	 * @param AbstractArticle $entity
+	 * @param string $entity
 	 * @return void
 	 */
-	public function prepare(AbstractArticle $entity)
+	public function prepare(string $entity = '')
 	{
 		global $modSettings, $context, $scripturl;
+
+		$classname = '\Bugo\LightPortal\Front\\' . $entity;
+
+		if (!class_exists($classname))
+			return;
+
+		$entity = AbstractArticle::load($classname);
+
+		if (!$entity instanceof AbstractArticle)
+			return;
 
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
@@ -109,6 +115,7 @@ class FrontPage
 
 		$articles = $entity->getData($start, $limit);
 
+		// Post processing for articles
 		$articles = array_map(function ($article) use ($modSettings) {
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);

@@ -25,7 +25,13 @@ $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <
 $txt['lp_frontpage_title']                   = 'Tytuł strony głównej';
 $txt['lp_frontpage_mode']                    = 'Strona główna portalu';
 $txt['lp_frontpage_mode_set']                = array(
-	'Wyłącz', 'Wybrana strona', 'Wszystkie wątki z wybranych działów', 'Wszystkie aktywne strony', 'Wybrane działy', 'Selected topics', 'Selected pages'
+	'Wyłącz',
+	'chosen_page'   => 'Wybrana strona',
+	'all_topics'    => 'Wszystkie wątki z wybranych działów',
+	'all_pages'     => 'Wszystkie aktywne strony',
+	'chosen_boards' => 'Wybrane działy',
+	'chosen_topics' => 'Selected topics',
+	'chosen_pages'  => 'Selected pages'
 );
 $txt['lp_frontpage_alias']                   = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']           = 'Podaj alias strony.';
