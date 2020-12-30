@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FrontpageFlarumStyle;
+namespace Bugo\LightPortal\Addons\FlarumStyle;
 
 use Bugo\LightPortal\Helpers;
 
 /**
- * FrontpageFlarumStyle
+ * FlarumStyle
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class FrontpageFlarumStyle
+class FlarumStyle
 {
 	/**
 	 * @var string
@@ -37,7 +37,7 @@ class FrontpageFlarumStyle
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], [2, 5]))
+		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics']))
 			return;
 
 		$context['lp_all_categories'] = $this->getListSelectedBoards();
