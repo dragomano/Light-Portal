@@ -258,8 +258,8 @@ class ManagePlugins
 				$context['lp_plugin']['options'][$id] = array(
 					'name'         => $option,
 					'type'         => $post_data['option_type'][$id],
-					'default'      => $post_data['option_defaults'][$id],
-					'variants'     => $post_data['option_variants'][$id],
+					'default'      => $post_data['option_defaults'][$id] ?? '',
+					'variants'     => $post_data['option_variants'][$id] ?? '',
 					'translations' => []
 				);
 			}

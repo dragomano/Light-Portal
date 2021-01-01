@@ -326,7 +326,8 @@ class Settings
 		toggleFrontpageMode();
 
 		$("#lp_frontpage_mode").on("change", function () {
-			toggleFrontpageMode()
+			toggleFrontpageMode();
+			toggleTimeFormat();
 		});';
 
 		// Time format toggle

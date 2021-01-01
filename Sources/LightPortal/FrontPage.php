@@ -116,7 +116,10 @@ class FrontPage
 		$articles = $entity->getData($start, $limit);
 
 		// Post processing for articles
-		$articles = array_map(function ($article) use ($modSettings) {
+		$articles = array_map(function ($article) use ($context, $modSettings) {
+			if ($context['user']['is_guest'])
+				$article['is_new'] = false;
+
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);
 

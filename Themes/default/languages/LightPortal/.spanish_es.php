@@ -16,6 +16,8 @@ $txt['lp_no_items'] = 'No hay elementos que mostrar.';
 $txt['lp_example']  = 'Ejemplo: ';
 $txt['lp_content']  = 'Contenido';
 $txt['lp_my_pages'] = 'My pages';
+$txt['lp_views']    = $txt['views'];
+$txt['lp_replies']  = $txt['replies'];
 
 // Settings
 $txt['lp_settings']  = 'Configuración del portal';

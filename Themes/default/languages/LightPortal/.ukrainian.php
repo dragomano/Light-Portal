@@ -16,6 +16,8 @@ $txt['lp_no_items'] = 'Немає елементів для відображен
 $txt['lp_example']  = 'Приклад: ';
 $txt['lp_content']  = 'Вміст';
 $txt['lp_my_pages'] = 'Мої сторінки';
+$txt['lp_views']    = $txt['views'];
+$txt['lp_replies']  = $txt['replies'];
 
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';

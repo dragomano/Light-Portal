@@ -141,7 +141,7 @@ class TopicArticle extends AbstractArticle
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
 						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
-						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
+						'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
@@ -152,6 +152,9 @@ class TopicArticle extends AbstractArticle
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
+
+					if (!empty($row['new_from']) && $row['new_from'] <= $row['id_msg_modified'])
+						$topics[$row['id_topic']]['link'] = $scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
 
 					$topics[$row['id_topic']]['msg_link'] = $topics[$row['id_topic']]['link'];
 
