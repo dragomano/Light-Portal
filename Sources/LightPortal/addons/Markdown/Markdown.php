@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\Markdown;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,10 +20,6 @@ if (!defined('SMF'))
 class Markdown
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'parser';
@@ -40,18 +36,18 @@ class Markdown
 	public function parseContent(&$content, $type)
 	{
 		if ($type == 'md')
-			$content = $this->getParsedMarkdown($content);
+			$content = $this->getParsedContent($content);
 	}
 
 	/**
-	 * Parse Markdown content
+	 * Get Markdown content
 	 *
-	 * Парсим Markdown-контент
+	 * Получаем Markdown-контент
 	 *
 	 * @param string $text
 	 * @return string
 	 */
-	private function getParsedMarkdown($text)
+	private function getParsedContent($text)
 	{
 		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
 		require_once(__DIR__ . '/Michelf/Markdown.php');
@@ -62,10 +58,6 @@ class Markdown
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

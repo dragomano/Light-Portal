@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,100 +22,56 @@ if (!defined('SMF'))
 class RecentPosts
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-comment-alt';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * The maximum number of posts to output
-	 *
-	 * Максимальное количество сообщений для вывода
-	 *
 	 * @var int
 	 */
 	private $num_posts = 10;
 
 	/**
-	 * The link type (link|preview)
-	 *
-	 * Тип отображаемой ссылки (link|preview)
-	 *
 	 * @var string
 	 */
 	private $type = 'link';
 
 	/**
-	 * If set, does NOT show posts from the specified boards
-	 *
-	 * Идентификаторы разделов, сообщения из которых НЕ нужно показывать
-	 *
 	 * @var string
 	 */
 	private $exclude_boards = '';
 
 	/**
-	 * If set, ONLY includes posts from the specified boards
-	 *
-	 * Идентификаторы разделов, для отображения сообщений ТОЛЬКО из них
-	 *
 	 * @var string
 	 */
 	private $include_boards = '';
 
 	/**
-	 * If set, does NOT show posts from the specified topics
-	 *
-	 * Идентификаторы тем, сообщения из которых НЕ нужно показывать
-	 *
 	 * @var string
 	 */
 	private $exclude_topics = '';
 
 	/**
-	 * If set, ONLY includes posts from the specified topics
-	 *
-	 * Идентификаторы тем, для отображения сообщений ТОЛЬКО из них
-	 *
 	 * @var string
 	 */
 	private $include_topics = '';
 
 	/**
-	 * Display user avatars (true|false)
-	 *
-	 * Отображать аватарки (true|false)
-	 *
 	 * @var bool
 	 */
 	private $show_avatars = false;
 
 	/**
-	 * Online list update interval, in seconds
-	 *
-	 * Интервал обновления списка онлайн, в секундах
-	 *
 	 * @var int
 	 */
 	private $update_interval = 600;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -134,10 +90,6 @@ class RecentPosts
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -158,10 +110,6 @@ class RecentPosts
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -335,10 +283,6 @@ class RecentPosts
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

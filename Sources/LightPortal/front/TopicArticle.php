@@ -11,17 +11,49 @@ use Bugo\LightPortal\Subs;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class TopicArticle implements ArticleInterface
+class TopicArticle extends AbstractArticle
 {
+	/**
+	 * Initialize class properties
+	 *
+	 * Инициализируем свойства класса
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		global $modSettings, $user_info;
+
+		$this->selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+
+		$this->params = [
+			'current_member'    => $user_info['id'],
+			'is_approved'       => 1,
+			'id_poll'           => 0,
+			'id_redirect_topic' => 0,
+			'attachment_type'   => 0,
+			'selected_boards'   => $this->selected_boards
+		];
+
+		$this->orders = [
+			't.id_last_msg DESC',
+			'mf.poster_time DESC',
+			'mf.poster_time',
+			'date DESC'
+		];
+
+		Subs::runAddons('frontTopics', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+	}
+
 	/**
 	 * Get topics from selected boards
 	 *
@@ -33,37 +65,16 @@ class TopicArticle implements ArticleInterface
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
+		global $user_info, $smcFunc, $modSettings, $scripturl;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return [];
 
 		if (($topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$custom_columns = [];
-			$custom_tables  = [];
-			$custom_wheres  = [];
-
-			$custom_parameters = [
-				'current_member'    => $user_info['id'],
-				'is_approved'       => 1,
-				'id_poll'           => 0,
-				'id_redirect_topic' => 0,
-				'attachment_type'   => 0,
-				'selected_boards'   => $selected_boards,
-				'start'             => $start,
-				'limit'             => $limit
-			];
-
-			$custom_sorting = [
-				't.id_last_msg DESC',
-				'mf.poster_time DESC',
-				'mf.poster_time',
-				'date DESC'
-			];
-
-			Subs::runAddons('frontTopics', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			$this->params += array(
+				'start' => $start,
+				'limit' => $limit
+			);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -77,25 +88,25 @@ class TopicArticle implements ArticleInterface
 							AND attachment_type = {int:attachment_type}
 						ORDER BY id_attach
 						LIMIT 1
-					) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
+					) AS id_attach, ' : '') . ($user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (!empty($this->columns) ? ',
+					' . implode(', ', $this->columns) : '') . '
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
 					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
-					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
+					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
 					AND t.id_redirect_topic = {int:id_redirect_topic}
 					AND t.id_board IN ({array_int:selected_boards})
-					AND {query_wanna_see_board}' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 't.num_replies DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+					AND {query_wanna_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 't.num_replies DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
+				$this->params
 			);
 
 			$topics = [];
@@ -130,7 +141,7 @@ class TopicArticle implements ArticleInterface
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
 						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
-						'link'        => $scripturl . '?topic=' . $row['id_topic'] . ($row['new_from'] > $row['id_msg_modified'] ? '.0' : '.new;topicseen#new'),
+						'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
 						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
 						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
@@ -141,6 +152,9 @@ class TopicArticle implements ArticleInterface
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
+
+					if (!empty($row['new_from']) && $row['new_from'] <= $row['id_msg_modified'])
+						$topics[$row['id_topic']]['link'] = $scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
 
 					$topics[$row['id_topic']]['msg_link'] = $topics[$row['id_topic']]['link'];
 
@@ -170,31 +184,26 @@ class TopicArticle implements ArticleInterface
 	 *
 	 * @return int
 	 */
-	public function getTotal()
+	public function getTotalCount()
 	{
-		global $modSettings, $user_info, $smcFunc;
+		global $user_info, $smcFunc;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return 0;
 
 		if (($num_topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
-					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
+					INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
 					AND t.id_redirect_topic = {int:id_redirect_topic}
 					AND t.id_board IN ({array_int:selected_boards})
-					AND {query_wanna_see_board}',
-				array(
-					'is_approved'       => 1,
-					'id_poll'           => 0,
-					'id_redirect_topic' => 0,
-					'selected_boards'   => $selected_boards
-				)
+					AND {query_wanna_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
+				$this->params
 			);
 
 			[$num_topics] = $smcFunc['db_fetch_row']($request);
@@ -202,7 +211,7 @@ class TopicArticle implements ArticleInterface
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_topics, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
 		}
 
 		return (int) $num_topics;

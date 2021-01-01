@@ -2,10 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Front\ArticleInterface;
-use Bugo\LightPortal\Front\BoardArticle;
-use Bugo\LightPortal\Front\TopicArticle;
-use Bugo\LightPortal\Front\PageArticle;
+use Bugo\LightPortal\Front\AbstractArticle;
 
 /**
  * FrontPage.php
@@ -13,10 +10,10 @@ use Bugo\LightPortal\Front\PageArticle;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 class FrontPage
@@ -37,23 +34,33 @@ class FrontPage
 		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
 		switch ($modSettings['lp_frontpage_mode']) {
-			case 1:
-				call_user_func(array(new Page, 'show'));
-				break;
+			case 'chosen_page':
+				return call_user_func(array(new Page, 'show'));
 
-			case 2:
-				$this->prepare(new TopicArticle);
+			case 'all_topics':
+				$this->prepare('TopicArticle');
 				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
-			case 3:
-				$this->prepare(new PageArticle);
+			case 'all_pages':
+				$this->prepare('PageArticle');
 				$context['sub_template'] = 'show_pages_as_articles';
 				break;
 
-			default:
-				$this->prepare(new BoardArticle);
+			case 'chosen_boards':
+				$this->prepare('BoardArticle');
 				$context['sub_template'] = 'show_boards_as_articles';
+				break;
+
+			case 'chosen_topics':
+				$this->prepare('ChosenTopicArticle');
+				$context['sub_template'] = 'show_topics_as_articles';
+				break;
+
+			case 'chosen_pages':
+			default:
+				$this->prepare('ChosenPageArticle');
+				$context['sub_template'] = 'show_pages_as_articles';
 		}
 
 		Subs::runAddons('frontCustomTemplate');
@@ -76,17 +83,29 @@ class FrontPage
 	 *
 	 * Формируем массив статей
 	 *
-	 * @param ArticleInterface $entity
+	 * @param string $entity
 	 * @return void
 	 */
-	public function prepare(ArticleInterface $entity)
+	public function prepare(string $entity = '')
 	{
 		global $modSettings, $context, $scripturl;
+
+		$classname = '\Bugo\LightPortal\Front\\' . $entity;
+
+		if (!class_exists($classname))
+			return;
+
+		$entity = AbstractArticle::load($classname);
+
+		if (!$entity instanceof AbstractArticle)
+			return;
 
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $entity->getTotal();
+		$entity->init();
+
+		$total_items = $entity->getTotalCount();
 
 		if ($start >= $total_items) {
 			send_http_status(404);
@@ -96,10 +115,23 @@ class FrontPage
 
 		$articles = $entity->getData($start, $limit);
 
-		$articles = array_map(function ($article) use ($modSettings) {
+		// Post processing for articles
+		$articles = array_map(function ($article) use ($context, $modSettings) {
+			if ($context['user']['is_guest'])
+				$article['is_new'] = false;
+
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);
-				$article['date']     = Helpers::getFriendlyTime($article['date']);
+
+				if (!empty($modSettings['lp_frontpage_time_format'])) {
+					if ($modSettings['lp_frontpage_time_format'] == 1) {
+						$article['date'] = timeformat($article['date'], true);
+					} else {
+						$article['date'] = date($modSettings['lp_frontpage_custom_time_format'] ?? 'F j, Y', $article['date']);
+					}
+				} else {
+					$article['date'] = Helpers::getFriendlyTime($article['date']);
+				}
 			}
 
 			if (isset($article['title']))
@@ -116,6 +148,8 @@ class FrontPage
 
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
+
+		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
 
 		$context['lp_frontpage_articles'] = $articles;
 

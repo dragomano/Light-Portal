@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -48,7 +48,7 @@ class ManageBlocks
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_manage_tab_description']
+			'description' => $txt['lp_blocks_manage_description']
 		);
 
 		$this->doActions();
@@ -323,7 +323,7 @@ class ManageBlocks
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_add_tab_description']
+			'description' => $txt['lp_blocks_add_description']
 		);
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
@@ -369,7 +369,7 @@ class ManageBlocks
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_edit_tab_description']
+			'description' => $txt['lp_blocks_edit_description']
 		);
 
 		Helpers::prepareForumLanguages();
@@ -427,7 +427,7 @@ class ManageBlocks
 	 */
 	private function validateData()
 	{
-		global $context, $user_info;
+		global $context, $modSettings;
 
 		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
@@ -478,7 +478,7 @@ class ManageBlocks
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
 			'placement'     => $post_data['placement'] ?? $context['current_block']['placement'] ?? '',
 			'priority'      => $post_data['priority'] ?? $context['current_block']['priority'] ?? 0,
-			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
+			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'        => $context['current_block']['status'] ?? Block::STATUS_ACTIVE,
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
@@ -888,7 +888,7 @@ class ManageBlocks
 
 		!empty($context['preview_content'])
 			? Helpers::parseContent($context['preview_content'], $context['lp_block']['type'])
-			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type'], $context['lp_block']['id']);
+			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
 		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());

@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\KarmaPostRating;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,10 +20,6 @@ if (!defined('SMF'))
 class KarmaPostRating
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'article';
@@ -36,10 +32,10 @@ class KarmaPostRating
 	 * @param array $custom_columns
 	 * @param array $custom_tables
 	 * @param array $custom_wheres
-	 * @param array $custom_parameters
+	 * @param array $custom_params
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters)
+	public function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_params)
 	{
 		global $modSettings;
 
@@ -51,7 +47,7 @@ class KarmaPostRating
 
 		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (t.id_first_msg = kpr.item_id AND kpr.item = {string:kpr_item_type})';
 
-		$custom_parameters['kpr_item_type'] = 'message';
+		$custom_params['kpr_item_type'] = 'message';
 	}
 
 	/**
@@ -70,6 +66,8 @@ class KarmaPostRating
 
 	/**
 	 * Show rating as stars
+	 *
+	 * Отображаем рейтинг в виде звёздочек
 	 *
 	 * @return void
 	 */

@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,64 +22,36 @@ if (!defined('SMF'))
 class ArticleList
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-file-alt';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
 	 * @var bool
 	 */
 	private $no_content_class = true;
 
 	/**
-	 * Default class for article blocks
-	 *
-	 * Класс (по умолчанию) для оформления блоков статей
-	 *
 	 * @var string
 	 */
 	private $article_body_class = 'div.descbox';
 
 	/**
-	 * Articles type (0 - topics, 1 - pages)
-	 *
-	 * Тип статей (0 - темы, 1 - страницы)
-	 *
 	 * @var int
 	 */
 	private $article_type = 0;
 
 	/**
-	 * IDs of topics or pages to display
-	 *
-	 * Идентификаторы тем или страниц для отображения
-	 *
 	 * @var string
 	 */
 	private $ids = '';
 
 	/**
-	 * Display article images (true|false)
-	 *
-	 * Отображать картинки статей (true|false)
-	 *
 	 * @var bool
 	 */
 	private $seek_images = false;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -94,10 +66,6 @@ class ArticleList
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -114,10 +82,6 @@ class ArticleList
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -318,10 +282,6 @@ class ArticleList
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

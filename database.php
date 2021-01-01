@@ -409,9 +409,9 @@ foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
 	if ($table['name'] == 'lp_blocks') {
-		foreach ($table['columns'] as $columns) {
-			if ($columns['name'] == 'note') {
-				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $columns, [], 'ignore');
+		foreach ($table['columns'] as $column) {
+			if ($column['name'] == 'note') {
+				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
 				break;
 			}
 		}

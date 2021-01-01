@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,46 +20,26 @@ if (!defined('SMF'))
 class Likely
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-share-square';
 
 	/**
-	 * Button size (small|big)
-	 *
-	 * Размер кнопок (small|big)
-	 *
 	 * @var string
 	 */
 	private $size = 'small';
 
 	/**
-	 * Button skin (normal|light)
-	 *
-	 * Скин кнопок (normal|light)
-	 *
 	 * @var string
 	 */
 	private $skin = 'normal';
 
 	/**
-	 * List of displayed buttons
-	 *
-	 * Список отображаемых кнопок
-	 *
 	 * @var string
 	 */
 	private $buttons = 'facebook,twitter,vkontakte,pinterest,odnoklassniki,telegram,linkedin,whatsapp';
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -71,10 +51,6 @@ class Likely
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -90,10 +66,6 @@ class Likely
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -189,10 +161,6 @@ class Likely
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
@@ -235,10 +203,6 @@ class Likely
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

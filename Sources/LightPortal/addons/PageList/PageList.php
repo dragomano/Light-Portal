@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,37 +22,21 @@ if (!defined('SMF'))
 class PageList
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'far fa-file-alt';
 
 	/**
-	 * The sort method of pages
-	 *
-	 * Способ сортировки страниц (см. $txt['lp_page_list_addon_sort_set'])
-	 *
 	 * @var string
 	 */
 	private $sort = 'page_id';
 
 	/**
-	 * The maximum number of pages to output
-	 *
-	 * Максимальное количество страниц для вывода
-	 *
 	 * @var int
 	 */
 	private $num_pages = 10;
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -63,10 +47,6 @@ class PageList
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -81,10 +61,6 @@ class PageList
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -192,10 +168,6 @@ class PageList
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

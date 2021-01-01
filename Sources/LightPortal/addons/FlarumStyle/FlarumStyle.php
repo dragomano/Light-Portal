@@ -1,32 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FrontpageFlarumStyle;
+namespace Bugo\LightPortal\Addons\FlarumStyle;
 
 use Bugo\LightPortal\Helpers;
 
 /**
- * FrontpageFlarumStyle
+ * FlarumStyle
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class FrontpageFlarumStyle
+class FlarumStyle
 {
-
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'frontpage';
@@ -42,7 +37,7 @@ class FrontpageFlarumStyle
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']) || $modSettings['lp_frontpage_mode'] != 2)
+		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics']))
 			return;
 
 		$context['lp_all_categories'] = $this->getListSelectedBoards();

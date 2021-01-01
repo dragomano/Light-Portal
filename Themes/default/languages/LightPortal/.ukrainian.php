@@ -15,40 +15,56 @@ $txt['lp_article']  = 'Стаття';
 $txt['lp_no_items'] = 'Немає елементів для відображення.';
 $txt['lp_example']  = 'Приклад: ';
 $txt['lp_content']  = 'Вміст';
+$txt['lp_my_pages'] = 'Мої сторінки';
+$txt['lp_views']    = $txt['views'];
+$txt['lp_replies']  = $txt['replies'];
 
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';
 $txt['lp_base']      = 'Налаштування головної сторінки і статей';
 $txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum">форумі розробника</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a> або на <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a>.';
 
-$txt['lp_frontpage_title']                = 'Заголовок головної сторінки';
-$txt['lp_frontpage_mode']                 = 'Перша сторінка порталу';
-$txt['lp_frontpage_mode_set']             = array('Відключивши', 'Зазначена сторінка', 'Всі теми з обраних розділів', 'Всі активні сторінки порталу', 'Вибрані розділи');
-$txt['lp_frontpage_alias']                = 'Сторінка порталу для відображення в якості головної';
-$txt['lp_frontpage_alias_subtext']        = 'Вкажіть аліас існуючої сторінк.';
-$txt['lp_frontpage_boards']               = 'Розділи-джерела статей для першої сторінки';
-$txt['lp_frontpage_card_alt_layout']      = 'Альтернативне розташування елементів в картках';
-$txt['lp_frontpage_card_alt_layout_help'] = 'Дата і автор міняються місцями.';
-$txt['lp_frontpage_order_by_num_replies'] = 'Першими виводити статті з найбільшою кількістю коментарів';
-$txt['lp_frontpage_article_sorting']      = 'Сортування статей';
-$txt['lp_frontpage_article_sorting_set']  = array('За останнім коментарем', 'За датою створення (нові вгорі)', 'За датою створення (старі вгорі)', 'За датою оновлення (свіжі вгорі)');
-$txt['lp_frontpage_article_sorting_help'] = 'При виборі першого варіанту в картках статей відображаються дати і автори останніх коментарів (при їх наявності).';
-$txt['lp_frontpage_layout']               = 'Кількість колонок для виведення статей';
-$txt['lp_frontpage_layout_set']           = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
-$txt['lp_show_images_in_articles']        = 'Показувати зображення, знайдені в статтях';
-$txt['lp_show_images_in_articles_help']   = 'Спочатку перевіряється, чи є в статті вкладення (якщо стаття заснована на темі форуму), потім — чи є в статті тег IMG з картинкою.';
-$txt['lp_image_placeholder']              = 'URL-адреса картинки-заглушки за замовчуванням';
-$txt['lp_teaser_size']                    = 'Розмір тизера статей (у символах)';
-$txt['lp_teaser_size_help']               = 'Використовується в деяких аддонах, а також може використовуватися в призначених для користувача макетах головної сторінки.';
-$txt['lp_num_items_per_page']             = 'Кількість елементів на сторінці (для пагінації)';
+$txt['lp_frontpage_title']                   = 'Заголовок головної сторінки';
+$txt['lp_frontpage_mode']                    = 'Перша сторінка порталу';
+$txt['lp_frontpage_mode_set']                = array(
+	'Відключивши',
+	'chosen_page'   => 'Зазначена сторінка',
+	'all_topics'    => 'Всі теми з обраних розділів',
+	'all_pages'     => 'Всі активні сторінки порталу',
+	'chosen_boards' => 'Вибрані розділи',
+	'chosen_topics' => 'Вибрані теми',
+	'chosen_pages'  => 'Вибрані сторінки'
+);
+$txt['lp_frontpage_alias']                   = 'Сторінка порталу для відображення в якості головної';
+$txt['lp_frontpage_alias_subtext']           = 'Вкажіть аліас існуючої сторінк.';
+$txt['lp_frontpage_boards']                  = 'Розділи-джерела статей для першої сторінки';
+$txt['lp_frontpage_topics']                  = 'Теми-джерела статей для першої сторінки';
+$txt['lp_frontpage_topics_subtext']          = 'Ідентифікатори потрібних тем, через кому.';
+$txt['lp_frontpage_pages']                   = 'Сторінки-джерела статей для першої сторінки';
+$txt['lp_frontpage_pages_subtext']           = 'Ідентифікатори потрібних сторінок, через кому.';
+$txt['lp_show_images_in_articles']           = 'Показувати зображення, знайдені в статтях';
+$txt['lp_show_images_in_articles_help']      = 'Спочатку перевіряється, чи є в статті вкладення (якщо стаття заснована на темі форуму), потім — чи є в статті тег IMG з картинкою.';
+$txt['lp_image_placeholder']                 = 'URL-адреса картинки-заглушки за замовчуванням';
+$txt['lp_frontpage_time_format']             = 'Формат часу в картках статей';
+$txt['lp_frontpage_time_format_set']         = array('Повен', 'Як на форумі', 'Свій');
+$txt['lp_frontpage_custom_time_format']      = 'Свій формат часу';
+$txt['lp_frontpage_custom_time_format_help'] = 'Див. список можливих параметрів у <a class="bbc_link" href="https://www.php.net/manual/ru/datetime.format.php">документації</a>.';
+$txt['lp_show_teaser']                       = 'Відображати короткий зміст (тизер) статей';
+$txt['lp_teaser_size']                       = 'Розмір тизера статей (у символах)';
+$txt['lp_show_author']                       = 'Відображати інформацію про автора статті';
+$txt['lp_show_author_help']                  = 'У разі виведення картки розділу це буде інформація про категорію.';
+$txt['lp_show_num_views_and_comments']       = 'Відображати інформацію про кількість переглядів і коментарів';
+$txt['lp_frontpage_order_by_num_replies']    = 'Першими виводити статті з найбільшою кількістю коментарів';
+$txt['lp_frontpage_article_sorting']         = 'Сортування статей';
+$txt['lp_frontpage_article_sorting_set']     = array('За останнім коментарем', 'За датою створення (нові вгорі)', 'За датою створення (старі вгорі)', 'За датою оновлення (свіжі вгорі)');
+$txt['lp_frontpage_article_sorting_help']    = 'При виборі першого варіанту в картках статей відображаються дати і автори останніх коментарів (при їх наявності).';
+$txt['lp_frontpage_layout']                  = 'Кількість колонок для виведення статей';
+$txt['lp_frontpage_layout_set']              = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
+$txt['lp_num_items_per_page']                = 'Кількість елементів на сторінці (для пагінації)';
 
-$txt['lp_standalone_mode_title'] = 'Автономний режим';
-$txt['lp_standalone_url']        = 'URL-адреса головної сторінки порталу в автономному режимі';
-$txt['lp_standalone_url_help']   = 'Можна вказати свою URL-адресу для відображення в якості головної сторінки порталу (наприклад, <strong>https://yourforum/portal.php</strong>).<br>У цьому випадку головна сторінка форуму залишиться доступною за адресою <strong>https://yourforum/index.php</strong>.<br><br>Щоб вивести головну сторінку порталу, у файлі <em>portal.php</em> повинен бути приблизно такий код:<br><pre><code class="bbc_code">
-require(dirname(__FILE__) . \'/SSI.php\');
-<br>
-(new Bugo\LightPortal\FrontPage)->show();</code></pre><br>
-Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо файл <em>portal.php</em> знаходиться поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
+$txt['lp_standalone_mode_title']                    = 'Автономний режим';
+$txt['lp_standalone_url']                           = 'URL-адреса головної сторінки порталу в автономному режимі';
+$txt['lp_standalone_url_help']                      = 'Можна вказати свою URL-адресу для відображення в якості головної сторінки порталу (наприклад, <strong>https://yourforum/portal.php</strong>).<br>У цьому випадку головна сторінка форуму залишиться доступною за адресою <strong>https://yourforum/index.php</strong>.<br><br>Як приклад в комплекті з порталом йде файл <em>portal.php</em> — можете використовувати його.<br><br>Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо хочете розмістити <em>portal.php</em> поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Області, що відключаються';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Вкажіть області, які повинні бути ВІДКЛЮЧЕНІ в автономному режимі';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Наприклад, якщо потрібно відключити область "Пошук" (index.php?action=<strong>search</strong>), додайте <strong>search</strong> в текстове поле.';
@@ -57,22 +73,24 @@ $txt['groups_light_portal_view']             = 'Хто може перегляд
 $txt['groups_light_portal_manage_blocks']    = 'Хто може керувати блоками';
 $txt['groups_light_portal_manage_own_pages'] = 'Хто може керувати своїми сторінками';
 $txt['groups_light_portal_approve_pages']    = 'Хто може розміщувати свої сторінки без модерації';
-$txt['lp_manage_permissions']                = 'Увага: деякі сторінки i блоки можуть містити небезпечний HTML/PHP контент, тому не надавайте це право всім підряд!';
+$txt['lp_manage_permissions']                = 'Деякі сторінки можуть містити небезпечний HTML/PHP контент, тому не дозволяйте їх створювати всім підряд!';
 
 // Pages and blocks
 $txt['lp_extra']      = 'Сторінки і блоки';
 $txt['lp_extra_info'] = 'Тут знаходяться загальні налаштування сторінок і блоків.';
 
-$txt['lp_show_tags_on_page']            = 'Відображати ключові слова у верхній частині сторінки';
-$txt['lp_show_tags_as_articles']        = 'Відображати списки статей з однаковим тегом у вигляді карток';
-$txt['lp_show_related_pages']           = 'Відображати блок схожих сторінок';
-$txt['lp_show_comment_block']           = 'Відображати блок коментарів';
-$txt['lp_disabled_bbc_in_comments']     = 'Дозволені ББ-теги в коментарях';
-$txt['lp_show_comment_block_set']       = array('none' => 'Ні', 'default' => 'Вбудований');
-$txt['lp_time_to_change_comments']      = 'Час, протягом якого можна змінити свій коментар';
-$txt['lp_num_comments_per_page']        = 'Кількість батьківських коментарів на сторінці';
-$txt['lp_page_editor_type_default']     = 'Тип редактора сторінок за замовчуванням';
-$txt['lp_hide_blocks_in_admin_section'] = 'Приховувати активні блоки в адмінці';
+$txt['lp_show_tags_on_page']                = 'Відображати ключові слова у верхній частині сторінки';
+$txt['lp_show_tags_as_articles']            = 'Відображати списки статей з однаковим тегом у вигляді карток';
+$txt['lp_show_related_pages']               = 'Відображати блок схожих сторінок';
+$txt['lp_show_comment_block']               = 'Відображати блок коментарів';
+$txt['lp_disabled_bbc_in_comments']         = 'Дозволені ББ-теги в коментарях';
+$txt['lp_disabled_bbc_in_comments_subtext'] = 'Можна задіяти будь-які теги, <a class="bbc_link" href="%1$s">дозволені для використання</a> на форумі.';
+$txt['lp_show_comment_block_set']           = array('none' => 'Ні', 'default' => 'Вбудований');
+$txt['lp_time_to_change_comments']          = 'Час, протягом якого можна змінити свій коментар';
+$txt['lp_num_comments_per_page']            = 'Кількість батьківських коментарів на сторінці';
+$txt['lp_page_editor_type_default']         = 'Тип редактора сторінок за замовчуванням';
+$txt['lp_permissions_default']              = 'Права доступу для сторінок і блоків за замовчуванням';
+$txt['lp_hide_blocks_in_admin_section']     = 'Приховувати активні блоки в адмінці';
 
 $txt['lp_open_graph']            = 'Open Graph';
 $txt['lp_page_og_image']         = 'Використовувати зображення з тексту статті';
@@ -97,22 +115,6 @@ $txt['lp_panel_direction_note'] = 'Тут можна змінити напрям
 $txt['lp_panel_direction']      = 'Напрямок блоків в панелях';
 $txt['lp_panel_direction_set']  = array('Вертикальне', 'Горизонтальне');
 
-// Plugins
-$txt['lp_plugins']      = 'Плагіни';
-$txt['lp_plugins_desc'] = 'Будь-який з плагінів можна включити або виключити. А деякі ще й налаштувати!';
-$txt['lp_plugins_info'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a>.';
-
-$txt['lp_plugins_hooks_types'] = array(
-	'block'     => 'Блок',
-	'editor'    => 'Редактор',
-	'comment'   => 'Віджет коментарів',
-	'parser'    => 'Парсер контента',
-	'article'   => 'Обробка статей',
-	'frontpage' => 'Макет головної сторінки',
-	'impex'     => 'Імпорт та експорт',
-	'other'     => 'Різне'
-);
-
 // Misc
 $txt['lp_misc']                           = 'Додатково';
 $txt['lp_misc_info']                      = 'Тут знаходяться додаткові налаштування порталу, які стануть в нагоді розробникам шаблонів і плагінів.';
@@ -133,23 +135,23 @@ $txt['lp_action_move']  = 'Перемістити';
 $txt['lp_read_more']    = 'Читати далі...';
 
 // Blocks
-$txt['lp_blocks']                        = 'Блоки';
-$txt['lp_blocks_manage']                 = 'Керування блоками';
-$txt['lp_blocks_manage_tab_description'] = 'Тут перераховані всі блоки порталу, що використовуються. Для додавання додаткового блоку скористайтеся відповідною кнопкою.';
-$txt['lp_blocks_add']                    = 'Додати блок';
-$txt['lp_blocks_add_title']              = 'Додавання блоку';
-$txt['lp_blocks_add_tab_description']    = 'Блоки можуть містити будь-який контент, в залежності від свого типу.';
-$txt['lp_blocks_add_instruction']        = 'Оберіть потрібний блок, натиснувши на нього.';
-$txt['lp_blocks_edit_title']             = 'Редагування блоку';
-$txt['lp_blocks_edit_tab_description']   = $txt['lp_blocks_add_tab_description'];
-$txt['lp_block_icon_cheatsheet']         = 'Список іконок';
-$txt['lp_block_type']                    = 'Тип блоку';
-$txt['lp_block_note']                    = 'Примітка';
-$txt['lp_block_priority']                = 'Пріоритет';
-$txt['lp_block_icon_type']               = 'Тип іконки';
-$txt['lp_block_icon_type_set']           = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');
-$txt['lp_block_placement']               = 'Розташування';
-$txt['lp_block_placement_set']           = array(
+$txt['lp_blocks']                    = 'Блоки';
+$txt['lp_blocks_manage']             = 'Керування блоками';
+$txt['lp_blocks_manage_description'] = 'Тут перераховані всі блоки порталу, що використовуються. Для додавання додаткового блоку скористайтеся відповідною кнопкою.';
+$txt['lp_blocks_add']                = 'Додати блок';
+$txt['lp_blocks_add_title']          = 'Додавання блоку';
+$txt['lp_blocks_add_description']    = 'Блоки можуть містити будь-який контент, в залежності від свого типу.';
+$txt['lp_blocks_add_instruction']    = 'Оберіть потрібний блок, натиснувши на нього.';
+$txt['lp_blocks_edit_title']         = 'Редагування блоку';
+$txt['lp_blocks_edit_description']   = $txt['lp_blocks_add_description'];
+$txt['lp_block_icon_cheatsheet']     = 'Список іконок';
+$txt['lp_block_type']                = 'Тип блоку';
+$txt['lp_block_note']                = 'Примітка';
+$txt['lp_block_priority']            = 'Пріоритет';
+$txt['lp_block_icon_type']           = 'Тип іконки';
+$txt['lp_block_icon_type_set']       = array('fas' => 'Solid', 'far' => 'Regular', 'fab' => 'Brands');
+$txt['lp_block_placement']           = 'Розташування';
+$txt['lp_block_placement_set']       = array(
 	'header' => 'Шапка',
 	'top'    => 'Центральна частина (верх)',
 	'left'   => 'Ліва панель',
@@ -194,27 +196,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                        = 'Сторінки';
-$txt['lp_pages_manage']                 = 'Керування сторінками';
-$txt['lp_pages_manage_all_pages']       = 'Тут перераховані всі сторінки порталу.';
-$txt['lp_pages_manage_own_pages']       = 'Тут перераховані всі створені вами сторінки.';
-$txt['lp_pages_manage_tab_description'] = 'Для додавання нової сторінки скористайтеся відповідною кнопкою.';
-$txt['lp_pages_add']                    = 'Додати сторінку';
-$txt['lp_pages_add_title']              = 'Додавання сторінки';
-$txt['lp_pages_add_tab_description']    = 'Заповніть заголовок сторінки. Після цього можна буде змінити її тип, використовувати попередній перегляд і збереження.';
-$txt['lp_pages_edit_title']             = 'Редагування сторінки';
-$txt['lp_pages_edit_tab_description']   = 'Внесіть необхідні зміни.';
-$txt['lp_extra_pages']                  = 'Сторінки порталу';
-$txt['lp_search_pages']                 = 'Аліас або заголовок';
-$txt['lp_page_types']                   = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                   = 'Аліас';
-$txt['lp_page_alias_subtext']           = 'Аліас сторінки має починатися з латинської літери і складатися з малих латинських букв, цифр і знака підкреслення.';
-$txt['lp_page_type']                    = 'Тип сторінки';
-$txt['lp_page_description']             = 'Опис';
-$txt['lp_page_keywords']                = 'Ключові слова';
-$txt['lp_page_keywords_only_unique']    = 'Можна додавати тільки унікальні теги';
-$txt['lp_page_keywords_enter_to_add']   = 'Натисніть Enter для додавання <b>«${value}»</b>';
-$txt['lp_page_publish_datetime']        = 'Дата і час публікації';
+$txt['lp_pages']                      = 'Сторінки';
+$txt['lp_pages_manage']               = 'Керування сторінками';
+$txt['lp_pages_manage_all_pages']     = 'Тут перераховані всі сторінки порталу.';
+$txt['lp_pages_manage_own_pages']     = 'Тут перераховані всі створені вами сторінки.';
+$txt['lp_pages_manage_description']   = 'Для додавання нової сторінки скористайтеся відповідною кнопкою.';
+$txt['lp_pages_add']                  = 'Додати сторінку';
+$txt['lp_pages_add_title']            = 'Додавання сторінки';
+$txt['lp_pages_add_description']      = 'Заповніть заголовок сторінки. Після цього можна буде змінити її тип, використовувати попередній перегляд і збереження.';
+$txt['lp_pages_edit_title']           = 'Редагування сторінки';
+$txt['lp_pages_edit_description']     = 'Внесіть необхідні зміни.';
+$txt['lp_pages_extra']                = 'Сторінки порталу';
+$txt['lp_pages_search']               = 'Аліас або заголовок';
+$txt['lp_page_types']                 = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                 = 'Аліас';
+$txt['lp_page_alias_subtext']         = 'Аліас сторінки має починатися з латинської літери і складатися з малих латинських букв, цифр і знака підкреслення.';
+$txt['lp_page_type']                  = 'Тип сторінки';
+$txt['lp_page_description']           = 'Опис';
+$txt['lp_page_keywords']              = 'Ключові слова';
+$txt['lp_page_keywords_only_unique']  = 'Можна додавати тільки унікальні теги';
+$txt['lp_page_keywords_enter_to_add'] = 'Натисніть Enter для додавання <b>«${value}»</b>';
+$txt['lp_page_publish_datetime']      = 'Дата і час публікації';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показувати автора і дату створення',
@@ -230,17 +232,75 @@ $txt['lp_tab_appearance']       = 'Оформлення';
 $txt['lp_tab_tuning']           = 'Тюнінг';
 
 // Import and Export
-$txt['lp_pages_export']                  = 'Експорт сторінок';
-$txt['lp_pages_import']                  = 'Імпорт сторінок';
-$txt['lp_pages_export_tab_description']  = 'Тут можна експортувати потрібні сторінки для створення резервної копії або для перенесення на інший форум.';
-$txt['lp_pages_import_tab_description']  = 'Тут можна імпортувати з резервної копії збережені раніше сторінки порталу.';
-$txt['lp_blocks_export']                 = 'Експорт блоків';
-$txt['lp_blocks_import']                 = 'Імпорт блоків';
-$txt['lp_blocks_export_tab_description'] = 'Тут можна експортувати потрібні блоки для створення резервної копії або для перенесення на інший форум.';
-$txt['lp_blocks_import_tab_description'] = 'Тут можна імпортувати з резервної копії збережені раніше блокі порталу.';
-$txt['lp_export_run']                    = 'Експортувати виділені';
-$txt['lp_import_run']                    = 'Імпортувати';
-$txt['lp_export_all']                    = 'Експортувати всі';
+$txt['lp_pages_export']              = 'Експорт сторінок';
+$txt['lp_pages_import']              = 'Імпорт сторінок';
+$txt['lp_pages_export_description']  = 'Тут можна експортувати потрібні сторінки для створення резервної копії або для перенесення на інший форум.';
+$txt['lp_pages_import_description']  = 'Тут можна імпортувати з резервної копії збережені раніше сторінки порталу.';
+$txt['lp_blocks_export']             = 'Експорт блоків';
+$txt['lp_blocks_import']             = 'Імпорт блоків';
+$txt['lp_blocks_export_description'] = 'Тут можна експортувати потрібні блоки для створення резервної копії або для перенесення на інший форум.';
+$txt['lp_blocks_import_description'] = 'Тут можна імпортувати з резервної копії збережені раніше блокі порталу.';
+$txt['lp_export_run']                = 'Експортувати виділені';
+$txt['lp_import_run']                = 'Імпортувати';
+$txt['lp_export_all']                = 'Експортувати всі';
+
+// Plugins
+$txt['lp_plugins']                    = 'Плагіни';
+$txt['lp_plugins_manage']             = 'Управление плагинами';
+$txt['lp_plugins_manage_description'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a> або кнопочкою «+» нижче.';
+$txt['lp_plugins_desc']               = 'Плагіни розширюють можливості порталу і його компонентів, надаючи додаткові функції, яких немає в ядрі.';
+$txt['lp_plugins_add']                = 'Додати плагін';
+$txt['lp_plugins_add_title']          = 'Додавання плагіна';
+$txt['lp_plugins_add_description']    = 'Майстер створення плагінів допоможе підготувати болванку для подальших змін. Уважно заповніть пропоновані поля.';
+$txt['lp_plugins_add_information']    = 'Файли плагіна будуть збережені в директорії %1$s<br>Обов\'язково загляньте туди і перевірте/відредагуйте потрібні файли.';
+
+$txt['lp_plugins_tab_content']    = 'Основні дані';
+$txt['lp_plugins_tab_copyrights'] = 'Авторське право';
+$txt['lp_plugins_tab_settings']   = 'Настройка';
+$txt['lp_plugins_tab_tuning']     = 'Додатково';
+
+$txt['lp_plugins_hooks_types'] = array(
+	'block'     => 'Блок',
+	'editor'    => 'Редактор',
+	'comment'   => 'Віджет коментарів',
+	'parser'    => 'Парсер контента',
+	'article'   => 'Обробка статей',
+	'frontpage' => 'Макет головної сторінки',
+	'impex'     => 'Імпорт та експорт',
+	'other'     => 'Різне'
+);
+
+$txt['lp_plugin_name']              = 'Назва плагіна';
+$txt['lp_plugin_name_subtext']      = 'Латинськими літерами, без пробілів!';
+$txt['lp_plugin_type']              = 'Тип плагіна';
+$txt['lp_plugin_site_subtext']      = 'Сайт, на якому можна буде завантажити нові версії цього плагіна.';
+$txt['lp_plugin_license']           = 'Ліцензія плагіна';
+$txt['lp_plugin_license_own']       = 'Своя ліцензія';
+$txt['lp_plugin_license_name']      = 'Назва ліцензі';
+$txt['lp_plugin_license_link']      = 'Посилання на ліцензію';
+$txt['lp_plugin_smf_hooks']         = 'Чи використовуються хуки SMF?';
+$txt['lp_plugin_components']        = 'Чи використовуються хуки SMF?';
+$txt['lp_plugin_components_name']   = 'Назва компонента';
+$txt['lp_plugin_components_link']   = 'Посилання на сайт компонента';
+$txt['lp_plugin_components_author'] = 'Автор компонента';
+
+$txt['lp_plugin_option_name']  = 'Ім\'я опції (латиниця)';
+$txt['lp_plugin_option_type']  = 'Тип опції';
+$txt['lp_plugin_option_types'] = array(
+	'text'       => 'Текстове поле',
+	'url'        => 'Веб-адрес',
+	'color'      => 'Вибір кольору',
+	'int'        => 'Введення чисел',
+	'check'      => 'Поле-прапорець',
+	'multicheck' => 'Список з вибором декількох значень',
+	'select'     => 'Список'
+);
+
+$txt['lp_plugin_option_default_value']        = 'Значення за замовчуванням';
+$txt['lp_plugin_option_variants']             = 'Можливі значення';
+$txt['lp_plugin_option_variants_placeholder'] = 'Кілька варіантів через кому';
+$txt['lp_plugin_option_translations']         = 'Локалізація';
+$txt['lp_plugin_new_option']                  = 'Додати опцію';
 
 // Tags
 $txt['lp_all_page_tags']          = 'Всі теги сторінок порталу';
@@ -286,7 +346,12 @@ $txt['lp_post_error_no_unique_alias'] = 'Сторінка з таким аліа
 $txt['lp_post_error_no_content']      = 'Не вказано зміст!';
 $txt['lp_post_error_no_areas']        = 'Не вказана область разташування!';
 $txt['lp_post_error_no_valid_areas']  = 'Область розміщення задана неправильно!';
+$txt['lp_post_error_no_name']         = 'Не вказано ім\'я!';
+$txt['lp_post_error_no_valid_name']   = 'Зазначене ім\'я не відповідає правилам!';
+$txt['lp_post_error_no_unique_name']  = 'Плагін з таким ім\'ям вже існує!';
+$txt['lp_post_error_no_description']  = 'Не вказано опис!';
 $txt['lp_addon_not_installed']        = 'Плагін %1$s не встановлений';
+$txt['lp_addon_add_failed']           = 'Директорія <strong>/Sources/LightPortal/addons</strong> повинна мати права на запис!';
 $txt['lp_wrong_import_file']          = 'Неправильний файл для імпорту...';
 $txt['lp_import_failed']              = 'Не вдалося здійснити імпорт...';
 

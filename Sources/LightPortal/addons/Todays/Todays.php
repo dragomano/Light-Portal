@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\Todays;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,28 +20,54 @@ if (!defined('SMF'))
 class Todays
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-calendar-day';
 
 	/**
-	 * What is displayed (birthdays|holidays|events|calendar)
-	 *
-	 * Что отображаем (birthdays|holidays|events|calendar)
-	 *
 	 * @var string
 	 */
 	private $type = 'calendar';
 
 	/**
-	 * Adding the block options
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+	}
+
+	/**
+	 * Hide Calendar in the main menu
 	 *
-	 * Добавляем параметры блока
+	 * Убираем Календарь из главного меню
 	 *
+	 * @param array $buttons
+	 * @return void
+	 */
+	public function menuButtons(&$buttons)
+	{
+		global $modSettings;
+
+		$buttons['calendar']['show'] = empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+	}
+
+	/**
+	 * @param array $config_vars
+	 * @return void
+	 */
+	public function addSettings(&$config_vars)
+	{
+		global $txt, $scripturl;
+
+		$config_vars[] = array(
+			'check',
+			'lp_todays_addon_hide_calendar_in_menu',
+			'subtext' => sprintf($txt['lp_todays_addon_hide_calendar_in_menu_subtext'], $scripturl . '?action=admin;area=managecalendar;sa=settings')
+		);
+	}
+
+	/**
 	 * @param array $options
 	 * @return void
 	 */
@@ -51,10 +77,6 @@ class Todays
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -68,10 +90,6 @@ class Todays
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -127,10 +145,6 @@ class Todays
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id

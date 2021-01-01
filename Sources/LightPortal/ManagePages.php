@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -55,7 +55,7 @@ class ManagePages
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_tab_description']
+			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_description']
 		);
 
 		loadJavaScriptFile('light_portal/manage_pages.js');
@@ -81,7 +81,7 @@ class ManagePages
 		$listOptions = array(
 			'id' => 'pages',
 			'items_per_page' => $this->num_pages,
-			'title' => $txt['lp_extra_pages'],
+			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
 			'default_sort_col' => 'date',
@@ -93,7 +93,7 @@ class ManagePages
 				)
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalQuantity'),
+				'function' => array($this, 'getTotalCount'),
 				'params' => array(
 					(!empty($search_params['string']) ? ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)' : ''),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
@@ -248,8 +248,8 @@ class ManagePages
 					'position' => 'after_title',
 					'value' => '
 						<i class="fas fa-search centericon"></i>
-						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_search_pages'] . '">
-						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button" style="float:none">',
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '">
+						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button floatnone">',
 					'class' => 'floatright'
 				),
 				array(
@@ -260,7 +260,7 @@ class ManagePages
 							<option value="action_on">' . $txt['lp_action_on'] . '</option>
 							<option value="action_off">' . $txt['lp_action_off'] . '</option>' : '') . '
 						</select>
-						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value != \'\' && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
+						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
 				)
 			)
@@ -269,7 +269,7 @@ class ManagePages
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=add;' . $context['session_var'] . '=' . $context['session_id'] . '" x-data>
-					<i class="fas fa-plus" @mouseover="page.toggleSpin($el.children[0])" @mouseout="page.toggleSpin($el.children[0])" title="' . $txt['lp_pages_add'] . '"></i>
+					<i class="fas fa-plus" @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" title="' . $txt['lp_pages_add'] . '"></i>
 				</a>
 			</span>' . $listOptions['title'];
 
@@ -352,7 +352,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return int
 	 */
-	public function getTotalQuantity(string $query_string = '', array $query_params = [])
+	public function getTotalCount(string $query_string = '', array $query_params = [])
 	{
 		global $smcFunc, $user_info;
 
@@ -554,7 +554,7 @@ class ManagePages
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_add_tab_description']
+			'description' => $txt['lp_pages_add_description']
 		);
 
 		Helpers::prepareForumLanguages();
@@ -590,7 +590,7 @@ class ManagePages
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_edit_tab_description']
+			'description' => $txt['lp_pages_edit_description']
 		);
 
 		$context['lp_current_page'] = (new Page)->getDataByItem($item);
@@ -704,8 +704,8 @@ class ManagePages
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
-			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? ($user_info['is_admin'] ? 0 : 2),
-			'status'      => $user_info['is_admin'] ? 1 : (int) allowedTo('light_portal_approve_pages'),
+			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
+			'status'      => $user_info['is_admin'] ? Page::STATUS_ACTIVE : (int) allowedTo('light_portal_approve_pages'),
 			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
 			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
@@ -754,7 +754,7 @@ class ManagePages
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
-		if (!empty($data['alias']) && $this->isUnique($data))
+		if (!empty($data['alias']) && $this->isNotUnique($data))
 			$post_errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
@@ -796,7 +796,7 @@ class ManagePages
 	 */
 	private function prepareFormFields()
 	{
-		global $context, $txt, $modSettings, $language;
+		global $modSettings, $language, $context, $txt;
 
 		checkSubmitOnce('register');
 
@@ -1328,7 +1328,7 @@ class ManagePages
 	 * @param array $data
 	 * @return bool
 	 */
-	private function isUnique(array $data)
+	private function isNotUnique(array $data)
 	{
 		global $smcFunc;
 

@@ -41,8 +41,10 @@ function template_page_post()
 	</div>';
 	}
 
+	$fields = $context['posting_fields'];
+
 	echo '
-	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($event.target, $refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
@@ -52,7 +54,7 @@ function template_page_post()
 				<input id="tab3" type="radio" name="tabs">
 				<label for="tab3" class="bg odd">', $txt['lp_tab_tuning'], '</label>
 				<section id="content-tab1" class="bg even">
-					', template_post_tab();
+					', template_post_tab($fields);
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
@@ -62,10 +64,10 @@ function template_page_post()
 	echo '
 				</section>
 				<section id="content-tab2" class="bg even">
-					', template_post_tab('seo'), '
+					', template_post_tab($fields, 'seo'), '
 				</section>
 				<section id="content-tab3" class="bg even">
-					', template_post_tab('tuning'), '
+					', template_post_tab($fields, 'tuning'), '
 				</section>
 			</div>
 			<br class="clear">

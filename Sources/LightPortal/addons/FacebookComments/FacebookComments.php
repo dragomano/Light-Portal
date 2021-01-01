@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,19 +22,11 @@ if (!defined('SMF'))
 class FacebookComments
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'comment';
 
 	/**
-	 * The IDs list of dark themes
-	 *
-	 * Список идентификаторов тёмных тем оформления
-	 *
 	 * @var string
 	 */
 	private $dark_themes = '';
@@ -54,10 +46,6 @@ class FacebookComments
 	}
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */

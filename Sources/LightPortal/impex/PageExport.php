@@ -11,10 +11,10 @@ use Bugo\LightPortal\ManagePages;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -39,7 +39,7 @@ class PageExport extends AbstractExport
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_export_tab_description']
+			'description' => $txt['lp_pages_export_description']
 		);
 
 		$this->run();
@@ -55,7 +55,7 @@ class PageExport extends AbstractExport
 				'function' => array($pages, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($pages, 'getTotalQuantity')
+				'function' => array($pages, 'getTotalCount')
 			),
 			'columns' => array(
 				'id' => array(
@@ -127,9 +127,9 @@ class PageExport extends AbstractExport
 				array(
 					'position' => 'below_table_data',
 					'value' => '
+						<input type="hidden">
 						<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
-						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">',
-					'class' => 'floatright'
+						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">'
 				)
 			)
 		);
@@ -146,14 +146,14 @@ class PageExport extends AbstractExport
 	 *
 	 * Формируем данные в XML-формате
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	protected function getData()
 	{
 		global $smcFunc;
 
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
-			return false;
+			return [];
 
 		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
 

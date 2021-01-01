@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,40 +22,33 @@ if (!defined('SMF'))
 class AdsBlock
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fas fa-ad';
 
 	/**
-	 * Default placement of ads block
-	 *
-	 * Размещение рекламного блока по умолчанию
-	 *
 	 * @var string
 	 */
 	private $placement = '';
 
 	/**
-	 * Board ids for block output
-	 *
-	 * Идентификаторы разделов для вывода блока
-	 *
 	 * @var string
 	 */
 	private $boards = '';
 
 	/**
-	 * Topic ids for block output
-	 *
-	 * Идентификаторы тем для вывода блока
-	 *
 	 * @var string
 	 */
 	private $topics = '';
+
+	/**
+	 * @param array $config_vars
+	 * @return void
+	 */
+	public function addSettings(&$config_vars)
+	{
+		$config_vars[] = array('int', 'lp_ads_block_addon_min_replies');
+	}
 
 	/**
 	 * Add advertising areas to panel settings
@@ -74,10 +67,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -91,10 +80,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -114,10 +99,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Override some standard fields
-	 *
-	 * Переопределяем некоторые стандартные поля
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -208,10 +189,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Run necessary hooks
-	 *
-	 * Запускаем необходимые хуки
-	 *
 	 * @return void
 	 */
 	public function init()
@@ -242,7 +219,7 @@ class AdsBlock
 		if (empty($context['current_board']))
 			return;
 
-		$context['lp_ads_blocks'] = Helpers::cache('ads_block_addon', 'getData', __CLASS__);
+		$context['lp_ads_blocks'] = $this->getData();
 
 		if (!empty($context['lp_ads_blocks']))
 			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
@@ -276,7 +253,10 @@ class AdsBlock
 	 */
 	public function displayButtons()
 	{
-		global $context;
+		global $modSettings, $context;
+
+		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
+			return;
 
 		require_once(__DIR__ . '/Template.php');
 
@@ -295,7 +275,10 @@ class AdsBlock
 	 */
 	public function prepareDisplayContext(&$output, &$message, $counter)
 	{
-		global $options, $context;
+		global $modSettings, $options, $context;
+
+		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
+			return;
 
 		$current_counter = empty($options['view_newest_first']) ? $context['start'] : $context['total_visible_posts'] - $context['start'];
 

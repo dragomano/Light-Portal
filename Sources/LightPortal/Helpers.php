@@ -14,10 +14,10 @@ use Bugo\LightPortal\Utils\Session;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -270,7 +270,7 @@ class Helpers
 
 		$current_time = time();
 
-		$tm = date('H:i', $timestamp);
+		$tm = date('H:i', $timestamp); // Use 'g:i a' for am/pm
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);
@@ -490,7 +490,7 @@ class Helpers
 			return false;
 
 		return !empty($modSettings['lp_frontpage_mode'])
-			&& $modSettings['lp_frontpage_mode'] == 1
+			&& $modSettings['lp_frontpage_mode'] == 'chosen_page'
 			&& !empty($modSettings['lp_frontpage_alias'])
 			&& $modSettings['lp_frontpage_alias'] == $alias;
 	}
@@ -659,7 +659,7 @@ class Helpers
 				ob_start();
 
 				try {
-					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
+					$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
 
 					eval($content);
 				} catch (\ParseError $p) {
@@ -777,5 +777,40 @@ class Helpers
 		}
 
 		return $titles;
+	}
+
+	/**
+	 * Get the total number of active pages
+	 *
+	 * Подсчитываем общее количество активных страниц
+	 *
+	 * @param bool $all - подсчитывать все страницы
+	 * @return int
+	 */
+	public static function getNumActivePages($all = false)
+	{
+		global $user_info, $smcFunc;
+
+		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}' . ($user_info['is_admin'] || $all ? '' : '
+					AND author_id = {int:user_id}'),
+				array(
+					'status'  => Page::STATUS_ACTIVE,
+					'user_id' => $user_info['id']
+				)
+			);
+
+			[$num_pages] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages, LP_CACHE_TIME);
+		}
+
+		return (int) $num_pages;
 	}
 }

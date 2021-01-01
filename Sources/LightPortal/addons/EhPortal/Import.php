@@ -11,10 +11,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -55,7 +55,7 @@ class Import extends AbstractImport
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalQuantity')
+				'function' => array($this, 'getTotalCount')
 			),
 			'columns' => array(
 				'id' => array(
@@ -118,9 +118,9 @@ class Import extends AbstractImport
 				array(
 					'position' => 'below_table_data',
 					'value' => '
+						<input type="hidden">
 						<input type="submit" name="import_selection" value="' . $txt['lp_eh_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_eh_portal_addon_button_all'] . '" class="button">',
-					'class' => 'floatright'
+						<input type="submit" name="import_all" value="' . $txt['lp_eh_portal_addon_button_all'] . '" class="button">'
 				)
 			)
 		);
@@ -190,7 +190,7 @@ class Import extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalQuantity()
+	public function getTotalCount()
 	{
 		global $smcFunc, $db_prefix;
 

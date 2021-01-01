@@ -11,10 +11,10 @@ use Bugo\LightPortal\ManageBlocks;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -41,7 +41,7 @@ class BlockExport extends AbstractExport
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_export_tab_description']
+			'description' => $txt['lp_blocks_export_description']
 		);
 
 		$this->run();
@@ -63,8 +63,10 @@ class BlockExport extends AbstractExport
 	{
 		global $smcFunc;
 
-		if (Helpers::post()->isEmpty('items'))
+		if (Helpers::post()->isEmpty('blocks') && Helpers::post()->has('export_all') === false)
 			return [];
+
+		$blocks = !empty(Helpers::post('blocks')) && Helpers::post()->has('export_all') === false ? Helpers::post('blocks') : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -72,11 +74,11 @@ class BlockExport extends AbstractExport
 				pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})
-			WHERE b.block_id IN ({array_int:blocks})',
+				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})' . (!empty($blocks) ? '
+			WHERE b.block_id IN ({array_int:blocks})' : ''),
 			array(
 				'type'   => 'block',
-				'blocks' => Helpers::post('items')
+				'blocks' => $blocks
 			)
 		);
 

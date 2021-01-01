@@ -64,7 +64,7 @@ function template_show_page()
 			</span>
 		</div>
 		<article class="roundframe" itemprop="articleBody">
-			<h3 style="display: none;">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
+			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 
 	if (!empty($context['lp_page']['keywords']) && !empty($modSettings['lp_show_tags_on_page'])) {
 		echo '
@@ -109,7 +109,7 @@ function template_show_page()
  */
 function show_likes_block()
 {
-	global $modSettings, $context, $scripturl, $txt, $settings;
+	global $modSettings, $context, $scripturl, $txt;
 
 	if (empty($modSettings['enable_likes']))
 		return;
@@ -160,7 +160,7 @@ function show_likes_block()
  */
 function show_comment_block()
 {
-	global $modSettings, $context, $options, $txt, $settings;
+	global $modSettings, $context, $options, $txt;
 
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
@@ -241,7 +241,7 @@ function show_comment_block()
 			</div>
 		</aside>
 		<script>
-			let commentBlockToggle = new blockToggle({
+			new Toggler({
 				isCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggleAltExpandedTitle: ', JavaScriptEscape($txt['hide']), ',
 				toggleAltCollapsedTitle: ', JavaScriptEscape($txt['show']), ',

@@ -12,17 +12,42 @@ use Bugo\LightPortal\Subs;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageArticle implements ArticleInterface
+class PageArticle extends AbstractArticle
 {
+	/**
+	 * Initialize class properties
+	 *
+	 * Инициализируем свойства класса
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		$this->params = [
+			'status'       => Page::STATUS_ACTIVE,
+			'current_time' => time(),
+			'permissions'  => Helpers::getPermissions()
+		];
+
+		$this->orders = [
+			'CASE WHEN (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) > 0 THEN 0 ELSE 1 END, comment_date DESC',
+			'p.created_at DESC',
+			'p.created_at',
+			'date DESC'
+		];
+
+		Subs::runAddons('frontPages', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+	}
+
 	/**
 	 * Get active pages of the portal
 	 *
@@ -39,41 +64,25 @@ class PageArticle implements ArticleInterface
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getAllTitles();
 
-			$custom_columns = [];
-			$custom_tables  = [];
-			$custom_wheres  = [];
-
-			$custom_parameters = [
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
-				'start'        => $start,
-				'limit'        => $limit
-			];
-
-			$custom_sorting = [
-				'CASE WHEN (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) > 0 THEN 0 ELSE 1 END, comment_date DESC',
-				'p.created_at DESC',
-				'p.created_at',
-				'date DESC'
-			];
-
-			Subs::runAddons('frontPages', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+			$this->params += array(
+				'start' => $start,
+				'limit' => $limit
+			);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-					mem.real_name AS author_name, (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_name, (SELECT lp_com.message FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_message' . (!empty($custom_columns) ? ', ' . implode(', ', $custom_columns) : '') . '
+					mem.real_name AS author_name, (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_name, (SELECT lp_com.message FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_message' . (!empty($this->columns) ? ', ' . implode(', ', $this->columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
+					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
+				$this->params
 			);
 
 			$pages = [];
@@ -102,7 +111,7 @@ class PageArticle implements ArticleInterface
 						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
-					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_message'] : ($row['description'] ?: strip_tags($row['content'])));
+					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? strip_tags(parse_bbc($row['comment_message'])) : ($row['description'] ?: strip_tags($row['content'])));
 
 					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
 						$pages[$row['page_id']]['date'] = $row['date'];
@@ -129,22 +138,20 @@ class PageArticle implements ArticleInterface
 	 *
 	 * @return int
 	 */
-	public function getTotal()
+	public function getTotalCount()
 	{
 		global $user_info, $smcFunc;
 
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND created_at <= {int:current_time}
-					AND permissions IN ({array_int:permissions})',
-				array(
-					'status'       => Page::STATUS_ACTIVE,
-					'current_time' => time(),
-					'permissions'  => Helpers::getPermissions()
-				)
+				SELECT COUNT(p.page_id)
+				FROM {db_prefix}lp_pages AS p' . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
+				WHERE p.status = {int:status}
+					AND p.created_at <= {int:current_time}
+					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
+				$this->params
 			);
 
 			[$num_pages] = $smcFunc['db_fetch_row']($request);
@@ -152,7 +159,7 @@ class PageArticle implements ArticleInterface
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_pages, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
 		}
 
 		return (int) $num_pages;

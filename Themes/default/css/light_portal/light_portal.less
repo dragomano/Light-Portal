@@ -247,36 +247,36 @@ section {
 				display: none;
 			}
 
-			.card__info-hover {
+			.card-info-hover {
 				opacity: 1;
 				z-index: 1;
 			}
 
-			.card__img--hover {
+			.card-img-hover {
 				height: 100%;
 				opacity: 0.3;
 			}
 
-			.card__info {
+			.card-info {
 				background-color: transparent;
 				position: relative;
 			}
 		}
 
-		.card__info-hover {
+		.card-info-hover {
 			position: absolute;
 			padding: 16px;
 			opacity: 0;
 			top: 0;
 			right: 0;
 
-			.card__edit-icon {
+			.card-edit-icon {
 				position: relative;
 				z-index: 2;
 			}
 		}
 
-		.card__img {
+		.card-img {
 			visibility: hidden;
 			background-size: cover;
 			background-position: center;
@@ -287,7 +287,7 @@ section {
 			border-top-right-radius: 12px;
 		}
 
-		.card__img--hover {
+		.card-img-hover {
 			transition: 0.2s all ease-out;
 			background-size: cover;
 			background-position: center;
@@ -300,23 +300,19 @@ section {
 			top: 0;
 		}
 
-		.card__info {
+		.card-info {
 			border-bottom-left-radius: 12px;
 			border-bottom-right-radius: 12px;
 			padding: 16px 24px 24px 24px;
 			display: flex;
 			flex-direction: column;
 
-			&.alt_style {
-				flex-direction: column-reverse;
-			}
-
-			.card__category {
+			.card-date {
 				font-weight: 500;
 				color: @article-category-color;
 			}
 
-			.card__title {
+			.card-title {
 				text-transform: uppercase;
 				margin-top: 5px;
 				margin-bottom: 10px;
@@ -330,11 +326,16 @@ section {
 				}
 			}
 
-			.card__by {
+			p {
+				line-height: 22.4px;
+				opacity: .9;
+			}
+
+			.card-by {
 				font-weight: 500;
 			}
 
-			.card__author {
+			.card-author {
 				font-weight: 600;
 				text-decoration: none;
 				color: @article-author-color;
@@ -517,23 +518,6 @@ section {
 	}
 }
 
-.footer {
-	.infobox,
-	.errorbox {
-		display: none;
-	}
-}
-
-#postpage,
-#postblock {
-	#post_header {
-		dt,dd {
-			float: none;
-			width: auto;
-		}
-	}
-}
-
 @media (max-width: 480px) {
 	.lp_default_blocks,
 	.lp_additional_blocks {
@@ -568,21 +552,6 @@ section {
 			}
 		}
 	}
-	#postpage,
-	#postblock {
-		.button {
-			float: none !important;
-			width: 100%;
-			margin-left: 0 !important;
-		}
-	}
-	#lp_layout {
-		input {
-			&[type="radio"] {
-				width: auto;
-			}
-		}
-	}
 	.related_pages {
 		.article_list {
 			grid-template-columns: repeat(2, 1fr);
@@ -607,6 +576,23 @@ section {
 		.col-xs-12 {
 			flex-basis: 95%;
 			margin-left: 10px;
+		}
+	}
+	#lp_post {
+		.button {
+			float: none !important;
+			width: 100%;
+			margin-left: 0 !important;
+		}
+	}
+}
+
+@media (max-width: 720px) {
+	#lp_layout {
+		input {
+			&[type="radio"] {
+				width: auto;
+			}
 		}
 	}
 }
@@ -771,6 +757,15 @@ section {
 #tab3:checked~#content-tab3,
 #tab4:checked~#content-tab4 {
 	display: block;
+}
+
+.add_option {
+	width: 100%;
+
+	select,
+	input {
+		width: 100%;
+	}
 }
 
 @media screen and (max-width: 680px) {
@@ -1006,7 +1001,7 @@ dl {
 	}
 }
 
-/* Flipster Carousel */
+/* FlipsterCarousel */
 .flipster {
 	overflow: hidden !important;
 
@@ -1023,7 +1018,7 @@ dl {
 	}
 }
 
-/* Slick Slider */
+/* SlickSlider */
 .slick-slider {
 	min-width: 0;
 	margin: 0 20px;
@@ -1089,38 +1084,45 @@ dl {
 	}
 }
 
-/* PageScroll */
-.button_go_up,
-.button_go_down {
-	display: none;
-	position: fixed;
-	z-index: 9999;
-	right: 10px;
-	background: #3e5a78;
-	.border-radius(100%);
-	.pointer;
-	color: #fff;
-	text-align: center;
-	font: normal normal 42px/42px sans-serif;
-	text-shadow: 0 1px 2px #000;
-	opacity: .5;
-	margin-bottom: 5px;
-	width: 42px;
-	height: 42px;
-}
-.button_go_up {
-	bottom: 60px;
+/* Search */
+.easy-autocomplete {
+	input {
+		width: 100% !important;
+	}
 
-	&:hover {
-		opacity: 1;
-		box-shadow: 0 5px 0.5em -1px #666;
+	.easy-autocomplete-container {
+		z-index: 1000 !important;
+		position: inherit !important;
 	}
 }
-.button_go_down {
-	bottom: 10px;
 
-	&:hover {
-		opacity: 1;
-		box-shadow: 0 5px 0.5em -1px #666;
+/* BoardStats */
+.block_board_stats {
+	.board_stats_areas {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		grid-gap: 0 10px;
+
+		div {
+			display: flex;
+			flex-direction: column;
+			margin-top: 2px;
+
+			h4 {
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
+
+			ul {
+				margin-left: -1em;
+			}
+		}
+	}
+}
+
+/* AvatarGenerator */
+.comment_avatar {
+	svg {
+		max-width: 50px;
 	}
 }

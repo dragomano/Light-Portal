@@ -10,10 +10,10 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -22,100 +22,56 @@ if (!defined('SMF'))
 class SlickSlider
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
 	public $addon_icon = 'fab fa-slideshare';
 
 	/**
-	 * Display arrows (true|false)
-	 *
-	 * Отображать стрелки «Вперёд и Назад»
-	 *
 	 * @var bool
 	 */
 	private $show_arrows = true;
 
 	/**
-	 * Display slider dots
-	 *
-	 * Отображать точки под слайдером
-	 *
 	 * @var bool
 	 */
 	private $show_dots = true;
 
 	/**
-	 * Adapts slider height to the current slide
-	 *
-	 * Адаптирует высоту слайдера к текущему слайду
-	 *
 	 * @var bool
 	 */
 	private $adaptive_height = true;
 
 	/**
-	 * The number of slides to show at a time
-	 *
-	 * Количество одновременно отображаемых слайдов
-	 *
 	 * @var int
 	 */
 	private $slides_to_show = 3;
 
 	/**
-	 * Number of slides to scroll at a time
-	 *
-	 * Количество слайдов, прокручиваемых за раз
-	 *
 	 * @var int
 	 */
 	private $slides_to_scroll = 1;
 
 	/**
-	 * The slider autoplay
-	 *
-	 * Автозапуск слайдера
-	 *
 	 * @var bool
 	 */
 	private $autoplay = true;
 
 	/**
-	 * Auto play change interval
-	 *
-	 * Интервал переключения между слайдами
-	 *
 	 * @var int
 	 */
 	private $autoplay_speed = 800;
 
 	/**
-	 * Transition speed
-	 *
-	 * Скорость перехода
-	 *
 	 * @var int
 	 */
 	private $speed = 1000;
 
 	/**
-	 * Image list for slider
-	 *
-	 * Список изображений для слайдера
-	 *
 	 * @var string
 	 */
 	private $images = '';
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -133,10 +89,6 @@ class SlickSlider
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
@@ -158,10 +110,6 @@ class SlickSlider
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
 	public function prepareBlockFields()
@@ -261,10 +209,6 @@ class SlickSlider
 	}
 
 	/**
-	 * Get the block html code
-	 *
-	 * Получаем html-код блока
-	 *
 	 * @param int $block_id
 	 * @param array $parameters
 	 * @return string
@@ -294,10 +238,6 @@ class SlickSlider
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
 	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
@@ -349,10 +289,6 @@ class SlickSlider
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */

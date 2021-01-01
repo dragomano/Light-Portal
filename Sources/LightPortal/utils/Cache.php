@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -33,7 +33,7 @@ class Cache
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public function __invoke(?string $key, ?string $funcName, ?string $class, int $time = 3600, ...$vars)
+	public function __invoke($key, $funcName, $class, $time = 3600, ...$vars)
 	{
 		if (empty($key))
 			return false;

@@ -3,6 +3,8 @@
 $txt['lp_block_types']['ads_block']              = 'Ads block';
 $txt['lp_block_types_descriptions']['ads_block'] = 'Displays custom HTML code in boards and topics.';
 
+$txt['lp_ads_block_addon_min_replies'] = 'Do not display ads in topics that have less than the specified number of replies';
+
 $txt['lp_block_placement_set']['ads']         = 'Boards and topics';
 $txt['lp_ads_block_addon_ads_boards']         = 'Boards';
 $txt['lp_ads_block_addon_ads_boards_subtext'] = 'Enter boards IDs to display ads only there. Otherwise, the block will be displayed in all boards.';

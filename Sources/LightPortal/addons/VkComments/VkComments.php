@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\VkComments;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,28 +20,16 @@ if (!defined('SMF'))
 class VkComments
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'comment';
 
 	/**
-	 * Allow attachments in comments (true|false)
-	 *
-	 * Разрешить вложения в комментариях (true|false)
-	 *
 	 * @var bool
 	 */
 	private $allow_attachments = true;
 
 	/**
-	 * Automatically publish the comment to the user's VK page (true|false)
-	 *
-	 * Автоматическая публикация комментария на странице пользователя (true|false)
-	 *
 	 * @var bool
 	 */
 	private $auto_publish = false;
@@ -61,10 +49,6 @@ class VkComments
 	}
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */

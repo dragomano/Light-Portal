@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -37,12 +37,15 @@ class Integration
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
 		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
 		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
@@ -75,17 +78,18 @@ class Integration
 	 */
 	public function userInfo()
 	{
-		global $context, $smcFunc, $modSettings, $user_info;
+		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
 		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.4.1',
-			'LP_RELEASE_DATE' => '2020-12-14',
+			'LP_VERSION'      => '1.5',
+			'LP_RELEASE_DATE' => '2021-01-01',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
+			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
 			'MAX_MSG_LENGTH'  => 65535
 		];
@@ -103,8 +107,15 @@ class Integration
 	 */
 	public function preCssOutput()
 	{
-		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
-		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
+		global $context;
+
+		if (SMF === 'BACKGROUND')
+			return;
+
+		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
+
+		if (!empty($context['portal_next_page']))
+			echo "\n\t" . '<link rel="prerender" href="', $context['portal_next_page'], '">';
 	}
 
 	/**
@@ -125,7 +136,7 @@ class Integration
 
 		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
-		$context['lp_num_active_pages'] = Subs::getNumActivePages();
+		$context['lp_num_active_pages'] = Helpers::getNumActivePages();
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
@@ -256,10 +267,8 @@ class Integration
 
 		(new Block)->show();
 
-		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
-		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
-			$buttons['admin']['show'] = true;
-
+		// Display "Portal settings" in Main Menu => Admin
+		if ($context['user']['is_admin']) {
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
 				$counter++;
@@ -270,18 +279,12 @@ class Integration
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				$context['user']['is_admin'] ? array(
+				array(
 					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
 						'show'  => true,
 						'sub_buttons' => array(
-							'plugins' => array(
-								'title' => $txt['lp_plugins'],
-								'href'  => $scripturl . '?action=admin;area=lp_settings;sa=plugins',
-								'amt'   => count($context['lp_enabled_plugins']),
-								'show'  => true
-							),
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
@@ -292,23 +295,16 @@ class Integration
 								'title'   => $txt['lp_pages'],
 								'href'    => $scripturl . '?action=admin;area=lp_pages',
 								'amt'     => $context['lp_num_active_pages'],
+								'show'    => true
+							),
+							'plugins' => array(
+								'title'   => $txt['lp_plugins'],
+								'href'    => $scripturl . '?action=admin;area=lp_plugins',
+								'amt'     => count($context['lp_enabled_plugins']),
 								'show'    => true,
 								'is_last' => true
 							)
 						)
-					)
-				) : array(
-					'portal_blocks' => array(
-						'title' => $txt['lp_blocks'],
-						'href'  => $scripturl . '?action=admin;area=lp_blocks',
-						'amt'   => count($context['lp_active_blocks']),
-						'show'  => $context['allow_light_portal_manage_blocks']
-					),
-					'portal_pages' => array(
-						'title' => $txt['lp_pages'],
-						'href'  => $scripturl . '?action=admin;area=lp_pages',
-						'amt'   => $context['lp_num_active_pages'],
-						'show'  => $context['allow_light_portal_manage_own_pages']
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
@@ -320,7 +316,7 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		// Display "Portal" item in Main Menu | Отображение пункта "Портал"
+		// Display "Portal" item in Main Menu
 		$buttons = array_merge(
 			array_slice($buttons, 0, 0, true),
 			array(
@@ -342,7 +338,7 @@ class Integration
 		$buttons['home']['icon']    = 'im_on';
 		$buttons['home']['is_last'] = false;
 
-		// Standalone mode | Автономный режим
+		// Standalone mode
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
 			$buttons['portal']['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
@@ -372,6 +368,41 @@ class Integration
 	}
 
 	/**
+	 * Remove comments and alerts on deleting members
+	 *
+	 * Удаляем комментарии и оповещения при удалении пользователей
+	 *
+	 * @param array $users
+	 * @return void
+	 */
+	public function deleteMembers(array $users)
+	{
+		global $smcFunc;
+
+		if (empty($users))
+			return;
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE author_id IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_alerts
+			WHERE id_member IN ({array_int:users})
+				OR id_member_started IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		Helpers::cache()->flush();
+	}
+
+	/**
 	 * Guests cannot to manage the portal!
 	 *
 	 * Гости могут только просматривать портал
@@ -385,7 +416,7 @@ class Integration
 		$context['non_guest_permissions'] = array_merge(
 			$context['non_guest_permissions'],
 			array(
-				'light_portal_manage_blocks',
+				//'light_portal_manage_blocks',
 				'light_portal_manage_own_pages',
 				'light_portal_approve_pages'
 			)
@@ -406,12 +437,12 @@ class Integration
 	{
 		global $context;
 
-		$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
+		//$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
 		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
 
 		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
+		//$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
 		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
 
@@ -523,6 +554,7 @@ class Integration
 						'link'     => '<a href="%2$s">%1$s</a>',
 						'text'     => '<strong>%1$s</strong>'
 					);
+
 					$formats['page_comment_reply_new_reply'] = array(
 						'required' => array('content_subject', 'content_link'),
 						'link'     => '<a href="%2$s">%1$s</a>',
@@ -533,6 +565,68 @@ class Integration
 				}
 			}
 		}
+	}
+
+	/**
+	 * Add the "My pages" item in the profile popup window
+	 *
+	 * Добавляем пункт «Мои страницы» в попап-окне профиля
+	 *
+	 * @param array $profile_areas
+	 * @return void
+	 */
+	public function preProfileAreas(&$profile_areas)
+	{
+		global $context, $txt, $scripturl;
+
+		if (!empty($context['user']['is_admin']))
+			return;
+
+		$profile_areas['info']['areas']['lp_my_pages'] = array(
+			'label' => $txt['lp_my_pages'],
+			'custom_url' => $scripturl . '?action=admin;area=lp_pages',
+			'icon' => 'reports',
+			'enabled' => Helpers::request('area') === 'popup',
+			'permission' => array(
+				'own' => array('light_portal_manage_own_pages'),
+				'any' => array()
+			)
+		);
+	}
+
+	/**
+	 * Register the "My pages" item in the profile popup window
+	 *
+	 * Регистрируем пункт «Мои страницы» в попап-окне профиля
+	 *
+	 * @param array $profile_items
+	 * @return void
+	 */
+	public function profilePopup(&$profile_items)
+	{
+		global $context, $txt;
+
+		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_pages'))
+			return;
+
+		$counter = 0;
+		foreach ($profile_items as $item) {
+			$counter++;
+
+			if ($item['area'] == 'showdrafts')
+				break;
+		}
+
+		$profile_items = array_merge(
+			array_slice($profile_items, 0, $counter, true),
+			array(
+				array(
+					'menu' => 'info',
+					'area' => 'lp_my_pages'
+				)
+			),
+			array_slice($profile_items, $counter, null, true)
+		);
 	}
 
 	/**

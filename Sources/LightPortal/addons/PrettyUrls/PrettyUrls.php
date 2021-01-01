@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\PrettyUrls;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,18 +20,14 @@ if (!defined('SMF'))
 class PrettyUrls
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
 	public $addon_type = 'other';
 
 	/**
-	 * Give a hint about action=portal to PrettyUrls mod
+	 * Give a hint to PrettyUrls mod about "action=portal"
 	 *
-	 * Подсказываем PrettyUrls про action=portal
+	 * Подсказываем PrettyUrls про "action=portal"
 	 *
 	 * @return void
 	 */

@@ -28,7 +28,7 @@ function template_manage_blocks()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					<i class="fas fa-plus" @mouseover="block.toggleSpin($el.children[0])" @mouseout="block.toggleSpin($el.children[0])" title="' . $txt['lp_blocks_add'] . '"></i>
+					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
 			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -49,7 +49,7 @@ function template_manage_blocks()
 
 				echo '
 				<th scope="col" class="title">
-					', $txt['lp_title'], ' / ', $txt['lp_block_note'], '
+					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 				</th>
 				<th scope="col" class="type">
 					', $txt['lp_block_type'], '
@@ -111,7 +111,7 @@ function show_block_entry($id, $data)
 
 	echo '
 		<td class="title">
-			', $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'] ?: $data['note'], '
+			', $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'], '
 		</td>
 		<td class="type">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
@@ -245,8 +245,10 @@ function template_block_post()
 	</div>';
 	}
 
+	$fields = $context['posting_fields'];
+
 	echo '
-	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
 		<div class="roundframe">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
@@ -264,7 +266,7 @@ function template_block_post()
 
 	echo '
 				<section id="content-tab1" class="bg even">
-					', template_post_tab();
+					', template_post_tab($fields);
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
@@ -274,16 +276,16 @@ function template_block_post()
 	echo '
 				</section>
 				<section id="content-tab2" class="bg even">
-					', template_post_tab('access_placement'), '
+					', template_post_tab($fields, 'access_placement'), '
 				</section>
 				<section id="content-tab3" class="bg even">
-					', template_post_tab('appearance'), '
+					', template_post_tab($fields, 'appearance'), '
 				</section>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
 				<section id="content-tab4" class="bg even">
-					', template_post_tab('tuning'), '
+					', template_post_tab($fields, 'tuning'), '
 				</section>';
 	}
 

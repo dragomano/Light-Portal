@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -20,18 +20,14 @@ if (!defined('SMF'))
 class EasyMarkdownEditor
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var array
 	 */
 	public $addon_type = array('block', 'editor');
 
 	/**
-	 * Adding the new content type
+	 * Adding the new content type and block icon
 	 *
-	 * Добавляем новый тип контента
+	 * Добавляем новый тип контента и иконку блока
 	 *
 	 * @return void
 	 */
@@ -45,10 +41,6 @@ class EasyMarkdownEditor
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
@@ -234,10 +226,6 @@ class EasyMarkdownEditor
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */
