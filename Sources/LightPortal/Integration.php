@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.4
+ * @version 1.5
  */
 
 if (!defined('SMF'))
@@ -85,8 +85,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.5 alpha',
-			'LP_RELEASE_DATE' => '2020-12-28',
+			'LP_VERSION'      => '1.5',
+			'LP_RELEASE_DATE' => '2021-01-01',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
@@ -108,6 +108,9 @@ class Integration
 	public function preCssOutput()
 	{
 		global $context;
+
+		if (SMF === 'BACKGROUND')
+			return;
 
 		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
 
@@ -313,7 +316,7 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		// Display "Portal" item in Main Menu | Отображение пункта "Портал"
+		// Display "Portal" item in Main Menu
 		$buttons = array_merge(
 			array_slice($buttons, 0, 0, true),
 			array(
@@ -335,7 +338,7 @@ class Integration
 		$buttons['home']['icon']    = 'im_on';
 		$buttons['home']['is_last'] = false;
 
-		// Standalone mode | Автономный режим
+		// Standalone mode
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			$buttons['portal']['title']   = $txt['lp_portal'];
 			$buttons['portal']['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
@@ -551,6 +554,7 @@ class Integration
 						'link'     => '<a href="%2$s">%1$s</a>',
 						'text'     => '<strong>%1$s</strong>'
 					);
+
 					$formats['page_comment_reply_new_reply'] = array(
 						'required' => array('content_subject', 'content_link'),
 						'link'     => '<a href="%2$s">%1$s</a>',
