@@ -483,14 +483,12 @@ class Integration
 		if (empty($alias))
 			return false;
 
-		$result = [
+		return [
 			'type'        => $type,
 			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
 			'redirect'    => 'page=' . $alias,
 			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
 		];
-
-		return $result;
 	}
 
 	/**
@@ -604,7 +602,7 @@ class Integration
 	 */
 	public function profilePopup(&$profile_items)
 	{
-		global $context, $txt;
+		global $context;
 
 		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_pages'))
 			return;

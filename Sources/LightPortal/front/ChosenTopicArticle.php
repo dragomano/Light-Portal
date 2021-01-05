@@ -20,6 +20,11 @@ if (!defined('SMF'))
 class ChosenTopicArticle extends TopicArticle
 {
 	/**
+	 * @var array
+	 */
+	private $selected_topics = [];
+
+	/**
 	 * Add properties of the parent class
 	 *
 	 * Дополняем свойства класса-родителя

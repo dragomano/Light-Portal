@@ -20,6 +20,11 @@ if (!defined('SMF'))
 class ChosenPageArticle extends PageArticle
 {
 	/**
+	 * @var array
+	 */
+	private $selected_pages = [];
+
+	/**
 	 * Add properties of the parent class
 	 *
 	 * Дополняем свойства класса-родителя

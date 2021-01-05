@@ -23,6 +23,11 @@ if (!defined('SMF'))
 class BoardArticle extends AbstractArticle
 {
 	/**
+	 * @var array
+	 */
+	private $selected_boards = [];
+
+	/**
 	 * Initialize class properties
 	 *
 	 * Инициализируем свойства класса
