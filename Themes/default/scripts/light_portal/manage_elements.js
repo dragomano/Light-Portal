@@ -120,19 +120,19 @@ class Page extends PortalEntity {
 		this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions'
 	}
 
-	change(e, refs) {
-		if (e.required && e.value === '') {
+	change(refs) {
+		if (!refs.title_0.value) {
 			refs.type.disabled = true
 		} else {
-			refs.type.disabled = false;
+			refs.type.disabled = false
+		}
 
-			// Create a page alias on page type changing
-			if (refs.alias.value === '' && typeof (slugify) === 'function') {
-				refs.alias.value = slugify(refs.title_english.value, {
-					separator: '_',
-					allowedChars: 'a-zA-Z0-9_'
-				});
-			}
+		// Create a page alias on page type changing
+		if (refs.alias.value === '' && typeof (slugify) === 'function') {
+			refs.alias.value = slugify(refs.title_0.value, {
+				separator: '_',
+				allowedChars: 'a-zA-Z0-9_'
+			});
 		}
 	}
 

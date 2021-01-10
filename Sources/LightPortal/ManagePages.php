@@ -802,6 +802,7 @@ class ManagePages
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
 
+		$i = 0;
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
@@ -812,7 +813,7 @@ class ManagePages
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], $languages),
 					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $lang['filename']
+					'x-ref'     => 'title_' . $i++
 				),
 				'tab' => 'content'
 			);

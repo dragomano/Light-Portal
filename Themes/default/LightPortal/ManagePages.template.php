@@ -45,7 +45,7 @@ function template_page_post()
 
 	echo '
 	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
-		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($event.target, $refs)">
+		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
