@@ -217,6 +217,7 @@ $txt['lp_page_keywords']              = 'Ключевые слова';
 $txt['lp_page_keywords_only_unique']  = 'Можно добавлять только уникальные теги';
 $txt['lp_page_keywords_enter_to_add'] = 'Нажмите Enter для добавления <b>«${value}»</b>';
 $txt['lp_page_publish_datetime']      = 'Дата и время публикации';
+$txt['lp_page_author_subtext']        = 'Имя автора. Оставьте пустым для использования своего имени.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показывать автора и дату создания',

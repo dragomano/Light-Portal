@@ -655,6 +655,7 @@ class ManagePages
 
 		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
+				'page_author' => FILTER_SANITIZE_STRING,
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
 				'keywords'    => FILTER_SANITIZE_STRING,
@@ -700,6 +701,7 @@ class ManagePages
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
 			'title'       => $context['lp_current_page']['title'] ?? [],
+			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author'] ?? '',
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
@@ -931,6 +933,16 @@ class ManagePages
 			);
 		}
 
+		$context['posting_fields']['page_author']['label']['text'] = $txt['author'];
+		$context['posting_fields']['page_author']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_page_author_subtext'],
+			'attributes' => array(
+				'id'    => 'page_author',
+				'value' => $context['lp_page']['page_author']
+			)
+		);
+
 		$context['posting_fields']['show_author_and_date']['label']['text'] = $txt['lp_page_options']['show_author_and_date'];
 		$context['posting_fields']['show_author_and_date']['input'] = array(
 			'type' => 'checkbox',
@@ -1095,7 +1107,7 @@ class ManagePages
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
-					$context['user']['id'],
+					Helpers::getUserId($context['lp_page']['page_author']),
 					$context['lp_page']['alias'],
 					$context['lp_page']['description'],
 					$context['lp_page']['content'],
@@ -1190,10 +1202,11 @@ class ManagePages
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				SET author_id = {string:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
+					'author_id'   => Helpers::getUserId($context['lp_page']['page_author']),
 					'alias'       => $context['lp_page']['alias'],
 					'description' => $context['lp_page']['description'],
 					'content'     => $context['lp_page']['content'],

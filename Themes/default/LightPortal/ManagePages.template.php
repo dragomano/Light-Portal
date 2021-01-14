@@ -88,6 +88,7 @@ function template_page_post()
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/choices.min.js"></script>
+	<script src="', $settings['default_theme_url'], '/scripts/suggest.js"></script>
 	<script>
 		const choices = new Choices("#keywords", {
 			removeItemButton: true,
@@ -95,5 +96,13 @@ function template_page_post()
 			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
 			addItemText: (value) => `' . $txt['lp_page_keywords_enter_to_add'] . '`
 		});
+		let oMemberSuggest = new smc_AutoSuggest({
+			sSelf: "oMemberSuggest",
+			sSessionId: smf_session_id,
+			sSessionVar: smf_session_var,
+			sControlId: "page_author",
+			sSearchType: "member",
+			bItemList: false
+		});console.log(oMemberSuggest);
 	</script>';
 }

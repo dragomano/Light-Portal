@@ -217,6 +217,7 @@ $txt['lp_page_keywords']              = 'Słowa kluczowe';
 $txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
 $txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime']      = 'Data i czas publikacji';
+$txt['lp_page_author_subtext']        = 'Name of member to post as. Leave blank to post as yourself.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
