@@ -813,4 +813,36 @@ class Helpers
 
 		return (int) $num_pages;
 	}
+
+	/**
+	 * Get user ID by name
+	 *
+	 * Получаем идентификатор пользователя по имени
+	 *
+	 * @param string $name
+	 * @return int
+	 */
+	public static function getUserId($name = '')
+	{
+		global $user_info, $smcFunc;
+
+		if (empty($name) || $name == $user_info['name'])
+			return $user_info['id'];
+
+		$request = $smcFunc['db_query']('', '
+			SELECT id_member
+			FROM {db_prefix}members
+			WHERE real_name = {string:real_name}',
+			array(
+				'real_name' => $name
+			)
+		);
+
+		[$user_id] = $smcFunc['db_fetch_row']($request);
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		return (int) $user_id;
+	}
 }
