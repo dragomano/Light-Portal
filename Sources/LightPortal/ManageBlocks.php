@@ -581,7 +581,7 @@ class ManageBlocks
 		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
@@ -1126,7 +1126,7 @@ class ManageBlocks
 		if (Helpers::post()->filled('clone'))
 			return $item;
 
-		Helpers::cache()->forget('active_blocks');
+		Helpers::cache()->flush();
 
 		redirectexit('action=admin;area=lp_blocks;sa=main');
 	}

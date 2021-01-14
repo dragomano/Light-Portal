@@ -92,7 +92,7 @@ $txt['lp_page_editor_type_default']         = 'El tipo de editor de página por 
 $txt['lp_permissions_default']              = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section']     = 'Ocultar bloques activos en el área de administración';
 
-$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_schema_org']            = 'Schema microdata markup for contacts';
 $txt['lp_page_og_image']         = 'Usa una imagen del contenido de la página';
 $txt['lp_page_og_image_set']     = array('ninguno', 'Primero encontrado', 'Último encontrado');
 $txt['lp_page_itemprop_address'] = 'Dirección de su organización';

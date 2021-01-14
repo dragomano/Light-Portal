@@ -56,7 +56,7 @@ In this section, you can change the general settings of pages and blocks used bo
 * Permissions for pages and blocks by default — if you constantly create pages and blocks with the same permissions, you can set these permissions as default.
 * Hide active blocks in the admin area — if blocks bother you in the admin panel, you can hide them.
 
-### Open Graph
+### Schema microdata markup for contacts
 These settings can be useful if your forum is owned by a company or organization. In other cases, you can limit yourself to using an image from the text of the article, ignoring other points.
 
 * Use an image from the page content

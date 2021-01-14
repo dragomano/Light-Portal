@@ -108,7 +108,7 @@ class ManagePlugins
 				updateSettings($plugin_options);
 
 			// You can do additional actions after settings saving
-			Subs::runAddons('saveSettings');
+			Subs::runAddons('onSettingsSaving');
 
 			exit(json_encode('ok'));
 		}
@@ -378,7 +378,7 @@ class ManagePlugins
 			}
 		}
 
-		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span></div>';
+		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div></div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',

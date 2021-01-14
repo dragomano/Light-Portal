@@ -92,7 +92,7 @@ $txt['lp_page_editor_type_default']         = 'Rodzaj domyślnego edytora ';
 $txt['lp_permissions_default']              = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section']     = 'Ukryj aktywne bloki w centrum administracji';
 
-$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_schema_org']            = 'Schema microdata markup for contacts';
 $txt['lp_page_og_image']         = 'Użyj obrazu z treści';
 $txt['lp_page_og_image_set']     = array('Brak', 'Pierwszy', 'Ostatni');
 $txt['lp_page_itemprop_address'] = 'Adres Twojej organizacji';

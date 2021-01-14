@@ -429,7 +429,7 @@ class Settings
 			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
 			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
-			array('title', 'lp_open_graph'),
+			array('title', 'lp_schema_org'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
 			array('text', 'lp_page_itemprop_phone', 80)
@@ -654,7 +654,7 @@ class Settings
 	{
 		global $user_info;
 
-		isAllowedTo('light_portal_manage_blocks');
+		isAllowedTo('admin_forum');//isAllowedTo('light_portal_manage_blocks');
 
 		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
 		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));

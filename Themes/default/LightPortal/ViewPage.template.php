@@ -218,7 +218,18 @@ function show_comment_block()
 		echo '
 				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '" x-ref="comment_form" @submit.prevent="comment.add($event.target, $refs)">
 					', show_toolbar(), '
-					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" maxlength="', MAX_MSG_LENGTH, '" @keyup="$refs.comment.disabled = !$event.target.value" @focus="comment.focus($event.target, $refs)" x-ref="message" required></textarea>
+					<textarea
+						id="message"
+						name="message"
+						class="content"
+						placeholder="', $txt['lp_comment_placeholder'], '"
+						maxlength="', MAX_MSG_LENGTH, '"
+						@keyup="$refs.comment.disabled = !$event.target.value"
+						@focus="comment.focus($event.target, $refs)"
+						x-ref="message"
+						tabindex="1"
+						required
+					></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
