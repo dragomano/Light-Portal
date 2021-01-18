@@ -2,11 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\Cache;
-use Bugo\LightPortal\Utils\Post;
-use Bugo\LightPortal\Utils\Request;
-use Bugo\LightPortal\Utils\Server;
-use Bugo\LightPortal\Utils\Session;
+use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
 
 /**
  * Helpers.php

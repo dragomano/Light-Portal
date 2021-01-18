@@ -120,7 +120,7 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $sourcedir, $user_info, $context, $txt;
+		global $smcFunc, $user_info, $context, $txt;
 
 		$args = array(
 			'parent_id'   => FILTER_VALIDATE_INT,
@@ -152,7 +152,7 @@ class Comment
 		if (empty($page_id) || empty($message))
 			return;
 
-		require_once($sourcedir . '/Subs-Post.php');
+		Helpers::require('Subs-Post');
 		preparsecode($message);
 
 		$item = $smcFunc['db_insert']('',
@@ -242,7 +242,7 @@ class Comment
 	 */
 	private function edit()
 	{
-		global $sourcedir, $smcFunc, $context;
+		global $smcFunc, $context;
 
 		$data = Helpers::request()->json();
 
@@ -255,7 +255,7 @@ class Comment
 		if (empty($item) || empty($message))
 			return;
 
-		require_once($sourcedir . '/Subs-Post.php');
+		Helpers::require('Subs-Post');
 		preparsecode($message);
 
 		$smcFunc['db_query']('', '
@@ -409,12 +409,12 @@ class Comment
 	 */
 	public function getAll(int $page_id = 0)
 	{
-		global $sourcedir, $smcFunc, $context, $modSettings;
+		global $smcFunc, $context, $modSettings;
 
 		if (empty($page_id))
 			return [];
 
-		require_once($sourcedir . '/Subs-Post.php');
+		Helpers::require('Subs-Post');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name

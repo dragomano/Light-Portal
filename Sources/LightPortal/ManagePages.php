@@ -176,13 +176,11 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getTitle($entry);
-
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
-							) . '">' . $title . '</a>';
+							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -299,10 +297,8 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$titles = Helpers::getAllTitles();
-
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
@@ -333,7 +329,7 @@ class ManagePages
 				'author_name' => $row['author_name'],
 				'created_at'  => Helpers::getFriendlyTime($row['date']),
 				'is_front'    => Helpers::isFrontpage($row['alias']),
-				'title'       => $titles[$row['page_id']] ?? []
+				'title'       => $row['title']
 			);
 		}
 

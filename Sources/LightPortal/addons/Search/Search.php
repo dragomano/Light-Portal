@@ -234,7 +234,7 @@ class Search
 		</form>
 		<script>
 			jQuery(document).ready(function ($) {
-				let easyAutoOptions = {
+				let searchAddonOptions = {
 					url: function (phrase) {
 						return "', $scripturl, '?action=portal;sa=qsearch"
 					},
@@ -268,7 +268,7 @@ class Search
 					adjustWidth: false,
 					theme: "' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? 'dark' : 'blue-light') . '"
 				};
-				$(".search_addon input").easyAutocomplete(easyAutoOptions);
+				$(".search_addon input").easyAutocomplete(searchAddonOptions);
 			});
 		</script>';
 

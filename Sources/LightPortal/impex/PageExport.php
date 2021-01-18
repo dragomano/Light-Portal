@@ -92,13 +92,11 @@ class PageExport extends AbstractExport
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getTitle($entry);
-
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
-								) . '">' . $title . '</a>';
+								) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
 					),
