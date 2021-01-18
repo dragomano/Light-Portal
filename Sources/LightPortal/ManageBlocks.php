@@ -608,17 +608,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
-			} else {
-				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
-			}
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_block']['icon_type']
+			);
 		}
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
@@ -632,17 +625,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['placement']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['placement']
-				);
-			} else {
-				$context['posting_fields']['placement']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['placement']
-				);
-			}
+			$context['posting_fields']['placement']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['placement']
+			);
 		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
@@ -656,17 +642,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['permissions']
-				);
-			} else {
-				$context['posting_fields']['permissions']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['permissions']
-				);
-			}
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['permissions']
+			);
 		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
@@ -694,17 +673,10 @@ class ManageBlocks
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['title_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['title_class']
-				);
-			} else {
-				$context['posting_fields']['title_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['title_class']
-				);
-			}
+			$context['posting_fields']['title_class']['input']['options'][$key] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['title_class']
+			);
 		}
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
@@ -733,17 +705,10 @@ class ManageBlocks
 				$value = $key;
 				$key   = $key == '_' ? $txt['no'] : $key;
 
-				if (RC2_CLEAN) {
-					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
-						'value'    => $value,
-						'selected' => $value == $context['lp_block']['content_class']
-					);
-				} else {
-					$context['posting_fields']['content_class']['input']['options'][$key] = array(
-						'value'    => $value,
-						'selected' => $value == $context['lp_block']['content_class']
-					);
-				}
+				$context['posting_fields']['content_class']['input']['options'][$key] = array(
+					'value'    => $value,
+					'selected' => $value == $context['lp_block']['content_class']
+				);
 			}
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];

@@ -106,17 +106,10 @@ class LanguageAccess
 		);
 
 		foreach ($context['languages'] as $lang) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']]['attributes'] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			} else {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			}
+			$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']] = array(
+				'value'    => $lang['filename'],
+				'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
+			);
 		}
 	}
 }

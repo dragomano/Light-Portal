@@ -80,17 +80,10 @@ class PageList
 		);
 
 		foreach ($txt['lp_page_list_addon_sort_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['sort']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
-				);
-			} else {
-				$context['posting_fields']['sort']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['sort']
-				);
-			}
+			$context['posting_fields']['sort']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['sort']
+			);
 		}
 
 		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list_addon_num_pages'];

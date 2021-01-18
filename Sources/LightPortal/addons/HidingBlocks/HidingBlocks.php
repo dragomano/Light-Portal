@@ -116,17 +116,10 @@ class HidingBlocks
 		);
 
 		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $size => $label) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label]['attributes'] = array(
-					'value'    => $size,
-					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])
-				);
-			} else {
-				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label] = array(
-					'value'    => $size,
-					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])
-				);
-			}
+			$context['posting_fields']['hidden_breakpoints']['input']['options'][$label] = array(
+				'value'    => $size,
+				'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])
+			);
 		}
 	}
 }

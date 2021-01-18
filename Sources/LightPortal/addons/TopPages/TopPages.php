@@ -87,17 +87,10 @@ class TopPages
 		);
 
 		foreach ($txt['lp_top_pages_addon_type_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['popularity_type']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			} else {
-				$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			}
+			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
+			);
 		}
 
 		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_top_pages_addon_num_pages'];

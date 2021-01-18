@@ -74,17 +74,10 @@ class Polls
 		$polls = $this->getAll();
 
 		foreach ($polls as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['selected_item']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
-				);
-			} else {
-				$context['posting_fields']['selected_item']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
-				);
-			}
+			$context['posting_fields']['selected_item']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+			);
 		}
 	}
 

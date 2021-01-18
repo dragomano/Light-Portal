@@ -109,17 +109,10 @@ class RecentAttachments
 		);
 
 		foreach ($txt['lp_recent_attachments_addon_direction_set'] as $direction => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			} else {
-				$context['posting_fields']['direction']['input']['options'][$title] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			}
+			$context['posting_fields']['direction']['input']['options'][$title] = array(
+				'value'    => $direction,
+				'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
+			);
 		}
 	}
 

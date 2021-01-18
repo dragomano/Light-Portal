@@ -91,17 +91,10 @@ class Translator
 		);
 
 		foreach ($txt['lp_translator_addon_engine_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['engine']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
-				);
-			} else {
-				$context['posting_fields']['engine']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
-				);
-			}
+			$context['posting_fields']['engine']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['engine']
+			);
 		}
 
 		if ($context['lp_block']['options']['parameters']['engine'] == 'google')
@@ -115,33 +108,16 @@ class Translator
 			)
 		);
 
-		if (RC2_CLEAN) {
-			$context['posting_fields']['widget_theme']['input']['options'] = array(
-				'light' => array(
-					'attributes' => array(
-						'value'    => 'light',
-						'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
-					)
-				),
-				'dark' => array(
-					'attributes' => array(
-						'value'    => 'dark',
-						'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
-					)
-				)
-			);
-		} else {
-			$context['posting_fields']['widget_theme']['input']['options'] = array(
-				'light' => array(
-					'value'    => 'light',
-					'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
-				),
-				'dark' => array(
-					'value'    => 'dark',
-					'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
-				)
-			);
-		}
+		$context['posting_fields']['widget_theme']['input']['options'] = array(
+			'light' => array(
+				'value'    => 'light',
+				'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
+			),
+			'dark' => array(
+				'value'    => 'dark',
+				'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
+			)
+		);
 
 		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator_addon_auto_mode'];
 		$context['posting_fields']['auto_mode']['input'] = array(

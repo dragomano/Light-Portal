@@ -365,17 +365,10 @@ class ManagePlugins
 		);
 
 		foreach ($txt['lp_plugins_hooks_types'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_plugin']['type']
-				);
-			} else {
-				$context['posting_fields']['type']['input']['options'][$title] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_plugin']['type']
-				);
-			}
+			$context['posting_fields']['type']['input']['options'][$title] = array(
+				'value'    => $type,
+				'selected' => $type == $context['lp_plugin']['type']
+			);
 		}
 
 		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div></div>';
@@ -405,17 +398,10 @@ class ManagePlugins
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_plugin']['icon_type']
-				);
-			} else {
-				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_plugin']['icon_type']
-				);
-			}
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_plugin']['icon_type']
+			);
 		}
 
 		foreach ($context['languages'] as $lang) {
@@ -500,17 +486,10 @@ class ManagePlugins
 		$licenses = ['mit' => 'MIT', 'bsd' => 'BSD', 'gpl' => 'GPL 3.0+', 'own' => $txt['lp_plugin_license_own'] ];
 
 		foreach ($licenses as $license => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['license']['input']['options'][$title]['attributes'] = array(
-					'value'    => $license,
-					'selected' => $license == $context['lp_plugin']['license']
-				);
-			} else {
-				$context['posting_fields']['license']['input']['options'][$title] = array(
-					'value'    => $license,
-					'selected' => $license == $context['lp_plugin']['license']
-				);
-			}
+			$context['posting_fields']['license']['input']['options'][$title] = array(
+				'value'    => $license,
+				'selected' => $license == $context['lp_plugin']['license']
+			);
 		}
 
 		$context['posting_fields']['smf_hooks']['label']['text'] = $txt['lp_plugin_smf_hooks'];

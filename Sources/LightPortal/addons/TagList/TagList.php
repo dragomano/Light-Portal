@@ -77,17 +77,10 @@ class TagList
 		);
 
 		foreach ($txt['lp_tag_list_addon_source_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['source']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			} else {
-				$context['posting_fields']['source']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			}
+			$context['posting_fields']['source']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['source']
+			);
 		}
 	}
 

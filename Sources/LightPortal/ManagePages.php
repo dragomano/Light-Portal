@@ -847,17 +847,10 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_page_types'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_page']['type']
-				);
-			} else {
-				$context['posting_fields']['type']['input']['options'][$title] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_page']['type']
-				);
-			}
+			$context['posting_fields']['type']['input']['options'][$title] = array(
+				'value'    => $type,
+				'selected' => $type == $context['lp_page']['type']
+			);
 		}
 
 		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
@@ -895,17 +888,10 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_page']['permissions']
-				);
-			} else {
-				$context['posting_fields']['permissions']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_page']['permissions']
-				);
-			}
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_page']['permissions']
+			);
 		}
 
 		if ($context['lp_page']['created_at'] >= time()) {

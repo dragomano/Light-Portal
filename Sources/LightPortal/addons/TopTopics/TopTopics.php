@@ -87,17 +87,10 @@ class TopTopics
 		);
 
 		foreach ($txt['lp_top_topics_addon_type_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['popularity_type']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			} else {
-				$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			}
+			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
+			);
 		}
 
 		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics_addon_num_topics'];

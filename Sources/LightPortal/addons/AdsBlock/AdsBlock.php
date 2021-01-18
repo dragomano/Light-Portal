@@ -150,17 +150,10 @@ class AdsBlock
 		);
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			} else {
-				$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			}
+			$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
+				'value'    => $position,
+				'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
+			);
 		}
 
 		$context['posting_fields']['ads_boards']['label']['text'] = $txt['lp_ads_block_addon_ads_boards'];

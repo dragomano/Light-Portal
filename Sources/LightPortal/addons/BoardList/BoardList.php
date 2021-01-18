@@ -88,17 +88,10 @@ class BoardList
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['category_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
-				);
-			} else {
-				$context['posting_fields']['category_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
-				);
-			}
+			$context['posting_fields']['category_class']['input']['options'][$key] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
+			);
 		}
 
 		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_board_list_addon_board_class'];
@@ -115,17 +108,10 @@ class BoardList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			if (RC2_CLEAN) {
-				$context['posting_fields']['board_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
-				);
-			} else {
-				$context['posting_fields']['board_class']['input']['options'][$key] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
-				);
-			}
+			$context['posting_fields']['board_class']['input']['options'][$key] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
+			);
 		}
 	}
 

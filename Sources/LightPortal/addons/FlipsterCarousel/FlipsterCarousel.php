@@ -111,17 +111,10 @@ class FlipsterCarousel
 		);
 
 		foreach ($txt['lp_flipster_carousel_addon_style_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['style']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['style']
-				);
-			} else {
-				$context['posting_fields']['style']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['style']
-				);
-			}
+			$context['posting_fields']['style']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['style']
+			);
 		}
 
 		$context['posting_fields']['show_nav']['label']['text'] = $txt['lp_flipster_carousel_addon_show_nav'];
