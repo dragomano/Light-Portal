@@ -85,8 +85,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.5',
-			'LP_RELEASE_DATE' => '2021-01-01',
+			'LP_VERSION'      => '1.6 alpha',
+			'LP_RELEASE_DATE' => '2021-01-18',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
