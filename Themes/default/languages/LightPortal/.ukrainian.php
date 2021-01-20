@@ -214,8 +214,7 @@ $txt['lp_page_alias_subtext']         = 'Аліас сторінки має по
 $txt['lp_page_type']                  = 'Тип сторінки';
 $txt['lp_page_description']           = 'Опис';
 $txt['lp_page_keywords']              = 'Ключові слова';
-$txt['lp_page_keywords_only_unique']  = 'Можна додавати тільки унікальні теги';
-$txt['lp_page_keywords_enter_to_add'] = 'Натисніть Enter для додавання <b>«${value}»</b>';
+$txt['lp_page_keywords_enter_to_add'] = 'Натисніть <strong>Enter</strong> чи <strong>TAB</strong> для додавання:';
 $txt['lp_page_publish_datetime']      = 'Дата і час публікації';
 $txt['lp_page_author_subtext']        = 'Ім\'я автора. Залиште порожнім для використання свого імені.';
 
