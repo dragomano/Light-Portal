@@ -87,26 +87,14 @@ function template_page_post()
 		</div>
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/selectize@0.12/dist/js/standalone/selectize.min.js"></script>
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/choices.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/suggest.js"></script>
 	<script>
-		jQuery(document).ready(function ($) {
-			$("#keywords").selectize({
-				plugins: ["remove_button"],
-				delimiter: ",",
-				persist: false,
-				create: function(input) {
-					return {
-						value: input,
-						text: input
-					}
-				},
-				render: {
-					option_create: function(data, escape) {
-						return `<div class="create">` + this.$input.data(\'label\') + ` <strong>` + escape(data.input) + `</strong>&hellip;</div>`;
-					}
-				}
-			});
+		const choices = new Choices("#keywords", {
+			removeItemButton: true,
+			duplicateItemsAllowed: false,
+			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
+			addItemText: (value) => `' . $txt['lp_page_keywords_enter_to_add'] . '`
 		});
 		let oMemberSuggest = new smc_AutoSuggest({
 			sSelf: "oMemberSuggest",
@@ -115,6 +103,6 @@ function template_page_post()
 			sControlId: "page_author",
 			sSearchType: "member",
 			bItemList: false
-		});
+		});console.log(oMemberSuggest);
 	</script>';
 }

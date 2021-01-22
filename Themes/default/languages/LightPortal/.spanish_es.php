@@ -214,7 +214,8 @@ $txt['lp_page_alias_subtext']         = 'El alias de la página debe comenzar co
 $txt['lp_page_type']                  = 'Tipo de página';
 $txt['lp_page_description']           = 'Descripción';
 $txt['lp_page_keywords']              = 'Palabras claves';
-$txt['lp_page_keywords_enter_to_add'] = 'Press <strong>Enter</strong> or <strong>TAB</strong> to add:';
+$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
+$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
 $txt['lp_page_publish_datetime']      = 'Fecha y hora de publicación';
 $txt['lp_page_author_subtext']        = 'Name of member to post as. Leave blank to post as yourself.';
 

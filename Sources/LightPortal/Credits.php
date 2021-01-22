@@ -78,7 +78,7 @@ class Credits
 				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
 				'author' => 'Kristofer Joseph',
 				'license' => array(
-					'name' => 'the Apache 2.0 License',
+					'name' => 'the Apache License',
 					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
 				)
 			),
@@ -116,12 +116,12 @@ class Credits
 				)
 			),
 			array(
-				'title' => 'Selectize.js',
-				'link' => 'https://github.com/selectize/selectize.js',
-				'author' => 'Brian Reavis & contributors',
+				'title' => 'Choices',
+				'link' => 'https://github.com/jshjohnson/Choices',
+				'author' => 'Josh Johnson',
 				'license' => array(
-					'name' => 'the Apache 2.0 License',
-					'link' => 'https://github.com/selectize/selectize.js/blob/master/LICENSE'
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/jshjohnson/Choices/blob/master/LICENSE'
 				)
 			)
 		);

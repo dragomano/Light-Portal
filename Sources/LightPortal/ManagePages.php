@@ -768,24 +768,20 @@ class ManagePages
 	}
 
 	/**
-	 * @see https://github.com/selectize/selectize.js
+	 * @see https://github.com/jshjohnson/Choices
 	 *
 	 * @return void
 	 */
 	private function improveKeywordsField()
 	{
-		loadCssFile('https://cdn.jsdelivr.net/npm/selectize@0.12/dist/css/selectize.bootstrap2.css', array('external' => true));
+		loadCssFile('light_portal/choices.min.css');
 
 		addInlineCss('
-		.selectize-control {
-			position: inherit;
+		.choices__list {
+			position: relative;
 		}
-		.selectize-dropdown-content {
-			padding: 6px;
-		}
-		.selectize-dropdown [data-selectable].active {
-			background: none;
-			color: inherit;
+		.choices__input {
+			box-shadow: none;
 		}');
 	}
 
@@ -874,11 +870,10 @@ class ManagePages
 		$context['posting_fields']['keywords']['input'] = array(
 			'type' => 'text',
 			'attributes' => array(
-				'id'         => 'keywords',
-				'value'      => $context['lp_page']['keywords'],
-				'style'      => 'width: 100%',
-				'dir'        => $context['right_to_left'] ? 'rtl' : 'ltr',
-				'data-label' => $txt['lp_page_keywords_enter_to_add']
+				'id'    => 'keywords',
+				'value' => $context['lp_page']['keywords'],
+				'style' => 'width: 100%',
+				'dir'   => $context['right_to_left'] ? 'rtl' : 'ltr'
 			),
 			'tab' => 'seo'
 		);
