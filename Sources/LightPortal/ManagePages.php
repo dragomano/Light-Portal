@@ -654,7 +654,11 @@ class ManagePages
 				'page_author' => FILTER_SANITIZE_STRING,
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
-				'keywords'    => FILTER_SANITIZE_STRING,
+				'keywords'    => array(
+					'name'   => 'keywords',
+					'filter' => FILTER_SANITIZE_STRING,
+					'flags'  => FILTER_REQUIRE_ARRAY
+				),
 				'type'        => FILTER_SANITIZE_STRING,
 				'permissions' => FILTER_VALIDATE_INT,
 				'date'        => FILTER_SANITIZE_STRING,
@@ -688,19 +692,13 @@ class ManagePages
 		$options = $this->getOptions();
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
-		if (!empty($context['lp_current_page']['keywords'])) {
-			$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
-		} else {
-			$context['lp_current_page']['keywords'] = '';
-		}
-
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
 			'title'       => $context['lp_current_page']['title'] ?? [],
 			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author'] ?? '',
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
+			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'      => $user_info['is_admin'] ? Page::STATUS_ACTIVE : (int) allowedTo('light_portal_approve_pages'),
@@ -768,21 +766,31 @@ class ManagePages
 	}
 
 	/**
-	 * @see https://github.com/jshjohnson/Choices
+	 * @see https://github.com/brianvoe/slim-select
 	 *
 	 * @return void
 	 */
 	private function improveKeywordsField()
 	{
-		loadCssFile('light_portal/choices.min.css');
+		global $context;
+
+		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 
 		addInlineCss('
-		.choices__list {
-			position: relative;
-		}
-		.choices__input {
-			box-shadow: none;
+		.ss-content.ss-open {
+			position: initial;
 		}');
+
+		$all_tags = Helpers::cache('all_tags', 'getAll', Tag::class, LP_CACHE_TIME, ...array(0, 0, 'value'));
+		$all_tags = array_keys($all_tags);
+
+		sort($all_tags);
+
+		$context['lp_all_tags'] = [];
+
+		foreach ($all_tags as $tag) {
+			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $tag . '", selected: ' . (in_array($tag, $context['lp_page']['keywords']) ? 'true' : 'false') . '}';
+		}
 	}
 
 	/**
@@ -868,15 +876,22 @@ class ManagePages
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
 		$context['posting_fields']['keywords']['input'] = array(
-			'type' => 'text',
+			'type' => 'select',
 			'attributes' => array(
-				'id'    => 'keywords',
-				'value' => $context['lp_page']['keywords'],
-				'style' => 'width: 100%',
-				'dir'   => $context['right_to_left'] ? 'rtl' : 'ltr'
+				'id'       => 'keywords',
+				'name'     => 'keywords[]',
+				'multiple' => true
 			),
+			'options' => array(),
 			'tab' => 'seo'
 		);
+
+		foreach ($context['lp_page']['keywords'] as $keyword) {
+			$context['posting_fields']['keywords']['input']['options'][$keyword] = array(
+				'value'    => $keyword,
+				'selected' => in_array($keyword, $context['lp_page']['keywords'])
+			);
+		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
@@ -1022,16 +1037,14 @@ class ManagePages
 	 */
 	private function prepareKeywords()
 	{
-		global $context, $smcFunc;
+		global $context;
 
-		$keywords = !empty($context['lp_page']['keywords']) ? explode(',', $context['lp_page']['keywords']) : [];
-
-		$context['lp_page']['keywords'] = array_map(function ($item) use ($smcFunc) {
+		$context['lp_page']['keywords'] = array_map(function ($item) {
 			$stop_chars = ['-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '='];
 			$new_item   = str_replace($stop_chars, '', $item);
 
-			return trim($smcFunc['strtolower']($new_item));
-		}, $keywords);
+			return $new_item;
+		}, $context['lp_page']['keywords']);
 	}
 
 	/**

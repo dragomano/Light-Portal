@@ -196,28 +196,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Páginas';
-$txt['lp_pages_manage']               = 'Administrar páginas';
-$txt['lp_pages_manage_all_pages']     = 'Todas las páginas del portal creadas se enumeran aquí.';
-$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_description']   = 'Para agregar una nueva página, use el botón correspondiente.';
-$txt['lp_pages_add']                  = 'Añadir página';
-$txt['lp_pages_add_title']            = 'Añadiendo página';
-$txt['lp_pages_add_description']      = 'Rellene el título de la página y el alias. Después de eso, se puede cambiar el tipo, el uso de vista previa y guardar.';
-$txt['lp_pages_edit_title']           = 'Página de edición';
-$txt['lp_pages_edit_description']     = $txt['lp_pages_add_description'];
-$txt['lp_pages_extra']                = 'Páginas del portal';
-$txt['lp_pages_search']               = 'Alias o título';
-$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Alias';
-$txt['lp_page_alias_subtext']         = 'El alias de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
-$txt['lp_page_type']                  = 'Tipo de página';
-$txt['lp_page_description']           = 'Descripción';
-$txt['lp_page_keywords']              = 'Palabras claves';
-$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']      = 'Fecha y hora de publicación';
-$txt['lp_page_author_subtext']        = 'Name of member to post as. Leave blank to post as yourself.';
+$txt['lp_pages']                     = 'Páginas';
+$txt['lp_pages_manage']              = 'Administrar páginas';
+$txt['lp_pages_manage_all_pages']    = 'Todas las páginas del portal creadas se enumeran aquí.';
+$txt['lp_pages_manage_own_pages']    = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']  = 'Para agregar una nueva página, use el botón correspondiente.';
+$txt['lp_pages_add']                 = 'Añadir página';
+$txt['lp_pages_add_title']           = 'Añadiendo página';
+$txt['lp_pages_add_description']     = 'Rellene el título de la página y el alias. Después de eso, se puede cambiar el tipo, el uso de vista previa y guardar.';
+$txt['lp_pages_edit_title']          = 'Página de edición';
+$txt['lp_pages_edit_description']    = $txt['lp_pages_add_description'];
+$txt['lp_pages_extra']               = 'Páginas del portal';
+$txt['lp_pages_search']              = 'Alias o título';
+$txt['lp_page_types']                = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Alias';
+$txt['lp_page_alias_subtext']        = 'El alias de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
+$txt['lp_page_type']                 = 'Tipo de página';
+$txt['lp_page_description']          = 'Descripción';
+$txt['lp_page_keywords']             = 'Palabras claves';
+$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_publish_datetime']     = 'Fecha y hora de publicación';
+$txt['lp_page_author_subtext']       = 'Name of member to post as. Leave blank to post as yourself.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Mostrar el autor y la fecha de creación',

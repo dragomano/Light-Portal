@@ -87,15 +87,31 @@ function template_page_post()
 		</div>
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/choices.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/suggest.js"></script>
 	<script>
-		const choices = new Choices("#keywords", {
-			removeItemButton: true,
-			duplicateItemsAllowed: false,
-			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
-			addItemText: (value) => `' . $txt['lp_page_keywords_enter_to_add'] . '`
-		});
+		new SlimSelect({
+			select: "#keywords",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_all_tags']);
+
+	echo '
+			],
+			limit: 10,
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_page_keywords_placeholder'], '",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "', $txt['search'], '",
+			searchHighlight: true,
+			closeOnSelect: false,
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		})
 		let oMemberSuggest = new smc_AutoSuggest({
 			sSelf: "oMemberSuggest",
 			sSessionId: smf_session_id,
@@ -103,6 +119,6 @@ function template_page_post()
 			sControlId: "page_author",
 			sSearchType: "member",
 			bItemList: false
-		});console.log(oMemberSuggest);
+		});
 	</script>';
 }

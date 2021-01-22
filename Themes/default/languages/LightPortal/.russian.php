@@ -196,28 +196,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Страницы';
-$txt['lp_pages_manage']               = 'Управление страницами';
-$txt['lp_pages_manage_all_pages']     = 'Здесь перечислены все страницы портала.';
-$txt['lp_pages_manage_own_pages']     = 'Здесь перечислены все созданные вами страницы.';
-$txt['lp_pages_manage_description']   = 'Для добавления новой страницы воспользуйтесь соответствующей кнопкой.';
-$txt['lp_pages_add']                  = 'Добавить страницу';
-$txt['lp_pages_add_title']            = 'Добавление страницы';
-$txt['lp_pages_add_description']      = 'Заполните заголовок страницы. После этого можно будет сменить её тип, использовать предварительный просмотр и сохранение.';
-$txt['lp_pages_edit_title']           = 'Редактирование страницы';
-$txt['lp_pages_edit_description']     = 'Внесите необходимые изменения.';
-$txt['lp_pages_extra']                = 'Страницы портала';
-$txt['lp_pages_search']               = 'Алиас или заголовок';
-$txt['lp_page_types']                 = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Алиас';
-$txt['lp_page_alias_subtext']         = 'Алиас страницы должен начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания.';
-$txt['lp_page_type']                  = 'Тип страницы';
-$txt['lp_page_description']           = 'Описание';
-$txt['lp_page_keywords']              = 'Ключевые слова';
-$txt['lp_page_keywords_only_unique']  = 'Можно добавлять только уникальные теги';
-$txt['lp_page_keywords_enter_to_add'] = 'Нажмите Enter для добавления <b>«${value}»</b>';
-$txt['lp_page_publish_datetime']      = 'Дата и время публикации';
-$txt['lp_page_author_subtext']        = 'Имя автора. Оставьте пустым для использования своего имени.';
+$txt['lp_pages']                     = 'Страницы';
+$txt['lp_pages_manage']              = 'Управление страницами';
+$txt['lp_pages_manage_all_pages']    = 'Здесь перечислены все страницы портала.';
+$txt['lp_pages_manage_own_pages']    = 'Здесь перечислены все созданные вами страницы.';
+$txt['lp_pages_manage_description']  = 'Для добавления новой страницы воспользуйтесь соответствующей кнопкой.';
+$txt['lp_pages_add']                 = 'Добавить страницу';
+$txt['lp_pages_add_title']           = 'Добавление страницы';
+$txt['lp_pages_add_description']     = 'Заполните заголовок страницы. После этого можно будет сменить её тип, использовать предварительный просмотр и сохранение.';
+$txt['lp_pages_edit_title']          = 'Редактирование страницы';
+$txt['lp_pages_edit_description']    = 'Внесите необходимые изменения.';
+$txt['lp_pages_extra']               = 'Страницы портала';
+$txt['lp_pages_search']              = 'Алиас или заголовок';
+$txt['lp_page_types']                = array('bbc' => 'ББ-код', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Алиас';
+$txt['lp_page_alias_subtext']        = 'Алиас страницы должен начинаться с латинской буквы и состоять из строчных латинских букв, цифр и знака подчеркивания.';
+$txt['lp_page_type']                 = 'Тип страницы';
+$txt['lp_page_description']          = 'Описание';
+$txt['lp_page_keywords']             = 'Ключевые слова';
+$txt['lp_page_keywords_placeholder'] = 'Выберите теги или добавьте новые';
+$txt['lp_page_publish_datetime']     = 'Дата и время публикации';
+$txt['lp_page_author_subtext']       = 'Имя автора. Оставьте пустым для использования своего имени.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показывать автора и дату создания',

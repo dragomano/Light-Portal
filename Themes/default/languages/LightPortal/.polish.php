@@ -196,28 +196,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Strony';
-$txt['lp_pages_manage']               = 'Zarządzaj stronami';
-$txt['lp_pages_manage_all_pages']     = 'Tutaj znajdują się wszystkie utworzone strony.';
-$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_description']   = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
-$txt['lp_pages_add']                  = 'Dodaj stronę';
-$txt['lp_pages_add_title']            = 'Dodawanie strony';
-$txt['lp_pages_add_description']      = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
-$txt['lp_pages_edit_title']           = 'Edytowanie strony';
-$txt['lp_pages_edit_description']     = $txt['lp_pages_add_description'];
-$txt['lp_pages_extra']                = 'Strony portalu';
-$txt['lp_pages_search']               = 'Alias lub tytuł';
-$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Alias';
-$txt['lp_page_alias_subtext']         = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
-$txt['lp_page_type']                  = 'Typ strony';
-$txt['lp_page_description']           = 'Opis';
-$txt['lp_page_keywords']              = 'Słowa kluczowe';
-$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']      = 'Data i czas publikacji';
-$txt['lp_page_author_subtext']        = 'Name of member to post as. Leave blank to post as yourself.';
+$txt['lp_pages']                     = 'Strony';
+$txt['lp_pages_manage']              = 'Zarządzaj stronami';
+$txt['lp_pages_manage_all_pages']    = 'Tutaj znajdują się wszystkie utworzone strony.';
+$txt['lp_pages_manage_own_pages']    = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']  = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
+$txt['lp_pages_add']                 = 'Dodaj stronę';
+$txt['lp_pages_add_title']           = 'Dodawanie strony';
+$txt['lp_pages_add_description']     = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
+$txt['lp_pages_edit_title']          = 'Edytowanie strony';
+$txt['lp_pages_edit_description']    = $txt['lp_pages_add_description'];
+$txt['lp_pages_extra']               = 'Strony portalu';
+$txt['lp_pages_search']              = 'Alias lub tytuł';
+$txt['lp_page_types']                = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Alias';
+$txt['lp_page_alias_subtext']        = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
+$txt['lp_page_type']                 = 'Typ strony';
+$txt['lp_page_description']          = 'Opis';
+$txt['lp_page_keywords']             = 'Słowa kluczowe';
+$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_publish_datetime']     = 'Data i czas publikacji';
+$txt['lp_page_author_subtext']       = 'Name of member to post as. Leave blank to post as yourself.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',

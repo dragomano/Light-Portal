@@ -116,12 +116,12 @@ class Credits
 				)
 			),
 			array(
-				'title' => 'Choices',
-				'link' => 'https://github.com/jshjohnson/Choices',
-				'author' => 'Josh Johnson',
+				'title' => 'Slim Select',
+				'link' => 'https://slimselectjs.com',
+				'author' => 'Brian Voelker',
 				'license' => array(
 					'name' => 'the MIT License',
-					'link' => 'https://github.com/jshjohnson/Choices/blob/master/LICENSE'
+					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
 				)
 			)
 		);

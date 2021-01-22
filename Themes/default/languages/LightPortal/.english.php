@@ -196,28 +196,27 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Pages';
-$txt['lp_pages_manage']               = 'Manage pages';
-$txt['lp_pages_manage_all_pages']     = 'Here you can view all portal pages.';
-$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_description']   = 'Use the corresponding button to add a new page.';
-$txt['lp_pages_add']                  = 'Add page';
-$txt['lp_pages_add_title']            = 'Adding a page';
-$txt['lp_pages_add_description']      = 'Fill the page title. After that, you can change its type, use preview and save.';
-$txt['lp_pages_edit_title']           = 'Editing page';
-$txt['lp_pages_edit_description']     = 'Make the necessary changes.';
-$txt['lp_pages_extra']                = 'Portal pages';
-$txt['lp_pages_search']               = 'Alias or title';
-$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Alias';
-$txt['lp_page_alias_subtext']         = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
-$txt['lp_page_type']                  = 'Page type';
-$txt['lp_page_description']           = 'Description';
-$txt['lp_page_keywords']              = 'Keywords';
-$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']      = 'Date and time of publication';
-$txt['lp_page_author_subtext']        = 'Name of member to post as. Leave blank to post as yourself.';
+$txt['lp_pages']                     = 'Pages';
+$txt['lp_pages_manage']              = 'Manage pages';
+$txt['lp_pages_manage_all_pages']    = 'Here you can view all portal pages.';
+$txt['lp_pages_manage_own_pages']    = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']  = 'Use the corresponding button to add a new page.';
+$txt['lp_pages_add']                 = 'Add page';
+$txt['lp_pages_add_title']           = 'Adding a page';
+$txt['lp_pages_add_description']     = 'Fill the page title. After that, you can change its type, use preview and save.';
+$txt['lp_pages_edit_title']          = 'Editing page';
+$txt['lp_pages_edit_description']    = 'Make the necessary changes.';
+$txt['lp_pages_extra']               = 'Portal pages';
+$txt['lp_pages_search']              = 'Alias or title';
+$txt['lp_page_types']                = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Alias';
+$txt['lp_page_alias_subtext']        = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
+$txt['lp_page_type']                 = 'Page type';
+$txt['lp_page_description']          = 'Description';
+$txt['lp_page_keywords']             = 'Keywords';
+$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_publish_datetime']     = 'Date and time of publication';
+$txt['lp_page_author_subtext']       = 'Name of member to post as. Leave blank to post as yourself.';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
