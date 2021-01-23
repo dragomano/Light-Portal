@@ -419,6 +419,7 @@ class Settings
 			updateSettings($add_settings);
 
 		$config_vars = array(
+			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
 			array('check', 'lp_show_tags_as_articles'),
 			array('check', 'lp_show_related_pages'),

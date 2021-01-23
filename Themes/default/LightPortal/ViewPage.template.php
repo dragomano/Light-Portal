@@ -9,20 +9,22 @@
  */
 function template_show_page()
 {
-	global $context, $txt, $scripturl, $settings, $modSettings, $boardurl;
+	global $modSettings, $context, $txt, $scripturl, $settings, $boardurl;
 
-	if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
-		echo '
-	<aside class="errorbox">
-		<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
-	</aside>';
-	}
+	if (!empty($modSettings['lp_show_page_permissions'])) {
+		if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
+			echo '
+		<aside class="errorbox">
+			<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
+		</aside>';
+		}
 
-	if ($context['lp_page']['can_edit']) {
-		echo '
-	<aside class="infobox">
-		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
-	</aside>';
+		if ($context['lp_page']['can_edit']) {
+			echo '
+		<aside class="infobox">
+			<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+		</aside>';
+		}
 	}
 
 	echo '

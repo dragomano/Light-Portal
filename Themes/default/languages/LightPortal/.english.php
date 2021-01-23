@@ -79,6 +79,8 @@ $txt['lp_manage_permissions']                = 'Some pages may contain dangerous
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
+$txt['lp_show_page_permissions']            = 'Show information about the page permissions';
+$txt['lp_show_page_permissions_subtext']    = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page']                = 'Show keywords at the top of the page';
 $txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
 $txt['lp_show_related_pages']               = 'Show related pages block';

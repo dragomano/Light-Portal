@@ -67,7 +67,7 @@ $txt['lp_standalone_url']                           = 'URL-адреса голо
 $txt['lp_standalone_url_help']                      = 'Можна вказати свою URL-адресу для відображення в якості головної сторінки порталу (наприклад, <strong>https://yourforum/portal.php</strong>).<br>У цьому випадку головна сторінка форуму залишиться доступною за адресою <strong>https://yourforum/index.php</strong>.<br><br>Як приклад в комплекті з порталом йде файл <em>portal.php</em> — можете використовувати його.<br><br>Вимкніть параметр "<strong>Enable local storage of cookies</strong>", якщо хочете розмістити <em>portal.php</em> поза директорії форуму (Maintenance => Настроювання Сервера => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Області, що відключаються';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Вкажіть області, які повинні бути ВІДКЛЮЧЕНІ в автономному режимі';
-$txt['lp_standalone_mode_disabled_actions_help']    = 'Наприклад, якщо потрібно відключити область "Пошук" (index.php?action=<strong>search</strong>), додайте <strong>search</strong> в текстове поле.';
+$txt['lp_standalone_mode_disabled_actions_help']    = 'Наприклад, якщо потрібно відключити область «Пошук» (index.php?action=<strong>search</strong>), додайте <strong>search</strong> в текстове поле.';
 
 $txt['groups_light_portal_view']             = 'Хто може переглядати елементи порталу';
 $txt['groups_light_portal_manage_blocks']    = 'Хто може керувати блоками';
@@ -79,6 +79,8 @@ $txt['lp_manage_permissions']                = 'Деякі сторінки мо
 $txt['lp_extra']      = 'Сторінки і блоки';
 $txt['lp_extra_info'] = 'Тут знаходяться загальні налаштування сторінок і блоків.';
 
+$txt['lp_show_page_permissions']            = 'Відображати інформацію про права доступу до сторінки';
+$txt['lp_show_page_permissions_subtext']    = 'Бачать тільки ті, у кого є право редагування сторінк.';
 $txt['lp_show_tags_on_page']                = 'Відображати ключові слова у верхній частині сторінки';
 $txt['lp_show_tags_as_articles']            = 'Відображати списки статей з однаковим тегом у вигляді карток';
 $txt['lp_show_related_pages']               = 'Відображати блок схожих сторінок';

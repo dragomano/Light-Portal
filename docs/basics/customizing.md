@@ -45,6 +45,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 ## Pages and blocks
 In this section, you can change the general settings of pages and blocks used both when creating them and when displaying them.
 
+* Show information about the page permissions — if you need a reminder about who can see the page you are viewing.
 * Show keywords at the top of the page — if keywords are specified for a page, they will appear at the top of the page
 * Show lists of articles with the same tag as cards — you can display tags as a table, or as cards.
 * Show related pages block — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
