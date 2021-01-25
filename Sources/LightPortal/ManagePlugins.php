@@ -305,7 +305,7 @@ class ManagePlugins
 		if (!empty($data['name']) && empty(Helpers::validate($data['name'], $addon_name_format)))
 			$post_errors[] = 'no_valid_name';
 
-		if (!empty($data['name']) && $this->isNotUnique($data['name']))
+		if (!empty($data['name']) && !$this->isUnique($data['name']))
 			$post_errors[] = 'no_unique_name';
 
 		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
@@ -897,15 +897,15 @@ EOF;
 	}
 
 	/**
-	 * We check whether there is already such a plugin
+	 * Check the uniqueness of the plugin
 	 *
-	 * Проверяем, нет ли уже такого плагина
+	 * Проверяем уникальность плагина
 	 *
 	 * @param string $name
 	 * @return bool
 	 */
-	private function isNotUnique(string $name)
+	private function isUnique(string $name)
 	{
-		return in_array($name, Subs::getAddons());
+		return !in_array($name, Subs::getAddons());
 	}
 }
