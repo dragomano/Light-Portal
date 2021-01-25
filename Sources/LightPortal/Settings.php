@@ -60,10 +60,11 @@ class Settings
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'basic'   => array($txt['mods_cat_features']),
-								'extra'   => array($txt['lp_extra']),
-								'panels'  => array($txt['lp_panels']),
-								'misc'    => array($txt['lp_misc'])
+								'basic'      => array($txt['mods_cat_features']),
+								'extra'      => array($txt['lp_extra']),
+								'categories' => array($txt['lp_categories']),
+								'panels'     => array($txt['lp_panels']),
+								'misc'       => array($txt['lp_misc'])
 							)
 						),
 						'lp_blocks' => array(
@@ -150,10 +151,11 @@ class Settings
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'basic'  => array($this, 'basic'),
-			'extra'  => array($this, 'extra'),
-			'panels' => array($this, 'panels'),
-			'misc'   => array($this, 'misc')
+			'basic'      => array($this, 'basic'),
+			'extra'      => array($this, 'extra'),
+			'categories' => array($this, 'categories'),
+			'panels'     => array($this, 'panels'),
+			'misc'       => array($this, 'misc')
 		);
 
 		db_extend();
@@ -167,6 +169,9 @@ class Settings
 				),
 				'extra' => array(
 					'description' => $txt['lp_extra_info']
+				),
+				'categories' => array(
+					'description' => $txt['lp_categories_info']
 				),
 				'panels' => array(
 					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
@@ -287,6 +292,12 @@ class Settings
 			let front_mode = $("#lp_frontpage_mode").val();
 			let change_mode = front_mode > 0;
 			let board_selector = $(".board_selector").parent("dd");
+
+			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
+
+			if (front_mode == 0) {
+				$("#lp_standalone_mode").prop("checked", false);
+			}
 
 			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
@@ -421,7 +432,7 @@ class Settings
 		$config_vars = array(
 			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
-			array('check', 'lp_show_tags_as_articles'),
+			array('check', 'lp_show_items_as_articles'),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
@@ -497,6 +508,52 @@ class Settings
 		}
 
 		prepareDBSettingContext($config_vars);
+	}
+
+	/**
+	 * Output category settings
+	 *
+	 * Выводим настройки рубрик
+	 *
+	 * @return array|void
+	 */
+	public function categories()
+	{
+		global $context, $txt, $scripturl;
+
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
+
+		loadTemplate('LightPortal/ManageSettings');
+
+		$context['page_title'] = $txt['lp_categories'];
+
+		$category = new Category;
+
+		$context['lp_categories'] = $category->getList();
+
+		if (Helpers::request()->has('actions')) {
+			$data = Helpers::request()->json();
+
+			if (!empty($data['update_priority']))
+				$category->updatePriority($data['update_priority']);
+
+			if (!empty($data['new_name']))
+				$category->add($data['new_name'], $data['new_desc'] ?? '');
+
+			if (!empty($data['name']))
+				$category->updateName($data['item'], $data['name']);
+
+			if (!empty($data['desc']))
+				$category->updateDescription($data['item'], $data['desc']);
+
+			if (!empty($data['del_item']))
+				$category->remove([(int) $data['del_item']]);
+
+			exit;
+		}
+
+		$context['sub_template'] = 'category_settings';
 	}
 
 	/**
@@ -600,10 +657,10 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
-		// Initial settings | Первоначальные настройки
+		// Initial settings
 		$add_settings = [];
 		if (!isset($modSettings['lp_cache_update_interval']))
-			$add_settings['lp_cache_update_interval'] = 3600;
+			$add_settings['lp_cache_update_interval'] = LP_CACHE_TIME;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 

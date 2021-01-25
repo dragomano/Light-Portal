@@ -33,7 +33,7 @@ class Cache
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public function __invoke($key, $funcName, $class, $time = 3600, ...$vars)
+	public function __invoke($key, $funcName, $class, $time = LP_CACHE_TIME, ...$vars)
 	{
 		if (empty($key))
 			return false;

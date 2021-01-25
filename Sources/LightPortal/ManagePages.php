@@ -651,7 +651,8 @@ class ManagePages
 
 		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
-				'page_author' => FILTER_SANITIZE_STRING,
+				'category'    => FILTER_VALIDATE_INT,
+				'page_author' => FILTER_VALIDATE_INT,
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
 				'keywords'    => array(
@@ -695,7 +696,8 @@ class ManagePages
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
 			'title'       => $context['lp_current_page']['title'] ?? [],
-			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author'] ?? '',
+			'category'    => $post_data['category'] ?? $context['lp_current_page']['category_id'] ?? 0,
+			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author_id'] ?? $user_info['id'],
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
@@ -750,7 +752,7 @@ class ManagePages
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
-		if (!empty($data['alias']) && $this->isNotUnique($data))
+		if (!empty($data['alias']) && !$this->isUnique($data))
 			$post_errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
@@ -770,9 +772,9 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private function improveKeywordsField()
+	private function improveSomeSelectFields()
 	{
-		global $context;
+		global $context, $txt;
 
 		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 
@@ -781,16 +783,71 @@ class ManagePages
 			position: initial;
 		}');
 
+		// Prepare the tag list
 		$all_tags = Helpers::cache('all_tags', 'getAll', Tag::class, LP_CACHE_TIME, ...array(0, 0, 'value'));
 		$all_tags = array_keys($all_tags);
 
 		sort($all_tags);
 
 		$context['lp_all_tags'] = [];
-
 		foreach ($all_tags as $tag) {
 			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $tag . '", selected: ' . (in_array($tag, $context['lp_page']['keywords']) ? 'true' : 'false') . '}';
 		}
+
+		// Prepare the category list
+		$all_categories = (new Category)->getList();
+
+		$context['lp_all_categories'] = ['{text: "' . $txt['lp_no_category'] . '", value: "0"}'];
+		foreach ($all_categories as $id => $category) {
+			$context['lp_all_categories'][] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . ($id == $context['lp_page']['category'] ? 'true' : 'false') . '}';
+		}
+
+		// Prepare the member list
+		if (Helpers::request()->has('members')) {
+			$data = Helpers::request()->json();
+
+			if (!empty($data['search']))
+				$this->prepareMemberList($data['search']);
+		}
+	}
+
+	/**
+	 * @param string $search
+	 * @return void
+	 */
+	private function prepareMemberList($search)
+	{
+		global $smcFunc;
+
+		$search = trim($smcFunc['strtolower']($search)) . '*';
+		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
+
+		$request = $smcFunc['db_query']('', '
+			SELECT id_member, real_name
+			FROM {db_prefix}members
+			WHERE {raw:real_name} LIKE {string:search}
+				AND is_activated IN (1, 11)
+			LIMIT 1000',
+			array(
+				'real_name' => $smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
+				'search'    => $search
+			)
+		);
+
+		$members = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$row['real_name'] = strtr($row['real_name'], array('&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;'));
+
+			$members[] = [
+				'text'  => $row['real_name'],
+				'value' => $row['id_member']
+			];
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		exit(json_encode($members));
 	}
 
 	/**
@@ -805,6 +862,8 @@ class ManagePages
 		global $modSettings, $language, $context, $txt;
 
 		checkSubmitOnce('register');
+
+		$this->improveSomeSelectFields();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
 
@@ -824,22 +883,6 @@ class ManagePages
 				'tab' => 'content'
 			);
 		}
-
-		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
-		$context['posting_fields']['alias']['input'] = array(
-			'type' => 'text',
-			'after' => $txt['lp_page_alias_subtext'],
-			'attributes' => array(
-				'id'        => 'alias',
-				'maxlength' => 255,
-				'value'     => $context['lp_page']['alias'],
-				'required'  => true,
-				'pattern'   => $this->alias_pattern,
-				'style'     => 'width: 100%',
-				'x-ref'     => 'alias'
-			),
-			'tab' => 'seo'
-		);
 
 		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
 		$context['posting_fields']['type']['input'] = array(
@@ -861,6 +904,36 @@ class ManagePages
 			);
 		}
 
+		if ($context['lp_page']['type'] !== 'bbc') {
+			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
+			$context['posting_fields']['content']['input'] = array(
+				'type' => 'textarea',
+				'attributes' => array(
+					'id'        => 'content',
+					'maxlength' => MAX_MSG_LENGTH,
+					'value'     => $context['lp_page']['content'],
+					'required'  => true
+				),
+				'tab' => 'content'
+			);
+		}
+
+		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
+		$context['posting_fields']['alias']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_page_alias_subtext'],
+			'attributes' => array(
+				'id'        => 'alias',
+				'maxlength' => 255,
+				'value'     => $context['lp_page']['alias'],
+				'required'  => true,
+				'pattern'   => $this->alias_pattern,
+				'style'     => 'width: 100%',
+				'x-ref'     => 'alias'
+			),
+			'tab' => 'seo'
+		);
+
 		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
 		$context['posting_fields']['description']['input'] = array(
 			'type' => 'textarea',
@@ -871,8 +944,6 @@ class ManagePages
 			),
 			'tab' => 'seo'
 		);
-
-		$this->improveKeywordsField();
 
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
 		$context['posting_fields']['keywords']['input'] = array(
@@ -885,13 +956,6 @@ class ManagePages
 			'options' => array(),
 			'tab' => 'seo'
 		);
-
-		foreach ($context['lp_page']['keywords'] as $keyword) {
-			$context['posting_fields']['keywords']['input']['options'][$keyword] = array(
-				'value'    => $keyword,
-				'selected' => in_array($keyword, $context['lp_page']['keywords'])
-			);
-		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
@@ -909,6 +973,16 @@ class ManagePages
 			);
 		}
 
+		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
+		$context['posting_fields']['category']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'id'   => 'category',
+				'name' => 'category'
+			),
+			'options' => array()
+		);
+
 		if ($context['lp_page']['created_at'] >= time()) {
 			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
 			$context['posting_fields']['datetime']['input']['html'] = '
@@ -916,29 +990,17 @@ class ManagePages
 			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
 		}
 
-		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
-			$context['posting_fields']['content']['input'] = array(
-				'type' => 'textarea',
+		if ($context['user']['is_admin']) {
+			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
+			$context['posting_fields']['page_author']['input'] = array(
+				'type' => 'select',
 				'attributes' => array(
-					'id'        => 'content',
-					'maxlength' => MAX_MSG_LENGTH,
-					'value'     => $context['lp_page']['content'],
-					'required'  => true
+					'id'   => 'page_author',
+					'name' => 'page_author'
 				),
-				'tab' => 'content'
+				'options' => array()
 			);
 		}
-
-		$context['posting_fields']['page_author']['label']['text'] = $txt['author'];
-		$context['posting_fields']['page_author']['input'] = array(
-			'type' => 'text',
-			'after' => $txt['lp_page_author_subtext'],
-			'attributes' => array(
-				'id'    => 'page_author',
-				'value' => $context['lp_page']['page_author']
-			)
-		);
 
 		$context['posting_fields']['show_author_and_date']['label']['text'] = $txt['lp_page_options']['show_author_and_date'];
 		$context['posting_fields']['show_author_and_date']['input'] = array(
@@ -1092,6 +1154,7 @@ class ManagePages
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_pages',
 				array_merge(array(
+					'category_id' => 'int',
 					'author_id'   => 'int',
 					'alias'       => 'string-255',
 					'description' => 'string-255',
@@ -1102,7 +1165,8 @@ class ManagePages
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
-					Helpers::getUserId($context['lp_page']['page_author']),
+					$context['lp_page']['category'],
+					$context['lp_page']['page_author'],
 					$context['lp_page']['alias'],
 					$context['lp_page']['description'],
 					$context['lp_page']['content'],
@@ -1197,11 +1261,12 @@ class ManagePages
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET author_id = {string:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
-					'author_id'   => Helpers::getUserId($context['lp_page']['page_author']),
+					'category_id' => $context['lp_page']['category'],
+					'author_id'   => $context['lp_page']['page_author'],
 					'alias'       => $context['lp_page']['alias'],
 					'description' => $context['lp_page']['description'],
 					'content'     => $context['lp_page']['content'],
@@ -1330,14 +1395,14 @@ class ManagePages
 	}
 
 	/**
-	 * We check whether there is already such an alias in the database
+	 * Check the uniqueness of the alias
 	 *
-	 * Проверяем, нет ли уже такого алиаса в базе
+	 * Проверяем уникальность алиаса
 	 *
 	 * @param array $data
 	 * @return bool
 	 */
-	private function isNotUnique(array $data)
+	private function isUnique(array $data)
 	{
 		global $smcFunc;
 
@@ -1357,6 +1422,6 @@ class ManagePages
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return (bool) $count;
+		return $count == 0;
 	}
 }

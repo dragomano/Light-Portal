@@ -85,8 +85,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.6 alpha',
-			'LP_RELEASE_DATE' => '2021-01-18',
+			'LP_VERSION'      => '1.6 beta',
+			'LP_RELEASE_DATE' => '2021-01-26',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
@@ -175,6 +175,9 @@ class Integration
 
 		$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
 		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
+
+		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'categories')
+			return call_user_func(array(new Category, 'show'));
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
 			return call_user_func(array(new Tag, 'show'));

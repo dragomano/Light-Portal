@@ -24,9 +24,9 @@ $txt['lp_settings']  = 'Configuración del portal';
 $txt['lp_base']      = 'Configuraciones para la portada y los artículos';
 $txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
-$txt['lp_frontpage_title']                   = 'El título de la portada';
-$txt['lp_frontpage_mode']                    = 'La primera página del portal';
-$txt['lp_frontpage_mode_set']                = array(
+$txt['lp_frontpage_title']    = 'El título de la portada';
+$txt['lp_frontpage_mode']     = 'La primera página del portal';
+$txt['lp_frontpage_mode_set'] = array(
 	'Desactivar',
 	'chosen_page'   => 'Página especificada',
 	'all_topics'    => 'Todos los temas de foros seleccionados',
@@ -82,8 +82,8 @@ $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de pág
 $txt['lp_show_page_permissions']            = 'Show information about the page permissions';
 $txt['lp_show_page_permissions_subtext']    = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page']                = 'Mostrar palabras clave en la parte superior de la página';
-$txt['lp_show_tags_as_articles']            = 'Display lists of articles with the same tag as cards';
-$txt['lp_show_related_pages']               = 'Display related pages block';
+$txt['lp_show_items_as_articles']           = 'Show items on tag/category pages as cards';
+$txt['lp_show_related_pages']               = 'Show related pages block';
 $txt['lp_show_comment_block']               = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments']         = 'BBC permitidos en los comentarios';
 $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
@@ -101,6 +101,21 @@ $txt['lp_page_itemprop_address'] = 'Dirección de su organización';
 $txt['lp_page_itemprop_phone']   = 'Teléfono de su organización';
 
 $txt['lp_permissions'] = array('Mostrar a los administradores', 'Mostrar a los invitados', 'Mostrar a los usuarios', 'Mostrar a todos');
+
+// Categories
+$txt['lp_categories']                 = 'Categories';
+$txt['lp_categories_info']            = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
+$txt['lp_categories_manage']          = 'Manage categories';
+$txt['lp_categories_add']             = 'Add category';
+$txt['lp_categories_desc']            = 'Description';
+$txt['lp_category']                   = 'Category';
+$txt['lp_no_category']                = 'Uncategorized';
+$txt['lp_all_categories']             = 'All categories of the portal';
+$txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
+$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_no_selected_category']       = 'The specified category was not found.';
+$txt['lp_no_categories']              = 'There are no categories yet.';
+$txt['lp_total_pages_column']         = 'Total pages';
 
 // Panels
 $txt['lp_panels']               = 'Paneles';
@@ -218,7 +233,9 @@ $txt['lp_page_description']          = 'Descripción';
 $txt['lp_page_keywords']             = 'Palabras claves';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime']     = 'Fecha y hora de publicación';
-$txt['lp_page_author_subtext']       = 'Name of member to post as. Leave blank to post as yourself.';
+$txt['lp_page_author']               = 'Transfer of authorship';
+$txt['lp_page_author_placeholder']   = 'Specify a username to transfer rights to the page';
+$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Mostrar el autor y la fecha de creación',

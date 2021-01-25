@@ -24,9 +24,9 @@ $txt['lp_settings']  = 'Налаштування порталу';
 $txt['lp_base']      = 'Налаштування головної сторінки і статей';
 $txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum">форумі розробника</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a> або на <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a>.';
 
-$txt['lp_frontpage_title']                   = 'Заголовок головної сторінки';
-$txt['lp_frontpage_mode']                    = 'Перша сторінка порталу';
-$txt['lp_frontpage_mode_set']                = array(
+$txt['lp_frontpage_title']    = 'Заголовок головної сторінки';
+$txt['lp_frontpage_mode']     = 'Перша сторінка порталу';
+$txt['lp_frontpage_mode_set'] = array(
 	'Відключивши',
 	'chosen_page'   => 'Зазначена сторінка',
 	'all_topics'    => 'Всі теми з обраних розділів',
@@ -82,7 +82,7 @@ $txt['lp_extra_info'] = 'Тут знаходяться загальні нала
 $txt['lp_show_page_permissions']            = 'Відображати інформацію про права доступу до сторінки';
 $txt['lp_show_page_permissions_subtext']    = 'Бачать тільки ті, у кого є право редагування сторінк.';
 $txt['lp_show_tags_on_page']                = 'Відображати ключові слова у верхній частині сторінки';
-$txt['lp_show_tags_as_articles']            = 'Відображати списки статей з однаковим тегом у вигляді карток';
+$txt['lp_show_items_as_articles']           = 'Відображати елементи на сторінках тегів і рубрик у вигляді карток';
 $txt['lp_show_related_pages']               = 'Відображати блок схожих сторінок';
 $txt['lp_show_comment_block']               = 'Відображати блок коментарів';
 $txt['lp_disabled_bbc_in_comments']         = 'Дозволені ББ-теги в коментарях';
@@ -101,6 +101,21 @@ $txt['lp_page_itemprop_address'] = 'Адреса вашої організаці
 $txt['lp_page_itemprop_phone']   = 'Телефон вашої організації';
 
 $txt['lp_permissions'] = array('Показувати адмінам', 'Показувати гостям', 'Показувати користувачам', 'Показувати всім');
+
+// Categories
+$txt['lp_categories']                 = 'Рубрики';
+$txt['lp_categories_info']            = 'Тут можна створити і відредагувати рубрики порталу, для категоризації сторінок.<br>Для зміни порядку рубрики просто перетягніть її на нову позицію.';
+$txt['lp_categories_manage']          = 'Управління рубриками';
+$txt['lp_categories_add']             = 'Додати рубрику';
+$txt['lp_categories_desc']            = 'Опис';
+$txt['lp_category']                   = 'Рубрика';
+$txt['lp_no_category']                = 'Без рубрики';
+$txt['lp_all_categories']             = 'Всі рубрики порталу';
+$txt['lp_all_pages_with_category']    = 'Всі сторінки в рубриці «%1$s»';
+$txt['lp_all_pages_without_category'] = 'Всі сторінки без рубрики';
+$txt['lp_no_selected_category']       = 'Зазначена рубрика не знайдена.';
+$txt['lp_no_categories']              = 'Рубрик поки немає.';
+$txt['lp_total_pages_column']         = 'Всього сторінок';
 
 // Panels
 $txt['lp_panels']               = 'Панелі';
@@ -218,7 +233,9 @@ $txt['lp_page_description']          = 'Опис';
 $txt['lp_page_keywords']             = 'Ключові слова';
 $txt['lp_page_keywords_placeholder'] = 'Виберіть теги або додайте нові';
 $txt['lp_page_publish_datetime']     = 'Дата і час публікації';
-$txt['lp_page_author_subtext']       = 'Ім\'я автора. Залиште порожнім для використання свого імені.';
+$txt['lp_page_author']               = 'Передача авторства';
+$txt['lp_page_author_placeholder']   = 'Вкажіть ім\'я користувача для передачі прав на сторінку';
+$txt['lp_page_author_search_length'] = 'Введіть не менше 3 символів';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показувати автора і дату створення',

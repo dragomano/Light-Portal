@@ -157,7 +157,7 @@ class PageExport extends AbstractExport
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
@@ -176,6 +176,7 @@ class PageExport extends AbstractExport
 			if (!isset($items[$row['page_id']]))
 				$items[$row['page_id']] = array(
 					'page_id'      => $row['page_id'],
+					'category_id'  => $row['category_id'],
 					'author_id'    => $row['author_id'],
 					'alias'        => $row['alias'],
 					'description'  => trim($row['description']),
@@ -237,7 +238,7 @@ class PageExport extends AbstractExport
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
 				$xmlName = $xmlElement->appendChild(
-					in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+					in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
 						? $xml->createAttribute($key)
 						: $xml->createElement($key)
 				);

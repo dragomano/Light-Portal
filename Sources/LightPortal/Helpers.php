@@ -33,7 +33,7 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = 3600, ...$vars)
+	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = LP_CACHE_TIME, ...$vars)
 	{
 		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
 	}
@@ -811,34 +811,38 @@ class Helpers
 	}
 
 	/**
-	 * Get user ID by name
+	 * Get array of all categories
 	 *
-	 * Получаем идентификатор пользователя по имени
+	 * Получаем массив всех рубрик
 	 *
-	 * @param string $name
-	 * @return int
+	 * @return array
 	 */
-	public static function getUserId($name = '')
+	public static function getAllCategories()
 	{
-		global $user_info, $smcFunc;
+		global $smcFunc;
 
-		if (empty($name) || $name == $user_info['name'])
-			return $user_info['id'];
+		if (($categories = self::cache()->get('all_categories', LP_CACHE_TIME)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT category_id, name, description
+				FROM {db_prefix}lp_categories
+				ORDER BY priority',
+				array()
+			);
 
-		$request = $smcFunc['db_query']('', '
-			SELECT id_member
-			FROM {db_prefix}members
-			WHERE real_name = {string:real_name}',
-			array(
-				'real_name' => $name
-			)
-		);
+			$categories = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				$categories[$row['category_id']] = [
+					'name' => $row['name'],
+					'desc' => $row['description']
+				];
+			}
 
-		[$user_id] = $smcFunc['db_fetch_row']($request);
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+			self::cache()->put('all_categories', $categories, LP_CACHE_TIME);
+		}
 
-		return (int) $user_id;
+		return $categories;
 	}
 }

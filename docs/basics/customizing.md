@@ -47,7 +47,7 @@ In this section, you can change the general settings of pages and blocks used bo
 
 * Show information about the page permissions — if you need a reminder about who can see the page you are viewing.
 * Show keywords at the top of the page — if keywords are specified for a page, they will appear at the top of the page
-* Show lists of articles with the same tag as cards — you can display tags as a table, or as cards.
+* Show items on tag/category pages as cards — you can display items as a table, or as cards.
 * Show related pages block — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
 * Show comments block — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
 * Allowed BBC in comments — you can specify tags that are allowed to be used when commenting pages.
@@ -63,6 +63,9 @@ These settings can be useful if your forum is owned by a company or organization
 * Use an image from the page content
 * Address of your organization
 * Phone of your organization
+
+## Categories
+In this section, you can manage categories for categorizing portal pages. If you need it, of course.
 
 ## Panels
 In this section, you can change some of the settings for existing portal panels and customize the display (direction) of blocks in these panels.

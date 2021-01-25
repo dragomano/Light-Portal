@@ -14,12 +14,50 @@ if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
 
 $tables[] = array(
+	'name' => 'lp_categories',
+	'columns' => array(
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'name',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		),
+		array(
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
+			'name'     => 'priority',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'default'  => 0,
+			'unsigned' => true
+		)
+	),
+	'indexes' => array(
+			array(
+			'type'    => 'primary',
+			'columns' => array('category_id')
+		)
+	)
+);
+
+$tables[] = array(
 	'name' => 'lp_blocks',
 	'columns' => array(
 		array(
 			'name'     => 'block_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -125,21 +163,21 @@ $tables[] = array(
 		array(
 			'name'     => 'id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
 		array(
 			'name'     => 'parent_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'default'  => 0
 		),
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -175,9 +213,16 @@ $tables[] = array(
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
+		),
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'null'     => true
 		),
 		array(
 			'name'     => 'author_id',
@@ -288,7 +333,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -336,7 +381,7 @@ $tables[] = array(
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -360,7 +405,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -412,6 +457,15 @@ foreach ($tables as $table) {
 		foreach ($table['columns'] as $column) {
 			if ($column['name'] == 'note') {
 				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
+				break;
+			}
+		}
+	}
+
+	if ($table['name'] == 'lp_pages') {
+		foreach ($table['columns'] as $column) {
+			if ($column['name'] == 'category_id') {
+				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
 				break;
 			}
 		}

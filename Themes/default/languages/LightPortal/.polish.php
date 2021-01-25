@@ -24,9 +24,9 @@ $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
 $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
-$txt['lp_frontpage_title']                   = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']                    = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']                = array(
+$txt['lp_frontpage_title']    = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']     = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set'] = array(
 	'Wyłącz',
 	'chosen_page'   => 'Wybrana strona',
 	'all_topics'    => 'Wszystkie wątki z wybranych działów',
@@ -82,7 +82,7 @@ $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków
 $txt['lp_show_page_permissions']            = 'Show information about the page permissions';
 $txt['lp_show_page_permissions_subtext']    = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page']                = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_items_as_articles']           = 'Show items on tag/category pages as cards';
 $txt['lp_show_related_pages']               = 'Show related pages block';
 $txt['lp_show_comment_block']               = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']         = 'Dozwolone tagi BBC';
@@ -101,6 +101,21 @@ $txt['lp_page_itemprop_address'] = 'Adres Twojej organizacji';
 $txt['lp_page_itemprop_phone']   = 'Numer telefonu';
 
 $txt['lp_permissions'] = array('Pokaż administratorom', 'Pokaż gościom', 'Pokaż użytkownikom', 'Pokaż wszystkim');
+
+// Categories
+$txt['lp_categories']                 = 'Categories';
+$txt['lp_categories_info']            = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
+$txt['lp_categories_manage']          = 'Manage categories';
+$txt['lp_categories_add']             = 'Add category';
+$txt['lp_categories_desc']            = 'Description';
+$txt['lp_category']                   = 'Category';
+$txt['lp_no_category']                = 'Uncategorized';
+$txt['lp_all_categories']             = 'All categories of the portal';
+$txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
+$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_no_selected_category']       = 'The specified category was not found.';
+$txt['lp_no_categories']              = 'There are no categories yet.';
+$txt['lp_total_pages_column']         = 'Total pages';
 
 // Panels
 $txt['lp_panels']               = 'Panele';
@@ -218,7 +233,9 @@ $txt['lp_page_description']          = 'Opis';
 $txt['lp_page_keywords']             = 'Słowa kluczowe';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime']     = 'Data i czas publikacji';
-$txt['lp_page_author_subtext']       = 'Name of member to post as. Leave blank to post as yourself.';
+$txt['lp_page_author']               = 'Transfer of authorship';
+$txt['lp_page_author_placeholder']   = 'Specify a username to transfer rights to the page';
+$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',

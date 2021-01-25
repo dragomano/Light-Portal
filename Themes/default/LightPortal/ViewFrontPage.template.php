@@ -45,7 +45,8 @@ function template_show_topics_as_articles()
 				<div class="card-info">
 					<span class="card-date smalltext">
 						', $topic['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
+						<a class="floatright" href="', $topic['board_link'], '">', $topic['board_name'], '</a>
+						<time datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>
 					</span>
 					<h3 class="card-title">
 						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
@@ -166,7 +167,8 @@ function template_show_pages_as_articles()
 				<div class="card-info">
 					<span class="card-date smalltext">
 						', $page['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<time datetime="', $page['datetime'], '">', $page['date'], '</time>
+						<a class="floatright" href="', $page['category_link'], '">', $page['category_name'], '</a>
+						<time datetime="', $page['datetime'], '"><i class="fas fa-clock"></i> ', $page['date'], '</time>
 					</span>
 					<h3 class="card-title">
 						<a href="', $page['link'], '">', $page['title'], '</a>
@@ -408,7 +410,7 @@ function template_alt_show_topics_as_articles()
 
 			if (!empty($topic['image'])) {
 				echo '
-					<img src="' . $topic['image'] . '" alt="">';
+					<img src="' . $topic['image'] . '" alt="" style="width: 100%; height: 235px">';
 			}
 
 			if (!empty($modSettings['lp_show_teaser']) && !empty($topic['teaser'])) {
@@ -422,7 +424,7 @@ function template_alt_show_topics_as_articles()
 							<a class="bbc_link" href="', $topic['link'], '">', $txt['lp_read_more'], '</a>
 						</div>
 						<div class="centertext" style="padding: 4px">
-							<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>';
+							<time datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>';
 
 			if (!empty($modSettings['lp_show_author'])) {
 				if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
@@ -432,10 +434,10 @@ function template_alt_show_topics_as_articles()
 
 				if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
 					echo '
-							<a href="', $topic['author_link'], '" class="card-author">', $topic['author_name'], '</a>';
+							| <a href="', $topic['author_link'], '" class="card-author">', $topic['author_name'], '</a>';
 				} else {
 					echo '
-							<span class="card-author">', $txt['guest_title'], '</span>';
+							| <span class="card-author">', $txt['guest_title'], '</span>';
 				}
 			}
 
@@ -581,4 +583,44 @@ function template_alt_show_pages_as_articles()
 		echo '
 	<div class="infobox">', $txt['lp_no_items'], '</div>';
 	}
+}
+
+function template_sorting_above()
+{
+	global $context, $txt;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $context['page_title'], '</h3>
+	</div>';
+
+	if (empty($context['lp_frontpage_articles'])) {
+		echo '
+	<div class="information">', $context['lp_no_selected_item'], '</div>';
+	} else {
+		echo '
+	<div class="information">
+		<div class="floatright">
+			<form action="', $context['canonical_url'], '" method="post">
+				<label for="sort">', $txt['lp_sorting_label'], '</label>
+				<select id="sort" name="sort" onchange="this.form.submit()">
+					<option value="created;desc"', $context['current_sorting'] == 'created;desc' ? ' selected' : '', '>', $txt['lp_sort_by_created_desc'], '</option>
+					<option value="created"', $context['current_sorting'] == 'created' ? ' selected' : '', '>', $txt['lp_sort_by_created'], '</option>
+					<option value="updated;desc"', $context['current_sorting'] == 'updated;desc' ? ' selected' : '', '>', $txt['lp_sort_by_updated_desc'], '</option>
+					<option value="updated"', $context['current_sorting'] == 'updated' ? ' selected' : '', '>', $txt['lp_sort_by_updated'], '</option>
+					<option value="title;desc"', $context['current_sorting'] == 'title;desc' ? ' selected' : '', '>', $txt['lp_sort_by_title_desc'], '</option>
+					<option value="title"', $context['current_sorting'] == 'title' ? ' selected' : '', '>', $txt['lp_sort_by_title'], '</option>
+					<option value="author_name;desc"', $context['current_sorting'] == 'author_name;desc' ? ' selected' : '', '>', $txt['lp_sort_by_author_desc'], '</option>
+					<option value="author_name"', $context['current_sorting'] == 'author_name' ? ' selected' : '', '>', $txt['lp_sort_by_author'], '</option>
+					<option value="num_views;desc"', $context['current_sorting'] == 'num_views;desc' ? ' selected' : '', '>', $txt['lp_sort_by_num_views_desc'], '</option>
+					<option value="num_views"', $context['current_sorting'] == 'num_views' ? ' selected' : '', '>', $txt['lp_sort_by_num_views'], '</option>
+				</select>
+			</form>
+		</div>
+	</div>';
+	}
+}
+
+function template_sorting_below()
+{
 }

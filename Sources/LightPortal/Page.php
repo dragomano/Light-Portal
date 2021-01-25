@@ -75,6 +75,14 @@ class Page
 			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
 			$context['canonical_url']       = $scripturl . '?page=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
+
+			if (!empty($context['lp_page']['category'])) {
+				$context['linktree'][] = array(
+					'name' => $context['lp_page']['category'],
+					'url'  => $scripturl . '?action=portal;sa=categories;id=' . $context['lp_page']['category_id']
+				);
+			}
+
 			$context['linktree'][] = array(
 				'name' => $context['page_title']
 			);
@@ -137,6 +145,9 @@ class Page
 			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']) : null,
 			'author'         => $context['lp_page']['author']
 		);
+
+		if (!empty($context['lp_page']['category']))
+			$context['optimus_og_type']['article']['section'] = $context['lp_page']['category'];
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
 			$settings['og_image'] = $context['lp_page']['image'];
@@ -272,7 +283,7 @@ class Page
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -308,6 +319,7 @@ class Page
 			if (!isset($data))
 				$data = array(
 					'id'          => $row['page_id'],
+					'category_id' => $row['category_id'],
 					'author_id'   => $row['author_id'],
 					'author'      => $row['author_name'],
 					'alias'       => $row['alias'],
@@ -333,6 +345,9 @@ class Page
 			if (!empty($row['keyword']))
 				$data['keywords'][] = $row['keyword'];
 		}
+
+		if (!empty($data['category_id']))
+			$data['category'] = Helpers::getAllCategories()[$data['category_id']]['name'];
 
 		if (!empty($data['keywords']))
 			$data['keywords'] = array_unique($data['keywords']);

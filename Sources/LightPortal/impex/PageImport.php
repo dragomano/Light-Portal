@@ -88,6 +88,7 @@ class PageImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'page_id'      => $page_id = intval($item['page_id']),
+					'category_id'  => intval($item['category_id']),
 					'author_id'    => intval($item['author_id']),
 					'alias'        => (string) $item->alias,
 					'description'  => $item->description,
@@ -162,6 +163,7 @@ class PageImport extends AbstractImport
 					'{db_prefix}lp_pages',
 					array(
 						'page_id'      => 'int',
+						'category_id'  => 'int',
 						'author_id'    => 'int',
 						'alias'        => 'string-255',
 						'description'  => 'string-255',
