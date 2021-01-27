@@ -113,7 +113,7 @@ $txt['lp_no_category']                = 'Без рубрики';
 $txt['lp_all_categories']             = 'Всі рубрики порталу';
 $txt['lp_all_pages_with_category']    = 'Всі сторінки в рубриці «%1$s»';
 $txt['lp_all_pages_without_category'] = 'Всі сторінки без рубрики';
-$txt['lp_no_selected_category']       = 'Зазначена рубрика не знайдена.';
+$txt['lp_category_not_found']         = 'Зазначена рубрика не знайдена.';
 $txt['lp_no_categories']              = 'Рубрик поки немає.';
 $txt['lp_total_pages_column']         = 'Всього сторінок';
 
@@ -324,11 +324,13 @@ $txt['lp_plugin_new_option']                  = 'Додати опцію';
 // Tags
 $txt['lp_all_page_tags']          = 'Всі теги сторінок порталу';
 $txt['lp_all_tags_by_key']        = 'Всі сторінки з тегом "%1$s"';
-$txt['lp_no_selected_tag']        = 'Вказаний тег не знайдено.';
+$txt['lp_tag_not_found']          = 'Вказаний тег не знайдено.';
 $txt['lp_no_tags']                = 'Тегів поки немає.';
 $txt['lp_keyword_column']         = 'Ключове слово';
 $txt['lp_frequency_column']       = 'Частотність';
 $txt['lp_sorting_label']          = 'Сортування';
+$txt['lp_sort_by_title_desc']     = 'За заголовком (за спаданням)';
+$txt['lp_sort_by_title']          = 'За заголовком (за зростанням)';
 $txt['lp_sort_by_created_desc']   = 'За датою створення (спочатку нові)';
 $txt['lp_sort_by_created']        = 'За датою створення (спочатку старі)';
 $txt['lp_sort_by_updated_desc']   = 'За датою оновлення (спочатку нові)';

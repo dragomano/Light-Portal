@@ -819,30 +819,6 @@ class Helpers
 	 */
 	public static function getAllCategories()
 	{
-		global $smcFunc;
-
-		if (($categories = self::cache()->get('all_categories', LP_CACHE_TIME)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT category_id, name, description
-				FROM {db_prefix}lp_categories
-				ORDER BY priority',
-				array()
-			);
-
-			$categories = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				$categories[$row['category_id']] = [
-					'name' => $row['name'],
-					'desc' => $row['description']
-				];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			self::cache()->put('all_categories', $categories, LP_CACHE_TIME);
-		}
-
-		return $categories;
+		return self::cache('all_categories', 'getList', Category::class);
 	}
 }

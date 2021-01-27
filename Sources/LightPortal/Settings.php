@@ -532,6 +532,8 @@ class Settings
 
 		$context['lp_categories'] = $category->getList();
 
+		unset($context['lp_categories'][0]);
+
 		if (Helpers::request()->has('actions')) {
 			$data = Helpers::request()->json();
 

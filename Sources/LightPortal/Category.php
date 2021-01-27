@@ -35,6 +35,10 @@ class Category
 
 		$context['lp_category'] = Helpers::request('id');
 
+		if (array_key_exists($context['lp_category'], Helpers::getAllCategories()) === false) {
+			fatal_lang_error('lp_category_not_found', false, null, 404);
+		}
+
 		if (empty($context['lp_category'])) {
 			$context['page_title'] = $txt['lp_all_pages_without_category'];
 		} else {
@@ -60,7 +64,7 @@ class Category
 			'id' => 'categories',
 			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
-			'no_items_label' => $txt['lp_no_selected_category'],
+			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'date',
 			'get_items' => array(
@@ -271,7 +275,7 @@ class Category
 	 */
 	private function showAsArticles()
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $context;
 
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
@@ -284,12 +288,12 @@ class Category
 		}
 
 		$sorting_types = array(
+			'title;desc'       => 't.title DESC',
+			'title'            => 't.title',
 			'created;desc'     => 'p.created_at DESC',
 			'created'          => 'p.created_at',
 			'updated;desc'     => 'p.updated_at DESC',
 			'updated'          => 'p.updated_at',
-			'title;desc'       => 't.title DESC',
-			'title'            => 't.title',
 			'author_name;desc' => 'author_name DESC',
 			'author_name'      => 'author_name',
 			'num_views;desc'   => 'p.num_views DESC',
@@ -313,8 +317,6 @@ class Category
 
 		$context['lp_frontpage_articles'] = $articles;
 		$context['lp_frontpage_layout']   = (new FrontPage)->getNumColumns();
-
-		$context['lp_no_selected_item'] = $txt['lp_no_selected_category'];
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -401,7 +403,7 @@ class Category
 	 */
 	public function getList()
 	{
-		global $smcFunc;
+		global $smcFunc, $txt;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT category_id, name, description, priority
@@ -410,7 +412,7 @@ class Category
 			array()
 		);
 
-		$items = [];
+		$items = [0 => ['name' => $txt['lp_no_category']]];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['category_id']] = array(
 				'name' => $row['name'],
@@ -681,7 +683,19 @@ class Category
 			)
 		);
 
-		$smcFunc['lp_num_queries']++;
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_pages
+			SET category_id = {int:category}
+			WHERE category_id IN ({array_int:items})',
+			array(
+				'category' => 0,
+				'items'    => $items
+			)
+		);
+
+		$smcFunc['lp_num_queries'] += 2;
+
+		Helpers::cache()->flush();
 	}
 
 	/**

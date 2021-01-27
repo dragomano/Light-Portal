@@ -797,7 +797,7 @@ class ManagePages
 		// Prepare the category list
 		$all_categories = (new Category)->getList();
 
-		$context['lp_all_categories'] = ['{text: "' . $txt['lp_no_category'] . '", value: "0"}'];
+		$context['lp_all_categories'] = [];
 		foreach ($all_categories as $id => $category) {
 			$context['lp_all_categories'][] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . ($id == $context['lp_page']['category'] ? 'true' : 'false') . '}';
 		}

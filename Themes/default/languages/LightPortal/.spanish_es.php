@@ -113,7 +113,7 @@ $txt['lp_no_category']                = 'Uncategorized';
 $txt['lp_all_categories']             = 'All categories of the portal';
 $txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
 $txt['lp_all_pages_without_category'] = 'All pages without category';
-$txt['lp_no_selected_category']       = 'The specified category was not found.';
+$txt['lp_category_not_found']         = 'The specified category was not found.';
 $txt['lp_no_categories']              = 'There are no categories yet.';
 $txt['lp_total_pages_column']         = 'Total pages';
 
@@ -324,11 +324,13 @@ $txt['lp_plugin_new_option']                  = 'Add option';
 // Tags
 $txt['lp_all_page_tags']          = 'Todas las etiquetas de página del portal';
 $txt['lp_all_tags_by_key']        = 'Todas las páginas con la etiqueta "%1$s"';
-$txt['lp_no_selected_tag']        = 'No se encontró la etiqueta especificada.';
+$txt['lp_tag_not_found']          = 'No se encontró la etiqueta especificada.';
 $txt['lp_no_tags']                = 'No hay etiquetas todavía.';
 $txt['lp_keyword_column']         = 'Palabra clave';
 $txt['lp_frequency_column']       = 'Frecuencia';
 $txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_title_desc']     = 'Title (desc)';
+$txt['lp_sort_by_title']          = 'Title (asc)';
 $txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
 $txt['lp_sort_by_created']        = 'Creation date (old first)';
 $txt['lp_sort_by_updated_desc']   = 'Update date (new first)';

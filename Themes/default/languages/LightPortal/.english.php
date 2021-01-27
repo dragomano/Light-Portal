@@ -113,7 +113,7 @@ $txt['lp_no_category']                = 'Uncategorized';
 $txt['lp_all_categories']             = 'All categories of the portal';
 $txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
 $txt['lp_all_pages_without_category'] = 'All pages without category';
-$txt['lp_no_selected_category']       = 'The specified category was not found.';
+$txt['lp_category_not_found']         = 'The specified category was not found.';
 $txt['lp_no_categories']              = 'There are no categories yet.';
 $txt['lp_total_pages_column']         = 'Total pages';
 
@@ -324,11 +324,13 @@ $txt['lp_plugin_new_option']                  = 'Add option';
 // Tags
 $txt['lp_all_page_tags']          = 'All portal page tags';
 $txt['lp_all_tags_by_key']        = 'All pages with the "%1$s" tag';
-$txt['lp_no_selected_tag']        = 'The specified tag was not found.';
+$txt['lp_tag_not_found']          = 'The specified tag was not found.';
 $txt['lp_no_tags']                = 'There is no tags yet.';
 $txt['lp_keyword_column']         = 'Keyword';
 $txt['lp_frequency_column']       = 'Frequency';
 $txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_title_desc']     = 'Title (desc)';
+$txt['lp_sort_by_title']          = 'Title (asc)';
 $txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
 $txt['lp_sort_by_created']        = 'Creation date (old first)';
 $txt['lp_sort_by_updated_desc']   = 'Update date (new first)';
