@@ -123,9 +123,6 @@ $txt['lp_panels_info']          = 'Możesz spersolanizować szerokość niektór
 $txt['lp_swap_header_footer']   = 'Zamień miejscami nagłówek ze stopką';
 $txt['lp_swap_left_right']      = 'Zamień miejscami panel lewy z prawym';
 $txt['lp_swap_top_bottom']      = 'Zamień miejscami panele centralne';
-$txt['lp_panel_layout_note']    = 'Zmień szerokość przeglądarki i sprawdź która klasa jest używana.';
-$txt['lp_browser_width']        = 'Szerokość okna przeglądarki';
-$txt['lp_used_class']           = 'Uzywana klasa';
 $txt['lp_panel_layout_preview'] = 'Możesz ustawić ilość kolumn dla niektórych panelów w zależnośc iod szerokości okna przeglądarki.';
 $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';

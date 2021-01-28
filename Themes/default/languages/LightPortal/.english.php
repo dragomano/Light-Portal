@@ -123,9 +123,6 @@ $txt['lp_panels_info']          = 'Here you can customize the width of some pane
 $txt['lp_swap_header_footer']   = 'Swap the header and the footer';
 $txt['lp_swap_left_right']      = 'Swap the left panel and the right panel';
 $txt['lp_swap_top_bottom']      = 'Swap the center (top) and the center (bottom)';
-$txt['lp_panel_layout_note']    = 'Change the width of the browser window and see which class is used.';
-$txt['lp_browser_width']        = 'Width of the browser window';
-$txt['lp_used_class']           = 'Class used';
 $txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
 $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';

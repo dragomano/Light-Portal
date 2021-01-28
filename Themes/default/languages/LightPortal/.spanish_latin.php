@@ -123,9 +123,6 @@ $txt['lp_panels_info']          = 'Aquí se puede personalizar el ancho de algun
 $txt['lp_swap_header_footer']   = 'Cambia el encabezado y el pie de página';
 $txt['lp_swap_left_right']      = 'Cambia el panel izquierdo y el panel derecho';
 $txt['lp_swap_top_bottom']      = 'Cambie el centro (arriba) y el centro (abajo)';
-$txt['lp_panel_layout_note']    = 'Cambia el ancho de la ventana del navegador y ver qué clase se utiliza.';
-$txt['lp_browser_width']        = 'Ancho de la ventana del navegador';
-$txt['lp_used_class']           = 'Clase utilizada';
 $txt['lp_panel_layout_preview'] = 'Aquí puede establecer el número de columnas para algunos paneles, dependiendo del ancho de la ventana del navegador.';
 $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Aquí puede cambiar la dirección de los bloques para cada panel.';
