@@ -36,6 +36,7 @@ class Category
 		$context['lp_category'] = Helpers::request('id');
 
 		if (array_key_exists($context['lp_category'], Helpers::getAllCategories()) === false) {
+			$this->changeBackButton();
 			fatal_lang_error('lp_category_not_found', false, null, 404);
 		}
 
@@ -721,5 +722,24 @@ class Category
 		$smcFunc['lp_num_queries']++;
 
 		return (int) $priority;
+	}
+
+	/**
+	 * Change back button text and back button href
+	 *
+	 * Меняем текст и href кнопки «Назад»
+	 *
+	 * @return void
+	 */
+	private function changeBackButton()
+	{
+		global $modSettings, $txt;
+
+		addInlineJavaScript('
+		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
+		if (!document.referrer) {
+			backButton.text = "' . $txt['lp_all_categories'] . '";
+			backButton.setAttribute("href", smf_scripturl + "?action=portal;sa=categories");
+		}', true);
 	}
 }
