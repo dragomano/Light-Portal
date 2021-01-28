@@ -784,14 +784,11 @@ class ManagePages
 		}');
 
 		// Prepare the tag list
-		$all_tags = Helpers::cache('all_tags', 'getAll', Tag::class, LP_CACHE_TIME, ...array(0, 0, 'value'));
-		$all_tags = array_keys($all_tags);
-
-		sort($all_tags);
+		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Tag::class);
 
 		$context['lp_all_tags'] = [];
-		foreach ($all_tags as $tag) {
-			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $tag . '", selected: ' . (in_array($tag, $context['lp_page']['keywords']) ? 'true' : 'false') . '}';
+		foreach ($all_tags as $id => $value) {
+			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $value . '", value: "' . $id . '", selected: ' . (isset($context['lp_page']['keywords'][$id]) ? 'true' : 'false') . '}';
 		}
 
 		// Prepare the category list
@@ -1101,12 +1098,8 @@ class ManagePages
 	{
 		global $context;
 
-		$context['lp_page']['keywords'] = array_map(function ($item) {
-			$stop_chars = ['-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '='];
-			$new_item   = str_replace($stop_chars, '', $item);
-
-			return $new_item;
-		}, $context['lp_page']['keywords']);
+		// Remove all punctuation symbols
+		$context['lp_page']['keywords'] = preg_replace("#[[:punct:]]#", "", $context['lp_page']['keywords']);
 	}
 
 	/**
@@ -1209,6 +1202,32 @@ class ManagePages
 				$smcFunc['lp_num_queries']++;
 			}
 
+			if (!empty($context['lp_page']['keywords'])) {
+				$tags = [];
+
+				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				foreach ($new_tags as $value) {
+					$tags[] = array(
+						'value' => $value
+					);
+				}
+
+				$keywords = $smcFunc['db_insert']('',
+					'{db_prefix}lp_tags',
+					array(
+						'value' => 'string'
+					),
+					$tags,
+					array('tag_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+
+				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+			}
+
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
@@ -1232,28 +1251,6 @@ class ManagePages
 					),
 					$params,
 					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
-				foreach ($context['lp_page']['keywords'] as $value) {
-					$tags[] = array(
-						'page_id' => $item,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'page_id' => 'int',
-						'value'   => 'string'
-					),
-					$tags,
-					array('page_id', 'value')
 				);
 
 				$smcFunc['lp_num_queries']++;
@@ -1308,6 +1305,32 @@ class ManagePages
 				$smcFunc['lp_num_queries']++;
 			}
 
+			if (!empty($context['lp_page']['keywords'])) {
+				$tags = [];
+
+				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				foreach ($new_tags as $value) {
+					$tags[] = array(
+						'value' => $value
+					);
+				}
+
+				$keywords = $smcFunc['db_insert']('',
+					'{db_prefix}lp_tags',
+					array(
+						'value' => 'string'
+					),
+					$tags,
+					array('tag_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+
+				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+			}
+
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
@@ -1331,38 +1354,6 @@ class ManagePages
 					),
 					$params,
 					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_tags
-				WHERE page_id = {int:page_id}',
-				array(
-					'page_id' => $item
-				)
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
-				foreach ($context['lp_page']['keywords'] as $value) {
-					$tags[] = array(
-						'page_id' => $item,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']($db_type == 'postgresql' ? 'ignore' : 'replace',
-					'{db_prefix}lp_tags',
-					array(
-						'page_id' => 'int',
-						'value'   => 'string'
-					),
-					$tags,
-					array('page_id', 'value')
 				);
 
 				$smcFunc['lp_num_queries']++;

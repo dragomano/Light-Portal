@@ -821,4 +821,16 @@ class Helpers
 	{
 		return self::cache('all_categories', 'getList', Category::class);
 	}
+
+	/**
+	 * Get array of all tags
+	 *
+	 * Получаем массив всех тегов
+	 *
+	 * @return array
+	 */
+	public static function getAllTags()
+	{
+		return self::cache('all_tags', 'getList', Tag::class);
+	}
 }

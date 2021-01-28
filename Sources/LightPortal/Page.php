@@ -284,12 +284,11 @@ class Page
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value, t.value AS keyword
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
 			WHERE p.' . (!empty($params['alias']) ? 'alias = {string:alias}' : 'page_id = {int:item}'),
 			array_merge(
 				$params,
@@ -333,7 +332,8 @@ class Page
 					'time'        => date('H:i', $row['created_at']),
 					'created_at'  => $row['created_at'],
 					'updated_at'  => $row['updated_at'],
-					'image'       => $og_image
+					'image'       => $og_image,
+					'keywords'    => []
 				);
 
 			if (!empty($row['lang']))
@@ -341,16 +341,17 @@ class Page
 
 			if (!empty($row['name']))
 				$data['options'][$row['name']] = $row['value'];
-
-			if (!empty($row['keyword']))
-				$data['keywords'][] = $row['keyword'];
 		}
 
 		if (!empty($data['category_id']))
 			$data['category'] = Helpers::getAllCategories()[$data['category_id']]['name'];
 
-		if (!empty($data['keywords']))
-			$data['keywords'] = array_unique($data['keywords']);
+		if (!empty($data['options']['keywords'])) {
+			$keywords = explode(',', $data['options']['keywords']);
+			foreach ($keywords as $key) {
+				$data['keywords'][$key] = Helpers::getAllTags()[$key];
+			}
+		}
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
@@ -419,7 +420,6 @@ class Page
 		$data['updated']  = Helpers::getFriendlyTime($data['updated_at']);
 		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
 		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
-		$data['keywords'] = $data['keywords'] ?? [];
 
 		if (!empty($modSettings['enable_likes'])) {
 			$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);

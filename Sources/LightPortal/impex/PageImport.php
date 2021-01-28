@@ -82,7 +82,7 @@ class PageImport extends AbstractImport
 		if (!isset($xml->pages->item[0]['page_id']))
 			fatal_lang_error('lp_wrong_import_file', false);
 
-		$items = $titles = $params = $tags = $comments = [];
+		$items = $titles = $params = $comments = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
@@ -140,15 +140,6 @@ class PageImport extends AbstractImport
 								'value'   => intval($v)
 							];
 						}
-					}
-				}
-
-				if (!empty($item->keywords)) {
-					foreach (explode(', ', $item->keywords) as $value) {
-						$tags[] = [
-							'page_id' => $page_id,
-							'value'   => $value
-						];
 					}
 				}
 			}
@@ -246,26 +237,6 @@ class PageImport extends AbstractImport
 					),
 					$params[$i],
 					array('item_id', 'type', 'name'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-		}
-
-		if (!empty($tags) && !empty($result)) {
-			$tags  = array_chunk($tags, 100);
-			$count = sizeof($tags);
-
-			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
-					'{db_prefix}lp_tags',
-					array(
-						'page_id' => 'int',
-						'value'   => 'string'
-					),
-					$tags[$i],
-					array('page_id', 'value'),
 					2
 				);
 

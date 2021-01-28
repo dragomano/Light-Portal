@@ -72,9 +72,9 @@ function template_show_page()
 		echo '
 			<div class="smalltext">';
 
-		foreach ($context['lp_page']['keywords'] as $keyword) {
+		foreach ($context['lp_page']['keywords'] as $id => $keyword) {
 			echo '
-				<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($keyword), '">', $keyword, '</a>';
+				<a class="button" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">', $keyword, '</a>';
 		}
 
 		echo '

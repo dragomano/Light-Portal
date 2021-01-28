@@ -158,15 +158,13 @@ class PageExport extends AbstractExport
 		$request = $smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
 			WHERE p.page_id IN ({array_int:pages})' : ''),
 			array(
-				'type'  => 'page',
 				'pages' => $pages
 			)
 		);
@@ -195,9 +193,6 @@ class PageExport extends AbstractExport
 
 			if (!empty($row['name']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
-
-			if (!empty($row['keyword']))
-				$items[$row['page_id']]['keywords'][] = $row['keyword'];
 
 			if (!empty($row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
@@ -250,8 +245,6 @@ class PageExport extends AbstractExport
 					}
 				} elseif (in_array($key, ['description', 'content'])) {
 					$xmlName->appendChild($xml->createCDATASection($val));
-				} elseif ($key == 'keywords' && !empty($val)) {
-					$xmlName->appendChild($xml->createTextNode(implode(', ', array_unique($val))));
 				} elseif ($key == 'comments') {
 					foreach ($item[$key] as $k => $comment) {
 						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));

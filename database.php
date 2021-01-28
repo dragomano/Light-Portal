@@ -39,8 +39,8 @@ $tables[] = array(
 			'name'     => 'priority',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -100,22 +100,22 @@ $tables[] = array(
 			'name'     => 'priority',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'    => 'areas',
@@ -195,8 +195,8 @@ $tables[] = array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -222,7 +222,7 @@ $tables[] = array(
 			'type'     => 'int',
 			'size'     => 10,
 			'unsigned' => true,
-			'null'     => true
+			'default'  => 0
 		),
 		array(
 			'name'     => 'author_id',
@@ -259,43 +259,43 @@ $tables[] = array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'     => 'num_views',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'num_comments',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'updated_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -379,7 +379,7 @@ $tables[] = array(
 	'name' => 'lp_tags',
 	'columns' => array(
 		array(
-			'name'     => 'page_id',
+			'name'     => 'tag_id',
 			'type'     => 'int',
 			'size'     => 10,
 			'unsigned' => true
@@ -394,7 +394,7 @@ $tables[] = array(
 	'indexes' => array(
 		 array(
 			'type'    => 'primary',
-			'columns' => array('page_id', 'value')
+			'columns' => array('tag_id')
 		 )
 	)
 );
