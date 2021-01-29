@@ -212,6 +212,40 @@ class PageExport extends AbstractExport
 	}
 
 	/**
+	 * Get an array of categories to export
+	 *
+	 * Получаем массив рубрик для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getCategories()
+	{
+		$categories = (new \Bugo\LightPortal\Category)->getList();
+
+		unset($categories[0]);
+
+		ksort($categories);
+
+		return $categories;
+	}
+
+	/**
+	 * Get an array of tags to export
+	 *
+	 * Получаем массив тегов для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getTags()
+	{
+		$tags = (new \Bugo\LightPortal\Tag)->getList();
+
+		ksort($tags);
+
+		return $tags;
+	}
+
+	/**
 	 * Get filename with XML data
 	 *
 	 * Получаем имя файла с XML-данными
@@ -227,6 +261,28 @@ class PageExport extends AbstractExport
 		$root = $xml->appendChild($xml->createElement('light_portal'));
 
 		$xml->formatOutput = true;
+
+		if (!empty($categories = $this->getCategories())) {
+			$xmlElements = $root->appendChild($xml->createElement('categories'));
+			foreach ($categories as $category) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				foreach ($category as $key => $val) {
+					$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		if (!empty($tags = $this->getTags())) {
+			$xmlElements = $root->appendChild($xml->createElement('tags'));
+			foreach ($tags as $key => $val) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
+				$xmlName->appendChild($xml->createTextNode($key));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
+				$xmlName->appendChild($xml->createTextNode($val));
+			}
+		}
 
 		$xmlElements = $root->appendChild($xml->createElement('pages'));
 		foreach ($items as $item) {

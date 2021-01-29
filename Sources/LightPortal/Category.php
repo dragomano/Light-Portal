@@ -415,8 +415,10 @@ class Category
 		$items = [0 => ['name' => $txt['lp_no_category']]];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['category_id']] = array(
-				'name' => $row['name'],
-				'desc' => $row['description']
+				'id'       => $row['category_id'],
+				'name'     => $row['name'],
+				'desc'     => $row['description'],
+				'priority' => $row['priority']
 			);
 		}
 

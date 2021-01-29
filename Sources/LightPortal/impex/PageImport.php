@@ -82,70 +82,125 @@ class PageImport extends AbstractImport
 		if (!isset($xml->pages->item[0]['page_id']))
 			fatal_lang_error('lp_wrong_import_file', false);
 
-		$items = $titles = $params = $comments = [];
+		$categories = $tags = $items = $titles = $params = $comments = [];
 
-		foreach ($xml as $element) {
-			foreach ($element->item as $item) {
-				$items[] = [
-					'page_id'      => $page_id = intval($item['page_id']),
-					'category_id'  => intval($item['category_id']),
-					'author_id'    => intval($item['author_id']),
-					'alias'        => (string) $item->alias,
-					'description'  => $item->description,
-					'content'      => $item->content,
-					'type'         => (string) $item->type,
-					'permissions'  => intval($item['permissions']),
-					'status'       => intval($item['status']),
-					'num_views'    => intval($item['num_views']),
-					'num_comments' => intval($item['num_comments']),
-					'created_at'   => intval($item['created_at']),
-					'updated_at'   => intval($item['updated_at'])
-				];
+		foreach ($xml as $entity => $element) {
+			if ($entity == 'categories') {
+				foreach ($element->item as $item) {
+					$categories[] = [
+						'category_id' => intval($item['id']),
+						'name'        => (string) $item['name'],
+						'description' => (string) $item['desc'],
+						'priority'    => intval($item['priority'])
+					];
+				}
+			} elseif ($entity == 'tags') {
+				foreach ($element->item as $item) {
+					$tags[] = [
+						'tag_id' => intval($item['id']),
+						'value'  => (string) $item['value']
+					];
+				}
+			} else {
+				foreach ($element->item as $item) {
+					$items[] = [
+						'page_id'      => $page_id = intval($item['page_id']),
+						'category_id'  => intval($item['category_id']),
+						'author_id'    => intval($item['author_id']),
+						'alias'        => (string) $item->alias,
+						'description'  => $item->description,
+						'content'      => $item->content,
+						'type'         => (string) $item->type,
+						'permissions'  => intval($item['permissions']),
+						'status'       => intval($item['status']),
+						'num_views'    => intval($item['num_views']),
+						'num_comments' => intval($item['num_comments']),
+						'created_at'   => intval($item['created_at']),
+						'updated_at'   => intval($item['updated_at'])
+					];
 
-				if (!empty($item->titles)) {
-					foreach ($item->titles as $title) {
-						foreach ($title as $k => $v) {
-							$titles[] = [
-								'item_id' => $page_id,
-								'type'    => 'page',
-								'lang'    => $k,
-								'title'   => $v
-							];
+					if (!empty($item->titles)) {
+						foreach ($item->titles as $title) {
+							foreach ($title as $k => $v) {
+								$titles[] = [
+									'item_id' => $page_id,
+									'type'    => 'page',
+									'lang'    => $k,
+									'title'   => $v
+								];
+							}
 						}
 					}
-				}
 
-				if (!empty($item->comments)) {
-					foreach ($item->comments as $comment) {
-						foreach ($comment as $k => $v) {
-							$comments[] = [
-								'id'         => intval($v['id']),
-								'parent_id'  => intval($v['parent_id']),
-								'page_id'    => intval($page_id),
-								'author_id'  => intval($v['author_id']),
-								'message'    => $v->message,
-								'created_at' => intval($v['created_at'])
-							];
+					if (!empty($item->comments)) {
+						foreach ($item->comments as $comment) {
+							foreach ($comment as $k => $v) {
+								$comments[] = [
+									'id'         => intval($v['id']),
+									'parent_id'  => intval($v['parent_id']),
+									'page_id'    => intval($page_id),
+									'author_id'  => intval($v['author_id']),
+									'message'    => $v->message,
+									'created_at' => intval($v['created_at'])
+								];
+							}
 						}
 					}
-				}
 
-				if (!empty($item->params)) {
-					foreach ($item->params as $param) {
-						foreach ($param as $k => $v) {
-							$params[] = [
-								'item_id' => $page_id,
-								'type'    => 'page',
-								'name'    => $k,
-								'value'   => intval($v)
-							];
+					if (!empty($item->params)) {
+						foreach ($item->params as $param) {
+							foreach ($param as $k => $v) {
+								$params[] = [
+									'item_id' => $page_id,
+									'type'    => 'page',
+									'name'    => $k,
+									'value'   => intval($v)
+								];
+							}
 						}
 					}
 				}
 			}
 		}
 
-		if (!empty($items)) {
+		if (!empty($categories)) {
+			$result = $smcFunc['db_insert']('replace',
+				'{db_prefix}lp_categories',
+				array(
+					'category_id' => 'int',
+					'name'        => 'string',
+					'description' => 'string',
+					'priority'    => 'int'
+				),
+				$categories,
+				array('category_id'),
+				2
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		if (!empty($tags) && !empty($result)) {
+			$tags  = array_chunk($tags, 100);
+			$count = sizeof($tags);
+
+			for ($i = 0; $i < $count; $i++) {
+				$result = $smcFunc['db_insert']('replace',
+					'{db_prefix}lp_tags',
+					array(
+						'tag_id' => 'int',
+						'value'  => 'string'
+					),
+					$tags[$i],
+					array('tag_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
+		}
+
+		if (!empty($items) && !empty($result)) {
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
