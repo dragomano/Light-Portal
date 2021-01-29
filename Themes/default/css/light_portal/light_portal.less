@@ -136,6 +136,60 @@
 	}
 }
 
+#lp_post {
+	#post_header {
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+
+		dt, dd {
+			margin-block-start: 1px;
+			margin-block-end: 1px;
+			margin-inline-start: 0;
+			padding-top: 5px;
+
+			&:first-child, &:first-child {
+				margin-block-start: 0;
+			}
+
+			&:last-child, &:last-child {
+				margin-block-end: 0;
+			}
+
+			& > * {
+				margin-block-start: 1px;
+				margin-block-end: 1px;
+			}
+
+			& > *:first-child, & > *:first-child {
+				margin-block-start: 0;
+			}
+			& > *:last-child, & > *:last-child {
+				margin-block-end: 0;
+			}
+		}
+
+		dt {
+			width: 30%;
+		}
+
+		dd {
+			width: 70%;
+		}
+	}
+}
+
+@media (max-width: 750px) {
+	#lp_post {
+		#post_header {
+			dt, dd {
+				width: 100%;
+				flex-grow: 1;
+			}
+		}
+	}
+}
+
 .errorbox {
 	color: initial !important;
 }

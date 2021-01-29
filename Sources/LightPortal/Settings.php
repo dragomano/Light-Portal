@@ -31,14 +31,6 @@ class Settings
 	{
 		global $settings, $context, $modSettings, $txt;
 
-		if (strpos($settings['name'], 'potato') === false)
-			addInlineCss('
-		#lp_post #post_header dt,
-		#lp_post #post_header dd {
-			float: none;
-			width: auto;
-		}');
-
 		loadLanguage('ManageSettings');
 
 		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
@@ -519,7 +511,7 @@ class Settings
 	 */
 	public function categories()
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt;
 
 		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
 		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));

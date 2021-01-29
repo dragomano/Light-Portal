@@ -301,14 +301,13 @@ class ManagePages
 			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, array(
-				'type'    => 'page',
 				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id'],
 				'sort'    => $sort,
@@ -355,12 +354,11 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
 			array_merge($query_params, array(
-				'type'    => 'page',
 				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id']
 			))
@@ -425,10 +423,9 @@ class ManagePages
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:page}',
 			array(
-				'items' => $items,
-				'type'  => 'page'
+				'items' => $items
 			)
 		);
 
@@ -443,10 +440,9 @@ class ManagePages
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:page}',
 			array(
-				'items' => $items,
-				'type'  => 'page'
+				'items' => $items
 			)
 		);
 
@@ -772,11 +768,12 @@ class ManagePages
 	 *
 	 * @return void
 	 */
-	private function improveSomeSelectFields()
+	private function improveSelectFields()
 	{
-		global $context, $txt;
+		global $context;
 
 		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
 
 		addInlineCss('
 		.ss-content.ss-open {
@@ -792,7 +789,7 @@ class ManagePages
 		}
 
 		// Prepare the category list
-		$all_categories = (new Category)->getList();
+		$all_categories = Helpers::cache('all_categories', 'getList', Category::class);
 
 		$context['lp_all_categories'] = [];
 		foreach ($all_categories as $id => $category) {
@@ -860,7 +857,7 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$this->improveSomeSelectFields();
+		$this->improveSelectFields();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
 

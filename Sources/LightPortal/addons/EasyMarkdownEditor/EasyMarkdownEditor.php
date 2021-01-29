@@ -76,6 +76,9 @@ class EasyMarkdownEditor
 		}
 		.editor-statusbar .words:before {
 			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
+		}
+		.CodeMirror pre {
+			max-height: none;
 		}');
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
 			addInlineJavaScript('

@@ -96,8 +96,10 @@ class Page
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
+		if ($context['user']['is_logged']) {
+			loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+			loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
+		}
 	}
 
 	/**
@@ -287,14 +289,13 @@ class Page
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 			WHERE p.' . (!empty($params['alias']) ? 'alias = {string:alias}' : 'page_id = {int:item}'),
 			array_merge(
 				$params,
 				array(
-					'guest' => $txt['guest_title'],
-					'type'  => 'page'
+					'guest' => $txt['guest_title']
 				)
 			)
 		);

@@ -73,11 +73,9 @@ class ManageBlocks
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
-			array(
-				'type' => 'block'
-			)
+			array()
 		);
 
 		$current_blocks = [];
@@ -160,20 +158,18 @@ class ManageBlocks
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:block}',
 			array(
-				'items' => $items,
-				'type'  => 'block'
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:block}',
 			array(
-				'items' => $items,
-				'type'  => 'block'
+				'items' => $items
 			)
 		);
 
@@ -544,6 +540,22 @@ class ManageBlocks
 	}
 
 	/**
+	 * @see https://github.com/brianvoe/slim-select
+	 *
+	 * @return void
+	 */
+	private function improveSelectFields()
+	{
+		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+
+		addInlineCss('
+		.ss-content.ss-open {
+			position: initial;
+		}');
+	}
+
+	/**
 	 * Adding special fields to the form
 	 *
 	 * Добавляем свои поля для формы
@@ -555,6 +567,8 @@ class ManageBlocks
 		global $context, $txt;
 
 		checkSubmitOnce('register');
+
+		$this->improveSelectFields();
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
@@ -1115,11 +1129,10 @@ class ManageBlocks
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 			WHERE b.block_id = {int:item}',
 			array(
-				'type' => 'block',
 				'item' => $item
 			)
 		);

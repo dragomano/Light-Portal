@@ -28,7 +28,7 @@ class Tag
 	 */
 	public function show()
 	{
-		global $context, $smcFunc, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
 		$context['lp_tag'] = Helpers::request('id', 0);
 
@@ -531,7 +531,7 @@ class Tag
 	 */
 	private function changeBackButton()
 	{
-		global $modSettings, $txt;
+		global $txt;
 
 		addInlineJavaScript('
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");

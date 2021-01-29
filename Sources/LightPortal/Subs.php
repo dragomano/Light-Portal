@@ -97,12 +97,11 @@ class Subs
 					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
+					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				array(
-					'type'   => 'block',
 					'status' => Block::STATUS_ACTIVE
 				)
 			);

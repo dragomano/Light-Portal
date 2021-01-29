@@ -175,7 +175,7 @@ class Category
 				COALESCE(mem.real_name, {string:guest}) AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
 			WHERE p.category_id = {int:id}
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
@@ -184,7 +184,6 @@ class Category
 			LIMIT {int:start}, {int:limit}',
 			array(
 				'guest'        => $txt['guest_title'],
-				'type'         => 'page',
 				'lang'         => $user_info['language'],
 				'id'           => $context['lp_category'],
 				'status'       => Page::STATUS_ACTIVE,
@@ -336,7 +335,7 @@ class Category
 	 */
 	public function showAll()
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl;
 
 		$context['page_title']     = $txt['lp_all_categories'];
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=categories';
@@ -516,9 +515,10 @@ class Category
 	 *
 	 * Обновление приоритета
 	 *
+	 * @param array $categories
 	 * @return void
 	 */
-	public function updatePriority($categories)
+	public function updatePriority(array $categories)
 	{
 		global $smcFunc;
 
@@ -556,7 +556,7 @@ class Category
 	 * @param string $desc
 	 * @return void
 	 */
-	public function add($name, $desc = '')
+	public function add(string $name, $desc = '')
 	{
 		global $smcFunc;
 
@@ -733,7 +733,7 @@ class Category
 	 */
 	private function changeBackButton()
 	{
-		global $modSettings, $txt;
+		global $txt;
 
 		addInlineJavaScript('
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");

@@ -107,7 +107,8 @@ class Comment
 
 		if ($context['user']['is_logged']) {
 			addInlineJavaScript('
-		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');');
+		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');
+		const toolbar = new Toolbar();');
 		}
 	}
 
