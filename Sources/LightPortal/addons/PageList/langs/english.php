@@ -3,8 +3,10 @@
 $txt['lp_block_types']['page_list']              = 'Page List';
 $txt['lp_block_types_descriptions']['page_list'] = 'Displays a list of active portal pages.';
 
-$txt['lp_page_list_addon_sort']      = 'Page sorting';
-$txt['lp_page_list_addon_sort_set']  = array(
+$txt['lp_page_list_addon_categories_subtext'] = 'If you do not need all the pages, but only from certain categories';
+
+$txt['lp_page_list_addon_sort']     = 'Page sorting';
+$txt['lp_page_list_addon_sort_set'] = array(
 	'page_id'     => 'By ID',
 	'author_name' => 'By author',
 	'title'       => 'By title',

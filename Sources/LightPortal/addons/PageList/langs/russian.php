@@ -3,6 +3,8 @@
 $txt['lp_block_types']['page_list']              = 'Список страниц';
 $txt['lp_block_types_descriptions']['page_list'] = 'Отображает список активных страниц портала.';
 
+$txt['lp_page_list_addon_categories_subtext'] = 'Если вам нужны не все страницы, а только из определённых рубрик';
+
 $txt['lp_page_list_addon_sort']     = 'Сортировка страниц';
 $txt['lp_page_list_addon_sort_set'] = array(
 	'page_id'     => 'По идентификатору',
