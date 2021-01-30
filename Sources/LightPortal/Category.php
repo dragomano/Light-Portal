@@ -282,7 +282,7 @@ class Category
 
 		$total_items = $this->getTotalCountAllPages();
 
-		if ($start >= $total_items) {
+		if ($start > $total_items) {
 			send_http_status(404);
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
@@ -465,7 +465,7 @@ class Category
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($items[$row['category_id']])) {
 				$items[$row['category_id']] = array(
-					'name'      => $row['name'],
+					'name'      => $row['name'] ?: $txt['lp_no_category'],
 					'desc'      => $row['description'],
 					'link'      => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'],
 					'num_pages' => 0
@@ -481,8 +481,6 @@ class Category
 		uasort($items, function ($a, $b) {
 			return $a['num_pages'] < $b['num_pages'];
 		});
-
-		$items[0]['name'] = $txt['lp_no_category'];
 
 		return $items;
 	}

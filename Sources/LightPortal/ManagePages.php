@@ -747,11 +747,11 @@ class ManagePages
 	 */
 	private function findErrors(array $data)
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $language, $context, $txt;
 
 		$post_errors = [];
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) ? empty($data['title_' . $language]) : false) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))

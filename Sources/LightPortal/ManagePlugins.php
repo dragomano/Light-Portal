@@ -292,7 +292,7 @@ class ManagePlugins
 	 */
 	private function findErrors(array $data)
 	{
-		global $modSettings, $context, $txt;
+		global $context, $txt;
 
 		$post_errors = [];
 
@@ -308,10 +308,10 @@ class ManagePlugins
 		if (!empty($data['name']) && !$this->isUnique($data['name']))
 			$post_errors[] = 'no_unique_name';
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
+		if (empty($data['title_english']))
 			$post_errors[] = 'no_title';
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['description_english']) : false) || empty($data['description_' . $context['user']['language']]))
+		if (empty($data['description_english']))
 			$post_errors[] = 'no_description';
 
 		if (!empty($post_errors)) {

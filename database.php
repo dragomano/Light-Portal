@@ -382,7 +382,8 @@ $tables[] = array(
 			'name'     => 'tag_id',
 			'type'     => 'int',
 			'size'     => 10,
-			'unsigned' => true
+			'unsigned' => true,
+			'auto'     => true
 		),
 		array(
 			'name' => 'value',

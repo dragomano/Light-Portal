@@ -43,9 +43,19 @@ function template_show_topics_as_articles()
 
 			echo '
 				<div class="card-info">
-					<span class="card-date smalltext">
-						', $topic['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<a class="floatright" href="', $topic['board_link'], '">', $topic['board_name'], '</a>
+					<span class="card-date smalltext">';
+
+			if ($topic['is_new']) {
+				echo '
+						<span class="new_posts">', $txt['new'], '</span>';
+			}
+
+			if (!empty($topic['board_name'])) {
+				echo '
+						<a class="floatleft" href="', $topic['board_link'], '">', $topic['board_name'], '</a>&nbsp;/&nbsp;';
+			}
+
+			echo '
 						<time datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>
 					</span>
 					<h3 class="card-title">
@@ -165,9 +175,19 @@ function template_show_pages_as_articles()
 
 			echo '
 				<div class="card-info">
-					<span class="card-date smalltext">
-						', $page['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<a class="floatright" href="', $page['category_link'], '">', $page['category_name'], '</a>
+					<span class="card-date smalltext">';
+
+			if ($page['is_new']) {
+				echo '
+						<span class="new_posts">', $txt['new'], '</span>';
+			}
+
+			if (!empty($page['category_name'])) {
+				echo '
+						<a class="floatleft" href="', $page['category_link'], '">', $page['category_name'], '</a>&nbsp;/&nbsp;';
+			}
+
+			echo '
 						<time datetime="', $page['datetime'], '"><i class="fas fa-clock"></i> ', $page['date'], '</time>
 					</span>
 					<h3 class="card-title">

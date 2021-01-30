@@ -382,6 +382,13 @@ class Subs
 			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
 	}
 
+	/**
+	 * Getting a list of pages to display in the main menu
+	 *
+	 * Получаем список страниц для отображения в главном меню
+	 *
+	 * @return array
+	 */
 	public static function getPagesInMenu()
 	{
 		global $smcFunc;
@@ -394,9 +401,11 @@ class Subs
 					LEFT JOIN {db_prefix}lp_params AS ps3 ON (ps.item_id = ps3.item_id AND ps3.name = {literal:icon_type} AND ps3.type = {literal:page})
 					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
 				WHERE ps.name = {literal:main_menu_item}
-					AND ps.value != ""
+					AND ps.value != {string:blank_string}
 					AND ps.type = {literal:page}',
-				array()
+				array(
+					'blank_string' => ''
+				)
 			);
 
 			$pages = [];
