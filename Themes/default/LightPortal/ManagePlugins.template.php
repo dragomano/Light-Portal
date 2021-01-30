@@ -241,7 +241,7 @@ function template_plugin_post()
 							<template x-for="(option, index) in options" :key="index">
 								<tr class="windowbg">
 									<td colspan="4">
-										<table class="table_grid">
+										<table class="plugin_options table_grid">
 											<thead>
 												<tr class="title_bar">
 													<th>#</th>
@@ -317,7 +317,7 @@ function template_plugin_post()
 																<tr class="windowbg">
 																	<td><strong>', $lang['filename'], '</strong></td>
 																	<td>
-																		<input type="text" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', '>
+																		<input type="text" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
 																	</td>
 																</tr>';
 	}
