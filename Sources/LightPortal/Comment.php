@@ -121,7 +121,12 @@ class Comment
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $txt;
+		global $user_info, $smcFunc, $context, $txt;
+
+		$result['error'] = true;
+
+		if (empty($user_info['id']))
+			exit(json_encode($result));
 
 		$args = array(
 			'parent_id'   => FILTER_VALIDATE_INT,
@@ -138,7 +143,7 @@ class Comment
 		$data = filter_input_array(INPUT_POST, $args);
 
 		if (empty($data))
-			return;
+			exit(json_encode($result));
 
 		$parent      = $data['parent_id'];
 		$counter     = $data['counter'];
@@ -151,7 +156,7 @@ class Comment
 		$commentator = $data['commentator'];
 
 		if (empty($page_id) || empty($message))
-			return;
+			exit(json_encode($result));
 
 		Helpers::require('Subs-Post');
 		preparsecode($message);
@@ -177,8 +182,6 @@ class Comment
 		);
 
 		$smcFunc['lp_num_queries']++;
-
-		$result['error'] = true;
 
 		if (!empty($item)) {
 			$smcFunc['db_query']('', '
@@ -243,18 +246,18 @@ class Comment
 	 */
 	private function edit()
 	{
-		global $smcFunc, $context;
+		global $context, $smcFunc;
 
 		$data = Helpers::request()->json();
 
-		if (empty($data))
-			return;
+		if (empty($data) || $context['user']['is_guest'])
+			exit;
 
 		$item    = $data['comment_id'];
 		$message = Helpers::validate($data['message']);
 
 		if (empty($item) || empty($message))
-			return;
+			exit;
 
 		Helpers::require('Subs-Post');
 		preparsecode($message);
