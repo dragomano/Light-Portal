@@ -22,7 +22,7 @@ $txt['lp_replies']  = $txt['replies'];
 // Settings
 $txt['lp_settings']  = 'Налаштування порталу';
 $txt['lp_base']      = 'Налаштування головної сторінки і статей';
-$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum">форумі розробника</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a> або на <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a>.';
+$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форумі розробника</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a> або на <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a>.';
 
 $txt['lp_frontpage_title']    = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode']     = 'Перша сторінка порталу';
@@ -237,7 +237,8 @@ $txt['lp_page_author_search_length'] = 'Введіть не менше 3 сим�
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Показувати автора і дату створення',
 	'show_related_pages'   => 'Показувати схожі сторінки',
-	'allow_comments'       => 'Дозволити коментарі'
+	'allow_comments'       => 'Дозволити коментарі',
+	'main_menu_item'       => 'Пункт в головному меню'
 );
 
 // Tabs

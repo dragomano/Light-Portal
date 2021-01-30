@@ -335,7 +335,7 @@ class ManagePlugins
 
 		checkSubmitOnce('register');
 
-		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
+		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
 		$context['posting_fields']['name']['label']['text'] = $txt['lp_plugin_name'];
 		$context['posting_fields']['name']['input'] = array(

@@ -126,9 +126,9 @@ class Helpers
 	}
 
 	/**
-	 * Get the block icon
+	 * Get the block/page icon
 	 *
-	 * Получаем иконку блока
+	 * Получаем иконку блока или страницы
 	 *
 	 * @param string|null $icon
 	 * @param string|null $type
@@ -138,8 +138,8 @@ class Helpers
 	{
 		global $context;
 
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
-		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
+		$icon = $icon ?? ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
+		$type = $type ?? ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
 
 		if (!empty($icon))
 			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
@@ -147,7 +147,8 @@ class Helpers
 		return '';
 	}
 
-	/**	 * Get a title for preview block
+	/**
+	 * Get a title for preview block
 	 *
 	 * Получаем заголовок блока превью
 	 *
@@ -506,10 +507,16 @@ class Helpers
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		return $object['title'][$user_info['language']]
-			?? $object['title'][$language]
-			?? $object['title']['english']
-			?? '';
+		if (!empty($object['title'][$user_info['language']]))
+			return $object['title'][$user_info['language']];
+
+		if (!empty($object['title'][$language]))
+			return $object['title'][$language];
+
+		if (!empty($object['title']['english']))
+			return $object['title']['english'];
+
+		return '';
 	}
 
 	/**
@@ -598,6 +605,11 @@ class Helpers
 			$context['languages'] = [];
 			$context['languages'][$language] = $default_lang;
 		}
+
+		// Move default lang to the top
+		$default_lang = $context['languages'][$language];
+		unset($context['languages'][$language]);
+		array_unshift($context['languages'], $default_lang);
 	}
 
 	/**

@@ -381,4 +381,40 @@ class Subs
 		if (!empty($old_url[1]))
 			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
 	}
+
+	public static function getPagesInMenu()
+	{
+		global $smcFunc;
+
+		if (($pages = Helpers::cache()->get('pages_in_menu', LP_CACHE_TIME * 4)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon, ps3.value AS icon_type
+				FROM {db_prefix}lp_params AS ps
+					LEFT JOIN {db_prefix}lp_params AS ps2 ON (ps.item_id = ps2.item_id AND ps2.name = {literal:icon} AND ps2.type = {literal:page})
+					LEFT JOIN {db_prefix}lp_params AS ps3 ON (ps.item_id = ps3.item_id AND ps3.name = {literal:icon_type} AND ps3.type = {literal:page})
+					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
+				WHERE ps.name = {literal:main_menu_item}
+					AND ps.value != ""
+					AND ps.type = {literal:page}',
+				array()
+			);
+
+			$pages = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				$pages[$row['alias']] = array(
+					'title'       => json_decode($row['value'], true),
+					'permissions' => $row['permissions'],
+					'icon'        => $row['icon'],
+					'icon_type'   => $row['icon_type']
+				);
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('pages_in_menu', $pages, LP_CACHE_TIME * 4);
+		}
+
+		return $pages;
+	}
 }

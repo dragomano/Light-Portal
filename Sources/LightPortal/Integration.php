@@ -86,7 +86,7 @@ class Integration
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
 			'LP_VERSION'      => '1.6 beta',
-			'LP_RELEASE_DATE' => '2021-01-26',
+			'LP_RELEASE_DATE' => '2021-01-30',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
@@ -215,9 +215,9 @@ class Integration
 	}
 
 	/**
-	 * Add a selection of the "Forum" menu item when viewing boards and topics
+	 * Add a selection for some menu items when navigating to the specified areas
 	 *
-	 * Добавляем выделение кнопки «Форум» при просмотре разделов и тем
+	 * Добавляем выделение для некоторых пунктов меню при переходе в указанные области
 	 *
 	 * @param string $current_action
 	 * @return void
@@ -235,8 +235,13 @@ class Integration
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
-			if (Helpers::request()->filled('page'))
+			if (Helpers::request()->filled('page')) {
 				$current_action = 'portal';
+
+				$page = Helpers::request('page');
+				if (isset(Subs::getPagesInMenu()[$page]))
+					$current_action = 'portal_' . $page;
+			}
 		} else {
 			$current_action = empty($modSettings['lp_standalone_mode']) && Helpers::request()->is('forum') ? 'home' : $context['current_action'];
 		}
@@ -310,6 +315,33 @@ class Integration
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
+			);
+		}
+
+		// Display chosen pages in the main menu
+		if (!empty($pages_in_menu = Subs::getPagesInMenu())) {
+			$pages = [];
+			foreach ($pages_in_menu as $alias => $item) {
+				$pages['portal_' . $alias] = array(
+					'title' => Helpers::getTitle($item),
+					'href'  => $scripturl . '?page=' . $alias,
+					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon_type'] . ' fa-' . $item['icon']),
+					'show'  => Helpers::canViewItem($item['permissions'])
+				);
+			}
+
+			$counter = -1;
+			foreach ($buttons as $area => $dummy) {
+				$counter++;
+
+				if ($area == 'admin')
+					break;
+			}
+
+			$buttons = array_merge(
+				array_slice($buttons, 0, $counter, true),
+				$pages,
+				array_slice($buttons, $counter, null, true)
 			);
 		}
 

@@ -738,7 +738,7 @@ class ManageBlocks
 		}
 
 		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
+			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(

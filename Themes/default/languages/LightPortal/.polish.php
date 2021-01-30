@@ -237,7 +237,8 @@ $txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
 	'show_related_pages'   => 'Show related pages',
-	'allow_comments'       => 'Włącz komentarze'
+	'allow_comments'       => 'Włącz komentarze',
+	'main_menu_item'       => 'Item in main menu'
 );
 
 // Tabs

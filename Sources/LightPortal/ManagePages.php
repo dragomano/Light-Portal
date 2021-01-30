@@ -626,7 +626,10 @@ class ManagePages
 		$options = [
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
-			'allow_comments'       => false
+			'allow_comments'       => false,
+			'main_menu_item'       => '',
+			'icon'                 => '',
+			'icon_type'            => 'fas'
 		];
 
 		Subs::runAddons('pageOptions', array(&$options));
@@ -664,7 +667,8 @@ class ManagePages
 			);
 
 			foreach ($context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']]          = FILTER_SANITIZE_STRING;
+				$args['main_menu_item_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
 			$parameters = [];
@@ -675,7 +679,10 @@ class ManagePages
 				array(
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
-					'allow_comments'       => FILTER_VALIDATE_BOOLEAN
+					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
+					'main_menu_item'       => FILTER_SANITIZE_STRING,
+					'icon'                 => FILTER_SANITIZE_STRING,
+					'icon_type'            => FILTER_SANITIZE_STRING
 				),
 				$parameters
 			);
@@ -715,9 +722,17 @@ class ManagePages
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
+		if (!empty($context['lp_page']['options']['main_menu_item']))
+			$context['lp_page']['options']['main_menu_item'] = json_decode($context['lp_page']['options']['main_menu_item'], true);
+		else
+			$context['lp_page']['options']['main_menu_item'] = [];
+
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
+			$context['lp_page']['options']['main_menu_item'][$lang['filename']] = $post_data['main_menu_item_' . $lang['filename']] ?? $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '';
 		}
+
+		$context['lp_page']['options']['main_menu_item'] = array_filter($context['lp_page']['options']['main_menu_item']);
 
 		Helpers::cleanBbcode($context['lp_page']['title']);
 	}
@@ -859,7 +874,7 @@ class ManagePages
 
 		$this->improveSelectFields();
 
-		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
+		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
 		$i = 0;
 		foreach ($context['languages'] as $lang) {
@@ -899,7 +914,7 @@ class ManagePages
 		}
 
 		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
+			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
@@ -1027,10 +1042,57 @@ class ManagePages
 			);
 		}
 
+		if ($context['user']['is_admin']) {
+			foreach ($context['languages'] as $lang) {
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
+					'type' => 'text',
+					'attributes' => array(
+						'id'        => 'main_menu_item_' . $lang['filename'],
+						'maxlength' => 255,
+						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
+						'style'     => 'width: 100%'
+					)
+				);
+			}
+		}
+
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['input'] = array(
+			'type' => 'text',
+			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'attributes' => array(
+				'id'        => 'icon',
+				'maxlength' => 30,
+				'value'     => $context['lp_page']['options']['icon'],
+				'x-ref'     => 'icon',
+				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			)
+		);
+
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id'      => 'icon_type',
+				'x-ref'   => 'icon_type',
+				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'options' => array()
+		);
+
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_page']['options']['icon_type']
+			);
+		}
+
 		Subs::runAddons('preparePageFields');
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if (!empty($data['input']['after']))
+			if ($item !== 'icon' && !empty($data['input']['after']))
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
@@ -1200,7 +1262,7 @@ class ManagePages
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
+				$tags = $keywords = [];
 
 				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
 				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
@@ -1210,17 +1272,19 @@ class ManagePages
 					);
 				}
 
-				$keywords = $smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'value' => 'string'
-					),
-					$tags,
-					array('tag_id'),
-					2
-				);
+				if (!empty($tags)) {
+					$keywords = $smcFunc['db_insert']('',
+						'{db_prefix}lp_tags',
+						array(
+							'value' => 'string'
+						),
+						$tags,
+						array('tag_id'),
+						2
+					);
 
-				$smcFunc['lp_num_queries']++;
+					$smcFunc['lp_num_queries']++;
+				}
 
 				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
 			}
@@ -1228,6 +1292,10 @@ class ManagePages
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					if ($param_name == 'main_menu_item') {
+						$value = empty($value) ? '' : json_encode($value);
+					}
+
 					$value = is_array($value) ? implode(',', $value) : $value;
 
 					$params[] = array(
@@ -1303,7 +1371,7 @@ class ManagePages
 			}
 
 			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
+				$tags = $keywords = [];
 
 				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
 				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
@@ -1313,17 +1381,19 @@ class ManagePages
 					);
 				}
 
-				$keywords = $smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'value' => 'string'
-					),
-					$tags,
-					array('tag_id'),
-					2
-				);
+				if (!empty($tags)) {
+					$keywords = $smcFunc['db_insert']('',
+						'{db_prefix}lp_tags',
+						array(
+							'value' => 'string'
+						),
+						$tags,
+						array('tag_id'),
+						2
+					);
 
-				$smcFunc['lp_num_queries']++;
+					$smcFunc['lp_num_queries']++;
+				}
 
 				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
 			}
@@ -1331,6 +1401,10 @@ class ManagePages
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					if ($param_name == 'main_menu_item') {
+						$value = empty($value) ? '' : json_encode($value);
+					}
+
 					$value = is_array($value) ? implode(',', $value) : $value;
 
 					$params[] = array(
