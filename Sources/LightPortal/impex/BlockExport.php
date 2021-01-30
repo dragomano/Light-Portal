@@ -33,7 +33,7 @@ class BlockExport extends AbstractExport
 	{
 		global $context, $txt, $scripturl;
 
-		loadTemplate('LightPortal/ManageExport');
+		loadTemplate('LightPortal/ManageImpex');
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
 		$context['page_area_title'] = $txt['lp_blocks_export'];

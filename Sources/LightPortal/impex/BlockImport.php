@@ -32,7 +32,7 @@ class BlockImport extends AbstractImport
 	{
 		global $context, $txt, $scripturl;
 
-		loadTemplate('LightPortal/ManageImport');
+		loadTemplate('LightPortal/ManageImpex');
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_import'];
 		$context['page_area_title'] = $txt['lp_blocks_import'];
