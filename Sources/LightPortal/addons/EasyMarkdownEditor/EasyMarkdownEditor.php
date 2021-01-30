@@ -211,18 +211,28 @@ class EasyMarkdownEditor
 
 		function toggleStickedPanels() {
 			let stickedPanels = document.getElementsByClassName("sticky_sidebar");
+			let noticeBlocks = document.getElementsByClassName("noticebox");
+			let scrollingButtons = document.getElementById("gtb_pos");
 
-			if (!stickedPanels)
+			if (!stickedPanels && !noticeBlocks && !scrollingButtons)
 				return;
 
 			if (easymde.isFullscreenActive()) {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "initial";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "none";
+				})
+				scrollingButtons.style.display = "none";
 			} else {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "sticky";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "block";
+				})
+				scrollingButtons.style.display = "block";
 			}
 		}', true);
 		}
