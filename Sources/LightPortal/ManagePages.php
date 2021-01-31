@@ -1147,6 +1147,22 @@ class ManagePages
 	}
 
 	/**
+	 * Prepare page description for saving
+	 *
+	 * Готовим описание страницы для сохранения
+	 *
+	 * @return void
+	 */
+	private function prepareDescription()
+	{
+		global $context;
+
+		Helpers::cleanBbcode($context['lp_page']['description']);
+
+		$context['lp_page']['description'] = strip_tags($context['lp_page']['description']);
+	}
+
+	/**
 	 * Prepare keywords for saving
 	 *
 	 * Готовим ключевые слова для сохранения
@@ -1200,6 +1216,7 @@ class ManagePages
 
 		checkSubmitOnce('check');
 
+		$this->prepareDescription();
 		$this->prepareKeywords();
 
 		if (empty($item)) {
