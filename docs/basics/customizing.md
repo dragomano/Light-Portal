@@ -10,14 +10,15 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 * The portal frontpage — choose what to display on the main page of the portal:
     * Disabled
-    * Specified page (you can specify the alias of the page to display as the main page of the portal)
-    * All topics from selected boards
-    * All active portal pages
-    * Selected boards
-    * Selected topics
+    * Specified page (only the selected page will be displayed)
+    * All pages from selected categories
     * Selected pages
+    * All topics from selected boards
+    * Selected topics
+    * Selected boards
 * The frontpage title — you can change the name of the portal used as the page title and the title of the browser tab.
-* Boards as sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards" and "Selected boards".
+* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories" and "Selected pages".
+* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", "Selected pages", and "Selected board".
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
 * Time format in the article cards — you can change the time format.
