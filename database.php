@@ -451,6 +451,12 @@ $tables[] = array(
 
 db_extend('packages');
 
+// Remove old lp_tags
+$colData = $smcFunc['db_list_columns']('{db_prefix}lp_tags');
+if (!empty($colData[0]) && $colData[0] == 'page_id') {
+	$smcFunc['db_drop_table']('{db_prefix}lp_tags');
+}
+
 foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
