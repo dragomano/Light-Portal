@@ -43,7 +43,8 @@ class Category
 		if (empty($context['lp_category'])) {
 			$context['page_title'] = $txt['lp_all_pages_without_category'];
 		} else {
-			$context['page_title'] = sprintf($txt['lp_all_pages_with_category'], Helpers::getAllCategories()[$context['lp_category']]['name']);
+			$category = Helpers::getAllCategories()[$context['lp_category']];
+			$context['page_title'] = sprintf($txt['lp_all_pages_with_category'], $category['name']);
 		}
 
 		$context['canonical_url']  = $scripturl . '?action=portal;sa=categories;id=' . $context['lp_category'];
@@ -145,6 +146,16 @@ class Category
 				'href' => $context['canonical_url']
 			)
 		);
+
+		if (!empty($category['desc'])) {
+			$listOptions['additional_rows'] = array(
+				array(
+					'position' => 'top_of_list',
+					'value'    => $category['desc'],
+					'class'    => 'information'
+				)
+			);
+		}
 
 		Helpers::require('Subs-List');
 		createList($listOptions);
