@@ -54,7 +54,7 @@ class ManagePages
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_manage'];
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
+			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_description']
 		);
 

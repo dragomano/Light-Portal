@@ -154,7 +154,7 @@ class Settings
 
 		// Tabs
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title' => LP_NAME,
+			'title' => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'tabs' => array(
 				'basic' => array(
 					'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
