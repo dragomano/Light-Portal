@@ -29,19 +29,22 @@ $txt['lp_frontpage_mode']     = 'La primera página del portal';
 $txt['lp_frontpage_mode_set'] = array(
 	'Desactivar',
 	'chosen_page'   => 'Página especificada',
+	'all_pages'     => 'All pages from selected categories',
+	'chosen_pages'  => 'Selected pages',
 	'all_topics'    => 'Todos los temas de foros seleccionados',
-	'all_pages'     => 'Todas las páginas activas',
-	'chosen_boards' => 'Foros seleccionados',
 	'chosen_topics' => 'Selected topics',
-	'chosen_pages'  => 'Selected pages'
+	'chosen_boards' => 'Foros seleccionados'
 );
 $txt['lp_frontpage_alias']                   = 'Página del portal para mostrar como página principal';
 $txt['lp_frontpage_alias_subtext']           = 'Ingrese el alias de la página que existen.';
+$txt['lp_frontpage_categories']              = 'Categories - sources of articles for the frontpage';
+$txt['lp_select_categories_from_list']       = 'Select the desired categories';
 $txt['lp_frontpage_boards']                  = 'Foros como fuentes de artículos para la portada';
-$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
-$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
+$txt['lp_select_boards_from_list']           = 'Select the desired boards';
 $txt['lp_frontpage_pages']                   = 'Pages as sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']           = 'IDs of the required pages, separated by commas.';
+$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
 $txt['lp_show_images_in_articles']           = 'Mostrar las imágenes que se encuentran en los artículos';
 $txt['lp_show_images_in_articles_help']      = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']                 = 'URL de la imagen del marcador de posición por defecto';

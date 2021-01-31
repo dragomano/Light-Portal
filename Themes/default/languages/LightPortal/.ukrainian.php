@@ -29,19 +29,22 @@ $txt['lp_frontpage_mode']     = 'Перша сторінка порталу';
 $txt['lp_frontpage_mode_set'] = array(
 	'Відключивши',
 	'chosen_page'   => 'Зазначена сторінка',
+	'all_pages'     => 'Всі сторінки з обраних рубрик',
+	'chosen_pages'  => 'Вибрані сторінки',
 	'all_topics'    => 'Всі теми з обраних розділів',
-	'all_pages'     => 'Всі активні сторінки порталу',
-	'chosen_boards' => 'Вибрані розділи',
 	'chosen_topics' => 'Вибрані теми',
-	'chosen_pages'  => 'Вибрані сторінки'
+	'chosen_boards' => 'Вибрані розділи'
 );
 $txt['lp_frontpage_alias']                   = 'Сторінка порталу для відображення в якості головної';
 $txt['lp_frontpage_alias_subtext']           = 'Вкажіть аліас існуючої сторінк.';
+$txt['lp_frontpage_categories']              = 'Рубрики-джерела статей для першої сторінки';
+$txt['lp_select_categories_from_list']       = 'Виберіть потрібні рубрики';
 $txt['lp_frontpage_boards']                  = 'Розділи-джерела статей для першої сторінки';
-$txt['lp_frontpage_topics']                  = 'Теми-джерела статей для першої сторінки';
-$txt['lp_frontpage_topics_subtext']          = 'Ідентифікатори потрібних тем, через кому.';
+$txt['lp_select_boards_from_list']           = 'Виберіть потрібні розділи';
 $txt['lp_frontpage_pages']                   = 'Сторінки-джерела статей для першої сторінки';
 $txt['lp_frontpage_pages_subtext']           = 'Ідентифікатори потрібних сторінок, через кому.';
+$txt['lp_frontpage_topics']                  = 'Теми-джерела статей для першої сторінки';
+$txt['lp_frontpage_topics_subtext']          = 'Ідентифікатори потрібних тем, через кому.';
 $txt['lp_show_images_in_articles']           = 'Показувати зображення, знайдені в статтях';
 $txt['lp_show_images_in_articles_help']      = 'Спочатку перевіряється, чи є в статті вкладення (якщо стаття заснована на темі форуму), потім — чи є в статті тег IMG з картинкою.';
 $txt['lp_image_placeholder']                 = 'URL-адреса картинки-заглушки за замовчуванням';

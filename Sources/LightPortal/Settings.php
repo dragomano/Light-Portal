@@ -187,7 +187,7 @@ class Settings
 	 */
 	public function basic(bool $return_config = false)
 	{
-		global $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
+		global $context, $txt, $scripturl, $modSettings, $boardurl, $settings;
 
 		$this->checkNewVersion();
 
@@ -198,6 +198,12 @@ class Settings
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
+		$context['lp_all_categories'] = Helpers::getAllCategories();
+		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+
+		loadTemplate('LightPortal/ManageSettings');
+
+		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
 		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings
@@ -223,9 +229,10 @@ class Settings
 			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
 			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
+			array('callback', 'frontpage_categories'),
 			array('boards', 'lp_frontpage_boards'),
-			array('large_text', 'lp_frontpage_topics', 'subtext' => $txt['lp_frontpage_topics_subtext']),
 			array('large_text', 'lp_frontpage_pages', 'subtext' => $txt['lp_frontpage_pages_subtext']),
+			array('large_text', 'lp_frontpage_topics', 'subtext' => $txt['lp_frontpage_topics_subtext']),
 			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
 			array('select', 'lp_frontpage_time_format', $txt['lp_frontpage_time_format_set']),
@@ -265,14 +272,14 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_frontpage_topics', 'lp_frontpage_pages', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {
@@ -316,13 +323,18 @@ class Settings
 			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
 			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
 
-			if (["all_pages", "chosen_topics", "chosen_pages"].includes(front_mode)) {
+			if (["all_pages", "chosen_pages"].includes(front_mode)) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();
 				boards.next("dd").hide();
-			} else {
-				board_selector.toggle(allow_change_title);
+			}
+
+			if (["all_topics", "chosen_topics", "chosen_boards"].includes(front_mode)) {
+				let categories = $("#setting_lp_frontpage_categories").closest("dt");
+
+				categories.hide();
+				categories.next("dd").hide();
 			}
 		};
 
@@ -383,7 +395,17 @@ class Settings
 			if (Helpers::post()->filled('lp_standalone_url'))
 				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
+			$frontpage_categories = [];
+			if (Helpers::post()->filled('lp_frontpage_categories')) {
+				foreach (Helpers::post('lp_frontpage_categories') as $id => $dummy)
+					if (isset($context['lp_all_categories'][$id]))
+						$frontpage_categories[] = $id;
+			}
+
+			Helpers::post()->put('lp_frontpage_categories', !empty($frontpage_categories) ? implode(',', $frontpage_categories) : '');
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_frontpage_categories'];
 			saveDBSettings($save_vars);
 
 			Helpers::cache()->flush();

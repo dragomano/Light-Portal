@@ -32,10 +32,15 @@ class PageArticle extends AbstractArticle
 	 */
 	public function init()
 	{
+		global $modSettings;
+
+		$this->selected_categories = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+
 		$this->params = [
-			'status'       => Page::STATUS_ACTIVE,
-			'current_time' => time(),
-			'permissions'  => Helpers::getPermissions()
+			'status'              => Page::STATUS_ACTIVE,
+			'current_time'        => time(),
+			'permissions'         => Helpers::getPermissions(),
+			'selected_categories' => $this->selected_categories
 		];
 
 		$this->orders = [
@@ -61,6 +66,9 @@ class PageArticle extends AbstractArticle
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
+		if (empty($this->selected_categories))
+			return [];
+
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getAllTitles();
 
@@ -79,7 +87,8 @@ class PageArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})
+					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
 				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
@@ -145,6 +154,9 @@ class PageArticle extends AbstractArticle
 	{
 		global $user_info, $smcFunc;
 
+		if (empty($this->selected_categories))
+			return 0;
+
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(p.page_id)
@@ -152,7 +164,8 @@ class PageArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})
+					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
 				$this->params
 			);

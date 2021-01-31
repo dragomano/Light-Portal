@@ -1,6 +1,49 @@
 <?php
 
 /**
+ * Callback template for selecting categories-sources of articles
+ *
+ * Callback-шаблон для выбора рубрик-источников статей
+ *
+ * @return void
+ */
+function template_callback_frontpage_categories()
+{
+	global $txt, $context;
+
+	echo '
+	<dt>
+		<a id="setting_lp_frontpage_categories"></a>
+		<span><label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label></span>
+	</dt>
+	<dd>
+		<a href="#" class="board_selector">[ ', $txt['lp_select_categories_from_list'], ' ]</a>
+		<fieldset>
+			<legend class="board_selector">
+				<a href="#">', $txt['lp_select_categories_from_list'], '</a>
+			</legend>
+			<ul>';
+
+	foreach ($context['lp_all_categories'] as $id => $cat) {
+		echo '
+				<li>
+					<label>
+						<input type="checkbox" name="lp_frontpage_categories[', $id, ']" value="1"', in_array($id, $context['lp_frontpage_categories']) ? ' checked' : '', '> ', $cat['name'], '
+					</label>
+				</li>';
+	}
+
+	echo '
+				<li>
+					<input type="checkbox" onclick="invertAll(this, this.form, \'lp_frontpage_categories[\');">
+					<span>', $txt['check_all'], '</span>
+				</li>
+			</ul>
+		</fieldset>
+	</dd>';
+}
+
+/**
  * Template for the category management page
  *
  * Шаблон страницы управления рубриками

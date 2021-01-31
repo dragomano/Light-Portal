@@ -29,19 +29,22 @@ $txt['lp_frontpage_mode']     = 'Strona główna portalu';
 $txt['lp_frontpage_mode_set'] = array(
 	'Wyłącz',
 	'chosen_page'   => 'Wybrana strona',
+	'all_pages'     => 'All pages from selected categories',
+	'chosen_pages'  => 'Selected pages',
 	'all_topics'    => 'Wszystkie wątki z wybranych działów',
-	'all_pages'     => 'Wszystkie aktywne strony',
-	'chosen_boards' => 'Wybrane działy',
 	'chosen_topics' => 'Selected topics',
-	'chosen_pages'  => 'Selected pages'
+	'chosen_boards' => 'Wybrane działy'
 );
 $txt['lp_frontpage_alias']                   = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']           = 'Podaj alias strony.';
+$txt['lp_frontpage_categories']              = 'Categories - sources of articles for the frontpage';
+$txt['lp_select_categories_from_list']       = 'Select the desired categories';
 $txt['lp_frontpage_boards']                  = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
-$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
+$txt['lp_select_boards_from_list']           = 'Select the desired boards';
 $txt['lp_frontpage_pages']                   = 'Pages as sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']           = 'IDs of the required pages, separated by commas.';
+$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
 $txt['lp_show_images_in_articles']           = 'Wyświetlaj obrazy z artykułów';
 $txt['lp_show_images_in_articles_help']      = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']                 = 'Adres domyślnego obrazu';
