@@ -154,7 +154,7 @@ class PageImport extends AbstractImport
 									'item_id' => $page_id,
 									'type'    => 'page',
 									'name'    => $k,
-									'value'   => intval($v)
+									'value'   => $v
 								];
 							}
 						}
