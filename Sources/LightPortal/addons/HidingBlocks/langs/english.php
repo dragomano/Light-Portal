@@ -11,4 +11,4 @@ $txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] = array(
 	'xl' => 'more than 1200px'
 );
 
-$txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'] = 'If no element is selected, there are no restrictions.<br>Use Ctrl/Cmd to select multiple items.';
+$txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'] = 'If no element is selected, there are no restrictions';

@@ -83,7 +83,8 @@ class PageList
 
 		// Prepare the category list
 		$all_categories     = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Category::class);
-		$current_categories = !empty($context['lp_block']['options']['parameters']['categories']) ? explode(',', $context['lp_block']['options']['parameters']['categories']) : [];
+		$current_categories = $context['lp_block']['options']['parameters']['categories'] ?? [];
+		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
 
 		$data = [];
 		foreach ($all_categories as $id => $category) {
@@ -136,6 +137,7 @@ class PageList
 			'attributes' => array(
 				'id'    => 'num_pages',
 				'min'   => 0,
+				'max'   => 999,
 				'value' => $context['lp_block']['options']['parameters']['num_pages']
 			)
 		);
@@ -151,7 +153,7 @@ class PageList
 	 */
 	public function getData(array $parameters)
 	{
-		global $smcFunc, $txt, $context, $scripturl;
+		global $smcFunc, $txt, $scripturl;
 
 		$titles = Helpers::getAllTitles();
 
@@ -163,7 +165,6 @@ class PageList
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (!empty($categories) ? '
@@ -172,7 +173,6 @@ class PageList
 			LIMIT {int:limit}' : ''),
 			array(
 				'guest'        => $txt['guest_title'],
-				'lang'         => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -238,7 +238,7 @@ class PageList
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', !empty($page['category_id']) ? '(' . $page['category_name'] . ') ' : '', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getCorrectDeclension($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ' . Helpers::getCorrectDeclension($page['num_comments'], $txt['lp_comments_set']);
