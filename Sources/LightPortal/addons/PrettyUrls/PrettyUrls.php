@@ -33,9 +33,60 @@ class PrettyUrls
 	 */
 	public function init()
 	{
-		global $context;
+		global $sourcedir, $context, $modSettings;
+
+		if (!is_file($sourcedir . '/Subs-PrettyUrls.php'))
+			return;
 
 		if (!empty($context['pretty']['action_array']) && !in_array('portal', array_values($context['pretty']['action_array'])))
 			$context['pretty']['action_array'][] = 'portal';
+
+		$prettyFilters = unserialize($modSettings['pretty_filters']);
+
+		if (isset($prettyFilters['lp-pages']))
+			return;
+
+		require_once($sourcedir . '/Subs-PrettyUrls.php');
+
+		$prettyFilters['lp-pages'] = array(
+			'description' => 'Rewrite Light Portal pages URLs',
+			'enabled' => 0,
+			'filter' => array(
+				'priority' => 30,
+				'callback' => __CLASS__ . '::filter',
+			),
+			'rewrite' => array(
+				'priority' => 30,
+				'rule' => 'RewriteRule ^page/([^/]+)/?$ ./index.php?pretty;page=$1 [L,QSA]',
+			),
+			'title' => '<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">Light Portal</a> pages',
+		);
+
+		updateSettings(array('pretty_filters' => serialize($prettyFilters)));
+
+		pretty_update_filters();
+	}
+
+	/**
+	 * Pretty Urls Light Portal pages Filter
+	 *
+	 * @param array $urls
+	 * @return array
+	 */
+	public static function filter($urls)
+	{
+		global $scripturl, $boardurl;
+
+		$pattern = '`' . $scripturl . '(.*)page=([^;]+)`S';
+		$replacement = $boardurl . '/page/$2/$1';
+
+		foreach ($urls as $url_id => $url) {
+			if (!isset($url['replacement'])) {
+				if (preg_match($pattern, $url['url']))
+					$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, $url['url']);
+			}
+		}
+
+		return $urls;
 	}
 }
