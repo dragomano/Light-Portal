@@ -12,7 +12,7 @@
 
 ## Description
 This modification will transform your forum into a portal that includes:
-* the frontpage
+* the customizable frontpage
 * separate pages with keywords
 * blocks within 12-column flexbox grid
 
@@ -34,7 +34,7 @@ The portal supports BBC, HTML, PHP, and Markdown content within pages and bloc
 
 ## Описание
 Модификация преобразует ваш форум в портал:
-* главная страница
+* настраиваемая главная страница
 * отдельные страницы с ключевыми словами
 * блоки внутри 12-колоночной flexbox-сетки.
 

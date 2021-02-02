@@ -44,7 +44,7 @@ use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
  * @copyright Year of creation of the addon and your nickname (again)
  * @license link to the license under which your addon is distributed and the name of the license
  *
- * @version 1.5 (version of the portal where your addon was developed and tested)
+ * @version 1.6 (version of the portal where your addon was developed and tested)
  */
 
 if (!defined('SMF'))
