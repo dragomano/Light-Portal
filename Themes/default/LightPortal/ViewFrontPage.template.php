@@ -43,9 +43,20 @@ function template_show_topics_as_articles()
 
 			echo '
 				<div class="card-info">
-					<span class="card-date smalltext">
-						', $topic['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
+					<span class="card-date smalltext">';
+
+			if ($topic['is_new']) {
+				echo '
+						<span class="new_posts">', $txt['new'], '</span>';
+			}
+
+			if (!empty($topic['board_name'])) {
+				echo '
+						<a class="floatleft" href="', $topic['board_link'], '">', $topic['board_name'], '</a>&nbsp;/&nbsp;';
+			}
+
+			echo '
+						<time datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>
 					</span>
 					<h3 class="card-title">
 						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
@@ -164,9 +175,20 @@ function template_show_pages_as_articles()
 
 			echo '
 				<div class="card-info">
-					<span class="card-date smalltext">
-						', $page['is_new'] ? ('<span class="new_posts">' . $txt['new'] . '</span>') : '', '
-						<time datetime="', $page['datetime'], '">', $page['date'], '</time>
+					<span class="card-date smalltext">';
+
+			if ($page['is_new']) {
+				echo '
+						<span class="new_posts">', $txt['new'], '</span>';
+			}
+
+			if (!empty($page['category_name'])) {
+				echo '
+						<a class="floatleft" href="', $page['category_link'], '">', $page['category_name'], '</a>&nbsp;/&nbsp;';
+			}
+
+			echo '
+						<time datetime="', $page['datetime'], '"><i class="fas fa-clock"></i> ', $page['date'], '</time>
 					</span>
 					<h3 class="card-title">
 						<a href="', $page['link'], '">', $page['title'], '</a>
@@ -352,6 +374,122 @@ function template_show_boards_as_articles()
 }
 
 /**
+ * Example of custom view for front topics
+ *
+ * Пример альтернативного отображения тем
+ *
+ * @return void
+ */
+function template_alt_show_topics_as_articles()
+{
+	global $context, $scripturl, $txt, $modSettings;
+
+	if (!empty($context['lp_frontpage_articles'])) {
+		if (empty($context['lp_active_blocks']))
+			echo '
+	<div class="col-xs">';
+
+		echo '
+	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+
+		foreach ($context['lp_frontpage_articles'] as $topic) {
+			echo '
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_layout'], ' col-xl-', $context['lp_frontpage_layout'], '">
+			<article style="transition: all .4s cubic-bezier(.175, .885, 0, 1); position: relative; padding: 0; display: flex; flex-direction: column; justify-content: space-between; height: 96%">
+				<div class="title_bar article_header" style="padding: 8px 12px">
+					<h3 class="floatleft">
+						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>', $topic['is_new'] ? (' <span class="new_posts">' . $txt['new'] . '</span>') : '', '
+					</h3>';
+
+			if ($topic['can_edit']) {
+				echo '
+					<span class="floatright">
+						<a href="', $scripturl, '?action=post;msg=', $topic['id_msg'], ';topic=', $topic['id'], '.0">
+							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+						</a>
+					</span>';
+			}
+
+			echo '
+				</div>
+				<div class="article_body roundframe" style="overflow: hidden">';
+
+			if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+				echo '
+					<span class="floatleft">
+						<i class="fas fa-eye" title="', $txt['lp_views'], '"></i> ', $topic['num_views'];
+
+				if (!empty($topic['num_replies'])) {
+					echo '
+						<i class="fas fa-comment" title="', $txt['lp_replies'], '"></i> ', $topic['num_replies'];
+				}
+
+				echo '
+					</span>';
+			}
+
+			if (!empty($topic['image'])) {
+				echo '
+					<img src="' . $topic['image'] . '" alt="" style="width: 100%; height: 235px">';
+			}
+
+			if (!empty($modSettings['lp_show_teaser']) && !empty($topic['teaser'])) {
+				echo '
+					<p>', $topic['teaser'], '</p>';
+			}
+
+			echo '
+					<div class="article_footer">
+						<div class="centertext" style="padding: 4px">
+							<a class="bbc_link" href="', $topic['link'], '">', $txt['lp_read_more'], '</a>
+						</div>
+						<div class="centertext" style="padding: 4px">
+							<time datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>';
+
+			if (!empty($modSettings['lp_show_author'])) {
+				if (empty($modSettings['lp_frontpage_article_sorting']) && !empty($topic['num_replies'])) {
+					echo '
+							<i class="fas fa-reply"></i>';
+				}
+
+				if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
+					echo '
+							| <a href="', $topic['author_link'], '" class="card-author">', $topic['author_name'], '</a>';
+				} else {
+					echo '
+							| <span class="card-author">', $txt['guest_title'], '</span>';
+				}
+			}
+
+			echo '
+						</div>
+					</div>
+				</div>
+			</article>
+		</div>';
+		}
+
+		if (!empty($context['page_index']))
+			echo '
+		<div class="col-xs-12 centertext">
+			<div class="pagesection">
+				<div class="pagelinks">', $context['page_index'], '</div>
+			</div>
+		</div>';
+
+		echo '
+	</div>';
+
+		if (empty($context['lp_active_blocks']))
+			echo '
+	</div>';
+	} else {
+		echo '
+	<div class="infobox">', $txt['lp_no_items'], '</div>';
+	}
+}
+
+/**
  * Example of custom view for front pages
  *
  * Пример альтернативного отображения страниц
@@ -465,4 +603,44 @@ function template_alt_show_pages_as_articles()
 		echo '
 	<div class="infobox">', $txt['lp_no_items'], '</div>';
 	}
+}
+
+function template_sorting_above()
+{
+	global $context, $txt;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $context['page_title'], '</h3>
+	</div>';
+
+	if (empty($context['lp_frontpage_articles'])) {
+		echo '
+	<div class="information">', $txt['lp_no_items'], '</div>';
+	} else {
+		echo '
+	<div class="information">
+		<div class="floatright">
+			<form action="', $context['canonical_url'], '" method="post">
+				<label for="sort">', $txt['lp_sorting_label'], '</label>
+				<select id="sort" name="sort" onchange="this.form.submit()">
+					<option value="title;desc"', $context['current_sorting'] == 'title;desc' ? ' selected' : '', '>', $txt['lp_sort_by_title_desc'], '</option>
+					<option value="title"', $context['current_sorting'] == 'title' ? ' selected' : '', '>', $txt['lp_sort_by_title'], '</option>
+					<option value="created;desc"', $context['current_sorting'] == 'created;desc' ? ' selected' : '', '>', $txt['lp_sort_by_created_desc'], '</option>
+					<option value="created"', $context['current_sorting'] == 'created' ? ' selected' : '', '>', $txt['lp_sort_by_created'], '</option>
+					<option value="updated;desc"', $context['current_sorting'] == 'updated;desc' ? ' selected' : '', '>', $txt['lp_sort_by_updated_desc'], '</option>
+					<option value="updated"', $context['current_sorting'] == 'updated' ? ' selected' : '', '>', $txt['lp_sort_by_updated'], '</option>
+					<option value="author_name;desc"', $context['current_sorting'] == 'author_name;desc' ? ' selected' : '', '>', $txt['lp_sort_by_author_desc'], '</option>
+					<option value="author_name"', $context['current_sorting'] == 'author_name' ? ' selected' : '', '>', $txt['lp_sort_by_author'], '</option>
+					<option value="num_views;desc"', $context['current_sorting'] == 'num_views;desc' ? ' selected' : '', '>', $txt['lp_sort_by_num_views_desc'], '</option>
+					<option value="num_views"', $context['current_sorting'] == 'num_views' ? ' selected' : '', '>', $txt['lp_sort_by_num_views'], '</option>
+				</select>
+			</form>
+		</div>
+	</div>';
+	}
+}
+
+function template_sorting_below()
+{
 }

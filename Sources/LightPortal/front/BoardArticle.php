@@ -14,7 +14,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,11 @@ if (!defined('SMF'))
 
 class BoardArticle extends AbstractArticle
 {
+	/**
+	 * @var array
+	 */
+	private $selected_boards = [];
+
 	/**
 	 * Initialize class properties
 	 *

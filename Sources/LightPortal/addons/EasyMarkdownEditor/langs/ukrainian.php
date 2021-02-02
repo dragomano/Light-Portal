@@ -1,6 +1,6 @@
 <?php
 
-$txt['lp_block_types']['md']                = 'Блок з Markdown-розміткою';
+$txt['lp_block_types']['md']                = 'Блок з Markdown';
 $txt['lp_block_types_descriptions']['md']   = 'У цьому блоці як контент можна використовувати базовий синтаксис Markdown.';
 $txt['lp_easy_markdown_editor_description'] = 'Додає блок з довільним Markdown-вмістом, а також редактор для роботи з Markdown.';
 

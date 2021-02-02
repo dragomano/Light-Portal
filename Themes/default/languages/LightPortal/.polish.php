@@ -24,24 +24,27 @@ $txt['lp_settings']  = 'Ustawienia portalu';
 $txt['lp_base']      = 'Ustawienia strony głównej i artykułów';
 $txt['lp_base_info'] = 'Wersja modyfikacji: <strong>%1$s</strong>, Wersja PHP: <strong>%2$s</strong>, Wersja %3$s: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
-$txt['lp_frontpage_title']                   = 'Tytuł strony głównej';
-$txt['lp_frontpage_mode']                    = 'Strona główna portalu';
-$txt['lp_frontpage_mode_set']                = array(
+$txt['lp_frontpage_title']    = 'Tytuł strony głównej';
+$txt['lp_frontpage_mode']     = 'Strona główna portalu';
+$txt['lp_frontpage_mode_set'] = array(
 	'Wyłącz',
 	'chosen_page'   => 'Wybrana strona',
+	'all_pages'     => 'All pages from selected categories',
+	'chosen_pages'  => 'Selected pages',
 	'all_topics'    => 'Wszystkie wątki z wybranych działów',
-	'all_pages'     => 'Wszystkie aktywne strony',
-	'chosen_boards' => 'Wybrane działy',
 	'chosen_topics' => 'Selected topics',
-	'chosen_pages'  => 'Selected pages'
+	'chosen_boards' => 'Wybrane działy'
 );
 $txt['lp_frontpage_alias']                   = 'Strona główna portalu';
 $txt['lp_frontpage_alias_subtext']           = 'Podaj alias strony.';
+$txt['lp_frontpage_categories']              = 'Categories - sources of articles for the frontpage';
+$txt['lp_select_categories_from_list']       = 'Select the desired categories';
 $txt['lp_frontpage_boards']                  = 'Działy artykułów strony głównej';
-$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
-$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
+$txt['lp_select_boards_from_list']           = 'Select the desired boards';
 $txt['lp_frontpage_pages']                   = 'Pages as sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']           = 'IDs of the required pages, separated by commas.';
+$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
 $txt['lp_show_images_in_articles']           = 'Wyświetlaj obrazy z artykułów';
 $txt['lp_show_images_in_articles_help']      = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']                 = 'Adres domyślnego obrazu';
@@ -79,8 +82,10 @@ $txt['lp_manage_permissions']                = 'Some pages may contain dangerous
 $txt['lp_extra']      = 'Strony i bloki';
 $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków.';
 
+$txt['lp_show_page_permissions']            = 'Show information about the page permissions';
+$txt['lp_show_page_permissions_subtext']    = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page']                = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_items_as_articles']           = 'Show items on tag/category pages as cards';
 $txt['lp_show_related_pages']               = 'Show related pages block';
 $txt['lp_show_comment_block']               = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments']         = 'Dozwolone tagi BBC';
@@ -92,7 +97,7 @@ $txt['lp_page_editor_type_default']         = 'Rodzaj domyślnego edytora ';
 $txt['lp_permissions_default']              = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section']     = 'Ukryj aktywne bloki w centrum administracji';
 
-$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_schema_org']            = 'Schema microdata markup for contacts';
 $txt['lp_page_og_image']         = 'Użyj obrazu z treści';
 $txt['lp_page_og_image_set']     = array('Brak', 'Pierwszy', 'Ostatni');
 $txt['lp_page_itemprop_address'] = 'Adres Twojej organizacji';
@@ -100,15 +105,27 @@ $txt['lp_page_itemprop_phone']   = 'Numer telefonu';
 
 $txt['lp_permissions'] = array('Pokaż administratorom', 'Pokaż gościom', 'Pokaż użytkownikom', 'Pokaż wszystkim');
 
+// Categories
+$txt['lp_categories']                 = 'Categories';
+$txt['lp_categories_info']            = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
+$txt['lp_categories_manage']          = 'Manage categories';
+$txt['lp_categories_add']             = 'Add category';
+$txt['lp_categories_desc']            = 'Description';
+$txt['lp_category']                   = 'Category';
+$txt['lp_no_category']                = 'Uncategorized';
+$txt['lp_all_categories']             = 'All categories of the portal';
+$txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
+$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_category_not_found']         = 'The specified category was not found.';
+$txt['lp_no_categories']              = 'There are no categories yet.';
+$txt['lp_total_pages_column']         = 'Total pages';
+
 // Panels
 $txt['lp_panels']               = 'Panele';
 $txt['lp_panels_info']          = 'Możesz spersolanizować szerokość niektórych panelów oraz kierunek bloków.<br><strong>%1$s</strong> wykorzystuje <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 kolumnowy układ siatki</a> do wyświetlania bloków w 6 panelach.';
 $txt['lp_swap_header_footer']   = 'Zamień miejscami nagłówek ze stopką';
 $txt['lp_swap_left_right']      = 'Zamień miejscami panel lewy z prawym';
 $txt['lp_swap_top_bottom']      = 'Zamień miejscami panele centralne';
-$txt['lp_panel_layout_note']    = 'Zmień szerokość przeglądarki i sprawdź która klasa jest używana.';
-$txt['lp_browser_width']        = 'Szerokość okna przeglądarki';
-$txt['lp_used_class']           = 'Uzywana klasa';
 $txt['lp_panel_layout_preview'] = 'Możesz ustawić ilość kolumn dla niektórych panelów w zależnośc iod szerokości okna przeglądarki.';
 $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Możesz zmienić kierunek bloków dla każdego panelu.';
@@ -196,32 +213,35 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Strony';
-$txt['lp_pages_manage']               = 'Zarządzaj stronami';
-$txt['lp_pages_manage_all_pages']     = 'Tutaj znajdują się wszystkie utworzone strony.';
-$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_description']   = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
-$txt['lp_pages_add']                  = 'Dodaj stronę';
-$txt['lp_pages_add_title']            = 'Dodawanie strony';
-$txt['lp_pages_add_description']      = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
-$txt['lp_pages_edit_title']           = 'Edytowanie strony';
-$txt['lp_pages_edit_description']     = $txt['lp_pages_add_description'];
-$txt['lp_pages_extra']                = 'Strony portalu';
-$txt['lp_pages_search']               = 'Alias lub tytuł';
-$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Alias';
-$txt['lp_page_alias_subtext']         = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
-$txt['lp_page_type']                  = 'Typ strony';
-$txt['lp_page_description']           = 'Opis';
-$txt['lp_page_keywords']              = 'Słowa kluczowe';
-$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']      = 'Data i czas publikacji';
+$txt['lp_pages']                     = 'Strony';
+$txt['lp_pages_manage']              = 'Zarządzaj stronami';
+$txt['lp_pages_manage_all_pages']    = 'Tutaj znajdują się wszystkie utworzone strony.';
+$txt['lp_pages_manage_own_pages']    = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']  = 'W celu dodania nowej strony kliknij w odpowiednią opcję.';
+$txt['lp_pages_add']                 = 'Dodaj stronę';
+$txt['lp_pages_add_title']           = 'Dodawanie strony';
+$txt['lp_pages_add_description']     = 'Podaj nazwę strony i jej alias. Po tym będzie można zmienić jej typ i użyć podglądu.';
+$txt['lp_pages_edit_title']          = 'Edytowanie strony';
+$txt['lp_pages_edit_description']    = $txt['lp_pages_add_description'];
+$txt['lp_pages_extra']               = 'Strony portalu';
+$txt['lp_pages_search']              = 'Alias lub tytuł';
+$txt['lp_page_types']                = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Alias';
+$txt['lp_page_alias_subtext']        = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
+$txt['lp_page_type']                 = 'Typ strony';
+$txt['lp_page_description']          = 'Opis';
+$txt['lp_page_keywords']             = 'Słowa kluczowe';
+$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_publish_datetime']     = 'Data i czas publikacji';
+$txt['lp_page_author']               = 'Transfer of authorship';
+$txt['lp_page_author_placeholder']   = 'Specify a username to transfer rights to the page';
+$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Wyświetlaj datę oraz nazwę autora',
 	'show_related_pages'   => 'Show related pages',
-	'allow_comments'       => 'Włącz komentarze'
+	'allow_comments'       => 'Włącz komentarze',
+	'main_menu_item'       => 'Item in main menu'
 );
 
 // Tabs
@@ -305,11 +325,13 @@ $txt['lp_plugin_new_option']                  = 'Add option';
 // Tags
 $txt['lp_all_page_tags']          = 'Wszystkie tagi stron portalu';
 $txt['lp_all_tags_by_key']        = 'Strony z tagiem "%1$s"';
-$txt['lp_no_selected_tag']        = 'Nie znaleziono podanego tagu.';
+$txt['lp_tag_not_found']          = 'Nie znaleziono podanego tagu.';
 $txt['lp_no_tags']                = 'Nie dodano żadnych tagów.';
 $txt['lp_keyword_column']         = 'Słowa kluczowe';
 $txt['lp_frequency_column']       = 'Częstotliwość';
 $txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_title_desc']     = 'Title (desc)';
+$txt['lp_sort_by_title']          = 'Title (asc)';
 $txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
 $txt['lp_sort_by_created']        = 'Creation date (old first)';
 $txt['lp_sort_by_updated_desc']   = 'Update date (new first)';

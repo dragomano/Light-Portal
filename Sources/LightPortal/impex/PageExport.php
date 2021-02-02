@@ -14,7 +14,7 @@ use Bugo\LightPortal\ManagePages;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -92,13 +92,11 @@ class PageExport extends AbstractExport
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getTitle($entry);
-
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
-								) . '">' . $title . '</a>';
+								) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -159,16 +157,14 @@ class PageExport extends AbstractExport
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
 			WHERE p.page_id IN ({array_int:pages})' : ''),
 			array(
-				'type'  => 'page',
 				'pages' => $pages
 			)
 		);
@@ -178,6 +174,7 @@ class PageExport extends AbstractExport
 			if (!isset($items[$row['page_id']]))
 				$items[$row['page_id']] = array(
 					'page_id'      => $row['page_id'],
+					'category_id'  => $row['category_id'],
 					'author_id'    => $row['author_id'],
 					'alias'        => $row['alias'],
 					'description'  => trim($row['description']),
@@ -197,9 +194,6 @@ class PageExport extends AbstractExport
 			if (!empty($row['name']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (!empty($row['keyword']))
-				$items[$row['page_id']]['keywords'][] = $row['keyword'];
-
 			if (!empty($row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
 					'id'         => $row['id'],
@@ -215,6 +209,40 @@ class PageExport extends AbstractExport
 		$smcFunc['lp_num_queries']++;
 
 		return $items;
+	}
+
+	/**
+	 * Get an array of categories to export
+	 *
+	 * Получаем массив рубрик для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getCategories()
+	{
+		$categories = (new \Bugo\LightPortal\Category)->getList();
+
+		unset($categories[0]);
+
+		ksort($categories);
+
+		return $categories;
+	}
+
+	/**
+	 * Get an array of tags to export
+	 *
+	 * Получаем массив тегов для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getTags()
+	{
+		$tags = (new \Bugo\LightPortal\Tag)->getList();
+
+		ksort($tags);
+
+		return $tags;
 	}
 
 	/**
@@ -234,12 +262,34 @@ class PageExport extends AbstractExport
 
 		$xml->formatOutput = true;
 
+		if (!empty($categories = $this->getCategories())) {
+			$xmlElements = $root->appendChild($xml->createElement('categories'));
+			foreach ($categories as $category) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				foreach ($category as $key => $val) {
+					$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		if (!empty($tags = $this->getTags())) {
+			$xmlElements = $root->appendChild($xml->createElement('tags'));
+			foreach ($tags as $key => $val) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
+				$xmlName->appendChild($xml->createTextNode($key));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
+				$xmlName->appendChild($xml->createTextNode($val));
+			}
+		}
+
 		$xmlElements = $root->appendChild($xml->createElement('pages'));
 		foreach ($items as $item) {
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
 				$xmlName = $xmlElement->appendChild(
-					in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+					in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
 						? $xml->createAttribute($key)
 						: $xml->createElement($key)
 				);
@@ -251,8 +301,6 @@ class PageExport extends AbstractExport
 					}
 				} elseif (in_array($key, ['description', 'content'])) {
 					$xmlName->appendChild($xml->createCDATASection($val));
-				} elseif ($key == 'keywords' && !empty($val)) {
-					$xmlName->appendChild($xml->createTextNode(implode(', ', array_unique($val))));
 				} elseif ($key == 'comments') {
 					foreach ($item[$key] as $k => $comment) {
 						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));

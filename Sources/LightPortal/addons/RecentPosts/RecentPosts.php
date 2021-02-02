@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -139,17 +139,10 @@ class RecentPosts
 		);
 
 		foreach ($txt['lp_recent_posts_addon_type_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['link_type']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
-				);
-			} else {
-				$context['posting_fields']['link_type']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
-				);
-			}
+			$context['posting_fields']['link_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
+			);
 		}
 
 		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_posts_addon_exclude_boards'];

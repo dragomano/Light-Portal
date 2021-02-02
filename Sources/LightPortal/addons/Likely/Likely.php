@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -83,33 +83,16 @@ class Likely
 			)
 		);
 
-		if (RC2_CLEAN) {
-			$context['posting_fields']['size']['input']['options'] = array(
-				'small' => array(
-					'attributes' => array(
-						'value'    => 'small',
-						'selected' => 'small' == $context['lp_block']['options']['parameters']['size']
-					)
-				),
-				'big' => array(
-					'attributes' => array(
-						'value'    => 'big',
-						'selected' => 'big' == $context['lp_block']['options']['parameters']['size']
-					)
-				)
-			);
-		} else {
-			$context['posting_fields']['size']['input']['options'] = array(
-				'small' => array(
-					'value'    => 'small',
-					'selected' => 'small' == $context['lp_block']['options']['parameters']['size']
-				),
-				'big' => array(
-					'value'    => 'big',
-					'selected' => 'big' == $context['lp_block']['options']['parameters']['size']
-				)
-			);
-		}
+		$context['posting_fields']['size']['input']['options'] = array(
+			'small' => array(
+				'value'    => 'small',
+				'selected' => 'small' == $context['lp_block']['options']['parameters']['size']
+			),
+			'big' => array(
+				'value'    => 'big',
+				'selected' => 'big' == $context['lp_block']['options']['parameters']['size']
+			)
+		);
 
 		$context['posting_fields']['skin']['label']['text'] = $txt['lp_likely_addon_skin'];
 		$context['posting_fields']['skin']['input'] = array(
@@ -119,33 +102,16 @@ class Likely
 			)
 		);
 
-		if (RC2_CLEAN) {
-			$context['posting_fields']['skin']['input']['options'] = array(
-				'normal' => array(
-					'attributes' => array(
-						'value'    => 'normal',
-						'selected' => 'normal' == $context['lp_block']['options']['parameters']['skin']
-					)
-				),
-				'light' => array(
-					'attributes' => array(
-						'value'    => 'light',
-						'selected' => 'light' == $context['lp_block']['options']['parameters']['skin']
-					)
-				)
-			);
-		} else {
-			$context['posting_fields']['skin']['input']['options'] = array(
-				'normal' => array(
-					'value'    => 'normal',
-					'selected' => 'normal' == $context['lp_block']['options']['parameters']['skin']
-				),
-				'light' => array(
-					'value'    => 'light',
-					'selected' => 'light' == $context['lp_block']['options']['parameters']['skin']
-				)
-			);
-		}
+		$context['posting_fields']['skin']['input']['options'] = array(
+			'normal' => array(
+				'value'    => 'normal',
+				'selected' => 'normal' == $context['lp_block']['options']['parameters']['skin']
+			),
+			'light' => array(
+				'value'    => 'light',
+				'selected' => 'light' == $context['lp_block']['options']['parameters']['skin']
+			)
+		);
 
 		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely_addon_buttons'];
 		$context['posting_fields']['buttons']['input'] = array(

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -97,12 +97,11 @@ class Subs
 					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
+					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				array(
-					'type'   => 'block',
 					'status' => Block::STATUS_ACTIVE
 				)
 			);
@@ -381,5 +380,50 @@ class Subs
 
 		if (!empty($old_url[1]))
 			$context['linktree'][1]['url'] = $scripturl . '?action=forum#' . $old_url[1];
+	}
+
+	/**
+	 * Getting a list of pages to display in the main menu
+	 *
+	 * Получаем список страниц для отображения в главном меню
+	 *
+	 * @return array
+	 */
+	public static function getPagesInMenu()
+	{
+		global $smcFunc;
+
+		if (($pages = Helpers::cache()->get('pages_in_menu', LP_CACHE_TIME * 4)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon, ps3.value AS icon_type
+				FROM {db_prefix}lp_params AS ps
+					LEFT JOIN {db_prefix}lp_params AS ps2 ON (ps.item_id = ps2.item_id AND ps2.name = {literal:icon} AND ps2.type = {literal:page})
+					LEFT JOIN {db_prefix}lp_params AS ps3 ON (ps.item_id = ps3.item_id AND ps3.name = {literal:icon_type} AND ps3.type = {literal:page})
+					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
+				WHERE ps.name = {literal:main_menu_item}
+					AND ps.value != {string:blank_string}
+					AND ps.type = {literal:page}',
+				array(
+					'blank_string' => ''
+				)
+			);
+
+			$pages = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				$pages[$row['alias']] = array(
+					'title'       => json_decode($row['value'], true),
+					'permissions' => $row['permissions'],
+					'icon'        => $row['icon'],
+					'icon_type'   => $row['icon_type']
+				);
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('pages_in_menu', $pages, LP_CACHE_TIME * 4);
+		}
+
+		return $pages;
 	}
 }

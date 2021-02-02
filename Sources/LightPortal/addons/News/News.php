@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\News;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -80,17 +80,10 @@ class News
 		}
 
 		foreach ($news as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['selected_item']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
-				);
-			} else {
-				$context['posting_fields']['selected_item']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
-				);
-			}
+			$context['posting_fields']['selected_item']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+			);
 		}
 	}
 

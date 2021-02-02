@@ -9,20 +9,22 @@
  */
 function template_show_page()
 {
-	global $context, $txt, $scripturl, $settings, $modSettings, $boardurl;
+	global $modSettings, $context, $txt, $scripturl, $settings, $boardurl;
 
-	if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
-		echo '
-	<aside class="errorbox">
-		<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
-	</aside>';
-	}
+	if (!empty($modSettings['lp_show_page_permissions'])) {
+		if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
+			echo '
+		<aside class="errorbox">
+			<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
+		</aside>';
+		}
 
-	if ($context['lp_page']['can_edit']) {
-		echo '
-	<aside class="infobox">
-		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
-	</aside>';
+		if ($context['lp_page']['can_edit']) {
+			echo '
+		<aside class="infobox">
+			<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+		</aside>';
+		}
 	}
 
 	echo '
@@ -33,8 +35,8 @@ function template_show_page()
 
 	if ($context['lp_page']['can_edit']) {
 		echo '
-					<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'] . '">
-						<i class="fas fa-edit" title="' . $txt['edit'] . '"></i>
+					<a class="floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '">
+						<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 					</a>';
 	}
 
@@ -70,9 +72,9 @@ function template_show_page()
 		echo '
 			<div class="smalltext">';
 
-		foreach ($context['lp_page']['keywords'] as $keyword) {
+		foreach ($context['lp_page']['keywords'] as $id => $keyword) {
 			echo '
-				<a class="button" href="', $scripturl, '?action=portal;sa=tags;key=', urlencode($keyword), '">', $keyword, '</a>';
+				<a class="button" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">', $keyword, '</a>';
 		}
 
 		echo '
@@ -111,7 +113,7 @@ function show_likes_block()
 {
 	global $modSettings, $context, $scripturl, $txt;
 
-	if (empty($modSettings['enable_likes']))
+	if (empty($modSettings['enable_likes']) || $context['user']['is_guest'])
 		return;
 
 	if (empty($context['lp_page']['likes']['can_like']) && empty($context['lp_page']['likes']['count']))
@@ -124,7 +126,11 @@ function show_likes_block()
 	if (!empty($context['lp_page']['likes']['can_like'])) {
 		echo '
 			<li>
-				<a href="', $scripturl, '?action=likes;sa=like;ltype=lpp;like=', $context['lp_page']['id'], ';', $context['session_var'], '=', $context['session_id'], '" class="like_page" @click.prevent="page.like($el, $event.target)">
+				<a
+					class="like_page"
+					href="', $scripturl, '?action=likes;sa=like;ltype=lpp;like=', $context['lp_page']['id'], ';', $context['session_var'], '=', $context['session_id'], '"
+					@click.prevent="page.like($el, $event.target)"
+				>
 					<span class="main_icons ', $context['lp_page']['likes']['you'] ? 'unlike' : 'like', '"></span> ', $context['lp_page']['likes']['you'] ? $txt['unlike'] : $txt['like'], '
 				</a>
 			</li>';
@@ -177,21 +183,18 @@ function show_comment_block()
 		return;
 
 	echo '
-		<aside class="comments" x-data>
+		<aside class="comments"', empty($context['user']['is_guest']) ? ' x-data' : '', '>
 			<div class="cat_bar">
-				<h3 class="catbg">';
-
-	if (!empty($context['lp_page']['comments'])) {
-		echo '
-					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none;"></span>
-					<a id="page_comments_link">', $txt['lp_comments'], '</a>';
-	} else
-		echo $txt['lp_comments'];
-
-	echo '
+				<h3 class="catbg">
+					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none"></span>
+					<a id="page_comments_link">', $txt['lp_comments'], '</a>
 				</h3>
 			</div>
-			<div id="page_comments"', empty($options['collapse_header_page_comments']) ? '' : ' style="display: none;"', ' x-ref="page_comments">';
+			<div
+				id="page_comments"', empty($options['collapse_header_page_comments']) ? '' : '
+				style="display: none"', empty($context['user']['is_guest']) ? '
+				x-ref="page_comments"' : '', '
+			>';
 
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
@@ -223,9 +226,26 @@ function show_comment_block()
 
 	if ($context['user']['is_logged'])
 		echo '
-				<form id="comment_form" class="roundframe descbox" accept-charset="', $context['character_set'], '" x-ref="comment_form" @submit.prevent="comment.add($event.target, $refs)">
+				<form
+					id="comment_form"
+					class="roundframe descbox"
+					accept-charset="', $context['character_set'], '"
+					x-ref="comment_form"
+					@submit.prevent="comment.add($event.target, $refs)"
+				>
 					', show_toolbar(), '
-					<textarea id="message" tabindex="1" name="message" class="content" placeholder="', $txt['lp_comment_placeholder'], '" maxlength="', MAX_MSG_LENGTH, '" @keyup="$refs.comment.disabled = !$event.target.value" @focus="comment.focus($event.target, $refs)" x-ref="message" required></textarea>
+					<textarea
+						id="message"
+						name="message"
+						class="content"
+						placeholder="', $txt['lp_comment_placeholder'], '"
+						maxlength="', MAX_MSG_LENGTH, '"
+						@keyup="$refs.comment.disabled = !$event.target.value"
+						@focus="comment.focus($event.target, $refs)"
+						x-ref="message"
+						tabindex="1"
+						required
+					></textarea>
 					<input type="hidden" name="parent_id" value="0">
 					<input type="hidden" name="counter" value="0">
 					<input type="hidden" name="level" value="1">
@@ -234,20 +254,30 @@ function show_comment_block()
 					<input type="hidden" name="page_url" value="', $context['lp_current_page_url'], '">
 					<input type="hidden" name="start" value="', $context['page_info']['start'], '">
 					<input type="hidden" name="commentator" value="0">
-					<button type="submit" class="button" name="comment" x-ref="comment" disabled>', $txt['post'], '</button>
+					<button
+						type="submit"
+						class="button"
+						name="comment"', empty($context['user']['is_guest']) ? '
+						x-ref="comment"' : '', '
+						disabled
+					>', $txt['post'], '</button>
 				</form>';
 
 	echo '
 			</div>
-		</aside>
+		</aside>';
+
+	if ($context['user']['is_logged'])
+		echo '
 		<script>
+			const page = new Page();
 			new Toggler({
 				isCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggleAltExpandedTitle: ', JavaScriptEscape($txt['hide']), ',
 				toggleAltCollapsedTitle: ', JavaScriptEscape($txt['show']), ',
 				toggleMsgBlockTitle: ', JavaScriptEscape($txt['lp_comments']), ',
-				useThemeSettings: ', $context['user']['is_guest'] ? 'false' : 'true', ',
-				useCookie: ', $context['user']['is_guest'] ? 'true' : 'false', '
+				useThemeSettings: true,
+				useCookie: false
 			});
 		</script>';
 }
@@ -267,7 +297,19 @@ function show_single_comment($comment, $i = 0, $level = 1)
 	global $context, $txt;
 
 	echo '
-	<li id="comment', $comment['id'], '" class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '" data-id="', $comment['id'], '" data-counter="', $i, '" data-level="', $level, '" data-start="', (int) $_REQUEST['start'], '" data-commentator="', $comment['author_id'], '" itemprop="comment" itemscope="itemscope" itemtype="http://schema.org/Comment" x-ref="comment', $comment['id'], '">
+	<li
+		id="comment', $comment['id'], '"
+		class="col-xs-12 generic_list_wrapper bg ', $i % 2 == 0 ? 'even' : 'odd', '"
+		data-id="', $comment['id'], '"
+		data-counter="', $i, '"
+		data-level="', $level, '"
+		data-start="', (int) $_REQUEST['start'], '"
+		data-commentator="', $comment['author_id'], '"
+		itemprop="comment"
+		itemscope="itemscope"
+		itemtype="http://schema.org/Comment"', empty($context['user']['is_guest']) ? '
+		x-ref="comment' . $comment['id'] . '"' : '', '
+	>
 		<div class="comment_avatar"', $context['right_to_left'] ? ' style="padding: 0 0 0 10px"' : '', '>
 			', $comment['avatar'];
 
@@ -280,7 +322,13 @@ function show_single_comment($comment, $i = 0, $level = 1)
 		<div class="comment_wrapper"', $context['right_to_left'] ? ' style="padding: 0 55px 0 0"' : '', '>
 			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', '">
 				<div class="title">
-					<span class="bg ', $i % 2 == 0 ? 'even' : 'odd', '" itemprop="creator"', $context['user']['is_logged'] ? (' style="cursor: pointer" data-parent="' . $comment['parent_id'] . '"') : '', ' @click="comment.pasteNick($event.target, $refs)">
+					<span
+						class="bg ', $i % 2 == 0 ? 'even' : 'odd', '"
+						itemprop="creator"', $context['user']['is_logged'] ? ('
+						style="cursor: pointer"
+						data-parent="' . $comment['parent_id'] . '"') : '', empty($context['user']['is_guest']) ? '
+						@click="comment.pasteNick($event.target, $refs)"' : '', '
+					>
 						', $comment['author_name'], '
 					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">

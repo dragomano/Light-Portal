@@ -15,7 +15,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -32,10 +32,15 @@ class PageArticle extends AbstractArticle
 	 */
 	public function init()
 	{
+		global $modSettings;
+
+		$this->selected_categories = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+
 		$this->params = [
-			'status'       => Page::STATUS_ACTIVE,
-			'current_time' => time(),
-			'permissions'  => Helpers::getPermissions()
+			'status'              => Page::STATUS_ACTIVE,
+			'current_time'        => time(),
+			'permissions'         => Helpers::getPermissions(),
+			'selected_categories' => $this->selected_categories
 		];
 
 		$this->orders = [
@@ -61,6 +66,9 @@ class PageArticle extends AbstractArticle
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
+		if (empty($this->selected_categories))
+			return [];
+
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
 			$titles = Helpers::getAllTitles();
 
@@ -71,14 +79,16 @@ class PageArticle extends AbstractArticle
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-					mem.real_name AS author_name, (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_name, (SELECT lp_com.message FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_message' . (!empty($this->columns) ? ', ' . implode(', ', $this->columns) : '') . '
+					p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at,
+					GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name,
+					(SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_name, (SELECT lp_com.message FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_message' . (!empty($this->columns) ? ', ' . implode(', ', $this->columns) : '') . '
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (!empty($this->tables) ? '
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})
+					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
 				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
@@ -97,18 +107,20 @@ class PageArticle extends AbstractArticle
 
 				if (!isset($pages[$row['page_id']])) {
 					$pages[$row['page_id']] = array(
-						'id'           => $row['page_id'],
-						'author_id'    => $author_id = empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id'],
-						'author_link'  => $scripturl . '?action=profile;u=' . $author_id,
-						'author_name'  => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name'],
-						'type'         => $row['type'],
-						'num_views'    => $row['num_views'],
-						'num_comments' => $row['num_comments'],
-						'date'         => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-						'link'         => $scripturl . '?page=' . $row['alias'],
-						'image'        => $image,
-						'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+						'id'            => $row['page_id'],
+						'category_name' => !empty($row['category_id']) ? Helpers::getAllCategories()[$row['category_id']]['name'] : '',
+						'category_link' => !empty($row['category_id']) ? $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'] : '',
+						'author_id'     => $author_id = empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id'],
+						'author_link'   => $scripturl . '?action=profile;u=' . $author_id,
+						'author_name'   => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name'],
+						'type'          => $row['type'],
+						'num_views'     => $row['num_views'],
+						'num_comments'  => $row['num_comments'],
+						'date'          => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
+						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+						'link'          => $scripturl . '?page=' . $row['alias'],
+						'image'         => $image,
+						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
 					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? strip_tags(parse_bbc($row['comment_message'])) : ($row['description'] ?: strip_tags($row['content'])));
@@ -142,6 +154,9 @@ class PageArticle extends AbstractArticle
 	{
 		global $user_info, $smcFunc;
 
+		if (empty($this->selected_categories))
+			return 0;
+
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(p.page_id)
@@ -149,7 +164,8 @@ class PageArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})
+					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
 				$this->params
 			);

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -77,17 +77,10 @@ class TagList
 		);
 
 		foreach ($txt['lp_tag_list_addon_source_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['source']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			} else {
-				$context['posting_fields']['source']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			}
+			$context['posting_fields']['source']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['source']
+			);
 		}
 	}
 

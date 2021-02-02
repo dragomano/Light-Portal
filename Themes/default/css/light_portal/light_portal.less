@@ -109,6 +109,12 @@
 	}
 }
 
+.portal_menu_icons {
+	font-size: 14px;
+	vertical-align: middle;
+	margin: -3px 8px 0 0;
+}
+
 #lp_blocks {
 	.item {
 		.pointer;
@@ -132,6 +138,59 @@
 	p {
 		&.errorbox {
 			margin: 0;
+		}
+	}
+}
+
+#lp_post {
+	#post_header {
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+
+		dt, dd {
+			margin-block-start: 1px;
+			margin-block-end: 1px;
+			margin-inline-start: 0;
+			padding-top: 5px;
+
+			&:first-child, &:first-child {
+				margin-block-start: 0;
+			}
+
+			&:last-child, &:last-child {
+				margin-block-end: 0;
+			}
+
+			& > *:first-child, & > *:first-child {
+				margin-block-start: 0;
+			}
+			& > *:last-child, & > *:last-child {
+				margin-block-end: 0;
+			}
+		}
+
+		dt {
+			width: 30%;
+		}
+
+		dd {
+			width: 70%;
+		}
+
+		dt.pf_content, dd.pf_content {
+			width: 100%;
+		}
+	}
+}
+
+@media (max-width: 750px) {
+	#lp_post {
+		#post_header {
+			dt, dd {
+				width: 100%;
+				flex-grow: 1;
+			}
 		}
 	}
 }
@@ -518,6 +577,35 @@ section {
 	}
 }
 
+.lp_categories {
+	input {
+		width: 100%;
+	}
+	textarea {
+		width: 100%;
+		resize: none;
+		margin-top: 1px;
+	}
+	dt {
+		.handle {
+			cursor: grab;
+		}
+		td.handle {
+			font-size: 1.4em;
+		}
+		span.floatright {
+			font-size: 1.7em;
+			font-weight: bold;
+			cursor: pointer;
+		}
+	}
+	dd {
+		.roundframe {
+			margin-top: 0;
+		}
+	}
+}
+
 @media (max-width: 480px) {
 	.lp_default_blocks,
 	.lp_additional_blocks {
@@ -777,6 +865,12 @@ section {
 				margin: 0;
 				font-size: 18px;
 			}
+		}
+	}
+
+	.plugin_options {
+		td:first-child {
+			display: none;
 		}
 	}
 }
@@ -1124,5 +1218,54 @@ dl {
 .comment_avatar {
 	svg {
 		max-width: 50px;
+	}
+}
+
+/* Todays */
+.block_todays {
+	details {
+		display: contents;
+		position: relative;
+		margin-bottom: .5rem;
+		min-height: 1rem;
+		max-height: 3rem;
+		transition: min-height .15s linear, max-height .5s linear;
+		will-change: max-height;
+		overflow: hidden;
+
+		summary {
+			&::-webkit-details-marker { display: none; }
+			&::-moz-list-bullet { list-style-type: none; }
+			display: inline-block;
+			cursor: pointer;
+			outline: 0;
+			transition: color .12s;
+
+			span {
+				border-bottom: 1px currentColor dotted;
+			}
+
+			&:hover {
+				color: #d06c6c;
+			}
+
+			& ~ * {
+				display: none;
+				transition: opacity .15s linear;
+			}
+		}
+
+		&[open] {
+			min-height: 2em;
+			max-height: 20em;
+
+			summary {
+				color: #d06c6c;
+
+				& ~ * {
+					display: block;
+				}
+			}
+		}
 	}
 }

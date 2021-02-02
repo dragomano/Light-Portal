@@ -5,8 +5,8 @@ if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF'))
 elseif(!defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
-if (version_compare(PHP_VERSION, '7.2', '<'))
-	die('This mod needs PHP 7.2 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '7.3', '<'))
+	die('This mod needs PHP 7.3 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
 global $user_info, $mbname, $modSettings;
 
@@ -14,12 +14,50 @@ if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
 
 $tables[] = array(
+	'name' => 'lp_categories',
+	'columns' => array(
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'name',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		),
+		array(
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
+			'name'     => 'priority',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 0
+		)
+	),
+	'indexes' => array(
+			array(
+			'type'    => 'primary',
+			'columns' => array('category_id')
+		)
+	)
+);
+
+$tables[] = array(
 	'name' => 'lp_blocks',
 	'columns' => array(
 		array(
 			'name'     => 'block_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -62,22 +100,22 @@ $tables[] = array(
 			'name'     => 'priority',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'    => 'areas',
@@ -125,21 +163,21 @@ $tables[] = array(
 		array(
 			'name'     => 'id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
 		array(
 			'name'     => 'parent_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'default'  => 0
 		),
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -157,8 +195,8 @@ $tables[] = array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -175,9 +213,16 @@ $tables[] = array(
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
+		),
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'author_id',
@@ -214,43 +259,43 @@ $tables[] = array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'     => 'num_views',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'num_comments',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'updated_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -288,7 +333,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -334,10 +379,11 @@ $tables[] = array(
 	'name' => 'lp_tags',
 	'columns' => array(
 		array(
-			'name'     => 'page_id',
+			'name'     => 'tag_id',
 			'type'     => 'int',
-			'size'     => 11,
-			'unsigned' => true
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
 		),
 		array(
 			'name' => 'value',
@@ -349,7 +395,7 @@ $tables[] = array(
 	'indexes' => array(
 		 array(
 			'type'    => 'primary',
-			'columns' => array('page_id', 'value')
+			'columns' => array('tag_id')
 		 )
 	)
 );
@@ -360,7 +406,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -405,6 +451,12 @@ $tables[] = array(
 
 db_extend('packages');
 
+// Remove old lp_tags
+$colData = $smcFunc['db_list_columns']('{db_prefix}lp_tags');
+if (!empty($colData[0]) && $colData[0] == 'page_id') {
+	$smcFunc['db_drop_table']('{db_prefix}lp_tags');
+}
+
 foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
@@ -412,6 +464,15 @@ foreach ($tables as $table) {
 		foreach ($table['columns'] as $column) {
 			if ($column['name'] == 'note') {
 				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
+				break;
+			}
+		}
+	}
+
+	if ($table['name'] == 'lp_pages') {
+		foreach ($table['columns'] as $column) {
+			if ($column['name'] == 'category_id') {
+				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
 				break;
 			}
 		}

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -87,36 +87,36 @@ class LanguageAccess
 	{
 		global $context, $txt;
 
-		if (isset($context['lp_block']['options']['parameters']['allowed_languages'])) {
-			$context['lp_block']['options']['parameters']['allowed_languages'] = is_array($context['lp_block']['options']['parameters']['allowed_languages']) ? $context['lp_block']['options']['parameters']['allowed_languages'] : explode(',', $context['lp_block']['options']['parameters']['allowed_languages']);
-		} else
-			$context['lp_block']['options']['parameters']['allowed_languages'] = Helpers::post('allowed_languages', []);
+		// Prepare the language list
+		$current_languages = $context['lp_block']['options']['parameters']['allowed_languages'] ?? [];
+		$current_languages = is_array($current_languages) ? $current_languages : explode(',', $current_languages);
+
+		$data = [];
+		foreach ($context['languages'] as $lang) {
+			$data[] = "\t\t\t\t" . '{text: "' . $lang['filename'] . '", selected: ' . (in_array($lang['filename'], $current_languages) ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#allowed_languages",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			placeholder: "' . $txt['lp_language_access_addon_allowed_languages_subtext'] . '",
+			searchHighlight: true,
+			closeOnSelect: false
+		});', true);
 
 		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access_addon_allowed_languages'];
 		$context['posting_fields']['allowed_languages']['input'] = array(
 			'type' => 'select',
-			'after' => $txt['lp_language_access_addon_allowed_languages_subtext'],
 			'attributes' => array(
 				'id'       => 'allowed_languages',
 				'name'     => 'allowed_languages[]',
-				'multiple' => true,
-				'style'    => 'height: auto'
+				'multiple' => true
 			),
 			'options' => array()
 		);
-
-		foreach ($context['languages'] as $lang) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']]['attributes'] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			} else {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			}
-		}
 	}
 }

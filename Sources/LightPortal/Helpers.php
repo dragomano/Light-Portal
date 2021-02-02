@@ -2,11 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\Cache;
-use Bugo\LightPortal\Utils\Post;
-use Bugo\LightPortal\Utils\Request;
-use Bugo\LightPortal\Utils\Server;
-use Bugo\LightPortal\Utils\Session;
+use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
 
 /**
  * Helpers.php
@@ -17,7 +13,7 @@ use Bugo\LightPortal\Utils\Session;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -37,7 +33,7 @@ class Helpers
 	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = 3600, ...$vars)
+	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = LP_CACHE_TIME, ...$vars)
 	{
 		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
 	}
@@ -130,9 +126,9 @@ class Helpers
 	}
 
 	/**
-	 * Get the block icon
+	 * Get the block/page icon
 	 *
-	 * Получаем иконку блока
+	 * Получаем иконку блока или страницы
 	 *
 	 * @param string|null $icon
 	 * @param string|null $type
@@ -142,8 +138,8 @@ class Helpers
 	{
 		global $context;
 
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
-		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
+		$icon = $icon ?? ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
+		$type = $type ?? ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
 
 		if (!empty($icon))
 			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
@@ -151,7 +147,8 @@ class Helpers
 		return '';
 	}
 
-	/**	 * Get a title for preview block
+	/**
+	 * Get a title for preview block
 	 *
 	 * Получаем заголовок блока превью
 	 *
@@ -510,10 +507,16 @@ class Helpers
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		return $object['title'][$user_info['language']]
-			?? $object['title'][$language]
-			?? $object['title']['english']
-			?? '';
+		if (!empty($object['title'][$user_info['language']]))
+			return $object['title'][$user_info['language']];
+
+		if (!empty($object['title'][$language]))
+			return $object['title'][$language];
+
+		if (!empty($object['title']['english']))
+			return $object['title']['english'];
+
+		return '';
 	}
 
 	/**
@@ -602,6 +605,11 @@ class Helpers
 			$context['languages'] = [];
 			$context['languages'][$language] = $default_lang;
 		}
+
+		// Move default lang to the top
+		$default_lang = $context['languages'][$language];
+		unset($context['languages'][$language]);
+		array_unshift($context['languages'], $default_lang);
 	}
 
 	/**
@@ -812,5 +820,29 @@ class Helpers
 		}
 
 		return (int) $num_pages;
+	}
+
+	/**
+	 * Get array of all categories
+	 *
+	 * Получаем массив всех рубрик
+	 *
+	 * @return array
+	 */
+	public static function getAllCategories()
+	{
+		return self::cache('all_categories', 'getList', Category::class);
+	}
+
+	/**
+	 * Get array of all tags
+	 *
+	 * Получаем массив всех тегов
+	 *
+	 * @return array
+	 */
+	public static function getAllTags()
+	{
+		return self::cache('all_tags', 'getList', Tag::class);
 	}
 }

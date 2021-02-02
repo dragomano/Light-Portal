@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -44,7 +44,7 @@ class ManagePlugins
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_plugins_manage'];
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
+			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'description' => sprintf($txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 		);
 
@@ -108,7 +108,7 @@ class ManagePlugins
 				updateSettings($plugin_options);
 
 			// You can do additional actions after settings saving
-			Subs::runAddons('saveSettings');
+			Subs::runAddons('onSettingsSaving');
 
 			exit(json_encode('ok'));
 		}
@@ -292,7 +292,7 @@ class ManagePlugins
 	 */
 	private function findErrors(array $data)
 	{
-		global $modSettings, $context, $txt;
+		global $context, $txt;
 
 		$post_errors = [];
 
@@ -305,13 +305,13 @@ class ManagePlugins
 		if (!empty($data['name']) && empty(Helpers::validate($data['name'], $addon_name_format)))
 			$post_errors[] = 'no_valid_name';
 
-		if (!empty($data['name']) && $this->isNotUnique($data['name']))
+		if (!empty($data['name']) && !$this->isUnique($data['name']))
 			$post_errors[] = 'no_unique_name';
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
+		if (empty($data['title_english']))
 			$post_errors[] = 'no_title';
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['description_english']) : false) || empty($data['description_' . $context['user']['language']]))
+		if (empty($data['description_english']))
 			$post_errors[] = 'no_description';
 
 		if (!empty($post_errors)) {
@@ -365,20 +365,13 @@ class ManagePlugins
 		);
 
 		foreach ($txt['lp_plugins_hooks_types'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_plugin']['type']
-				);
-			} else {
-				$context['posting_fields']['type']['input']['options'][$title] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_plugin']['type']
-				);
-			}
+			$context['posting_fields']['type']['input']['options'][$title] = array(
+				'value'    => $type,
+				'selected' => $type == $context['lp_plugin']['type']
+			);
 		}
 
-		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span></div>';
+		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div></div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
@@ -405,17 +398,10 @@ class ManagePlugins
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_plugin']['icon_type']
-				);
-			} else {
-				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_plugin']['icon_type']
-				);
-			}
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_plugin']['icon_type']
+			);
 		}
 
 		foreach ($context['languages'] as $lang) {
@@ -500,17 +486,10 @@ class ManagePlugins
 		$licenses = ['mit' => 'MIT', 'bsd' => 'BSD', 'gpl' => 'GPL 3.0+', 'own' => $txt['lp_plugin_license_own'] ];
 
 		foreach ($licenses as $license => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['license']['input']['options'][$title]['attributes'] = array(
-					'value'    => $license,
-					'selected' => $license == $context['lp_plugin']['license']
-				);
-			} else {
-				$context['posting_fields']['license']['input']['options'][$title] = array(
-					'value'    => $license,
-					'selected' => $license == $context['lp_plugin']['license']
-				);
-			}
+			$context['posting_fields']['license']['input']['options'][$title] = array(
+				'value'    => $license,
+				'selected' => $license == $context['lp_plugin']['license']
+			);
 		}
 
 		$context['posting_fields']['smf_hooks']['label']['text'] = $txt['lp_plugin_smf_hooks'];
@@ -918,15 +897,15 @@ EOF;
 	}
 
 	/**
-	 * We check whether there is already such a plugin
+	 * Check the uniqueness of the plugin
 	 *
-	 * Проверяем, нет ли уже такого плагина
+	 * Проверяем уникальность плагина
 	 *
 	 * @param string $name
 	 * @return bool
 	 */
-	private function isNotUnique(string $name)
+	private function isUnique(string $name)
 	{
-		return in_array($name, Subs::getAddons());
+		return !in_array($name, Subs::getAddons());
 	}
 }

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -54,7 +54,7 @@ class ManagePages
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_pages_manage'];
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
+			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_description']
 		);
 
@@ -176,13 +176,11 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getTitle($entry);
-
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
-							) . '">' . $title . '</a>';
+							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -299,20 +297,17 @@ class ManagePages
 	{
 		global $smcFunc, $user_info;
 
-		$titles = Helpers::getAllTitles();
-
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : '') . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, array(
-				'type'    => 'page',
 				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id'],
 				'sort'    => $sort,
@@ -333,7 +328,7 @@ class ManagePages
 				'author_name' => $row['author_name'],
 				'created_at'  => Helpers::getFriendlyTime($row['date']),
 				'is_front'    => Helpers::isFrontpage($row['alias']),
-				'title'       => $titles[$row['page_id']] ?? []
+				'title'       => $row['title']
 			);
 		}
 
@@ -359,12 +354,11 @@ class ManagePages
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {string:type} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
 				AND ' . $query_string : ''),
 			array_merge($query_params, array(
-				'type'    => 'page',
 				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id']
 			))
@@ -429,10 +423,9 @@ class ManagePages
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:page}',
 			array(
-				'items' => $items,
-				'type'  => 'page'
+				'items' => $items
 			)
 		);
 
@@ -447,10 +440,9 @@ class ManagePages
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:page}',
 			array(
-				'items' => $items,
-				'type'  => 'page'
+				'items' => $items
 			)
 		);
 
@@ -634,7 +626,10 @@ class ManagePages
 		$options = [
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
-			'allow_comments'       => false
+			'allow_comments'       => false,
+			'main_menu_item'       => '',
+			'icon'                 => '',
+			'icon_type'            => 'fas'
 		];
 
 		Subs::runAddons('pageOptions', array(&$options));
@@ -655,9 +650,15 @@ class ManagePages
 
 		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
 			$args = array(
+				'category'    => FILTER_VALIDATE_INT,
+				'page_author' => FILTER_VALIDATE_INT,
 				'alias'       => FILTER_SANITIZE_STRING,
 				'description' => FILTER_SANITIZE_STRING,
-				'keywords'    => FILTER_SANITIZE_STRING,
+				'keywords'    => array(
+					'name'   => 'keywords',
+					'filter' => FILTER_SANITIZE_STRING,
+					'flags'  => FILTER_REQUIRE_ARRAY
+				),
 				'type'        => FILTER_SANITIZE_STRING,
 				'permissions' => FILTER_VALIDATE_INT,
 				'date'        => FILTER_SANITIZE_STRING,
@@ -666,7 +667,8 @@ class ManagePages
 			);
 
 			foreach ($context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']]          = FILTER_SANITIZE_STRING;
+				$args['main_menu_item_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
 			$parameters = [];
@@ -677,7 +679,10 @@ class ManagePages
 				array(
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
-					'allow_comments'       => FILTER_VALIDATE_BOOLEAN
+					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
+					'main_menu_item'       => FILTER_SANITIZE_STRING,
+					'icon'                 => FILTER_SANITIZE_STRING,
+					'icon_type'            => FILTER_SANITIZE_STRING
 				),
 				$parameters
 			);
@@ -691,18 +696,14 @@ class ManagePages
 		$options = $this->getOptions();
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
-		if (!empty($context['lp_current_page']['keywords'])) {
-			$context['lp_current_page']['keywords'] = implode(', ', $context['lp_current_page']['keywords']);
-		} else {
-			$context['lp_current_page']['keywords'] = '';
-		}
-
 		$context['lp_page'] = array(
 			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
 			'title'       => $context['lp_current_page']['title'] ?? [],
+			'category'    => $post_data['category'] ?? $context['lp_current_page']['category_id'] ?? 0,
+			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author_id'] ?? $user_info['id'],
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? '',
+			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'      => $user_info['is_admin'] ? Page::STATUS_ACTIVE : (int) allowedTo('light_portal_approve_pages'),
@@ -721,9 +722,17 @@ class ManagePages
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
+		if (!empty($context['lp_page']['options']['main_menu_item']))
+			$context['lp_page']['options']['main_menu_item'] = json_decode($context['lp_page']['options']['main_menu_item'], true);
+		else
+			$context['lp_page']['options']['main_menu_item'] = [];
+
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
+			$context['lp_page']['options']['main_menu_item'][$lang['filename']] = $post_data['main_menu_item_' . $lang['filename']] ?? $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '';
 		}
+
+		$context['lp_page']['options']['main_menu_item'] = array_filter($context['lp_page']['options']['main_menu_item']);
 
 		Helpers::cleanBbcode($context['lp_page']['title']);
 	}
@@ -738,11 +747,11 @@ class ManagePages
 	 */
 	private function findErrors(array $data)
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $language, $context, $txt;
 
 		$post_errors = [];
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_english']) : false) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) ? empty($data['title_' . $language]) : false) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -754,7 +763,7 @@ class ManagePages
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
-		if (!empty($data['alias']) && $this->isNotUnique($data))
+		if (!empty($data['alias']) && !$this->isUnique($data))
 			$post_errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
@@ -770,21 +779,84 @@ class ManagePages
 	}
 
 	/**
-	 * @see https://github.com/jshjohnson/Choices
+	 * @see https://github.com/brianvoe/slim-select
 	 *
 	 * @return void
 	 */
-	private function improveKeywordsField()
+	private function improveSelectFields()
 	{
-		loadCssFile('light_portal/choices.min.css');
+		global $context;
+
+		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
 
 		addInlineCss('
-		.choices__list {
-			position: relative;
-		}
-		.choices__input {
-			box-shadow: none;
+		.ss-content.ss-open {
+			position: initial;
 		}');
+
+		// Prepare the tag list
+		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Tag::class);
+
+		$context['lp_all_tags'] = [];
+		foreach ($all_tags as $id => $value) {
+			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $value . '", value: "' . $id . '", selected: ' . (isset($context['lp_page']['keywords'][$id]) ? 'true' : 'false') . '}';
+		}
+
+		// Prepare the category list
+		$all_categories = Helpers::cache('all_categories', 'getList', Category::class);
+
+		$context['lp_all_categories'] = [];
+		foreach ($all_categories as $id => $category) {
+			$context['lp_all_categories'][] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . ($id == $context['lp_page']['category'] ? 'true' : 'false') . '}';
+		}
+
+		// Prepare the member list
+		if (Helpers::request()->has('members')) {
+			$data = Helpers::request()->json();
+
+			if (!empty($data['search']))
+				$this->prepareMemberList($data['search']);
+		}
+	}
+
+	/**
+	 * @param string $search
+	 * @return void
+	 */
+	private function prepareMemberList($search)
+	{
+		global $smcFunc;
+
+		$search = trim($smcFunc['strtolower']($search)) . '*';
+		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
+
+		$request = $smcFunc['db_query']('', '
+			SELECT id_member, real_name
+			FROM {db_prefix}members
+			WHERE {raw:real_name} LIKE {string:search}
+				AND is_activated IN (1, 11)
+			LIMIT 1000',
+			array(
+				'real_name' => $smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
+				'search'    => $search
+			)
+		);
+
+		$members = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$row['real_name'] = strtr($row['real_name'], array('&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;'));
+
+			$members[] = [
+				'text'  => $row['real_name'],
+				'value' => $row['id_member']
+			];
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		exit(json_encode($members));
 	}
 
 	/**
@@ -800,8 +872,11 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$languages = empty($modSettings['userLanguage']) ? [$language] : ['english', $language];
+		$this->improveSelectFields();
 
+		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
+
+		$i = 0;
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
@@ -812,7 +887,41 @@ class ManagePages
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], $languages),
 					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $lang['filename']
+					'x-ref'     => 'title_' . $i++
+				),
+				'tab' => 'content'
+			);
+		}
+
+		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
+		$context['posting_fields']['type']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'id'       => 'type',
+				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
+				'x-ref'    => 'type',
+				'@change'  => 'page.toggleType($el)'
+			),
+			'options' => array(),
+			'tab' => 'content'
+		);
+
+		foreach ($txt['lp_page_types'] as $type => $title) {
+			$context['posting_fields']['type']['input']['options'][$title] = array(
+				'value'    => $type,
+				'selected' => $type == $context['lp_page']['type']
+			);
+		}
+
+		if ($context['lp_page']['type'] !== 'bbc') {
+			$context['posting_fields']['content']['label']['text'] = '';
+			$context['posting_fields']['content']['input'] = array(
+				'type' => 'textarea',
+				'attributes' => array(
+					'id'        => 'content',
+					'maxlength' => MAX_MSG_LENGTH,
+					'value'     => $context['lp_page']['content'],
+					'required'  => true
 				),
 				'tab' => 'content'
 			);
@@ -834,33 +943,6 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
-		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
-		$context['posting_fields']['type']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'       => 'type',
-				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
-				'x-ref'    => 'type',
-				'@change'  => 'page.toggleType($el)'
-			),
-			'options' => array(),
-			'tab' => 'content'
-		);
-
-		foreach ($txt['lp_page_types'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_page']['type']
-				);
-			} else {
-				$context['posting_fields']['type']['input']['options'][$title] = array(
-					'value'    => $type,
-					'selected' => $type == $context['lp_page']['type']
-				);
-			}
-		}
-
 		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
 		$context['posting_fields']['description']['input'] = array(
 			'type' => 'textarea',
@@ -872,17 +954,15 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
-		$this->improveKeywordsField();
-
 		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
 		$context['posting_fields']['keywords']['input'] = array(
-			'type' => 'text',
+			'type' => 'select',
 			'attributes' => array(
-				'id'    => 'keywords',
-				'value' => $context['lp_page']['keywords'],
-				'style' => 'width: 100%',
-				'dir'   => $context['right_to_left'] ? 'rtl' : 'ltr'
+				'id'       => 'keywords',
+				'name'     => 'keywords[]',
+				'multiple' => true
 			),
+			'options' => array(),
 			'tab' => 'seo'
 		);
 
@@ -896,18 +976,21 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_page']['permissions']
-				);
-			} else {
-				$context['posting_fields']['permissions']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_page']['permissions']
-				);
-			}
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_page']['permissions']
+			);
 		}
+
+		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
+		$context['posting_fields']['category']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'id'   => 'category',
+				'name' => 'category'
+			),
+			'options' => array()
+		);
 
 		if ($context['lp_page']['created_at'] >= time()) {
 			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
@@ -916,17 +999,15 @@ class ManagePages
 			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
 		}
 
-		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
-			$context['posting_fields']['content']['input'] = array(
-				'type' => 'textarea',
+		if ($context['user']['is_admin']) {
+			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
+			$context['posting_fields']['page_author']['input'] = array(
+				'type' => 'select',
 				'attributes' => array(
-					'id'        => 'content',
-					'maxlength' => MAX_MSG_LENGTH,
-					'value'     => $context['lp_page']['content'],
-					'required'  => true
+					'id'   => 'page_author',
+					'name' => 'page_author'
 				),
-				'tab' => 'content'
+				'options' => array()
 			);
 		}
 
@@ -961,10 +1042,57 @@ class ManagePages
 			);
 		}
 
+		if ($context['user']['is_admin']) {
+			foreach ($context['languages'] as $lang) {
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
+					'type' => 'text',
+					'attributes' => array(
+						'id'        => 'main_menu_item_' . $lang['filename'],
+						'maxlength' => 255,
+						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
+						'style'     => 'width: 100%'
+					)
+				);
+			}
+		}
+
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['input'] = array(
+			'type' => 'text',
+			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'attributes' => array(
+				'id'        => 'icon',
+				'maxlength' => 30,
+				'value'     => $context['lp_page']['options']['icon'],
+				'x-ref'     => 'icon',
+				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			)
+		);
+
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id'      => 'icon_type',
+				'x-ref'   => 'icon_type',
+				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'options' => array()
+		);
+
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_page']['options']['icon_type']
+			);
+		}
+
 		Subs::runAddons('preparePageFields');
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if (!empty($data['input']['after']))
+			if ($item !== 'icon' && !empty($data['input']['after']))
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
 		}
 
@@ -1019,6 +1147,22 @@ class ManagePages
 	}
 
 	/**
+	 * Prepare page description for saving
+	 *
+	 * Готовим описание страницы для сохранения
+	 *
+	 * @return void
+	 */
+	private function prepareDescription()
+	{
+		global $context;
+
+		Helpers::cleanBbcode($context['lp_page']['description']);
+
+		$context['lp_page']['description'] = strip_tags($context['lp_page']['description']);
+	}
+
+	/**
 	 * Prepare keywords for saving
 	 *
 	 * Готовим ключевые слова для сохранения
@@ -1027,16 +1171,10 @@ class ManagePages
 	 */
 	private function prepareKeywords()
 	{
-		global $context, $smcFunc;
+		global $context;
 
-		$keywords = !empty($context['lp_page']['keywords']) ? explode(',', $context['lp_page']['keywords']) : [];
-
-		$context['lp_page']['keywords'] = array_map(function ($item) use ($smcFunc) {
-			$stop_chars = ['-', '"', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '"', '<', '>', '?', '[', ']', ';', "'", ',', '.', '/', '', '~', '`', '='];
-			$new_item   = str_replace($stop_chars, '', $item);
-
-			return trim($smcFunc['strtolower']($new_item));
-		}, $keywords);
+		// Remove all punctuation symbols
+		$context['lp_page']['keywords'] = preg_replace("#[[:punct:]]#", "", $context['lp_page']['keywords']);
 	}
 
 	/**
@@ -1078,12 +1216,14 @@ class ManagePages
 
 		checkSubmitOnce('check');
 
+		$this->prepareDescription();
 		$this->prepareKeywords();
 
 		if (empty($item)) {
 			$item = $smcFunc['db_insert']('',
 				'{db_prefix}lp_pages',
 				array_merge(array(
+					'category_id' => 'int',
 					'author_id'   => 'int',
 					'alias'       => 'string-255',
 					'description' => 'string-255',
@@ -1094,7 +1234,8 @@ class ManagePages
 					'created_at'  => 'int'
 				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
 				array_merge(array(
-					$context['user']['id'],
+					$context['lp_page']['category'],
+					$context['lp_page']['page_author'],
 					$context['lp_page']['alias'],
 					$context['lp_page']['description'],
 					$context['lp_page']['content'],
@@ -1137,9 +1278,41 @@ class ManagePages
 				$smcFunc['lp_num_queries']++;
 			}
 
+			if (!empty($context['lp_page']['keywords'])) {
+				$tags = $keywords = [];
+
+				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				foreach ($new_tags as $value) {
+					$tags[] = array(
+						'value' => $value
+					);
+				}
+
+				if (!empty($tags)) {
+					$keywords = $smcFunc['db_insert']('',
+						'{db_prefix}lp_tags',
+						array(
+							'value' => 'string'
+						),
+						$tags,
+						array('tag_id'),
+						2
+					);
+
+					$smcFunc['lp_num_queries']++;
+				}
+
+				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+			}
+
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					if ($param_name == 'main_menu_item') {
+						$value = empty($value) ? '' : json_encode($value);
+					}
+
 					$value = is_array($value) ? implode(',', $value) : $value;
 
 					$params[] = array(
@@ -1164,35 +1337,15 @@ class ManagePages
 
 				$smcFunc['lp_num_queries']++;
 			}
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
-				foreach ($context['lp_page']['keywords'] as $value) {
-					$tags[] = array(
-						'page_id' => $item,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'page_id' => 'int',
-						'value'   => 'string'
-					),
-					$tags,
-					array('page_id', 'value')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
 		} else {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
 				WHERE page_id = {int:page_id}',
 				array(
 					'page_id'     => $item,
+					'category_id' => $context['lp_page']['category'],
+					'author_id'   => $context['lp_page']['page_author'],
 					'alias'       => $context['lp_page']['alias'],
 					'description' => $context['lp_page']['description'],
 					'content'     => $context['lp_page']['content'],
@@ -1234,9 +1387,41 @@ class ManagePages
 				$smcFunc['lp_num_queries']++;
 			}
 
+			if (!empty($context['lp_page']['keywords'])) {
+				$tags = $keywords = [];
+
+				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+				foreach ($new_tags as $value) {
+					$tags[] = array(
+						'value' => $value
+					);
+				}
+
+				if (!empty($tags)) {
+					$keywords = $smcFunc['db_insert']('',
+						'{db_prefix}lp_tags',
+						array(
+							'value' => 'string'
+						),
+						$tags,
+						array('tag_id'),
+						2
+					);
+
+					$smcFunc['lp_num_queries']++;
+				}
+
+				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+			}
+
 			if (!empty($context['lp_page']['options'])) {
 				$params = [];
 				foreach ($context['lp_page']['options'] as $param_name => $value) {
+					if ($param_name == 'main_menu_item') {
+						$value = empty($value) ? '' : json_encode($value);
+					}
+
 					$value = is_array($value) ? implode(',', $value) : $value;
 
 					$params[] = array(
@@ -1257,38 +1442,6 @@ class ManagePages
 					),
 					$params,
 					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			$smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_tags
-				WHERE page_id = {int:page_id}',
-				array(
-					'page_id' => $item
-				)
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = [];
-				foreach ($context['lp_page']['keywords'] as $value) {
-					$tags[] = array(
-						'page_id' => $item,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']($db_type == 'postgresql' ? 'ignore' : 'replace',
-					'{db_prefix}lp_tags',
-					array(
-						'page_id' => 'int',
-						'value'   => 'string'
-					),
-					$tags,
-					array('page_id', 'value')
 				);
 
 				$smcFunc['lp_num_queries']++;
@@ -1321,14 +1474,14 @@ class ManagePages
 	}
 
 	/**
-	 * We check whether there is already such an alias in the database
+	 * Check the uniqueness of the alias
 	 *
-	 * Проверяем, нет ли уже такого алиаса в базе
+	 * Проверяем уникальность алиаса
 	 *
 	 * @param array $data
 	 * @return bool
 	 */
-	private function isNotUnique(array $data)
+	private function isUnique(array $data)
 	{
 		global $smcFunc;
 
@@ -1348,6 +1501,6 @@ class ManagePages
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return (bool) $count;
+		return $count == 0;
 	}
 }

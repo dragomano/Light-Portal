@@ -14,7 +14,7 @@ use Bugo\LightPortal\Subs;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -22,6 +22,11 @@ if (!defined('SMF'))
 
 class TopicArticle extends AbstractArticle
 {
+	/**
+	 * @var array
+	 */
+	private $selected_boards = [];
+
 	/**
 	 * Initialize class properties
 	 *
@@ -129,11 +134,12 @@ class TopicArticle extends AbstractArticle
 					}
 
 					self::parseBody($row['body'], $row);
-
 					self::parseBody($row['last_body'], $row);
 
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
+						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
+						'board_name'  => $row['name'],
 						'id_msg'      => $row['id_first_msg'],
 						'author_id'   => $author_id = !empty($modSettings['lp_frontpage_article_sorting']) ? $row['id_member'] : $row['last_poster_id'],
 						'author_link' => $scripturl . '?action=profile;u=' . $author_id,
@@ -142,8 +148,6 @@ class TopicArticle extends AbstractArticle
 						'subject'     => $row['subject'],
 						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
-						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
-						'board_name'  => $row['name'],
 						'is_sticky'   => !empty($row['is_sticky']),
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
 						'num_views'   => $row['num_views'],

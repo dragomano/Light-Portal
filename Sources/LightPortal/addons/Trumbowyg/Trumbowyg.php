@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -118,8 +118,10 @@ class Trumbowyg
 			autogrow: true' : '') . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
 			autogrowOnEnter: true' : '') . '
 		}).on("tbwopenfullscreen", function() {
+			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
 			$(".sticky_sidebar").css("position", "initial");
 		}).on("tbwclosefullscreen", function() {
+			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
 			$(".sticky_sidebar").css("position", "sticky");
 		});' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);

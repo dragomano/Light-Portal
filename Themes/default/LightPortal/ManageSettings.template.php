@@ -1,6 +1,162 @@
 <?php
 
 /**
+ * Callback template for selecting categories-sources of articles
+ *
+ * Callback-шаблон для выбора рубрик-источников статей
+ *
+ * @return void
+ */
+function template_callback_frontpage_categories()
+{
+	global $txt, $context;
+
+	echo '
+	<dt>
+		<a id="setting_lp_frontpage_categories"></a>
+		<span><label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label></span>
+	</dt>
+	<dd>
+		<a href="#" class="board_selector">[ ', $txt['lp_select_categories_from_list'], ' ]</a>
+		<fieldset>
+			<legend class="board_selector">
+				<a href="#">', $txt['lp_select_categories_from_list'], '</a>
+			</legend>
+			<ul>';
+
+	foreach ($context['lp_all_categories'] as $id => $cat) {
+		echo '
+				<li>
+					<label>
+						<input type="checkbox" name="lp_frontpage_categories[', $id, ']" value="1"', in_array($id, $context['lp_frontpage_categories']) ? ' checked' : '', '> ', $cat['name'], '
+					</label>
+				</li>';
+	}
+
+	echo '
+				<li>
+					<input type="checkbox" onclick="invertAll(this, this.form, \'lp_frontpage_categories[\');">
+					<span>', $txt['check_all'], '</span>
+				</li>
+			</ul>
+		</fieldset>
+	</dd>';
+}
+
+/**
+ * Template for the category management page
+ *
+ * Шаблон страницы управления рубриками
+ *
+ * @return void
+ */
+function template_category_settings()
+{
+	global $txt, $context;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_categories_manage'], '</h3>
+	</div>
+	<div class="windowbg noup">
+		<dl class="lp_categories settings" x-data>
+			<dt>
+				<form accept-charset="', $context['character_set'], '">
+					<table class="table_grid">
+						<tbody id="lp_categories" x-ref="category_list">';
+
+	foreach ($context['lp_categories'] as $id => $cat)
+		show_single_category($id, $cat);
+
+	echo '
+						</tbody>
+					</table>
+				</form>
+			</dt>
+			<dd>
+				<div class="roundframe">
+					<div class="noticebox">
+						<form
+							id="add_category_form"
+							name="add_category_form"
+							accept-charset="', $context['character_set'], '"
+							@submit.prevent="category.add($refs)"
+						>
+							<input
+								name="new_category_name"
+								type="text"
+								placeholder="', $txt['title'], '"
+								maxlength="255"
+								form="add_category_form"
+								required
+								x-ref="cat_name">
+							<textarea
+								placeholder="', $txt['lp_categories_desc'], '"
+								maxlength="255"
+								x-ref="cat_desc"
+							></textarea>
+						</form>
+					</div>
+					<div class="centertext">
+						<input form="add_category_form" class="button" type="submit" value="', $txt['lp_categories_add'], '">
+					</div>
+				</div>
+			</dd>
+		</dl>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const category = new Category();
+		new Sortable(document.getElementById("lp_categories"), {
+			handle: ".handle",
+			animation: 150,
+			onSort: e => category.updatePriority(e)
+		});
+	</script>';
+}
+
+/**
+ * Single category template
+ *
+ * Шаблон одиночной рубрики
+ *
+ * @param int $id
+ * @param array $cat
+ * @return void
+ */
+function show_single_category($id, $cat)
+{
+	global $txt;
+
+	echo '
+	<tr class="windowbg" x-data data-id="', $id, '">
+		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
+		<td>
+			<span class="floatright">
+				<span @click="category.remove($el)" title="', $txt['remove'], '" class="error">&times;</span>
+			</span>
+			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], '</label>
+			<input
+				id="category_name', $id, '"
+				name="category_name[', $id, ']"
+				type="text"
+				value="', $cat['name'], '"
+				maxlength="255"
+				@change="category.updateName($el, $event.target)"
+			>
+			<br>
+			<textarea
+				rows="2"
+				placeholder="', $txt['lp_page_description'], '"
+				maxlength="255"
+				@change="category.updateDescription($el, $event.target.value)"
+			>', $cat['desc'], '</textarea>
+		</td>
+	</tr>';
+}
+
+/**
  * Callback template to configure panel layouts
  *
  * Callback-шаблон для настройки макета панелей
@@ -14,38 +170,6 @@ function template_callback_panel_layout()
 	echo '
 	<dt style="width: 0"></dt>
 	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_layout_note'], '</div>
-		<table class="table_grid centertext">
-			<thead>
-				<tr class="title_bar">
-					<th>', $txt['lp_browser_width'], '</th>
-					<th>', $txt['lp_used_class'], '</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="windowbg">
-					<td> >= 0px</td>
-					<td>col-xs-* <span class="hidden-sm hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 576px</td>
-					<td>col-sm-* <span class="hidden-xs hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 768px</td>
-					<td>col-md-* <span class="hidden-xs hidden-sm hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 992px</td>
-					<td>col-lg-* <span class="hidden-xs hidden-sm hidden-md hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 1200px</td>
-					<td>col-xl-* <span class="hidden-xs hidden-sm hidden-md hidden-lg"><i class="fas fa-grin"></i></span></td>
-				</tr>
-			</tbody>
-		</table>
-		<br>
 		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
 		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row column-reverse' : '', '">
 			<div class="row center-xs">

@@ -120,19 +120,19 @@ class Page extends PortalEntity {
 		this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions'
 	}
 
-	change(e, refs) {
-		if (e.required && e.value === '') {
+	change(refs) {
+		if (!refs.title_0.value) {
 			refs.type.disabled = true
 		} else {
-			refs.type.disabled = false;
+			refs.type.disabled = false
+		}
 
-			// Create a page alias on page type changing
-			if (refs.alias.value === '' && typeof (slugify) === 'function') {
-				refs.alias.value = slugify(refs.title_english.value, {
-					separator: '_',
-					allowedChars: 'a-zA-Z0-9_'
-				});
-			}
+		// Create a page alias on page type changing
+		if (refs.alias.value === '' && typeof (slugify) === 'function') {
+			refs.alias.value = slugify(refs.title_0.value, {
+				separator: '_',
+				allowedChars: 'a-zA-Z0-9_'
+			});
 		}
 	}
 
@@ -260,6 +260,117 @@ class Plugin extends PortalEntity {
 				el.style.opacity = opacity;
 				opacity -= opacity * 0.1;
 			}, 400);
+	}
+}
+
+class Category extends PortalEntity {
+	constructor() {
+		super()
+		this.workUrl = smf_scripturl + '?action=admin;area=lp_settings;sa=categories;actions'
+	}
+
+	async updatePriority(e) {
+		const items = e.to.children;
+
+		let priority = [];
+
+		for (let i = 0; i < items.length; i++) {
+			const id = items[i].querySelector('.handle') ? parseInt(items[i].querySelector('.handle').closest('tr').getAttribute('data-id')) : null
+
+			if (id !== null) {
+				priority.push(id)
+			}
+		}
+
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				update_priority: priority
+			})
+		});
+
+		if (!response.ok) {
+			console.error(response.status, priority)
+		}
+	}
+
+	async add(refs) {
+		if (!refs.cat_name) return false;
+
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				new_name: refs.cat_name.value,
+				new_desc: refs.cat_desc.value
+			})
+		});
+
+		if (response.ok) {
+			const json = await response.json();
+
+			if (json.success) {
+				refs.category_list.insertAdjacentHTML('beforeend', json.section);
+
+				refs.cat_name.value = '';
+				refs.cat_desc.value = '';
+
+				document.getElementById('category_name' + json.item).focus();
+			}
+		} else {
+			console.error(response)
+		}
+	}
+
+	async updateName(target, event) {
+		const item = target.dataset.id;
+
+		if (item && event.value) {
+			let response = await fetch(this.workUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify({
+					item,
+					name: event.value
+				})
+			});
+
+			if (!response.ok) {
+				console.error(response)
+			}
+		}
+
+		if (!event.value) {
+			event.value = event.defaultValue
+		}
+	}
+
+	async updateDescription(target, value) {
+		const item = target.dataset.id;
+
+		if (item) {
+			let response = await fetch(this.workUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				},
+				body: JSON.stringify({
+					item,
+					desc: value
+				})
+			});
+
+			if (!response.ok) {
+				console.error(response)
+			}
+		}
 	}
 }
 

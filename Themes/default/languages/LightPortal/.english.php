@@ -24,24 +24,27 @@ $txt['lp_settings']  = 'Portal settings';
 $txt['lp_base']      = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
-$txt['lp_frontpage_title']                   = 'The frontpage title';
-$txt['lp_frontpage_mode']                    = 'The portal frontpage';
-$txt['lp_frontpage_mode_set']                = array(
+$txt['lp_frontpage_title']    = 'The frontpage title';
+$txt['lp_frontpage_mode']     = 'The portal frontpage';
+$txt['lp_frontpage_mode_set'] = array(
 	'Disabled',
 	'chosen_page'   => 'Specified page',
+	'all_pages'     => 'All pages from selected categories',
+	'chosen_pages'  => 'Selected pages',
 	'all_topics'    => 'All topics from selected boards',
-	'all_pages'     => 'All active pages',
-	'chosen_boards' => 'Selected boards',
 	'chosen_topics' => 'Selected topics',
-	'chosen_pages'  => 'Selected pages'
+	'chosen_boards' => 'Selected boards'
 );
 $txt['lp_frontpage_alias']                   = 'Portal page to display as the main page';
 $txt['lp_frontpage_alias_subtext']           = 'Enter the alias of the page that exist.';
-$txt['lp_frontpage_boards']                  = 'Boards as sources of articles for the frontpage';
-$txt['lp_frontpage_topics']                  = 'Topics as sources of articles for the frontpage';
-$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
-$txt['lp_frontpage_pages']                   = 'Pages as sources of articles for the frontpage';
+$txt['lp_frontpage_categories']              = 'Categories - sources of articles for the frontpage';
+$txt['lp_select_categories_from_list']       = 'Select the desired categories';
+$txt['lp_frontpage_boards']                  = 'Boards - sources of articles for the frontpage';
+$txt['lp_select_boards_from_list']           = 'Select the desired boards';
+$txt['lp_frontpage_pages']                   = 'Pages - sources of articles for the frontpage';
 $txt['lp_frontpage_pages_subtext']           = 'IDs of the required pages, separated by commas.';
+$txt['lp_frontpage_topics']                  = 'Topics - sources of articles for the frontpage';
+$txt['lp_frontpage_topics_subtext']          = 'IDs of the required topics, separated by commas.';
 $txt['lp_show_images_in_articles']           = 'Show images that found in articles';
 $txt['lp_show_images_in_articles_help']      = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder']                 = 'URL of the default placeholder image';
@@ -79,8 +82,10 @@ $txt['lp_manage_permissions']                = 'Some pages may contain dangerous
 $txt['lp_extra']      = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
+$txt['lp_show_page_permissions']            = 'Show information about the page permissions';
+$txt['lp_show_page_permissions_subtext']    = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page']                = 'Show keywords at the top of the page';
-$txt['lp_show_tags_as_articles']            = 'Show lists of articles with the same tag as cards';
+$txt['lp_show_items_as_articles']           = 'Show items on tag/category pages as cards';
 $txt['lp_show_related_pages']               = 'Show related pages block';
 $txt['lp_show_comment_block']               = 'Show comments block';
 $txt['lp_disabled_bbc_in_comments']         = 'Allowed BBC in comments';
@@ -92,7 +97,7 @@ $txt['lp_page_editor_type_default']         = 'The type of page editor by defaul
 $txt['lp_permissions_default']              = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section']     = 'Hide active blocks in the admin area';
 
-$txt['lp_open_graph']            = 'Open Graph';
+$txt['lp_schema_org']            = 'Schema microdata markup for contacts';
 $txt['lp_page_og_image']         = 'Use an image from the page content';
 $txt['lp_page_og_image_set']     = array('None', 'First found', 'Last found');
 $txt['lp_page_itemprop_address'] = 'Address of your organization';
@@ -100,15 +105,27 @@ $txt['lp_page_itemprop_phone']   = 'Phone of your organization';
 
 $txt['lp_permissions'] = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
 
+// Categories
+$txt['lp_categories']                 = 'Categories';
+$txt['lp_categories_info']            = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
+$txt['lp_categories_manage']          = 'Manage categories';
+$txt['lp_categories_add']             = 'Add category';
+$txt['lp_categories_desc']            = 'Description';
+$txt['lp_category']                   = 'Category';
+$txt['lp_no_category']                = 'Uncategorized';
+$txt['lp_all_categories']             = 'All categories of the portal';
+$txt['lp_all_pages_with_category']    = 'All pages in category "%1$s"';
+$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_category_not_found']         = 'The specified category was not found.';
+$txt['lp_no_categories']              = 'There are no categories yet.';
+$txt['lp_total_pages_column']         = 'Total pages';
+
 // Panels
 $txt['lp_panels']               = 'Panels';
 $txt['lp_panels_info']          = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
 $txt['lp_swap_header_footer']   = 'Swap the header and the footer';
 $txt['lp_swap_left_right']      = 'Swap the left panel and the right panel';
 $txt['lp_swap_top_bottom']      = 'Swap the center (top) and the center (bottom)';
-$txt['lp_panel_layout_note']    = 'Change the width of the browser window and see which class is used.';
-$txt['lp_browser_width']        = 'Width of the browser window';
-$txt['lp_used_class']           = 'Class used';
 $txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
 $txt['lp_left_panel_sticky']    = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
@@ -196,32 +213,35 @@ $txt['lp_block_types_descriptions'] = array(
 );
 
 // Pages
-$txt['lp_pages']                      = 'Pages';
-$txt['lp_pages_manage']               = 'Manage pages';
-$txt['lp_pages_manage_all_pages']     = 'Here you can view all portal pages.';
-$txt['lp_pages_manage_own_pages']     = 'Here you can view all your own portal pages.';
-$txt['lp_pages_manage_description']   = 'Use the corresponding button to add a new page.';
-$txt['lp_pages_add']                  = 'Add page';
-$txt['lp_pages_add_title']            = 'Adding a page';
-$txt['lp_pages_add_description']      = 'Fill the page title. After that, you can change its type, use preview and save.';
-$txt['lp_pages_edit_title']           = 'Editing page';
-$txt['lp_pages_edit_description']     = 'Make the necessary changes.';
-$txt['lp_pages_extra']                = 'Portal pages';
-$txt['lp_pages_search']               = 'Alias or title';
-$txt['lp_page_types']                 = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
-$txt['lp_page_alias']                 = 'Alias';
-$txt['lp_page_alias_subtext']         = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
-$txt['lp_page_type']                  = 'Page type';
-$txt['lp_page_description']           = 'Description';
-$txt['lp_page_keywords']              = 'Keywords';
-$txt['lp_page_keywords_only_unique']  = 'Only unique items can be added';
-$txt['lp_page_keywords_enter_to_add'] = 'Press Enter to add <b>"${value}"</b>';
-$txt['lp_page_publish_datetime']      = 'Date and time of publication';
+$txt['lp_pages']                     = 'Pages';
+$txt['lp_pages_manage']              = 'Manage pages';
+$txt['lp_pages_manage_all_pages']    = 'Here you can view all portal pages.';
+$txt['lp_pages_manage_own_pages']    = 'Here you can view all your own portal pages.';
+$txt['lp_pages_manage_description']  = 'Use the corresponding button to add a new page.';
+$txt['lp_pages_add']                 = 'Add page';
+$txt['lp_pages_add_title']           = 'Adding a page';
+$txt['lp_pages_add_description']     = 'Fill the page title. After that, you can change its type, use preview and save.';
+$txt['lp_pages_edit_title']          = 'Editing page';
+$txt['lp_pages_edit_description']    = 'Make the necessary changes.';
+$txt['lp_pages_extra']               = 'Portal pages';
+$txt['lp_pages_search']              = 'Alias or title';
+$txt['lp_page_types']                = array('bbc' => 'BBC', 'html' => 'HTML', 'php' => 'PHP');
+$txt['lp_page_alias']                = 'Alias';
+$txt['lp_page_alias_subtext']        = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
+$txt['lp_page_type']                 = 'Page type';
+$txt['lp_page_description']          = 'Description';
+$txt['lp_page_keywords']             = 'Keywords';
+$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_publish_datetime']     = 'Date and time of publication';
+$txt['lp_page_author']               = 'Transfer of authorship';
+$txt['lp_page_author_placeholder']   = 'Specify a username to transfer rights to the page';
+$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 
 $txt['lp_page_options'] = array(
 	'show_author_and_date' => 'Show the author and creation date',
 	'show_related_pages'   => 'Show related pages',
-	'allow_comments'       => 'Allow comments'
+	'allow_comments'       => 'Allow comments',
+	'main_menu_item'       => 'Item in main menu'
 );
 
 // Tabs
@@ -305,11 +325,13 @@ $txt['lp_plugin_new_option']                  = 'Add option';
 // Tags
 $txt['lp_all_page_tags']          = 'All portal page tags';
 $txt['lp_all_tags_by_key']        = 'All pages with the "%1$s" tag';
-$txt['lp_no_selected_tag']        = 'The specified tag was not found.';
+$txt['lp_tag_not_found']          = 'The specified tag was not found.';
 $txt['lp_no_tags']                = 'There is no tags yet.';
 $txt['lp_keyword_column']         = 'Keyword';
 $txt['lp_frequency_column']       = 'Frequency';
 $txt['lp_sorting_label']          = 'Sort by';
+$txt['lp_sort_by_title_desc']     = 'Title (desc)';
+$txt['lp_sort_by_title']          = 'Title (asc)';
 $txt['lp_sort_by_created_desc']   = 'Creation date (new first)';
 $txt['lp_sort_by_created']        = 'Creation date (old first)';
 $txt['lp_sort_by_updated_desc']   = 'Update date (new first)';

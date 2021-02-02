@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -54,9 +54,11 @@ class Credits
 	 */
 	public function getCopyrights()
 	{
-		global $scripturl;
+		global $user_info, $scripturl;
 
-		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
+		$link = $user_info['language'] == 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
+
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
 	}
 
 	/**
@@ -116,12 +118,12 @@ class Credits
 				)
 			),
 			array(
-				'title' => 'Choices',
-				'link' => 'https://github.com/jshjohnson/Choices',
-				'author' => 'Josh Johnson',
+				'title' => 'Slim Select',
+				'link' => 'https://slimselectjs.com',
+				'author' => 'Brian Voelker',
 				'license' => array(
 					'name' => 'the MIT License',
-					'link' => 'https://github.com/jshjohnson/Choices/blob/master/LICENSE'
+					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
 				)
 			)
 		);

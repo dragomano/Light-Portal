@@ -18,10 +18,10 @@ function show_ffs_sidebar()
 				<div class="roundframe">
 					<ul>
 						<li>
-							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $txt['lp_frontpage_flarum_style_addon_all_boards'], '</a>
+							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $txt['lp_flarum_style_addon_all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=portal;sa=tags">', $txt['lp_frontpage_flarum_style_addon_tags'], '</a>
+							<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=portal;sa=tags">', $txt['lp_flarum_style_addon_tags'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -142,11 +142,11 @@ function template_show_topics_as_flarum_style()
 				<div class="floatright smalltext">
 					<a class="new_posts" href="', $topic['board_link'], '">', $topic['board_name'], '</a>
 					<div class="righttext">
-						<i class="fas fa-eye"></i> ', $topic['num_views'];
+						<i class="fas fa-eye" title="', $txt['lp_views'], '"></i> ', $topic['num_views'];
 
 			if (!empty($topic['num_replies'])) {
 				echo '
-						<i class="fas fa-comment"></i> ', $topic['num_replies'];
+						<i class="fas fa-comment" title="', $txt['lp_replies'], '"></i> ', $topic['num_replies'];
 			}
 
 			echo '

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -109,17 +109,10 @@ class RecentAttachments
 		);
 
 		foreach ($txt['lp_recent_attachments_addon_direction_set'] as $direction => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['direction']['input']['options'][$title]['attributes'] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			} else {
-				$context['posting_fields']['direction']['input']['options'][$title] = array(
-					'value'    => $direction,
-					'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-				);
-			}
+			$context['posting_fields']['direction']['input']['options'][$title] = array(
+				'value'    => $direction,
+				'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
+			);
 		}
 	}
 

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -105,17 +105,10 @@ class ArticleList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			if (RC2_CLEAN) {
-				$context['posting_fields']['article_body_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['options']['parameters']['article_body_class']
-				);
-			} else {
-				$context['posting_fields']['article_body_class']['input']['options'][$key] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['options']['parameters']['article_body_class']
-				);
-			}
+			$context['posting_fields']['article_body_class']['input']['options'][$key] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_block']['options']['parameters']['article_body_class']
+			);
 		}
 
 		$context['posting_fields']['article_type']['label']['text'] = $txt['lp_article_list_addon_article_type'];
@@ -129,17 +122,10 @@ class ArticleList
 		);
 
 		foreach ($txt['lp_article_list_addon_article_type_set'] as $article_type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['article_type']['input']['options'][$title]['attributes'] = array(
-					'value'    => $article_type,
-					'selected' => $article_type == $context['lp_block']['options']['parameters']['article_type']
-				);
-			} else {
-				$context['posting_fields']['article_type']['input']['options'][$title] = array(
-					'value'    => $article_type,
-					'selected' => $article_type == $context['lp_block']['options']['parameters']['article_type']
-				);
-			}
+			$context['posting_fields']['article_type']['input']['options'][$title] = array(
+				'value'    => $article_type,
+				'selected' => $article_type == $context['lp_block']['options']['parameters']['article_type']
+			);
 		}
 
 		$context['posting_fields']['ids']['label']['text'] = $txt['lp_article_list_addon_ids'];

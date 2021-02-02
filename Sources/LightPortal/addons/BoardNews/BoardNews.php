@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -104,19 +104,11 @@ class BoardNews
 			$context['posting_fields']['board_id']['input']['options'][$category['name']] = array('options' => array());
 
 			foreach ($category['boards'] as $board) {
-				if (RC2_CLEAN) {
-					$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']]['attributes'] = array(
-						'value'    => $board['id'],
-						'selected' => (bool) $board['selected'],
-						'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']
-					);
-				} else {
-					$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = array(
-						'value'    => $board['id'],
-						'selected' => (bool) $board['selected'],
-						'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']
-					);
-				}
+				$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = array(
+					'value'    => $board['id'],
+					'selected' => (bool) $board['selected'],
+					'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']
+				);
 			}
 		}
 

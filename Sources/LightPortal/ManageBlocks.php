@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -47,7 +47,7 @@ class ManageBlocks
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_manage'];
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title'       => LP_NAME,
+			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'description' => $txt['lp_blocks_manage_description']
 		);
 
@@ -73,11 +73,9 @@ class ManageBlocks
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.icon_type, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
-			array(
-				'type' => 'block'
-			)
+			array()
 		);
 
 		$current_blocks = [];
@@ -160,20 +158,18 @@ class ManageBlocks
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:block}',
 			array(
-				'items' => $items,
-				'type'  => 'block'
+				'items' => $items
 			)
 		);
 
 		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
-				AND type = {string:type}',
+				AND type = {literal:block}',
 			array(
-				'items' => $items,
-				'type'  => 'block'
+				'items' => $items
 			)
 		);
 
@@ -544,6 +540,22 @@ class ManageBlocks
 	}
 
 	/**
+	 * @see https://github.com/brianvoe/slim-select
+	 *
+	 * @return void
+	 */
+	private function improveSelectFields()
+	{
+		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+
+		addInlineCss('
+		.ss-content.ss-open {
+			position: initial;
+		}');
+	}
+
+	/**
 	 * Adding special fields to the form
 	 *
 	 * Добавляем свои поля для формы
@@ -555,6 +567,8 @@ class ManageBlocks
 		global $context, $txt;
 
 		checkSubmitOnce('register');
+
+		$this->improveSelectFields();
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
@@ -581,7 +595,7 @@ class ManageBlocks
 		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<br><span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>';
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
@@ -608,17 +622,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['icon_type']['input']['options'][$title]['attributes'] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
-			} else {
-				$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-					'value'   => $type,
-					'checked' => $type == $context['lp_block']['icon_type']
-				);
-			}
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_block']['icon_type']
+			);
 		}
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
@@ -632,17 +639,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_block_placement_set'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['placement']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['placement']
-				);
-			} else {
-				$context['posting_fields']['placement']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['placement']
-				);
-			}
+			$context['posting_fields']['placement']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['placement']
+			);
 		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
@@ -656,17 +656,10 @@ class ManageBlocks
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['permissions']['input']['options'][$title]['attributes'] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['permissions']
-				);
-			} else {
-				$context['posting_fields']['permissions']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['permissions']
-				);
-			}
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['permissions']
+			);
 		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
@@ -694,17 +687,10 @@ class ManageBlocks
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['title_class']['input']['options'][$key]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['title_class']
-				);
-			} else {
-				$context['posting_fields']['title_class']['input']['options'][$key] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['title_class']
-				);
-			}
+			$context['posting_fields']['title_class']['input']['options'][$key] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['title_class']
+			);
 		}
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
@@ -733,17 +719,10 @@ class ManageBlocks
 				$value = $key;
 				$key   = $key == '_' ? $txt['no'] : $key;
 
-				if (RC2_CLEAN) {
-					$context['posting_fields']['content_class']['input']['options'][$key]['attributes'] = array(
-						'value'    => $value,
-						'selected' => $value == $context['lp_block']['content_class']
-					);
-				} else {
-					$context['posting_fields']['content_class']['input']['options'][$key] = array(
-						'value'    => $value,
-						'selected' => $value == $context['lp_block']['content_class']
-					);
-				}
+				$context['posting_fields']['content_class']['input']['options'][$key] = array(
+					'value'    => $value,
+					'selected' => $value == $context['lp_block']['content_class']
+				);
 			}
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
@@ -759,7 +738,7 @@ class ManageBlocks
 		}
 
 		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = $txt['lp_content'];
+			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
@@ -1126,7 +1105,7 @@ class ManageBlocks
 		if (Helpers::post()->filled('clone'))
 			return $item;
 
-		Helpers::cache()->forget('active_blocks');
+		Helpers::cache()->flush();
 
 		redirectexit('action=admin;area=lp_blocks;sa=main');
 	}
@@ -1150,11 +1129,10 @@ class ManageBlocks
 			SELECT
 				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {string:type})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 			WHERE b.block_id = {int:item}',
 			array(
-				'type' => 'block',
 				'item' => $item
 			)
 		);

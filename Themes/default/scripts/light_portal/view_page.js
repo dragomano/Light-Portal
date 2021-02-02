@@ -344,7 +344,3 @@ class Toggler {
 		});
 	}
 }
-
-const page = new Page();
-
-const toolbar = new Toolbar();

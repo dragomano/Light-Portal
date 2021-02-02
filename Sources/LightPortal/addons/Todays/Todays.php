@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Addons\Todays;
 
+use Bugo\LightPortal\Helpers;
+
 /**
  * Todays
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal\Addons\Todays;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -28,6 +30,11 @@ class Todays
 	 * @var string
 	 */
 	private $type = 'calendar';
+
+	/**
+	 * @var int
+	 */
+	private $max_items = 1;
 
 	/**
 	 * @return void
@@ -74,6 +81,7 @@ class Todays
 	public function blockOptions(&$options)
 	{
 		$options['todays']['parameters']['widget_type'] = $this->type;
+		$options['todays']['parameters']['max_items']   = $this->max_items;
 	}
 
 	/**
@@ -87,6 +95,7 @@ class Todays
 			return;
 
 		$parameters['widget_type'] = FILTER_SANITIZE_STRING;
+		$parameters['max_items']   = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -110,18 +119,22 @@ class Todays
 		);
 
 		foreach ($txt['lp_todays_addon_type_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['widget_type']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']
-				);
-			} else {
-				$context['posting_fields']['widget_type']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']
-				);
-			}
+			$context['posting_fields']['widget_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']
+			);
 		}
+
+		$context['posting_fields']['max_items']['label']['text'] = $txt['lp_todays_addon_max_items'];
+		$context['posting_fields']['max_items']['input'] = array(
+			'type' => 'number',
+			'after' => $txt['lp_todays_addon_max_items_subtext'],
+			'attributes' => array(
+				'id'    => 'max_items',
+				'min'   => 1,
+				'value' => $context['lp_block']['options']['parameters']['max_items']
+			)
+		);
 	}
 
 	/**
@@ -154,7 +167,7 @@ class Todays
 	 */
 	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $txt;
+		global $txt, $scripturl;
 
 		if ($type !== 'todays')
 			return;
@@ -169,7 +182,38 @@ class Todays
 			else
 				echo $txt['lp_todays_addon_empty_list'];
 		} elseif (!empty($result)) {
-			$this->getData($parameters['widget_type']);
+			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
+				$this->getData($parameters['widget_type']);
+			} else {
+				$visibleItems = array_slice($result, 0, $parameters['max_items']);
+				$visibleItems[$parameters['max_items'] - 1]['is_last'] = true;
+				$hiddenItems = array_slice($result, $parameters['max_items']);
+
+				foreach ($visibleItems as $member) {
+					echo '
+		<a href="', $scripturl, '?action=profile;u=', $member['id'], '">
+			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
+		</a>' . (!$member['is_last'] ? ', ' : '');
+				}
+
+				$hiddenContent = '';
+				foreach ($hiddenItems as $member) {
+					$hiddenContent .= '
+		<a href="' . $scripturl . '?action=profile;u=' . $member['id'] . '">
+			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
+		</a>' . (!$member['is_last'] ? ', ' : '');
+				}
+
+				// HTML5 spoiler
+				if (!empty($hiddenContent))
+					echo $txt['lp_todays_addon_and_more'], '
+		<details>
+			<summary>
+				<span>', Helpers::getCorrectDeclension(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
+			</summary>
+			<div>', $hiddenContent, '</div>
+		</details>';
+			}
 		} else {
 			echo $txt['lp_todays_addon_empty_list'];
 		}

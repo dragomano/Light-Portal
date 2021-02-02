@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -76,6 +76,9 @@ class EasyMarkdownEditor
 		}
 		.editor-statusbar .words:before {
 			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
+		}
+		.CodeMirror pre {
+			max-height: none;
 		}');
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
 			addInlineJavaScript('
@@ -208,18 +211,28 @@ class EasyMarkdownEditor
 
 		function toggleStickedPanels() {
 			let stickedPanels = document.getElementsByClassName("sticky_sidebar");
+			let noticeBlocks = document.getElementsByClassName("noticebox");
+			let scrollingButtons = document.getElementById("gtb_pos");
 
-			if (!stickedPanels)
+			if (!stickedPanels && !noticeBlocks && !scrollingButtons)
 				return;
 
 			if (easymde.isFullscreenActive()) {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "initial";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "none";
+				})
+				scrollingButtons.style.display = "none";
 			} else {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "sticky";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "block";
+				})
+				scrollingButtons.style.display = "block";
 			}
 		}', true);
 		}

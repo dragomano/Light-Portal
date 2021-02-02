@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -28,14 +28,20 @@ class Tag
 	 */
 	public function show()
 	{
-		global $context, $smcFunc, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
-		if (Helpers::request()->isEmpty('key'))
+		$context['lp_tag'] = Helpers::request('id', 0);
+
+		if (empty($context['lp_tag']))
 			$this->showAll();
 
-		$context['lp_keyword']     = $smcFunc['htmlspecialchars'](trim(Helpers::request('key')), ENT_QUOTES);
-		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], $context['lp_keyword']);
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;key=' . urlencode($context['lp_keyword']);
+		if (array_key_exists($context['lp_tag'], Helpers::getAllTags()) === false) {
+			$this->changeBackButton();
+			fatal_lang_error('lp_tag_not_found', false, null, 404);
+		}
+
+		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], Helpers::getAllTags()[$context['lp_tag']]);
+		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;id=' . $context['lp_tag'];
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -47,21 +53,21 @@ class Tag
 			'name' => $context['page_title']
 		);
 
-		if (!empty($modSettings['lp_show_tags_as_articles']))
+		if (!empty($modSettings['lp_show_items_as_articles']))
 			$this->showAsArticles();
 
 		$listOptions = array(
 			'id' => 'tags',
 			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
-			'no_items_label' => $txt['lp_no_selected_tag'],
+			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'date',
 			'get_items' => array(
-				'function' => array($this, 'getAllPagesWithSelectedTag')
+				'function' => array($this, 'getAllPagesWithChosenTag')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalCountPagesWithSelectedTag')
+				'function' => array($this, 'getTotalCountPagesWithChosenTag')
 			),
 			'columns' => array(
 				'date' => array(
@@ -84,9 +90,17 @@ class Tag
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							return '<a href="' . $scripturl . (Helpers::isFrontpage($entry['alias']) ? '' : ('?page=' . $entry['alias'])) . '">' . Helpers::getTitle($entry) . '</a>';
+							return '<a class="bbc_link' . (
+								$entry['is_front']
+									? ' new_posts" href="' . $scripturl
+									: '" href="' . $scripturl . '?page=' . $entry['alias']
+							) . '">' . $entry['title'] . '</a>';
 						},
-						'class' => 'centertext'
+						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
 					)
 				),
 				'author' => array(
@@ -94,9 +108,12 @@ class Tag
 						'value' => $txt['author']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $scripturl)
+						'function' => function ($entry) use ($scripturl)
 						{
-							return empty($entry['author_id']) ? $txt['guest_title'] : '<a href="' . $scripturl . '?action=profile;u=' . $entry['author_id'] . '">' . $entry['author_name'] . '</a>';
+							if (empty($entry['author_id']))
+								return $entry['author_name'];
+
+							return '<a href="' . $scripturl . '?action=profile;u=' . $entry['author_id'] . '">' . $entry['author_name'] . '</a>';
 						},
 						'class' => 'centertext'
 					),
@@ -143,20 +160,19 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAllPagesWithSelectedTag(int $start, int $items_per_page, string $sort)
+	public function getAllPagesWithChosenTag(int $start, int $items_per_page, string $sort)
 	{
-		global $smcFunc, $txt, $context, $modSettings, $scripturl, $user_info;
-
-		$titles = Helpers::getAllTitles();
+		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.alias, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				t.value, mem.id_member AS author_id, mem.real_name AS author_name
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
+				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, ps.value, t.title
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-			WHERE t.value = {string:key}
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
+			WHERE FIND_IN_SET({int:id}, ps.value) > 0
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -164,7 +180,8 @@ class Tag
 			LIMIT {int:start}, {int:limit}',
 			array(
 				'guest'        => $txt['guest_title'],
-				'key'          => $context['lp_keyword'],
+				'lang'         => $user_info['language'],
+				'id'           => $context['lp_tag'],
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -184,21 +201,29 @@ class Tag
 				$image = $first_post_image ? array_pop($value) : null;
 			}
 
+			if (!empty($row['category_id'])) {
+				$category_name = Helpers::getAllCategories()[$row['category_id']]['name'];;
+				$category_link = $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'];
+			}
+
 			$items[$row['page_id']] = array(
-				'id'           => $row['page_id'],
-				'alias'        => $row['alias'],
-				'num_views'    => $row['num_views'],
-				'author_id'    => $row['author_id'],
-				'author_name'  => $row['author_name'],
-				'date'         => Helpers::getFriendlyTime($row['date']),
-				'datetime'     => date('Y-m-d', $row['date']),
-				'title'        => $titles[$row['page_id']] ?? [],
-				'num_comments' => $row['num_comments'],
-				'author_link'  => $scripturl . '?action=profile;u=' . $row['author_id'],
-				'is_new'       => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-				'link'         => $scripturl . '?page=' . $row['alias'],
-				'image'        => $image,
-				'can_edit'     => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+				'id'            => $row['page_id'],
+				'category_name' => $category_name ?? '',
+				'category_link' => $category_link ?? '',
+				'alias'         => $row['alias'],
+				'num_views'     => $row['num_views'],
+				'author_id'     => $row['author_id'],
+				'author_name'   => $row['author_name'],
+				'date'          => Helpers::getFriendlyTime($row['date']),
+				'datetime'      => date('Y-m-d', $row['date']),
+				'title'         => $row['title'],
+				'num_comments'  => $row['num_comments'],
+				'author_link'   => $scripturl . '?action=profile;u=' . $row['author_id'],
+				'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+				'is_front'      => Helpers::isFrontpage($row['alias']),
+				'link'          => $scripturl . '?page=' . $row['alias'],
+				'image'         => $image,
+				'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 			);
 		}
 
@@ -215,38 +240,36 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public function getTotalCountPagesWithSelectedTag()
+	public function getTotalCountPagesWithChosenTag()
 	{
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value = {string:key}
+			SELECT COUNT(p.page_id)
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+			WHERE FIND_IN_SET({int:id}, ps.value) > 0
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			array(
-				'key'          => $context['lp_keyword'],
+				'id'           => $context['lp_tag'],
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions()
 			)
 		);
 
-		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
-			$items[$row['page_id']] = $row['value'];
+		[$num_items] = $smcFunc['db_fetch_row']($request);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return sizeof($items);
+		return $num_items;
 	}
 
 	/**
-	 * Display all tags
+	 * Display all tags at once
 	 *
 	 * Отображение всех тегов сразу
 	 *
@@ -323,6 +346,35 @@ class Tag
 	 *
 	 * Получаем список всех тегов
 	 *
+	 * @return array
+	 */
+	public function getList()
+	{
+		global $smcFunc;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT tag_id, value
+			FROM {db_prefix}lp_tags
+			ORDER BY value',
+			array()
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$items[$row['tag_id']] = $row['value'];
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		return $items;
+	}
+
+	/**
+	 * Get the list of all tags
+	 *
+	 * Получаем список всех тегов
+	 *
 	 * @param int $start
 	 * @param int $items_per_page
 	 * @param string $sort
@@ -333,17 +385,16 @@ class Tag
 		global $smcFunc, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value <> {string:blank_string}
-				AND p.status = {int:status}
+			SELECT t.tag_id, t.value
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
+			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
-				'blank_string' => '',
 				'status'       => Page::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
@@ -357,13 +408,13 @@ class Tag
 		$i = 1;
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			!isset($items[$row['value']])
+			!isset($items[$row['tag_id']])
 				? $i = 1
 				: $i++;
 
-			$items[$row['value']] = array(
+			$items[$row['tag_id']] = array(
 				'value'     => $row['value'],
-				'link'      => $scripturl . '?action=portal;sa=tags;key=' . urlencode(trim($row['value'])),
+				'link'      => $scripturl . '?action=portal;sa=tags;id=' . $row['tag_id'],
 				'frequency' => $i
 			);
 		}
@@ -381,7 +432,7 @@ class Tag
 	/**
 	 * Get the total number of pages with tags
 	 *
-	 * Подсчитываем общее количество страниц тегами
+	 * Подсчитываем общее количество страниц с тегами
 	 *
 	 * @return int
 	 */
@@ -390,11 +441,10 @@ class Tag
 		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.page_id, t.value
-			FROM {db_prefix}lp_tags AS t
-				INNER JOIN {db_prefix}lp_pages AS p ON (t.page_id = p.page_id)
-			WHERE t.value IS NOT NULL
-				AND p.status = {int:status}
+			SELECT COUNT(p.page_id)
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			array(
@@ -404,14 +454,12 @@ class Tag
 			)
 		);
 
-		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
-			$items[$row['value']] = $row['page_id'];
+		[$num_items] = $smcFunc['db_fetch_row']($request);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return sizeof($items);
+		return $num_items;
 	}
 
 	/**
@@ -428,7 +476,7 @@ class Tag
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $this->getTotalCountPagesWithSelectedTag();
+		$total_items = $this->getTotalCountPagesWithChosenTag();
 
 		if ($start >= $total_items) {
 			send_http_status(404);
@@ -436,6 +484,8 @@ class Tag
 		}
 
 		$sorting_types = array(
+			'title;desc'       => 't.title DESC',
+			'title'            => 't.title',
 			'created;desc'     => 'p.created_at DESC',
 			'created'          => 'p.created_at',
 			'updated;desc'     => 'p.updated_at DESC',
@@ -449,12 +499,9 @@ class Tag
 		$context['current_sorting'] = Helpers::post('sort', 'created;desc');
 		$sort = $sorting_types[$context['current_sorting']];
 
-		$articles = $this->getAllPagesWithSelectedTag($start, $limit, $sort);
+		$articles = $this->getAllPagesWithChosenTag($start, $limit, $sort);
 
 		$articles = array_map(function ($article) use ($modSettings) {
-			if (isset($article['title']))
-				$article['title'] = Helpers::getTitle($article);
-
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];
 
@@ -465,15 +512,32 @@ class Tag
 		$context['start']      = Helpers::request()->get('start');
 
 		$context['lp_frontpage_articles'] = $articles;
-
-		$context['lp_frontpage_layout'] = (new FrontPage)->getNumColumns();
+		$context['lp_frontpage_layout']   = (new FrontPage)->getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
-		loadTemplate('LightPortal/ViewTags');
 
 		$context['sub_template'] = 'show_pages_as_articles';
-		$context['template_layers'][] = 'show_tags';
+		$context['template_layers'][] = 'sorting';
 
 		obExit();
+	}
+
+	/**
+	 * Change back button text and back button href
+	 *
+	 * Меняем текст и href кнопки «Назад»
+	 *
+	 * @return void
+	 */
+	private function changeBackButton()
+	{
+		global $txt;
+
+		addInlineJavaScript('
+		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
+		if (!document.referrer) {
+			backButton.text = "' . $txt['lp_all_page_tags'] . '";
+			backButton.setAttribute("href", smf_scripturl + "?action=portal;sa=tags");
+		}', true);
 	}
 }

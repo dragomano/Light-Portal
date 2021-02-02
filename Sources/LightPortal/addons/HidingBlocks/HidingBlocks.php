@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -97,36 +97,36 @@ class HidingBlocks
 	{
 		global $context, $txt;
 
-		if (isset($context['lp_block']['options']['parameters']['hidden_breakpoints'])) {
-			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = is_array($context['lp_block']['options']['parameters']['hidden_breakpoints']) ? $context['lp_block']['options']['parameters']['hidden_breakpoints'] : explode(',', $context['lp_block']['options']['parameters']['hidden_breakpoints']);
-		} else
-			$context['lp_block']['options']['parameters']['hidden_breakpoints'] = Helpers::post('hidden_breakpoints', []);
+		// Prepare the breakpoints list
+		$current_breakpoints = $context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
+		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
+
+		$data = [];
+		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $bp => $name) {
+			$data[] = "\t\t\t\t" . '{text: "' . $name . '", value: "' . $bp . '", selected: ' . (in_array($bp, $current_breakpoints) ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#hidden_breakpoints",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			placeholder: "' . $txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'] . '",
+			searchHighlight: true,
+			closeOnSelect: false
+		});', true);
 
 		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
 			'type' => 'select',
-			'after' => $txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'],
 			'attributes' => array(
 				'id'       => 'hidden_breakpoints',
 				'name'     => 'hidden_breakpoints[]',
-				'multiple' => true,
-				'style'    => 'height: 90px'
+				'multiple' => true
 			),
 			'options' => array()
 		);
-
-		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $size => $label) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label]['attributes'] = array(
-					'value'    => $size,
-					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])
-				);
-			} else {
-				$context['posting_fields']['hidden_breakpoints']['input']['options'][$label] = array(
-					'value'    => $size,
-					'selected' => in_array($size, $context['lp_block']['options']['parameters']['hidden_breakpoints'])
-				);
-			}
-		}
 	}
 }

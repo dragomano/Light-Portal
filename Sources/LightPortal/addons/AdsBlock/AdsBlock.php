@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.5
+ * @version 1.6
  */
 
 if (!defined('SMF'))
@@ -150,17 +150,10 @@ class AdsBlock
 		);
 
 		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['ads_placement']['input']['options'][$title]['attributes'] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			} else {
-				$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
-					'value'    => $position,
-					'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-				);
-			}
+			$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
+				'value'    => $position,
+				'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
+			);
 		}
 
 		$context['posting_fields']['ads_boards']['label']['text'] = $txt['lp_ads_block_addon_ads_boards'];
