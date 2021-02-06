@@ -263,7 +263,7 @@ class Integration
 	 */
 	public function menuButtons(array &$buttons)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $settings, $modSettings;
 
 		if (Subs::isPortalShouldNotBeLoaded())
 			return;
@@ -320,9 +320,11 @@ class Integration
 
 		// Display chosen pages in the main menu
 		if (!empty($pages_in_menu = Subs::getPagesInMenu())) {
+			$compat_theme = in_array(explode('_', $settings['name'])[0], ['Wide', 'Badem']);
+
 			$pages = [];
 			foreach ($pages_in_menu as $alias => $item) {
-				$pages['portal_' . $alias] = array(
+				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
 					'title' => Helpers::getTitle($item),
 					'href'  => $scripturl . '?page=' . $alias,
 					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon_type'] . ' fa-' . $item['icon']),
