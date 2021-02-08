@@ -447,14 +447,6 @@ class ManagePages
 		);
 
 		$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_tags
-			WHERE page_id IN ({array_int:items})',
-			array(
-				'items' => $items
-			)
-		);
-
-		$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}user_likes
 			WHERE content_id IN ({array_int:items})
 				AND content_type = {literal:lpp}',
