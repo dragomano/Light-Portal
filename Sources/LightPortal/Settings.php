@@ -238,7 +238,7 @@ class Settings
 			array('select', 'lp_frontpage_time_format', $txt['lp_frontpage_time_format_set']),
 			array('text', 'lp_frontpage_custom_time_format', 'help' => 'lp_frontpage_custom_time_format_help'),
 			array('check', 'lp_show_teaser'),
-			array('int', 'lp_teaser_size', 'min' => 0),
+			array('int', 'lp_teaser_size'),
 			array('check', 'lp_show_author', 'help' => 'lp_show_author_help'),
 			array('check', 'lp_show_num_views_and_comments'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
