@@ -54,9 +54,9 @@ class Todays
 	 */
 	public function menuButtons(&$buttons)
 	{
-		global $modSettings;
+		global $context, $modSettings;
 
-		$buttons['calendar']['show'] = empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = !empty($context['allow_calendar']) && empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
 	}
 
 	/**
