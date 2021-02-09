@@ -209,7 +209,7 @@ class Todays
 					echo $txt['lp_todays_addon_and_more'], '
 		<details>
 			<summary>
-				<span>', Helpers::getCorrectDeclension(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
+				<span>', Helpers::getText(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

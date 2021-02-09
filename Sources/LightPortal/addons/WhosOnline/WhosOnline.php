@@ -132,18 +132,18 @@ class WhosOnline
 		if (!empty($whos_online)) {
 			ob_start();
 
-			echo Helpers::getCorrectDeclension(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getCorrectDeclension(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
+			echo Helpers::getText(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getText(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
 
 			$online_list = [];
 
 			if (!empty($user_info['buddies']) && !empty($whos_online['num_buddies']))
-				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
+				$online_list[] = Helpers::getText(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
 
 			if (!empty($whos_online['num_spiders']))
-				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
+				$online_list[] = Helpers::getText(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
 
 			if (!empty($whos_online['num_users_hidden']))
-				$online_list[] = Helpers::getCorrectDeclension(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
+				$online_list[] = Helpers::getText(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
 
 			if (!empty($online_list))
 				echo ' (' . implode(', ', $online_list) . ')';

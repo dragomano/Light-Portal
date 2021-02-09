@@ -83,7 +83,7 @@ class Comment
 		);
 
 		$total_comments     = sizeof($comments);
-		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helpers::getText($total_comments, $txt['lp_comments_set']);
 
 		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$comment_tree   = $this->getTree($comments);
