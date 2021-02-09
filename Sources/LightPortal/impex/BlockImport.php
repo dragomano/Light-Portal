@@ -145,7 +145,7 @@ class BlockImport extends AbstractImport
 						'icon_type'     => 'string-10',
 						'type'          => 'string',
 						'note'          => 'string',
-						'content'       => 'string-' . MAX_MSG_LENGTH,
+						'content'       => 'string-65534',
 						'placement'     => 'string-10',
 						'priority'      => 'int',
 						'permissions'   => 'int',

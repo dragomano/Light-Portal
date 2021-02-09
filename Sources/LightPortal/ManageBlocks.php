@@ -742,9 +742,8 @@ class ManageBlocks
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'id'        => 'content',
-					'maxlength' => MAX_MSG_LENGTH,
-					'value'     => $context['lp_block']['content']
+					'id'    => 'content',
+					'value' => $context['lp_block']['content']
 				),
 				'tab' => 'content'
 			);
@@ -929,7 +928,7 @@ class ManageBlocks
 					'icon_type'     => 'string-10',
 					'type'          => 'string',
 					'note'          => 'string',
-					'content'       => 'string-' . MAX_MSG_LENGTH,
+					'content'       => 'string-65534',
 					'placement'     => 'string-10',
 					'priority'      => 'int',
 					'permissions'   => 'int',

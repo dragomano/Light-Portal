@@ -455,7 +455,7 @@ class ManagePages
 			)
 		);
 
-		$smcFunc['lp_num_queries'] += 6;
+		$smcFunc['lp_num_queries'] += 5;
 
 		Subs::runAddons('onPageRemoving', array($items));
 	}
@@ -910,10 +910,9 @@ class ManagePages
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'id'        => 'content',
-					'maxlength' => MAX_MSG_LENGTH,
-					'value'     => $context['lp_page']['content'],
-					'required'  => true
+					'id'       => 'content',
+					'value'    => $context['lp_page']['content'],
+					'required' => true
 				),
 				'tab' => 'content'
 			);
@@ -1219,8 +1218,8 @@ class ManagePages
 					'author_id'   => 'int',
 					'alias'       => 'string-255',
 					'description' => 'string-255',
-					'content'     => 'string-' . MAX_MSG_LENGTH,
-					'type'        => 'string-4',
+					'content'     => 'string',
+					'type'        => 'string',
 					'permissions' => 'int',
 					'status'      => 'int',
 					'created_at'  => 'int'

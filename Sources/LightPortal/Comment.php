@@ -167,7 +167,7 @@ class Comment
 				'parent_id'  => 'int',
 				'page_id'    => 'int',
 				'author_id'  => 'int',
-				'message'    => 'string-' . MAX_MSG_LENGTH,
+				'message'    => 'string-65534',
 				'created_at' => 'int'
 			),
 			array(
@@ -268,7 +268,7 @@ class Comment
 			WHERE id = {int:id}
 				AND author_id = {int:user}',
 			array(
-				'message' => $message,
+				'message' => shorten_subject($message, 65531),
 				'id'      => $item,
 				'user'    => $context['user']['id']
 			)
