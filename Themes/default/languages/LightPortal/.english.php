@@ -135,8 +135,8 @@ $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 // Misc
 $txt['lp_misc']                           = 'Miscellaneous';
 $txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
-$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
-$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
+$txt['lp_fontawesome_compat_themes']      = 'Check themes that do not display action icons';
+$txt['lp_fontawesome_compat_themes_help'] = 'When this option is enabled, Font Awesome icons will be used instead of standard icons.';
 $txt['lp_debug_and_caching']              = 'Debugging and caching';
 $txt['lp_show_debug_info']                = 'Show the loading time and number of the portal queries';
 $txt['lp_show_debug_info_help']           = 'This information will be available to administrators only!';

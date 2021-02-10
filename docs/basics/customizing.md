@@ -81,7 +81,7 @@ Here you can quickly rearrange some panels without dragging blocks from one pane
 ## Miscellaneous
 In this section, you can change various auxiliary settings of the portal, which may be useful for developers of templates and plugins.
 
-* Check themes those using Font Awesome icons — if some icons are not displayed when using a third-party theme, enable this theme here.
+* Check themes that do not display action icons — if some icons are not displayed when using a third-party theme, enable this theme here.
 
 ![](misc.png)
 
