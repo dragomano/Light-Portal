@@ -12,7 +12,7 @@ $txt['lp_forum']  = 'Forum';
 $txt['lp_new_version_is_available'] = 'A new version is available!';
 
 $txt['lp_article']  = 'Article';
-$txt['lp_no_items'] = 'There is no items to show.';
+$txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example']  = 'Example: ';
 $txt['lp_content']  = 'Content';
 $txt['lp_my_pages'] = 'My pages';
@@ -326,7 +326,7 @@ $txt['lp_plugin_new_option']                  = 'Add option';
 $txt['lp_all_page_tags']          = 'All portal page tags';
 $txt['lp_all_tags_by_key']        = 'All pages with the "%1$s" tag';
 $txt['lp_tag_not_found']          = 'The specified tag was not found.';
-$txt['lp_no_tags']                = 'There is no tags yet.';
+$txt['lp_no_tags']                = 'There are no tags yet.';
 $txt['lp_keyword_column']         = 'Keyword';
 $txt['lp_frequency_column']       = 'Frequency';
 $txt['lp_sorting_label']          = 'Sort by';
