@@ -111,6 +111,9 @@ class FrontPage
 			send_http_status(404);
 
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
+
+			if ($start < 0)
+				$start = 0;
 		}
 
 		$articles = $entity->getData($start, $limit);
