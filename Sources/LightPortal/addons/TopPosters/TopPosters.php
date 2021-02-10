@@ -194,7 +194,7 @@ class TopPosters
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getText($poster['posts'], $txt['lp_posts_set'])), '</span>
 			</dd>';
 			}
 

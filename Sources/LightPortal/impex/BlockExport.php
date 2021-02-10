@@ -2,8 +2,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\ManageBlocks;
+use Bugo\LightPortal\{Helpers, ManageBlocks};
 
 /**
  * BlockExport.php

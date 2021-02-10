@@ -36,7 +36,18 @@ function template_manage_export_blocks()
 			</thead>
 			<tbody>';
 
-		if (empty(count($context['lp_active_blocks']))) {
+		$empty = true;
+		foreach ($context['lp_current_blocks'] as $placement) {
+			if (is_array($placement)) {
+				$empty = false;
+				break;
+			}
+		}
+
+		if ($empty)
+			$context['lp_current_blocks'] = [];
+
+		if (empty($context['lp_current_blocks'])) {
 			echo '
 				<tr class="windowbg">
 					<td colspan="4" class="centertext">', $txt['lp_no_items'], '</td>

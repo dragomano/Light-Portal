@@ -2,8 +2,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\Subs;
+use Bugo\LightPortal\{Helpers, Subs};
 
 /**
  * TopicArticle.php

@@ -239,7 +239,7 @@ function show_comment_block()
 						name="message"
 						class="content"
 						placeholder="', $txt['lp_comment_placeholder'], '"
-						maxlength="', MAX_MSG_LENGTH, '"
+						maxlength="65534"
 						@keyup="$refs.comment.disabled = !$event.target.value"
 						@focus="comment.focus($event.target, $refs)"
 						x-ref="message"

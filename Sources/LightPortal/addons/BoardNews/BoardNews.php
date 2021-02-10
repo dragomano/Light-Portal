@@ -160,7 +160,7 @@ class BoardNews
 			ob_start();
 
 			foreach ($board_news as $news) {
-				$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getCorrectDeclension($news['replies'], $txt['lp_comments_set']) . '</a>';
+				$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getText($news['replies'], $txt['lp_comments_set']) . '</a>';
 
 				echo '
 			<div class="news_item">

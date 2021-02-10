@@ -54,9 +54,9 @@ class Todays
 	 */
 	public function menuButtons(&$buttons)
 	{
-		global $modSettings;
+		global $context, $modSettings;
 
-		$buttons['calendar']['show'] = empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = !empty($context['allow_calendar']) && empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
 	}
 
 	/**
@@ -209,7 +209,7 @@ class Todays
 					echo $txt['lp_todays_addon_and_more'], '
 		<details>
 			<summary>
-				<span>', Helpers::getCorrectDeclension(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
+				<span>', Helpers::getText(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

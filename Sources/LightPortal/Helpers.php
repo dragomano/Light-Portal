@@ -177,18 +177,19 @@ class Helpers
 	}
 
 	/**
-	 * Get the word in the correct declension, depending on the number $num and the array|string $str with declension forms
+	 * Get the word with the correct ending, depending on the number $num and the array|string $str with possible forms
 	 *
-	 * Получаем слово в правильном склонении, в зависимости от числа $num и массива|строки $str с формами склонения
+	 * Получаем слово с правильным окончанием, в зависимости от числа $num и массива|строки $str с возможными формами
 	 *
+	 * @see https://github.com/dragomano/Light-Portal/wiki/To-translators
 	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
 	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
 	 *
 	 * @param int $num
-	 * @param array|string $str массив или строка с формами склонения (если в языке только одна форма склонения, см. rule #0)
+	 * @param array|string $str массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
 	 * @return string
 	 */
-	public static function getCorrectDeclension(int $num, $str)
+	public static function getText(int $num, $str)
 	{
 		global $txt;
 
@@ -293,7 +294,7 @@ class Helpers
 			// like "In n days"
 			if ($days > 1) {
 				if ($days < 7)
-					return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($days, $txt['lp_days_set']));
+					return sprintf($txt['lp_time_label_in'], self::getText($days, $txt['lp_days_set']));
 
 				// Future date in current month
 				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
@@ -313,7 +314,7 @@ class Helpers
 
 			// like "In n hours"
 			if ($hours > 1)
-				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($hours, $txt['lp_hours_set']));
+				return sprintf($txt['lp_time_label_in'], self::getText($hours, $txt['lp_hours_set']));
 
 			$minutes = ($timestamp - $current_time) / 60;
 			// like "In a minute"
@@ -322,10 +323,10 @@ class Helpers
 
 			// like "In n minutes"
 			if ($minutes > 1)
-				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(ceil($minutes), $txt['lp_minutes_set']));
+				return sprintf($txt['lp_time_label_in'], self::getText(ceil($minutes), $txt['lp_minutes_set']));
 
 			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(abs($time_difference), $txt['lp_seconds_set']));
+			return sprintf($txt['lp_time_label_in'], self::getText(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
 		// Less than an hour
@@ -333,13 +334,13 @@ class Helpers
 
 		// like "n seconds ago"
 		if ($time_difference < 60)
-			return self::getCorrectDeclension($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+			return self::getText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
-			return self::getCorrectDeclension((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+			return self::getText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $current_time))
 			return $txt['today'] . $tm;

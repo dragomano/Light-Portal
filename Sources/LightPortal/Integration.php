@@ -85,12 +85,11 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.6',
-			'LP_RELEASE_DATE' => '2021-02-02',
+			'LP_VERSION'      => '1.6.1',
+			'LP_RELEASE_DATE' => '2021-02-10',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
-			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
-			'MAX_MSG_LENGTH'  => 65535
+			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons'
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -263,7 +262,7 @@ class Integration
 	 */
 	public function menuButtons(array &$buttons)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $settings, $modSettings;
 
 		if (Subs::isPortalShouldNotBeLoaded())
 			return;
@@ -320,9 +319,11 @@ class Integration
 
 		// Display chosen pages in the main menu
 		if (!empty($pages_in_menu = Subs::getPagesInMenu())) {
+			$compat_theme = in_array(explode('_', $settings['name'])[0], ['Wide', 'Badem']);
+
 			$pages = [];
 			foreach ($pages_in_menu as $alias => $item) {
-				$pages['portal_' . $alias] = array(
+				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
 					'title' => Helpers::getTitle($item),
 					'href'  => $scripturl . '?page=' . $alias,
 					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon_type'] . ' fa-' . $item['icon']),

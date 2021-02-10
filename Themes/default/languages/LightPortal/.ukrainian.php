@@ -88,7 +88,7 @@ $txt['lp_show_tags_on_page']                = 'Відображати ключо
 $txt['lp_show_items_as_articles']           = 'Відображати елементи на сторінках тегів і рубрик у вигляді карток';
 $txt['lp_show_related_pages']               = 'Відображати блок схожих сторінок';
 $txt['lp_show_comment_block']               = 'Відображати блок коментарів';
-$txt['lp_disabled_bbc_in_comments']         = 'Дозволені ББ-теги в коментарях';
+$txt['lp_disabled_bbc_in_comments']         = 'Дозволені форумні теги в коментарях';
 $txt['lp_disabled_bbc_in_comments_subtext'] = 'Можна задіяти будь-які теги, <a class="bbc_link" href="%1$s">дозволені для використання</a> на форумі.';
 $txt['lp_show_comment_block_set']           = array('none' => 'Ні', 'default' => 'Вбудований');
 $txt['lp_time_to_change_comments']          = 'Час, протягом якого можна змінити свій коментар';

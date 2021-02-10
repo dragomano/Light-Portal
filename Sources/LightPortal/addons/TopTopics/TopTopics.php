@@ -164,7 +164,7 @@ class TopTopics
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getText($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
 			</dd>';
 			}
 

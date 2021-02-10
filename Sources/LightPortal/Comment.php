@@ -83,7 +83,7 @@ class Comment
 		);
 
 		$total_comments     = sizeof($comments);
-		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helpers::getText($total_comments, $txt['lp_comments_set']);
 
 		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$comment_tree   = $this->getTree($comments);
@@ -167,7 +167,7 @@ class Comment
 				'parent_id'  => 'int',
 				'page_id'    => 'int',
 				'author_id'  => 'int',
-				'message'    => 'string-' . MAX_MSG_LENGTH,
+				'message'    => 'string-65534',
 				'created_at' => 'int'
 			),
 			array(
@@ -268,7 +268,7 @@ class Comment
 			WHERE id = {int:id}
 				AND author_id = {int:user}',
 			array(
-				'message' => $message,
+				'message' => shorten_subject($message, 65531),
 				'id'      => $item,
 				'user'    => $context['user']['id']
 			)
