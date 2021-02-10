@@ -2,8 +2,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\ManagePages;
+use Bugo\LightPortal\{Helpers, ManagePages};
 
 /**
  * PageExport.php
