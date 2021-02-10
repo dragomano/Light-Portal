@@ -245,7 +245,7 @@ $tables[] = array(
 		),
 		array(
 			'name' => 'content',
-			'type' => 'text',
+			'type' => 'mediumtext',
 			'null' => false
 		),
 		array(
@@ -459,24 +459,6 @@ if (!empty($colData[0]) && $colData[0] == 'page_id') {
 
 foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-
-	if ($table['name'] == 'lp_blocks') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] == 'note') {
-				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
-				break;
-			}
-		}
-	}
-
-	if ($table['name'] == 'lp_pages') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] == 'category_id') {
-				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
-				break;
-			}
-		}
-	}
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
