@@ -346,14 +346,14 @@ function show_single_comment($comment, $i = 0, $level = 1)
 
 		if ($level < 5) {
 			echo '
-					<span class="button reply_button" data-id="', $comment['id'], '" @click="comment.reply($event.target, $refs)">', $txt['reply'], '</span>';
+					<span class="reply_button" data-id="', $comment['id'], '" @click="comment.reply($event.target, $refs)"><i class="fas fa-reply"></i> ', $txt['reply'], '</span>';
 
 			// Only comment author can edit comments
 			if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
 				echo '
-					<span class="button modify_button" data-id="', $comment['id'], '" @click="comment.modify($event.target)">', $txt['modify'], '</span>
-					<span class="button update_button" data-id="', $comment['id'], '" @click="comment.update($event.target)">', $txt['save'], '</span>
-					<span class="button cancel_button" data-id="', $comment['id'], '" @click="comment.cancel($event.target)">', $txt['modify_cancel'], '</span>';
+					<span class="modify_button" data-id="', $comment['id'], '" @click="comment.modify($event.target)"><i class="fas fa-edit"></i> ', $txt['modify'], '</span>
+					<span class="update_button" data-id="', $comment['id'], '" @click="comment.update($event.target)"><i class="fas fa-save"></i> ', $txt['save'], '</span>
+					<span class="cancel_button" data-id="', $comment['id'], '" @click="comment.cancel($event.target)"><i class="fas fa-undo"></i> ', $txt['modify_cancel'], '</span>';
 		} else {
 			echo '&nbsp;';
 		}
@@ -361,7 +361,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-					<span class="button remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)">', $txt['remove'], '</span>';
+					<span class="remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)"><i class="fas fa-trash-alt"></i> ', $txt['remove'], '</span>';
 
 		echo '
 				</div>';
