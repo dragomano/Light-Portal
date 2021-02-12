@@ -103,6 +103,7 @@ function template_page_post()
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true,
 			closeOnSelect: false,
+			showContent: "down",
 			addable: function (value) {
 				return {
 					text: value.toLowerCase(),

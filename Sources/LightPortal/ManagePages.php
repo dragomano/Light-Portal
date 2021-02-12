@@ -785,6 +785,9 @@ class ManagePages
 		addInlineCss('
 		.ss-content.ss-open {
 			position: initial;
+		}
+		.ss-disabled {
+			color: inherit !important;
 		}');
 
 		// Prepare the tag list
