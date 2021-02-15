@@ -186,8 +186,16 @@ function show_comment_block()
 		<aside class="comments"', empty($context['user']['is_guest']) ? ' x-data' : '', '>
 			<div class="cat_bar">
 				<h3 class="catbg">
-					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none"></span>
-					<a id="page_comments_link">', $txt['lp_comments'], '</a>
+					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none"></span>';
+
+	if (empty($context['user']['is_guest'])) {
+		echo '
+					<a id="page_comments_link">', $txt['lp_comments'], '</a>';
+	} else {
+		echo $txt['lp_comments'];
+	}
+
+	echo '
 				</h3>
 			</div>
 			<div
