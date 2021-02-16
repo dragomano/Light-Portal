@@ -59,15 +59,19 @@ $txt['lp_show_author_help']                  = 'If the board card is displayed, 
 $txt['lp_show_num_views_and_comments']       = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies']    = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']         = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']     = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
+$txt['lp_frontpage_article_sorting_set']     = array(
+	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
+);
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']              = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
+$txt['lp_frontpage_layout']                  = 'The frontpage layout';
+$txt['lp_frontpage_layout_set']              = array('pages' => 'For page cards', 'topics' => 'For topic cards', 'boards' => 'For board cards', 'common' => 'Universal');
+$txt['lp_frontpage_num_columns']             = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_num_columns_set']         = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_num_items_per_page']                = 'Ilość artykułów na stronę';
 
-$txt['lp_standalone_mode_title']                    = 'Tryb portalu';
-$txt['lp_standalone_url']                           = 'Adres strony głównej w trybie portalu osobnym';
-$txt['lp_standalone_url_help']                      = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
+$txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']        = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help']   = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Na przykład, jeśli chcesz wyłączyć akcję wyszukiwania (index.php?action=<strong>search</strong>), dodaj w polu <strong>search</strong>.';
@@ -376,6 +380,7 @@ $txt['lp_addon_not_installed']        = 'Wtyczka %1$s nie jest zainstalowana';
 $txt['lp_addon_add_failed']           = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file']          = 'Nie można importować tego pliku...';
 $txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania...';
+$txt['lp_wrong_template']             = 'Wrong template. Choose a template that matches the content.';
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';

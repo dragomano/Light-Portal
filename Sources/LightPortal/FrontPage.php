@@ -39,34 +39,37 @@ class FrontPage
 
 			case 'all_topics':
 				$this->prepare('TopicArticle');
-				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
 			case 'all_pages':
 				$this->prepare('PageArticle');
-				$context['sub_template'] = 'show_pages_as_articles';
 				break;
 
 			case 'chosen_boards':
 				$this->prepare('BoardArticle');
-				$context['sub_template'] = 'show_boards_as_articles';
 				break;
 
 			case 'chosen_topics':
 				$this->prepare('ChosenTopicArticle');
-				$context['sub_template'] = 'show_topics_as_articles';
 				break;
 
 			case 'chosen_pages':
 			default:
 				$this->prepare('ChosenPageArticle');
-				$context['sub_template'] = 'show_pages_as_articles';
 		}
 
+		if (!empty($context['lp_frontpage_articles'])) {
+			$context['sub_template'] = !empty($modSettings['lp_frontpage_layout']) ? 'show_' . $modSettings['lp_frontpage_layout'] : 'wrong_template';
+		} else {
+			$context['sub_template'] = 'empty';
+		}
+
+		// Mod authors can define their own template
 		Subs::runAddons('frontCustomTemplate');
 
-		$context['lp_frontpage_layout'] = $this->getNumColumns();
-		$context['canonical_url']       = $scripturl;
+		$context['lp_frontpage_num_columns'] = $this->getNumColumns();
+
+		$context['canonical_url'] = $scripturl;
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -186,25 +189,62 @@ class FrontPage
 
 		$num_columns = 12;
 
-		if (!empty($modSettings['lp_frontpage_layout'])) {
-			switch ($modSettings['lp_frontpage_layout']) {
-				case '1':
-					$num_columns /= 2;
-					break;
+		if (empty($modSettings['lp_frontpage_num_columns']))
+			return $num_columns;
 
-				case '2':
-					$num_columns /= 3;
-					break;
+		switch ($modSettings['lp_frontpage_num_columns']) {
+			case '1':
+				$num_columns /= 2;
+				break;
 
-				case '3':
-					$num_columns /= 4;
-					break;
+			case '2':
+				$num_columns /= 3;
+				break;
 
-				default:
-					$num_columns /= 6;
-			}
+			case '3':
+				$num_columns /= 4;
+				break;
+
+			default:
+				$num_columns /= 6;
 		}
 
 		return $num_columns;
+	}
+
+	/**
+	 * Get available layouts of the frontpage
+	 *
+	 * Получаем доступные макеты главной страницы
+	 *
+	 * @return array
+	 */
+	public function getLayouts()
+	{
+		global $settings, $txt;
+
+		$layouts = $values = [];
+
+		$all_funcs = get_defined_functions()['user'];
+
+		require_once($settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php');
+
+		if (is_file($custom_templates = $settings['default_theme_dir'] . '/LightPortal/CustomFrontPage.template.php'))
+			require_once($custom_templates);
+
+		$fp_funcs = array_values(array_diff(get_defined_functions()['user'], $all_funcs));
+
+		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $fp_funcs), $matches);
+
+		if (!empty($matches[1])) {
+			foreach ($matches[1] as $k => $v) {
+				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
+				$values[]  = $txt['lp_frontpage_layout_set'][explode('_', $v)[0]] . ' ~ ' .  $name;
+			}
+
+			$layouts = array_combine($layouts, $values);
+		}
+
+		return $layouts;
 	}
 }

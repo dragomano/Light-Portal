@@ -511,12 +511,12 @@ class Tag
 		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
-		$context['lp_frontpage_articles'] = $articles;
-		$context['lp_frontpage_layout']   = (new FrontPage)->getNumColumns();
+		$context['lp_frontpage_articles']    = $articles;
+		$context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
-		$context['sub_template'] = 'show_pages_as_articles';
+		$context['sub_template']      = 'show_pages';
 		$context['template_layers'][] = 'sorting';
 
 		obExit();

@@ -59,15 +59,19 @@ $txt['lp_show_author_help']                  = 'If the board card is displayed, 
 $txt['lp_show_num_views_and_comments']       = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies']    = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']         = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']     = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
+$txt['lp_frontpage_article_sorting_set']     = array(
+	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
+);
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'Number of columns for displaying articles';
-$txt['lp_frontpage_layout_set']              = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
+$txt['lp_frontpage_layout']                  = 'The frontpage layout';
+$txt['lp_frontpage_layout_set']              = array('pages' => 'For page cards', 'topics' => 'For topic cards', 'boards' => 'For board cards', 'common' => 'Universal');
+$txt['lp_frontpage_num_columns']             = 'Number of columns for displaying articles';
+$txt['lp_frontpage_num_columns_set']         = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_num_items_per_page']                = 'Number of items per page (for pagination)';
 
-$txt['lp_standalone_mode_title']                    = 'Standalone mode';
-$txt['lp_standalone_url']                           = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help']                      = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_mode_title'] = 'Standalone mode';
+$txt['lp_standalone_url']        = 'The frontpage URL in the standalone mode';
+$txt['lp_standalone_url_help']   = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_standalone_mode_disabled_actions_help']    =  'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
@@ -376,6 +380,7 @@ $txt['lp_addon_not_installed']        = 'Plugin %1$s is not installed';
 $txt['lp_addon_add_failed']           = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file']          = 'Wrong file to import...';
 $txt['lp_import_failed']              = 'Failed to import...';
+$txt['lp_wrong_template']             = 'Wrong template. Choose a template that matches the content.';
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Viewing <a href="%1$s">the portal frontpage</a>.';
