@@ -66,7 +66,7 @@ class ManageBlocks
 	 *
 	 * @return array
 	 */
-	public function getAll()
+	public function getAll(): array
 	{
 		global $smcFunc;
 
@@ -395,7 +395,7 @@ class ManageBlocks
 	 *
 	 * @return array
 	 */
-	private function getOptions()
+	private function getOptions(): array
 	{
 		$options = [
 			'bbc' => [
@@ -774,7 +774,7 @@ class ManageBlocks
 	 *
 	 * @return string
 	 */
-	private function getAreasInfo()
+	private function getAreasInfo(): string
 	{
 		global $context, $txt;
 
@@ -812,7 +812,7 @@ class ManageBlocks
 	 * @param string $check_value
 	 * @return bool
 	 */
-	private function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	private function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning'): bool
 	{
 		if (empty($data))
 			return false;
@@ -882,7 +882,7 @@ class ManageBlocks
 	 *
 	 * @return int
 	 */
-	private function getPriority()
+	private function getPriority(): int
 	{
 		global $context, $smcFunc;
 
@@ -912,14 +912,14 @@ class ManageBlocks
 	 * Создаем или обновляем блок
 	 *
 	 * @param int $item
-	 * @return int|void
+	 * @return int
 	 */
-	private function setData(int $item = 0)
+	private function setData(int $item = 0): int
 	{
 		global $context, $smcFunc;
 
 		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
-			return;
+			return 0;
 
 		checkSubmitOnce('check');
 
@@ -1120,7 +1120,7 @@ class ManageBlocks
 	 * @param int $item
 	 * @return array
 	 */
-	public function getData(int $item)
+	public function getData(int $item): array
 	{
 		global $smcFunc;
 

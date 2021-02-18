@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use ReflectionException;
+
 /**
  * ManagePlugins.php
  *
@@ -34,6 +36,7 @@ class ManagePlugins
 	 * Управление плагинами
 	 *
 	 * @return void
+	 * @throws ReflectionException
 	 */
 	public function main()
 	{
@@ -848,7 +851,7 @@ EOF;
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private static function getTypes(string $snake_name)
+	private static function getTypes(string $snake_name): string
 	{
 		global $txt, $context;
 
@@ -873,13 +876,15 @@ EOF;
 	}
 
 	/**
-	 * Undocumented function
+	 * Get the plugin settings
+	 *
+	 * Получаем настройки плагина
 	 *
 	 * @param array $config_vars
 	 * @param string $name
 	 * @return array
 	 */
-	private static function getSettings(array $config_vars, $name = '')
+	private static function getSettings(array $config_vars, $name = ''): array
 	{
 		if (empty($config_vars))
 			return [];
@@ -904,7 +909,7 @@ EOF;
 	 * @param string $name
 	 * @return bool
 	 */
-	private function isUnique(string $name)
+	private function isUnique(string $name): bool
 	{
 		return !in_array($name, Subs::getAddons());
 	}

@@ -26,7 +26,7 @@ class Subs
 	 *
 	 * @return bool
 	 */
-	public static function isPortalShouldNotBeLoaded()
+	public static function isPortalShouldNotBeLoaded(): bool
 	{
 		global $context, $modSettings;
 
@@ -87,7 +87,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getActiveBlocks()
+	public static function getActiveBlocks(): array
 	{
 		global $smcFunc;
 
@@ -150,7 +150,7 @@ class Subs
 	 * @param array $data
 	 * @return array
 	 */
-	public static function unsetDisabledActions(array &$data)
+	public static function unsetDisabledActions(array &$data): array
 	{
 		global $modSettings, $context;
 
@@ -185,7 +185,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getAddons()
+	public static function getAddons(): array
 	{
 		$dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR) or array();
 
@@ -281,7 +281,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getTitleClasses()
+	public static function getTitleClasses(): array
 	{
 		return [
 			'div.cat_bar > h3.catbg'        => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
@@ -304,7 +304,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getContentClasses()
+	public static function getContentClasses(): array
 	{
 		return [
 			'div.roundframe'  => '<div class="roundframe noup"%2$s>%1$s</div>',
@@ -389,7 +389,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPagesInMenu()
+	public static function getPagesInMenu(): array
 	{
 		global $smcFunc;
 

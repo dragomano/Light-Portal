@@ -176,7 +176,7 @@ class Category
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAllPages(int $start, int $items_per_page, string $sort)
+	public function getAllPages(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl;
 
@@ -250,7 +250,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	public function getTotalCountAllPages()
+	public function getTotalCountAllPages(): int
 	{
 		global $smcFunc, $context;
 
@@ -412,7 +412,7 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getList()
+	public function getList(): array
 	{
 		global $smcFunc, $txt;
 
@@ -449,7 +449,7 @@ class Category
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.priority')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.priority'): array
 	{
 		global $smcFunc, $scripturl, $txt;
 
@@ -503,7 +503,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc;
 
@@ -623,7 +623,7 @@ class Category
 	 * @param string $value
 	 * @return void
 	 */
-	public function updateName($item, $value)
+	public function updateName(int $item, string $value)
 	{
 		global $smcFunc;
 
@@ -652,7 +652,7 @@ class Category
 	 * @param string $value
 	 * @return void
 	 */
-	public function updateDescription($item, $value)
+	public function updateDescription(int $item, string $value)
 	{
 		global $smcFunc;
 
@@ -717,7 +717,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	private function getPriority()
+	private function getPriority(): int
 	{
 		global $smcFunc;
 

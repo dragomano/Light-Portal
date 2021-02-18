@@ -9,7 +9,7 @@
  */
 function template_page_post()
 {
-	global $context, $txt, $settings;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '

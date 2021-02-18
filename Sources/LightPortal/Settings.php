@@ -531,7 +531,7 @@ class Settings
 	 *
 	 * Выводим настройки рубрик
 	 *
-	 * @return array|void
+	 * @return void
 	 */
 	public function categories()
 	{
@@ -560,10 +560,10 @@ class Settings
 				$category->add($data['new_name'], $data['new_desc'] ?? '');
 
 			if (!empty($data['name']))
-				$category->updateName($data['item'], $data['name']);
+				$category->updateName((int) $data['item'], $data['name']);
 
 			if (!empty($data['desc']))
-				$category->updateDescription($data['item'], $data['desc']);
+				$category->updateDescription((int) $data['item'], $data['desc']);
 
 			if (!empty($data['del_item']))
 				$category->remove([(int) $data['del_item']]);
@@ -814,7 +814,7 @@ class Settings
 	 *
 	 * @return string
 	 */
-	public function getLastVersion()
+	public function getLastVersion(): string
 	{
 		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 

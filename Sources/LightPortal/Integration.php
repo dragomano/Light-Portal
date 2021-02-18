@@ -608,7 +608,7 @@ class Integration
 	 * @param array $profile_areas
 	 * @return void
 	 */
-	public function preProfileAreas(&$profile_areas)
+	public function preProfileAreas(array &$profile_areas)
 	{
 		global $context, $txt, $scripturl;
 
@@ -635,7 +635,7 @@ class Integration
 	 * @param array $profile_items
 	 * @return void
 	 */
-	public function profilePopup(&$profile_items)
+	public function profilePopup(array &$profile_items)
 	{
 		global $context;
 
@@ -670,7 +670,7 @@ class Integration
 	 * @param array $actions
 	 * @return string
 	 */
-	public function whoisOnline(array $actions)
+	public function whoisOnline(array $actions): string
 	{
 		global $txt, $scripturl, $modSettings, $context;
 

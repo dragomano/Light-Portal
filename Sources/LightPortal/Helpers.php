@@ -134,7 +134,7 @@ class Helpers
 	 * @param string|null $type
 	 * @return string
 	 */
-	public static function getIcon($icon = null, $type = null)
+	public static function getIcon($icon = null, $type = null): string
 	{
 		global $context;
 
@@ -155,7 +155,7 @@ class Helpers
 	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle($prefix = null)
+	public static function getPreviewTitle($prefix = null): string
 	{
 		global $context, $txt;
 
@@ -171,7 +171,7 @@ class Helpers
 	 * @param string $direction
 	 * @return string
 	 */
-	private static function getFloatSpan(string $text, string $direction = 'left')
+	private static function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}
@@ -189,7 +189,7 @@ class Helpers
 	 * @param array|string $str массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
 	 * @return string
 	 */
-	public static function getText(int $num, $str)
+	public static function getText(int $num, $str): string
 	{
 		global $txt;
 
@@ -262,7 +262,7 @@ class Helpers
 	 * @param bool $use_user_offset
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false)
+	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false): string
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
@@ -368,7 +368,7 @@ class Helpers
 	 * @param string $postfix
 	 * @return string
 	 */
-	public static function getDateFormat(int $day, string $month, string $postfix)
+	public static function getDateFormat(int $day, string $month, string $postfix): string
 	{
 		global $txt;
 
@@ -432,7 +432,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canViewItem(int $permissions)
+	public static function canViewItem(int $permissions): bool
 	{
 		global $user_info;
 
@@ -458,7 +458,7 @@ class Helpers
 	 *
 	 * @return array
 	 */
-	public static function getPermissions()
+	public static function getPermissions(): array
 	{
 		global $user_info;
 
@@ -480,7 +480,7 @@ class Helpers
 	 * @param string $alias
 	 * @return bool
 	 */
-	public static function isFrontpage(string $alias)
+	public static function isFrontpage(string $alias): bool
 	{
 		global $modSettings;
 
@@ -501,7 +501,7 @@ class Helpers
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getTitle(array $object)
+	public static function getTitle(array $object): string
 	{
 		global $user_info, $language;
 
@@ -529,7 +529,7 @@ class Helpers
 	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $value, string $delimiter = '_')
+	public static function getSnakeName(string $value, string $delimiter = '_'): string
 	{
 		if (!ctype_lower($value)) {
 			$value = preg_replace('/\s+/u', '', ucwords($value));
@@ -548,7 +548,7 @@ class Helpers
 	 * @param string|null $text
 	 * @return string
 	 */
-	public static function getTeaser($text = '')
+	public static function getTeaser($text = ''): string
 	{
 		global $modSettings;
 
@@ -565,7 +565,7 @@ class Helpers
 	 *
 	 * @return array
 	 */
-	public static function getForumThemes()
+	public static function getForumThemes(): array
 	{
 		global $smcFunc;
 
@@ -758,7 +758,7 @@ class Helpers
 	 * @param string $type
 	 * @return array
 	 */
-	public static function getAllTitles(string $type = 'page')
+	public static function getAllTitles(string $type = 'page'): array
 	{
 		global $smcFunc;
 
@@ -796,7 +796,7 @@ class Helpers
 	 * @param bool $all - подсчитывать все страницы
 	 * @return int
 	 */
-	public static function getNumActivePages($all = false)
+	public static function getNumActivePages($all = false): int
 	{
 		global $user_info, $smcFunc;
 

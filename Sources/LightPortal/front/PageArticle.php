@@ -22,6 +22,11 @@ if (!defined('SMF'))
 class PageArticle extends AbstractArticle
 {
 	/**
+	 * @var array
+	 */
+	private $selected_categories = [];
+
+	/**
 	 * Initialize class properties
 	 *
 	 * Инициализируем свойства класса

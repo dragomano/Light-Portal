@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Page.php
  *
@@ -28,6 +30,7 @@ class Page
 	 * Просматриваем страницу по её алиасу
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function show()
 	{
@@ -179,7 +182,7 @@ class Page
 	 *
 	 * @return array
 	 */
-	public function getRelatedPages()
+	public function getRelatedPages(): array
 	{
 		global $smcFunc, $modSettings, $context;
 
@@ -249,6 +252,7 @@ class Page
 	 * Подготавливаем комментарии для отображения
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	private function prepareComments()
 	{
@@ -276,7 +280,7 @@ class Page
 	 * @param array $params
 	 * @return array
 	 */
-	public function getData(array $params)
+	public function getData(array $params): array
 	{
 		global $smcFunc, $txt, $modSettings;
 
@@ -368,7 +372,7 @@ class Page
 	 * @param string $alias
 	 * @return array
 	 */
-	public function getDataByAlias(string $alias)
+	public function getDataByAlias(string $alias): array
 	{
 		if (empty($alias))
 			return [];
@@ -388,7 +392,7 @@ class Page
 	 * @param int $item
 	 * @return array
 	 */
-	public function getDataByItem(int $item)
+	public function getDataByItem(int $item): array
 	{
 		if (empty($item))
 			return [];
@@ -441,7 +445,7 @@ class Page
 	 * @param int $page
 	 * @return array
 	 */
-	private function prepareLikesContext(int $page)
+	private function prepareLikesContext(int $page): array
 	{
 		global $user_info, $smcFunc;
 
@@ -485,7 +489,7 @@ class Page
 	 * @param int $page
 	 * @return int
 	 */
-	private function getLikesCount(int $page)
+	private function getLikesCount(int $page): int
 	{
 		global $smcFunc;
 

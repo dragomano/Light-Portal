@@ -20,11 +20,9 @@ if (!defined('SMF'))
 class Credits
 {
 	/**
-	 * The mod credits for action=credits
+	 * Display credits on action=credits area
 	 *
 	 * Отображаем копирайты на странице action=credits
-	 *
-	 * @return void
 	 */
 	public function show()
 	{
@@ -49,10 +47,8 @@ class Credits
 	 * Return copyright information
 	 *
 	 * Возвращаем информацию об авторских правах
-	 *
-	 * @return string
 	 */
-	public function getCopyrights()
+	public function getCopyrights(): string
 	{
 		global $user_info, $scripturl;
 
@@ -65,8 +61,6 @@ class Credits
 	 * Collect information about used components
 	 *
 	 * Формируем информацию об используемых компонентах
-	 *
-	 * @return void
 	 */
 	public function getComponentList()
 	{

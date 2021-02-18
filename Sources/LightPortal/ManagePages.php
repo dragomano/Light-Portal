@@ -63,11 +63,6 @@ class ManagePages
 		$this->doActions();
 		$this->massActions();
 
-		if (Helpers::request()->filled('params') && Helpers::request()->isEmpty('is_search')) {
-			$search_params = base64_decode(strtr(Helpers::request('params'), array(' ' => '+')));
-			$search_params = $smcFunc['json_decode']($search_params, true);
-		}
-
 		$search_params_string = trim(Helpers::request('search', ''));
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
@@ -293,7 +288,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return array
 	 */
-	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
+	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		global $smcFunc, $user_info;
 
@@ -347,7 +342,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return int
 	 */
-	public function getTotalCount(string $query_string = '', array $query_params = [])
+	public function getTotalCount(string $query_string = '', array $query_params = []): int
 	{
 		global $smcFunc, $user_info;
 
@@ -613,7 +608,7 @@ class ManagePages
 	 *
 	 * @return array
 	 */
-	private function getOptions()
+	private function getOptions(): array
 	{
 		$options = [
 			'show_author_and_date' => true,
@@ -819,7 +814,7 @@ class ManagePages
 	 * @param string $search
 	 * @return void
 	 */
-	private function prepareMemberList($search)
+	private function prepareMemberList(string $search)
 	{
 		global $smcFunc;
 
@@ -1178,7 +1173,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private function getPublishTime()
+	private function getPublishTime(): int
 	{
 		global $context;
 
@@ -1454,7 +1449,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private function getAutoIncrementValue()
+	private function getAutoIncrementValue(): int
 	{
 		global $smcFunc;
 
@@ -1475,7 +1470,7 @@ class ManagePages
 	 * @param array $data
 	 * @return bool
 	 */
-	private function isUnique(array $data)
+	private function isUnique(array $data): bool
 	{
 		global $smcFunc;
 

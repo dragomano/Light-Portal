@@ -424,16 +424,13 @@ function template_callback_panel_direction()
  */
 function template_callback_compat_themes()
 {
-	global $context, $scripturl, $txt, $modSettings;
+	global $context, $txt, $modSettings;
 
 	if (empty($context['lp_fontawesome_compat_themes']))
 		return;
 
 	echo '
-		<dt class="descbox" style="width: 100%">
-			<a id="setting_lp_show_debug_info_help" href="', $scripturl, '?action=helpadmin;help=lp_fontawesome_compat_themes_help" onclick="return reqOverlayDiv(this.href);">
-				<span class="main_icons help" title="', $txt['help'], '"></span>
-			</a>
+		<dt class="infobox" style="width: 100%">
 			<a id="setting_lp_fontawesome_compat_themes"></a>
 			<span><label for="lp_fontawesome_compat_themes">', $txt['lp_fontawesome_compat_themes'], '</label></span>
 		</dt>

@@ -166,10 +166,8 @@ class FrontPage
 	 * Check whether need to display dates in lowercase for the current language
 	 *
 	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
-	 *
-	 * @return bool
 	 */
-	public function isLowerCaseForDates()
+	public function isLowerCaseForDates(): bool
 	{
 		global $txt;
 
@@ -180,10 +178,8 @@ class FrontPage
 	 * Get the number columns for the frontpage layout
 	 *
 	 * Получаем количество колонок для макета главной страницы
-	 *
-	 * @return int
 	 */
-	public function getNumColumns()
+	public function getNumColumns(): int
 	{
 		global $modSettings;
 
@@ -216,10 +212,8 @@ class FrontPage
 	 * Get available layouts of the frontpage
 	 *
 	 * Получаем доступные макеты главной страницы
-	 *
-	 * @return array
 	 */
-	public function getLayouts()
+	public function getLayouts(): array
 	{
 		global $settings, $txt;
 

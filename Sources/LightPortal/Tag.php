@@ -160,7 +160,7 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAllPagesWithChosenTag(int $start, int $items_per_page, string $sort)
+	public function getAllPagesWithChosenTag(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl;
 
@@ -202,7 +202,7 @@ class Tag
 			}
 
 			if (!empty($row['category_id'])) {
-				$category_name = Helpers::getAllCategories()[$row['category_id']]['name'];;
+				$category_name = Helpers::getAllCategories()[$row['category_id']]['name'];
 				$category_link = $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'];
 			}
 
@@ -240,7 +240,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public function getTotalCountPagesWithChosenTag()
+	public function getTotalCountPagesWithChosenTag(): int
 	{
 		global $smcFunc, $context;
 
@@ -348,7 +348,7 @@ class Tag
 	 *
 	 * @return array
 	 */
-	public function getList()
+	public function getList(): array
 	{
 		global $smcFunc;
 
@@ -380,7 +380,7 @@ class Tag
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start, int $items_per_page, string $sort)
+	public function getAll(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -436,7 +436,7 @@ class Tag
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc;
 

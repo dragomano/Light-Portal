@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Comment.php
  *
@@ -42,6 +44,7 @@ class Comment
 	 * Обрабатываем комментарии
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function prepare()
 	{
@@ -118,6 +121,7 @@ class Comment
 	 * Добавление комментария
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	private function add()
 	{
@@ -290,8 +294,9 @@ class Comment
 	 *
 	 * @param $user_id
 	 * @return string
+	 * @throws Exception
 	 */
-	private function getUserAvatar($user_id)
+	private function getUserAvatar($user_id): string
 	{
 		global $memberContext;
 
@@ -410,13 +415,11 @@ class Comment
 	 *
 	 * @param int $page_id
 	 * @return array
+	 * @throws Exception
 	 */
-	public function getAll(int $page_id = 0)
+	public function getAll(int $page_id = 0): array
 	{
 		global $smcFunc, $context, $modSettings;
-
-		if (empty($page_id))
-			return [];
 
 		Helpers::require('Subs-Post');
 
@@ -464,7 +467,7 @@ class Comment
 	 * @param array $data
 	 * @return array
 	 */
-	private function getTree(array $data)
+	private function getTree(array $data): array
 	{
 		$tree = [];
 
