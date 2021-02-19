@@ -356,6 +356,10 @@ function show_single_comment($comment, $i = 0, $level = 1)
 			echo '
 					<span class="reply_button" data-id="', $comment['id'], '" @click="comment.reply($event.target, $refs)"><i class="fas fa-reply"></i> ', $txt['reply'], '</span>';
 
+			// Do not allow edit comments with children
+			if (!empty($comment['children']))
+				$comment['can_edit'] = false;
+
 			// Only comment author can edit comments
 			if ($comment['author_id'] == $context['user']['id'] && $comment['can_edit'])
 				echo '
