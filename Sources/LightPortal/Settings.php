@@ -52,11 +52,11 @@ class Settings
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'basic'      => array($txt['mods_cat_features']),
-								'extra'      => array($txt['lp_extra']),
-								'categories' => array($txt['lp_categories']),
-								'panels'     => array($txt['lp_panels']),
-								'misc'       => array($txt['lp_misc'])
+								'basic'      => array('<i class="fas fa-cogs"></i> ' . $txt['mods_cat_features']),
+								'extra'      => array('<i class="fas fa-pager"></i> ' . $txt['lp_extra']),
+								'categories' => array('<i class="fas fa-folder"></i> ' . $txt['lp_categories']),
+								'panels'     => array('<i class="fas fa-columns"></i> ' . $txt['lp_panels']),
+								'misc'       => array('<i class="fas fa-tools"></i> ' . $txt['lp_misc'])
 							)
 						),
 						'lp_blocks' => array(
@@ -66,7 +66,7 @@ class Settings
 							'amt' => count($context['lp_active_blocks']),
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
-								'main' => array($txt['lp_blocks_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
@@ -77,7 +77,7 @@ class Settings
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main' => array($txt['lp_pages_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
 							)
 						),
@@ -88,7 +88,7 @@ class Settings
 							'amt' => count($context['lp_enabled_plugins']),
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'main' => array($txt['lp_plugins_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_plugins_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_plugins_add'])
 							)
 						)
@@ -100,13 +100,13 @@ class Settings
 
 		if ($context['user']['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
-				'export' => array($txt['lp_blocks_export']),
-				'import' => array($txt['lp_blocks_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_blocks_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_blocks_import'])
 			);
 
 			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += array(
-				'export' => array($txt['lp_pages_export']),
-				'import' => array($txt['lp_pages_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_pages_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_pages_import'])
 			);
 		}
 	}
