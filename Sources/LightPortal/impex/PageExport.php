@@ -44,7 +44,7 @@ class PageExport extends AbstractExport
 		$this->run();
 
 		$listOptions = array(
-			'id' => 'pages',
+			'id' => 'lp_pages',
 			'items_per_page' => ($pages = new ManagePages)->num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -135,7 +135,7 @@ class PageExport extends AbstractExport
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**

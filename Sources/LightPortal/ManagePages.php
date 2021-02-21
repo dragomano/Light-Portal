@@ -74,7 +74,7 @@ class ManagePages
 		);
 
 		$listOptions = array(
-			'id' => 'pages',
+			'id' => 'lp_pages',
 			'items_per_page' => $this->num_pages,
 			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -271,9 +271,9 @@ class ManagePages
 		Helpers::require('Subs-List');
 		createList($listOptions);
 
-		$context['pages']['title'] .= ' (' . $context['pages']['total_num_items'] . ')';
+		$context['lp_pages']['title'] .= ' (' . $context['lp_pages']['total_num_items'] . ')';
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**

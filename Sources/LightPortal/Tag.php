@@ -57,7 +57,7 @@ class Tag
 			$this->showAsArticles();
 
 		$listOptions = array(
-			'id' => 'tags',
+			'id' => 'lp_tags',
 			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -145,7 +145,7 @@ class Tag
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'tags';
+		$context['default_list'] = 'lp_tags';
 
 		obExit();
 	}

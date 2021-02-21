@@ -45,7 +45,7 @@ class Import extends AbstractImport
 		$this->run();
 
 		$listOptions = array(
-			'id' => 'pages',
+			'id' => 'lp_pages',
 			'items_per_page' => 50,
 			'title' => $txt['lp_pages_import'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -129,7 +129,7 @@ class Import extends AbstractImport
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**

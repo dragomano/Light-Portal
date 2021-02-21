@@ -63,7 +63,7 @@ class Category
 			$this->showAsArticles();
 
 		$listOptions = array(
-			'id' => 'categories',
+			'id' => 'lp_categories',
 			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -161,7 +161,7 @@ class Category
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'categories';
+		$context['default_list'] = 'lp_categories';
 
 		obExit();
 	}
@@ -609,6 +609,8 @@ class Category
 				'item'    => $item
 			];
 		}
+
+		Helpers::cache()->forget('all_categories');
 
 		exit(json_encode($result));
 	}
