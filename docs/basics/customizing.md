@@ -17,8 +17,8 @@ In this section, you can fully customize the portal frontpage, enable standalone
     * Selected topics
     * Selected boards
 * The frontpage title — you can change the name of the portal used as the page title and the title of the browser tab.
-* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories" and "Selected pages".
-* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", "Selected pages", and "Selected board".
+* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories".
+* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", and "Selected board".
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
 * Time format in the article cards — you can change the time format.
@@ -31,6 +31,8 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * The frontpage layout — you can choose your preferred template for displaying the cards. To add your own templates, place the function `template_show_somename` into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`, or into the file `/Themes/default/LightPortal/CustomFrontPage.template.php` (you need to create it first). The template name must begin with the type of content displayed on the main page. (`pages`, `topics`, `boards`). If your template is universal (i.e. suitable for displaying all existing content types), name it `template_show_common_somename`.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
+
+> If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
 
 ### Standalone mode
 
@@ -81,10 +83,6 @@ Here you can quickly rearrange some panels without dragging blocks from one pane
 
 ## Miscellaneous
 In this section, you can change various auxiliary settings of the portal, which may be useful for developers of templates and plugins.
-
-* Check themes that do not display action icons — if some icons are not displayed when using a third-party theme, enable this theme here.
-
-![](misc.png)
 
 ### Debugging and caching
 
