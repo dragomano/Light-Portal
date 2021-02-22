@@ -37,6 +37,8 @@ class ChosenPageArticle extends PageArticle
 
 		parent::init();
 
+		$this->selected_categories = [];
+
 		$this->selected_pages = !empty($modSettings['lp_frontpage_pages']) ? explode(',', $modSettings['lp_frontpage_pages']) : [];
 
 		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';

@@ -69,9 +69,9 @@ class TopicArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $scripturl;
+		global $modSettings, $user_info, $smcFunc, $scripturl;
 
-		if (empty($this->selected_boards))
+		if (empty($this->selected_boards) && $modSettings['lp_frontpage_mode'] == 'all_topics')
 			return [];
 
 		if (($topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
@@ -104,8 +104,8 @@ class TopicArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
-					AND t.id_redirect_topic = {int:id_redirect_topic}
-					AND t.id_board IN ({array_int:selected_boards})
+					AND t.id_redirect_topic = {int:id_redirect_topic}' . (!empty($this->selected_boards) ? '
+					AND t.id_board IN ({array_int:selected_boards})' : '') . '
 					AND {query_wanna_see_board}' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
 				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 't.num_replies DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
@@ -189,9 +189,9 @@ class TopicArticle extends AbstractArticle
 	 */
 	public function getTotalCount()
 	{
-		global $user_info, $smcFunc;
+		global $modSettings, $user_info, $smcFunc;
 
-		if (empty($this->selected_boards))
+		if (empty($this->selected_boards) && $modSettings['lp_frontpage_mode'] == 'all_topics')
 			return 0;
 
 		if (($num_topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
@@ -202,8 +202,8 @@ class TopicArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE t.approved = {int:is_approved}
 					AND t.id_poll = {int:id_poll}
-					AND t.id_redirect_topic = {int:id_redirect_topic}
-					AND t.id_board IN ({array_int:selected_boards})
+					AND t.id_redirect_topic = {int:id_redirect_topic}' . (!empty($this->selected_boards) ? '
+					AND t.id_board IN ({array_int:selected_boards})' : '') . '
 					AND {query_wanna_see_board}' . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
 				$this->params

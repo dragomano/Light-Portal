@@ -69,7 +69,7 @@ class PageArticle extends AbstractArticle
 	{
 		global $user_info, $smcFunc, $modSettings, $scripturl;
 
-		if (empty($this->selected_categories))
+		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return [];
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
@@ -90,8 +90,8 @@ class PageArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})
-					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})' . (!empty($this->selected_categories) ? '
+					AND p.category_id IN ({array_int:selected_categories})' : '') . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
 				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'num_comments DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
@@ -118,7 +118,7 @@ class PageArticle extends AbstractArticle
 						'author_name'   => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name'],
 						'type'          => $row['type'],
 						'num_views'     => $row['num_views'],
-						'num_comments'  => $row['num_comments'],
+						'num_comments'  => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
 						'date'          => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
 						'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'link'          => $scripturl . '?page=' . $row['alias'],
@@ -155,9 +155,9 @@ class PageArticle extends AbstractArticle
 	 */
 	public function getTotalCount()
 	{
-		global $user_info, $smcFunc;
+		global $modSettings, $user_info, $smcFunc;
 
-		if (empty($this->selected_categories))
+		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return 0;
 
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
@@ -167,8 +167,8 @@ class PageArticle extends AbstractArticle
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})
-					AND p.category_id IN ({array_int:selected_categories})' . (!empty($this->wheres) ? '
+					AND p.permissions IN ({array_int:permissions})' . (!empty($this->selected_categories) ? '
+					AND p.category_id IN ({array_int:selected_categories})' : '') . (!empty($this->wheres) ? '
 					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
 				$this->params
 			);

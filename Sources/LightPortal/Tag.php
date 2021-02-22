@@ -201,6 +201,9 @@ class Tag
 				$image = $first_post_image ? array_pop($value) : null;
 			}
 
+			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
+				$image = $modSettings['lp_image_placeholder'];
+
 			if (!empty($row['category_id'])) {
 				$category_name = Helpers::getAllCategories()[$row['category_id']]['name'];
 				$category_link = $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'];
@@ -500,13 +503,6 @@ class Tag
 		$sort = $sorting_types[$context['current_sorting']];
 
 		$articles = $this->getAllPagesWithChosenTag($start, $limit, $sort);
-
-		$articles = array_map(function ($article) use ($modSettings) {
-			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
-				$article['image'] = $modSettings['lp_image_placeholder'];
-
-			return $article;
-		}, $articles);
 
 		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
