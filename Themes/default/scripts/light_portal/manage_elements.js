@@ -56,7 +56,7 @@ class PortalEntity {
 		const formElements = target.elements;
 
 		for (let i = 0; i < formElements.length; i++) {
-			if (formElements[i].required && formElements[i].value === '') {
+			if ((formElements[i].required && formElements[i].value === '') || !formElements[i].checkValidity()) {
 				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;

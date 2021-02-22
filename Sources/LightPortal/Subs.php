@@ -75,6 +75,7 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
+		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true)); // SVG
 		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCssFile('light_portal/flexboxgrid.css');
 		loadCssFile('light_portal/light_portal.css');
@@ -237,7 +238,7 @@ class Subs
 	{
 		global $context;
 
-		$context['lp_bbc_icon']  = 'fas fa-square';
+		$context['lp_bbc_icon']  = 'fas fa-bold';
 		$context['lp_html_icon'] = 'fab fa-html5';
 		$context['lp_php_icon']  = 'fab fa-php';
 

@@ -137,13 +137,12 @@ $txt['lp_panel_direction']      = 'The direction of blocks in panels';
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 
 // Misc
-$txt['lp_misc']                      = 'Miscellaneous';
-$txt['lp_misc_info']                 = 'There are additional portal settings that will be useful for template and plugin developers here.';
-$txt['lp_fontawesome_compat_themes'] = 'Select themes that should use Font Awesome icons instead of the standard action icons';
-$txt['lp_debug_and_caching']         = 'Debugging and caching';
-$txt['lp_show_debug_info']           = 'Show the loading time and number of the portal queries';
-$txt['lp_show_debug_info_help']      = 'This information will be available to administrators only!';
-$txt['lp_cache_update_interval']     = 'The cache update interval';
+$txt['lp_misc']                  = 'Miscellaneous';
+$txt['lp_misc_info']             = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_debug_and_caching']     = 'Debugging and caching';
+$txt['lp_show_debug_info']       = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info_help']  = 'This information will be available to administrators only!';
+$txt['lp_cache_update_interval'] = 'The cache update interval';
 
 // Actions
 $txt['lp_title']        = 'Title';

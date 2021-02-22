@@ -135,22 +135,6 @@ class ManagePages
 						'reverse' => 'p.num_views'
 					)
 				),
-				'type' => array(
-					'header' => array(
-						'value' => $txt['package_install_type']
-					),
-					'data' => array(
-						'function' => function ($entry) use ($txt)
-						{
-							return $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
-						},
-						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'p.type DESC',
-						'reverse' => 'p.type'
-					)
-				),
 				'alias' => array(
 					'header' => array(
 						'value' => $txt['lp_page_alias'],
@@ -169,9 +153,28 @@ class ManagePages
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($scripturl)
+						'function' => function ($entry) use ($txt, $scripturl)
 						{
-							return '<a class="bbc_link' . (
+							$type_hint = $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
+
+							switch ($entry['type']) {
+								case 'html':
+									$icon = 'fab fa-html5';
+									break;
+
+								case 'php':
+									$icon = 'fab fa-php';
+									break;
+
+								case 'md':
+									$icon = 'fab fa-markdown';
+									break;
+
+								default:
+									$icon = 'fas fa-bold';
+							}
+
+							return '<i class="' . $icon . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
@@ -184,29 +187,56 @@ class ManagePages
 						'reverse' => 't.title'
 					)
 				),
+				'status' => array(
+					'header' => array(
+						'value' => $txt['status']
+					),
+					'data' => array(
+						'function' => function ($entry)
+						{
+							return '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" @update-status.window="if ($event.detail.id == ' . $entry['id'] . ') status = $event.detail.status">
+								<span :class="{\'on\': status, \'off\': !status}"></span>
+							</div>';
+						},
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.status DESC',
+						'reverse' => 'p.status'
+					)
+				),
 				'actions' => array(
 					'header' => array(
 						'value' => $txt['lp_actions'],
 						'style' => 'width: 8%'
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $context, $scripturl)
+						'function' => function ($entry) use ($txt, $scripturl)
 						{
-							$actions = '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" data-id="' . $entry['id'] . '" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">';
+							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false, status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+							<div class="context_menu" @click.away="showContextMenu = false">
+								<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
+								<div class="roundframe" x-show="showContextMenu">
+									<ul>';
 
 							if (allowedTo('light_portal_approve_pages')) {
-								$actions .= '<span :class="{\'on\': status, \'off\': !status}" title="' . $txt['lp_action_' . (empty($data['status']) ? 'on' : 'off')] . '" @click="status = !status"></span> ';
+								$actions .= '
+										<li>
+											<a @click.prevent="showContextMenu = false; status = !status; $dispatch(\'update-status\', {id: ' . $entry['id'] . ', status: status})" x-text="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" class="button"></a>
+										</li>';
 							}
 
-							if ($context['lp_fontawesome_enabled']) {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>
-							<span class="fas fa-trash" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
-							} else {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>
-							<span class="main_icons unread_button" data-id="' . $entry['id'] . '" data-alias="' . $entry['alias'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
-							}
-
-							$actions .= '</div>';
+							$actions .= '
+										<li>
+											<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $txt['edit'] . '</a>
+										</li>
+										<li>
+											<a @click.prevent="showContextMenu = false; page.remove($el)" class="button error">' . $txt['remove'] . '</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>';
 
 							return $actions;
 						},
@@ -240,10 +270,9 @@ class ManagePages
 				array(
 					'position' => 'after_title',
 					'value' => '
-						<i class="fas fa-search centericon"></i>
-						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '">
-						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button floatnone">',
-					'class' => 'floatright'
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '" style="width: 80%">
+						<button type="submit" name="is_search" class="button floatnone" ><i class="fas fa-search"></i> ' . $txt['search'] . '</button>',
+					'class' => 'righttext'
 				),
 				array(
 					'position' => 'below_table_data',

@@ -29,13 +29,9 @@ class Settings
 	 */
 	public function adminAreas(array &$admin_areas)
 	{
-		global $settings, $context, $modSettings, $txt;
+		global $txt, $context;
 
 		loadLanguage('ManageSettings');
-
-		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
-			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
-			: false;
 
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
@@ -325,14 +321,14 @@ class Settings
 			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
 			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
 
-			if (["all_pages", "chosen_pages"].includes(front_mode)) {
+			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();
 				boards.next("dd").hide();
 			}
 
-			if (["all_topics", "chosen_topics", "chosen_boards"].includes(front_mode)) {
+			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
 				let categories = $("#setting_lp_frontpage_categories").closest("dt");
 
 				categories.hide();
@@ -670,9 +666,7 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		loadTemplate('LightPortal/ManageSettings');
-
-		$context['page_title'] = $context['settings_title'] = $txt['lp_misc'];
+		$context['page_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		// Initial settings
@@ -682,10 +676,7 @@ class Settings
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
-		$context['lp_fontawesome_compat_themes'] = Helpers::getForumThemes();
-
 		$config_vars = array(
-			array('callback', 'compat_themes'),
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
@@ -701,16 +692,7 @@ class Settings
 		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			$compat_themes = [];
-			foreach (Helpers::post('lp_fontawesome_compat_themes') as $theme => $check) {
-				$theme = (int) $theme;
-				$compat_themes[$theme] = (int) $check;
-			}
-
-			Helpers::post()->put('lp_fontawesome_compat_themes', json_encode($compat_themes));
-
 			$save_vars = $config_vars;
-			$save_vars[] = ['text', 'lp_fontawesome_compat_themes'];
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=misc');

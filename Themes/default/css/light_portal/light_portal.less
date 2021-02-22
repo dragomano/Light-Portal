@@ -85,8 +85,26 @@
 }
 
 .actions {
-	.fas {
-		.valign;
+	.context_menu {
+		position: relative;
+
+		.roundframe {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 30;
+
+			ul {
+				overflow: auto;
+				position: relative;
+				z-index: 10;
+
+				a {
+					width: 100%;
+					margin-bottom: 2px;
+				}
+			}
+		}
 	}
 }
 
@@ -550,14 +568,9 @@ section {
 .lp_default_blocks,
 .lp_additional_blocks {
 	th {
-		&.icon {
-			width: 8%;
-		}
-		&.type,
-		&.areas,
-		&.priority,
+		&.icon,
 		&.actions {
-			width: 14%;
+			width: 8%;
 		}
 	}
 }
@@ -625,6 +638,7 @@ section {
 	.lp_additional_blocks {
 		th, td {
 			&.icon,
+			&.type,
 			&.areas {
 				display: none;
 			}
@@ -699,6 +713,16 @@ section {
 	}
 }
 
+@media (max-width: 800px) {
+	#lp_pages {
+		th, td {
+			&.num_views {
+				display: none;
+			}
+		}
+	}
+}
+
 @media (max-width: 887px) {
 	.information {
 		.righttext {
@@ -708,17 +732,6 @@ section {
 	#lp_pages {
 		th, td {
 			&.alias {
-				display: none;
-			}
-		}
-	}
-}
-
-@media (max-width: 800px) {
-	#lp_pages {
-		th, td {
-			&.num_views,
-			&.type {
 				display: none;
 			}
 		}
