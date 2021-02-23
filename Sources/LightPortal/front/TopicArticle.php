@@ -69,12 +69,12 @@ class TopicArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $memberContext;
 
 		if (empty($this->selected_boards) && $modSettings['lp_frontpage_mode'] == 'all_topics')
 			return [];
 
-		if (($topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$this->params += array(
 				'start' => $start,
 				'limit' => $limit
@@ -82,7 +82,7 @@ class TopicArticle extends AbstractArticle
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
+					t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (!empty($modSettings['lp_show_images_in_articles']) ? '(
 						SELECT id_attach
 						FROM {db_prefix}attachments
 						WHERE id_msg = t.id_first_msg
@@ -102,8 +102,8 @@ class TopicArticle extends AbstractArticle
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (!empty($this->tables) ? '
 					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
-				WHERE t.approved = {int:is_approved}
-					AND t.id_poll = {int:id_poll}
+				WHERE t.id_poll = {int:id_poll}
+					AND t.approved = {int:is_approved}
 					AND t.id_redirect_topic = {int:id_redirect_topic}' . (!empty($this->selected_boards) ? '
 					AND t.id_board IN ({array_int:selected_boards})' : '') . '
 					AND {query_wanna_see_board}' . (!empty($this->wheres) ? '
@@ -119,21 +119,33 @@ class TopicArticle extends AbstractArticle
 					Helpers::cleanBbcode($row['subject']);
 
 					censorText($row['subject']);
-					censorText($row['body']);
-					censorText($row['last_body']);
+
+					if (!empty($modSettings['lp_show_teaser'])) {
+						censorText($row['body']);
+						censorText($row['last_body']);
+
+						$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', '', $row['body']);
+						$body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $body);
+						$body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $body);
+						$body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $body);
+
+						$last_body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', '', $row['last_body']);
+						$last_body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $last_body);
+						$last_body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $last_body);
+						$last_body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $last_body);
+
+						$body      = parse_bbc($body, $row['smileys_enabled'], $row['id_first_msg']);
+						$last_body = parse_bbc($last_body, $row['smileys_enabled'], $row['id_msg']);
+					}
 
 					$image = null;
 					if (!empty($row['id_attach']))
 						$image = $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
 
 					if (!empty($modSettings['lp_show_images_in_articles']) && empty($image)) {
-						$body = parse_bbc($row['body'], false);
-						$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $body, $value);
+						$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', parse_bbc($row['body'], false), $value);
 						$image = $first_post_image ? array_pop($value) : null;
 					}
-
-					self::parseBody($row['body'], $row);
-					self::parseBody($row['last_body'], $row);
 
 					$topics[$row['id_topic']] = array(
 						'id'          => $row['id_topic'],
@@ -145,7 +157,6 @@ class TopicArticle extends AbstractArticle
 						'author_name' => !empty($modSettings['lp_frontpage_article_sorting']) ? $row['poster_name'] : $row['last_poster_name'],
 						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
 						'subject'     => $row['subject'],
-						'teaser'      => Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $row['body'] : $row['last_body']),
 						'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
 						'is_sticky'   => !empty($row['is_sticky']),
 						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
@@ -155,6 +166,16 @@ class TopicArticle extends AbstractArticle
 						'image'       => $image,
 						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
 					);
+
+					loadMemberData($author_id);
+
+					$topics[$row['id_topic']]['author_avatar'] = $modSettings['avatar_url'] . '/default.png';
+					if (loadMemberContext($author_id, true)) {
+						$topics[$row['id_topic']]['author_avatar'] = $memberContext[$author_id]['avatar']['href'];
+					}
+
+					if (!empty($modSettings['lp_show_teaser']))
+						$topics[$row['id_topic']]['teaser'] = Helpers::getTeaser(!empty($modSettings['lp_frontpage_article_sorting']) ? $body : $last_body);
 
 					if (!empty($row['new_from']) && $row['new_from'] <= $row['id_msg_modified'])
 						$topics[$row['id_topic']]['link'] = $scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
@@ -174,7 +195,7 @@ class TopicArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $topics);
 		}
 
 		return $topics;
@@ -194,7 +215,7 @@ class TopicArticle extends AbstractArticle
 		if (empty($this->selected_boards) && $modSettings['lp_frontpage_mode'] == 'all_topics')
 			return 0;
 
-		if (($num_topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_topics = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(t.id_topic)
 				FROM {db_prefix}topics AS t
@@ -214,27 +235,9 @@ class TopicArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_topics, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_topics);
 		}
 
 		return (int) $num_topics;
-	}
-
-	/**
-	 * Removing unnecessary tags from the article text
-	 *
-	 * Избавляем текст статьи от ненужных тегов
-	 *
-	 * @param string $body
-	 * @param array $row
-	 * @return void
-	 */
-	protected function parseBody(&$body, $row)
-	{
-		global $txt;
-
-		$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', $txt['spoiler'] ?? '', $body);
-		$body = preg_replace('~\[code.*].*?\[/code]~Usi', $txt['code'], $body);
-		$body = strip_tags(strtr(parse_bbc($body, $row['smileys_enabled'], $row['id_first_msg']), array('<br>' => ' ')), '<blockquote><cite><ul><li>');
 	}
 }

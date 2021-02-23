@@ -72,7 +72,7 @@ class PageArticle extends AbstractArticle
 		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return [];
 
-		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$titles = Helpers::getAllTitles();
 
 			$this->params += array(
@@ -126,7 +126,8 @@ class PageArticle extends AbstractArticle
 						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
 					);
 
-					$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? strip_tags(parse_bbc($row['comment_message'])) : ($row['description'] ?: strip_tags($row['content'])));
+					if (!empty($modSettings['lp_show_teaser']))
+						$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
 
 					if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3)
 						$pages[$row['page_id']]['date'] = $row['date'];
@@ -140,7 +141,7 @@ class PageArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages);
 		}
 
 		return $pages;
@@ -160,7 +161,7 @@ class PageArticle extends AbstractArticle
 		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return 0;
 
-		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(p.page_id)
 				FROM {db_prefix}lp_pages AS p' . (!empty($this->tables) ? '
@@ -178,7 +179,7 @@ class PageArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_pages, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_pages);
 		}
 
 		return (int) $num_pages;
