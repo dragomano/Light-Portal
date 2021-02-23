@@ -196,7 +196,7 @@ class Search
 			$results[] = array(
 				'link'    => $scripturl . '?page=' . $row['alias'],
 				'title'   => $row['title'],
-				'content' => Helpers::getTeaser(strip_tags($row['content'])),
+				'content' => Helpers::getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
 				'date'    => Helpers::getFriendlyTime($row['date'])
 			);

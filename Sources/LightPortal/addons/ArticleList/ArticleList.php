@@ -171,9 +171,9 @@ class ArticleList
 				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 			WHERE t.id_topic IN ({array_int:topics})
-				AND {query_wanna_see_board}' . ($modSettings['postmod_active'] ? '
+				AND {query_wanna_see_board}
 				AND t.approved = {int:is_approved}
-				AND ml.approved = {int:is_approved}' : '') . '
+				AND ml.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
 			array(
 				'topics'      => $parameters['ids'],
@@ -191,10 +191,12 @@ class ArticleList
 
 			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
 
+			$body = parse_bbc($row['body'], $row['smileys_enabled'], $row['id_msg']);
+
 			$topics[$row['id_topic']] = array(
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
-				'description' => Helpers::getTeaser(strip_tags(strtr(parse_bbc($row['body'], $row['smileys_enabled'], $row['id_msg']), array('<br>' => '&#10;')))),
+				'description' => Helpers::getTeaser($body),
 				'image'       => $image
 			);
 		}
