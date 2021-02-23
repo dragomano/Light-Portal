@@ -454,7 +454,7 @@ class Page
 
 		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
 
-		if (($liked_pages = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+		if (($liked_pages = Helpers::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT content_id
 				FROM {db_prefix}user_likes AS l
@@ -475,7 +475,7 @@ class Page
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $liked_pages, LP_CACHE_TIME);
+			Helpers::cache()->put($cache_key, $liked_pages);
 		}
 
 		return $liked_pages;
@@ -498,7 +498,7 @@ class Page
 
 		$cache_key = 'likes_page_' . $page . '_count';
 
-		if (($num_likes = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+		if (($num_likes = Helpers::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(content_id)
 				FROM {db_prefix}user_likes AS l
@@ -515,7 +515,7 @@ class Page
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $num_likes, LP_CACHE_TIME);
+			Helpers::cache()->put($cache_key, $num_likes);
 		}
 
 		return (int) $num_likes;

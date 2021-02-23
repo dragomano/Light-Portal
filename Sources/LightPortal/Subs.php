@@ -92,7 +92,7 @@ class Subs
 	{
 		global $smcFunc;
 
-		if (($active_blocks = Helpers::cache()->get('active_blocks', LP_CACHE_TIME)) === null) {
+		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
@@ -137,7 +137,7 @@ class Subs
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('active_blocks', $active_blocks, LP_CACHE_TIME);
+			Helpers::cache()->put('active_blocks', $active_blocks);
 		}
 
 		return $active_blocks;

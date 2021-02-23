@@ -223,9 +223,6 @@ class FrontPage
 
 		require_once($settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php');
 
-		if (is_file($custom_templates = $settings['default_theme_dir'] . '/LightPortal/CustomFrontPage.template.php'))
-			require_once($custom_templates);
-
 		$fp_funcs = array_values(array_diff(get_defined_functions()['user'], $all_funcs));
 
 		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $fp_funcs), $matches);

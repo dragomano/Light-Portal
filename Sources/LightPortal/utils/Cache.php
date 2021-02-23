@@ -65,22 +65,22 @@ class Cache
 	 * @param int $time
 	 * @return mixed
 	 */
-	public static function get(string $key, $time = 120)
+	public static function get(string $key, $time = LP_CACHE_TIME)
 	{
 		return cache_get_data(static::$prefix . $key, $time);
 	}
 
 	/**
-	 * Put $value into $key in the cache for $time ms
+	 * Put $value into $key in the cache for $time
 	 *
-	 * Кладем $value в ячейку $key в кэше, на $time мс
+	 * Кладем $value в ячейку $key в кэше, на $time
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @param int $time
 	 * @return void
 	 */
-	public static function put(string $key, $value, $time = 120)
+	public static function put(string $key, $value, $time = LP_CACHE_TIME)
 	{
 		cache_put_data(static::$prefix . $key, $value, $time);
 	}

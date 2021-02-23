@@ -52,8 +52,7 @@ $txt['lp_frontpage_time_format']             = 'Time format in the article cards
 $txt['lp_frontpage_time_format_set']         = array('Full (LP style)', 'As in the forum', 'Own format');
 $txt['lp_frontpage_custom_time_format']      = 'Own time format';
 $txt['lp_frontpage_custom_time_format_help'] = 'See the list of possible parameters in the <a class="bbc_link" href="https://www.php.net/manual/en/datetime.format.php">documentation</a>.';
-$txt['lp_show_teaser']                       = 'Show the article teaser';
-$txt['lp_teaser_size']                       = 'El tamaño máximo de los avances de artículos (en símbolos)';
+$txt['lp_show_teaser']                       = 'Show the article summary';
 $txt['lp_show_author']                       = 'Show the article author';
 $txt['lp_show_author_help']                  = 'If the board card is displayed, it will be information about the category.';
 $txt['lp_show_num_views_and_comments']       = 'Show the number of views and comments';

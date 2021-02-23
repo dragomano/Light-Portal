@@ -545,17 +545,17 @@ class Helpers
 	 *
 	 * Получаем тизер статьи
 	 *
-	 * @param string|null $text
+	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text = ''): string
+	public static function getTeaser($text): string
 	{
-		global $modSettings;
-
 		if (empty($text))
-			return '';
+			return '...';
 
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+		$text = strip_tags(explode('<br>', $text)[0]);
+
+		return $text ?: '...';
 	}
 
 	/**
@@ -762,7 +762,7 @@ class Helpers
 	{
 		global $smcFunc;
 
-		if (($titles = self::cache()->get('all_titles', LP_CACHE_TIME)) === null) {
+		if (($titles = self::cache()->get('all_titles')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT item_id, lang, title
 				FROM {db_prefix}lp_titles
@@ -782,7 +782,7 @@ class Helpers
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			self::cache()->put('all_titles', $titles, LP_CACHE_TIME);
+			self::cache()->put('all_titles', $titles);
 		}
 
 		return $titles;
@@ -800,7 +800,7 @@ class Helpers
 	{
 		global $user_info, $smcFunc;
 
-		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), LP_CACHE_TIME)) === null) {
+		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])))) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -817,7 +817,7 @@ class Helpers
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages, LP_CACHE_TIME);
+			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages);
 		}
 
 		return (int) $num_pages;
