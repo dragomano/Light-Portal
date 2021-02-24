@@ -75,7 +75,8 @@ class FrontPage
 
 		$context['page_title'] = $modSettings['lp_frontpage_title'] ?: ($context['forum_name'] . ' - ' . $txt['lp_portal']);
 		$context['linktree'][] = array(
-			'name' => $txt['lp_portal']
+			'name'        => $txt['lp_portal'],
+			'extra_after' => '(' . Helpers::getText($context['total_articles'], $txt['lp_articles_set']) . ')'
 		);
 
 		obExit();
@@ -108,7 +109,7 @@ class FrontPage
 
 		$entity->init();
 
-		$total_items = $entity->getTotalCount();
+		$total_items = $context['total_articles'] = $entity->getTotalCount();
 
 		if ($start >= $total_items) {
 			send_http_status(404);

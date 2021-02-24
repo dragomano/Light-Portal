@@ -424,6 +424,7 @@ $txt['lp_posts_set']    = array('mensaje', 'mensajes');
 $txt['lp_replies_set']  = array('respuesta', 'respuestas');
 $txt['lp_views_set']    = array('vista', 'vistas');
 $txt['lp_comments_set'] = array('comentario', 'comentarios');
+$txt['lp_articles_set'] = array('article', 'articles');
 
 // Other units
 $txt['lp_users_set']   = array('usuario', 'usuarios');
