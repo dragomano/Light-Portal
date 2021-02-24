@@ -171,7 +171,7 @@ class ManagePages
 									break;
 
 								default:
-									$icon = 'fas fa-bold';
+									$icon = 'fab fa-bimobject';
 							}
 
 							return '<i class="' . $icon . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (

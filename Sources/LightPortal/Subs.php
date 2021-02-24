@@ -238,7 +238,7 @@ class Subs
 	{
 		global $context;
 
-		$context['lp_bbc_icon']  = 'fas fa-bold';
+		$context['lp_bbc_icon']  = 'fab fa-bimobject';
 		$context['lp_html_icon'] = 'fab fa-html5';
 		$context['lp_php_icon']  = 'fab fa-php';
 
