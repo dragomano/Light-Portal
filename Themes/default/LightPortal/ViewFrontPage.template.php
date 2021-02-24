@@ -46,28 +46,28 @@ function template_show_topics()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles row topic_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 	foreach ($context['lp_frontpage_articles'] as $topic) {
 		echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
-			<article class="card roundframe', $topic['css_class'], '">';
+			<article class="roundframe', $topic['css_class'], '">';
 
 		if ($topic['is_new']) {
 			echo '
-				<div class="card-new-hover">
-					<div class="card-new-icon">
+				<div class="new_hover">
+					<div class="new_icon">
 						<span class="new_posts">', $txt['new'], '</span>
 					</div>
 				</div>';
 		}
 
 		echo '
-				<div class="card-info-hover">';
+				<div class="info_hover">';
 
 		if ($topic['can_edit']) {
 			echo '
-					<div class="card-edit-icon">
+					<div class="edit_icon">
 						<a href="', $scripturl, '?action=post;msg=', $topic['id_msg'], ';topic=', $topic['id'], '.0">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -79,15 +79,15 @@ function template_show_topics()
 
 		if (!empty($topic['image'])) {
 			echo '
-				<div class="card-img"></div>
+				<div class="card_img"></div>
 				<a href="', $topic['link'], '">
-					<div class="card-img-hover" style="background-image: url(\'', $topic['image'], '\')"></div>
+					<div class="card_img_hover" style="background-image: url(\'', $topic['image'], '\')"></div>
 				</a>';
 		}
 
 		echo '
-				<div class="card-info">
-					<span class="card-date smalltext">';
+				<div class="card_info">
+					<span class="card_date smalltext">';
 
 		if (!empty($topic['board_name'])) {
 			echo '
@@ -97,7 +97,7 @@ function template_show_topics()
 		echo '
 						<time class="floatright" datetime="', $topic['datetime'], '"><i class="fas fa-clock"></i> ', $topic['date'], '</time>
 					</span>
-					<h3 class="card-title">
+					<h3>
 						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>
 					</h3>';
 
@@ -110,19 +110,13 @@ function template_show_topics()
 					<div>';
 
 		if (!empty($modSettings['lp_show_author'])) {
-			echo '
-						<span class="card-by">';
-
 			if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
 				echo '
-							<a href="', $topic['author_link'], '" class="card-author"><i class="fas fa-user"></i> ', $topic['author_name'], '</a>';
+						<a href="', $topic['author_link'], '" class="card_author"><i class="fas fa-user"></i> ', $topic['author_name'], '</a>';
 			} else {
 				echo '
-							<span class="card-author">', $txt['guest_title'], '</span>';
+						<span class="card_author">', $txt['guest_title'], '</span>';
 			}
-
-			echo '
-						</span>';
 		}
 
 		if (!empty($modSettings['lp_show_num_views_and_comments'])) {
@@ -240,10 +234,10 @@ function template_show_topics_alt()
 		if (!empty($modSettings['lp_show_author'])) {
 			if (!empty($topic['author_id']) && !empty($topic['author_name'])) {
 				echo '
-						| <i class="fas fa-user"></i> <a href="', $topic['author_link'], '" class="card-author">', $topic['author_name'], '</a>';
+						| <i class="fas fa-user"></i> <a href="', $topic['author_link'], '" class="card_author">', $topic['author_name'], '</a>';
 			} else {
 				echo '
-						| <span class="card-author">', $txt['guest_title'], '</span>';
+						| <span class="card_author">', $txt['guest_title'], '</span>';
 			}
 		}
 
@@ -379,14 +373,14 @@ function template_show_topics_alt3()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px; margin-left: 5px"' : '', '>';
+	<div class="lp_frontpage_articles row topic_alt3_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px; margin-left: 5px"' : '', '>';
 
 	$i = 0;
 	foreach ($context['lp_frontpage_articles'] as $topic) {
 		$i++;
 
 		echo '
-		<div class="blog-card', $i % 2 === 0 ? ' alt': '', ' col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="card', $i % 2 === 0 ? ' alt': '', ' col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
 			<div class="meta">';
 
 		if (!empty($topic['image'])) {
@@ -407,7 +401,7 @@ function template_show_topics_alt3()
 						<a href="', $topic['author_link'], '">', $topic['author_name'], '</a>';
 			} else {
 				echo '
-						<span class="card-author">', $txt['guest_title'], '</span>';
+						<span class="card_author">', $txt['guest_title'], '</span>';
 			}
 
 			echo '
@@ -450,11 +444,76 @@ function template_show_topics_alt3()
 		}
 
 		echo '
-				<p class="read-more">
+				<p class="read_more">
 					<a class="bbc_link" href="', $topic['msg_link'], '">', $txt['lp_read_more'], '</a> <i class="fas fa-arrow-right"></i>
 				</p>
 			</div>
 		</div>';
+	}
+
+	if (!empty($context['page_index']))
+		echo '
+		<div class="col-xs-12 centertext">
+			<div class="pagesection">
+				<div class="pagelinks">', $context['page_index'], '</div>
+			</div>
+		</div>';
+
+	echo '
+	</div>';
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	</div>';
+}
+
+/**
+ * Example of custom view for front topics
+ *
+ * Пример альтернативного отображения тем
+ *
+ * @return void
+ */
+function template_show_topics_alt4()
+{
+	global $context, $scripturl;
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	<div class="col-xs">';
+
+	echo '
+	<div class="lp_frontpage_articles row topic_alt4_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+
+	foreach ($context['lp_frontpage_articles'] as $topic) {
+		echo '
+		<article>
+			<div class="num"></div>
+			<a class="card" href="', $topic['link'], '"', !empty($topic['image']) ? ' style="--bg-img: url(\'' . $topic['image'] . '\')"' : '', '>
+				<div>
+					<h1>', $topic['subject'], '</h1>';
+
+		if (!empty($topic['teaser'])) {
+			echo '
+					<p>', $topic['teaser'], '</p>';
+		}
+
+		echo '
+					<div class="date">
+						<time datetime="', $topic['datetime'], '">', $topic['date'], '</time>
+					</div>';
+
+		if (!empty($topic['board_name'])) {
+			echo '
+					<div class="tags">
+						<div class="tag">', $topic['board_name'], '</div>
+					</div>';
+		}
+
+		echo '
+				</div>
+			</a>
+		</article>';
 	}
 
 	if (!empty($context['page_index']))
@@ -489,28 +548,28 @@ function template_show_pages()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles row topic_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 	foreach ($context['lp_frontpage_articles'] as $page) {
 		echo '
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
-			<article class="card roundframe">';
+			<article class="roundframe">';
 
 		if ($page['is_new']) {
 			echo '
-				<div class="card-new-hover">
-					<div class="card-new-icon">
+				<div class="new_hover">
+					<div class="new_icon">
 						<span class="new_posts">', $txt['new'], '</span>
 					</div>
 				</div>';
 		}
 
 		echo '
-				<div class="card-info-hover">';
+				<div class="info_hover">';
 
 		if ($page['can_edit']) {
 			echo '
-					<div class="card-edit-icon">
+					<div class="edit_icon">
 						<a href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $page['id'], '">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -522,15 +581,15 @@ function template_show_pages()
 
 		if (!empty($page['image'])) {
 			echo '
-				<div class="card-img"></div>
+				<div class="card_img"></div>
 				<a href="', $page['link'], '">
-					<div class="card-img-hover" style="background-image: url(\'', $page['image'], '\')"></div>
+					<div class="card_img_hover" style="background-image: url(\'', $page['image'], '\')"></div>
 				</a>';
 		}
 
 		echo '
-				<div class="card-info">
-					<span class="card-date smalltext">';
+				<div class="card_info">
+					<span class="card_date smalltext">';
 
 		if (!empty($page['category_name'])) {
 			echo '
@@ -540,7 +599,7 @@ function template_show_pages()
 		echo '
 						<time class="floatleft" datetime="', $page['datetime'], '"><i class="fas fa-clock"></i> ', $page['date'], '</time>
 					</span>
-					<h3 class="card-title">
+					<h3>
 						<a href="', $page['link'], '">', $page['title'], '</a>
 					</h3>';
 
@@ -553,19 +612,13 @@ function template_show_pages()
 					<div>';
 
 		if (!empty($modSettings['lp_show_author'])) {
-			echo '
-						<span class="card-by">';
-
 			if (!empty($page['author_id']) && !empty($page['author_name'])) {
 				echo '
-							<a href="', $page['author_link'], '" class="card-author"><i class="fas fa-user"></i> ', $page['author_name'], '</a>';
+						<a href="', $page['author_link'], '" class="card_author"><i class="fas fa-user"></i> ', $page['author_name'], '</a>';
 			} else {
 				echo '
-							<span class="card-author">', $txt['guest_title'], '</span>';
+						<span class="card_author">', $txt['guest_title'], '</span>';
 			}
-
-			echo '
-						</span>';
 		}
 
 		if (!empty($modSettings['lp_show_num_views_and_comments'])) {
@@ -683,10 +736,10 @@ function template_show_pages_alt()
 		if (!empty($modSettings['lp_show_author'])) {
 			if (!empty($page['author_id']) && !empty($page['author_name'])) {
 				echo '
-						| <i class="fas fa-user"></i> <a href="', $page['author_link'], '" class="card-author">', $page['author_name'], '</a>';
+						| <i class="fas fa-user"></i> <a href="', $page['author_link'], '" class="card_author">', $page['author_name'], '</a>';
 			} else {
 				echo '
-						| <span class="card-author">', $txt['guest_title'], '</span>';
+						| <span class="card_author">', $txt['guest_title'], '</span>';
 			}
 		}
 
@@ -729,7 +782,7 @@ function template_show_boards()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles row"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles row topic_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
 
 	foreach ($context['lp_frontpage_articles'] as $board) {
 		echo '
@@ -738,19 +791,19 @@ function template_show_boards()
 
 		if ($board['is_updated']) {
 			echo '
-				<div class="card-new-hover">
-					<div class="card-new-icon">
+				<div class="new_hover">
+					<div class="new_icon">
 						<span class="new_posts">', $txt['new'], '</span>
 					</div>
 				</div>';
 		}
 
 		echo '
-				<div class="card-info-hover">';
+				<div class="info_hover">';
 
 		if ($board['can_edit']) {
 			echo '
-					<div class="card-edit-icon">
+					<div class="edit_icon">
 						<a href="', $scripturl, '?action=admin;area=manageboards;sa=board;boardid=', $board['id'], '">
 							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
 						</a>
@@ -762,15 +815,15 @@ function template_show_boards()
 
 		if (!empty($board['image'])) {
 			echo '
-				<div class="card-img"></div>
+				<div class="card_img"></div>
 				<a href="', $board['link'], '">
-					<div class="card-img-hover" style="background-image: url(\'', $board['image'], '\')"></div>
+					<div class="card_img_hover" style="background-image: url(\'', $board['image'], '\')"></div>
 				</a>';
 		}
 
 		echo '
-				<div class="card-info">
-					<span class="card-date smalltext">';
+				<div class="card_info">
+					<span class="card_date smalltext">';
 
 		if (!empty($board['date']))
 			echo '
@@ -793,7 +846,7 @@ function template_show_boards()
 		if (!empty($modSettings['lp_show_author'])) {
 			echo '
 						<span class="card-by">
-							<span class="card-author"><i class="fas fa-list-alt"></i> ', $board['category'], '</span>
+							<span class="card_author"><i class="fas fa-list-alt"></i> ', $board['category'], '</span>
 						</span>';
 		}
 
