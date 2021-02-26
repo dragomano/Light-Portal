@@ -66,7 +66,7 @@ class BoardArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $context, $scripturl;
+		global $user_info, $smcFunc, $modSettings, $context, $scripturl, $txt;
 
 		if (empty($this->selected_boards))
 			return [];
@@ -108,17 +108,21 @@ class BoardArticle extends AbstractArticle
 					$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : null);
 				}
 
+				if ($row['is_redirect'] && empty($image))
+					$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
+
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
-					'name'        => $board_name,
 					'date'        => $row['poster_time'],
-					'category'    => $cat_name,
+					'title'       => $board_name,
 					'link'        => $row['is_redirect'] ? ($row['redirect'] . '" rel="nofollow noopener') : ($scripturl . '?board=' . $row['id_board'] . '.0'),
-					'is_redirect' => $row['is_redirect'],
-					'is_updated'  => empty($row['is_read']),
-					'num_posts'   => $row['num_posts'],
+					'is_new'      => empty($row['is_read']),
+					'replies'     => array('num' => $row['num_posts'], 'title' => $txt['lp_replies']),
 					'image'       => $image,
-					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards')
+					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards'),
+					'edit_link'   => $scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
+					'category'    => $cat_name,
+					'is_redirect' => $row['is_redirect']
 				);
 
 				if (!empty($modSettings['lp_show_teaser']))

@@ -69,7 +69,7 @@ class TopicArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $memberContext;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $memberContext, $txt;
 
 		if (empty($this->selected_boards) && $modSettings['lp_frontpage_mode'] == 'all_topics')
 			return [];
@@ -148,30 +148,33 @@ class TopicArticle extends AbstractArticle
 					}
 
 					$topics[$row['id_topic']] = array(
-						'id'          => $row['id_topic'],
-						'board_link'  => $scripturl . '?board=' . $row['id_board'] . '.0',
-						'board_name'  => $row['name'],
-						'id_msg'      => $row['id_first_msg'],
-						'author_id'   => $author_id = !empty($modSettings['lp_frontpage_article_sorting']) ? $row['id_member'] : $row['last_poster_id'],
-						'author_link' => $scripturl . '?action=profile;u=' . $author_id,
-						'author_name' => !empty($modSettings['lp_frontpage_article_sorting']) ? $row['poster_name'] : $row['last_poster_name'],
-						'date'        => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
-						'subject'     => $row['subject'],
-						'link'        => $scripturl . '?topic=' . $row['id_topic'] . '.0',
-						'is_sticky'   => !empty($row['is_sticky']),
-						'is_new'      => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
-						'num_views'   => $row['num_views'],
-						'num_replies' => $row['num_replies'],
-						'css_class'   => $row['is_sticky'] ? ' sticky' : '',
-						'image'       => $image,
-						'can_edit'    => $user_info['is_admin'] || ($row['id_member'] == $user_info['id'] && !empty($user_info['id']))
+						'id'        => $row['id_topic'],
+						'section'   => array(
+							'name' => $row['name'],
+							'link' => $scripturl . '?board=' . $row['id_board'] . '.0'
+						),
+						'author'    => array(
+							'id'   => $author_id = !empty($modSettings['lp_frontpage_article_sorting']) ? $row['id_member'] : $row['last_poster_id'],
+							'link' => $scripturl . '?action=profile;u=' . $author_id,
+							'name' => !empty($modSettings['lp_frontpage_article_sorting']) ? $row['poster_name'] : $row['last_poster_name']
+						),
+						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
+						'title'     => $row['subject'],
+						'link'      => $scripturl . '?topic=' . $row['id_topic'] . '.0',
+						'is_new'    => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
+						'views'     => array('num' => $row['num_views'], 'title' => $txt['lp_views']),
+						'replies'   => array('num' => $row['num_replies'], 'title' => $txt['lp_replies']),
+						'css_class' => $row['is_sticky'] ? ' sticky' : '',
+						'image'     => $image,
+						'can_edit'  => $user_info['is_admin'] || (!empty($user_info['id']) && $row['id_member'] == $user_info['id']),
+						'edit_link' => $scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
 					);
 
 					loadMemberData($author_id);
 
-					$topics[$row['id_topic']]['author_avatar'] = $modSettings['avatar_url'] . '/default.png';
+					$topics[$row['id_topic']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
 					if (loadMemberContext($author_id, true)) {
-						$topics[$row['id_topic']]['author_avatar'] = $memberContext[$author_id]['avatar']['href'];
+						$topics[$row['id_topic']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
 					}
 
 					if (!empty($modSettings['lp_show_teaser']))

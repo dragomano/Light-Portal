@@ -305,7 +305,13 @@ section {
 }
 
 /* The frontpage style */
-.topic_view {
+.lp_frontpage_articles {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.article_view {
 	> div {
 		margin-bottom: 10px;
 	}
@@ -449,7 +455,7 @@ section {
 }
 
 // Topic alt
-.topic_alt_view {
+.article_alt_view {
 	article {
 		transition: all .4s cubic-bezier(.175, .885, 0, 1);
 		position: relative;
@@ -500,7 +506,7 @@ section {
 }
 
 // Topic alt2
-.topic_alt2_view {
+.article_alt2_view {
 	display: flex;
 	flex-wrap: wrap;
 
@@ -595,7 +601,7 @@ section {
 }
 
 // Topic alt3
-.topic_alt3_view {
+.article_alt3_view {
 	.card {
 		display: flex;
 		flex-direction: column;
@@ -697,6 +703,9 @@ section {
 			background: #fff;
 			position: relative;
 			z-index: 1;
+			display: flex;
+			justify-content: space-between;
+			flex-direction: column;
 
 			a {
 				&:hover {
@@ -712,15 +721,40 @@ section {
 			h1 {
 				line-height: 1;
 				margin: 0;
-				font-size: 1.7rem;
+				font-size: 1.4rem;
 			}
 
 			h2 {
-				font-size: 1rem;
 				font-weight: 300;
 				text-transform: uppercase;
 				color: #a2a2a2;
 				margin-top: 5px;
+			}
+
+			p {
+				position: relative;
+				margin: 1rem 0 0;
+				margin-bottom: 5px;
+				overflow: hidden;
+				//text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				line-height: 1.4em;
+
+				&:first-of-type {
+					margin-top: 1.25rem;
+
+					&:before {
+						content: "";
+						position: absolute;
+						height: 5px;
+						background: #5ad67d;
+						width: 35px;
+						top: -0.75rem;
+						border-radius: 3px;
+					}
+				}
 			}
 
 			.read_more {
@@ -732,46 +766,9 @@ section {
 				}
 			}
 		}
-
-		p {
-			position: relative;
-			margin: 1rem 0 0;
-
-			&:first-of-type {
-				margin-top: 1.25rem;
-
-				&:before {
-					content: "";
-					position: absolute;
-					height: 5px;
-					background: #5ad67d;
-					width: 35px;
-					top: -0.75rem;
-					border-radius: 3px;
-				}
-			}
-		}
-	}
-}
-
-/* .alt {
-	flex-direction: row-reverse !important;
-
-	.description {
-		&:before {
-			left: inherit;
-			right: -10px;
-			transform: skew(3deg);
-		}
 	}
 
-	.details {
-		padding-left: 25px;
-	}
-} */
-
-@media (min-width: 640px) {
-	.topic_alt3_view {
+	@media (min-width: 640px) {
 		.card {
 			flex-direction: row;
 
@@ -799,13 +796,27 @@ section {
 	}
 }
 
-// Topic alt4
-:root {
-	--color: #3c3163;
-	--transition-time: 0.5s;
-}
+/* .alt {
+	flex-direction: row-reverse !important;
 
-.topic_alt4_view {
+	.description {
+		&:before {
+			left: inherit;
+			right: -10px;
+			transform: skew(3deg);
+		}
+	}
+
+	.details {
+		padding-left: 25px;
+	}
+} */
+
+// Topic alt4
+.article_alt4_view {
+	@alt4-color: #3c3163;
+	@alt4-transition-time: .5s;
+
 	justify-content: center;
 	/* display: grid;
 	justify-content: center;
@@ -830,26 +841,26 @@ section {
 			font-size: 1.5em;
 			color: white;
 			border-radius: 1em;
+			margin: 2px;
 			padding: 1em;
 			/*margin: 2em;*/
 			display: flex;
 			align-items: flex-end;
 			background-size: cover;
 			background-position: center;
-			box-shadow: 0 0 5em -1em black;
-			transition: all, var(--transition-time);
+			transition: all, @alt4-transition-time;
 			position: relative;
 			overflow: hidden;
-			border: 10px solid #ccc;
+			border: 5px solid #ccc;
 			text-decoration: none;
 
 			&:hover {
 				transform: rotate(0);
-				color: var(--color);
+				color: @alt4-color;
 
 				.tags {
 					.tag {
-						background: var(--color);
+						background: @alt4-color;
 						color: white;
 					}
 				}
@@ -870,7 +881,7 @@ section {
 				left: -50%;
 				top: -50%;
 				z-index: -5;
-				transition: all, var(--transition-time);
+				transition: all, @alt4-transition-time;
 				transition-timing-function: ease-in-out;
 			}
 
@@ -894,10 +905,16 @@ section {
 			}
 
 			p {
-				font-size: 0.75em;
+				font-size: .75em;
 				font-family: 'Open Sans';
-				margin-top: 0.5em;
 				line-height: 2em;
+				margin-top: .5em;
+				margin-bottom: 5px;
+				overflow: hidden;
+				//text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
 			}
 
 			.tags {
@@ -910,7 +927,7 @@ section {
 					padding: 0 0.5em;
 					margin-right: 0.5em;
 					line-height: 1.5em;
-					transition: all, var(--transition-time);
+					transition: all, @alt4-transition-time;
 				}
 			}
 
