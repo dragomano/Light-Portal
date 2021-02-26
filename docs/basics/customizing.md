@@ -6,8 +6,6 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 ### Settings for the frontpage and articles
 
-![](basic.png)
-
 * The portal frontpage — choose what to display on the main page of the portal:
     * Disabled
     * Specified page (only the selected page will be displayed)
@@ -22,13 +20,12 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
 * Time format in the article cards — you can change the time format.
-* Show the article teaser — check whether to display the description (summary) in the article cards.
-* The max size of article teasers (in symbols) — maximum number of characters displayed as description in the article cards.
+* Show the article summary
 * Show the article author
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* The frontpage layout — you can choose your preferred template for displaying the cards. To add your own templates, place the function `template_show_somename` into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`, or into the file `/Themes/default/LightPortal/CustomFrontPage.template.php` (you need to create it first). The template name must begin with the type of content displayed on the main page. (`pages`, `topics`, `boards`). If your template is universal (i.e. suitable for displaying all existing content types), name it `template_show_common_somename`.
+* Template layout for articles — you can choose your preferred template for displaying the cards. To add your own templates, place the function `template_show_articles_somename` (replace `somename` with your desired name) into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
 
