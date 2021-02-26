@@ -91,8 +91,12 @@ function show_plugin_settings($plugin_name, $settings)
 
 	foreach ($settings as $id => $value) {
 		echo '
-				<div>
+				<div>';
+
+		if ($value[0] !== 'callback' && $value['0'] !== 'desc') {
+			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $txt[$value[1]], '</strong></label>';
+		}
 
 		if ($value[0] == 'text') {
 			echo '
@@ -109,6 +113,13 @@ function show_plugin_settings($plugin_name, $settings)
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1">';
+		} elseif ($value[0] == 'callback' && !empty($value[2])) {
+			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
+				call_user_func($value[2]);
+			}
+		} elseif ($value[0] == 'desc') {
+			echo '
+					<div class="roundframe">', $txt[$value[1]], '</div>';
 		} elseif ($value[0] == 'multicheck') {
 			echo '
 					<fieldset>
