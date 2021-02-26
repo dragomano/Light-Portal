@@ -939,7 +939,8 @@ class ManagePages
 				'attributes' => array(
 					'id'       => 'content',
 					'value'    => $context['lp_page']['content'],
-					'required' => true
+					'required' => true,
+					'style'    => 'height: 300px'
 				),
 				'tab' => 'content'
 			);
