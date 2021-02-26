@@ -18,6 +18,7 @@ $txt['lp_content']  = 'Contenido';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views']    = $txt['views'];
 $txt['lp_replies']  = $txt['replies'];
+$txt['lp_default']  = 'Default';
 
 // Settings
 $txt['lp_settings']  = 'Configuración del portal';
@@ -62,8 +63,7 @@ $txt['lp_frontpage_article_sorting_set']     = array(
 	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
 );
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'The frontpage layout';
-$txt['lp_frontpage_layout_set']              = array('pages' => 'For page cards', 'topics' => 'For topic cards', 'boards' => 'For board cards', 'common' => 'Universal');
+$txt['lp_frontpage_layout']                  = 'Template layout for articles';
 $txt['lp_frontpage_num_columns']             = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_num_columns_set']         = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_num_items_per_page']                = 'Número de elementos por página (para paginación)';
@@ -434,6 +434,10 @@ $txt['lp_hidden_set']  = array('oculto', 'oculto');
 $txt['lp_buddies_set'] = array('amigo', 'amigos');
 
 // Credits
+$txt['lp_contributors']    = 'Contribution to the development of the portal';
+$txt['lp_translators']     = 'Translators';
+$txt['lp_testers']         = 'Testers';
+$txt['lp_sponsors']        = 'Sponsors';
 $txt['lp_used_components'] = 'Los componentes del portal.';
 
 // Debug info

@@ -18,6 +18,7 @@ $txt['lp_content']  = 'Содержимое';
 $txt['lp_my_pages'] = 'Мои страницы';
 $txt['lp_views']    = 'Просмотры';
 $txt['lp_replies']  = 'Ответы';
+$txt['lp_default']  = 'По умолчанию';
 
 // Settings
 $txt['lp_settings']  = 'Настройки портала';
@@ -62,8 +63,7 @@ $txt['lp_frontpage_article_sorting_set']     = array(
 	'По последнему комментарию', 'По дате создания (новые вверху)', 'По дате создания (старые вверху)', 'По дате обновления (свежие вверху)'
 );
 $txt['lp_frontpage_article_sorting_help']    = 'При выборе первого варианта в карточках статей отображаются даты и авторы последних комментариев (при их наличии).';
-$txt['lp_frontpage_layout']                  = 'Макет главной страницы';
-$txt['lp_frontpage_layout_set']              = array('pages' => 'Для карточек страниц', 'topics' => 'Для карточек тем', 'boards' => 'Для карточек разделов', 'common' => 'Универсальный');
+$txt['lp_frontpage_layout']                  = 'Шаблон оформления статей';
 $txt['lp_frontpage_num_columns']             = 'Количество колонок для вывода статей';
 $txt['lp_frontpage_num_columns_set']         = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
 $txt['lp_num_items_per_page']                = 'Количество элементов на странице (для пагинации)';
@@ -434,6 +434,10 @@ $txt['lp_hidden_set']  = array('скрытый', 'скрытых');
 $txt['lp_buddies_set'] = array('друг', 'друга', 'друзей');
 
 // Credits
+$txt['lp_contributors']    = 'Вклад в развитие портала';
+$txt['lp_translators']     = 'Переводчики';
+$txt['lp_testers']         = 'Тестеры';
+$txt['lp_sponsors']        = 'Спонсоры';
 $txt['lp_used_components'] = 'Компоненты портала';
 
 // Debug info
