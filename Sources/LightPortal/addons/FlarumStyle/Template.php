@@ -21,7 +21,7 @@ function show_ffs_sidebar()
 							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $txt['lp_flarum_style_addon_all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=portal;sa=tags">', $txt['lp_flarum_style_addon_tags'], '</a>
+							<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=keywords">', $txt['lp_flarum_style_addon_tags'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -96,9 +96,9 @@ function template_show_topics_as_flarum_style()
 			if (!empty($topic['image'])) {
 				echo '
 				<div class="floatleft">
-					<img class="avatar" src="', $topic['image'], '" alt="', $topic['subject'], '" loading="lazy">
+					<img class="avatar" src="', $topic['image'], '" alt="', $topic['title'], '" loading="lazy">
 				</div>';
-			 } else {
+			} else {
 				echo '
 				<div class="floatleft" style="width: 64px">
 					<i class="far fa-image fa-5x"></i>
@@ -108,22 +108,22 @@ function template_show_topics_as_flarum_style()
 			echo '
 				<div class="floatleft" style="margin-left: 20px; width: 70%">
 					<h3>
-						<a href="', $topic['msg_link'], '">', $topic['subject'], '</a>', $topic['is_new'] ? '
-						 <span class="new_posts">' . $txt['new'] . '</span> ' : '', '
+						<a href="', $topic['msg_link'], '">', $topic['title'], '</a>', $topic['is_new'] ? '
+						<span class="new_posts">' . $txt['new'] . '</span> ' : '', '
 					</h3>
 					<div class="smalltext" style="opacity: .5">';
 
-			if (!empty($topic['num_replies'])) {
+			if (!empty($topic['replies']['num'])) {
 				echo '
 						<i class="fas fa-reply"></i>';
 			}
 
-			if (!empty($topic['author_id'])) {
+			if (!empty($topic['author']['id'])) {
 				echo '
-						<a href="', $topic['author_link'], '" title="', $txt['profile_of'], ' ', $topic['author_name'], '">', $topic['author_name'], '</a>, ';
+						<a href="', $topic['author']['link'], '" title="', $txt['profile_of'], ' ', $topic['author']['name'], '">', $topic['author']['name'], '</a>, ';
 			} else {
 				echo '
-						', $topic['author_name'], ', ';
+						', $topic['author']['name'], ', ';
 			}
 
 			echo '
@@ -132,7 +132,7 @@ function template_show_topics_as_flarum_style()
 
 			if (!empty($topic['teaser'])) {
 				echo '
-					<p>
+					<p style="margin-bottom: 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.4em">
 						', $topic['teaser'], '
 					</p>';
 			}
@@ -140,13 +140,13 @@ function template_show_topics_as_flarum_style()
 			echo '
 				</div>
 				<div class="floatright smalltext">
-					<a class="new_posts" href="', $topic['board_link'], '">', $topic['board_name'], '</a>
+					<a class="new_posts" href="', $topic['section']['link'], '">', $topic['section']['name'], '</a>
 					<div class="righttext">
-						<i class="fas fa-eye" title="', $txt['lp_views'], '"></i> ', $topic['num_views'];
+						<i class="fas fa-eye" title="', $topic['views']['title'], '"></i> ', $topic['views']['num'];
 
-			if (!empty($topic['num_replies'])) {
+			if (!empty($topic['replies']['num'])) {
 				echo '
-						<i class="fas fa-comment" title="', $txt['lp_replies'], '"></i> ', $topic['num_replies'];
+						<i class="fas fa-comment" title="', $topic['replies']['title'], '"></i> ', $topic['replies']['num'];
 			}
 
 			echo '

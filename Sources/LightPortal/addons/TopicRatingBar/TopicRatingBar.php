@@ -70,7 +70,7 @@ class TopicRatingBar
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['rating'])) {
-				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
+				$context['lp_frontpage_articles'][$id]['replies']['num'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}
 	}

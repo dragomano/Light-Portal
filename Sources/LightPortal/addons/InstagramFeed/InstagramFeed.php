@@ -24,7 +24,7 @@ class InstagramFeed
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fab fa-instagram-square';
+	public $addon_icon = 'fab fa-instagram';
 
 	/**
 	 * @var string

@@ -22,7 +22,34 @@ class Markdown
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'parser';
+	public $addon_type = array('block', 'parser');
+
+	/**
+	 * Adding the new content type and block icon
+	 *
+	 * Добавляем новый тип контента и иконку блока
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		global $txt, $context;
+
+		$txt['lp_page_types']['md'] = 'Markdown';
+
+		$context['lp_md_icon'] = 'fab fa-markdown';
+	}
+
+	/**
+	 * @param array $options
+	 * @return void
+	 */
+	public function blockOptions(&$options)
+	{
+		$options['md'] = array(
+			'content' => true
+		);
+	}
 
 	/**
 	 * Parse 'md' content
