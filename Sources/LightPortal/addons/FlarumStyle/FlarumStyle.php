@@ -37,10 +37,12 @@ class FlarumStyle
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics']))
+		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
 			return;
 
-		$context['lp_all_categories'] = $this->getListSelectedBoards();
+		$context['is_portal'] = in_array($modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
+
+		$context['lp_all_categories'] = $this->getCategoryList();
 
 		require_once(__DIR__ . '/Template.php');
 
@@ -85,9 +87,31 @@ class FlarumStyle
 	 *
 	 * @return array
 	 */
-	private function getListSelectedBoards()
+	private function getCategoryList()
 	{
-		global $modSettings;
+		global $context, $txt, $modSettings;
+
+		if ($context['is_portal']) {
+			$all_categories = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Category::class);
+
+			$categories = array(
+				array(
+					'name' => $txt['lp_categories'],
+					'boards' => []
+				)
+			);
+
+			foreach ($all_categories as $id => $cat) {
+				$categories[0]['boards'][] = array(
+					'id'          => $id,
+					'name'        => $cat['name'],
+					'child_level' => 0,
+					'selected'    => false
+				);
+			}
+
+			return $categories;
+		}
 
 		Helpers::require('Subs-MessageIndex');
 

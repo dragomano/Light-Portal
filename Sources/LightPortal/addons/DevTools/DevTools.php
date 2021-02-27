@@ -24,18 +24,7 @@ class DevTools
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
-
-	/**
-	 * @return void
-	 */
-	public function init()
-	{
-		global $modSettings;
-
-		if (!empty($modSettings['lp_dev_tools_addon_debug_functions']))
-			require_once(__DIR__ . '/functions.php');
-	}
+	public $addon_type = 'frontpage';
 
 	/**
 	 * @param array $config_vars
@@ -45,8 +34,8 @@ class DevTools
 	{
 		global $txt;
 
+		$config_vars[] = array('check', 'lp_dev_tools_addon_show_template_switcher');
 		$config_vars[] = array('check', 'lp_dev_tools_addon_fake_cards', 'subtext' => $txt['lp_dev_tools_addon_fake_cards_subtext']);
-		$config_vars[] = array('check', 'lp_dev_tools_addon_debug_functions', 'subtext' => $txt['lp_dev_tools_addon_debug_functions_subtext']);
 	}
 
 	/**
@@ -56,50 +45,55 @@ class DevTools
 	{
 		global $modSettings, $scripturl, $txt, $context;
 
-		if (empty($modSettings['lp_dev_tools_addon_fake_cards']))
+		if (empty($modSettings['lp_dev_tools_addon_show_template_switcher']) && empty($modSettings['lp_dev_tools_addon_fake_cards']))
 			return;
 
-		$demo_articles = [];
+		if (!empty($modSettings['lp_dev_tools_addon_fake_cards'])) {
+			$demo_articles = [];
 
-		$products = Helpers::cache('dev_tools_addon_demo_products', 'getProducts', __CLASS__, 21600);
-		$users    = Helpers::cache('dev_tools_addon_demo_users', 'getUsers', __CLASS__, 21600);
+			$products = Helpers::cache('dev_tools_addon_demo_products', 'getProducts', __CLASS__, 21600);
+			$users    = Helpers::cache('dev_tools_addon_demo_users', 'getUsers', __CLASS__, 21600);
 
-		foreach ($products as $id => $article) {
-			$date = random_int((new \DateTime('-2 years'))->getTimestamp(), time());
+			foreach ($products as $id => $article) {
+				$date = random_int((new \DateTime('-2 years'))->getTimestamp(), time());
 
-			$demo_articles[$article['id']] = array(
-				'id'        => $article['id'],
-				'section'   => array(
-					'name' => $txt['board_name'],
-					'link' => $scripturl . '?board=' . random_int(0, 100) . '.0'
-				),
-				'id_msg'    => $msg_id = random_int(0, 9999),
-				'author'    => array(
-					'id'     => $users[$id]['id'],
-					'link'   => $scripturl . '?action=profile;u=' . $users[$id]['id'],
-					'name'   => $users[$id]['first_name'] . ' ' . $users[$id]['last_name'],
-					'avatar' => $users[$id]['avatar']
-				),
-				'date'      => (new FrontPage)->getCardDate($date),
-				'title'     => shorten_subject(Lorem::ipsum(1), 40),
-				'link'      => $link = $scripturl . '?topic=' . $article['id'] . '.0',
-				'is_new'    => rand(0, 1),
-				'views'     => array('num' => random_int(0, 9999), 'title' => $txt['lp_views']),
-				'replies'   => array('num' => $num_replies = random_int(0, 9999), 'title' => $txt['lp_replies']),
-				'css_class' => rand(0, 1) ? ' sticky' : '',
-				'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
-				'can_edit'  => true,
-				'edit_link' => '',
-				'teaser'    => Lorem::ipsum(4),
-				'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
-				'keywords'  => ['Tag1', 'Tag2', 'Tag3'],
-				'datetime'  => date('Y-m-d', $date)
-			);
+				$demo_articles[$article['id']] = array(
+					'id'        => $article['id'],
+					'section'   => array(
+						'name' => $txt['board_name'],
+						'link' => $scripturl . '?board=' . random_int(0, 100) . '.0'
+					),
+					'id_msg'    => $msg_id = random_int(0, 9999),
+					'author'    => array(
+						'id'     => $users[$id]['id'],
+						'link'   => $scripturl . '?action=profile;u=' . $users[$id]['id'],
+						'name'   => $users[$id]['first_name'] . ' ' . $users[$id]['last_name'],
+						'avatar' => $users[$id]['avatar']
+					),
+					'date'      => (new FrontPage)->getCardDate($date),
+					'title'     => shorten_subject(Lorem::ipsum(1), 40),
+					'link'      => $link = $scripturl . '?topic=' . $article['id'] . '.0',
+					'is_new'    => rand(0, 1),
+					'views'     => array('num' => random_int(0, 9999), 'title' => $txt['lp_views']),
+					'replies'   => array('num' => $num_replies = random_int(0, 9999), 'title' => $txt['lp_replies']),
+					'css_class' => rand(0, 1) ? ' sticky' : '',
+					'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
+					'can_edit'  => true,
+					'edit_link' => '',
+					'teaser'    => Lorem::ipsum(4),
+					'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
+					'keywords'  => ['Tag1', 'Tag2', 'Tag3'],
+					'datetime'  => date('Y-m-d', $date)
+				);
+			}
+
+			$context['lp_frontpage_articles'] = $demo_articles;
+
+			$context['linktree'][count($context['linktree']) - 1]['extra_after'] = '';
 		}
 
-		$context['lp_frontpage_articles'] = $demo_articles;
-
-		$context['linktree'][count($context['linktree']) - 1]['extra_after'] = '';
+		if (empty($modSettings['lp_dev_tools_addon_show_template_switcher']))
+			return;
 
 		require_once(__DIR__ . '/Template.php');
 

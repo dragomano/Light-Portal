@@ -18,10 +18,10 @@ function show_ffs_sidebar()
 				<div class="roundframe">
 					<ul>
 						<li>
-							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $txt['lp_flarum_style_addon_all_boards'], '</a>
+							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style_addon_all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, '?action=keywords">', $txt['lp_flarum_style_addon_tags'], '</a>
+							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=portal;sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style_addon_tags'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -45,12 +45,12 @@ function show_ffs_sidebar()
 					echo '
 							<ul>
 								<li style="margin-left: 1em">
-									<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>
+									<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=portal;sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>
 								</li>
 							</ul>';
 				} else {
 					echo '
-							<i class="far fa-circle"></i> <a href="', $scripturl, '?board=', $board['id'], '.0">', $board['name'], '</a>';
+							<i class="far fa-circle"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=portal;sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
 				}
 
 				echo '
@@ -89,14 +89,14 @@ function template_show_topics_as_flarum_style()
 			</div>';
 
 	if (!empty($context['lp_frontpage_articles'])) {
-		foreach ($context['lp_frontpage_articles'] as $topic) {
+		foreach ($context['lp_frontpage_articles'] as $article) {
 			echo '
-			<div class="windowbg', $topic['css_class'], '">';
+			<div class="windowbg', $article['css_class'] ?? '', '">';
 
-			if (!empty($topic['image'])) {
+			if (!empty($article['image'])) {
 				echo '
 				<div class="floatleft">
-					<img class="avatar" src="', $topic['image'], '" alt="', $topic['title'], '" loading="lazy">
+					<img class="avatar" src="', $article['image'], '" alt="', $article['title'], '" loading="lazy">
 				</div>';
 			} else {
 				echo '
@@ -108,45 +108,51 @@ function template_show_topics_as_flarum_style()
 			echo '
 				<div class="floatleft" style="margin-left: 20px; width: 70%">
 					<h3>
-						<a href="', $topic['msg_link'], '">', $topic['title'], '</a>', $topic['is_new'] ? '
+						<a href="', $article['msg_link'], '">', $article['title'], '</a>', $article['is_new'] ? '
 						<span class="new_posts">' . $txt['new'] . '</span> ' : '', '
 					</h3>
 					<div class="smalltext" style="opacity: .5">';
 
-			if (!empty($topic['replies']['num'])) {
+			if (!empty($article['replies']['num'])) {
 				echo '
 						<i class="fas fa-reply"></i>';
 			}
 
-			if (!empty($topic['author']['id'])) {
+			if (!empty($article['author']['id'])) {
 				echo '
-						<a href="', $topic['author']['link'], '" title="', $txt['profile_of'], ' ', $topic['author']['name'], '">', $topic['author']['name'], '</a>, ';
+						<a href="', $article['author']['link'], '" title="', $txt['profile_of'], ' ', $article['author']['name'], '">', $article['author']['name'], '</a>, ';
 			} else {
 				echo '
-						', $topic['author']['name'], ', ';
+						', $article['author']['name'], ', ';
 			}
 
 			echo '
-						<span', $context['lp_need_lower_case'] ? ' style="text-transform: lowercase"' : '', '>', $topic['date'], '</span>
+						<span', $context['lp_need_lower_case'] ? ' style="text-transform: lowercase"' : '', '>', $article['date'], '</span>
 					</div>';
 
-			if (!empty($topic['teaser'])) {
+			if (!empty($article['teaser'])) {
 				echo '
 					<p style="margin-bottom: 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.4em">
-						', $topic['teaser'], '
+						', $article['teaser'], '
 					</p>';
 			}
 
 			echo '
 				</div>
-				<div class="floatright smalltext">
-					<a class="new_posts" href="', $topic['section']['link'], '">', $topic['section']['name'], '</a>
-					<div class="righttext">
-						<i class="fas fa-eye" title="', $topic['views']['title'], '"></i> ', $topic['views']['num'];
+				<div class="floatright smalltext">';
 
-			if (!empty($topic['replies']['num'])) {
+			if (!empty($article['section']['name'])) {
 				echo '
-						<i class="fas fa-comment" title="', $topic['replies']['title'], '"></i> ', $topic['replies']['num'];
+					<a class="new_posts" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
+			}
+
+			echo '
+					<div class="righttext">
+						<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
+
+			if (!empty($article['replies']['num'])) {
+				echo '
+						<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
 
 			echo '
