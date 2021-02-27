@@ -133,24 +133,21 @@ function show_block_entry($id, $data)
 		</td>
 		<td
 			class="status"
+			data-id="', $id, '"
 			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
-			@update-status.window="if ($event.detail.id == ', $id, ') status = $event.detail.status"
+			x-init="$watch(\'status\', value => block.toggleStatus($el, value))"
 		>
-			<span :class="{\'on\': status, \'off\': !status}"></span>
+			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td
 			class="actions"
-			x-data="{showContextMenu: false, status: ', empty($data['status']) ? 'false' : 'true', '}"
 			data-id="', $id, '"
-			x-init="$watch(\'status\', value => block.toggleStatus($el, value))"
+			x-data="{showContextMenu: false}"
 		>
 			<div class="context_menu" @click.away="showContextMenu = false">
 				<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
 				<div class="roundframe" x-show="showContextMenu">
 					<ul>
-						<li>
-							<a @click.prevent="showContextMenu = false; status = !status; $dispatch(\'update-status\', {id: ', $id, ', status: status})" x-text="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" class="button"></a>
-						</li>
 						<li>
 							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
 						</li>';

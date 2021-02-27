@@ -192,11 +192,17 @@ class ManagePages
 						'value' => $txt['status']
 					),
 					'data' => array(
-						'function' => function ($entry)
+						'function' => function ($entry) use ($txt)
 						{
-							return '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" @update-status.window="if ($event.detail.id == ' . $entry['id'] . ') status = $event.detail.status">
-								<span :class="{\'on\': status, \'off\': !status}"></span>
+							if (allowedTo('light_portal_approve_pages')) {
+								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>';
+							} else {
+								return '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}">
+								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
+							</div>';
+							}
 						},
 						'class' => 'centertext'
 					),
@@ -211,22 +217,13 @@ class ManagePages
 						'style' => 'width: 8%'
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $scripturl)
+						'function' => function ($entry) use ($scripturl, $txt)
 						{
-							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false, status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
 							<div class="context_menu" @click.away="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
 								<div class="roundframe" x-show="showContextMenu">
-									<ul>';
-
-							if (allowedTo('light_portal_approve_pages')) {
-								$actions .= '
-										<li>
-											<a @click.prevent="showContextMenu = false; status = !status; $dispatch(\'update-status\', {id: ' . $entry['id'] . ', status: status})" x-text="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" class="button"></a>
-										</li>';
-							}
-
-							$actions .= '
+									<ul>
 										<li>
 											<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $txt['edit'] . '</a>
 										</li>
