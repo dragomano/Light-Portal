@@ -309,7 +309,7 @@ class Category
 	{
 		global $modSettings, $context;
 
-		$start = abs(Helpers::request('start'));
+		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$total_items = $this->getTotalCountPages();
@@ -318,6 +318,8 @@ class Category
 			send_http_status(404);
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
+
+		$start = abs($start);
 
 		$sort = (new FrontPage)->getOrderBy();
 

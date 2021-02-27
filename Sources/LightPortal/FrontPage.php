@@ -104,7 +104,7 @@ class FrontPage
 		if (!$entityClass instanceof AbstractArticle)
 			return;
 
-		$start = abs(Helpers::request('start'));
+		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$entityClass->init();
@@ -115,6 +115,8 @@ class FrontPage
 			send_http_status(404);
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
+
+		$start = abs($start);
 
 		$articles = $entityClass->getData($start, $limit);
 		$articles = $this->postProcess($entity, $articles);
