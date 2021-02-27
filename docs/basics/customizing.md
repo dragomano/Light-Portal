@@ -25,7 +25,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* Template layout for articles — you can choose your preferred template for displaying the cards. To add your own templates, place the function `template_show_articles_somename` (replace `somename` with your desired name) into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`.
+* Template layout for article cards — to add your own templates, place the function `template_show_articles_somename` (replace `somename` with your desired name) into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
 

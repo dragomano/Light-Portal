@@ -63,7 +63,7 @@ $txt['lp_frontpage_article_sorting_set']     = array(
 	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
 );
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'Template layout for articles';
+$txt['lp_frontpage_layout']                  = 'Template layout for article cards';
 $txt['lp_frontpage_num_columns']             = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set']         = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_num_items_per_page']                = 'Number of items per page (for pagination)';
