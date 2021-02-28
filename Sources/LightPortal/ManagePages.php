@@ -982,6 +982,56 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
+		if ($context['user']['is_admin']) {
+			foreach ($context['languages'] as $lang) {
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
+					'type' => 'text',
+					'attributes' => array(
+						'id'        => 'main_menu_item_' . $lang['filename'],
+						'maxlength' => 255,
+						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
+						'style'     => 'width: 100%'
+					),
+					'tab' => 'menu'
+				);
+			}
+		}
+
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['input'] = array(
+			'type' => 'text',
+			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'attributes' => array(
+				'id'        => 'icon',
+				'maxlength' => 30,
+				'value'     => $context['lp_page']['options']['icon'],
+				'x-ref'     => 'icon',
+				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'tab' => 'menu'
+		);
+
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id'      => 'icon_type',
+				'x-ref'   => 'icon_type',
+				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'options' => array(),
+			'tab' => 'menu'
+		);
+
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_page']['options']['icon_type']
+			);
+		}
+
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
 			'type' => 'select',
@@ -1055,53 +1105,6 @@ class ManagePages
 					'id'      => 'allow_comments',
 					'checked' => !empty($context['lp_page']['options']['allow_comments'])
 				)
-			);
-		}
-
-		if ($context['user']['is_admin']) {
-			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
-					'type' => 'text',
-					'attributes' => array(
-						'id'        => 'main_menu_item_' . $lang['filename'],
-						'maxlength' => 255,
-						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
-						'style'     => 'width: 100%'
-					)
-				);
-			}
-		}
-
-		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
-		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
-			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_page']['options']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			)
-		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'options' => array()
-		);
-
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_page']['options']['icon_type']
 			);
 		}
 

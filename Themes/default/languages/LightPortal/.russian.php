@@ -250,6 +250,7 @@ $txt['lp_tab_content']          = 'Контент';
 $txt['lp_tab_seo']              = 'SEO';
 $txt['lp_tab_access_placement'] = 'Доступ и размещение';
 $txt['lp_tab_appearance']       = 'Оформление';
+$txt['lp_tab_menu']             = 'Меню';
 $txt['lp_tab_tuning']           = 'Тюнинг';
 
 // Import and Export

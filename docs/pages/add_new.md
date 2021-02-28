@@ -9,9 +9,14 @@ Here you can configure:
 
 ## SEO tab
 Here you can configure:
-* alias — page will be available at `?page=alias`
+* alias — the page will be available at `?page=alias`
 * description — the meta description
 * keywords — the meta keywords
+
+## Menu tab
+Here you can configure:
+* displaying a link to the page in the main menu
+* menu item icon
 
 ## Tuning tab
 Here you can configure:
