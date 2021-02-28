@@ -188,12 +188,8 @@
 			}
 		}
 
-		dt {
-			width: 30%;
-		}
-
-		dd {
-			width: 70%;
+		dt, dd {
+			width: 50%;
 		}
 
 		dt.pf_content, dd.pf_content {
@@ -1656,57 +1652,6 @@ dl {
 	}
 }
 
-/* FlipsterCarousel */
-.flipster {
-	overflow: hidden !important;
-
-	.flipster__button {
-		height: auto !important;
-
-		&:focus,
-		&:hover,
-		&::selection {
-			background: none;
-			border: none;
-			box-shadow: none;
-		}
-	}
-}
-
-/* SlickSlider */
-.slick-slider {
-	min-width: 0;
-	margin: 0 20px;
-	position: relative;
-
-	.slick-arrow {
-		box-shadow: none;
-		position: absolute;
-		top: 50%;
-		z-index: 10;
-		font-size: 0;
-		width: 30px;
-		height: 60px;
-	}
-
-	.slick-prev,
-	.slick-next {
-		&::before {
-			color: @color-black !important;
-		}
-	}
-	.slick-disabled{
-		opacity: .2;
-	}
-}
-.slider__item {
-	padding: 0 15px;
-
-	img {
-		max-width: 100%;
-	}
-}
-
 /* ArticleList */
 .article_list {
 	display: grid;
@@ -1825,6 +1770,93 @@ dl {
 
 				& ~ * {
 					display: block;
+				}
+			}
+		}
+	}
+}
+
+/* TinySlider */
+.block_tiny_slider {
+	.item {
+		text-align: center;
+	}
+
+	.tns-nav {
+		text-align: center;
+		margin: 10px 0;
+
+		& > [aria-controls] {
+			width: 9px;
+			height: 9px;
+			padding: 0;
+			margin: 0 5px;
+			border-radius: 50%;
+			background: #ddd;
+			border: 0;
+		}
+
+		& > .tns-nav-active {
+			background: #999;
+		}
+	}
+
+	.customize-tools {
+		position: relative;
+
+		&[hidden] {
+			display: none;
+		}
+
+		.thumbnails {
+			margin: 20px 0 0;
+			text-align: center;
+
+			li {
+				display: inline-block;
+				cursor: pointer;
+				border: 5px solid #fff;
+				width: 50px;
+			}
+
+			img {
+				vertical-align: bottom;
+				height: auto;
+				max-height: 50px;
+			}
+
+			.tns-nav-active {
+				background: none;
+				border-color: #000;
+			}
+
+			@media (max-width: 640px) {
+				margin-bottom: 10px;
+			}
+		}
+
+		.controls {
+			text-align: center;
+			margin-top: 10px;
+
+			li {
+				display: block;
+				padding: 0 15px;
+				cursor: pointer;
+				transition: background 0.3s;
+
+				span::selection {
+					text-shadow: none;
+					background: initial;
+					color: inherit;
+				}
+			}
+
+			@media (max-width: 640px) {
+				li {
+					display: inline-block;
+					position: relative;
+					padding: 0;
 				}
 			}
 		}
