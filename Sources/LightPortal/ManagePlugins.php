@@ -515,15 +515,7 @@ class ManagePlugins
 
 		Subs::runAddons('preparePluginFields');
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
-
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-		}
-
-		loadTemplate('LightPortal/ManageSettings');
+		Helpers::preparePostFields();
 	}
 
 	/**

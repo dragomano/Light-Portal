@@ -846,4 +846,32 @@ class Helpers
 	{
 		return self::cache('all_tags', 'getList', Tag::class);
 	}
+
+	/**
+	 * Prepare field array with entity options
+	 *
+	 * Формируем массив полей с настройками сущности
+	 *
+	 * @return void
+	 */
+	public static function preparePostFields()
+	{
+		global $context;
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if ($item !== 'icon' && !empty($data['input']['after']))
+				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+
+			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+				$data['input']['attributes']['class'] = 'checkbox';
+				$data['input']['after'] = '<label class="label" for="' . $data['input']['attributes']['id'] . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
+				$context['posting_fields'][$item] = $data;
+			}
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+		}
+
+		loadTemplate('LightPortal/ManageSettings');
+	}
 }

@@ -754,17 +754,9 @@ class ManageBlocks
 
 		Subs::runAddons('prepareBlockFields');
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
-
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-		}
+		Helpers::preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
-
-		loadTemplate('LightPortal/ManageSettings');
 	}
 
 	/**
