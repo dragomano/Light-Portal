@@ -97,6 +97,7 @@
 			ul {
 				overflow: auto;
 				position: relative;
+				list-style: none;
 				z-index: 10;
 
 				a {
@@ -161,49 +162,241 @@
 }
 
 #lp_post {
-	#post_header {
-		margin: 0;
-		display: flex;
-		flex-wrap: wrap;
+	/* Tabs for settings */
+	.lp_tabs {
+		padding: 0;
+		margin: 0 auto;
 
-		dt, dd {
-			margin-block-start: 1px;
-			margin-block-end: 1px;
-			margin-inline-start: 0;
-			padding-top: 5px;
+		> input {
+			display: none;
+			position: absolute;
 
-			&:first-child, &:first-child {
-				margin-block-start: 0;
-			}
-
-			&:last-child, &:last-child {
-				margin-block-end: 0;
-			}
-
-			& > *:first-child, & > *:first-child {
-				margin-block-start: 0;
-			}
-			& > *:last-child, & > *:last-child {
-				margin-block-end: 0;
+			&:checked+label {
+				color: @tabs-input-color;
+				border-top: 1px solid @tabs-input-border-color;
+				border-bottom: 1px solid @color-white;
 			}
 		}
 
-		dt, dd {
-			width: 50%;
+		input,
+		textarea {
+			&:invalid {
+				border: 3px double red;
+			}
 		}
 
-		dt.pf_content, dd.pf_content {
-			width: 100%;
-		}
-	}
-}
+		> label {
+			display: inline-block;
+			margin: 0 0 -1px;
+			padding: 15px 25px;
+			font-weight: 600;
+			text-align: center;
+			color: @tabs-label-color;
+			border: 1px solid @color-light-gray;
+			border-radius: 3px 3px 0 0;
 
-@media (max-width: 750px) {
-	#lp_post {
-		#post_header {
-			dt, dd {
+			&:hover {
+				color: @tabs-label-hover-color;
+				.pointer;
+			}
+
+			&:before {
+				font-family: "Font Awesome 5 Free";
+				margin-right: 10px;
+			}
+
+			&[for*="1"] {
+				&:before {
+					content: "\f15c";
+				}
+			}
+			&[for*="2"] {
+				&:before {
+					content: "\f084";
+				}
+			}
+			&[for*="3"] {
+				&:before {
+					content: "\f53f";
+				}
+			}
+			&[for*="4"] {
+				&:before {
+					content: "\f509";
+				}
+			}
+
+			@media screen and (max-width: 680px) {
+				font-size: 0;
+
+				&:before {
+					margin: 0;
+					font-size: 18px;
+				}
+			}
+
+			@media screen and (max-width: 400px) {
+				padding: 15px;
+			}
+		}
+
+		#tab1:checked~#content-tab1,
+		#tab2:checked~#content-tab2,
+		#tab3:checked~#content-tab3,
+		#tab4:checked~#content-tab4 {
+			display: block;
+		}
+
+		section {
+			display: none;
+			padding: 15px;
+			border: 1px solid @color-light-gray;
+			.border-radius(0, 7px, 7px, 7px);
+
+			> div {
+				margin-top: 1em;
+			}
+
+			#post_header {
+				display: flex;
+				flex-wrap: wrap;
+				flex-direction: column;
+				line-height: 1.5;
+				-webkit-animation-duration: 1s;
+				animation-duration: 1s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+
+				@media (max-width: 600px) {
+					flex-direction: row;
+				}
+
+				dt {
+					width: 50%;
+
+					label {
+						font-weight: bold;
+					}
+				}
+
+				dt, dd {
+					margin-block-start: 1px;
+					margin-block-end: 1px;
+					margin-inline-start: 0;
+					padding-top: 5px;
+
+					&:first-child, &:first-child {
+						margin-block-start: 0;
+					}
+
+					&:last-child, &:last-child {
+						margin-block-end: 0;
+					}
+
+					& > *:first-child, & > *:first-child {
+						margin-block-start: 0;
+					}
+					& > *:last-child, & > *:last-child {
+						margin-block-end: 0;
+					}
+
+					width: auto !important;
+					float: none !important;
+					flex: 2 50%;
+
+					@media (max-width: 600px) {
+						flex: 1 100%;
+						text-align: center;
+					}
+				}
+
+				dt.pf_content, dd.pf_content {
+					width: 100%;
+				}
+
+				dd {
+					/* Checkbox toggler */
+					.checkbox {
+						vertical-align: top;
+						margin: 0 3px 0 0;
+						width: 17px;
+						height: 17px;
+
+						& + .label {
+							.pointer;
+						}
+
+						&:not(checked) {
+							position: absolute;
+							opacity: 0;
+
+							& + .label {
+								position: relative;
+								padding: 0 0 0 60px;
+
+								&:before {
+									content: '';
+									position: absolute;
+									top: -4px;
+									left: 0;
+									width: 50px;
+									height: 26px;
+									border-radius: 13px;
+									background: #CDD1DA;
+									box-shadow: inset 0 2px 3px rgba(0, 0, 0, .2);
+								}
+
+								&:after {
+									content: '';
+									position: absolute;
+									top: -2px;
+									left: 2px;
+									width: 22px;
+									height: 22px;
+									border-radius: 10px;
+									background: #fff;
+									box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+									transition: all .2s;
+								}
+							}
+						}
+
+						&:checked {
+							& + .label {
+								&:before {
+									background: #00CC33;
+								}
+
+								&:after {
+									left: 26px;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			.choices__inner {
+				.border-radius;
+			}
+
+			.add_option {
 				width: 100%;
-				flex-grow: 1;
+
+				select,
+				input {
+					width: 100%;
+				}
+
+				@media screen and (max-width: 680px) {
+					.plugin_options {
+						td:first-child {
+							display: none;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -762,10 +955,8 @@ section {
 				}
 			}
 		}
-	}
 
-	@media (min-width: 640px) {
-		.card {
+		@media (min-width: 640px) {
 			flex-direction: row;
 
 			.meta {
@@ -940,12 +1131,11 @@ section {
 					color: inherit;
 				}
 			}
-		}
-	}
 
-	@media screen and (max-width: 500px) {
-		.card {
-			max-width: calc(100vw - 4rem);
+
+			@media screen and (max-width: 500px) {
+				max-width: calc(100vw - 4rem);
+			}
 		}
 	}
 }
@@ -1109,6 +1299,10 @@ section {
 	.floatleft {
 		width: 80%;
 	}
+
+	.fa-toggle-on {
+		color: #00CC33;
+	}
 }
 
 .lp_plugin_toggle,
@@ -1163,6 +1357,7 @@ section {
 	}
 }
 
+/* Common media queriers */
 @media (max-width: 480px) {
 	.lp_default_blocks,
 	.lp_additional_blocks {
@@ -1281,105 +1476,7 @@ section {
 	}
 }
 
-/* Tabs for settings */
-.lp_tabs {
-	padding: 0;
-	margin: 0 auto;
-
-	> input {
-		display: none;
-		position: absolute;
-
-		&:checked+label {
-			color: @tabs-input-color;
-			border-top: 1px solid @tabs-input-border-color;
-			border-bottom: 1px solid @color-white;
-		}
-	}
-
-	input,
-	textarea {
-		&:invalid {
-			border: 3px double red;
-		}
-	}
-
-	> label {
-		display: inline-block;
-		margin: 0 0 -1px;
-		padding: 15px 25px;
-		font-weight: 600;
-		text-align: center;
-		color: @tabs-label-color;
-		border: 1px solid @color-light-gray;
-		border-radius: 3px 3px 0 0;
-
-		&:hover {
-			color: @tabs-label-hover-color;
-			.pointer;
-		}
-
-		&:before {
-			font-family: "Font Awesome 5 Free";
-			margin-right: 10px;
-		}
-
-		&[for*="1"] {
-			&:before {
-				content: "\f15c";
-			}
-		}
-		&[for*="2"] {
-			&:before {
-				content: "\f084";
-			}
-		}
-		&[for*="3"] {
-			&:before {
-				content: "\f53f";
-			}
-		}
-		&[for*="4"] {
-			&:before {
-				content: "\f509";
-			}
-		}
-	}
-
-	section {
-		display: none;
-		padding: 15px;
-		background: @color-white;
-		border: 1px solid @color-light-gray;
-		.border-radius(0, 7px, 7px, 7px);
-
-		dl {
-			margin: 0 0 5px;
-			line-height: 1.5;
-			-webkit-animation-duration: 1s;
-			animation-duration: 1s;
-			-webkit-animation-fill-mode: both;
-			animation-fill-mode: both;
-			-webkit-animation-name: fadeIn;
-			animation-name: fadeIn;
-
-			dt {
-				label {
-					font-weight: bold;
-				}
-			}
-
-			dd {
-				margin-bottom: 1em;
-			}
-		}
-
-		.choices__inner {
-			.border-radius;
-		}
-	}
-}
-
+/* Animations */
 @-webkit-keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -1397,49 +1494,6 @@ section {
 	}
 }
 
-#tab1:checked~#content-tab1,
-#tab2:checked~#content-tab2,
-#tab3:checked~#content-tab3,
-#tab4:checked~#content-tab4 {
-	display: block;
-}
-
-.add_option {
-	width: 100%;
-
-	select,
-	input {
-		width: 100%;
-	}
-}
-
-@media screen and (max-width: 680px) {
-	.lp_tabs {
-		> label {
-			font-size: 0;
-
-			&:before {
-				margin: 0;
-				font-size: 18px;
-			}
-		}
-	}
-
-	.plugin_options {
-		td:first-child {
-			display: none;
-		}
-	}
-}
-
-@media screen and (max-width: 400px) {
-	.lp_tabs {
-		> label {
-			padding: 15px;
-		}
-	}
-}
-
 /* Addons */
 
 /* UserInfo */
@@ -1452,10 +1506,8 @@ section {
 			margin: 1em;
 		}
 	}
-}
 
-@media (min-width: 769px) and (max-width: 1241px) {
-	.block_user_info {
+	@media (min-width: 769px) and (max-width: 1241px) {
 		span {
 			&.floatleft,
 			&.floatright {
@@ -1850,10 +1902,8 @@ dl {
 					background: initial;
 					color: inherit;
 				}
-			}
 
-			@media (max-width: 640px) {
-				li {
+				@media (max-width: 640px) {
 					display: inline-block;
 					position: relative;
 					padding: 0;
