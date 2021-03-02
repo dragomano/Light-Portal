@@ -19,7 +19,7 @@ In any case, the title of each of your commits should continue such a phrase —
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use PHP 7.2+
+* Use PHP 7.3+
 * Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
 
 ```php
@@ -87,7 +87,7 @@ $test = isset($variable) ? $variable : 'default_value';
 ```
 
 ### JavaScript Styleguide
-* Use native JavaScript instead of jQuery, or [Alpine.js](https://github.com/alpinejs/alpine) instead of native JS.
+* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) instead of jQuery.
 * Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts or functions.
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
