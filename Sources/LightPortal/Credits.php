@@ -76,6 +76,10 @@ class Credits
 			array(
 				'name' => 'Rock Lee',
 				'lang' => 'Spanish'
+			),
+			array(
+				'name' => 'Papoune57',
+				'lang' => 'French'
 			)
 		);
 
