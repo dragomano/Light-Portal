@@ -894,7 +894,7 @@ class ManagePages
 
 		$i = 0;
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -905,6 +905,7 @@ class ManagePages
 					'style'     => 'width: 100%',
 					'x-ref'     => 'title_' . $i++
 				),
+				'spoiler' => !in_array($lang['filename'], $languages),
 				'tab' => 'content'
 			);
 		}
@@ -984,7 +985,7 @@ class ManagePages
 
 		if ($context['user']['is_admin']) {
 			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
 					'type' => 'text',
 					'attributes' => array(
@@ -993,6 +994,7 @@ class ManagePages
 						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
 						'style'     => 'width: 100%'
 					),
+					'spoiler' => $lang['filename'] != $context['user']['language'],
 					'tab' => 'menu'
 				);
 			}

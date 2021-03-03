@@ -574,7 +574,7 @@ class ManageBlocks
 		$this->improveSelectFields();
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -582,6 +582,7 @@ class ManageBlocks
 					'value'     => $context['lp_block']['title'][$lang['filename']] ?? '',
 					'style'     => 'width: 100%'
 				),
+				'spoiler' => $lang['filename'] != $context['user']['language'],
 				'tab' => 'content'
 			);
 		}

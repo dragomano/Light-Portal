@@ -326,7 +326,7 @@ function template_plugin_post()
 	foreach ($context['languages'] as $lang) {
 		echo '
 																<tr class="windowbg">
-																	<td><strong>', $lang['filename'], '</strong></td>
+																	<td><strong>', $lang['name'], '</strong></td>
 																	<td>
 																		<input type="text" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
 																	</td>

@@ -408,23 +408,24 @@ class ManagePlugins
 		}
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
-					'id'        => 'title_' . $lang['filename'],
-					'maxlength' => 255,
-					'value'     => $context['lp_plugin']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $lang['filename']
+					'id'          => 'title_' . $lang['filename'],
+					'maxlength'   => 255,
+					'value'       => $context['lp_plugin']['title'][$lang['filename']] ?? '',
+					'required'    => in_array($lang['filename'], $languages),
+					'style'       => 'width: 100%',
+					'x-ref'       => 'title_' . $lang['filename']
 				),
+				'spoiler' => !in_array($lang['filename'], $languages),
 				'tab' => 'content'
 			);
 		}
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $txt['lp_page_description'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $txt['lp_page_description'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['description_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -434,6 +435,7 @@ class ManagePlugins
 					'required'  => in_array($lang['filename'], $languages),
 					'style'     => 'width: 100%'
 				),
+				'spoiler' => !in_array($lang['filename'], $languages),
 				'tab' => 'content'
 			);
 		}
