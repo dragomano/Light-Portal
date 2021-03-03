@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -22,34 +22,7 @@ class EasyMarkdownEditor
 	/**
 	 * @var array
 	 */
-	public $addon_type = array('block', 'editor');
-
-	/**
-	 * Adding the new content type and block icon
-	 *
-	 * Добавляем новый тип контента и иконку блока
-	 *
-	 * @return void
-	 */
-	public function init()
-	{
-		global $txt, $context;
-
-		$txt['lp_page_types']['md'] = 'Markdown';
-
-		$context['lp_md_icon'] = 'fab fa-markdown';
-	}
-
-	/**
-	 * @param array $options
-	 * @return void
-	 */
-	public function blockOptions(&$options)
-	{
-		$options['md'] = array(
-			'content' => true
-		);
-	}
+	public $addon_type = 'editor';
 
 	/**
 	 * Adding the editor for 'md' content

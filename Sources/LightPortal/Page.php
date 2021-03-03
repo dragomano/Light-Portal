@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Page.php
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -28,6 +30,7 @@ class Page
 	 * Просматриваем страницу по её алиасу
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function show()
 	{
@@ -179,7 +182,7 @@ class Page
 	 *
 	 * @return array
 	 */
-	public function getRelatedPages()
+	public function getRelatedPages(): array
 	{
 		global $smcFunc, $modSettings, $context;
 
@@ -249,6 +252,7 @@ class Page
 	 * Подготавливаем комментарии для отображения
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	private function prepareComments()
 	{
@@ -276,7 +280,7 @@ class Page
 	 * @param array $params
 	 * @return array
 	 */
-	public function getData(array $params)
+	public function getData(array $params): array
 	{
 		global $smcFunc, $txt, $modSettings;
 
@@ -368,7 +372,7 @@ class Page
 	 * @param string $alias
 	 * @return array
 	 */
-	public function getDataByAlias(string $alias)
+	public function getDataByAlias(string $alias): array
 	{
 		if (empty($alias))
 			return [];
@@ -388,7 +392,7 @@ class Page
 	 * @param int $item
 	 * @return array
 	 */
-	public function getDataByItem(int $item)
+	public function getDataByItem(int $item): array
 	{
 		if (empty($item))
 			return [];
@@ -441,7 +445,7 @@ class Page
 	 * @param int $page
 	 * @return array
 	 */
-	private function prepareLikesContext(int $page)
+	private function prepareLikesContext(int $page): array
 	{
 		global $user_info, $smcFunc;
 
@@ -450,7 +454,7 @@ class Page
 
 		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
 
-		if (($liked_pages = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+		if (($liked_pages = Helpers::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT content_id
 				FROM {db_prefix}user_likes AS l
@@ -471,7 +475,7 @@ class Page
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $liked_pages, LP_CACHE_TIME);
+			Helpers::cache()->put($cache_key, $liked_pages);
 		}
 
 		return $liked_pages;
@@ -485,7 +489,7 @@ class Page
 	 * @param int $page
 	 * @return int
 	 */
-	private function getLikesCount(int $page)
+	private function getLikesCount(int $page): int
 	{
 		global $smcFunc;
 
@@ -494,7 +498,7 @@ class Page
 
 		$cache_key = 'likes_page_' . $page . '_count';
 
-		if (($num_likes = Helpers::cache()->get($cache_key, LP_CACHE_TIME)) === null) {
+		if (($num_likes = Helpers::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(content_id)
 				FROM {db_prefix}user_likes AS l
@@ -511,7 +515,7 @@ class Page
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $num_likes, LP_CACHE_TIME);
+			Helpers::cache()->put($cache_key, $num_likes);
 		}
 
 		return (int) $num_likes;

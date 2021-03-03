@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -20,11 +20,9 @@ if (!defined('SMF'))
 class Credits
 {
 	/**
-	 * The mod credits for action=credits
+	 * Display credits on action=credits area
 	 *
 	 * Отображаем копирайты на странице action=credits
-	 *
-	 * @return void
 	 */
 	public function show()
 	{
@@ -49,10 +47,8 @@ class Credits
 	 * Return copyright information
 	 *
 	 * Возвращаем информацию об авторских правах
-	 *
-	 * @return string
 	 */
-	public function getCopyrights()
+	public function getCopyrights(): string
 	{
 		global $user_info, $scripturl;
 
@@ -62,17 +58,44 @@ class Credits
 	}
 
 	/**
-	 * Collect information about used components
+	 * Prepare information about contrubutors and third party components
 	 *
-	 * Формируем информацию об используемых компонентах
-	 *
-	 * @return void
+	 * Формируем информацию о внесших вклад в развитие портала и об используемых компонентах
 	 */
 	public function getComponentList()
 	{
 		global $context;
 
 		isAllowedTo('light_portal_view');
+
+		$context['translators'] = array(
+			array(
+				'name' => 'Adrek',
+				'lang' => 'Polish'
+			),
+			array(
+				'name' => 'Rock Lee',
+				'lang' => 'Spanish'
+			),
+			array(
+				'name' => 'Papoune57',
+				'lang' => 'French'
+			)
+		);
+
+		$context['testers'] = array(
+			array(
+				'name' => 'Wylek',
+				'link' => 'https://wylek.ru/'
+			)
+		);
+
+		$context['sponsors'] = array(
+			array(
+				'name' => 'JetBrains',
+				'link' => 'https://www.jetbrains.com/?from=LightPortal'
+			)
+		);
 
 		$links = array(
 			array(
@@ -87,6 +110,7 @@ class Credits
 			array(
 				'title' => 'Font Awesome Free',
 				'link' => 'https://fontawesome.com/cheatsheet/free',
+				'author' => 'Fonticons, Inc.',
 				'license' => array(
 					'name' => 'the Font Awesome Free License',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
@@ -95,6 +119,7 @@ class Credits
 			array(
 				'title' => 'Alpine.js',
 				'link' => 'https://github.com/alpinejs/alpine',
+				'author' => 'Caleb Porzio and contributors',
 				'license' => array(
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'

@@ -13,7 +13,7 @@ use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -134,7 +134,7 @@ class Helpers
 	 * @param string|null $type
 	 * @return string
 	 */
-	public static function getIcon($icon = null, $type = null)
+	public static function getIcon($icon = null, $type = null): string
 	{
 		global $context;
 
@@ -155,7 +155,7 @@ class Helpers
 	 * @param string|null $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle($prefix = null)
+	public static function getPreviewTitle($prefix = null): string
 	{
 		global $context, $txt;
 
@@ -171,7 +171,7 @@ class Helpers
 	 * @param string $direction
 	 * @return string
 	 */
-	private static function getFloatSpan(string $text, string $direction = 'left')
+	private static function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}
@@ -189,7 +189,7 @@ class Helpers
 	 * @param array|string $str массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
 	 * @return string
 	 */
-	public static function getText(int $num, $str)
+	public static function getText(int $num, $str): string
 	{
 		global $txt;
 
@@ -262,7 +262,7 @@ class Helpers
 	 * @param bool $use_user_offset
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false)
+	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false): string
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
@@ -368,7 +368,7 @@ class Helpers
 	 * @param string $postfix
 	 * @return string
 	 */
-	public static function getDateFormat(int $day, string $month, string $postfix)
+	public static function getDateFormat(int $day, string $month, string $postfix): string
 	{
 		global $txt;
 
@@ -432,7 +432,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canViewItem(int $permissions)
+	public static function canViewItem(int $permissions): bool
 	{
 		global $user_info;
 
@@ -458,7 +458,7 @@ class Helpers
 	 *
 	 * @return array
 	 */
-	public static function getPermissions()
+	public static function getPermissions(): array
 	{
 		global $user_info;
 
@@ -480,7 +480,7 @@ class Helpers
 	 * @param string $alias
 	 * @return bool
 	 */
-	public static function isFrontpage(string $alias)
+	public static function isFrontpage(string $alias): bool
 	{
 		global $modSettings;
 
@@ -501,7 +501,7 @@ class Helpers
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getTitle(array $object)
+	public static function getTitle(array $object): string
 	{
 		global $user_info, $language;
 
@@ -529,7 +529,7 @@ class Helpers
 	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $value, string $delimiter = '_')
+	public static function getSnakeName(string $value, string $delimiter = '_'): string
 	{
 		if (!ctype_lower($value)) {
 			$value = preg_replace('/\s+/u', '', ucwords($value));
@@ -545,17 +545,17 @@ class Helpers
 	 *
 	 * Получаем тизер статьи
 	 *
-	 * @param string|null $text
+	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text = '')
+	public static function getTeaser($text): string
 	{
-		global $modSettings;
-
 		if (empty($text))
-			return '';
+			return '...';
 
-		return !empty($modSettings['lp_teaser_size']) ? shorten_subject(trim($text), $modSettings['lp_teaser_size']) : trim($text);
+		$text = strip_tags(explode('<br>', $text)[0]);
+
+		return $text ?: '...';
 	}
 
 	/**
@@ -565,7 +565,7 @@ class Helpers
 	 *
 	 * @return array
 	 */
-	public static function getForumThemes()
+	public static function getForumThemes(): array
 	{
 		global $smcFunc;
 
@@ -758,11 +758,11 @@ class Helpers
 	 * @param string $type
 	 * @return array
 	 */
-	public static function getAllTitles(string $type = 'page')
+	public static function getAllTitles(string $type = 'page'): array
 	{
 		global $smcFunc;
 
-		if (($titles = self::cache()->get('all_titles', LP_CACHE_TIME)) === null) {
+		if (($titles = self::cache()->get('all_titles')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT item_id, lang, title
 				FROM {db_prefix}lp_titles
@@ -782,7 +782,7 @@ class Helpers
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			self::cache()->put('all_titles', $titles, LP_CACHE_TIME);
+			self::cache()->put('all_titles', $titles);
 		}
 
 		return $titles;
@@ -796,11 +796,11 @@ class Helpers
 	 * @param bool $all - подсчитывать все страницы
 	 * @return int
 	 */
-	public static function getNumActivePages($all = false)
+	public static function getNumActivePages($all = false): int
 	{
 		global $user_info, $smcFunc;
 
-		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), LP_CACHE_TIME)) === null) {
+		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])))) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -817,7 +817,7 @@ class Helpers
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages, LP_CACHE_TIME);
+			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages);
 		}
 
 		return (int) $num_pages;
@@ -845,5 +845,33 @@ class Helpers
 	public static function getAllTags()
 	{
 		return self::cache('all_tags', 'getList', Tag::class);
+	}
+
+	/**
+	 * Prepare field array with entity options
+	 *
+	 * Формируем массив полей с настройками сущности
+	 *
+	 * @return void
+	 */
+	public static function preparePostFields()
+	{
+		global $context;
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if ($item !== 'icon' && !empty($data['input']['after']))
+				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+
+			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+				$data['input']['attributes']['class'] = 'checkbox';
+				$data['input']['after'] = '<label class="label" for="' . $data['input']['attributes']['id'] . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
+				$context['posting_fields'][$item] = $data;
+			}
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+		}
+
+		loadTemplate('LightPortal/ManageSettings');
 	}
 }

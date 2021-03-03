@@ -60,6 +60,9 @@ function template_manage_blocks()
 				<th scope="col" class="priority">
 					', $txt['lp_block_priority'], '
 				</th>
+				<th scope="col" class="status">
+					', $txt['status'], '
+				</th>
 				<th scope="col" class="actions">
 					', $txt['lp_actions'], '
 				</th>
@@ -103,15 +106,21 @@ function show_block_entry($id, $data)
 	echo '
 	<tr id="lp_block_', $id, '" class="windowbg">';
 
-	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
+	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none') {
 		echo '
 		<td class="icon">
 			', $data['icon'], '
 		</td>';
+	}
 
 	echo '
 		<td class="title">
-			', $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'], '
+			', $title = $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'];
+
+	if (empty($title))
+		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
+
+	echo '
 		</td>
 		<td class="type">
 			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
@@ -120,36 +129,43 @@ function show_block_entry($id, $data)
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td class="actions" x-data="{status: ', empty($data['status']) ? 'false' : 'true', '}" data-id="', $id, '" x-init="$watch(\'status\', value => block.toggleStatus($el, value))">
-			<span :class="{\'on\': status, \'off\': !status}" title="', $txt['lp_action_' . (empty($data['status']) ? 'on' : 'off')], '" @click="status = !status"></span>';
+		<td
+			class="status"
+			data-id="', $id, '"
+			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
+			x-init="$watch(\'status\', value => block.toggleStatus($el, value))"
+		>
+			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
+		</td>
+		<td
+			class="actions"
+			data-id="', $id, '"
+			x-data="{showContextMenu: false}"
+		>
+			<div class="context_menu" @click.away="showContextMenu = false">
+				<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
+				<div class="roundframe" x-show="showContextMenu">
+					<ul>
+						<li>
+							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
+						</li>';
 
-		if ($context['lp_fontawesome_enabled']) {
-			echo '
-			<span class="fas fa-clone" title="', $txt['lp_action_clone'], '" @click="block.clone($el)"></span>';
-
-			if (isset($txt['lp_block_types'][$data['type']])) {
-				echo '
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>';
-			}
-
-			echo '
-			<span class="fas fa-trash" title="', $txt['remove'], '" @click="block.remove($el)"></span>';
-		} else {
-			echo '
-			<span class="main_icons reports" title="', $txt['lp_action_clone'], '" @click="block.clone($el)"></span>';
-
-			if (isset($txt['lp_block_types'][$data['type']])) {
-				echo '
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>';
-			}
-
-			echo '
-			<span class="main_icons unread_button" title="', $txt['remove'], '" @click="block.remove($el)"></span>';
-		}
-
+	if (isset($txt['lp_block_types'][$data['type']])) {
 		echo '
+						<li>
+							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['edit'] ,'</a>
+						</li>';
+	}
+
+	echo '
+						<li>
+							<a @click.prevent="showContextMenu = false; block.remove($el)" class="button error">', $txt['remove'], '</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</td>
 	</tr>';
 }

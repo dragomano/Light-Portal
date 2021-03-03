@@ -8,7 +8,7 @@
 * **Compatible with:** SMF 2.1 RC3+ / PHP 7.3+
 * **Tested on:** PHP 7.4.15, 8.0.2 / MariaDB 10.5.6 / MySQL 5.7.25 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
-* **Languages:** Spanish, Ukrainian, Polish, English, Russian
+* **Languages:** English, Russian, Ukrainian, Polish, Spanish, French
 
 ## Description
 This modification will transform your forum into a portal that includes:

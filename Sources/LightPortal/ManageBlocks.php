@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -66,7 +66,7 @@ class ManageBlocks
 	 *
 	 * @return array
 	 */
-	public function getAll()
+	public function getAll(): array
 	{
 		global $smcFunc;
 
@@ -395,7 +395,7 @@ class ManageBlocks
 	 *
 	 * @return array
 	 */
-	private function getOptions()
+	private function getOptions(): array
 	{
 		$options = [
 			'bbc' => [
@@ -552,6 +552,9 @@ class ManageBlocks
 		addInlineCss('
 		.ss-content.ss-open {
 			position: initial;
+		}
+		.ss-disabled {
+			color: inherit !important;
 		}');
 	}
 
@@ -751,17 +754,9 @@ class ManageBlocks
 
 		Subs::runAddons('prepareBlockFields');
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
-
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-		}
+		Helpers::preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
-
-		loadTemplate('LightPortal/ManageSettings');
 	}
 
 	/**
@@ -771,7 +766,7 @@ class ManageBlocks
 	 *
 	 * @return string
 	 */
-	private function getAreasInfo()
+	private function getAreasInfo(): string
 	{
 		global $context, $txt;
 
@@ -809,7 +804,7 @@ class ManageBlocks
 	 * @param string $check_value
 	 * @return bool
 	 */
-	private function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning')
+	private function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning'): bool
 	{
 		if (empty($data))
 			return false;
@@ -879,7 +874,7 @@ class ManageBlocks
 	 *
 	 * @return int
 	 */
-	private function getPriority()
+	private function getPriority(): int
 	{
 		global $context, $smcFunc;
 
@@ -909,14 +904,14 @@ class ManageBlocks
 	 * Создаем или обновляем блок
 	 *
 	 * @param int $item
-	 * @return int|void
+	 * @return int
 	 */
-	private function setData(int $item = 0)
+	private function setData(int $item = 0): int
 	{
 		global $context, $smcFunc;
 
 		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
-			return;
+			return 0;
 
 		checkSubmitOnce('check');
 
@@ -1117,7 +1112,7 @@ class ManageBlocks
 	 * @param int $item
 	 * @return array
 	 */
-	public function getData(int $item)
+	public function getData(int $item): array
 	{
 		global $smcFunc;
 

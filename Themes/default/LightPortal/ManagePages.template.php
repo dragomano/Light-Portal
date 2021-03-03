@@ -9,7 +9,7 @@
  */
 function template_page_post()
 {
-	global $context, $txt, $settings;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '
@@ -52,7 +52,9 @@ function template_page_post()
 				<input id="tab2" type="radio" name="tabs">
 				<label for="tab2" class="bg odd">', $txt['lp_tab_seo'], '</label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_tab_tuning'], '</label>
+				<label for="tab3" class="bg odd">', $txt['lp_tab_menu'], '</label>
+				<input id="tab4" type="radio" name="tabs">
+				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
 				<section id="content-tab1" class="bg even">
 					', template_post_tab($fields);
 
@@ -67,6 +69,9 @@ function template_page_post()
 					', template_post_tab($fields, 'seo'), '
 				</section>
 				<section id="content-tab3" class="bg even">
+					', template_post_tab($fields, 'menu'), '
+				</section>
+				<section id="content-tab4" class="bg even">
 					', template_post_tab($fields, 'tuning'), '
 				</section>
 			</div>
@@ -103,6 +108,7 @@ function template_page_post()
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true,
 			closeOnSelect: false,
+			showContent: "down",
 			addable: function (value) {
 				return {
 					text: value.toLowerCase(),

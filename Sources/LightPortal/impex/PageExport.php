@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, ManagePages};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -44,7 +44,7 @@ class PageExport extends AbstractExport
 		$this->run();
 
 		$listOptions = array(
-			'id' => 'pages',
+			'id' => 'lp_pages',
 			'items_per_page' => ($pages = new ManagePages)->num_pages,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -135,7 +135,7 @@ class PageExport extends AbstractExport
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**

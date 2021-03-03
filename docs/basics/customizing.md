@@ -6,8 +6,6 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 ### Settings for the frontpage and articles
 
-![](basic.png)
-
 * The portal frontpage — choose what to display on the main page of the portal:
     * Disabled
     * Specified page (only the selected page will be displayed)
@@ -17,19 +15,21 @@ In this section, you can fully customize the portal frontpage, enable standalone
     * Selected topics
     * Selected boards
 * The frontpage title — you can change the name of the portal used as the page title and the title of the browser tab.
-* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories" and "Selected pages".
-* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", "Selected pages", and "Selected board".
+* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories".
+* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", and "Selected board".
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
 * Time format in the article cards — you can change the time format.
-* Show the article teaser — check whether to display the description (summary) in the article cards.
-* The max size of article teasers (in symbols) — maximum number of characters displayed as description in the article cards.
+* Show the article summary
 * Show the article author
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
+* Template layout for article cards — to add your own templates, place the function `template_show_articles_somename` (replace `somename` with your desired name) into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
+
+> If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
 
 ### Standalone mode
 
@@ -80,10 +80,6 @@ Here you can quickly rearrange some panels without dragging blocks from one pane
 
 ## Miscellaneous
 In this section, you can change various auxiliary settings of the portal, which may be useful for developers of templates and plugins.
-
-* Check themes those using Font Awesome icons — if some icons are not displayed when using a third-party theme, enable this theme here.
-
-![](misc.png)
 
 ### Debugging and caching
 

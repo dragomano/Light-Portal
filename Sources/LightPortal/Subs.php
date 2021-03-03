@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -26,7 +26,7 @@ class Subs
 	 *
 	 * @return bool
 	 */
-	public static function isPortalShouldNotBeLoaded()
+	public static function isPortalShouldNotBeLoaded(): bool
 	{
 		global $context, $modSettings;
 
@@ -75,6 +75,7 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
+		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true)); // SVG
 		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCssFile('light_portal/flexboxgrid.css');
 		loadCssFile('light_portal/light_portal.css');
@@ -87,11 +88,11 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getActiveBlocks()
+	public static function getActiveBlocks(): array
 	{
 		global $smcFunc;
 
-		if (($active_blocks = Helpers::cache()->get('active_blocks', LP_CACHE_TIME)) === null) {
+		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
@@ -136,7 +137,7 @@ class Subs
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('active_blocks', $active_blocks, LP_CACHE_TIME);
+			Helpers::cache()->put('active_blocks', $active_blocks);
 		}
 
 		return $active_blocks;
@@ -150,7 +151,7 @@ class Subs
 	 * @param array $data
 	 * @return array
 	 */
-	public static function unsetDisabledActions(array &$data)
+	public static function unsetDisabledActions(array &$data): array
 	{
 		global $modSettings, $context;
 
@@ -185,7 +186,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getAddons()
+	public static function getAddons(): array
 	{
 		$dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR) or array();
 
@@ -237,7 +238,7 @@ class Subs
 	{
 		global $context;
 
-		$context['lp_bbc_icon']  = 'fas fa-square';
+		$context['lp_bbc_icon']  = 'fab fa-bimobject';
 		$context['lp_html_icon'] = 'fab fa-html5';
 		$context['lp_php_icon']  = 'fab fa-php';
 
@@ -281,7 +282,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getTitleClasses()
+	public static function getTitleClasses(): array
 	{
 		return [
 			'div.cat_bar > h3.catbg'        => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
@@ -304,7 +305,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getContentClasses()
+	public static function getContentClasses(): array
 	{
 		return [
 			'div.roundframe'  => '<div class="roundframe noup"%2$s>%1$s</div>',
@@ -389,7 +390,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPagesInMenu()
+	public static function getPagesInMenu(): array
 	{
 		global $smcFunc;
 

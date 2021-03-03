@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, Subs};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -66,12 +66,12 @@ class BoardArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit)
 	{
-		global $user_info, $smcFunc, $modSettings, $context, $scripturl;
+		global $user_info, $smcFunc, $modSettings, $context, $scripturl, $txt;
 
 		if (empty($this->selected_boards))
 			return [];
 
-		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
+		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$this->params += array(
 				'start' => $start,
 				'limit' => $limit
@@ -108,21 +108,25 @@ class BoardArticle extends AbstractArticle
 					$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : null);
 				}
 
-				$description = strip_tags($description);
+				if ($row['is_redirect'] && empty($image))
+					$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
 
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
-					'name'        => $board_name,
 					'date'        => $row['poster_time'],
-					'teaser'      => Helpers::getTeaser($description),
-					'category'    => $cat_name,
-					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
-					'is_redirect' => $row['is_redirect'],
-					'is_updated'  => empty($row['is_read']),
-					'num_posts'   => $row['num_posts'],
+					'title'       => $board_name,
+					'link'        => $row['is_redirect'] ? ($row['redirect'] . '" rel="nofollow noopener') : ($scripturl . '?board=' . $row['id_board'] . '.0'),
+					'is_new'      => empty($row['is_read']),
+					'replies'     => array('num' => $row['num_posts'], 'title' => $txt['lp_replies']),
 					'image'       => $image,
-					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards')
+					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards'),
+					'edit_link'   => $scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
+					'category'    => $cat_name,
+					'is_redirect' => $row['is_redirect']
 				);
+
+				if (!empty($modSettings['lp_show_teaser']))
+					$boards[$row['id_board']]['teaser'] = Helpers::getTeaser($description);
 
 				if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3 && !empty($row['last_updated'])) {
 					$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
@@ -141,7 +145,7 @@ class BoardArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards);
 		}
 
 		return $boards;
@@ -161,7 +165,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selected_boards))
 			return 0;
 
-		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
@@ -178,7 +182,7 @@ class BoardArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_boards);
 		}
 
 		return (int) $num_boards;

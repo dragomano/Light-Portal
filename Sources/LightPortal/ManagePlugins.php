@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use ReflectionException;
+
 /**
  * ManagePlugins.php
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -34,6 +36,7 @@ class ManagePlugins
 	 * Управление плагинами
 	 *
 	 * @return void
+	 * @throws ReflectionException
 	 */
 	public function main()
 	{
@@ -512,15 +515,7 @@ class ManagePlugins
 
 		Subs::runAddons('preparePluginFields');
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
-
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-		}
-
-		loadTemplate('LightPortal/ManageSettings');
+		Helpers::preparePostFields();
 	}
 
 	/**
@@ -848,7 +843,7 @@ EOF;
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private static function getTypes(string $snake_name)
+	private static function getTypes(string $snake_name): string
 	{
 		global $txt, $context;
 
@@ -873,13 +868,15 @@ EOF;
 	}
 
 	/**
-	 * Undocumented function
+	 * Get the plugin settings
+	 *
+	 * Получаем настройки плагина
 	 *
 	 * @param array $config_vars
 	 * @param string $name
 	 * @return array
 	 */
-	private static function getSettings(array $config_vars, $name = '')
+	private static function getSettings(array $config_vars, $name = ''): array
 	{
 		if (empty($config_vars))
 			return [];
@@ -904,7 +901,7 @@ EOF;
 	 * @param string $name
 	 * @return bool
 	 */
-	private function isUnique(string $name)
+	private function isUnique(string $name): bool
 	{
 		return !in_array($name, Subs::getAddons());
 	}

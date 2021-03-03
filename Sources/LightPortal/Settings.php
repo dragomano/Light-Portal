@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -29,13 +29,9 @@ class Settings
 	 */
 	public function adminAreas(array &$admin_areas)
 	{
-		global $settings, $context, $modSettings, $txt;
+		global $txt, $context;
 
 		loadLanguage('ManageSettings');
-
-		$context['lp_fontawesome_enabled'] = !empty($modSettings['lp_fontawesome_compat_themes'])
-			? isset(json_decode($modSettings['lp_fontawesome_compat_themes'], true)[$settings['theme_id']])
-			: false;
 
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
@@ -52,11 +48,11 @@ class Settings
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'basic'      => array($txt['mods_cat_features']),
-								'extra'      => array($txt['lp_extra']),
-								'categories' => array($txt['lp_categories']),
-								'panels'     => array($txt['lp_panels']),
-								'misc'       => array($txt['lp_misc'])
+								'basic'      => array('<i class="fas fa-cogs"></i> ' . $txt['mods_cat_features']),
+								'extra'      => array('<i class="fas fa-pager"></i> ' . $txt['lp_extra']),
+								'categories' => array('<i class="fas fa-folder"></i> ' . $txt['lp_categories']),
+								'panels'     => array('<i class="fas fa-columns"></i> ' . $txt['lp_panels']),
+								'misc'       => array('<i class="fas fa-tools"></i> ' . $txt['lp_misc'])
 							)
 						),
 						'lp_blocks' => array(
@@ -66,7 +62,7 @@ class Settings
 							'amt' => count($context['lp_active_blocks']),
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
-								'main' => array($txt['lp_blocks_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
@@ -77,7 +73,7 @@ class Settings
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main' => array($txt['lp_pages_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
 							)
 						),
@@ -88,7 +84,7 @@ class Settings
 							'amt' => count($context['lp_enabled_plugins']),
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'main' => array($txt['lp_plugins_manage']),
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_plugins_manage']),
 								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_plugins_add'])
 							)
 						)
@@ -100,13 +96,13 @@ class Settings
 
 		if ($context['user']['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
-				'export' => array($txt['lp_blocks_export']),
-				'import' => array($txt['lp_blocks_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_blocks_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_blocks_import'])
 			);
 
 			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += array(
-				'export' => array($txt['lp_pages_export']),
-				'import' => array($txt['lp_pages_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_pages_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_pages_import'])
 			);
 		}
 	}
@@ -198,13 +194,14 @@ class Settings
 		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
 		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
-		$context['lp_all_categories'] = Helpers::getAllCategories();
+		$context['lp_all_categories']       = Helpers::getAllCategories();
 		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+		$context['lp_frontpage_layout']     = (new FrontPage)->getLayouts();
 
 		loadTemplate('LightPortal/ManageSettings');
 
 		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
-		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
+		$txt['lp_manage_permissions']   = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings
 		$add_settings = [];
@@ -212,8 +209,6 @@ class Settings
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_alias']))
 			$add_settings['lp_frontpage_alias'] = 'home';
-		if (!isset($modSettings['lp_teaser_size']))
-			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_show_num_views_and_comments']))
 			$add_settings['lp_show_num_views_and_comments'] = 1;
 		if (!isset($modSettings['lp_frontpage_article_sorting']))
@@ -238,12 +233,12 @@ class Settings
 			array('select', 'lp_frontpage_time_format', $txt['lp_frontpage_time_format_set']),
 			array('text', 'lp_frontpage_custom_time_format', 'help' => 'lp_frontpage_custom_time_format_help'),
 			array('check', 'lp_show_teaser'),
-			array('int', 'lp_teaser_size'),
 			array('check', 'lp_show_author', 'help' => 'lp_show_author_help'),
 			array('check', 'lp_show_num_views_and_comments'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
 			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'),
-			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
+			array('select', 'lp_frontpage_layout', $context['lp_frontpage_layout']),
+			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
@@ -272,14 +267,14 @@ class Settings
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
 		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_teaser_size', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {
@@ -323,14 +318,14 @@ class Settings
 			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
 			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
 
-			if (["all_pages", "chosen_pages"].includes(front_mode)) {
+			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();
 				boards.next("dd").hide();
 			}
 
-			if (["all_topics", "chosen_topics", "chosen_boards"].includes(front_mode)) {
+			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
 				let categories = $("#setting_lp_frontpage_categories").closest("dt");
 
 				categories.hide();
@@ -529,7 +524,7 @@ class Settings
 	 *
 	 * Выводим настройки рубрик
 	 *
-	 * @return array|void
+	 * @return void
 	 */
 	public function categories()
 	{
@@ -558,10 +553,10 @@ class Settings
 				$category->add($data['new_name'], $data['new_desc'] ?? '');
 
 			if (!empty($data['name']))
-				$category->updateName($data['item'], $data['name']);
+				$category->updateName((int) $data['item'], $data['name']);
 
 			if (!empty($data['desc']))
-				$category->updateDescription($data['item'], $data['desc']);
+				$category->updateDescription((int) $data['item'], $data['desc']);
 
 			if (!empty($data['del_item']))
 				$category->remove([(int) $data['del_item']]);
@@ -668,9 +663,7 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		loadTemplate('LightPortal/ManageSettings');
-
-		$context['page_title'] = $context['settings_title'] = $txt['lp_misc'];
+		$context['page_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		// Initial settings
@@ -680,10 +673,7 @@ class Settings
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
-		$context['lp_fontawesome_compat_themes'] = Helpers::getForumThemes();
-
 		$config_vars = array(
-			array('callback', 'compat_themes'),
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
@@ -699,16 +689,7 @@ class Settings
 		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			$compat_themes = [];
-			foreach (Helpers::post('lp_fontawesome_compat_themes') as $theme => $check) {
-				$theme = (int) $theme;
-				$compat_themes[$theme] = (int) $check;
-			}
-
-			Helpers::post()->put('lp_fontawesome_compat_themes', json_encode($compat_themes));
-
 			$save_vars = $config_vars;
-			$save_vars[] = ['text', 'lp_fontawesome_compat_themes'];
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=misc');
@@ -812,7 +793,7 @@ class Settings
 	 *
 	 * @return string
 	 */
-	public function getLastVersion()
+	public function getLastVersion(): string
 	{
 		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 

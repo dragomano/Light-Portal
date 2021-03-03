@@ -18,6 +18,7 @@ $txt['lp_content']  = 'Contenido';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views']    = $txt['views'];
 $txt['lp_replies']  = $txt['replies'];
+$txt['lp_default']  = 'Default';
 
 // Settings
 $txt['lp_settings']  = 'Configuración del portal';
@@ -52,22 +53,24 @@ $txt['lp_frontpage_time_format']             = 'Time format in the article cards
 $txt['lp_frontpage_time_format_set']         = array('Full (LP style)', 'As in the forum', 'Own format');
 $txt['lp_frontpage_custom_time_format']      = 'Own time format';
 $txt['lp_frontpage_custom_time_format_help'] = 'See the list of possible parameters in the <a class="bbc_link" href="https://www.php.net/manual/en/datetime.format.php">documentation</a>.';
-$txt['lp_show_teaser']                       = 'Show the article teaser';
-$txt['lp_teaser_size']                       = 'El tamaño máximo de los avances de artículos (en símbolos)';
+$txt['lp_show_teaser']                       = 'Show the article summary';
 $txt['lp_show_author']                       = 'Show the article author';
 $txt['lp_show_author_help']                  = 'If the board card is displayed, it will be information about the category.';
 $txt['lp_show_num_views_and_comments']       = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies']    = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']         = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']     = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
+$txt['lp_frontpage_article_sorting_set']     = array(
+	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
+);
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'Número de columnas para mostrar artículos.';
-$txt['lp_frontpage_layout_set']              = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
+$txt['lp_frontpage_layout']                  = 'Template layout for article cards';
+$txt['lp_frontpage_num_columns']             = 'Número de columnas para mostrar artículos.';
+$txt['lp_frontpage_num_columns_set']         = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
 $txt['lp_num_items_per_page']                = 'Número de elementos por página (para paginación)';
 
-$txt['lp_standalone_mode_title']                    = 'Modo independiente';
-$txt['lp_standalone_url']                           = 'La URL de la página principal en el modo independiente';
-$txt['lp_standalone_url_help']                      = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" if you want to place <em>portal.php</em> outside the forum directory (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
+$txt['lp_standalone_mode_title'] = 'Modo independiente';
+$txt['lp_standalone_url']        = 'La URL de la página principal en el modo independiente';
+$txt['lp_standalone_url_help']   = 'Puede especificar su propia URL para mostrar como portada del portal (por ejemplo, <strong>https://miforo/portal.php</strong>).<br>En este caso, la portada del foro permanecerá disponible en <strong>https://miforo/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Deshabilite la opción "<strong>Activar el almacenamiento local de cookies.</strong>" if you want to place <em>portal.php</em> outside the forum directory (Mantenimiento => Configuración del servidor => Cookies y sesiones).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Acciones desactivadas';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Especifique las áreas que deben DESACTIVARSE en el modo independiente.';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Por ejemplo, si necesita desactivar el área de búsqueda (index.php?action=<strong>search</strong>), Agregar <strong>búsqueda</strong> en el campo de texto.';
@@ -133,14 +136,12 @@ $txt['lp_panel_direction']      = 'La dirección de los bloques en los paneles.'
 $txt['lp_panel_direction_set']  = array('Vertical', 'Horizontal');
 
 // Misc
-$txt['lp_misc']                           = 'Miscellaneous';
-$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
-$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
-$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
-$txt['lp_debug_and_caching']              = 'Depuración y almacenamiento en caché';
-$txt['lp_show_debug_info']                = 'Muestra el tiempo de carga y el número de consultas del portal.';
-$txt['lp_show_debug_info_help']           = '¡Esta información estará disponible solo para administradores!';
-$txt['lp_cache_update_interval']          = 'El intervalo de actualización del caché';
+$txt['lp_misc']                  = 'Miscellaneous';
+$txt['lp_misc_info']             = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_debug_and_caching']     = 'Depuración y almacenamiento en caché';
+$txt['lp_show_debug_info']       = 'Muestra el tiempo de carga y el número de consultas del portal.';
+$txt['lp_show_debug_info_help']  = '¡Esta información estará disponible solo para administradores!';
+$txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché';
 
 // Actions
 $txt['lp_title']        = 'Título';
@@ -249,6 +250,7 @@ $txt['lp_tab_content']          = 'Contenido';
 $txt['lp_tab_seo']              = 'SEO';
 $txt['lp_tab_access_placement'] = 'El acceso y la colocación';
 $txt['lp_tab_appearance']       = 'Apariencia';
+$txt['lp_tab_menu']             = 'Menu';
 $txt['lp_tab_tuning']           = 'Extras';
 
 // Import and Export
@@ -376,6 +378,7 @@ $txt['lp_addon_not_installed']        = 'Plugin %1$s no instalado';
 $txt['lp_addon_add_failed']           = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file']          = 'Archivo incorrecto para importar...';
 $txt['lp_import_failed']              = 'Error al importar...';
+$txt['lp_wrong_template']             = 'Wrong template. Choose a template that matches the content.';
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Viendo <a href="%1$s">la página principal del portal</a>.';
@@ -422,6 +425,7 @@ $txt['lp_posts_set']    = array('mensaje', 'mensajes');
 $txt['lp_replies_set']  = array('respuesta', 'respuestas');
 $txt['lp_views_set']    = array('vista', 'vistas');
 $txt['lp_comments_set'] = array('comentario', 'comentarios');
+$txt['lp_articles_set'] = array('article', 'articles');
 
 // Other units
 $txt['lp_users_set']   = array('usuario', 'usuarios');
@@ -431,6 +435,10 @@ $txt['lp_hidden_set']  = array('oculto', 'oculto');
 $txt['lp_buddies_set'] = array('amigo', 'amigos');
 
 // Credits
+$txt['lp_contributors']    = 'Contribution to the development of the portal';
+$txt['lp_translators']     = 'Translators';
+$txt['lp_testers']         = 'Testers';
+$txt['lp_sponsors']        = 'Sponsors';
 $txt['lp_used_components'] = 'Los componentes del portal.';
 
 // Debug info

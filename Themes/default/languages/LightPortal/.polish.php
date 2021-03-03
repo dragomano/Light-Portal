@@ -18,6 +18,7 @@ $txt['lp_content']  = 'Zawartość';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views']    = $txt['views'];
 $txt['lp_replies']  = $txt['replies'];
+$txt['lp_default']  = 'Default';
 
 // Settings
 $txt['lp_settings']  = 'Ustawienia portalu';
@@ -52,22 +53,24 @@ $txt['lp_frontpage_time_format']             = 'Time format in the article cards
 $txt['lp_frontpage_time_format_set']         = array('Full (LP style)', 'As in the forum', 'Own format');
 $txt['lp_frontpage_custom_time_format']      = 'Own time format';
 $txt['lp_frontpage_custom_time_format_help'] = 'See the list of possible parameters in the <a class="bbc_link" href="https://www.php.net/manual/en/datetime.format.php">documentation</a>.';
-$txt['lp_show_teaser']                       = 'Show the article teaser';
-$txt['lp_teaser_size']                       = 'Długość podglądu artykułów';
+$txt['lp_show_teaser']                       = 'Show the article summary';
 $txt['lp_show_author']                       = 'Show the article author';
 $txt['lp_show_author_help']                  = 'If the board card is displayed, it will be information about the category.';
 $txt['lp_show_num_views_and_comments']       = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies']    = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting']         = 'Sorting articles';
-$txt['lp_frontpage_article_sorting_set']     = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
+$txt['lp_frontpage_article_sorting_set']     = array(
+	'By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)'
+);
 $txt['lp_frontpage_article_sorting_help']    = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
-$txt['lp_frontpage_layout']                  = 'Liczba kolumn artykułów';
-$txt['lp_frontpage_layout_set']              = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
+$txt['lp_frontpage_layout']                  = 'Template layout for article cards';
+$txt['lp_frontpage_num_columns']             = 'Liczba kolumn artykułów';
+$txt['lp_frontpage_num_columns_set']         = array('1 kolumna', '2 kolumny', '3 kolumny', '4 kolumny', '6 kolumn');
 $txt['lp_num_items_per_page']                = 'Ilość artykułów na stronę';
 
-$txt['lp_standalone_mode_title']                    = 'Tryb portalu';
-$txt['lp_standalone_url']                           = 'Adres strony głównej w trybie portalu osobnym';
-$txt['lp_standalone_url_help']                      = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
+$txt['lp_standalone_mode_title'] = 'Tryb portalu';
+$txt['lp_standalone_url']        = 'Adres strony głównej w trybie portalu osobnym';
+$txt['lp_standalone_url_help']   = 'Możesz ustawić własny adres strony głównej portalu (np., <strong>https://twojastrona/portal.php</strong>).<br>W tym przypadku strona główna forum pozostanie pod adresem <strong>https://twojastrona/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Wyłącz opcję "<strong>Włącz lokalne przechowywanie plików cookies</strong>" if you want to place <em>portal.php</em> outside the forum directory (Konserwacja => Ustawienia serwera => Ciasteczka i Sesje).';
 $txt['lp_standalone_mode_disabled_actions']         = 'Wyłączone akcje';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Wybierz akcje, które powinny być wyłączone w trybie osobnym.';
 $txt['lp_standalone_mode_disabled_actions_help']    = 'Na przykład, jeśli chcesz wyłączyć akcję wyszukiwania (index.php?action=<strong>search</strong>), dodaj w polu <strong>search</strong>.';
@@ -133,14 +136,12 @@ $txt['lp_panel_direction']      = 'Kierunek bloków w panelach';
 $txt['lp_panel_direction_set']  = array('Pionowy', 'Poziomy');
 
 // Misc
-$txt['lp_misc']                           = 'Miscellaneous';
-$txt['lp_misc_info']                      = 'There are additional portal settings that will be useful for template and plugin developers here.';
-$txt['lp_fontawesome_compat_themes']      = 'Check themes those using Font Awesome icons';
-$txt['lp_fontawesome_compat_themes_help'] = 'Compatibility option for templates that use Font Awesome icons.';
-$txt['lp_debug_and_caching']              = 'Debugowanie i pamięć podręczna';
-$txt['lp_show_debug_info']                = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
-$txt['lp_show_debug_info_help']           = 'Informacja ta widoczna jest tylko dla administratorów!';
-$txt['lp_cache_update_interval']          = 'Interwał aktualizacji pamięci podręcznej';
+$txt['lp_misc']                  = 'Miscellaneous';
+$txt['lp_misc_info']             = 'There are additional portal settings that will be useful for template and plugin developers here.';
+$txt['lp_debug_and_caching']     = 'Debugowanie i pamięć podręczna';
+$txt['lp_show_debug_info']       = 'Wyświetl czas ładowania portalu oraz ilość zapytań do bazy danych';
+$txt['lp_show_debug_info_help']  = 'Informacja ta widoczna jest tylko dla administratorów!';
+$txt['lp_cache_update_interval'] = 'Interwał aktualizacji pamięci podręcznej';
 
 // Actions
 $txt['lp_title']        = 'Tytuł';
@@ -249,6 +250,7 @@ $txt['lp_tab_content']          = 'Zawartość';
 $txt['lp_tab_seo']              = 'SEO';
 $txt['lp_tab_access_placement'] = 'Dostęp i rozmieszczenie';
 $txt['lp_tab_appearance']       = 'Wygląd';
+$txt['lp_tab_menu']             = 'Menu';
 $txt['lp_tab_tuning']           = 'Tuning';
 
 // Import and Export
@@ -376,6 +378,7 @@ $txt['lp_addon_not_installed']        = 'Wtyczka %1$s nie jest zainstalowana';
 $txt['lp_addon_add_failed']           = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file']          = 'Nie można importować tego pliku...';
 $txt['lp_import_failed']              = 'Wystąpił błąd podczas importowania...';
+$txt['lp_wrong_template']             = 'Wrong template. Choose a template that matches the content.';
 
 // Who
 $txt['lp_who_viewing_frontpage']       = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';
@@ -422,6 +425,7 @@ $txt['lp_posts_set']    = array('wiadomość', 'wiadomości');
 $txt['lp_replies_set']  = array('odpowiedź', 'odpowiedzi');
 $txt['lp_views_set']    = array('wyświetleń', 'wyświetlenia');
 $txt['lp_comments_set'] = array('komentarz', 'komentarze', 'komentarzy');
+$txt['lp_articles_set'] = array('artykuł', 'artykuły', 'artykułów');
 
 // Other units
 $txt['lp_users_set']   = array('użytkownik', 'użytkowników');
@@ -431,6 +435,10 @@ $txt['lp_hidden_set']  = array('ukryty', 'ukrytych');
 $txt['lp_buddies_set'] = array('znajomy', 'znajomych');
 
 // Credits
+$txt['lp_contributors']    = 'Contribution to the development of the portal';
+$txt['lp_translators']     = 'Translators';
+$txt['lp_testers']         = 'Testers';
+$txt['lp_sponsors']        = 'Sponsors';
 $txt['lp_used_components'] = 'Składniki portalu';
 
 // Debug info

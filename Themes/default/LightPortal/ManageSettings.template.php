@@ -416,44 +416,6 @@ function template_callback_panel_direction()
 }
 
 /**
- * Callback template for selecting themes support FontAwesome icons
- *
- * Callback-шаблон для выбора тем, поддерживающих иконки FontAwesome
- *
- * @return void
- */
-function template_callback_compat_themes()
-{
-	global $context, $scripturl, $txt, $modSettings;
-
-	if (empty($context['lp_fontawesome_compat_themes']))
-		return;
-
-	echo '
-		<dt class="descbox" style="width: 100%">
-			<a id="setting_lp_show_debug_info_help" href="', $scripturl, '?action=helpadmin;help=lp_fontawesome_compat_themes_help" onclick="return reqOverlayDiv(this.href);">
-				<span class="main_icons help" title="', $txt['help'], '"></span>
-			</a>
-			<a id="setting_lp_fontawesome_compat_themes"></a>
-			<span><label for="lp_fontawesome_compat_themes">', $txt['lp_fontawesome_compat_themes'], '</label></span>
-		</dt>
-		<dd class="roundframe" style="width: 100%">';
-
-	$compat_themes = !empty($modSettings['lp_fontawesome_compat_themes']) ? json_decode($modSettings['lp_fontawesome_compat_themes'], true) : [];
-
-	foreach ($context['lp_fontawesome_compat_themes'] as $id => $theme) {
-		echo '
-			<label for="lp_fontawesome_compat_themes_' . $id . '">
-				<input type="checkbox" name="lp_fontawesome_compat_themes[' . $id . ']" id="lp_fontawesome_compat_themes_' . $id . '" value="1"', !empty($compat_themes[$id]) ? ' checked' : '', '> ', $theme, '
-			</label>
-			<br>';
-	}
-
-	echo '
-		</dd>';
-}
-
-/**
  * Display settings on multiple tabs
  *
  * Вывод настроек на нескольких вкладках

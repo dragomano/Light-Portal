@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Addons\KarmaPostRating;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -80,7 +80,7 @@ class KarmaPostRating
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['kpr_rating'])) {
-				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
+				$context['lp_frontpage_articles'][$id]['replies']['num'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}
 		}
 	}

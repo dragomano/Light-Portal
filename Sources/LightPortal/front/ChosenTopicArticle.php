@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Front;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -36,6 +36,8 @@ class ChosenTopicArticle extends TopicArticle
 		global $modSettings;
 
 		parent::init();
+
+		$this->selected_boards = [];
 
 		$this->selected_topics = !empty($modSettings['lp_frontpage_topics']) ? explode(',', $modSettings['lp_frontpage_topics']) : [];
 

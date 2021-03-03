@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -63,11 +63,6 @@ class ManagePages
 		$this->doActions();
 		$this->massActions();
 
-		if (Helpers::request()->filled('params') && Helpers::request()->isEmpty('is_search')) {
-			$search_params = base64_decode(strtr(Helpers::request('params'), array(' ' => '+')));
-			$search_params = $smcFunc['json_decode']($search_params, true);
-		}
-
 		$search_params_string = trim(Helpers::request('search', ''));
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
@@ -79,7 +74,7 @@ class ManagePages
 		);
 
 		$listOptions = array(
-			'id' => 'pages',
+			'id' => 'lp_pages',
 			'items_per_page' => $this->num_pages,
 			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
@@ -140,22 +135,6 @@ class ManagePages
 						'reverse' => 'p.num_views'
 					)
 				),
-				'type' => array(
-					'header' => array(
-						'value' => $txt['package_install_type']
-					),
-					'data' => array(
-						'function' => function ($entry) use ($txt)
-						{
-							return $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
-						},
-						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'p.type DESC',
-						'reverse' => 'p.type'
-					)
-				),
 				'alias' => array(
 					'header' => array(
 						'value' => $txt['lp_page_alias'],
@@ -174,9 +153,28 @@ class ManagePages
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($scripturl)
+						'function' => function ($entry) use ($txt, $scripturl)
 						{
-							return '<a class="bbc_link' . (
+							$type_hint = $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
+
+							switch ($entry['type']) {
+								case 'html':
+									$icon = 'fab fa-html5';
+									break;
+
+								case 'php':
+									$icon = 'fab fa-php';
+									break;
+
+								case 'md':
+									$icon = 'fab fa-markdown';
+									break;
+
+								default:
+									$icon = 'fab fa-bimobject';
+							}
+
+							return '<i class="' . $icon . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
@@ -189,29 +187,53 @@ class ManagePages
 						'reverse' => 't.title'
 					)
 				),
+				'status' => array(
+					'header' => array(
+						'value' => $txt['status']
+					),
+					'data' => array(
+						'function' => function ($entry) use ($txt)
+						{
+							if (allowedTo('light_portal_approve_pages')) {
+								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
+							</div>';
+							} else {
+								return '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}">
+								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
+							</div>';
+							}
+						},
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.status DESC',
+						'reverse' => 'p.status'
+					)
+				),
 				'actions' => array(
 					'header' => array(
 						'value' => $txt['lp_actions'],
 						'style' => 'width: 8%'
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $context, $scripturl)
+						'function' => function ($entry) use ($scripturl, $txt)
 						{
-							$actions = '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" data-id="' . $entry['id'] . '" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">';
-
-							if (allowedTo('light_portal_approve_pages')) {
-								$actions .= '<span :class="{\'on\': status, \'off\': !status}" title="' . $txt['lp_action_' . (empty($data['status']) ? 'on' : 'off')] . '" @click="status = !status"></span> ';
-							}
-
-							if ($context['lp_fontawesome_enabled']) {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="fas fa-tools" title="' . $txt['edit'] . '"></span></a>
-							<span class="fas fa-trash" data-id="' . $entry['id'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
-							} else {
-								$actions .= '<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '"><span class="main_icons settings" title="' . $txt['edit'] . '"></span></a>
-							<span class="main_icons unread_button" data-id="' . $entry['id'] . '" data-alias="' . $entry['alias'] . '" title="' . $txt['remove'] . '" @click="page.remove($el)"></span>';
-							}
-
-							$actions .= '</div>';
+							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
+							<div class="context_menu" @click.away="showContextMenu = false">
+								<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
+								<div class="roundframe" x-show="showContextMenu">
+									<ul>
+										<li>
+											<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $txt['edit'] . '</a>
+										</li>
+										<li>
+											<a @click.prevent="showContextMenu = false; page.remove($el)" class="button error">' . $txt['remove'] . '</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>';
 
 							return $actions;
 						},
@@ -245,10 +267,9 @@ class ManagePages
 				array(
 					'position' => 'after_title',
 					'value' => '
-						<i class="fas fa-search centericon"></i>
-						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '">
-						<input type="submit" name="is_search" value="' . $txt['search'] . '" class="button floatnone">',
-					'class' => 'floatright'
+						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '" style="width: 80%">
+						<button type="submit" name="is_search" class="button floatnone" ><i class="fas fa-search"></i> ' . $txt['search'] . '</button>',
+					'class' => 'righttext'
 				),
 				array(
 					'position' => 'below_table_data',
@@ -276,9 +297,9 @@ class ManagePages
 		Helpers::require('Subs-List');
 		createList($listOptions);
 
-		$context['pages']['title'] .= ' (' . $context['pages']['total_num_items'] . ')';
+		$context['lp_pages']['title'] .= ' (' . $context['lp_pages']['total_num_items'] . ')';
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**
@@ -293,7 +314,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return array
 	 */
-	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = [])
+	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		global $smcFunc, $user_info;
 
@@ -347,7 +368,7 @@ class ManagePages
 	 * @param array $query_params
 	 * @return int
 	 */
-	public function getTotalCount(string $query_string = '', array $query_params = [])
+	public function getTotalCount(string $query_string = '', array $query_params = []): int
 	{
 		global $smcFunc, $user_info;
 
@@ -613,7 +634,7 @@ class ManagePages
 	 *
 	 * @return array
 	 */
-	private function getOptions()
+	private function getOptions(): array
 	{
 		$options = [
 			'show_author_and_date' => true,
@@ -785,6 +806,9 @@ class ManagePages
 		addInlineCss('
 		.ss-content.ss-open {
 			position: initial;
+		}
+		.ss-disabled {
+			color: inherit !important;
 		}');
 
 		// Prepare the tag list
@@ -816,7 +840,7 @@ class ManagePages
 	 * @param string $search
 	 * @return void
 	 */
-	private function prepareMemberList($search)
+	private function prepareMemberList(string $search)
 	{
 		global $smcFunc;
 
@@ -912,7 +936,8 @@ class ManagePages
 				'attributes' => array(
 					'id'       => 'content',
 					'value'    => $context['lp_page']['content'],
-					'required' => true
+					'required' => true,
+					'style'    => 'height: 300px'
 				),
 				'tab' => 'content'
 			);
@@ -956,6 +981,56 @@ class ManagePages
 			'options' => array(),
 			'tab' => 'seo'
 		);
+
+		if ($context['user']['is_admin']) {
+			foreach ($context['languages'] as $lang) {
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
+					'type' => 'text',
+					'attributes' => array(
+						'id'        => 'main_menu_item_' . $lang['filename'],
+						'maxlength' => 255,
+						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
+						'style'     => 'width: 100%'
+					),
+					'tab' => 'menu'
+				);
+			}
+		}
+
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['input'] = array(
+			'type' => 'text',
+			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'attributes' => array(
+				'id'        => 'icon',
+				'maxlength' => 30,
+				'value'     => $context['lp_page']['options']['icon'],
+				'x-ref'     => 'icon',
+				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'tab' => 'menu'
+		);
+
+		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
+		$context['posting_fields']['icon_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id'      => 'icon_type',
+				'x-ref'   => 'icon_type',
+				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+			),
+			'options' => array(),
+			'tab' => 'menu'
+		);
+
+		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
+				'value'   => $type,
+				'checked' => $type == $context['lp_page']['options']['icon_type']
+			);
+		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
@@ -1033,61 +1108,9 @@ class ManagePages
 			);
 		}
 
-		if ($context['user']['is_admin']) {
-			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
-					'type' => 'text',
-					'attributes' => array(
-						'id'        => 'main_menu_item_' . $lang['filename'],
-						'maxlength' => 255,
-						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
-						'style'     => 'width: 100%'
-					)
-				);
-			}
-		}
-
-		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
-		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
-			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_page']['options']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			)
-		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'options' => array()
-		);
-
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_page']['options']['icon_type']
-			);
-		}
-
 		Subs::runAddons('preparePageFields');
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
-		}
-
-		loadTemplate('LightPortal/ManageSettings');
+		Helpers::preparePostFields();
 	}
 
 	/**
@@ -1175,7 +1198,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private function getPublishTime()
+	private function getPublishTime(): int
 	{
 		global $context;
 
@@ -1451,7 +1474,7 @@ class ManagePages
 	 *
 	 * @return int
 	 */
-	private function getAutoIncrementValue()
+	private function getAutoIncrementValue(): int
 	{
 		global $smcFunc;
 
@@ -1472,7 +1495,7 @@ class ManagePages
 	 * @param array $data
 	 * @return bool
 	 */
-	private function isUnique(array $data)
+	private function isUnique(array $data): bool
 	{
 		global $smcFunc;
 

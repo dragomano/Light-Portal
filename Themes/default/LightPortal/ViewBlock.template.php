@@ -67,8 +67,7 @@ function template_portal_above()
 
 	echo '
 				<div class="row">
-					<div class="col-xs noup">
-						<main>';
+					<div class="col-xs noup">';
 }
 
 /**
@@ -83,7 +82,6 @@ function template_portal_below()
 	global $context, $modSettings;
 
 	echo '
-						</main>
 					</div>
 				</div>';
 

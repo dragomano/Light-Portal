@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.6
+ * @version 1.7
  */
 
 if (!defined('SMF'))
@@ -63,17 +63,17 @@ class Category
 			$this->showAsArticles();
 
 		$listOptions = array(
-			'id' => 'categories',
+			'id' => 'lp_categories',
 			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $context['canonical_url'],
 			'default_sort_col' => 'date',
 			'get_items' => array(
-				'function' => array($this, 'getAllPages')
+				'function' => array($this, 'getPages')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalCountAllPages')
+				'function' => array($this, 'getTotalCountPages')
 			),
 			'columns' => array(
 				'date' => array(
@@ -161,7 +161,7 @@ class Category
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'categories';
+		$context['default_list'] = 'lp_categories';
 
 		obExit();
 	}
@@ -176,13 +176,13 @@ class Category
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAllPages(int $start, int $items_per_page, string $sort)
+	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl;
+		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl, $memberContext;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -216,25 +216,46 @@ class Category
 				$image = $first_post_image ? array_pop($value) : null;
 			}
 
+			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
+				$image = $modSettings['lp_image_placeholder'];
+
 			$items[$row['page_id']] = array(
-				'id'            => $row['page_id'],
-				'category_name' => '',
-				'category_link' => '',
-				'alias'         => $row['alias'],
-				'num_views'     => $row['num_views'],
-				'author_id'     => $row['author_id'],
-				'author_name'   => $row['author_name'],
-				'date'          => Helpers::getFriendlyTime($row['date']),
-				'datetime'      => date('Y-m-d', $row['date']),
-				'title'         => $row['title'],
-				'num_comments'  => $row['num_comments'],
-				'author_link'   => $scripturl . '?action=profile;u=' . $row['author_id'],
-				'is_new'        => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-				'is_front'      => Helpers::isFrontpage($row['alias']),
-				'link'          => $scripturl . '?page=' . $row['alias'],
-				'image'         => $image,
-				'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id'])
+				'id'        => $row['page_id'],
+				'author'    => array(
+					'id'   => $author_id = $row['author_id'],
+					'link' => $scripturl . '?action=profile;u=' . $author_id,
+					'name' => $row['author_name']
+				),
+				'date'      => Helpers::getFriendlyTime($row['date']),
+				'datetime'  => date('Y-m-d', $row['date']),
+				'link'      => $scripturl . '?page=' . $row['alias'],
+				'views'     => array(
+					'num'   => $row['num_views'],
+					'title' => $txt['lp_views']
+				),
+				'replies'   => array(
+					'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
+					'title' => $txt['lp_comments']
+				),
+				'title'     => $row['title'],
+				'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+				'is_front'  => Helpers::isFrontpage($row['alias']),
+				'image'     => $image,
+				'can_edit'  => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id']),
+				'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 			);
+
+			$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
+
+			loadMemberData($author_id);
+
+			$items[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
+			if (loadMemberContext($author_id, true)) {
+				$items[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
+			}
+
+			if (!empty($modSettings['lp_show_teaser']))
+				$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -250,7 +271,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	public function getTotalCountAllPages()
+	public function getTotalCountPages(): int
 	{
 		global $smcFunc, $context;
 
@@ -291,47 +312,28 @@ class Category
 		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $this->getTotalCountAllPages();
+		$total_items = $this->getTotalCountPages();
 
-		if ($start > $total_items) {
+		if ($start >= $total_items) {
 			send_http_status(404);
 			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
 		}
 
-		$sorting_types = array(
-			'title;desc'       => 't.title DESC',
-			'title'            => 't.title',
-			'created;desc'     => 'p.created_at DESC',
-			'created'          => 'p.created_at',
-			'updated;desc'     => 'p.updated_at DESC',
-			'updated'          => 'p.updated_at',
-			'author_name;desc' => 'author_name DESC',
-			'author_name'      => 'author_name',
-			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views'
-		);
+		$start = abs($start);
 
-		$context['current_sorting'] = Helpers::post('sort', 'created;desc');
-		$sort = $sorting_types[$context['current_sorting']];
+		$sort = (new FrontPage)->getOrderBy();
 
-		$articles = $this->getAllPages($start, $limit, $sort);
-
-		$articles = array_map(function ($article) use ($modSettings) {
-			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
-				$article['image'] = $modSettings['lp_image_placeholder'];
-
-			return $article;
-		}, $articles);
+		$articles = $this->getPages($start, $limit, $sort);
 
 		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
-		$context['lp_frontpage_articles'] = $articles;
-		$context['lp_frontpage_layout']   = (new FrontPage)->getNumColumns();
+		$context['lp_frontpage_articles']    = $articles;
+		$context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
-		$context['sub_template'] = 'show_pages_as_articles';
+		$context['sub_template']      = 'show_articles';
 		$context['template_layers'][] = 'sorting';
 
 		obExit();
@@ -412,7 +414,7 @@ class Category
 	 *
 	 * @return array
 	 */
-	public function getList()
+	public function getList(): array
 	{
 		global $smcFunc, $txt;
 
@@ -449,7 +451,7 @@ class Category
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.priority')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.priority'): array
 	{
 		global $smcFunc, $scripturl, $txt;
 
@@ -503,7 +505,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc;
 
@@ -610,6 +612,8 @@ class Category
 			];
 		}
 
+		Helpers::cache()->forget('all_categories');
+
 		exit(json_encode($result));
 	}
 
@@ -623,7 +627,7 @@ class Category
 	 * @param string $value
 	 * @return void
 	 */
-	public function updateName($item, $value)
+	public function updateName(int $item, string $value)
 	{
 		global $smcFunc;
 
@@ -652,7 +656,7 @@ class Category
 	 * @param string $value
 	 * @return void
 	 */
-	public function updateDescription($item, $value)
+	public function updateDescription(int $item, string $value)
 	{
 		global $smcFunc;
 
@@ -717,7 +721,7 @@ class Category
 	 *
 	 * @return int
 	 */
-	private function getPriority()
+	private function getPriority(): int
 	{
 		global $smcFunc;
 
