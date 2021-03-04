@@ -985,7 +985,7 @@ class ManagePages
 
 		if ($context['user']['is_admin']) {
 			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $txt['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $context['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
 					'type' => 'text',
 					'attributes' => array(
@@ -1027,7 +1027,7 @@ class ManagePages
 			'tab' => 'menu'
 		);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+		foreach ($context['lp_icon_types'] as $type => $title) {
 			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
 				'value'   => $type,
 				'checked' => $type == $context['lp_page']['options']['icon_type']
@@ -1079,7 +1079,7 @@ class ManagePages
 			);
 		}
 
-		$context['posting_fields']['show_author_and_date']['label']['text'] = $txt['lp_page_options']['show_author_and_date'];
+		$context['posting_fields']['show_author_and_date']['label']['text'] = $context['lp_page_options']['show_author_and_date'];
 		$context['posting_fields']['show_author_and_date']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -1089,7 +1089,7 @@ class ManagePages
 		);
 
 		if (!empty($modSettings['lp_show_related_pages'])) {
-			$context['posting_fields']['show_related_pages']['label']['text'] = $txt['lp_page_options']['show_related_pages'];
+			$context['posting_fields']['show_related_pages']['label']['text'] = $context['lp_page_options']['show_related_pages'];
 			$context['posting_fields']['show_related_pages']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
@@ -1100,7 +1100,7 @@ class ManagePages
 		}
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
-			$context['posting_fields']['allow_comments']['label']['text'] = $txt['lp_page_options']['allow_comments'];
+			$context['posting_fields']['allow_comments']['label']['text'] = $context['lp_page_options']['allow_comments'];
 			$context['posting_fields']['allow_comments']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(

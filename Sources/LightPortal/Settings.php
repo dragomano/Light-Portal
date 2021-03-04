@@ -221,7 +221,14 @@ class Settings
 			updateSettings($add_settings);
 
 		$config_vars = array(
-			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
+			array(
+				'select',
+				'lp_frontpage_mode',
+				array_combine(
+					array(0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'),
+					$txt['lp_frontpage_mode_set']
+				)
+			),
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
 			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
 			array('callback', 'frontpage_categories'),
@@ -443,7 +450,7 @@ class Settings
 			array('check', 'lp_show_tags_on_page'),
 			array('check', 'lp_show_items_as_articles'),
 			array('check', 'lp_show_related_pages'),
-			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
+			array('select', 'lp_show_comment_block', array_combine(array('none', 'default'), $txt['lp_show_comment_block_set'])),
 			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
@@ -607,8 +614,6 @@ class Settings
 			$add_settings['lp_right_panel_sticky'] = 1;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
-
-		$context['lp_panels'] = $txt['lp_block_placement_set'];
 
 		$context['lp_left_right_width_values']    = [2, 3, 4];
 		$context['lp_header_footer_width_values'] = [6, 8, 10, 12];

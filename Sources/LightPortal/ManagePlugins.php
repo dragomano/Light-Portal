@@ -367,7 +367,7 @@ class ManagePlugins
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_plugins_hooks_types'] as $type => $title) {
+		foreach ($context['lp_plugin_types'] as $type => $title) {
 			$context['posting_fields']['type']['input']['options'][$title] = array(
 				'value'    => $type,
 				'selected' => $type == $context['lp_plugin']['type']
@@ -400,7 +400,7 @@ class ManagePlugins
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+		foreach ($context['lp_icon_types'] as $type => $title) {
 			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
 				'value'   => $type,
 				'checked' => $type == $context['lp_plugin']['icon_type']
@@ -860,13 +860,13 @@ EOF;
 		if (is_array($data)) {
 			$all_types = [];
 			foreach ($data as $type) {
-				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
+				$all_types[] = $context['lp_plugin_types'][$type];
 			}
 
 			return implode(' + ', $all_types);
 		}
 
-		return $txt['lp_plugins_hooks_types'][$data];
+		return $context['lp_plugin_types'][$data];
 	}
 
 	/**

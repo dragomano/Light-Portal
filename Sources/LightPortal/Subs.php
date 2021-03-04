@@ -53,6 +53,11 @@ class Subs
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
+		$context['lp_block_placements']    = self::getBlockPlacements();
+		$context['lp_page_options']        = self::getPageOptions();
+		$context['lp_plugin_types']        = self::getPluginTypes();
+		$context['lp_plugin_option_types'] = self::getPluginOptionTypes();
+		$context['lp_icon_types']          = self::getIconTypes();
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -426,5 +431,75 @@ class Subs
 		}
 
 		return $pages;
+	}
+
+	/**
+	 * Get an array of available block placements
+	 *
+	 * Получаем массив доступных расположений блоков
+	 *
+	 * @return array
+	 */
+	public static function getBlockPlacements()
+	{
+		global $txt;
+
+		return array_combine(array('header', 'top', 'left', 'right', 'bottom', 'footer'), $txt['lp_block_placement_set']);
+	}
+
+	/**
+	 * Get an array of available page options
+	 *
+	 * Получаем массив доступных опций страниц
+	 *
+	 * @return array
+	 */
+	public static function getPageOptions()
+	{
+		global $txt;
+
+		return array_combine(array('show_author_and_date', 'show_related_pages', 'allow_comments', 'main_menu_item'), $txt['lp_page_options']);
+	}
+
+	/**
+	 * Get an array of available plugin type of the portal
+	 *
+	 * Получаем массив доступных типов плагинов портала
+	 *
+	 * @return array
+	 */
+	public static function getPluginTypes()
+	{
+		global $txt;
+
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugin_type_set']);
+	}
+
+	/**
+	 * Get an array of available plugin option types
+	 *
+	 * Получаем массив доступных типов параметров плагинов
+	 *
+	 * @return array
+	 */
+	public static function getPluginOptionTypes()
+	{
+		global $txt;
+
+		return array_combine(array('text', 'url', 'color', 'int', 'check', 'multicheck', 'select'), $txt['lp_plugin_option_type_set']);
+	}
+
+	/**
+	 * Get an array of available icon types
+	 *
+	 * Получаем массив доступных типов иконок
+	 *
+	 * @return array
+	 */
+	public static function getIconTypes()
+	{
+		global $txt;
+
+		return array_combine(array('fas', 'far', 'fab'), $txt['lp_block_icon_type_set']);
 	}
 }

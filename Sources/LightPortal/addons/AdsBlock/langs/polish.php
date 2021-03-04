@@ -10,16 +10,16 @@ $txt['lp_ads_block_addon_ads_topics']         = 'Topics';
 $txt['lp_ads_block_addon_ads_topics_subtext'] = 'Wpisz ID wątków w których chcesz wyświetlać reklamy. Żeby wyświetlać reklamy w każdym wątku pozostaw puste.';
 
 $txt['lp_ads_block_addon_placement_set'] = array(
-	'board_top'               => 'Nad działami',
-	'board_bottom'            => 'Pod działami',
-	'topic_top'               => 'Nad wątkiem',
-	'topic_bottom'            => 'Pod wątkiem',
-	'before_first_post'       => 'Przed pierwszą wiadomością',
-	'before_every_first_post' => 'Przed pierwszą wiadomością na każdej stronie wątku',
-	'before_every_last_post'  => 'Przed ostatnią wiadomością na każdej stronie wątku',
-	'before_last_post'        => 'Przed ostatnią wiadomością',
-	'after_first_post'        => 'Po pierwszej wiadomości',
-	'after_every_first_post'  => 'Po pierwszej wiadomości  na każdej stronie wątku',
-	'after_every_last_post'   => 'Po ostatniej wiadomości na każdej stronie wątku',
-	'after_last_post'         => 'Po ostatniej wiadomości'
+	'Nad działami',
+	'Pod działami',
+	'Nad wątkiem',
+	'Pod wątkiem',
+	'Przed pierwszą wiadomością',
+	'Przed pierwszą wiadomością na każdej stronie wątku',
+	'Przed ostatnią wiadomością na każdej stronie wątku',
+	'Przed ostatnią wiadomością',
+	'Po pierwszej wiadomości',
+	'Po pierwszej wiadomości  na każdej stronie wątku',
+	'Po ostatniej wiadomości na każdej stronie wątku',
+	'Po ostatniej wiadomości'
 );

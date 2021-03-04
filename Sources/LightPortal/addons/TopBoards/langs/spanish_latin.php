@@ -7,4 +7,4 @@ $txt['lp_block_types_descriptions']['top_boards'] = 'Muestra una lista de foros 
 
 $txt['lp_top_boards_addon_num_boards'] = 'Número de foros para mostrar';
 $txt['lp_top_boards_addon_show_numbers_only'] = 'Solo mostrar números';
-$txt['lp_top_boards_addon_topics'] = array('temas', 'temas');
+$txt['lp_top_boards_addon_topics'] = 'temas, temas';

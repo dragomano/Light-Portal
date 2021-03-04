@@ -175,7 +175,7 @@ function template_callback_panel_layout()
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['header'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['header'], '</h3>
 					</div>
 					<div class="information">
 						<label class="centericon" for="lp_header_panel_width">col-xs-</label>
@@ -196,7 +196,7 @@ function template_callback_panel_layout()
 			<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['left'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
 					</div>
 					<div class="information">
 						<ul class="righttext">
@@ -256,7 +256,7 @@ function template_callback_panel_layout()
 						<div class="row">
 							<div class="col-xs">
 								<div class="title_bar">
-									<h3 class="titlebg">', $txt['lp_block_placement_set']['top'], '</h3>
+									<h3 class="titlebg">', $context['lp_block_placements']['top'], '</h3>
 								</div>
 								<div class="information">
 									col-xs (auto)
@@ -275,7 +275,7 @@ function template_callback_panel_layout()
 						<div class="row">
 							<div class="col-xs">
 								<div class="title_bar">
-									<h3 class="titlebg">', $txt['lp_block_placement_set']['bottom'], '</h3>
+									<h3 class="titlebg">', $context['lp_block_placements']['bottom'], '</h3>
 								</div>
 								<div class="information">
 									col-xs (auto)
@@ -286,7 +286,7 @@ function template_callback_panel_layout()
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['right'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['right'], '</h3>
 					</div>
 					<div class="information">
 						<ul class="righttext">
@@ -344,7 +344,7 @@ function template_callback_panel_layout()
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_footer_panel_width'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['footer'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['footer'], '</h3>
 					</div>
 					<div class="information">
 						<label class="centericon" for="lp_footer_panel_width">col-xs-</label>
@@ -389,7 +389,7 @@ function template_callback_panel_direction()
 			</thead>
 			<tbody>';
 
-	foreach ($context['lp_panels'] as $key => $label) {
+	foreach ($context['lp_block_placements'] as $key => $label) {
 		echo '
 				<tr class="windowbg">
 					<td>

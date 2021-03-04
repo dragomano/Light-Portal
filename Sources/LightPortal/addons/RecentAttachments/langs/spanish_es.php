@@ -9,4 +9,3 @@ $txt['lp_recent_attachments_addon_num_attachments'] = 'Número de archivos adjun
 $txt['lp_recent_attachments_addon_extensions'] = 'Las extensiones de los archivos adjuntos que desea mostrar';
 $txt['lp_recent_attachments_addon_extensions_subtext'] = 'Ingrese las extensiones requeridas, separadas por comas. Por ejemplo: <strong>jpg,png,gif</strong>';
 $txt['lp_recent_attachments_addon_direction'] = 'Dirección de la lista';
-$txt['lp_recent_attachments_addon_direction_set'] = array('horizontal' => 'Horizontal', 'vertical' => 'Vertical');

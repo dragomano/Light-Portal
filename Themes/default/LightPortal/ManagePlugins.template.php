@@ -276,7 +276,7 @@ function template_plugin_post()
 													<td>
 														<select x-model="option.type" name="option_type[]">';
 
-	foreach ($txt['lp_plugin_option_types'] as $type => $name) {
+	foreach ($context['lp_plugin_option_types'] as $type => $name) {
 		echo '
 															<option value="', $type, '">', $name, '</option>';
 	}

@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * LanguageAccess
  *

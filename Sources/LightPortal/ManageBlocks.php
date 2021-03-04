@@ -54,7 +54,7 @@ class ManageBlocks
 		$this->doActions();
 
 		$context['lp_current_blocks'] = $this->getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($context['lp_block_placements'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_blocks';
 	}
@@ -625,7 +625,7 @@ class ManageBlocks
 			'tab' => 'appearance'
 		);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+		foreach ($context['lp_icon_types'] as $type => $title) {
 			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
 				'value'   => $type,
 				'checked' => $type == $context['lp_block']['icon_type']
@@ -642,7 +642,7 @@ class ManageBlocks
 			'tab' => 'access_placement'
 		);
 
-		foreach ($txt['lp_block_placement_set'] as $level => $title) {
+		foreach ($context['lp_block_placements'] as $level => $title) {
 			$context['posting_fields']['placement']['input']['options'][$title] = array(
 				'value'    => $level,
 				'selected' => $level == $context['lp_block']['placement']

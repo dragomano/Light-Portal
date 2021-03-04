@@ -7,4 +7,3 @@ $txt['lp_recent_attachments_addon_num_attachments']    = 'Кількість в�
 $txt['lp_recent_attachments_addon_extensions']         = 'Розширення вкладень, які потрібно відображати';
 $txt['lp_recent_attachments_addon_extensions_subtext'] = 'Перерахуйте потрібні розширення, через кому. Наприклад: <strong>jpg,png</strong>';
 $txt['lp_recent_attachments_addon_direction']          = 'Напрямок списку';
-$txt['lp_recent_attachments_addon_direction_set']      = array('horizontal' => 'Горизонтальний', 'vertical' => 'Вертикальний');

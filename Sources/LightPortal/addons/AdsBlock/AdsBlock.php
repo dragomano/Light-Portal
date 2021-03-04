@@ -59,11 +59,11 @@ class AdsBlock
 	 */
 	public function addPanels()
 	{
-		global $context, $txt;
+		global $context;
 
-		unset($context['lp_panels']['ads']);
+		unset($context['lp_block_placements']['ads']);
 
-		$context['lp_panels'] += $txt['lp_ads_block_addon_placement_set'];
+		$context['lp_block_placements'] = array_merge($context['lp_block_placements'], $this->getPlacements());
 	}
 
 	/**
@@ -72,11 +72,20 @@ class AdsBlock
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['ads_block']['content'] = 'html';
-
 		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
 		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
 		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
+	}
+
+	/**
+	 * @param string $content
+	 * @param string $type
+	 * @return void
+	 */
+	public function parseContent(&$content, $type)
+	{
+		if ($type == 'ads_block')
+			Helpers::parseContent($content, 'html');
 	}
 
 	/**
@@ -149,7 +158,9 @@ class AdsBlock
 			'tab' => 'access_placement'
 		);
 
-		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $title) {
+		$placement_set = $this->getPlacements();
+
+		foreach ($placement_set as $position => $title) {
 			$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
 				'value'    => $position,
 				'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
@@ -380,13 +391,14 @@ class AdsBlock
 	 */
 	public function getData()
 	{
-		global $context, $txt;
+		global $context;
 
 		if (empty($context['lp_blocks']['ads']))
 			return [];
 
 		$ads_blocks = [];
-		foreach ($txt['lp_ads_block_addon_placement_set'] as $position => $dump) {
+		$placement_set = $this->getPlacements();
+		foreach ($placement_set as $position => $dump) {
 			$ads_blocks[$position] = $this->getByPosition($position);
 		}
 
@@ -394,10 +406,6 @@ class AdsBlock
 	}
 
 	/**
-	 * Get ads blocks by selected position
-	 *
-	 * Получаем рекламные блоки в указанной позиции
-	 *
 	 * @param string $position
 	 * @return array
 	 */
@@ -431,5 +439,18 @@ class AdsBlock
 
 			return false;
 		});
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getPlacements()
+	{
+		global $txt;
+
+		return array_combine(
+			array('board_top', 'board_bottom', 'topic_top', 'topic_bottom', 'before_first_post', 'before_every_first_post', 'before_every_last_post', 'before_last_post','after_first_post', 'after_every_first_post', 'after_every_last_post', 'after_last_post'),
+			$txt['lp_ads_block_addon_placement_set']
+		);
 	}
 }

@@ -212,7 +212,9 @@ class TinySlider
 			'options' => array()
 		);
 
-		foreach ($txt['lp_tiny_slider_addon_axis_set'] as $key => $value) {
+		$axis_directions = array_combine(array('horizontal', 'vertical'), $txt['lp_panel_direction_set']);
+
+		foreach ($axis_directions as $key => $value) {
 			$context['posting_fields']['axis']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['axis']
@@ -363,7 +365,9 @@ class TinySlider
 			'options' => array()
 		);
 
-		foreach ($txt['lp_tiny_slider_addon_autoplay_direction_set'] as $key => $value) {
+		$autoplay_directions = array_combine(array('forward', 'backward'), $txt['lp_tiny_slider_addon_autoplay_direction_set']);
+
+		foreach ($autoplay_directions as $key => $value) {
 			$context['posting_fields']['autoplay_direction']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['autoplay_direction']
@@ -471,13 +475,15 @@ class TinySlider
 		}
 
 		if (!empty($parameters['controls'])) {
+			$buttons = array_combine(array('prev', 'next'), $txt['lp_tiny_slider_addon_controls_buttons']);
+
 			$html .= '
 			<ul class="controls customize-controls">
 				<li class="prev">
-					<span class="button floatleft"><i class="fas fa-arrow-left"></i> ' . $txt['lp_tiny_slider_addon_controls_buttons']['prev'] . '</span>
+					<span class="button floatleft"><i class="fas fa-arrow-left"></i> ' . $buttons['prev'] . '</span>
 				</li>
 				<li class="next">
-					<span class="button floatright">' . $txt['lp_tiny_slider_addon_controls_buttons']['next'] . ' <i class="fas fa-arrow-right"></i></span>
+					<span class="button floatright">' . $buttons['next'] . ' <i class="fas fa-arrow-right"></i></span>
 				</li>
 			</ul>';
 		}

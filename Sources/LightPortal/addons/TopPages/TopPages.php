@@ -86,7 +86,9 @@ class TopPages
 			'options' => array()
 		);
 
-		foreach ($txt['lp_top_pages_addon_type_set'] as $key => $value) {
+		$types = array_combine(array('coments', 'views'), $txt['lp_top_pages_addon_type_set']);
+
+		foreach ($types as $key => $value) {
 			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']

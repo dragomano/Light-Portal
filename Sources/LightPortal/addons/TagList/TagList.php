@@ -63,8 +63,10 @@ class TagList
 		if ($context['lp_block']['type'] !== 'tag_list')
 			return;
 
+		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list_addon_source_set']);
+
 		if (!class_exists('\Bugo\Optimus\Keywords'))
-			$txt['lp_tag_list_addon_source_set'] = array('lp_tags' => $txt['lp_tag_list_addon_source_set']['lp_tags']);
+			$sources = $sources['lp_tags'];
 
 		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list_addon_source'];
 		$context['posting_fields']['source']['input'] = array(
@@ -76,7 +78,7 @@ class TagList
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_tag_list_addon_source_set'] as $key => $value) {
+		foreach ($sources as $key => $value) {
 			$context['posting_fields']['source']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['source']

@@ -123,7 +123,9 @@ class PageList
 			'options' => array()
 		);
 
-		foreach ($txt['lp_page_list_addon_sort_set'] as $key => $value) {
+		$sort_set = array_combine(array('page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'), $txt['lp_page_list_addon_sort_set']);
+
+		foreach ($sort_set as $key => $value) {
 			$context['posting_fields']['sort']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['sort']

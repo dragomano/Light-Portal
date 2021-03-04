@@ -193,10 +193,13 @@ class Helpers
 	{
 		global $txt;
 
+		$str = is_array($str) ? $str : explode(',', $str);
+		$str = array_map('trim', $str);
+
 		// Plural rule #0 (Chinese, Japanese, Persian, Turkish, Thai, Indonesian, Malay)
 		$rule_zero = array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms');
 		if (in_array($txt['lang_dictionary'], $rule_zero))
-			return $num . ' ' . (is_string($str) ? $str : $str[0]);
+			return $num . ' ' . $str[0];
 
 		// Plural rule #2 (French, Portuguese_brazilian)
 		$rule_two = array('fr', 'pt');
@@ -204,6 +207,8 @@ class Helpers
 			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
 
 		// Just in case
+		if (!isset($str[1]))
+			$str[1] = $str[0];
 		if (!isset($str[2]))
 			$str[2] = $str[1];
 
@@ -860,7 +865,7 @@ class Helpers
 
 		foreach ($context['posting_fields'] as $item => $data) {
 			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';

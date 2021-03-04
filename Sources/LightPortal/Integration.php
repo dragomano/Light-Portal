@@ -470,7 +470,9 @@ class Integration
 	 */
 	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
-		global $context;
+		global $txt, $context;
+
+		$txt['permissiongroup_light_portal'] = LP_NAME;
 
 		//$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
@@ -552,7 +554,9 @@ class Integration
 	 */
 	public function alertTypes(array &$alert_types)
 	{
-		global $modSettings;
+		global $txt, $modSettings;
+
+		$txt['alert_group_light_portal'] = LP_NAME;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
 			$alert_types['light_portal'] = array(

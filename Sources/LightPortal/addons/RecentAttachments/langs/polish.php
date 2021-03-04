@@ -7,4 +7,3 @@ $txt['lp_recent_attachments_addon_num_attachments']    = 'Liczba wyświetlanych 
 $txt['lp_recent_attachments_addon_extensions']         = 'Rozszerzenia wyświetlanych załączników';
 $txt['lp_recent_attachments_addon_extensions_subtext'] = 'Podaj rozszerzenia oddzielone przecinkami, np.: <strong>jpg,png</strong>';
 $txt['lp_recent_attachments_addon_direction']          = 'Kierunek listy';
-$txt['lp_recent_attachments_addon_direction_set']      = array('horizontal' => 'Poziomo', 'vertical' => 'Pionowo');
