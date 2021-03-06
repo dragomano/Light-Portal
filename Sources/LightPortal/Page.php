@@ -65,6 +65,10 @@ class Page
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
 
+		$context['lp_page']['errors'] = [];
+		if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit'])
+			$context['lp_page']['errors'][] = $txt['lp_page_visible_but_disabled'];
+
 		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
