@@ -873,13 +873,6 @@ class Helpers
 				$context['posting_fields'][$item] = $data;
 			}
 
-			if (isset($data['input']['type']) && !empty($data['input']['spoiler'])) {
-				$data['input']['before'] = '<details class="details"><summary>' . $data['label']['text'] . '</summary>';
-				$data['input']['after'] = '</details>';
-				$data['label']['text'] = '';
-				$context['posting_fields'][$item] = $data;
-			}
-
 			if (empty($data['input']['tab']))
 				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}

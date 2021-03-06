@@ -582,7 +582,6 @@ class ManageBlocks
 					'value'     => $context['lp_block']['title'][$lang['filename']] ?? '',
 					'style'     => 'width: 100%'
 				),
-				'spoiler' => $lang['filename'] != $context['user']['language'],
 				'tab' => 'content'
 			);
 		}
@@ -705,7 +704,6 @@ class ManageBlocks
 				'value'     => $context['lp_block']['title_style'],
 				'style'     => 'width: 100%'
 			),
-			'spoiler' => true,
 			'tab' => 'appearance'
 		);
 
@@ -738,7 +736,6 @@ class ManageBlocks
 					'value'     => $context['lp_block']['content_style'],
 					'style'     => 'width: 100%'
 				),
-				'spoiler' => true,
 				'tab' => 'appearance'
 			);
 		}

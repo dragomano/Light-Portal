@@ -375,36 +375,6 @@
 							}
 						}
 					}
-
-					/* Spoiler */
-					.details {
-						display: block;
-						border: 1px solid silver;
-						border-radius: 4px;
-						padding: .5em;
-
-						summary {
-							display: list-item;
-							margin: -.5em;
-							padding: .5em;
-							font-weight: bold;
-
-							&:hover {
-								.pointer;
-							}
-
-							&:focus {
-								outline: none;
-							}
-						}
-
-						&[open] {
-							& > summary {
-								margin-bottom: .5em;
-								border-bottom: 1px solid silver;
-							}
-						}
-					}
 				}
 			}
 
@@ -1763,18 +1733,6 @@ dl {
 				}
 			}
 		}
-	}
-}
-
-/* Search */
-.easy-autocomplete {
-	input {
-		width: 100% !important;
-	}
-
-	.easy-autocomplete-container {
-		z-index: 1000 !important;
-		position: inherit !important;
 	}
 }
 

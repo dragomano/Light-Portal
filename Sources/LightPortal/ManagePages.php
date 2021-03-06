@@ -905,7 +905,6 @@ class ManagePages
 					'style'     => 'width: 100%',
 					'x-ref'     => 'title_' . $i++
 				),
-				'spoiler' => !in_array($lang['filename'], $languages),
 				'tab' => 'content'
 			);
 		}
@@ -994,7 +993,6 @@ class ManagePages
 						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
 						'style'     => 'width: 100%'
 					),
-					'spoiler' => $lang['filename'] != $context['user']['language'],
 					'tab' => 'menu'
 				);
 			}
