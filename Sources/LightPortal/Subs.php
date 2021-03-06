@@ -80,10 +80,9 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true)); // SVG
-		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
-		loadCssFile('light_portal/flexboxgrid.css');
-		loadCssFile('light_portal/light_portal.css');
+		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+		loadCSSFile('light_portal/flexboxgrid.css');
+		loadCSSFile('light_portal/light_portal.css');
 	}
 
 	/**
@@ -408,9 +407,11 @@ class Subs
 					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
 				WHERE ps.name = {literal:main_menu_item}
 					AND ps.value != {string:blank_string}
-					AND ps.type = {literal:page}',
+					AND ps.type = {literal:page}
+					AND p.status = {int:status}',
 				array(
-					'blank_string' => ''
+					'blank_string' => '',
+					'status'       => Page::STATUS_ACTIVE
 				)
 			);
 

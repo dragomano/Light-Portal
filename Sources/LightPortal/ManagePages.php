@@ -719,7 +719,7 @@ class ManagePages
 			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $user_info['is_admin'] ? Page::STATUS_ACTIVE : (int) allowedTo('light_portal_approve_pages'),
+			'status'      => $context['lp_current_page']['status'] ?? (int) allowedTo('light_portal_approve_pages'),
 			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
 			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
@@ -728,9 +728,11 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null) {
+			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null)
 				$post_data[$option] = 0;
-			}
+
+			if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data[$option] === null)
+				$post_data[$option] = [];
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
