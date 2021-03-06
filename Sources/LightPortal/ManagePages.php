@@ -800,7 +800,7 @@ class ManagePages
 	{
 		global $context;
 
-		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
 
 		addInlineCss('
@@ -1001,7 +1001,7 @@ class ManagePages
 		}
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',

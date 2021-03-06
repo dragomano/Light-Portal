@@ -246,7 +246,7 @@ class ManagePlugins
 			'icon_type'  => $post_data['icon_type'] ?? $context['lp_plugin']['icon_type'] ?? 'fas',
 			'author'     => $post_data['author'] ?? $context['lp_plugin']['author'] ?? $user_info['name'],
 			'email'      => $post_data['email'] ?? $context['lp_plugin']['email'] ?? $user_info['email'],
-			'site'       => $post_data['site'] ?? $context['lp_plugin']['site'] ?? '',
+			'site'       => $post_data['site'] ?? $context['lp_plugin']['site'] ?? 'https://github.com/dragomano/Light-Portal',
 			'license'    => $post_data['license'] ?? $context['lp_plugin']['license'] ?? 'mit',
 			'smf_hooks'  => $post_data['smf_hooks'] ?? $context['lp_plugin']['smf_hooks'] ?? false,
 			'components' => $post_data['components'] ?? $context['lp_plugin']['components'] ?? false,
@@ -374,7 +374,7 @@ class ManagePlugins
 			);
 		}
 
-		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div></div>';
+		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label> (<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)</div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
