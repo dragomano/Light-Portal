@@ -27,9 +27,9 @@ class Search
 	public $addon_icon = 'fas fa-search';
 
 	/**
-	 * @var string
+	 * @var int
 	 */
-	private $dark_themes = '';
+	private $min_chars = 3;
 
 	/**
 	 * @return void
@@ -45,17 +45,15 @@ class Search
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $modSettings, $context;
+		global $modSettings;
 
 		$addSettings = [];
-		if (!isset($modSettings['lp_search_addon_dark_themes']))
-			$addSettings['lp_search_addon_dark_themes'] = $this->dark_themes;
+		if (!isset($modSettings['lp_search_addon_min_chars']))
+			$addSettings['lp_search_addon_min_chars'] = $this->min_chars;
 		if (!empty($addSettings))
 			updateSettings($addSettings);
 
-		$context['lp_search_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_search_addon_dark_themes');
+		$config_vars[] = array('int', 'lp_search_addon_min_chars');
 	}
 
 	/**
@@ -114,13 +112,12 @@ class Search
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->filled('phrase') === false)
+		$data = Helpers::request()->json();
+
+		if (empty($data['phrase']))
 			return;
 
-		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars'](Helpers::request('phrase')));
-
-		if (empty($query))
-			return;
+		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars']($data['phrase']));
 
 		exit(json_encode($this->query($query)));
 	}
@@ -215,60 +212,49 @@ class Search
 	 */
 	public function prepareContent(&$content, $type)
 	{
-		global $modSettings, $scripturl, $context, $txt, $settings;
+		global $scripturl, $context, $txt, $modSettings;
 
 		if ($type !== 'search')
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/easy-autocomplete@1/dist/easy-autocomplete.min.css', array('external' => true));
-		loadCSSFile('https://cdn.jsdelivr.net/npm/easy-autocomplete@1/dist/easy-autocomplete.themes.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easy-autocomplete@1/dist/jquery.easy-autocomplete.min.js', array('external' => true));
-
-		$dark_themes = !empty($modSettings['lp_search_addon_dark_themes']) ? json_decode($modSettings['lp_search_addon_dark_themes'], true) : [];
+		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1.0.4/auto-complete.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1.0.4/auto-complete.min.js', array('external' => true));
 
 		ob_start();
 
 		echo '
 		<form class="search_addon centertext" action="', $scripturl, '?action=portal;sa=search" method="post" accept-charset="', $context['character_set'], '">
-			<input type="search" name="search">
+			<input type="search" name="search" placeholder="', $txt['lp_block_types']['search'], '">
 		</form>
 		<script>
-			jQuery(document).ready(function ($) {
-				let searchAddonOptions = {
-					url: function (phrase) {
-						return "', $scripturl, '?action=portal;sa=qsearch"
-					},
-					getValue: function (element) {
-						return element.title;
-					},
-					ajaxSettings: {
-						dataType: "json",
+			new autoComplete({
+				selector: ".search_addon input",' . (!empty($modSettings['lp_search_addon_min_chars']) ? '
+				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',' : '') . '
+				source: async function(term, response) {
+					const results = await fetch("', $scripturl, '?action=portal;sa=qsearch", {
 						method: "POST",
-						data: {
-							dataType: "json"
-						}
-					},
-					preparePostData: function (data) {
-						data.phrase = $(".search_addon input").val();
-						return data;
-					},
-					requestDelay: 500,
-					template: {
-						type: "links",
-						fields: {
-							link: "link"
-						}
-					},
-					list: {
-						match: {
-							enabled: true
-						}
-					},
-					placeholder: "', $txt['lp_block_types']['search'], '",
-					adjustWidth: false,
-					theme: "' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? 'dark' : 'blue-light') . '"
-				};
-				$(".search_addon input").easyAutocomplete(searchAddonOptions);
+						headers: {
+							"Content-Type": "application/json; charset=utf-8"
+						},
+						body: JSON.stringify({
+							phrase: term
+						})
+					});
+
+					if (results.ok) {
+						const data = await results.json();
+						response(data);
+					}
+				},
+				renderItem: function (item, search) {
+					search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+					let re = new RegExp("(" + search.split(" ").join("|") + ")", "gi");
+
+					return `<div class="autocomplete-suggestion" data-val="` + item.title + `" data-link="` + item.link + `" style="cursor: pointer">` + item.title.replace(re, "<b>$1</b>") + `</div>`;
+				},
+				onSelect: function(e, term, item) {
+					window.location = item.dataset.link;
+				}
 			});
 		</script>';
 
@@ -282,12 +268,12 @@ class Search
 	public function credits(&$links)
 	{
 		$links[] = array(
-			'title' => 'EasyAutocomplete',
-			'link' => 'https://github.com/pawelczak/EasyAutocomplete',
-			'author' => 'Łukasz Pawełczak',
+			'title' => 'Vanilla JavaScript autoComplete',
+			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
+			'author' => 'Simon Steinberger / Pixabay.com',
 			'license' => array(
 				'name' => 'the MIT License',
-				'link' => 'https://github.com/pawelczak/EasyAutocomplete/blob/master/LICENSE.txt'
+				'link' => 'https://www.opensource.org/licenses/mit-license.php'
 			)
 		);
 	}

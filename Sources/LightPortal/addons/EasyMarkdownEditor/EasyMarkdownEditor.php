@@ -39,7 +39,7 @@ class EasyMarkdownEditor
 		if ($object['type'] == 'md') {
 			loadLanguage('Editor');
 
-			loadCssFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
+			loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
 			addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;

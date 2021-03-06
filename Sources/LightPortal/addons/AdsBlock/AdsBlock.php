@@ -72,6 +72,8 @@ class AdsBlock
 	 */
 	public function blockOptions(&$options)
 	{
+		$options['ads_block']['content'] = 'html';
+
 		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
 		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
 		$options['ads_block']['parameters']['ads_topics']    = $this->topics;

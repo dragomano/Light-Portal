@@ -128,7 +128,7 @@ class UserInfo
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>';
 
-			if ($context['allow_light_portal_manage_own_pages']) {
+			if (!empty($context['allow_light_portal_manage_own_pages'])) {
 				echo '
 				<li>
 					<hr>
