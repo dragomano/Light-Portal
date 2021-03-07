@@ -241,6 +241,7 @@ class Subs
 	public static function runAddons(string $hook = '', array $vars = [], array $plugins = [])
 	{
 		global $context;
+		static $results = [];
 
 		$context['lp_bbc_icon']  = 'fab fa-bimobject';
 		$context['lp_html_icon'] = 'fab fa-html5';
@@ -256,9 +257,8 @@ class Subs
 
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
-			if (!class_exists($className)) {
+			if (!class_exists($className))
 				continue;
-			}
 
 			$class = new $className;
 
@@ -269,13 +269,14 @@ class Subs
 				$context['lp_' . $snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class->addon_icon : 'fas fa-puzzle-piece';
 			}
 
-			if (method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
+			// Hook init should run only once
+			if (empty($results[$id]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
 				$class->init();
+				$results[$id]['init'] = $addon;
 			}
 
-			if (method_exists($class, $hook)) {
+			if (method_exists($class, $hook))
 				$class->$hook(...$vars);
-			}
 		}
 	}
 
