@@ -173,7 +173,7 @@ class ArticleList
 			WHERE t.id_topic IN ({array_int:topics})
 				AND {query_wanna_see_board}
 				AND t.approved = {int:is_approved}
-				AND ml.approved = {int:is_approved}
+				AND m.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
 			array(
 				'topics'      => $parameters['ids'],

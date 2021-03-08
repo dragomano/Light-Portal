@@ -49,7 +49,7 @@ function template_manage_plugins()
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
 		echo '
@@ -57,7 +57,7 @@ function template_manage_plugins()
 			</div>';
 
 		if (!empty($plugin['settings']))
-			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
+			show_plugin_settings($plugin['snake_name'] . $context['session_id'], $plugin['settings']);
 
 		echo '
 		</div>

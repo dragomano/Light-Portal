@@ -324,7 +324,7 @@ class Helpers
 			$minutes = ($timestamp - $current_time) / 60;
 			// like "In a minute"
 			if ($minutes == 1)
-				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
+				return sprintf($txt['lp_time_label_in'], explode(',', $txt['lp_minutes_set'])[0]);
 
 			// like "In n minutes"
 			if ($minutes > 1)
@@ -342,7 +342,7 @@ class Helpers
 			return self::getText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
-			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
+			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
 			return self::getText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];

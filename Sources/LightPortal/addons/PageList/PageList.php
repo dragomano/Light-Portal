@@ -158,6 +158,7 @@ class PageList
 		global $smcFunc, $txt, $scripturl;
 
 		$titles = Helpers::getAllTitles();
+		$all_categories = Helpers::getAllCategories();
 
 		$categories = !empty($parameters['categories']) ? explode(',', $parameters['categories']) : [];
 
@@ -192,7 +193,7 @@ class PageList
 			$pages[$row['page_id']] = array(
 				'id'            => $row['page_id'],
 				'category_id'   => $row['category_id'],
-				'category_name' => Helpers::getAllCategories()[$row['category_id']]['name'],
+				'category_name' => $all_categories[$row['category_id']]['name'],
 				'category_link' => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
