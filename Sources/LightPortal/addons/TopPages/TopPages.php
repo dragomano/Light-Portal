@@ -86,7 +86,7 @@ class TopPages
 			'options' => array()
 		);
 
-		$types = array_combine(array('coments', 'views'), $txt['lp_top_pages_addon_type_set']);
+		$types = array_combine(array('comments', 'views'), $txt['lp_top_pages_addon_type_set']);
 
 		foreach ($types as $key => $value) {
 			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
@@ -184,7 +184,7 @@ class TopPages
 		ob_start();
 
 		if (!empty($top_pages)) {
-			$max = reset($top_pages)['num_' . $parameters['popularity_type']];
+			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
 				echo $txt['lp_top_pages_addon_no_items'];

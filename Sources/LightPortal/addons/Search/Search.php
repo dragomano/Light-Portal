@@ -217,8 +217,8 @@ class Search
 		if ($type !== 'search')
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1.0.4/auto-complete.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1.0.4/auto-complete.min.js', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', array('external' => true));
 
 		ob_start();
 
