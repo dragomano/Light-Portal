@@ -24,7 +24,7 @@ class PageArticle extends AbstractArticle
 	/**
 	 * @var array
 	 */
-	private $selected_categories = [];
+	protected $selected_categories = [];
 
 	/**
 	 * Initialize class properties
@@ -64,8 +64,9 @@ class PageArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData(int $start, int $limit)
+	public function getData(int $start, int $limit): array
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $memberContext;
 
@@ -172,7 +173,7 @@ class PageArticle extends AbstractArticle
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $modSettings, $user_info, $smcFunc;
 

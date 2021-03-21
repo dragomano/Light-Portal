@@ -87,7 +87,7 @@ class Block
 	 *
 	 * @return array
 	 */
-	private function getFilteredByAreas()
+	private function getFilteredByAreas(): array
 	{
 		global $context, $modSettings;
 
@@ -146,7 +146,7 @@ class Block
 	 * @param string $entity
 	 * @return array
 	 */
-	private function getAllowedIds(string $entity = '')
+	private function getAllowedIds(string $entity = ''): array
 	{
 		$ids = [];
 

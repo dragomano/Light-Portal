@@ -64,7 +64,7 @@ class BoardArticle extends AbstractArticle
 	 * @param int $limit
 	 * @return array
 	 */
-	public function getData(int $start, int $limit)
+	public function getData(int $start, int $limit): array
 	{
 		global $user_info, $smcFunc, $modSettings, $context, $scripturl, $txt;
 
@@ -158,7 +158,7 @@ class BoardArticle extends AbstractArticle
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $user_info, $smcFunc;
 

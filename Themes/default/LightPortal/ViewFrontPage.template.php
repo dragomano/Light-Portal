@@ -39,7 +39,7 @@ function template_wrong_template()
  */
 function template_show_articles()
 {
-	global $context, $txt, $scripturl, $modSettings;
+	global $context, $txt, $modSettings;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
@@ -181,7 +181,7 @@ function template_show_articles()
  */
 function template_show_articles_alt()
 {
-	global $context, $txt, $modSettings, $scripturl;
+	global $context, $txt, $modSettings;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
@@ -508,7 +508,7 @@ function template_show_articles_alt3()
  */
 function template_show_articles_alt4()
 {
-	global $context, $scripturl;
+	global $context;
 
 	if (empty($context['lp_active_blocks']))
 		echo '

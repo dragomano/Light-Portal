@@ -227,10 +227,6 @@ class Subs
 	}
 
 	/**
-	 * Run addons
-	 *
-	 * Подключаем аддоны
-	 *
 	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
 	 *
 	 * @param string $hook

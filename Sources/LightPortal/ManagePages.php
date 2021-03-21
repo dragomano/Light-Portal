@@ -728,11 +728,13 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && !empty($post_data) && $post_data[$option] === null)
-				$post_data[$option] = 0;
+			if (!empty($parameters[$option]) && !empty($post_data) && $post_data[$option] === null) {
+				if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
+					$post_data[$option] = 0;
 
-			if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data[$option] === null)
-				$post_data[$option] = [];
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY)
+					$post_data[$option] = [];
+			}
 
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
@@ -1225,7 +1227,7 @@ class ManagePages
 	 */
 	private function setData(int $item = 0)
 	{
-		global $context, $smcFunc, $db_type;
+		global $context;
 
 		if (!empty($context['post_errors']) || Helpers::post()->has('save') === false)
 			return;
@@ -1236,237 +1238,262 @@ class ManagePages
 		$this->prepareKeywords();
 
 		if (empty($item)) {
-			$item = $smcFunc['db_insert']('',
-				'{db_prefix}lp_pages',
-				array_merge(array(
-					'category_id' => 'int',
-					'author_id'   => 'int',
-					'alias'       => 'string-255',
-					'description' => 'string-255',
-					'content'     => 'string',
-					'type'        => 'string',
-					'permissions' => 'int',
-					'status'      => 'int',
-					'created_at'  => 'int'
-				), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
-				array_merge(array(
-					$context['lp_page']['category'],
-					$context['lp_page']['page_author'],
-					$context['lp_page']['alias'],
-					$context['lp_page']['description'],
-					$context['lp_page']['content'],
-					$context['lp_page']['type'],
-					$context['lp_page']['permissions'],
-					$context['lp_page']['status'],
-					$this->getPublishTime()
-				), $db_type == 'postgresql' ? array($this->getAutoIncrementValue()) : array()),
-				array('page_id'),
-				1
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			Subs::runAddons('onPageSaving', array($item));
-
-			if (!empty($context['lp_page']['title'])) {
-				$titles = [];
-				foreach ($context['lp_page']['title'] as $lang => $title) {
-					$titles[] = array(
-						'item_id' => $item,
-						'type'    => 'page',
-						'lang'    => $lang,
-						'title'   => $title
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = $keywords = [];
-
-				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-				foreach ($new_tags as $value) {
-					$tags[] = array(
-						'value' => $value
-					);
-				}
-
-				if (!empty($tags)) {
-					$keywords = $smcFunc['db_insert']('',
-						'{db_prefix}lp_tags',
-						array(
-							'value' => 'string'
-						),
-						$tags,
-						array('tag_id'),
-						2
-					);
-
-					$smcFunc['lp_num_queries']++;
-				}
-
-				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
-			}
-
-			if (!empty($context['lp_page']['options'])) {
-				$params = [];
-				foreach ($context['lp_page']['options'] as $param_name => $value) {
-					if ($param_name == 'main_menu_item') {
-						$value = empty($value) ? '' : json_encode($value);
-					}
-
-					$value = is_array($value) ? implode(',', $value) : $value;
-
-					$params[] = array(
-						'item_id' => $item,
-						'type'    => 'page',
-						'name'    => $param_name,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$params,
-					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
+			$this->addData();
 		} else {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
-				WHERE page_id = {int:page_id}',
-				array(
-					'page_id'     => $item,
-					'category_id' => $context['lp_page']['category'],
-					'author_id'   => $context['lp_page']['page_author'],
-					'alias'       => $context['lp_page']['alias'],
-					'description' => $context['lp_page']['description'],
-					'content'     => $context['lp_page']['content'],
-					'type'        => $context['lp_page']['type'],
-					'permissions' => $context['lp_page']['permissions'],
-					'status'      => $context['lp_page']['status'],
-					'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
-					'updated_at'  => time()
-				)
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			Subs::runAddons('onPageSaving', array($item));
-
-			if (!empty($context['lp_page']['title'])) {
-				$titles = [];
-				foreach ($context['lp_page']['title'] as $lang => $title) {
-					$titles[] = array(
-						'item_id' => $item,
-						'type'    => 'page',
-						'lang'    => $lang,
-						'title'   => $title
-					);
-				}
-
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			if (!empty($context['lp_page']['keywords'])) {
-				$tags = $keywords = [];
-
-				$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-				$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-				foreach ($new_tags as $value) {
-					$tags[] = array(
-						'value' => $value
-					);
-				}
-
-				if (!empty($tags)) {
-					$keywords = $smcFunc['db_insert']('',
-						'{db_prefix}lp_tags',
-						array(
-							'value' => 'string'
-						),
-						$tags,
-						array('tag_id'),
-						2
-					);
-
-					$smcFunc['lp_num_queries']++;
-				}
-
-				$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
-			}
-
-			if (!empty($context['lp_page']['options'])) {
-				$params = [];
-				foreach ($context['lp_page']['options'] as $param_name => $value) {
-					if ($param_name == 'main_menu_item') {
-						$value = empty($value) ? '' : json_encode($value);
-					}
-
-					$value = is_array($value) ? implode(',', $value) : $value;
-
-					$params[] = array(
-						'item_id' => $item,
-						'type'    => 'page',
-						'name'    => $param_name,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$params,
-					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
+			$this->updateData($item);
 		}
 
 		Helpers::cache()->flush();
 
 		redirectexit('action=admin;area=lp_pages;sa=main');
+	}
+
+	/**
+	 * @return int
+	 */
+	private function addData(): int
+	{
+		global $smcFunc, $db_type, $context;
+
+		$item = $smcFunc['db_insert']('',
+			'{db_prefix}lp_pages',
+			array_merge(array(
+				'category_id' => 'int',
+				'author_id'   => 'int',
+				'alias'       => 'string-255',
+				'description' => 'string-255',
+				'content'     => 'string',
+				'type'        => 'string',
+				'permissions' => 'int',
+				'status'      => 'int',
+				'created_at'  => 'int'
+			), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
+			array_merge(array(
+				$context['lp_page']['category'],
+				$context['lp_page']['page_author'],
+				$context['lp_page']['alias'],
+				$context['lp_page']['description'],
+				$context['lp_page']['content'],
+				$context['lp_page']['type'],
+				$context['lp_page']['permissions'],
+				$context['lp_page']['status'],
+				$this->getPublishTime()
+			), $db_type == 'postgresql' ? array($this->getAutoIncrementValue()) : array()),
+			array('page_id'),
+			1
+		);
+
+		$smcFunc['lp_num_queries']++;
+
+		if (empty($item))
+			return 0;
+
+		Subs::runAddons('onPageSaving', array($item));
+
+		if (!empty($context['lp_page']['title'])) {
+			$titles = [];
+			foreach ($context['lp_page']['title'] as $lang => $title) {
+				$titles[] = array(
+					'item_id' => $item,
+					'type'    => 'page',
+					'lang'    => $lang,
+					'title'   => $title
+				);
+			}
+
+			$smcFunc['db_insert']('',
+				'{db_prefix}lp_titles',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'lang'    => 'string',
+					'title'   => 'string'
+				),
+				$titles,
+				array('item_id', 'type', 'lang')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		if (!empty($context['lp_page']['keywords'])) {
+			$tags = $keywords = [];
+
+			$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+			$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+			foreach ($new_tags as $value) {
+				$tags[] = array(
+					'value' => $value
+				);
+			}
+
+			if (!empty($tags)) {
+				$keywords = $smcFunc['db_insert']('',
+					'{db_prefix}lp_tags',
+					array(
+						'value' => 'string'
+					),
+					$tags,
+					array('tag_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
+
+			$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+		}
+
+		if (!empty($context['lp_page']['options'])) {
+			$params = [];
+			foreach ($context['lp_page']['options'] as $param_name => $value) {
+				if ($param_name == 'main_menu_item') {
+					$value = empty($value) ? '' : json_encode($value);
+				}
+
+				$value = is_array($value) ? implode(',', $value) : $value;
+
+				$params[] = array(
+					'item_id' => $item,
+					'type'    => 'page',
+					'name'    => $param_name,
+					'value'   => $value
+				);
+			}
+
+			$smcFunc['db_insert']('',
+				'{db_prefix}lp_params',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'name'    => 'string',
+					'value'   => 'string'
+				),
+				$params,
+				array('item_id', 'type', 'name')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		return $item;
+	}
+
+	/**
+	 * @param int $item
+	 */
+	private function updateData(int $item)
+	{
+		global $smcFunc, $context;
+
+		$smcFunc['db_query']('', '
+				UPDATE {db_prefix}lp_pages
+				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+				WHERE page_id = {int:page_id}',
+			array(
+				'page_id'     => $item,
+				'category_id' => $context['lp_page']['category'],
+				'author_id'   => $context['lp_page']['page_author'],
+				'alias'       => $context['lp_page']['alias'],
+				'description' => $context['lp_page']['description'],
+				'content'     => $context['lp_page']['content'],
+				'type'        => $context['lp_page']['type'],
+				'permissions' => $context['lp_page']['permissions'],
+				'status'      => $context['lp_page']['status'],
+				'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
+				'updated_at'  => time()
+			)
+		);
+
+		$smcFunc['lp_num_queries']++;
+
+		Subs::runAddons('onPageSaving', array($item));
+
+		if (!empty($context['lp_page']['title'])) {
+			$titles = [];
+			foreach ($context['lp_page']['title'] as $lang => $title) {
+				$titles[] = array(
+					'item_id' => $item,
+					'type'    => 'page',
+					'lang'    => $lang,
+					'title'   => $title
+				);
+			}
+
+			$smcFunc['db_insert']('replace',
+				'{db_prefix}lp_titles',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'lang'    => 'string',
+					'title'   => 'string'
+				),
+				$titles,
+				array('item_id', 'type', 'lang')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		if (!empty($context['lp_page']['keywords'])) {
+			$tags = $keywords = [];
+
+			$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+			$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+			foreach ($new_tags as $value) {
+				$tags[] = array(
+					'value' => $value
+				);
+			}
+
+			if (!empty($tags)) {
+				$keywords = $smcFunc['db_insert']('',
+					'{db_prefix}lp_tags',
+					array(
+						'value' => 'string'
+					),
+					$tags,
+					array('tag_id'),
+					2
+				);
+
+				$smcFunc['lp_num_queries']++;
+			}
+
+			$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
+		}
+
+		if (!empty($context['lp_page']['options'])) {
+			$params = [];
+			foreach ($context['lp_page']['options'] as $param_name => $value) {
+				if ($param_name == 'main_menu_item') {
+					$value = empty($value) ? '' : json_encode($value);
+				}
+
+				$value = is_array($value) ? implode(',', $value) : $value;
+
+				$params[] = array(
+					'item_id' => $item,
+					'type'    => 'page',
+					'name'    => $param_name,
+					'value'   => $value
+				);
+			}
+
+			$smcFunc['db_insert']('replace',
+				'{db_prefix}lp_params',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'name'    => 'string',
+					'value'   => 'string'
+				),
+				$params,
+				array('item_id', 'type', 'name')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
 	}
 
 	/**
