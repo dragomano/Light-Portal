@@ -253,8 +253,8 @@ class Comment {
 class Toolbar {
 	insertTags(open, close) {
 		let start = this.message.selectionStart,
-			  end = this.message.selectionEnd,
-			 text = this.message.value;
+			end = this.message.selectionEnd,
+			text = this.message.value;
 
 		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
 		this.message.focus();
@@ -277,7 +277,7 @@ class Toolbar {
 			case 'fa-bold':
 				return this.insertTags('[b]', '[/b]');
 
- 			case 'fa-italic':
+			case 'fa-italic':
 				return this.insertTags('[i]', '[/i]');
 
 			case 'fa-list-ul':

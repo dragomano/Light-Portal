@@ -39,9 +39,6 @@ class ManageBlocks
 	{
 		global $context, $txt;
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/change_priority.js', array('minimize' => true));
-
 		loadTemplate('LightPortal/ManageBlocks');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_manage'];

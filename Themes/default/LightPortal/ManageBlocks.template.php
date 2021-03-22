@@ -84,6 +84,34 @@ function template_manage_blocks()
 		</tbody>
 	</table>';
 		}
+
+		echo '
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const block = new Block(),
+			defaultBlocks = document.querySelectorAll(".lp_default_blocks tbody"),
+			additionalBlocks = document.querySelectorAll(".lp_additional_blocks tbody");
+
+		defaultBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "default_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+
+		additionalBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "additional_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+	</script>';
 	}
 }
 
@@ -208,7 +236,11 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-	</div>';
+	</div>
+
+	<script>
+		const block = new Block();
+	</script>';
 }
 
 /**
@@ -324,7 +356,11 @@ function template_block_post()
 				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>';
+	</form>
+
+	<script>
+		const block = new Block();
+	</script>';
 }
 
 /**

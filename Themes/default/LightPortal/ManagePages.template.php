@@ -93,6 +93,7 @@ function template_page_post()
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
+		const page = new Page();
 		let keywords = new SlimSelect({
 			select: "#keywords",
 			data: [';

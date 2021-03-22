@@ -63,6 +63,11 @@ function template_manage_plugins()
 		</div>
 	</div>';
 	}
+
+	echo '
+	<script>
+		const plugin = new Plugin();
+	</script>';
 }
 
 /**
@@ -365,5 +370,8 @@ function template_plugin_post()
 				<button type="submit" class="button" name="save" @click="plugin.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>';
+	</form>
+	<script>
+		const plugin = new Plugin();
+	</script>';
 }

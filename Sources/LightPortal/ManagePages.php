@@ -263,6 +263,7 @@ class ManagePages
 					'params' => $context['search_params']
 				)
 			),
+			'javascript' => 'const page = new Page();',
 			'additional_rows' => array(
 				array(
 					'position' => 'after_title',

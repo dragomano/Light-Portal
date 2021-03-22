@@ -89,7 +89,8 @@ function template_category_settings()
 								maxlength="255"
 								form="add_category_form"
 								required
-								x-ref="cat_name">
+								x-ref="cat_name"
+							>
 							<textarea
 								placeholder="', $txt['lp_categories_desc'], '"
 								maxlength="255"
