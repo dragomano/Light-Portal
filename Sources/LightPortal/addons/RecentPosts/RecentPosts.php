@@ -218,6 +218,7 @@ class RecentPosts
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getData($parameters)
 	{

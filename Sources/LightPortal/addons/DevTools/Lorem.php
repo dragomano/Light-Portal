@@ -27,8 +27,9 @@ abstract class Lorem
 	/**
 	 * @param int $num_paragraphs
 	 * @return string
+	 * @throws \Exception
 	 */
-	public static function ipsum($num_paragraphs)
+	public static function ipsum(int $num_paragraphs): string
 	{
 		$paragraphs = [];
 		for ($p = 0; $p < $num_paragraphs; ++$p) {
@@ -62,6 +63,7 @@ abstract class Lorem
 
 	/**
 	 * @return float
+	 * @throws \Exception
 	 */
 	private static function random_float()
 	{
@@ -73,7 +75,7 @@ abstract class Lorem
 	 * @param int $count
 	 * @return array
 	 */
-	private static function random_values($arr, $count)
+	private static function random_values($arr, $count): array
 	{
 		$keys = array_rand($arr, $count);
 		if ($count == 1) {

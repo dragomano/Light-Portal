@@ -504,8 +504,6 @@ class TinySlider
 	 */
 	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $txt;
-
 		if ($type !== 'tiny_slider')
 			return;
 

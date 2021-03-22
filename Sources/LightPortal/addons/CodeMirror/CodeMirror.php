@@ -30,8 +30,6 @@ class CodeMirror
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $txt;
-
 		$config_vars[] = array('check', 'lp_code_mirror_addon_php_mode');
 		$config_vars[] = array('check', 'lp_code_mirror_addon_html_mode');
 		$config_vars[] = array('check', 'lp_code_mirror_addon_md_mode');

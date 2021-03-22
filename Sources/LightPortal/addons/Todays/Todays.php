@@ -146,7 +146,7 @@ class Todays
 	 *
 	 * @param string $type
 	 * @param string $output_method
-	 * @return string
+	 * @return string|array
 	 */
 	public function getData($type, $output_method = 'echo')
 	{

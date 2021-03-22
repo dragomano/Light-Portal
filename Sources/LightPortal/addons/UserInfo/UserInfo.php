@@ -80,8 +80,9 @@ class UserInfo
 	 * Получаем информацию о пользователе
 	 *
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData()
+	public function getData(): array
 	{
 		global $memberContext, $user_info;
 

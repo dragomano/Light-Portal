@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * HidingBlocks
  *

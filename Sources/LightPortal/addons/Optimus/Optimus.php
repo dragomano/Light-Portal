@@ -88,7 +88,7 @@ class Optimus
 	 */
 	public function getKeywords($topic)
 	{
-		global $smcFunc, $scripturl;
+		global $smcFunc;
 
 		if (empty($topic))
 			return [];
