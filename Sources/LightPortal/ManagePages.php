@@ -225,7 +225,7 @@ class ManagePages
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
 										<li>
-											<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $txt['edit'] . '</a>
+											<a href="' . $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $txt['modify'] . '</a>
 										</li>
 										<li>
 											<a @click.prevent="showContextMenu = false; page.remove($el)" class="button error">' . $txt['remove'] . '</a>
@@ -267,8 +267,14 @@ class ManagePages
 				array(
 					'position' => 'after_title',
 					'value' => '
-						<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '" style="width: 80%">
-						<button type="submit" name="is_search" class="button floatnone" ><i class="fas fa-search"></i> ' . $txt['search'] . '</button>',
+						<div class="row">
+							<div class="col-lg-10">
+								<input type="search" name="search" value="' . $context['search']['string'] . '" placeholder="' . $txt['lp_pages_search'] . '" style="width: 100%">
+							</div>
+							<div class="col-lg-2">
+								<button type="submit" name="is_search" class="button floatnone" style="width: 100%"><i class="fas fa-search"></i> ' . $txt['search'] . '</button>
+							</div>
+						</div>',
 					'class' => 'righttext'
 				),
 				array(

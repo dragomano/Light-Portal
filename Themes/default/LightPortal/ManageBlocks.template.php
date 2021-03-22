@@ -155,7 +155,7 @@ function show_block_entry($id, $data)
 	if (isset($txt['lp_block_types'][$data['type']])) {
 		echo '
 						<li>
-							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['edit'] ,'</a>
+							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
 						</li>';
 	}
 
