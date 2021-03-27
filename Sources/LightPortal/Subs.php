@@ -72,10 +72,6 @@ class Subs
 	}
 
 	/**
-	 * Load used styles and scripts
-	 *
-	 * Подключаем используемые таблицы стилей и скрипты
-	 *
 	 * @return void
 	 */
 	public static function loadCssFiles()
@@ -86,10 +82,6 @@ class Subs
 	}
 
 	/**
-	 * Get information about all active blocks of the portal
-	 *
-	 * Получаем информацию обо всех активных блоках портала
-	 *
 	 * @return array
 	 */
 	public static function getActiveBlocks(): array
@@ -184,10 +176,6 @@ class Subs
 	}
 
 	/**
-	 * Get names of the current addons
-	 *
-	 * Получаем имена имеющихся аддонов
-	 *
 	 * @return array
 	 */
 	public static function getAddons(): array
@@ -203,10 +191,6 @@ class Subs
 	}
 
 	/**
-	 * Require the language file of the addon
-	 *
-	 * Подключаем языковой файл аддона
-	 *
 	 * @param string $addon
 	 * @return void
 	 */

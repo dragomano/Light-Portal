@@ -138,10 +138,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Adding a plugin
-	 *
-	 * Добавление плагина
-	 *
 	 * @return void
 	 */
 	public function add()
@@ -176,10 +172,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Validating the sent data
-	 *
-	 * Валидируем отправляемые данные
-	 *
 	 * @return void
 	 */
 	private function validateData()
@@ -286,10 +278,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Check that the fields are filled in correctly
-	 *
-	 * Проверяем правильность заполнения полей
-	 *
 	 * @param array $data
 	 * @return void
 	 */
@@ -326,10 +314,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Adding special fields to the form
-	 *
-	 * Добавляем свои поля для формы
-	 *
 	 * @return void
 	 */
 	private function prepareFormFields()
@@ -519,10 +503,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Load settings to create a new plugin
-	 *
-	 * Подгружаем настройки для создания нового плагина
-	 *
 	 * @return void
 	 */
 	private function setData()
@@ -836,10 +816,6 @@ EOF;
 	}
 
 	/**
-	 * Get all types of the plugin
-	 *
-	 * Получаем все типы плагина
-	 *
 	 * @param string $snake_name
 	 * @return string
 	 */
@@ -868,10 +844,6 @@ EOF;
 	}
 
 	/**
-	 * Get the plugin settings
-	 *
-	 * Получаем настройки плагина
-	 *
 	 * @param array $config_vars
 	 * @param string $name
 	 * @return array

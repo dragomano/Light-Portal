@@ -91,17 +91,17 @@ class Category implements PageListInterface
 		obExit();
 	}
 
-    /**
-     * Get the list of pages within selected category
-     *
-     * Получаем список страниц внутри указанной рубрики
-     *
-     * @param int $start
-     * @param int $items_per_page
-     * @param string $sort
-     * @return array
-     * @throws \Exception
-     */
+	/**
+	 * Get the list of pages within selected category
+	 *
+	 * Получаем список страниц внутри указанной рубрики
+	 *
+	 * @param int $start
+	 * @param int $items_per_page
+	 * @param string $sort
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context;
@@ -363,10 +363,6 @@ class Category implements PageListInterface
 	}
 
 	/**
-	 * Update priority
-	 *
-	 * Обновление приоритета
-	 *
 	 * @param array $categories
 	 * @return void
 	 */
@@ -400,10 +396,6 @@ class Category implements PageListInterface
 	}
 
 	/**
-	 * Добавление рубрики
-	 *
-	 * Adding a category
-	 *
 	 * @param string $name
 	 * @param string $desc
 	 * @return void
@@ -458,10 +450,6 @@ class Category implements PageListInterface
 
 
 	/**
-	 * Обновление названия рубрики
-	 *
-	 * Update category name
-	 *
 	 * @param int $item
 	 * @param string $value
 	 * @return void
@@ -487,10 +475,6 @@ class Category implements PageListInterface
 	}
 
 	/**
-	 * Обновление описания рубрики
-	 *
-	 * Update category description
-	 *
 	 * @param int $item
 	 * @param string $value
 	 * @return void
@@ -516,10 +500,6 @@ class Category implements PageListInterface
 	}
 
 	/**
-	 * Removing categories
-	 *
-	 * Удаление рубрик
-	 *
 	 * @param array $items
 	 * @return void
 	 */

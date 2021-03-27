@@ -126,10 +126,6 @@ class Helpers
 	}
 
 	/**
-	 * Get the block/page icon
-	 *
-	 * Получаем иконку блока или страницы
-	 *
 	 * @param string|null $icon
 	 * @param string|null $type
 	 * @return string
@@ -148,10 +144,6 @@ class Helpers
 	}
 
 	/**
-	 * Get a title for preview block
-	 *
-	 * Получаем заголовок блока превью
-	 *
 	 * @param string|null $prefix
 	 * @return string
 	 */
@@ -400,10 +392,6 @@ class Helpers
 	}
 
 	/**
-	 * Load BBCode editor
-	 *
-	 * Подключаем редактор ББ-кода
-	 *
 	 * @param string $content
 	 * @return void
 	 */
@@ -526,10 +514,6 @@ class Helpers
 	}
 
 	/**
-	 * Getting a string converted to snake_case
-	 *
-	 * Получаем строку, преобразованную в snake_case
-	 *
 	 * @param string $value
 	 * @param string $delimiter
 	 * @return string
@@ -546,10 +530,6 @@ class Helpers
 	}
 
 	/**
-	 * Get the article teaser
-	 *
-	 * Получаем тизер статьи
-	 *
 	 * @param string $text
 	 * @return string
 	 */
@@ -564,10 +544,6 @@ class Helpers
 	}
 
 	/**
-	 * Get an array with names of installed themes
-	 *
-	 * Получаем массив с названиями установленных тем оформления
-	 *
 	 * @return array
 	 */
 	public static function getForumThemes(): array
@@ -594,10 +570,6 @@ class Helpers
 	}
 
 	/**
-	 * Prepare a list of all localizations of the forum
-	 *
-	 * Формируем список всех локализаций форума
-	 *
 	 * @return void
 	 */
 	public static function prepareForumLanguages()
@@ -829,10 +801,6 @@ class Helpers
 	}
 
 	/**
-	 * Get array of all categories
-	 *
-	 * Получаем массив всех рубрик
-	 *
 	 * @return array
 	 */
 	public static function getAllCategories()
@@ -841,10 +809,6 @@ class Helpers
 	}
 
 	/**
-	 * Get array of all tags
-	 *
-	 * Получаем массив всех тегов
-	 *
 	 * @return array
 	 */
 	public static function getAllTags()

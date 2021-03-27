@@ -426,10 +426,6 @@ class ManagePages
 	}
 
 	/**
-	 * Removing pages
-	 *
-	 * Удаление страниц
-	 *
 	 * @param array $items
 	 * @return void
 	 */
@@ -489,10 +485,6 @@ class ManagePages
 	}
 
 	/**
-	 * Pages status changing
-	 *
-	 * Смена статуса страниц
-	 *
 	 * @param array $items
 	 * @param int $status
 	 * @return void
@@ -516,10 +508,6 @@ class ManagePages
 	}
 
 	/**
-	 * Mass actions with pages
-	 *
-	 * Массовые действия со страницами
-	 *
 	 * @return void
 	 */
 	public function massActions()
@@ -548,10 +536,6 @@ class ManagePages
 	}
 
 	/**
-	 * Adding a page
-	 *
-	 * Добавление страницы
-	 *
 	 * @return void
 	 */
 	public function add()
@@ -581,10 +565,6 @@ class ManagePages
 	}
 
 	/**
-	 * Editing a page
-	 *
-	 * Редактирование страницы
-	 *
 	 * @return void
 	 */
 	public function edit()
@@ -635,10 +615,6 @@ class ManagePages
 	}
 
 	/**
-	 * Get the parameters of all pages
-	 *
-	 * Получаем параметры всех страниц
-	 *
 	 * @return array
 	 */
 	private function getOptions(): array
@@ -658,10 +634,6 @@ class ManagePages
 	}
 
 	/**
-	 * Validating the sent data
-	 *
-	 * Валидируем отправляемые данные
-	 *
 	 * @return void
 	 */
 	private function validateData()
@@ -762,10 +734,6 @@ class ManagePages
 	}
 
 	/**
-	 * Check that the fields are filled in correctly
-	 *
-	 * Проверяем правильность заполнения полей
-	 *
 	 * @param array $data
 	 * @return void
 	 */
@@ -887,10 +855,6 @@ class ManagePages
 	}
 
 	/**
-	 * Adding special fields to the form
-	 *
-	 * Добавляем свои поля для формы
-	 *
 	 * @return void
 	 */
 	private function prepareFormFields()
@@ -1125,10 +1089,6 @@ class ManagePages
 	}
 
 	/**
-	 * Run the desired editor
-	 *
-	 * Подключаем нужный редактор
-	 *
 	 * @return void
 	 */
 	private function prepareEditor()
@@ -1142,10 +1102,6 @@ class ManagePages
 	}
 
 	/**
-	 * Preview
-	 *
-	 * Предварительный просмотр
-	 *
 	 * @return void
 	 */
 	private function preparePreview()
@@ -1172,10 +1128,6 @@ class ManagePages
 	}
 
 	/**
-	 * Prepare page description for saving
-	 *
-	 * Готовим описание страницы для сохранения
-	 *
 	 * @return void
 	 */
 	private function prepareDescription()
@@ -1188,10 +1140,6 @@ class ManagePages
 	}
 
 	/**
-	 * Prepare keywords for saving
-	 *
-	 * Готовим ключевые слова для сохранения
-	 *
 	 * @return void
 	 */
 	private function prepareKeywords()
@@ -1203,10 +1151,6 @@ class ManagePages
 	}
 
 	/**
-	 * Get the date and time of the page publish
-	 *
-	 * Получаем дату и время публикации страницы
-	 *
 	 * @return int
 	 */
 	private function getPublishTime(): int
@@ -1225,10 +1169,6 @@ class ManagePages
 	}
 
 	/**
-	 * Creating or updating a page
-	 *
-	 * Создаем или обновляем страницу
-	 *
 	 * @param int $item
 	 * @return void
 	 */

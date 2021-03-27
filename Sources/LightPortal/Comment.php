@@ -116,10 +116,6 @@ class Comment
 	}
 
 	/**
-	 * Adding a comment
-	 *
-	 * Добавление комментария
-	 *
 	 * @return void
 	 * @throws Exception
 	 */
@@ -242,10 +238,6 @@ class Comment
 	}
 
 	/**
-	 * Editing a comment
-	 *
-	 * Редактирование комментария
-	 *
 	 * @return void
 	 */
 	private function edit()
@@ -288,10 +280,6 @@ class Comment
 	}
 
 	/**
-	 * Get user avatar image
-	 *
-	 * Получение аватарки пользователя
-	 *
 	 * @param $user_id
 	 * @return string
 	 * @throws Exception
@@ -357,10 +345,6 @@ class Comment
 	}
 
 	/**
-	 * Deleting a comment (and all children)
-	 *
-	 * Удаление комментария (и всех дочерних)
-	 *
 	 * @return void
 	 */
 	private function remove()

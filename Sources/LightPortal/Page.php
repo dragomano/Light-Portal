@@ -163,10 +163,6 @@ class Page
 	}
 
 	/**
-	 * Prepare related pages list
-	 *
-	 * Формируем список похожих страниц
-	 *
 	 * @return void
 	 */
 	private function prepareRelatedPages()
@@ -180,10 +176,6 @@ class Page
 	}
 
 	/**
-	 * Get an array of related pages
-	 *
-	 * Получаем массив похожих страниц
-	 *
 	 * @return array
 	 */
 	public function getRelatedPages(): array
@@ -251,10 +243,6 @@ class Page
 	}
 
 	/**
-	 * Prepare comments to output
-	 *
-	 * Подготавливаем комментарии для отображения
-	 *
 	 * @return void
 	 * @throws Exception
 	 */
@@ -369,10 +357,6 @@ class Page
 	}
 
 	/**
-	 * Get the page fields by its alias
-	 *
-	 * Получаем поля страницы по её алиасу
-	 *
 	 * @param string $alias
 	 * @return array
 	 */
@@ -389,10 +373,6 @@ class Page
 	}
 
 	/**
-	 * Get the page fields
-	 *
-	 * Получаем поля страницы
-	 *
 	 * @param int $item
 	 * @return array
 	 */
@@ -721,10 +701,6 @@ class Page
 	}
 
 	/**
-	 * Increasing the number of page views
-	 *
-	 * Увеличиваем количество просмотров страницы
-	 *
 	 * @return void
 	 */
 	private function updateNumViews()

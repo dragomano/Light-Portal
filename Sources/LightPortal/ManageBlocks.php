@@ -130,10 +130,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Block deleting
-	 *
-	 * Удаление блоков
-	 *
 	 * @param array $items
 	 * @return void
 	 */
@@ -176,10 +172,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Cloning a block
-	 *
-	 * Клонирование блока
-	 *
 	 * @param int $item
 	 * @return void
 	 */
@@ -216,10 +208,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Changing the block status
-	 *
-	 * Смена статуса блока
-	 *
 	 * @param array $items
 	 * @param int $status
 	 * @return void
@@ -245,10 +233,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Update priority
-	 *
-	 * Обновление приоритета
-	 *
 	 * @return void
 	 */
 	private function updatePriority()
@@ -299,10 +283,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Adding a block
-	 *
-	 * Добавление блока
-	 *
 	 * @return void
 	 */
 	public function add()
@@ -341,10 +321,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Editing a block
-	 *
-	 * Редактирование блока
-	 *
 	 * @return void
 	 */
 	public function edit()
@@ -386,10 +362,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Get the parameters of all blocks
-	 *
-	 * Получаем параметры всех блоков
-	 *
 	 * @return array
 	 */
 	private function getOptions(): array
@@ -412,10 +384,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Validating the sent data
-	 *
-	 * Валидируем отправляемые данные
-	 *
 	 * @return void
 	 */
 	private function validateData()
@@ -505,10 +473,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Check that the fields are filled in correctly
-	 *
-	 * Проверяем правильность заполнения полей
-	 *
 	 * @param array $data
 	 * @return void
 	 */
@@ -556,10 +520,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Adding special fields to the form
-	 *
-	 * Добавляем свои поля для формы
-	 *
 	 * @return void
 	 */
 	private function prepareFormFields()
@@ -817,10 +777,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Run the desired editor
-	 *
-	 * Подключаем нужный редактор
-	 *
 	 * @return void
 	 */
 	private function prepareEditor()
@@ -834,10 +790,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Preview
-	 *
-	 * Предварительный просмотр
-	 *
 	 * @return void
 	 */
 	private function preparePreview()
@@ -896,10 +848,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Saving a block
-	 *
-	 * Сохраняем блок
-	 *
 	 * @param int $item
 	 * @return int|void
 	 */
@@ -1127,10 +1075,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Get the block fields
-	 *
-	 * Получаем поля блока
-	 *
 	 * @param int $item
 	 * @return array
 	 */

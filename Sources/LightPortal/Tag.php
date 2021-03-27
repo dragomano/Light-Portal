@@ -75,17 +75,17 @@ class Tag implements PageListInterface
 		obExit();
 	}
 
-    /**
-     * Get the list of pages with selected tag
-     *
-     * Получаем список страниц с указанным тегом
-     *
-     * @param int $start
-     * @param int $items_per_page
-     * @param string $sort
-     * @return array
-     * @throws \Exception
-     */
+	/**
+	 * Get the list of pages with selected tag
+	 *
+	 * Получаем список страниц с указанным тегом
+	 *
+	 * @param int $start
+	 * @param int $items_per_page
+	 * @param string $sort
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context, $scripturl;
