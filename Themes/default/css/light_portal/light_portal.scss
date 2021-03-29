@@ -91,7 +91,7 @@ $tabs-label-hover-color: #888;
 }
 
 .portal_menu_icons {
-	font-size: 14px;
+	font-size: .875rem;
 	vertical-align: middle;
 	margin: -3px 8px 0 0;
 }
@@ -192,7 +192,7 @@ $tabs-label-hover-color: #888;
 
 			&:before {
 				margin: 0;
-				font-size: 18px;
+				font-size: 1.125rem;
 			}
 		}
 
@@ -565,7 +565,7 @@ section {
 			}
 
 			h3 {
-				font-size: 20px;
+				font-size: 1.25rem;
 				font-weight: 700;
 				margin: 10px 0 10px 0;
 				overflow: hidden;
@@ -974,7 +974,7 @@ section {
 			background-image: linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, .5)), var(--bg-img);
 			height: 20em;
 			width: 15em;
-			font-size: 1.5em;
+			font-size: 1.2rem;
 			color: $color-white;
 			@include border-radius(1em);
 			margin: 2px;
@@ -1034,13 +1034,13 @@ section {
 
 			h1 {
 				margin: 0;
-				font-size: 1.5em;
+				font-size: 1.6rem;
 				line-height: 1.2em;
 				color: inherit;
 			}
 
 			p {
-				font-size:.75em;
+				font-size: 1rem;
 				font-family: 'Open Sans';
 				line-height: 2em;
 				margin-top:.5em;
@@ -1056,7 +1056,7 @@ section {
 				display: flex;
 
 				.tag {
-					font-size: .75em;
+					font-size: .8rem;
 					background: rgba(255, 255, 255, .5);
 					@include border-radius(.3rem);
 					padding: 0 .5em;
@@ -1070,7 +1070,7 @@ section {
 				position: absolute;
 				top: 0;
 				right: 0;
-				font-size: .75em;
+				font-size: .9rem;
 				padding: 1em;
 				line-height: 1em;
 				opacity: .8;
@@ -1116,7 +1116,7 @@ section {
 
 				.title {
 					display: block;
-					font-size: .9em;
+					font-size: .7rem;
 					margin: -1px -13px -11px;
 					line-height: 20px;
 					text-align: justify;
@@ -1290,10 +1290,10 @@ section {
 			cursor: grab;
 		}
 		td.handle {
-			font-size: 1.4em;
+			font-size: 1.2rem;
 		}
 		span.floatright {
-			font-size: 1.7em;
+			font-size: 1.4rem;
 			font-weight: bold;
 			cursor: pointer;
 		}
