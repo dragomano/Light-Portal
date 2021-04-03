@@ -6,9 +6,9 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC3+ / PHP 7.3+
-* **Tested on:** PHP 7.4.15, 8.0.2 / MariaDB 10.5.6 / MySQL 5.7.25 / PostgreSQL 9.6.18
+* **Tested on:** PHP 7.3.27, 7.4.16, 8.0.3 / MariaDB 10.5.6 / MySQL 5.7.25 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
-* **Languages:** English, Russian, Ukrainian, Polish, Spanish, French
+* **Languages:** English, Russian, Ukrainian, Polish, Spanish, French, Turkish
 
 ## Description
 This modification will transform your forum into a portal that includes:

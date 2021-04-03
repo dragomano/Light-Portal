@@ -150,10 +150,10 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('block_id')
-		 )
+		)
 	)
 );
 
@@ -200,10 +200,10 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('id', 'page_id')
-		 )
+		)
 	)
 );
 
@@ -299,14 +299,14 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('page_id')
-		 ),
-		 array(
-			 'type'    => 'unique',
-			 'columns' => array('alias')
-		 )
+		),
+		array(
+			'type'    => 'unique',
+			'columns' => array('alias')
+		)
 	),
 	'default' => array(
 		'columns' => array(
@@ -356,7 +356,7 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('item_id', 'type', 'name')
 		)
@@ -393,10 +393,10 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('tag_id')
-		 )
+		)
 	)
 );
 
@@ -430,7 +430,7 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('item_id', 'type', 'lang')
 		)
@@ -451,39 +451,15 @@ $tables[] = array(
 
 db_extend('packages');
 
-// Remove old lp_tags
-$colData = $smcFunc['db_list_columns']('{db_prefix}lp_tags');
-if (!empty($colData[0]) && $colData[0] == 'page_id') {
-	$smcFunc['db_drop_table']('{db_prefix}lp_tags');
-}
-
 foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-
-	if ($table['name'] == 'lp_blocks') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] == 'note') {
-				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
-				break;
-			}
-		}
-	}
-
-	if ($table['name'] == 'lp_pages') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] == 'category_id') {
-				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
-				break;
-			}
-		}
-	}
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'Trumbowyg'));
+	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));
 
 if (SMF == 'SSI')
 	echo 'Database changes are complete! Please wait...';
