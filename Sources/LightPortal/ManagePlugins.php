@@ -138,10 +138,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Adding a plugin
-	 *
-	 * Добавление плагина
-	 *
 	 * @return void
 	 */
 	public function add()
@@ -176,10 +172,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Validating the sent data
-	 *
-	 * Валидируем отправляемые данные
-	 *
 	 * @return void
 	 */
 	private function validateData()
@@ -246,7 +238,7 @@ class ManagePlugins
 			'icon_type'  => $post_data['icon_type'] ?? $context['lp_plugin']['icon_type'] ?? 'fas',
 			'author'     => $post_data['author'] ?? $context['lp_plugin']['author'] ?? $user_info['name'],
 			'email'      => $post_data['email'] ?? $context['lp_plugin']['email'] ?? $user_info['email'],
-			'site'       => $post_data['site'] ?? $context['lp_plugin']['site'] ?? '',
+			'site'       => $post_data['site'] ?? $context['lp_plugin']['site'] ?? 'https://github.com/dragomano/Light-Portal',
 			'license'    => $post_data['license'] ?? $context['lp_plugin']['license'] ?? 'mit',
 			'smf_hooks'  => $post_data['smf_hooks'] ?? $context['lp_plugin']['smf_hooks'] ?? false,
 			'components' => $post_data['components'] ?? $context['lp_plugin']['components'] ?? false,
@@ -286,10 +278,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Check that the fields are filled in correctly
-	 *
-	 * Проверяем правильность заполнения полей
-	 *
 	 * @param array $data
 	 * @return void
 	 */
@@ -326,10 +314,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Adding special fields to the form
-	 *
-	 * Добавляем свои поля для формы
-	 *
 	 * @return void
 	 */
 	private function prepareFormFields()
@@ -367,14 +351,14 @@ class ManagePlugins
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_plugins_hooks_types'] as $type => $title) {
+		foreach ($context['lp_plugin_types'] as $type => $title) {
 			$context['posting_fields']['type']['input']['options'][$title] = array(
 				'value'    => $type,
 				'selected' => $type == $context['lp_plugin']['type']
 			);
 		}
 
-		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label><div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div></div>';
+		$context['posting_fields']['icon']['label']['html'] = '<div x-ref="icon_label"><label for="icon" id="caption_icon">' . $txt['current_icon'] . '</label> (<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)</div>';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
@@ -400,7 +384,7 @@ class ManagePlugins
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+		foreach ($context['lp_icon_types'] as $type => $title) {
 			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
 				'value'   => $type,
 				'checked' => $type == $context['lp_plugin']['icon_type']
@@ -408,7 +392,7 @@ class ManagePlugins
 		}
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -424,7 +408,7 @@ class ManagePlugins
 		}
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $txt['lp_page_description'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $txt['lp_page_description'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['description_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -519,10 +503,6 @@ class ManagePlugins
 	}
 
 	/**
-	 * Load settings to create a new plugin
-	 *
-	 * Подгружаем настройки для создания нового плагина
-	 *
 	 * @return void
 	 */
 	private function setData()
@@ -836,10 +816,6 @@ EOF;
 	}
 
 	/**
-	 * Get all types of the plugin
-	 *
-	 * Получаем все типы плагина
-	 *
 	 * @param string $snake_name
 	 * @return string
 	 */
@@ -858,20 +834,16 @@ EOF;
 		if (is_array($data)) {
 			$all_types = [];
 			foreach ($data as $type) {
-				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
+				$all_types[] = $context['lp_plugin_types'][$type];
 			}
 
 			return implode(' + ', $all_types);
 		}
 
-		return $txt['lp_plugins_hooks_types'][$data];
+		return $context['lp_plugin_types'][$data];
 	}
 
 	/**
-	 * Get the plugin settings
-	 *
-	 * Получаем настройки плагина
-	 *
 	 * @param array $config_vars
 	 * @param string $name
 	 * @return array

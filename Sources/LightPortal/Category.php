@@ -17,7 +17,7 @@ namespace Bugo\LightPortal;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class Category
+class Category implements PageListInterface
 {
 	/**
 	 * Display all portal pages within selected category
@@ -25,6 +25,7 @@ class Category
 	 * Отображение всех страниц портала внутри выбранной рубрики
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
 	public function show()
 	{
@@ -60,91 +61,15 @@ class Category
 		);
 
 		if (!empty($modSettings['lp_show_items_as_articles']))
-			$this->showAsArticles();
+			(new Page)->showAsCards($this);
 
-		$listOptions = array(
-			'id' => 'lp_categories',
-			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
-			'title' => $context['page_title'],
-			'no_items_label' => $txt['lp_no_items'],
-			'base_href' => $context['canonical_url'],
-			'default_sort_col' => 'date',
-			'get_items' => array(
-				'function' => array($this, 'getPages')
-			),
-			'get_count' => array(
-				'function' => array($this, 'getTotalCountPages')
-			),
-			'columns' => array(
-				'date' => array(
-					'header' => array(
-						'value' => $txt['date']
-					),
-					'data' => array(
-						'db'    => 'date',
-						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'p.created_at DESC, p.updated_at DESC',
-						'reverse' => 'p.created_at, p.updated_at'
-					)
-				),
-				'title' => array(
-					'header' => array(
-						'value' => $txt['lp_title']
-					),
-					'data' => array(
-						'function' => function ($entry) use ($scripturl)
-						{
-							return '<a class="bbc_link' . (
-								$entry['is_front']
-									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
-							) . '">' . $entry['title'] . '</a>';
-						},
-						'class' => 'word_break'
-					),
-					'sort' => array(
-						'default' => 't.title DESC',
-						'reverse' => 't.title'
-					)
-				),
-				'author' => array(
-					'header' => array(
-						'value' => $txt['author']
-					),
-					'data' => array(
-						'function' => function ($entry) use ($scripturl)
-						{
-							if (empty($entry['author_id']))
-								return $entry['author_name'];
-
-							return '<a href="' . $scripturl . '?action=profile;u=' . $entry['author_id'] . '">' . $entry['author_name'] . '</a>';
-						},
-						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'author_name DESC',
-						'reverse' => 'author_name'
-					)
-				),
-				'num_views' => array(
-					'header' => array(
-						'value' => $txt['views']
-					),
-					'data' => array(
-						'db'    => 'num_views',
-						'class' => 'centertext'
-					),
-					'sort' => array(
-						'default' => 'p.num_views DESC',
-						'reverse' => 'p.num_views'
-					)
-				)
-			),
-			'form' => array(
-				'href' => $context['canonical_url']
-			)
+		$listOptions = (new Page)->getList();
+		$listOptions['id'] = 'lp_categories';
+		$listOptions['get_items'] = array(
+			'function' => array($this, 'getPages')
+		);
+		$listOptions['get_count'] = array(
+			'function' => array($this, 'getTotalCountPages')
 		);
 
 		if (!empty($category['desc'])) {
@@ -175,10 +100,11 @@ class Category
 	 * @param int $items_per_page
 	 * @param string $sort
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		global $smcFunc, $txt, $user_info, $context, $modSettings, $scripturl, $memberContext;
+		global $smcFunc, $txt, $user_info, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -207,55 +133,9 @@ class Category
 		);
 
 		$items = [];
+		$page  = new Page;
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			Helpers::parseContent($row['content'], $row['type']);
-
-			$image = null;
-			if (!empty($modSettings['lp_show_images_in_articles'])) {
-				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
-				$image = $first_post_image ? array_pop($value) : null;
-			}
-
-			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
-				$image = $modSettings['lp_image_placeholder'];
-
-			$items[$row['page_id']] = array(
-				'id'        => $row['page_id'],
-				'author'    => array(
-					'id'   => $author_id = $row['author_id'],
-					'link' => $scripturl . '?action=profile;u=' . $author_id,
-					'name' => $row['author_name']
-				),
-				'date'      => Helpers::getFriendlyTime($row['date']),
-				'datetime'  => date('Y-m-d', $row['date']),
-				'link'      => $scripturl . '?page=' . $row['alias'],
-				'views'     => array(
-					'num'   => $row['num_views'],
-					'title' => $txt['lp_views']
-				),
-				'replies'   => array(
-					'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
-					'title' => $txt['lp_comments']
-				),
-				'title'     => $row['title'],
-				'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
-				'is_front'  => Helpers::isFrontpage($row['alias']),
-				'image'     => $image,
-				'can_edit'  => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id']),
-				'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
-			);
-
-			$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
-
-			loadMemberData($author_id);
-
-			$items[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
-			if (loadMemberContext($author_id, true)) {
-				$items[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
-			}
-
-			if (!empty($modSettings['lp_show_teaser']))
-				$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);
+			$page->fetchQueryResults($items, $row);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -296,47 +176,6 @@ class Category
 		$smcFunc['lp_num_queries']++;
 
 		return $num_items;
-	}
-
-	/**
-	 * Show pages as articles
-	 *
-	 * Отображаем страницы как карточки
-	 *
-	 * @return void
-	 */
-	private function showAsArticles()
-	{
-		global $modSettings, $context;
-
-		$start = Helpers::request('start');
-		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
-
-		$total_items = $this->getTotalCountPages();
-
-		if ($start >= $total_items) {
-			send_http_status(404);
-			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
-		}
-
-		$start = abs($start);
-
-		$sort = (new FrontPage)->getOrderBy();
-
-		$articles = $this->getPages($start, $limit, $sort);
-
-		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
-		$context['start']      = Helpers::request()->get('start');
-
-		$context['lp_frontpage_articles']    = $articles;
-		$context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
-
-		loadTemplate('LightPortal/ViewFrontPage');
-
-		$context['sub_template']      = 'show_articles';
-		$context['template_layers'][] = 'sorting';
-
-		obExit();
 	}
 
 	/**
@@ -524,10 +363,6 @@ class Category
 	}
 
 	/**
-	 * Update priority
-	 *
-	 * Обновление приоритета
-	 *
 	 * @param array $categories
 	 * @return void
 	 */
@@ -561,10 +396,6 @@ class Category
 	}
 
 	/**
-	 * Добавление рубрики
-	 *
-	 * Adding a category
-	 *
 	 * @param string $name
 	 * @param string $desc
 	 * @return void
@@ -619,10 +450,6 @@ class Category
 
 
 	/**
-	 * Обновление названия рубрики
-	 *
-	 * Update category name
-	 *
 	 * @param int $item
 	 * @param string $value
 	 * @return void
@@ -648,10 +475,6 @@ class Category
 	}
 
 	/**
-	 * Обновление описания рубрики
-	 *
-	 * Update category description
-	 *
 	 * @param int $item
 	 * @param string $value
 	 * @return void
@@ -677,10 +500,6 @@ class Category
 	}
 
 	/**
-	 * Removing categories
-	 *
-	 * Удаление рубрик
-	 *
 	 * @param array $items
 	 * @return void
 	 */

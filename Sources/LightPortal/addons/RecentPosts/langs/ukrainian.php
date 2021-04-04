@@ -5,7 +5,7 @@ $txt['lp_block_types_descriptions']['recent_posts'] = 'Відображає сп
 
 $txt['lp_recent_posts_addon_num_posts']              = 'Кількість повідомлень для відображення';
 $txt['lp_recent_posts_addon_type']                   = 'Що відображати у вигляді посилання на пост';
-$txt['lp_recent_posts_addon_type_set']               = array('link' => 'Заголовок повідомлення', 'preview' => 'Превью повідомлення');
+$txt['lp_recent_posts_addon_type_set']               = array('Заголовок повідомлення', 'Превью повідомлення');
 $txt['lp_recent_posts_addon_exclude_boards']         = 'Розділи які виключаються';
 $txt['lp_recent_posts_addon_exclude_boards_subtext'] = 'Якщо вказані ідентифікатори розділів, останні повідомлення НЕ будуть запитуватися з цих розділів.';
 $txt['lp_recent_posts_addon_include_boards']         = 'Розділи які включаються';

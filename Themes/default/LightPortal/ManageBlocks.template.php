@@ -31,7 +31,7 @@ function template_manage_blocks()
 					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
-			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
+			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
 	<table class="lp_', $block_group_type, '_blocks table_grid centertext">';
@@ -84,6 +84,34 @@ function template_manage_blocks()
 		</tbody>
 	</table>';
 		}
+
+		echo '
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const block = new Block(),
+			defaultBlocks = document.querySelectorAll(".lp_default_blocks tbody"),
+			additionalBlocks = document.querySelectorAll(".lp_additional_blocks tbody");
+
+		defaultBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "default_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+
+		additionalBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "additional_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+	</script>';
 	}
 }
 
@@ -155,7 +183,7 @@ function show_block_entry($id, $data)
 	if (isset($txt['lp_block_types'][$data['type']])) {
 		echo '
 						<li>
-							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['edit'] ,'</a>
+							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
 						</li>';
 	}
 
@@ -208,7 +236,11 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-	</div>';
+	</div>
+
+	<script>
+		const block = new Block();
+	</script>';
 }
 
 /**
@@ -324,7 +356,11 @@ function template_block_post()
 				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>';
+	</form>
+
+	<script>
+		const block = new Block();
+	</script>';
 }
 
 /**

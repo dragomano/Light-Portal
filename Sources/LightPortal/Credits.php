@@ -80,6 +80,10 @@ class Credits
 			array(
 				'name' => 'Papoune57',
 				'lang' => 'French'
+			),
+			array(
+				'name' => 'gevv',
+				'lang' => 'Turkish'
 			)
 		);
 

@@ -1,72 +1,43 @@
-/* Light Portal ~ less file */
+/* Light Portal ~ scss file */
 
-@color-light-gray: #ddd;
-@color-white: #fff;
-@color-black: #000;
-@color-checked: #00cc33;
-@article-category-color: #868686;
-@article-author-color: #ad7d52;
-@comment-smalltext-color: #bfbfbf;
-@tabs-input-color: #555;
-@tabs-input-border-color: #f49a3a;
-@tabs-label-color: #aaa;
-@tabs-label-hover-color: #888;
+$color-light-gray: #ddd;
+$color-white: #fff;
+$color-black: #000;
+$color-checked: #00cc33;
+$article-category-color: #868686;
+$article-author-color: #ad7d52;
+$comment-smalltext-color: #bfbfbf;
+$tabs-input-color: #555;
+$tabs-input-border-color: #f49a3a;
+$tabs-label-color: #aaa;
+$tabs-label-hover-color: #888;
 
-.pointer() {
+@mixin pointer() {
 	cursor: pointer;
 }
-.valign(@align: middle) {
-	vertical-align: @align;
+@mixin valign($align: middle) {
+	vertical-align: $align;
 }
-.border-radius(@radius: 6px) {
-	border-radius: @radius;
+@mixin border-radius($topleft: null, $topright: null, $bottomright: null, $bottomleft: null) {
+	@if $topright == null and $bottomright == null and $bottomleft == null {
+		border-radius: $topleft;
+		$topleft: null;
+	}
+	@if $topleft != null and $topleft >= 0 {
+		border-top-left-radius: $topleft;
+	}
+	@if $topright != null and $topright >= 0 {
+		border-top-right-radius: $topright;
+	}
+	@if $bottomleft != null and $bottomleft >= 0 {
+		border-bottom-left-radius: $bottomleft;
+	}
+	@if $bottomright != null and $bottomright >= 0 {
+		border-bottom-right-radius: $bottomright;
+	}
 }
-.border-radius(top-left, @radius) {
-	border-top-left-radius: @radius;
-}
-.border-radius(top-right, @radius) {
-	border-top-right-radius: @radius;
-}
-.border-radius(bottom-right, @radius) {
-	border-bottom-right-radius: @radius;
-}
-.border-radius(bottom-left, @radius) {
-	border-bottom-left-radius: @radius;
-}
-.border-radius(top, @radius) {
-	.border-radius(top-right, @radius);
-	.border-radius(top-left, @radius);
-}
-.border-radius(bottom, @radius) {
-	.border-radius(bottom-right, @radius);
-	.border-radius(bottom-left, @radius);
-}
-.border-radius(left, @radius) {
-	.border-radius(top-left, @radius);
-	.border-radius(bottom-left, @radius);
-}
-.border-radius(right, @radius) {
-	.border-radius(top-right, @radius);
-	.border-radius(bottom-right, @radius);
-}
-.border-radius(@top-radius, @bottom-radius) when(isnumber(@top-radius)) {
-	.border-radius(@top-radius);
-	.border-radius(bottom-right, @bottom-radius);
-	.border-radius(bottom-left, @bottom-radius);
-}
-.border-radius(vert, @left-radius, @right-radius) {
-	.border-radius(@left-radius, @right-radius);
-}
-.border-radius(horz, @left-radius, @right-radius) {
-	.border-radius(@left-radius);
-	.border-radius(top-right, @right-radius);
-	.border-radius(bottom-right, @right-radius);
-}
-.border-radius(@top-left-radius, @top-right-radius, @bottom-right-radius, @bottom-left-radius) {
-	.border-radius(top-left, @top-left-radius);
-	.border-radius(top-right, @top-right-radius);
-	.border-radius(bottom-right, @bottom-right-radius);
-	.border-radius(bottom-left, @bottom-left-radius);
+@mixin box-shadow($shadows...) {
+	box-shadow: $shadows;
 }
 
 .fa-portal {
@@ -113,7 +84,7 @@
 }
 
 .descbox {
-	.border-radius;
+	@include border-radius(6px);
 	.bbc_code {
 		overflow: hidden !important;
 	}
@@ -121,13 +92,13 @@
 
 .portal_menu_icons {
 	font-size: .875rem;
-	.valign;
+	vertical-align: middle;
 	margin: -3px 8px 0 0;
 }
 
 #lp_blocks {
 	.item {
-		.pointer;
+		@include pointer;
 		height: 96%;
 	}
 
@@ -136,7 +107,7 @@
 
 #block_icon {
 	i {
-		.valign;
+		@include valign;
 	}
 }
 
@@ -162,9 +133,9 @@
 		position: absolute;
 
 		&:checked+label {
-			color: @tabs-input-color;
-			border-top: 1px solid @tabs-input-border-color;
-			border-bottom: 1px solid @color-white;
+			color: $tabs-input-color;
+			border-top: 1px solid $tabs-input-border-color;
+			border-bottom: 1px solid $color-white;
 		}
 	}
 
@@ -181,13 +152,13 @@
 		padding: 15px 25px;
 		font-weight: 600;
 		text-align: center;
-		color: @tabs-label-color;
-		border: 1px solid @color-light-gray;
-		border-radius: 3px 3px 0 0;
+		color: $tabs-label-color;
+		border: 1px solid $color-light-gray;
+		@include border-radius(3px, 3px);
 
 		&:hover {
-			color: @tabs-label-hover-color;
-			.pointer;
+			color: $tabs-label-hover-color;
+			@include pointer;
 		}
 
 		&:before {
@@ -240,8 +211,8 @@
 	section {
 		display: none;
 		padding: 15px;
-		border: 1px solid @color-light-gray;
-		.border-radius(0, 7px, 7px, 7px);
+		border: 1px solid $color-light-gray;
+		@include border-radius(null, 7px, 7px, 7px);
 
 		> div {
 			margin-top: 1em;
@@ -308,13 +279,13 @@
 
 			/* Checkbox toggler */
 			.checkbox {
-				.valign(top);
+				@include valign(top);
 				margin: 0 3px 0 0;
 				width: 17px;
 				height: 17px;
 
 				& + .label {
-					.pointer;
+					@include pointer;
 				}
 
 				&:not(checked) {
@@ -332,9 +303,9 @@
 							left: 0;
 							width: 50px;
 							height: 26px;
-							border-radius: 13px;
+							@include border-radius(13px);
 							background: #cdd1da;
-							box-shadow: inset 0 2px 3px rgba(0, 0, 0, .2);
+							@include box-shadow(inset 0 2px 3px rgba(0, 0, 0, .2));
 						}
 
 						&:after {
@@ -344,9 +315,9 @@
 							left: 2px;
 							width: 22px;
 							height: 22px;
-							border-radius: 10px;
-							background: @color-white;
-							box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+							@include border-radius(10px);
+							background: $color-white;
+							@include box-shadow(0 2px 5px rgba(0, 0, 0, .3));
 							transition: all .2s;
 						}
 					}
@@ -355,7 +326,7 @@
 				&:checked {
 					& + .label {
 						&:before {
-							background: @color-checked;
+							background: $color-checked;
 						}
 
 						&:after {
@@ -367,7 +338,7 @@
 		}
 
 		.choices__inner {
-			.border-radius;
+			@include border-radius(6px);
 		}
 
 		.add_option {
@@ -460,12 +431,12 @@
 	.avatar {
 		max-width: 45px;
 		max-height: 45px;
-		.border-radius(100%);
-		box-shadow: 0 0 4px #666;
+		@include border-radius(100%);
+		@include box-shadow(0 0 4px #666);
 	}
 
 	.cat_bar {
-		.border-radius;
+		@include border-radius(6px);
 	}
 }
 
@@ -495,7 +466,7 @@ section {
 	article {
 		transition: all .4s cubic-bezier(.175, .885, 0, 1);
 		position: relative;
-		border-radius: 12px;
+		@include border-radius(12px);
 		overflow: hidden;
 		padding: 0;
 		display: flex;
@@ -510,7 +481,7 @@ section {
 		}
 
 		&:hover {
-			box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
+			@include box-shadow(0 0 10px 5px rgba(221, 221, 221, 1));
 
 			.new_posts {
 				display: none;
@@ -590,7 +561,7 @@ section {
 
 			.card_date {
 				font-weight: 500;
-				color: @article-category-color;
+				color: $article-category-color;
 			}
 
 			h3 {
@@ -624,7 +595,7 @@ section {
 			.card_author {
 				font-weight: 600;
 				text-decoration: none;
-				color: @article-author-color;
+				color: $article-author-color;
 			}
 		}
 	}
@@ -694,15 +665,15 @@ section {
 		margin: 0 10px 10px;
 		min-height: 300px;
 		background-size: cover;
-		border-radius: 5px;
-		box-shadow: 0 3px 7px -1px rgba(0, 0, 0, .1);
+		@include border-radius(5px);
+		@include box-shadow(0 3px 7px -1px rgba(0, 0, 0, .1));
 		transition: all .5s ease;
 
 		.article_image_link {
 			display: block;
 			position: relative;
 			overflow: hidden;
-			border-radius: 5px 5px 0 0;
+			@include border-radius(5px, 5px);
 
 			div {
 				width: auto;
@@ -762,7 +733,7 @@ section {
 					margin-right: 5px;
 					width: 25px;
 					height: 25px;
-					border-radius: 100%;
+					@include border-radius(100%);
 					object-fit: cover;
 				}
 
@@ -782,10 +753,10 @@ section {
 		display: flex;
 		flex-direction: column;
 		margin: 1rem auto;
-		box-shadow: 0 3px 7px -1px rgba(0, 0, 0, .1);
+		@include box-shadow(0 3px 7px -1px rgba(0, 0, 0, .1));
 		line-height: 1.4;
 		font-family: sans-serif;
-		border-radius: 5px;
+		@include border-radius(5px);
 		overflow: hidden;
 		z-index: 0;
 
@@ -831,7 +802,7 @@ section {
 			margin: auto;
 			transition: left .2s;
 			background: rgba(0, 0, 0, .6);
-			color: @color-white;
+			color: $color-white;
 			padding: 10px;
 			width: 100%;
 			font-size: .9rem;
@@ -876,7 +847,7 @@ section {
 
 		.description {
 			padding: 1rem;
-			background: @color-white;
+			background: $color-white;
 			position: relative;
 			z-index: 1;
 			display: flex;
@@ -928,7 +899,7 @@ section {
 						background: #5ad67d;
 						width: 35px;
 						top: -.75rem;
-						border-radius: 3px;
+						@include border-radius(3px);
 					}
 				}
 			}
@@ -957,7 +928,7 @@ section {
 				&:before {
 					transform: skewX(-3deg);
 					content: "";
-					background: @color-white;
+					background: $color-white;
 					width: 30px;
 					position: absolute;
 					left: -10px;
@@ -988,8 +959,8 @@ section {
 
 // Topic alt4
 .article_alt4_view {
-	@alt4-color: #3c3163;
-	@alt4-transition-time: .5s;
+	$alt4-color: #3c3163;
+	$alt4-transition-time: .5s;
 
 	justify-content: center;
 
@@ -1004,15 +975,15 @@ section {
 			height: 20em;
 			width: 15em;
 			font-size: 1.2rem;
-			color: @color-white;
-			border-radius: 1em;
+			color: $color-white;
+			@include border-radius(1em);
 			margin: 2px;
 			padding: 1em;
 			display: flex;
 			align-items: flex-end;
 			background-size: cover;
 			background-position: center;
-			transition: all, @alt4-transition-time;
+			transition: all, $alt4-transition-time;
 			position: relative;
 			overflow: hidden;
 			border: 5px solid #ccc;
@@ -1020,12 +991,12 @@ section {
 
 			&:hover {
 				transform: rotate(0);
-				color: @alt4-color;
+				color: $alt4-color;
 
 				.tags {
 					.tag {
-						background: @alt4-color;
-						color: @color-white;
+						background: $alt4-color;
+						color: $color-white;
 					}
 				}
 
@@ -1040,23 +1011,23 @@ section {
 				content: '';
 				transform: scale(0);
 				transform-origin: top left;
-				border-radius: 50%;
+				@include border-radius(50%);
 				position: absolute;
 				left: -50%;
 				top: -50%;
 				z-index: -5;
-				transition: all, @alt4-transition-time;
+				transition: all, $alt4-transition-time;
 				transition-timing-function: ease-in-out;
 			}
 
 			&:before {
-				background: @color-light-gray;
+				background: $color-light-gray;
 				width: 250%;
 				height: 250%;
 			}
 
 			&:after {
-				background: @color-white;
+				background: $color-white;
 				width: 200%;
 				height: 200%;
 			}
@@ -1072,7 +1043,7 @@ section {
 				font-size: 1rem;
 				font-family: 'Open Sans';
 				line-height: 2em;
-				margin-top: .5em;
+				margin-top:.5em;
 				margin-bottom: 5px;
 				overflow: hidden;
 				//text-overflow: ellipsis;
@@ -1087,11 +1058,11 @@ section {
 				.tag {
 					font-size: .8rem;
 					background: rgba(255, 255, 255, .5);
-					border-radius: .3rem;
+					@include border-radius(.3rem);
 					padding: 0 .5em;
 					margin-right: .5em;
 					line-height: 1.5em;
-					transition: all, @alt4-transition-time;
+					transition: all, $alt4-transition-time;
 				}
 			}
 
@@ -1127,7 +1098,7 @@ section {
 		.comment_avatar {
 			position: absolute;
 			width: 74px;
-			.valign(top);
+			@include valign(top);
 			padding-right: 10px;
 		}
 
@@ -1139,9 +1110,9 @@ section {
 				display: block;
 				position: relative;
 				padding: 0 12px 8px;
-				border: 1px solid @color-light-gray;
-				.border-radius(7px);
-				box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+				border: 1px solid $color-light-gray;
+				@include border-radius(7px);
+				@include box-shadow(0 2px 5px rgba(0, 0, 0, .1));
 
 				.title {
 					display: block;
@@ -1161,18 +1132,18 @@ section {
 
 					> span {
 						font-weight: bold;
-						border: 1px solid @color-light-gray;
-						.border-radius(7px, 0, 7px, 0);
+						border: 1px solid $color-light-gray;
+						@include border-radius(7px, null, 7px, null);
 						display: inline-block;
-						.valign(top);
+						@include valign(top);
 						padding: 6px 11px;
 					}
 
 					.comment_date {
-						border: 1px solid @color-light-gray;
-						.border-radius(0, 7px, 0, 7px);
+						border: 1px solid $color-light-gray;
+						@include border-radius(null, 7px, null, 7px);
 						display: inline-block;
-						.valign(top);
+						@include valign(top);
 						padding: 6px 11px;
 						opacity: .8;
 					}
@@ -1199,7 +1170,7 @@ section {
 					margin-right: 5px;
 
 					&:hover {
-						.pointer;
+						@include pointer;
 						opacity: 1;
 					}
 				}
@@ -1212,7 +1183,7 @@ section {
 				.smalltext {
 					margin-top: 6px;
 					padding-top: 6px;
-					border-top: 1px dashed @comment-smalltext-color;
+					border-top: 1px dashed $comment-smalltext-color;
 				}
 			}
 		}
@@ -1247,7 +1218,7 @@ section {
 .status,
 .actions {
 	span {
-		.pointer;
+		@include pointer;
 	}
 }
 
@@ -1259,7 +1230,7 @@ section {
 }
 
 #page_comments_toggle {
-	.pointer;
+	@include pointer;
 }
 
 .lp_default_blocks,
@@ -1278,19 +1249,19 @@ section {
 	}
 
 	.fa-toggle-on {
-		color: @color-checked;
+		color: $color-checked;
 	}
 }
 
 .lp_plugin_toggle,
 .lp_plugin_settings {
-	.pointer;
+	@include pointer;
 }
 
 .lp_plugin_settings {
 	position: relative;
 	top: -3px;
-	.valign(baseline) !important;
+	@include valign(baseline !important);
 }
 
 .form_settings {
@@ -1539,7 +1510,7 @@ dl {
 		dt {
 			img {
 				width: 24px;
-				.valign;
+				@include valign;
 			}
 		}
 	}
@@ -1548,7 +1519,7 @@ dl {
 /* ThemeSwitcher */
 .themeswitcher {
 	select {
-		.pointer;
+		@include pointer;
 		width: 100%;
 	}
 }
@@ -1600,22 +1571,22 @@ dl {
 }
 
 /* CurrentMonth */
-@table-bgcolor: #f0f4f7;
-@th-bgcolor: #e7eaef;
-@td-disabled-bgcolor: #eee;
+$table-bgcolor: #f0f4f7;
+$th-bgcolor: #e7eaef;
+$td-disabled-bgcolor: #eee;
 
 .block_current_month {
 	table {
 		width: 100%;
 		margin-bottom: 10px;
 		border-collapse: collapse;
-		background: @table-bgcolor;
-		border: 1px solid @color-light-gray;
+		background: $table-bgcolor;
+		border: 1px solid $color-light-gray;
 		text-align: center;
 
 		.windowbg {
-			box-shadow: none;
-			.border-radius(0);
+			@include box-shadow(none);
+			@include border-radius(0);
 			box-sizing: content-box;
 			margin: 0;
 		}
@@ -1623,20 +1594,20 @@ dl {
 
 	th {
 		padding: 2px;
-		background: @th-bgcolor;
+		background: $th-bgcolor;
 		font-size: smaller;
 	}
 
 	td {
 		padding: 2px;
 		width: 12.5%;
-		.valign(top);
-		border-right: 1px solid @color-light-gray;
-		border-bottom: 1px solid @color-light-gray;
+		@include valign(top);
+		border-right: 1px solid $color-light-gray;
+		border-bottom: 1px solid $color-light-gray;
 
 		&.disabled {
-			background: @td-disabled-bgcolor;
-			border: 1px solid @color-light-gray;
+			background: $td-disabled-bgcolor;
+			border: 1px solid $color-light-gray;
 		}
 		&.events {
 			background: rgba(30, 245, 20, .1);
@@ -1808,8 +1779,8 @@ dl {
 			height: 9px;
 			padding: 0;
 			margin: 0 5px;
-			border-radius: 50%;
-			background: @color-light-gray;
+			@include border-radius(50%);
+			background: $color-light-gray;
 			border: 0;
 		}
 
@@ -1832,19 +1803,19 @@ dl {
 			li {
 				display: inline-block;
 				cursor: pointer;
-				border: 5px solid @color-white;
+				border: 5px solid $color-white;
 				width: 50px;
 			}
 
 			img {
-				.valign(bottom);
+				@include valign(bottom);
 				height: auto;
 				max-height: 50px;
 			}
 
 			.tns-nav-active {
 				background: none;
-				border-color: @color-black;
+				border-color: $color-black;
 			}
 
 			@media (max-width: 640px) {

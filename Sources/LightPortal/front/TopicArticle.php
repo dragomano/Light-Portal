@@ -24,7 +24,7 @@ class TopicArticle extends AbstractArticle
 	/**
 	 * @var array
 	 */
-	private $selected_boards = [];
+	protected $selected_boards = [];
 
 	/**
 	 * Initialize class properties
@@ -66,8 +66,9 @@ class TopicArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData(int $start, int $limit)
+	public function getData(int $start, int $limit): array
 	{
 		global $modSettings, $user_info, $smcFunc, $scripturl, $memberContext, $txt;
 
@@ -211,7 +212,7 @@ class TopicArticle extends AbstractArticle
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $modSettings, $user_info, $smcFunc;
 

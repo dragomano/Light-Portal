@@ -39,9 +39,6 @@ class ManageBlocks
 	{
 		global $context, $txt;
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/change_priority.js', array('minimize' => true));
-
 		loadTemplate('LightPortal/ManageBlocks');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_manage'];
@@ -54,7 +51,7 @@ class ManageBlocks
 		$this->doActions();
 
 		$context['lp_current_blocks'] = $this->getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($context['lp_block_placements'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_blocks';
 	}
@@ -133,10 +130,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Block deleting
-	 *
-	 * Удаление блоков
-	 *
 	 * @param array $items
 	 * @return void
 	 */
@@ -179,10 +172,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Cloning a block
-	 *
-	 * Клонирование блока
-	 *
 	 * @param int $item
 	 * @return void
 	 */
@@ -219,10 +208,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Changing the block status
-	 *
-	 * Смена статуса блока
-	 *
 	 * @param array $items
 	 * @param int $status
 	 * @return void
@@ -248,10 +233,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Update priority
-	 *
-	 * Обновление приоритета
-	 *
 	 * @return void
 	 */
 	private function updatePriority()
@@ -302,10 +283,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Adding a block
-	 *
-	 * Добавление блока
-	 *
 	 * @return void
 	 */
 	public function add()
@@ -344,10 +321,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Editing a block
-	 *
-	 * Редактирование блока
-	 *
 	 * @return void
 	 */
 	public function edit()
@@ -389,10 +362,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Get the parameters of all blocks
-	 *
-	 * Получаем параметры всех блоков
-	 *
 	 * @return array
 	 */
 	private function getOptions(): array
@@ -415,10 +384,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Validating the sent data
-	 *
-	 * Валидируем отправляемые данные
-	 *
 	 * @return void
 	 */
 	private function validateData()
@@ -488,11 +453,11 @@ class ManageBlocks
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
-				if (!empty($post_data['parameters'])) {
-					if (!empty($parameters[$option]) && $parameters[$option] == FILTER_VALIDATE_BOOLEAN && $post_data['parameters'][$option] === null)
+				if (!empty($parameters[$option]) && !empty($post_data['parameters']) && $post_data['parameters'][$option] === null) {
+					if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 						$post_data['parameters'][$option] = 0;
 
-					if (!empty($parameters[$option]) && is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY && $post_data['parameters'][$option] === null)
+					if (is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY)
 						$post_data['parameters'][$option] = [];
 				}
 
@@ -508,10 +473,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Check that the fields are filled in correctly
-	 *
-	 * Проверяем правильность заполнения полей
-	 *
 	 * @param array $data
 	 * @return void
 	 */
@@ -546,7 +507,7 @@ class ManageBlocks
 	 */
 	private function improveSelectFields()
 	{
-		loadCssFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
 
 		addInlineCss('
@@ -559,10 +520,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Adding special fields to the form
-	 *
-	 * Добавляем свои поля для формы
-	 *
 	 * @return void
 	 */
 	private function prepareFormFields()
@@ -574,7 +531,7 @@ class ManageBlocks
 		$this->improveSelectFields();
 
 		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['filename'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
@@ -598,7 +555,7 @@ class ManageBlocks
 		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '<div class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></div>';
+		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'text',
 			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
@@ -624,7 +581,7 @@ class ManageBlocks
 			'tab' => 'appearance'
 		);
 
-		foreach ($txt['lp_block_icon_type_set'] as $type => $title) {
+		foreach ($context['lp_icon_types'] as $type => $title) {
 			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
 				'value'   => $type,
 				'checked' => $type == $context['lp_block']['icon_type']
@@ -641,7 +598,7 @@ class ManageBlocks
 			'tab' => 'access_placement'
 		);
 
-		foreach ($txt['lp_block_placement_set'] as $level => $title) {
+		foreach ($context['lp_block_placements'] as $level => $title) {
 			$context['posting_fields']['placement']['input']['options'][$title] = array(
 				'value'    => $level,
 				'selected' => $level == $context['lp_block']['placement']
@@ -820,10 +777,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Run the desired editor
-	 *
-	 * Подключаем нужный редактор
-	 *
 	 * @return void
 	 */
 	private function prepareEditor()
@@ -837,10 +790,6 @@ class ManageBlocks
 	}
 
 	/**
-	 * Preview
-	 *
-	 * Предварительный просмотр
-	 *
 	 * @return void
 	 */
 	private function preparePreview()
@@ -899,16 +848,12 @@ class ManageBlocks
 	}
 
 	/**
-	 * Creating or updating a block
-	 *
-	 * Создаем или обновляем блок
-	 *
 	 * @param int $item
-	 * @return int
+	 * @return int|void
 	 */
 	private function setData(int $item = 0): int
 	{
-		global $context, $smcFunc;
+		global $context;
 
 		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
 			return 0;
@@ -916,184 +861,9 @@ class ManageBlocks
 		checkSubmitOnce('check');
 
 		if (empty($item)) {
-			$item = $smcFunc['db_insert']('',
-				'{db_prefix}lp_blocks',
-				array(
-					'icon'          => 'string-60',
-					'icon_type'     => 'string-10',
-					'type'          => 'string',
-					'note'          => 'string',
-					'content'       => 'string-65534',
-					'placement'     => 'string-10',
-					'priority'      => 'int',
-					'permissions'   => 'int',
-					'status'        => 'int',
-					'areas'         => 'string',
-					'title_class'   => 'string',
-					'title_style'   => 'string',
-					'content_class' => 'string',
-					'content_style' => 'string'
-				),
-				array(
-					$context['lp_block']['icon'],
-					$context['lp_block']['icon_type'],
-					$context['lp_block']['type'],
-					$context['lp_block']['note'],
-					$context['lp_block']['content'],
-					$context['lp_block']['placement'],
-					$context['lp_block']['priority'],
-					$context['lp_block']['permissions'],
-					$context['lp_block']['status'],
-					$context['lp_block']['areas'],
-					$context['lp_block']['title_class'],
-					$context['lp_block']['title_style'],
-					$context['lp_block']['content_class'],
-					$context['lp_block']['content_style']
-				),
-				array('block_id'),
-				1
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			Subs::runAddons('onBlockSaving', array($item));
-
-			if (!empty($context['lp_block']['title'])) {
-				$titles = [];
-				foreach ($context['lp_block']['title'] as $lang => $title) {
-					$titles[] = array(
-						'item_id' => $item,
-						'type'    => 'block',
-						'lang'    => $lang,
-						'title'   => $title
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			if (!empty($context['lp_block']['options']['parameters'])) {
-				$params = [];
-				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
-					$value = is_array($value) ? implode(',', $value) : $value;
-
-					$params[] = array(
-						'item_id' => $item,
-						'type'    => 'block',
-						'name'    => $param_name,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$params,
-					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
+			$item = $this->addData();
 		} else {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
-				WHERE block_id = {int:block_id}',
-				array(
-					'block_id'      => $item,
-					'icon'          => $context['lp_block']['icon'],
-					'icon_type'     => $context['lp_block']['icon_type'],
-					'type'          => $context['lp_block']['type'],
-					'note'          => $context['lp_block']['note'],
-					'content'       => $context['lp_block']['content'],
-					'placement'     => $context['lp_block']['placement'],
-					'permissions'   => $context['lp_block']['permissions'],
-					'areas'         => $context['lp_block']['areas'],
-					'title_class'   => $context['lp_block']['title_class'],
-					'title_style'   => $context['lp_block']['title_style'],
-					'content_class' => $context['lp_block']['content_class'],
-					'content_style' => $context['lp_block']['content_style']
-				)
-			);
-
-			$smcFunc['lp_num_queries']++;
-
-			Subs::runAddons('onBlockSaving', array($item));
-
-			if (!empty($context['lp_block']['title'])) {
-				$titles = [];
-				foreach ($context['lp_block']['title'] as $lang => $title) {
-					$titles[] = array(
-						'item_id' => $item,
-						'type'    => 'block',
-						'lang'    => $lang,
-						'title'   => $title
-					);
-				}
-
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles,
-					array('item_id', 'type', 'lang')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			if (!empty($context['lp_block']['options']['parameters'])) {
-				$params = [];
-				foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
-					$value = is_array($value) ? implode(',', $value) : $value;
-
-					$params[] = array(
-						'item_id' => $item,
-						'type'    => 'block',
-						'name'    => $param_name,
-						'value'   => $value
-					);
-				}
-
-				$smcFunc['db_insert']('replace',
-					'{db_prefix}lp_params',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					),
-					$params,
-					array('item_id', 'type', 'name')
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
-			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_u' . $context['user']['id']);
-			Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id']);
+			$this->updateData($item);
 		}
 
 		if (Helpers::post()->filled('clone'))
@@ -1105,10 +875,206 @@ class ManageBlocks
 	}
 
 	/**
-	 * Get the block fields
-	 *
-	 * Получаем поля блока
-	 *
+	 * @return int
+	 */
+	private function addData(): int
+	{
+		global $smcFunc, $context;
+
+		$item = $smcFunc['db_insert']('',
+			'{db_prefix}lp_blocks',
+			array(
+				'icon'          => 'string-60',
+				'icon_type'     => 'string-10',
+				'type'          => 'string',
+				'note'          => 'string',
+				'content'       => 'string-65534',
+				'placement'     => 'string-10',
+				'priority'      => 'int',
+				'permissions'   => 'int',
+				'status'        => 'int',
+				'areas'         => 'string',
+				'title_class'   => 'string',
+				'title_style'   => 'string',
+				'content_class' => 'string',
+				'content_style' => 'string'
+			),
+			array(
+				$context['lp_block']['icon'],
+				$context['lp_block']['icon_type'],
+				$context['lp_block']['type'],
+				$context['lp_block']['note'],
+				$context['lp_block']['content'],
+				$context['lp_block']['placement'],
+				$context['lp_block']['priority'],
+				$context['lp_block']['permissions'],
+				$context['lp_block']['status'],
+				$context['lp_block']['areas'],
+				$context['lp_block']['title_class'],
+				$context['lp_block']['title_style'],
+				$context['lp_block']['content_class'],
+				$context['lp_block']['content_style']
+			),
+			array('block_id'),
+			1
+		);
+
+		$smcFunc['lp_num_queries']++;
+
+		if (empty($item))
+			return 0;
+
+		Subs::runAddons('onBlockSaving', array($item));
+
+		if (!empty($context['lp_block']['title'])) {
+			$titles = [];
+			foreach ($context['lp_block']['title'] as $lang => $title) {
+				$titles[] = array(
+					'item_id' => $item,
+					'type'    => 'block',
+					'lang'    => $lang,
+					'title'   => $title
+				);
+			}
+
+			$smcFunc['db_insert']('',
+				'{db_prefix}lp_titles',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'lang'    => 'string',
+					'title'   => 'string'
+				),
+				$titles,
+				array('item_id', 'type', 'lang')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		if (!empty($context['lp_block']['options']['parameters'])) {
+			$params = [];
+			foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
+				$value = is_array($value) ? implode(',', $value) : $value;
+
+				$params[] = array(
+					'item_id' => $item,
+					'type'    => 'block',
+					'name'    => $param_name,
+					'value'   => $value
+				);
+			}
+
+			$smcFunc['db_insert']('',
+				'{db_prefix}lp_params',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'name'    => 'string',
+					'value'   => 'string'
+				),
+				$params,
+				array('item_id', 'type', 'name')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		return $item;
+	}
+
+	/**
+	 * @param int $item
+	 */
+	private function updateData(int $item)
+	{
+		global $smcFunc, $context;
+
+		$smcFunc['db_query']('', '
+				UPDATE {db_prefix}lp_blocks
+				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				WHERE block_id = {int:block_id}',
+			array(
+				'block_id'      => $item,
+				'icon'          => $context['lp_block']['icon'],
+				'icon_type'     => $context['lp_block']['icon_type'],
+				'type'          => $context['lp_block']['type'],
+				'note'          => $context['lp_block']['note'],
+				'content'       => $context['lp_block']['content'],
+				'placement'     => $context['lp_block']['placement'],
+				'permissions'   => $context['lp_block']['permissions'],
+				'areas'         => $context['lp_block']['areas'],
+				'title_class'   => $context['lp_block']['title_class'],
+				'title_style'   => $context['lp_block']['title_style'],
+				'content_class' => $context['lp_block']['content_class'],
+				'content_style' => $context['lp_block']['content_style']
+			)
+		);
+
+		$smcFunc['lp_num_queries']++;
+
+		Subs::runAddons('onBlockSaving', array($item));
+
+		if (!empty($context['lp_block']['title'])) {
+			$titles = [];
+			foreach ($context['lp_block']['title'] as $lang => $title) {
+				$titles[] = array(
+					'item_id' => $item,
+					'type'    => 'block',
+					'lang'    => $lang,
+					'title'   => $title
+				);
+			}
+
+			$smcFunc['db_insert']('replace',
+				'{db_prefix}lp_titles',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'lang'    => 'string',
+					'title'   => 'string'
+				),
+				$titles,
+				array('item_id', 'type', 'lang')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		if (!empty($context['lp_block']['options']['parameters'])) {
+			$params = [];
+			foreach ($context['lp_block']['options']['parameters'] as $param_name => $value) {
+				$value = is_array($value) ? implode(',', $value) : $value;
+
+				$params[] = array(
+					'item_id' => $item,
+					'type'    => 'block',
+					'name'    => $param_name,
+					'value'   => $value
+				);
+			}
+
+			$smcFunc['db_insert']('replace',
+				'{db_prefix}lp_params',
+				array(
+					'item_id' => 'int',
+					'type'    => 'string',
+					'name'    => 'string',
+					'value'   => 'string'
+				),
+				$params,
+				array('item_id', 'type', 'name')
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
+		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_u' . $context['user']['id']);
+		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item . '_u' . $context['user']['id']);
+	}
+
+	/**
 	 * @param int $item
 	 * @return array
 	 */

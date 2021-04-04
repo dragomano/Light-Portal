@@ -24,7 +24,7 @@ class PageArticle extends AbstractArticle
 	/**
 	 * @var array
 	 */
-	private $selected_categories = [];
+	protected $selected_categories = [];
 
 	/**
 	 * Initialize class properties
@@ -64,16 +64,18 @@ class PageArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData(int $start, int $limit)
+	public function getData(int $start, int $limit): array
 	{
-		global $user_info, $smcFunc, $modSettings, $scripturl, $txt, $memberContext;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $memberContext;
 
 		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return [];
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$titles = Helpers::getAllTitles();
+			$categories = Helpers::getAllCategories();
 
 			$this->params += array(
 				'start' => $start,
@@ -112,7 +114,7 @@ class PageArticle extends AbstractArticle
 					$pages[$row['page_id']] = array(
 						'id'        => $row['page_id'],
 						'section'   => array(
-							'name' => !empty($row['category_id']) ? Helpers::getAllCategories()[$row['category_id']]['name'] : '',
+							'name' => !empty($row['category_id']) ? $categories[$row['category_id']]['name'] : '',
 							'link' => !empty($row['category_id']) ? $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'] : ''
 						),
 						'author'    => array(
@@ -171,7 +173,7 @@ class PageArticle extends AbstractArticle
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $modSettings, $user_info, $smcFunc;
 

@@ -68,15 +68,9 @@ class FlarumStyle
 
 		$content = ob_get_clean();
 
-		$context['lp_blocks']['left'][time()] = [
-			'id'            => time(),
-			'type'          => 'flarum_style',
-			'content'       => $content,
-			'title_class'   => '',
-			'title_style'   => '',
-			'content_class' => '',
-			'content_style' => '',
-			'title'         => ''
+		$context['lp_blocks']['left'][] = [
+			'type'    => 'flarum_style',
+			'content' => $content
 		];
 	}
 

@@ -138,7 +138,9 @@ class RecentPosts
 			'options' => array()
 		);
 
-		foreach ($txt['lp_recent_posts_addon_type_set'] as $key => $value) {
+		$link_types = array_combine(array('link', 'preview'), $txt['lp_recent_posts_addon_type_set']);
+
+		foreach ($link_types as $key => $value) {
 			$context['posting_fields']['link_type']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['link_type']
@@ -216,6 +218,7 @@ class RecentPosts
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getData($parameters)
 	{

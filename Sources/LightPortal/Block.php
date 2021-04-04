@@ -81,13 +81,9 @@ class Block
 	}
 
 	/**
-	 * Get blocks filtered by areas
-	 *
-	 * Получаем блоки, отфильтрованные по области
-	 *
 	 * @return array
 	 */
-	private function getFilteredByAreas()
+	private function getFilteredByAreas(): array
 	{
 		global $context, $modSettings;
 
@@ -139,14 +135,10 @@ class Block
 	}
 
 	/**
-	 * Get allowed identifiers from $entity string
-	 *
-	 * Получаем разрешенные идентификаторы из строки $entity
-	 *
 	 * @param string $entity
 	 * @return array
 	 */
-	private function getAllowedIds(string $entity = '')
+	private function getAllowedIds(string $entity = ''): array
 	{
 		$ids = [];
 

@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\InstagramFeed;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * InstagramFeed
  *

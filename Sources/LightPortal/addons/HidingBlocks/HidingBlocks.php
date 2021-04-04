@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
-use Bugo\LightPortal\Helpers;
-
 /**
  * HidingBlocks
  *
@@ -101,8 +99,10 @@ class HidingBlocks
 		$current_breakpoints = $context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
 		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
 
+		$breakpoints = array_combine(array('xs', 'sm', 'md', 'lg', 'xl'), $txt['lp_hiding_blocks_addon_hidden_breakpoints_set']);
+
 		$data = [];
-		foreach ($txt['lp_hiding_blocks_addon_hidden_breakpoints_set'] as $bp => $name) {
+		foreach ($breakpoints as $bp => $name) {
 			$data[] = "\t\t\t\t" . '{text: "' . $name . '", value: "' . $bp . '", selected: ' . (in_array($bp, $current_breakpoints) ? 'true' : 'false') . '}';
 		}
 

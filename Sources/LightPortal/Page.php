@@ -65,6 +65,10 @@ class Page
 		if ($context['lp_page']['created_at'] > time())
 			send_http_status(404);
 
+		$context['lp_page']['errors'] = [];
+		if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit'])
+			$context['lp_page']['errors'][] = $txt['lp_page_visible_but_disabled'];
+
 		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
@@ -159,10 +163,6 @@ class Page
 	}
 
 	/**
-	 * Prepare related pages list
-	 *
-	 * Формируем список похожих страниц
-	 *
 	 * @return void
 	 */
 	private function prepareRelatedPages()
@@ -176,10 +176,6 @@ class Page
 	}
 
 	/**
-	 * Get an array of related pages
-	 *
-	 * Получаем массив похожих страниц
-	 *
 	 * @return array
 	 */
 	public function getRelatedPages(): array
@@ -247,10 +243,6 @@ class Page
 	}
 
 	/**
-	 * Prepare comments to output
-	 *
-	 * Подготавливаем комментарии для отображения
-	 *
 	 * @return void
 	 * @throws Exception
 	 */
@@ -365,10 +357,6 @@ class Page
 	}
 
 	/**
-	 * Get the page fields by its alias
-	 *
-	 * Получаем поля страницы по её алиасу
-	 *
 	 * @param string $alias
 	 * @return array
 	 */
@@ -385,10 +373,6 @@ class Page
 	}
 
 	/**
-	 * Get the page fields
-	 *
-	 * Получаем поля страницы
-	 *
 	 * @param int $item
 	 * @return array
 	 */
@@ -402,6 +386,201 @@ class Page
 		$this->prepareData($data);
 
 		return $data;
+	}
+
+	/**
+	 * Show pages as articles
+	 *
+	 * Отображаем страницы как карточки
+	 *
+	 * @param PageListInterface $entity
+	 * @return void
+	 */
+	public function showAsCards(PageListInterface $entity)
+	{
+		global $modSettings, $context;
+
+		$start = Helpers::request('start');
+		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
+
+		$total_items = $entity->getTotalCountPages();
+
+		if ($start >= $total_items) {
+			send_http_status(404);
+			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
+		}
+
+		$start = abs($start);
+
+		$sort = (new FrontPage)->getOrderBy();
+
+		$articles = $entity->getPages($start, $limit, $sort);
+
+		$context['page_index'] = constructPageIndex($context['canonical_url'], Helpers::request()->get('start'), $total_items, $limit);
+		$context['start']      = Helpers::request()->get('start');
+
+		$context['lp_frontpage_articles']    = $articles;
+		$context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
+
+		loadTemplate('LightPortal/ViewFrontPage');
+
+		$context['sub_template']      = 'show_articles';
+		$context['template_layers'][] = 'sorting';
+
+		obExit();
+	}
+
+	/**
+	 * Get page list within selected category, with common tag, etc.
+	 *
+	 * Получаем список страниц внутри заданной категории, с общим тегом и т. д.
+	 *
+	 * @return array
+	 */
+	public function getList(): array
+	{
+		global $modSettings, $context, $txt, $scripturl;
+
+		return array(
+			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
+			'title' => $context['page_title'],
+			'no_items_label' => $txt['lp_no_items'],
+			'base_href' => $context['canonical_url'],
+			'default_sort_col' => 'date',
+			'columns' => array(
+				'date' => array(
+					'header' => array(
+						'value' => $txt['date']
+					),
+					'data' => array(
+						'db'    => 'date',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.created_at DESC, p.updated_at DESC',
+						'reverse' => 'p.created_at, p.updated_at'
+					)
+				),
+				'title' => array(
+					'header' => array(
+						'value' => $txt['lp_title']
+					),
+					'data' => array(
+						'function' => function ($entry) use ($scripturl)
+						{
+							return '<a class="bbc_link' . (
+								$entry['is_front']
+									? ' new_posts" href="' . $scripturl
+									: '" href="' . $scripturl . '?page=' . $entry['alias']
+							) . '">' . $entry['title'] . '</a>';
+						},
+						'class' => 'word_break'
+					),
+					'sort' => array(
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
+					)
+				),
+				'author' => array(
+					'header' => array(
+						'value' => $txt['author']
+					),
+					'data' => array(
+						'function' => function ($entry) use ($scripturl)
+						{
+							if (empty($entry['author']['id']))
+								return $entry['author']['name'];
+
+							return '<a href="' . $scripturl . '?action=profile;u=' . $entry['author']['id'] . '">' . $entry['author']['name'] . '</a>';
+						},
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'author_name DESC',
+						'reverse' => 'author_name'
+					)
+				),
+				'num_views' => array(
+					'header' => array(
+						'value' => $txt['views']
+					),
+					'data' => array(
+						'function' => function ($entry)
+						{
+							return $entry['views']['num'];
+						},
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.num_views DESC',
+						'reverse' => 'p.num_views'
+					)
+				)
+			),
+			'form' => array(
+				'href' => $context['canonical_url']
+			)
+		);
+	}
+
+	/**
+	 * @param array $items
+	 * @param array $row
+	 * @return void
+	 */
+	public function fetchQueryResults(array &$items, array $row)
+	{
+		global $modSettings, $scripturl, $txt, $user_info, $memberContext;
+
+		Helpers::parseContent($row['content'], $row['type']);
+
+		$image = null;
+		if (!empty($modSettings['lp_show_images_in_articles'])) {
+			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
+			$image = $first_post_image ? array_pop($value) : null;
+		}
+
+		if (empty($image) && !empty($modSettings['lp_image_placeholder']))
+			$image = $modSettings['lp_image_placeholder'];
+
+		$items[$row['page_id']] = array(
+			'id'        => $row['page_id'],
+			'alias'     => $row['alias'],
+			'author'    => array(
+				'id'   => $author_id = $row['author_id'],
+				'link' => $scripturl . '?action=profile;u=' . $author_id,
+				'name' => $row['author_name']
+			),
+			'date'      => Helpers::getFriendlyTime($row['date']),
+			'datetime'  => date('Y-m-d', $row['date']),
+			'link'      => $scripturl . '?page=' . $row['alias'],
+			'views'     => array(
+				'num'   => $row['num_views'],
+				'title' => $txt['lp_views']
+			),
+			'replies'   => array(
+				'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
+				'title' => $txt['lp_comments']
+			),
+			'title'     => $row['title'],
+			'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
+			'is_front'  => Helpers::isFrontpage($row['alias']),
+			'image'     => $image,
+			'can_edit'  => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $user_info['id']),
+			'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
+		);
+
+		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
+
+		loadMemberData($author_id);
+
+		$items[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
+		if (loadMemberContext($author_id, true)) {
+			$items[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
+		}
+
+		if (!empty($modSettings['lp_show_teaser']))
+			$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);
 	}
 
 	/**
@@ -522,10 +701,6 @@ class Page
 	}
 
 	/**
-	 * Increasing the number of page views
-	 *
-	 * Увеличиваем количество просмотров страницы
-	 *
 	 * @return void
 	 */
 	private function updateNumViews()

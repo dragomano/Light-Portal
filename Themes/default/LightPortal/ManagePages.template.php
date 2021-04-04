@@ -93,6 +93,7 @@ function template_page_post()
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
+		const page = new Page();
 		let keywords = new SlimSelect({
 			select: "#keywords",
 			data: [';
@@ -128,7 +129,10 @@ function template_page_post()
 			searchText: "', $txt['no_matches'], '",
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true
-		});
+		});';
+
+	if ($context['user']['is_admin']) {
+		echo '
 		let members = new SlimSelect({
 			select: "#page_author",
 			allowDeselect: true,
@@ -168,6 +172,9 @@ function template_page_post()
 			searchText: "', $txt['no_matches'], '",
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true
-		});
+		});';
+	}
+
+	echo '
 	</script>';
 }

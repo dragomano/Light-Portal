@@ -53,6 +53,11 @@ class Subs
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
+		$context['lp_block_placements']    = self::getBlockPlacements();
+		$context['lp_page_options']        = self::getPageOptions();
+		$context['lp_plugin_types']        = self::getPluginTypes();
+		$context['lp_plugin_option_types'] = self::getPluginOptionTypes();
+		$context['lp_icon_types']          = self::getIconTypes();
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -67,25 +72,16 @@ class Subs
 	}
 
 	/**
-	 * Load used styles and scripts
-	 *
-	 * Подключаем используемые таблицы стилей и скрипты
-	 *
 	 * @return void
 	 */
 	public static function loadCssFiles()
 	{
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true)); // SVG
-		loadCssFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
-		loadCssFile('light_portal/flexboxgrid.css');
-		loadCssFile('light_portal/light_portal.css');
+		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+		loadCSSFile('light_portal/flexboxgrid.css');
+		loadCSSFile('light_portal/light_portal.css');
 	}
 
 	/**
-	 * Get information about all active blocks of the portal
-	 *
-	 * Получаем информацию обо всех активных блоках портала
-	 *
 	 * @return array
 	 */
 	public static function getActiveBlocks(): array
@@ -180,10 +176,6 @@ class Subs
 	}
 
 	/**
-	 * Get names of the current addons
-	 *
-	 * Получаем имена имеющихся аддонов
-	 *
 	 * @return array
 	 */
 	public static function getAddons(): array
@@ -199,10 +191,6 @@ class Subs
 	}
 
 	/**
-	 * Require the language file of the addon
-	 *
-	 * Подключаем языковой файл аддона
-	 *
 	 * @param string $addon
 	 * @return void
 	 */
@@ -223,10 +211,6 @@ class Subs
 	}
 
 	/**
-	 * Run addons
-	 *
-	 * Подключаем аддоны
-	 *
 	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
 	 *
 	 * @param string $hook
@@ -237,6 +221,7 @@ class Subs
 	public static function runAddons(string $hook = '', array $vars = [], array $plugins = [])
 	{
 		global $context;
+		static $results = [];
 
 		$context['lp_bbc_icon']  = 'fab fa-bimobject';
 		$context['lp_html_icon'] = 'fab fa-html5';
@@ -252,9 +237,8 @@ class Subs
 
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
-			if (!class_exists($className)) {
+			if (!class_exists($className))
 				continue;
-			}
 
 			$class = new $className;
 
@@ -265,13 +249,14 @@ class Subs
 				$context['lp_' . $snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class->addon_icon : 'fas fa-puzzle-piece';
 			}
 
-			if (method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
+			// Hook init should run only once
+			if (empty($results[$id]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
 				$class->init();
+				$results[$id]['init'] = $addon;
 			}
 
-			if (method_exists($class, $hook)) {
+			if (method_exists($class, $hook))
 				$class->$hook(...$vars);
-			}
 		}
 	}
 
@@ -403,9 +388,11 @@ class Subs
 					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
 				WHERE ps.name = {literal:main_menu_item}
 					AND ps.value != {string:blank_string}
-					AND ps.type = {literal:page}',
+					AND ps.type = {literal:page}
+					AND p.status = {int:status}',
 				array(
-					'blank_string' => ''
+					'blank_string' => '',
+					'status'       => Page::STATUS_ACTIVE
 				)
 			);
 
@@ -426,5 +413,75 @@ class Subs
 		}
 
 		return $pages;
+	}
+
+	/**
+	 * Get an array of available block placements
+	 *
+	 * Получаем массив доступных расположений блоков
+	 *
+	 * @return array
+	 */
+	public static function getBlockPlacements()
+	{
+		global $txt;
+
+		return array_combine(array('header', 'top', 'left', 'right', 'bottom', 'footer'), $txt['lp_block_placement_set']);
+	}
+
+	/**
+	 * Get an array of available page options
+	 *
+	 * Получаем массив доступных опций страниц
+	 *
+	 * @return array
+	 */
+	public static function getPageOptions()
+	{
+		global $txt;
+
+		return array_combine(array('show_author_and_date', 'show_related_pages', 'allow_comments', 'main_menu_item'), $txt['lp_page_options']);
+	}
+
+	/**
+	 * Get an array of available plugin type of the portal
+	 *
+	 * Получаем массив доступных типов плагинов портала
+	 *
+	 * @return array
+	 */
+	public static function getPluginTypes()
+	{
+		global $txt;
+
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugin_type_set']);
+	}
+
+	/**
+	 * Get an array of available plugin option types
+	 *
+	 * Получаем массив доступных типов параметров плагинов
+	 *
+	 * @return array
+	 */
+	public static function getPluginOptionTypes()
+	{
+		global $txt;
+
+		return array_combine(array('text', 'url', 'color', 'int', 'check', 'multicheck', 'select'), $txt['lp_plugin_option_type_set']);
+	}
+
+	/**
+	 * Get an array of available icon types
+	 *
+	 * Получаем массив доступных типов иконок
+	 *
+	 * @return array
+	 */
+	public static function getIconTypes()
+	{
+		global $txt;
+
+		return array_combine(array('fas', 'far', 'fab'), $txt['lp_block_icon_type_set']);
 	}
 }

@@ -20,10 +20,6 @@ if (!defined('SMF'))
 class Integration
 {
 	/**
-	 * Add used hooks
-	 *
-	 * Подключаем используемые хуки
-	 *
 	 * @return void
 	 */
 	public function hooks()
@@ -53,10 +49,6 @@ class Integration
 	}
 
 	/**
-	 * Setup for autoloader of used classes
-	 *
-	 * Настраиваем автоподключение используемых классов
-	 *
 	 * @param array $classMap
 	 * @return void
 	 */
@@ -70,10 +62,6 @@ class Integration
 	}
 
 	/**
-	 * Determine used constants
-	 *
-	 * Определяем необходимые константы
-	 *
 	 * @return void
 	 */
 	public function userInfo()
@@ -85,8 +73,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.7',
-			'LP_RELEASE_DATE' => '2021-03-03',
+			'LP_VERSION'      => '1.7.1',
+			'LP_RELEASE_DATE' => '2021-04-04',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons'
@@ -97,10 +85,6 @@ class Integration
 	}
 
 	/**
-	 * Speed up the loading of third-party resources
-	 *
-	 * Ускоряем загрузку сторонних ресурсов
-	 *
 	 * @return void
 	 */
 	public function preCssOutput()
@@ -117,10 +101,6 @@ class Integration
 	}
 
 	/**
-	 * Load the mod languages, addons, blocks & styles
-	 *
-	 * Подключаем языковой файл, скрипты и стили, используемые модом
-	 *
 	 * @return void
 	 */
 	public function loadTheme()
@@ -142,10 +122,6 @@ class Integration
 	}
 
 	/**
-	 * Set up a redirect to the main page of the forum, when requesting an action markasread
-	 *
-	 * Настраиваем редирект на главную страницу форума, при запросе действия action=markasread
-	 *
 	 * @param string $setLocation
 	 * @return void
 	 */
@@ -161,10 +137,6 @@ class Integration
 	}
 
 	/**
-	 * Add "action=portal"
-	 *
-	 * Добавляем action «portal»
-	 *
 	 * @param array $actions
 	 * @return void
 	 */
@@ -190,10 +162,6 @@ class Integration
 	}
 
 	/**
-	 * Access the portal page or call the default method
-	 *
-	 * Обращаемся к странице портала или вызываем метод по умолчанию
-	 *
 	 * @return void
 	 */
 	public function defaultAction()
@@ -253,10 +221,6 @@ class Integration
 	}
 
 	/**
-	 * Manage the display of items in the main menu
-	 *
-	 * Управляем отображением пунктов в главном меню
-	 *
 	 * @param array $buttons
 	 * @return void
 	 */
@@ -438,10 +402,6 @@ class Integration
 	}
 
 	/**
-	 * Guests cannot to manage the portal!
-	 *
-	 * Гости могут только просматривать портал
-	 *
 	 * @return void
 	 */
 	public function loadIllegalGuestPermissions()
@@ -459,10 +419,6 @@ class Integration
 	}
 
 	/**
-	 * Determine permissions
-	 *
-	 * Определяем права доступа
-	 *
 	 * @param array $permissionGroups
 	 * @param array $permissionList
 	 * @param array $leftPermissionGroups
@@ -470,7 +426,9 @@ class Integration
 	 */
 	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
-		global $context;
+		global $txt, $context;
+
+		$txt['permissiongroup_light_portal'] = LP_NAME;
 
 		//$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
 		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
@@ -552,7 +510,9 @@ class Integration
 	 */
 	public function alertTypes(array &$alert_types)
 	{
-		global $modSettings;
+		global $txt, $modSettings;
+
+		$txt['alert_group_light_portal'] = LP_NAME;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
 			$alert_types['light_portal'] = array(
@@ -663,10 +623,6 @@ class Integration
 	}
 
 	/**
-	 * Display current actions of members (on portal area)
-	 *
-	 * Показываем, кто что делает на портале
-	 *
 	 * @param array $actions
 	 * @return string
 	 */

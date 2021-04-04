@@ -46,7 +46,7 @@ class BlockExport extends AbstractExport
 		$this->run();
 
 		$context['lp_current_blocks'] = (new ManageBlocks)->getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($context['lp_block_placements'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_export_blocks';
 	}

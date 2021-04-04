@@ -68,7 +68,7 @@ function template_manage_export_blocks()
 						', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
-						', $txt['lp_block_placement_set'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
+						', $context['lp_block_placements'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
 					</td>
 					<td class="actions centertext">
 						<input type="checkbox" value="' . $id . '" name="blocks[]" checked>

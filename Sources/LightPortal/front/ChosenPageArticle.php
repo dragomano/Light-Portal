@@ -54,8 +54,9 @@ class ChosenPageArticle extends PageArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData(int $start, int $limit)
+	public function getData(int $start, int $limit): array
 	{
 		if (empty($this->selected_pages))
 			return [];
@@ -70,7 +71,7 @@ class ChosenPageArticle extends PageArticle
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		if (empty($this->selected_pages))
 			return 0;

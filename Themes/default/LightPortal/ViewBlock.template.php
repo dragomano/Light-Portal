@@ -167,10 +167,19 @@ function lp_show_blocks($placement = '')
 		if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
 			$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
 
+		if (empty($block['title']))
+			$block['title'] = '';
+
 		if (!empty($block['title_class']))
 			echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
 		else
 			echo $block['title'];
+
+		if (empty($block['content_class']))
+			$block['content_class'] = '';
+
+		if (empty($block['content_style']))
+			$block['content_style'] = '';
 
 		if (empty($block['title_class']))
 			$block['content_style'] = 'border-radius: 7px;' . $block['content_style'];

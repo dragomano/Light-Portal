@@ -49,7 +49,7 @@ function template_manage_plugins()
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
 		echo '
@@ -57,12 +57,17 @@ function template_manage_plugins()
 			</div>';
 
 		if (!empty($plugin['settings']))
-			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
+			show_plugin_settings($plugin['snake_name'] . $context['session_id'], $plugin['settings']);
 
 		echo '
 		</div>
 	</div>';
 	}
+
+	echo '
+	<script>
+		const plugin = new Plugin();
+	</script>';
 }
 
 /**
@@ -276,7 +281,7 @@ function template_plugin_post()
 													<td>
 														<select x-model="option.type" name="option_type[]">';
 
-	foreach ($txt['lp_plugin_option_types'] as $type => $name) {
+	foreach ($context['lp_plugin_option_types'] as $type => $name) {
 		echo '
 															<option value="', $type, '">', $name, '</option>';
 	}
@@ -326,7 +331,7 @@ function template_plugin_post()
 	foreach ($context['languages'] as $lang) {
 		echo '
 																<tr class="windowbg">
-																	<td><strong>', $lang['filename'], '</strong></td>
+																	<td><strong>', $lang['name'], '</strong></td>
 																	<td>
 																		<input type="text" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
 																	</td>
@@ -365,5 +370,8 @@ function template_plugin_post()
 				<button type="submit" class="button" name="save" @click="plugin.post($el)">', $txt['save'], '</button>
 			</div>
 		</div>
-	</form>';
+	</form>
+	<script>
+		const plugin = new Plugin();
+	</script>';
 }

@@ -118,7 +118,9 @@ class Todays
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_todays_addon_type_set'] as $key => $value) {
+		$types = array_combine(array('birthdays', 'holidays', 'events', 'calendar'), $txt['lp_todays_addon_type_set']);
+
+		foreach ($types as $key => $value) {
 			$context['posting_fields']['widget_type']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']
@@ -144,7 +146,7 @@ class Todays
 	 *
 	 * @param string $type
 	 * @param string $output_method
-	 * @return string
+	 * @return string|array
 	 */
 	public function getData($type, $output_method = 'echo')
 	{

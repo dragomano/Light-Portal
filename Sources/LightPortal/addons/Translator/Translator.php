@@ -90,7 +90,9 @@ class Translator
 			)
 		);
 
-		foreach ($txt['lp_translator_addon_engine_set'] as $key => $value) {
+		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator_addon_engine_set']);
+
+		foreach ($engines as $key => $value) {
 			$context['posting_fields']['engine']['input']['options'][$value] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['engine']

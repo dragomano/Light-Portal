@@ -9,21 +9,30 @@
  */
 function template_show_page()
 {
-	global $modSettings, $context, $txt, $scripturl, $settings, $boardurl;
+	global $context, $modSettings, $txt, $scripturl, $settings, $boardurl;
 
-	if (!empty($modSettings['lp_show_page_permissions'])) {
-		if (empty($context['lp_page']['status']) && $context['lp_page']['can_edit']) {
+	if (!empty($context['lp_page']['errors'])) {
+		echo '
+	<aside class="errorbox">
+		<ul>';
+
+		$context['lp_page']['errors'] = array_unique($context['lp_page']['errors']);
+		foreach ($context['lp_page']['errors'] as $error) {
 			echo '
-		<aside class="errorbox">
-			<strong>', $txt['lp_page_visible_but_disabled'], '</strong>
-		</aside>';
+			<li><strong>', $error, '</strong></li>';
 		}
 
+		echo '
+		</ul>
+	</aside>';
+	}
+
+	if (!empty($modSettings['lp_show_page_permissions'])) {
 		if ($context['lp_page']['can_edit']) {
 			echo '
-		<aside class="infobox">
-			<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
-		</aside>';
+	<aside class="infobox">
+		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+	</aside>';
 		}
 	}
 

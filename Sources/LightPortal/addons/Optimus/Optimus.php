@@ -27,6 +27,16 @@ class Optimus
 	public $addon_type = 'article';
 
 	/**
+	 * @param array $config_vars
+	 * @return void
+	 */
+	public function addSettings(&$config_vars)
+	{
+		$config_vars[] = array('check', 'lp_optimus_addon_use_topic_descriptions');
+		$config_vars[] = array('check', 'lp_optimus_addon_show_topic_keywords');
+	}
+
+	/**
 	 * Select optimus_description column from topics table for the frontpage topics
 	 *
 	 * Выбираем столбец optimus_description из таблицы topics при выборке тем-статей
@@ -37,7 +47,9 @@ class Optimus
 	 */
 	public function frontTopics(&$custom_columns, &$custom_tables)
 	{
-		if (!class_exists('\Bugo\Optimus\Integration'))
+		global $modSettings;
+
+		if (empty($modSettings['lp_optimus_addon_use_topic_descriptions']) || !class_exists('\Bugo\Optimus\Integration'))
 			return;
 
 		$custom_columns[] = 't.optimus_description';
@@ -54,12 +66,15 @@ class Optimus
 	 */
 	public function frontTopicsOutput(&$topics, $row)
 	{
+		global $modSettings;
+
 		if (!class_exists('\Bugo\Optimus\Integration'))
 			return;
 
-		$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords', 'getKeywords', __CLASS__, LP_CACHE_TIME, $row['id_topic']);
+		if (!empty($modSettings['lp_optimus_addon_show_topic_keywords']))
+			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords', 'getKeywords', __CLASS__, LP_CACHE_TIME, $row['id_topic']);
 
-		if (!empty($row['optimus_description']) && !empty($topics[$row['id_topic']]['teaser']))
+		if (!empty($modSettings['lp_optimus_addon_use_topic_descriptions']) && !empty($row['optimus_description']) && !empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
 	}
 
@@ -73,7 +88,7 @@ class Optimus
 	 */
 	public function getKeywords($topic)
 	{
-		global $smcFunc, $scripturl;
+		global $smcFunc;
 
 		if (empty($topic))
 			return [];

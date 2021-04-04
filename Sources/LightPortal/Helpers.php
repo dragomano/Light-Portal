@@ -126,10 +126,6 @@ class Helpers
 	}
 
 	/**
-	 * Get the block/page icon
-	 *
-	 * Получаем иконку блока или страницы
-	 *
 	 * @param string|null $icon
 	 * @param string|null $type
 	 * @return string
@@ -148,10 +144,6 @@ class Helpers
 	}
 
 	/**
-	 * Get a title for preview block
-	 *
-	 * Получаем заголовок блока превью
-	 *
 	 * @param string|null $prefix
 	 * @return string
 	 */
@@ -193,10 +185,13 @@ class Helpers
 	{
 		global $txt;
 
+		$str = is_array($str) ? $str : explode(',', $str);
+		$str = array_map('trim', $str);
+
 		// Plural rule #0 (Chinese, Japanese, Persian, Turkish, Thai, Indonesian, Malay)
 		$rule_zero = array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms');
 		if (in_array($txt['lang_dictionary'], $rule_zero))
-			return $num . ' ' . (is_string($str) ? $str : $str[0]);
+			return $num . ' ' . $str[0];
 
 		// Plural rule #2 (French, Portuguese_brazilian)
 		$rule_two = array('fr', 'pt');
@@ -204,6 +199,8 @@ class Helpers
 			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
 
 		// Just in case
+		if (!isset($str[1]))
+			$str[1] = $str[0];
 		if (!isset($str[2]))
 			$str[2] = $str[1];
 
@@ -319,7 +316,7 @@ class Helpers
 			$minutes = ($timestamp - $current_time) / 60;
 			// like "In a minute"
 			if ($minutes == 1)
-				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
+				return sprintf($txt['lp_time_label_in'], explode(',', $txt['lp_minutes_set'])[0]);
 
 			// like "In n minutes"
 			if ($minutes > 1)
@@ -337,7 +334,7 @@ class Helpers
 			return self::getText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
-			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
+			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
 			return self::getText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
@@ -395,10 +392,6 @@ class Helpers
 	}
 
 	/**
-	 * Load BBCode editor
-	 *
-	 * Подключаем редактор ББ-кода
-	 *
 	 * @param string $content
 	 * @return void
 	 */
@@ -521,10 +514,6 @@ class Helpers
 	}
 
 	/**
-	 * Getting a string converted to snake_case
-	 *
-	 * Получаем строку, преобразованную в snake_case
-	 *
 	 * @param string $value
 	 * @param string $delimiter
 	 * @return string
@@ -541,10 +530,6 @@ class Helpers
 	}
 
 	/**
-	 * Get the article teaser
-	 *
-	 * Получаем тизер статьи
-	 *
 	 * @param string $text
 	 * @return string
 	 */
@@ -559,10 +544,6 @@ class Helpers
 	}
 
 	/**
-	 * Get an array with names of installed themes
-	 *
-	 * Получаем массив с названиями установленных тем оформления
-	 *
 	 * @return array
 	 */
 	public static function getForumThemes(): array
@@ -589,10 +570,6 @@ class Helpers
 	}
 
 	/**
-	 * Prepare a list of all localizations of the forum
-	 *
-	 * Формируем список всех локализаций форума
-	 *
 	 * @return void
 	 */
 	public static function prepareForumLanguages()
@@ -824,10 +801,6 @@ class Helpers
 	}
 
 	/**
-	 * Get array of all categories
-	 *
-	 * Получаем массив всех рубрик
-	 *
 	 * @return array
 	 */
 	public static function getAllCategories()
@@ -836,10 +809,6 @@ class Helpers
 	}
 
 	/**
-	 * Get array of all tags
-	 *
-	 * Получаем массив всех тегов
-	 *
 	 * @return array
 	 */
 	public static function getAllTags()
@@ -860,7 +829,7 @@ class Helpers
 
 		foreach ($context['posting_fields'] as $item => $data) {
 			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative smalltext">' . $data['input']['after'] . '</div>';
+				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';

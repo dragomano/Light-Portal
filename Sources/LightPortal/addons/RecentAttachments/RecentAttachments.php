@@ -108,7 +108,9 @@ class RecentAttachments
 			'options' => array()
 		);
 
-		foreach ($txt['lp_recent_attachments_addon_direction_set'] as $direction => $title) {
+		$directions = array_combine(array('horizontal', 'vertical'), $txt['lp_panel_direction_set']);
+
+		foreach ($directions as $direction => $title) {
 			$context['posting_fields']['direction']['input']['options'][$title] = array(
 				'value'    => $direction,
 				'selected' => $direction == $context['lp_block']['options']['parameters']['direction']

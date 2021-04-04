@@ -113,6 +113,7 @@ class TopPosters
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getData($parameters)
 	{
