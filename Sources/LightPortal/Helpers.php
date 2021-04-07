@@ -538,7 +538,7 @@ class Helpers
 		if (empty($text))
 			return '...';
 
-		$text = strip_tags(explode('<br>', $text)[0]);
+		$text = strip_tags($text);
 
 		return $text ?: '...';
 	}
