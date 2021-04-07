@@ -383,7 +383,7 @@ class Helpers
 	 * @param string $type
 	 * @return void
 	 */
-	public static function findMissingBlockTypes(string $type)
+	public static function prepareMissingBlockTypes(string $type)
 	{
 		global $txt, $context;
 
@@ -706,7 +706,7 @@ class Helpers
 	 * Получаем число в приятном глазу формате (для чисел более 10к)
 	 *
 	 * @param int $value
-	 * @return float
+	 * @return int|float
 	 */
 	public static function getFriendlyNumber(int $value = 0)
 	{

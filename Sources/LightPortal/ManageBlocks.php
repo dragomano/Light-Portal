@@ -90,7 +90,7 @@ class ManageBlocks
 
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 
-			Helpers::findMissingBlockTypes($row['type']);
+			Helpers::prepareMissingBlockTypes($row['type']);
 		}
 
 		$smcFunc['db_free_result']($request);
