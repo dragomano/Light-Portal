@@ -640,7 +640,7 @@ class ManagePages
 	{
 		global $context, $modSettings, $user_info;
 
-		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
+		if (Helpers::post()->has('save') || Helpers::post()->has('save_exit') || Helpers::post()->has('preview')) {
 			$args = array(
 				'category'    => FILTER_VALIDATE_INT,
 				'page_author' => FILTER_VALIDATE_INT,
@@ -707,7 +707,7 @@ class ManagePages
 		);
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && !empty($post_data) && $post_data[$option] === null) {
+			if (!empty($parameters[$option]) && !empty($post_data) && !isset($post_data[$option])) {
 				if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 					$post_data[$option] = 0;
 
@@ -1176,7 +1176,7 @@ class ManagePages
 	{
 		global $context;
 
-		if (!empty($context['post_errors']) || Helpers::post()->has('save') === false)
+		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('save_exit') === false))
 			return;
 
 		checkSubmitOnce('check');
@@ -1192,7 +1192,8 @@ class ManagePages
 
 		Helpers::cache()->flush();
 
-		redirectexit('action=admin;area=lp_pages;sa=main');
+		if (Helpers::post()->has('save_exit'))
+			redirectexit('action=admin;area=lp_pages;sa=main');
 	}
 
 	/**

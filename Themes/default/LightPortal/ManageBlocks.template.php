@@ -20,7 +20,7 @@ function template_manage_blocks()
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
 			$block_group_type = 'default';
-			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
+			if (!in_array($placement, array_keys($context['lp_block_placements'])))
 				$block_group_type = 'additional';
 
 			echo '
@@ -354,6 +354,7 @@ function template_block_post()
 	echo '
 				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
 				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($el)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

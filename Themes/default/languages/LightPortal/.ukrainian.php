@@ -141,6 +141,7 @@ $txt['lp_action_off'] = 'Вимкнути';
 $txt['lp_action_clone'] = 'Клонувати';
 $txt['lp_action_move'] = 'Перемістити';
 $txt['lp_read_more'] = 'Читати далі...';
+$txt['lp_save_and_exit'] = 'Зберегти і вийти';
 
 // Blocks
 $txt['lp_blocks'] = 'Блоки';

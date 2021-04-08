@@ -141,6 +141,7 @@ $txt['lp_action_off'] = 'Disable';
 $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';
+$txt['lp_save_and_exit'] = 'Save and Exit';
 
 // Blocks
 $txt['lp_blocks'] = 'Blocks';
