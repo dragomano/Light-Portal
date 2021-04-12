@@ -98,7 +98,7 @@ function show_plugin_settings($plugin_name, $settings)
 		echo '
 				<div>';
 
-		if ($value[0] !== 'callback' && $value['0'] !== 'desc') {
+		if (!in_array($value[0], array('callback', 'desc', 'check'))) {
 			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $txt[$value[1]], '</strong></label>';
 		}
@@ -117,7 +117,8 @@ function show_plugin_settings($plugin_name, $settings)
 					<br><input type="number" min="0" step="1" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
 		} elseif ($value[0] == 'check') {
 			echo '
-					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1">';
+					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
+					<label class="label" for="', $value[1], '"><strong>', $txt[$value[1]], '</strong></label>';
 		} elseif ($value[0] == 'callback' && !empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
