@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Tag.php
  *
@@ -25,7 +27,7 @@ class Tag implements PageListInterface
 	 * Отображение всех страниц портала с указанным тегом
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function show()
 	{
@@ -84,7 +86,7 @@ class Tag implements PageListInterface
 	 * @param int $items_per_page
 	 * @param string $sort
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{

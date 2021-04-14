@@ -533,11 +533,8 @@ class Helpers
 	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text): string
+	public static function getTeaser(string $text): string
 	{
-		if (empty($text))
-			return '...';
-
 		$text = strip_tags($text);
 
 		return $text ?: '...';

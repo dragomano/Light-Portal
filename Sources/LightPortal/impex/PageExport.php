@@ -139,13 +139,9 @@ class PageExport extends AbstractExport
 	}
 
 	/**
-	 * Creating data in XML format
-	 *
-	 * Формируем данные в XML-формате
-	 *
 	 * @return array
 	 */
-	protected function getData()
+	protected function getData(): array
 	{
 		global $smcFunc;
 
@@ -217,7 +213,7 @@ class PageExport extends AbstractExport
 	 *
 	 * @return array
 	 */
-	protected function getCategories()
+	protected function getCategories(): array
 	{
 		$categories = (new \Bugo\LightPortal\Category)->getList();
 
@@ -235,7 +231,7 @@ class PageExport extends AbstractExport
 	 *
 	 * @return array
 	 */
-	protected function getTags()
+	protected function getTags(): array
 	{
 		$tags = (new \Bugo\LightPortal\Tag)->getList();
 
@@ -251,7 +247,7 @@ class PageExport extends AbstractExport
 	 *
 	 * @return string
 	 */
-	protected function getXmlFile()
+	protected function getXmlFile(): string
 	{
 		if (empty($items = $this->getData()))
 			return '';
@@ -294,14 +290,14 @@ class PageExport extends AbstractExport
 				);
 
 				if (in_array($key, ['titles', 'params'])) {
-					foreach ($item[$key] as $k => $v) {
+					foreach ($val as $k => $v) {
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}
 				} elseif (in_array($key, ['description', 'content'])) {
 					$xmlName->appendChild($xml->createCDATASection($val));
 				} elseif ($key == 'comments') {
-					foreach ($item[$key] as $k => $comment) {
+					foreach ($val as $comment) {
 						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
 						foreach ($comment as $label => $text) {
 							$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));

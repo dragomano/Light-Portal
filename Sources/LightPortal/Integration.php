@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Likes;
+
 /**
  * Integration.php
  *
@@ -489,10 +491,10 @@ class Integration
 	 *
 	 * Обновляем кэш при лайке/дизлайке страниц
 	 *
-	 * @param \Likes $obj
+	 * @param Likes $obj
 	 * @return void
 	 */
-	public function issueLike(\Likes $obj)
+	public function issueLike(Likes $obj)
 	{
 		if ($obj->get('type') !== 'lpp')
 			return;

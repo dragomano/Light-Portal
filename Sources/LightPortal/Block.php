@@ -66,10 +66,10 @@ class Block
 		loadTemplate('LightPortal/ViewBlock');
 
 		$counter = 0;
-		foreach ($context['template_layers'] as $position => $name) {
+		foreach ($context['template_layers'] as $layer) {
 			$counter++;
 
-			if ($name == 'body')
+			if ($layer === 'body')
 				break;
 		}
 

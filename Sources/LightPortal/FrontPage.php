@@ -188,13 +188,13 @@ class FrontPage
 
 		$layouts = $values = [];
 
-		$all_funcs = get_defined_functions()['user'];
+		$allFunctions = get_defined_functions()['user'];
 
 		require_once($settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php');
 
-		$fp_funcs = array_values(array_diff(get_defined_functions()['user'], $all_funcs));
+		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
 
-		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $fp_funcs), $matches);
+		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
 
 		if (!empty($matches[1])) {
 			foreach ($matches[1] as $k => $v) {
@@ -216,7 +216,7 @@ class FrontPage
 	 * @param int $date
 	 * @return string
 	 */
-	public function getCardDate($date): string
+	public function getCardDate(int $date): string
 	{
 		global $modSettings;
 
@@ -238,9 +238,9 @@ class FrontPage
 	 *
 	 * Получаем условие сортировки для SQL
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function getOrderBy()
+	public function getOrderBy(): string
 	{
 		global $context;
 
@@ -271,7 +271,7 @@ class FrontPage
 	 * @param array $articles
 	 * @return array
 	 */
-	private function postProcess($entity, $articles)
+	private function postProcess(string $entity, array $articles): array
 	{
 		return array_map(function ($article) use ($entity) {
 			global $context, $modSettings;
@@ -282,7 +282,7 @@ class FrontPage
 			if (!empty($article['date'])) {
 				$article['datetime'] = date('Y-m-d', $article['date']);
 
-				$article['date'] = $this->getCardDate($article['date']);
+				$article['date'] = $this->getCardDate((int) $article['date']);
 			}
 
 			$article['msg_link'] = $article['msg_link'] ?? $article['link'];

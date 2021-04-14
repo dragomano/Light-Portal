@@ -2,6 +2,7 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Exception;
 use Bugo\LightPortal\{Helpers, Subs};
 
 /**
@@ -66,7 +67,7 @@ class TopicArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getData(int $start, int $limit): array
 	{
@@ -120,6 +121,8 @@ class TopicArticle extends AbstractArticle
 					Helpers::cleanBbcode($row['subject']);
 
 					censorText($row['subject']);
+
+					$body = $last_body = '';
 
 					if (!empty($modSettings['lp_show_teaser'])) {
 						censorText($row['body']);

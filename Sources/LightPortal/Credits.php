@@ -58,7 +58,7 @@ class Credits
 	}
 
 	/**
-	 * Prepare information about contrubutors and third party components
+	 * Prepare information about contributors and third party components
 	 *
 	 * Формируем информацию о внесших вклад в развитие портала и об используемых компонентах
 	 */

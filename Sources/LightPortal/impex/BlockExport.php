@@ -52,13 +52,9 @@ class BlockExport extends AbstractExport
 	}
 
 	/**
-	 * Creating data in XML format
-	 *
-	 * Формируем данные в XML-формате
-	 *
 	 * @return array
 	 */
-	protected function getData()
+	protected function getData(): array
 	{
 		global $smcFunc;
 
@@ -137,7 +133,7 @@ class BlockExport extends AbstractExport
 				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
 
 				if (in_array($key, ['titles', 'params'])) {
-					foreach ($item[$key] as $k => $v) {
+					foreach ($val as $k => $v) {
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}

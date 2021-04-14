@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Exception;
+
 /**
  * ChosenTopicArticle.php
  *
@@ -54,7 +56,7 @@ class ChosenTopicArticle extends TopicArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getData(int $start, int $limit): array
 	{

@@ -422,7 +422,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getBlockPlacements()
+	public static function getBlockPlacements(): array
 	{
 		global $txt;
 
@@ -436,7 +436,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPageOptions()
+	public static function getPageOptions(): array
 	{
 		global $txt;
 
@@ -450,7 +450,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPluginTypes()
+	public static function getPluginTypes(): array
 	{
 		global $txt;
 
@@ -464,7 +464,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPluginOptionTypes()
+	public static function getPluginOptionTypes(): array
 	{
 		global $txt;
 
@@ -478,7 +478,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getIconTypes()
+	public static function getIconTypes(): array
 	{
 		global $txt;
 

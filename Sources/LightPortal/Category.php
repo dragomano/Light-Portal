@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Category.php
  *
@@ -25,7 +27,7 @@ class Category implements PageListInterface
 	 * Отображение всех страниц портала внутри выбранной рубрики
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function show()
 	{
@@ -100,7 +102,7 @@ class Category implements PageListInterface
 	 * @param int $items_per_page
 	 * @param string $sort
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{

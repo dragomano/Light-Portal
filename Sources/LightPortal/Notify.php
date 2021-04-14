@@ -23,7 +23,7 @@ class Notify extends \SMF_BackgroundTask
 	 *
 	 * @return bool
 	 */
-	public function execute()
+	public function execute(): bool
 	{
 		global $sourcedir, $user_profile, $smcFunc;
 

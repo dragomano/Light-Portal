@@ -85,7 +85,7 @@ class ManagePlugins
 			checkSession();
 
 			$plugin_options = [];
-			foreach ($config_vars as $id => $var) {
+			foreach ($config_vars as $var) {
 				if (Helpers::post()->has($var[1])) {
 					if ($var[0] == 'check') {
 						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
@@ -560,7 +560,7 @@ EOF;
 EOF;
 		}
 
-		foreach ($context['lp_plugin']['options'] as $id => $option) {
+		foreach ($context['lp_plugin']['options'] as $option) {
 			if (!empty($option['default'])) {
 				switch ($option['type']) {
 					case 'int';
@@ -621,7 +621,7 @@ EOF;
 
 EOF;
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				if (!empty($option['default'])) {
 					$class_content .= <<<EOF
 
@@ -639,7 +639,7 @@ EOF;
 
 EOF;
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				if ($option['type'] == 'text')
 					$class_content .= <<<EOF
 
@@ -767,7 +767,7 @@ EOF;
 		$addon_content = sprintf($addon_content, LP_NAME, date('Y'), LP_VERSION);
 
 		mkdir($path = LP_ADDON_DIR . '/' . $context['lp_plugin']['name']);
-		file_put_contents($addon_dir = $path . '/' . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
+		file_put_contents($path . '/' . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
 		copy(LP_ADDON_DIR . '/index.php', $path . '/index.php');
 
 		if (!empty($context['lp_plugin']['description'])) {
@@ -800,7 +800,7 @@ EOF;
 				file_put_contents($path . '/langs/' . $lang . '.php', $lang_file, LOCK_EX);
 			}
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				foreach ($option['translations'] as $lang => $value) {
 					$lang_file = <<<EOF
 

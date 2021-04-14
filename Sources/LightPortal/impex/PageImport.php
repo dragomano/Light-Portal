@@ -134,11 +134,11 @@ class PageImport extends AbstractImport
 
 					if (!empty($item->comments)) {
 						foreach ($item->comments as $comment) {
-							foreach ($comment as $k => $v) {
+							foreach ($comment as $v) {
 								$comments[] = [
 									'id'         => intval($v['id']),
 									'parent_id'  => intval($v['parent_id']),
-									'page_id'    => intval($page_id),
+									'page_id'    => $page_id,
 									'author_id'  => intval($v['author_id']),
 									'message'    => $v->message,
 									'created_at' => intval($v['created_at'])
