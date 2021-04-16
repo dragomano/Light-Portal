@@ -23,7 +23,7 @@ $txt['lp_default'] = 'По умолчанию';
 // Settings
 $txt['lp_settings'] = 'Настройки портала';
 $txt['lp_base'] = 'Настройки главной страницы и статей';
-$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить на русском баги и фичи портала можно на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форуме разработчика</a>.<br>Вы также можете <a class="bbc_link" href="https://boosty.to/bugo">стать спонсором на Boosty.to</a> или <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купить разработчику чашку кофе</a>.';
+$txt['lp_base_info'] = 'Версия мода: <strong>%1$s</strong>, версия PHP: <strong>%2$s</strong>, версия %3$s: <strong>%4$s</strong>.<br>Обсудить на русском баги и фичи портала можно на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форуме разработчика</a>.<br>Вы также можете <a class="bbc_link" href="https://boosty.to/bugo">стать спонсором на Boosty.to</a>, <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купить разработчику чашку кофе</a> или пожертвовать любую сумму на <a class="bbc_link" href="https://qiwi.com/n/DRAGOMANO">QIWI Кошелёк</a>.';
 
 $txt['lp_frontpage_title'] = 'Заголовок главной страницы';
 $txt['lp_frontpage_mode'] = 'Первая страница портала';
