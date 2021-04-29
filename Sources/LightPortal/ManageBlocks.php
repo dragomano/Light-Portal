@@ -390,7 +390,7 @@ class ManageBlocks
 	{
 		global $context, $modSettings;
 
-		if (Helpers::post()->has('save') || Helpers::post()->has('save_exit') || Helpers::post()->has('preview')) {
+		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_SANITIZE_STRING,

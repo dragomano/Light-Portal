@@ -640,7 +640,7 @@ class ManagePages
 	{
 		global $context, $modSettings, $user_info;
 
-		if (Helpers::post()->has('save') || Helpers::post()->has('save_exit') || Helpers::post()->has('preview')) {
+		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'category'    => FILTER_VALIDATE_INT,
 				'page_author' => FILTER_VALIDATE_INT,
