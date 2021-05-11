@@ -120,7 +120,7 @@ function template_show_topics_as_flarum_style()
 
 			if (!empty($article['author']['id'])) {
 				echo '
-						<a href="', $article['author']['link'], '" title="', $txt['profile_of'], ' ', $article['author']['name'], '">', $article['author']['name'], '</a>, ';
+						<a href="', $article['author']['link'], '" title="', isset($txt['profile_of']) ? ($txt['profile_of'] . ' ' . $article['author']['name']) : (sprintf($txt['view_profile_of_username'], $article['author']['name'])), '">', $article['author']['name'], '</a>, ';
 			} else {
 				echo '
 						', $article['author']['name'], ', ';
