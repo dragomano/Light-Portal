@@ -53,6 +53,8 @@ class ManagePlugins
 
 		$context['lp_plugins'] = Subs::getAddons();
 
+		$this->addPluginsForSponsors();
+
 		asort($context['lp_plugins']);
 
 		$txt['lp_plugins_extra'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
@@ -64,8 +66,14 @@ class ManagePlugins
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
-			$comments = explode('* ', $addonClass->getDocComment());
+			$donate = false;
+
+			try {
+				$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
+				$comments = explode('* ', $addonClass->getDocComment());
+			} catch (\Exception $e) {
+				$donate = true;
+			}
 
 			return [
 				'name'       => $item,
@@ -74,7 +82,7 @@ class ManagePlugins
 				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
 				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $this->getTypes($snake_name),
+				'types'      => $donate ? $txt['lp_sponsors_only'] : $this->getTypes($snake_name),
 				'settings'   => $this->getSettings($config_vars, $item)
 			];
 		}, $context['lp_plugins']);
@@ -816,10 +824,30 @@ EOF;
 	}
 
 	/**
+	 * @return void
+	 */
+	private function addPluginsForSponsors()
+	{
+		global $context;
+
+		$context['lp_plugins'] = array_merge(
+			$context['lp_plugins'],
+			array(
+				'AvatarGenerator',
+				'ExtUpload',
+				'GoogleAmp',
+				'Jodit',
+				'PageScroll',
+				'YandexTurbo'
+			)
+		);
+	}
+
+	/**
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private static function getTypes(string $snake_name): string
+	private function getTypes(string $snake_name): string
 	{
 		global $txt, $context;
 
@@ -848,7 +876,7 @@ EOF;
 	 * @param string $name
 	 * @return array
 	 */
-	private static function getSettings(array $config_vars, $name = ''): array
+	private function getSettings(array $config_vars, $name = ''): array
 	{
 		if (empty($config_vars))
 			return [];

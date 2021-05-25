@@ -19,11 +19,12 @@ $txt['lp_my_pages'] = 'Sayfalarım';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Varsayılan';
+$txt['lp_sponsors_only'] = 'For sponsors of the portal';
 
 // Ayarlar
 $txt['lp_settings'] = 'Portal ayarları';
 $txt['lp_base'] = 'Ön sayfa ve makaleler için ayarlar';
-$txt['lp_base_info'] = 'Mod sürümü: <strong>%1$s</strong>, PHP sürümü: <strong>%2$s</strong>, %3$s sürümü: <strong>%4$s</strong>.<br>Portalın hataları ve özellikleri <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>adresinde tartışılabilir. Ayrıca <a class="bbc_link" href="https://www.patreon.com/bugo">Patreo\'da sponsor olabilirsiniz </a> veya <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">bağış yapabilirsiniz</a>.';
+$txt['lp_base_info'] = 'Mod sürümü: <strong>%1$s</strong>, PHP sürümü: <strong>%2$s</strong>, %3$s sürümü: <strong>%4$s</strong>.<br>Portalın hataları ve özellikleri <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title'] = 'Ön sayfa başlığı';
 $txt['lp_frontpage_mode'] = 'Portal ön sayfası';

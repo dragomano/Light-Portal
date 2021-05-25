@@ -52,8 +52,15 @@ function template_manage_plugins()
 				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
+		if ($plugin['types'] === $txt['lp_sponsors_only'] ) {
+			echo '
+				<i class="fas fa-3x fa-donate"></i>';
+		} else {
+			echo '
+				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
+		}
+
 		echo '
-				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>
 			</div>';
 
 		if (!empty($plugin['settings']))

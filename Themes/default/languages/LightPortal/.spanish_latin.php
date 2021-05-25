@@ -19,11 +19,12 @@ $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
+$txt['lp_sponsors_only'] = 'For sponsors of the portal';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
 $txt['lp_base'] = 'Configuraciones para la portada y los artículos';
-$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
+$txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
