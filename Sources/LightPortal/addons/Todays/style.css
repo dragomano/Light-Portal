@@ -1,0 +1,42 @@
+.block_todays details {
+	display: contents;
+	position: relative;
+	margin-bottom: 0.5rem;
+	min-height: 1rem;
+	max-height: 3rem;
+	transition: min-height 0.15s linear, max-height 0.5s linear;
+	will-change: max-height;
+	overflow: hidden;
+}
+.block_todays details summary {
+	display: inline-block;
+	cursor: pointer;
+	outline: 0;
+	transition: color 0.12s;
+}
+.block_todays details summary::-webkit-details-marker {
+	display: none;
+}
+.block_todays details summary::-moz-list-bullet {
+	list-style-type: none;
+}
+.block_todays details summary span {
+	border-bottom: 1px currentColor dotted;
+}
+.block_todays details summary:hover {
+	color: #d06c6c;
+}
+.block_todays details summary ~ * {
+	display: none;
+	transition: opacity 0.15s linear;
+}
+.block_todays details[open] {
+	min-height: 2em;
+	max-height: 20em;
+}
+.block_todays details[open] summary {
+	color: #d06c6c;
+}
+.block_todays details[open] summary ~ * {
+	display: block;
+}

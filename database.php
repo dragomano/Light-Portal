@@ -8,7 +8,7 @@ elseif(!defined('SMF'))
 if (version_compare(PHP_VERSION, '7.3', '<'))
 	die('This mod needs PHP 7.3 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
-global $user_info, $mbname, $modSettings;
+global $user_info, $mbname, $modSettings, $settings;
 
 if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
@@ -460,6 +460,9 @@ foreach ($tables as $table) {
 
 if (!isset($modSettings['lp_enabled_plugins']))
 	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));
+
+if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
+	smf_chmod($css_dir, 0755);
 
 if (SMF == 'SSI')
 	echo 'Database changes are complete! Please wait...';

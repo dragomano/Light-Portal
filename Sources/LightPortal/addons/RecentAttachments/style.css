@@ -1,0 +1,16 @@
+.recent_attachments {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+.recent_attachments .item {
+	margin: 5px;
+}
+.recent_attachments .item img {
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+}
+.column_direction {
+	flex-direction: column !important;
+}

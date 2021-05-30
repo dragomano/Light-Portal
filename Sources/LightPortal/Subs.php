@@ -211,6 +211,27 @@ class Subs
 	}
 
 	/**
+	 * @param string $addon
+	 * @return void
+	 */
+	public static function loadAddonCss(string $addon = '')
+	{
+		global $settings;
+
+		$style = LP_ADDON_DIR . '/' . $addon . '/style.css';
+
+		if (!is_file($style))
+			return;
+
+		$addon = Helpers::getSnakeName($addon);
+
+		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !@copy($style, $settings['default_theme_dir'] . '/css/light_portal/addon_' . $addon . '.css'))
+			return;
+
+		loadCSSFile('light_portal/addon_' . $addon . '.css');
+	}
+
+	/**
 	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
 	 *
 	 * @param string $hook
@@ -234,6 +255,7 @@ class Subs
 
 		foreach ($addons as $id => $addon) {
 			self::loadAddonLanguage($addon);
+			self::loadAddonCss($addon);
 
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
