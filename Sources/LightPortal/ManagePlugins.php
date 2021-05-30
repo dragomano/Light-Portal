@@ -841,6 +841,8 @@ EOF;
 				'YandexTurbo'
 			)
 		);
+
+		$context['lp_plugins'] = array_unique($context['lp_plugins']);
 	}
 
 	/**
