@@ -982,6 +982,9 @@ section #display_head span {
 .features .fa-toggle-on {
   color: #00cc33;
 }
+.features form textarea {
+  width: 100%;
+}
 .lp_plugin_toggle,
 .lp_plugin_settings {
   cursor: pointer;

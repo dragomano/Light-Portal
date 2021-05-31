@@ -101,7 +101,7 @@ function show_plugin_settings($plugin_name, $settings)
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
 
-	foreach ($settings as $id => $value) {
+	foreach ($settings as $value) {
 		echo '
 				<div>';
 
@@ -113,6 +113,9 @@ function show_plugin_settings($plugin_name, $settings)
 		if ($value[0] == 'text') {
 			echo '
 					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+		} elseif ($value[0] == 'large_text') {
+			echo '
+					<br><textarea name="', $value[1], '" id="', $value[1], '">', $modSettings[$value[1]] ?? '', '</textarea>';
 		} elseif ($value[0] == 'url') {
 			echo '
 					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
