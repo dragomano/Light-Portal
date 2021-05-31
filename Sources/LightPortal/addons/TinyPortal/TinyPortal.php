@@ -44,12 +44,30 @@ class TinyPortal
 	{
 		global $user_info, $txt;
 
-		if ($user_info['is_admin'])
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
+		if ($user_info['is_admin']) {
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = array($txt['lp_tiny_portal_addon_label_name']);
+		}
 	}
 
 	/**
-	 * Add "Import from TinyPortal" tab
+	 * Add "Import from TinyPortal" tab for Blocks area
+	 *
+	 * Добавляем вкладку «Импорт из TinyPortal»
+	 *
+	 * @param array $subActions
+	 * @return void
+	 */
+	public function addBlockAreas(&$subActions)
+	{
+		global $user_info;
+
+		if ($user_info['is_admin'])
+			$subActions['import_from_tp'] = array(new BlockImport, 'main');
+	}
+
+	/**
+	 * Add "Import from TinyPortal" tab for Pages area
 	 *
 	 * Добавляем вкладку «Импорт из TinyPortal»
 	 *
@@ -61,6 +79,6 @@ class TinyPortal
 		global $user_info;
 
 		if ($user_info['is_admin'])
-			$subActions['import_from_tp'] = array(new Import, 'main');
+			$subActions['import_from_tp'] = array(new PageImport, 'main');
 	}
 }
