@@ -36,7 +36,6 @@ class ManagePlugins
 	 * Управление плагинами
 	 *
 	 * @return void
-	 * @throws ReflectionException
 	 */
 	public function main()
 	{
@@ -838,6 +837,7 @@ EOF;
 				'GoogleAmp',
 				'Jodit',
 				'PageScroll',
+				'SiteList',
 				'YandexTurbo'
 			)
 		);
@@ -878,7 +878,7 @@ EOF;
 	 * @param string $name
 	 * @return array
 	 */
-	private function getSettings(array $config_vars, $name = ''): array
+	private function getSettings(array $config_vars, string $name = ''): array
 	{
 		if (empty($config_vars))
 			return [];

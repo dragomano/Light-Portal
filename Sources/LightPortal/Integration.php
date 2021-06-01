@@ -144,10 +144,12 @@ class Integration
 	 */
 	public function actions(array &$actions)
 	{
-		global $context, $modSettings;
+		global $modSettings, $context;
 
-		$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
-		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
+		if (!empty($modSettings['lp_frontpage_mode']))
+			$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
+
+		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'categories')
 			return call_user_func(array(new Category, 'show'));

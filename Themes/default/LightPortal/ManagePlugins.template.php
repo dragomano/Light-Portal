@@ -207,9 +207,9 @@ function show_plugin_settings($plugin_name, $settings)
 }
 
 /**
- * The page creation/editing template
+ * The plugin creation/editing template
  *
- * Шаблон создания/редактирования страницы
+ * Шаблон создания/редактирования плагина
  *
  * @return void
  */
@@ -282,7 +282,7 @@ function template_plugin_post()
 														<input type="text" x-model="option.name" name="option_name[]" pattern="^[a-z][a-z_]+$" maxlength="255" placeholder="option_name">
 													</td>
 													<td>
-														<button type="button" class="button floatnone" @click="removeOption(index)">
+														<button type="button" class="button" @click="removeOption(index)" style="width: 100%">
 															<span class="main_icons delete"></span> ', $txt['remove'], '
 														</button>
 													</td>
@@ -361,9 +361,9 @@ function template_plugin_post()
 							</template>
 						</tbody>
 						<tfoot>
-							<tr class="windowbg">
+							<tr>
 								<td colspan="4">
-									<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', $txt['lp_plugin_new_option'] , '</button>
+									<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', $txt['lp_plugin_new_option'], '</button>
 								</td>
 							</tr>
 						</tfoot>
