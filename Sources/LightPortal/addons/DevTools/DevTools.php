@@ -2,6 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\DevTools;
 
+use Exception;
 use Bugo\LightPortal\{Helpers, FrontPage};
 
 /**
@@ -30,7 +31,7 @@ class DevTools
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt;
 
@@ -40,6 +41,7 @@ class DevTools
 
 	/**
 	 * @return void
+	 * @throws Exception
 	 */
 	public function frontCustomTemplate()
 	{
@@ -130,7 +132,7 @@ class DevTools
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title'  => 'Reqres',

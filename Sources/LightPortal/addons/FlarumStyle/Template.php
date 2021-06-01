@@ -71,13 +71,9 @@ function show_ffs_sidebar()
 }
 
 /**
- * Topics from selected boards as sources of articles (Flarum style)
- *
- * Темы из выбранных разделов в виде статей
- *
  * @return void
  */
-function template_show_topics_as_flarum_style()
+function template_show_articles_as_flarum_style()
 {
 	global $context, $txt;
 

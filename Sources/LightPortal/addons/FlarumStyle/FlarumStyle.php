@@ -37,18 +37,18 @@ class FlarumStyle
 	{
 		global $modSettings, $context;
 
-		if (empty($modSettings['lp_frontpage_mode']) || !in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
+		if (!in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
 			return;
 
 		$context['is_portal'] = in_array($modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
 
-		$context['lp_all_categories'] = $this->getCategoryList();
+		$context['lp_all_categories'] = $this->getCategories();
 
 		require_once(__DIR__ . '/Template.php');
 
 		$this->prepareFantomBLock();
 
-		$context['sub_template'] = 'show_topics_as_flarum_style';
+		$context['sub_template'] = 'show_articles_as_flarum_style';
 	}
 
 	/**
@@ -81,7 +81,7 @@ class FlarumStyle
 	 *
 	 * @return array
 	 */
-	private function getCategoryList()
+	private function getCategories()
 	{
 		global $context, $txt, $modSettings;
 
@@ -90,7 +90,7 @@ class FlarumStyle
 
 			$categories = array(
 				array(
-					'name' => $txt['lp_categories'],
+					'name'   => $txt['lp_categories'],
 					'boards' => []
 				)
 			);
