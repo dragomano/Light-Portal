@@ -79,7 +79,11 @@ function template_show_articles_as_flarum_style()
 
 	echo '
 	<div class="row">
-		<div class="col-xs-12">
+		<div class="col-xs-12">';
+
+	show_pagination();
+
+	echo '
 			<div class="title_bar" style="margin-bottom: 1px">
 				<h2 class="titlebg">', $context['page_title'], '</h2>
 			</div>';
@@ -158,17 +162,9 @@ function template_show_articles_as_flarum_style()
 		}
 	}
 
-	echo '
-		</div>';
-
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
+		</div>
 	</div>';
 }

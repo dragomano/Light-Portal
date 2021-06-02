@@ -39,14 +39,16 @@ function template_wrong_template()
  */
 function template_show_articles()
 {
-	global $context, $txt, $modSettings;
+	global $context, $modSettings, $txt;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_view"', !empty($context['lp_active_blocks']) && empty($modSettings['lp_show_pagination']) ? ' style="margin-top: -10px"' : '', '>';
+
+	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
@@ -156,13 +158,7 @@ function template_show_articles()
 		</div>';
 	}
 
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
 	</div>';
@@ -189,6 +185,8 @@ function template_show_articles_alt()
 
 	echo '
 	<div class="lp_frontpage_articles article_alt_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+
+	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
@@ -272,13 +270,7 @@ function template_show_articles_alt()
 		</div>';
 	}
 
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
 	</div>';
@@ -305,6 +297,8 @@ function template_show_articles_alt2()
 
 	echo '
 	<div class="article_alt2_view">';
+
+	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
@@ -371,13 +365,7 @@ function template_show_articles_alt2()
 		</article>';
 	}
 
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
 	</div>';
@@ -404,6 +392,8 @@ function template_show_articles_alt3()
 
 	echo '
 	<div class="lp_frontpage_articles article_alt3_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px; margin-left: 5px"' : '', '>';
+
+	show_pagination();
 
 	$i = 0;
 	foreach ($context['lp_frontpage_articles'] as $article) {
@@ -483,13 +473,7 @@ function template_show_articles_alt3()
 		</div>';
 	}
 
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
 	</div>';
@@ -516,6 +500,8 @@ function template_show_articles_alt4()
 
 	echo '
 	<div class="lp_frontpage_articles article_alt4_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+
+	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
@@ -550,13 +536,7 @@ function template_show_articles_alt4()
 		</article>';
 	}
 
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
 	</div>';
@@ -611,4 +591,25 @@ function template_sorting_above()
 
 function template_sorting_below()
 {
+}
+
+/**
+ * @param string $position
+ * @return void
+ */
+function show_pagination($position = 'top')
+{
+	global $context, $modSettings;
+
+	$show_on_top = $position == 'top' && !empty($modSettings['lp_show_pagination']);
+
+	$show_on_bottom = $position == 'bottom' && (empty($modSettings['lp_show_pagination']) || ($modSettings['lp_show_pagination'] == 1));
+
+	if (!empty($context['page_index']) && ($show_on_top || $show_on_bottom))
+		echo '
+		<div class="col-xs-12 centertext">
+			<div class="pagesection">
+				<div class="pagelinks">', $context['page_index'], '</div>
+			</div>
+		</div>';
 }

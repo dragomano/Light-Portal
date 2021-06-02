@@ -57,6 +57,8 @@ $txt['lp_frontpage_article_sorting_help'] = 'При виборі першого 
 $txt['lp_frontpage_layout'] = 'Шаблон оформлення карток статей';
 $txt['lp_frontpage_num_columns'] = 'Кількість колонок для виведення статей';
 $txt['lp_frontpage_num_columns_set'] = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
+$txt['lp_show_pagination'] = 'Відображати пагінацію';
+$txt['lp_show_pagination_set'] = array('Тільки внизу', 'Вгорі і внизу', 'Тільки вгорі');
 $txt['lp_num_items_per_page'] = 'Кількість елементів на сторінці (для пагінації)';
 
 $txt['lp_standalone_mode_title'] = 'Автономний режим';

@@ -246,6 +246,7 @@ class Settings
 			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'),
 			array('select', 'lp_frontpage_layout', $context['lp_frontpage_layout']),
 			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
+			array('select', 'lp_show_pagination', $txt['lp_show_pagination_set']),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
