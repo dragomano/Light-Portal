@@ -30,6 +30,7 @@ function template_manage_plugins()
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
+				<span class="counter">', $id + 1, '</span>
 				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
 					<p>
