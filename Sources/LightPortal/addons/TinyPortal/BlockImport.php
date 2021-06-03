@@ -241,7 +241,7 @@ class BlockImport extends AbstractImport
 	 */
 	protected function run()
 	{
-		global $db_temp_cache, $db_cache, $language, $modSettings, $smcFunc;
+		global $db_temp_cache, $db_cache, $language, $smcFunc;
 
 		if (Helpers::post()->isEmpty('blocks') && Helpers::post()->has('import_all') === false)
 			return;
@@ -260,38 +260,31 @@ class BlockImport extends AbstractImport
 		$titles = [];
 		foreach ($items as $block_id => $item) {
 			$titles[] = [
-				'item_id' => $block_id,
-				'type'    => 'block',
-				'lang'    => $language,
-				'title'   => $item['title']
+				'type'  => 'block',
+				'lang'  => $language,
+				'title' => $item['title']
 			];
-
-			if ($language != 'english' && !empty($modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $block_id,
-					'type'    => 'block',
-					'lang'    => 'english',
-					'title'   => $item['title']
-				];
-			}
 
 			unset($items[$block_id]['title']);
 		}
+
+		$result = [];
 
 		if (!empty($items)) {
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$temp = $smcFunc['db_insert']('',
 					'{db_prefix}lp_blocks',
 					array(
-						'block_id'    => 'int',
-						'type'        => 'string',
-						'content'     => 'string-65534',
-						'placement'   => 'string-10',
-						'permissions' => 'int',
-						'status'      => 'int'
+						'type'          => 'string',
+						'content'       => 'string-65534',
+						'placement'     => 'string-10',
+						'permissions'   => 'int',
+						'status'        => 'int',
+						'title_class'   => 'string',
+						'content_class' => 'string'
 					),
 					$items[$i],
 					array('block_id'),
@@ -299,21 +292,27 @@ class BlockImport extends AbstractImport
 				);
 
 				$smcFunc['lp_num_queries']++;
+
+				$result = array_merge($result, $temp);
 			}
 		}
 
 		if (!empty($titles) && !empty($result)) {
+			foreach ($result as $key => $value) {
+				$titles[$key]['item_id'] = $value;
+			}
+
 			$titles = array_chunk($titles, 100);
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$result = $smcFunc['db_insert']('',
 					'{db_prefix}lp_titles',
 					array(
-						'item_id' => 'int',
 						'type'    => 'string',
 						'lang'    => 'string',
-						'title'   => 'string'
+						'title'   => 'string',
+						'item_id' => 'int'
 					),
 					$titles[$i],
 					array('item_id', 'type', 'lang'),
@@ -339,7 +338,7 @@ class BlockImport extends AbstractImport
 	 */
 	private function getItems($blocks)
 	{
-		global $smcFunc;
+		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id, type, title, body, access, bar
@@ -368,13 +367,14 @@ class BlockImport extends AbstractImport
 			}
 
 			$items[$row['id']] = array(
-				'block_id'    => $row['id'],
-				'type'        => $this->getType($row['type']),
-				'title'       => $row['title'],
-				'content'     => $row['body'],
-				'placement'   => $this->getPlacement($row['bar']),
-				'permissions' => $perm,
-				'status'      => 0
+				'type'          => $this->getType($row['type']),
+				'title'         => $row['title'],
+				'content'       => $row['body'],
+				'placement'     => $this->getPlacement($row['bar']),
+				'permissions'   => $perm,
+				'status'        => 0,
+				'title_class'   => array_key_first($context['lp_all_title_classes']),
+				'content_class' => array_key_first($context['lp_all_content_classes'])
 			);
 		}
 
