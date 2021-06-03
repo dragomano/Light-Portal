@@ -143,7 +143,7 @@ function show_block_entry($id, $data)
 
 	echo '
 		<td class="title">
-			', $title = $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'];
+			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'] ?? '');
 
 	if (empty($title))
 		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
