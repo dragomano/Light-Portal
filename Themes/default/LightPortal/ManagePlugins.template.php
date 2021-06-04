@@ -22,15 +22,35 @@ function template_manage_plugins()
 			', $txt['lp_plugins_extra'], '
 		</h3>
 	</div>
-	<p class="information">', $txt['lp_plugins_desc'], '</p>';
+	<div class="information">
+		', $txt['lp_plugins_desc'];
+
+	echo '
+		<div class="floatright">
+			<form action="', $scripturl . '?action=admin;area=lp_plugins" method="post">
+				<label for="filter">', $txt['apply_filter'], '</label>
+				<select id="filter" name="filter" onchange="this.form.submit()">
+					<option value="all"', $context['current_filter'] == 'all' ? ' selected' : '', '>', $txt['all'], '</option>';
+
+	foreach ($context['lp_plugin_types'] as $type => $title) {
+		echo '
+					<option value="', $type, '"', $context['current_filter'] == $type ? ' selected' : '', '>', $title, '</option>';
+	}
+
+	echo '
+				</select>
+			</form>
+		</div>
+	</div>';
 
 	// This is a magic! Пошла магия!
+	$i = 0;
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<span class="counter">', $id + 1, '</span>
+				<span class="counter">', ++$i, '</span>
 				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
 					<p>

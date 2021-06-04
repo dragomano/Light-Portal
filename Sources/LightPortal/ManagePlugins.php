@@ -41,6 +41,7 @@ class ManagePlugins
 	{
 		global $context, $txt, $scripturl;
 
+		loadLanguage('ManageMaintenance');
 		loadTemplate('LightPortal/ManagePlugins');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_plugins_manage'];
@@ -85,6 +86,20 @@ class ManagePlugins
 				'settings'   => $this->getSettings($config_vars, $item)
 			];
 		}, $context['lp_plugins']);
+
+		// Sort plugin list
+		$context['current_filter'] = Helpers::post('filter', 'all');
+
+		if (Helpers::post()->has('filter')) {
+			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context)
+			{
+				$filter = Helpers::post('filter');
+
+				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['types'], $context['lp_plugin_types'][$filter]) !== false) {
+					return true;
+				}
+			});
+		}
 
 		$context['sub_template'] = 'manage_plugins';
 
