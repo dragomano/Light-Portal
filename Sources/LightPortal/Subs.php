@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -140,14 +140,14 @@ class Subs
 	}
 
 	/**
-	 * Remove unnecessary areas for the standalone mode and return the list of these areas
+	 * Remove unnecessary areas for the standalone mode
 	 *
-	 * Удаляем ненужные в автономном режиме области и возвращаем список этих областей
+	 * Удаляем ненужные в автономном режиме области
 	 *
 	 * @param array $data
-	 * @return array
+	 * @return void
 	 */
-	public static function unsetDisabledActions(array &$data): array
+	public static function unsetDisabledActions(array &$data)
 	{
 		global $modSettings, $context;
 
@@ -172,7 +172,7 @@ class Subs
 		if (array_key_exists('mlist', $disabled_actions))
 			$context['allow_memberlist'] = false;
 
-		return $disabled_actions;
+		$context['lp_disabled_actions'] = $disabled_actions;
 	}
 
 	/**
