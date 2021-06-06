@@ -71,19 +71,19 @@ function show_ffs_sidebar()
 }
 
 /**
- * Topics from selected boards as sources of articles (Flarum style)
- *
- * Темы из выбранных разделов в виде статей
- *
  * @return void
  */
-function template_show_topics_as_flarum_style()
+function template_show_articles_as_flarum_style()
 {
 	global $context, $txt;
 
 	echo '
 	<div class="row">
-		<div class="col-xs-12">
+		<div class="col-xs-12">';
+
+	show_pagination();
+
+	echo '
 			<div class="title_bar" style="margin-bottom: 1px">
 				<h2 class="titlebg">', $context['page_title'], '</h2>
 			</div>';
@@ -120,7 +120,7 @@ function template_show_topics_as_flarum_style()
 
 			if (!empty($article['author']['id'])) {
 				echo '
-						<a href="', $article['author']['link'], '" title="', $txt['profile_of'], ' ', $article['author']['name'], '">', $article['author']['name'], '</a>, ';
+						<a href="', $article['author']['link'], '" title="', isset($txt['profile_of']) ? ($txt['profile_of'] . ' ' . $article['author']['name']) : (sprintf($txt['view_profile_of_username'], $article['author']['name'])), '">', $article['author']['name'], '</a>, ';
 			} else {
 				echo '
 						', $article['author']['name'], ', ';
@@ -162,17 +162,9 @@ function template_show_topics_as_flarum_style()
 		}
 	}
 
-	echo '
-		</div>';
-
-	if (!empty($context['page_index']))
-		echo '
-		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
-		</div>';
+	show_pagination('bottom');
 
 	echo '
+		</div>
 	</div>';
 }

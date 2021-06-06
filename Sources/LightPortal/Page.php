@@ -13,7 +13,7 @@ use Exception;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -185,7 +185,7 @@ class Page
 		if (empty($item = $context['lp_page']))
 			return [];
 
-		$title_words = explode(' ', $title = Helpers::getTitle($item));
+		$title_words = explode(' ', Helpers::getTitle($item));
 		$alias_words = explode('_', $item['alias']);
 
 		$search_formula = '';
@@ -527,6 +527,7 @@ class Page
 	 * @param array $items
 	 * @param array $row
 	 * @return void
+	 * @throws Exception
 	 */
 	public function fetchQueryResults(array &$items, array $row)
 	{

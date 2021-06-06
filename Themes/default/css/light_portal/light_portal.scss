@@ -276,65 +276,6 @@ $tabs-label-hover-color: #888;
 			dt.pf_content, dd.pf_content {
 				width: 100%;
 			}
-
-			/* Checkbox toggler */
-			.checkbox {
-				@include valign(top);
-				margin: 0 3px 0 0;
-				width: 17px;
-				height: 17px;
-
-				& + .label {
-					@include pointer;
-				}
-
-				&:not(checked) {
-					position: absolute;
-					opacity: 0;
-
-					& + .label {
-						position: relative;
-						padding: 0 0 0 60px;
-
-						&:before {
-							content: '';
-							position: absolute;
-							top: -4px;
-							left: 0;
-							width: 50px;
-							height: 26px;
-							@include border-radius(13px);
-							background: #cdd1da;
-							@include box-shadow(inset 0 2px 3px rgba(0, 0, 0, .2));
-						}
-
-						&:after {
-							content: '';
-							position: absolute;
-							top: -2px;
-							left: 2px;
-							width: 22px;
-							height: 22px;
-							@include border-radius(10px);
-							background: $color-white;
-							@include box-shadow(0 2px 5px rgba(0, 0, 0, .3));
-							transition: all .2s;
-						}
-					}
-				}
-
-				&:checked {
-					& + .label {
-						&:before {
-							background: $color-checked;
-						}
-
-						&:after {
-							left: 26px;
-						}
-					}
-				}
-			}
 		}
 
 		.choices__inner {
@@ -355,6 +296,65 @@ $tabs-label-hover-color: #888;
 						display: none;
 					}
 				}
+			}
+		}
+	}
+}
+
+/* Checkbox toggler */
+.checkbox {
+	@include valign(top);
+	margin: 0 3px 0 0;
+	width: 17px;
+	height: 17px;
+
+	& + .label {
+		@include pointer;
+	}
+
+	&:not(checked) {
+		position: absolute;
+		opacity: 0;
+
+		& + .label {
+			position: relative;
+			padding: 0 0 0 60px;
+
+			&:before {
+				content: '';
+				position: absolute;
+				top: -4px;
+				left: 0;
+				width: 50px;
+				height: 26px;
+				@include border-radius(13px);
+				background: #cdd1da;
+				@include box-shadow(inset 0 2px 3px rgba(0, 0, 0, .2));
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				top: -2px;
+				left: 2px;
+				width: 22px;
+				height: 22px;
+				@include border-radius(10px);
+				background: $color-white;
+				@include box-shadow(0 2px 5px rgba(0, 0, 0, .3));
+				transition: all .2s;
+			}
+		}
+	}
+
+	&:checked {
+		& + .label {
+			&:before {
+				background: $color-checked;
+			}
+
+			&:after {
+				left: 26px;
 			}
 		}
 	}
@@ -1251,6 +1251,12 @@ section {
 	.fa-toggle-on {
 		color: $color-checked;
 	}
+
+	form {
+		textarea {
+			width: 100%;
+		}
+	}
 }
 
 .lp_plugin_toggle,
@@ -1439,412 +1445,5 @@ section {
 	}
 	to {
 		opacity: 1;
-	}
-}
-
-/* Addons */
-
-/* UserInfo */
-.block_user_info {
-	ul {
-		list-style: none;
-		padding-left: 0;
-
-		.avatar {
-			margin: 1em;
-		}
-	}
-
-	@media (min-width: 769px) and (max-width: 1241px) {
-		span {
-			&.floatleft,
-			&.floatright {
-				float: none;
-				margin: 0 auto;
-				display: block;
-			}
-		}
-	}
-}
-
-/* Likely */
-.likely__widget {
-	opacity: .5 !important;
-	filter: grayscale(100%);
-
-	&:hover {
-		opacity: 1 !important;
-		filter: grayscale(0%);
-	}
-}
-
-/* RecentPosts, RecentTopics, RandomTopics */
-.recent_posts,
-.recent_topics,
-.random_topics {
-	list-style: none;
-	padding-left: 0;
-
-	li {
-		margin: 4px 0 0 0;
-		padding: 6px 12px;
-	}
-}
-
-.recent_posts,
-.recent_topics {
-	.poster_avatar {
-		float: left;
-		padding: 3px 11px 0 0;
-	}
-
-	.avatar {
-		width: 40px;
-		height: 40px;
-	}
-}
-
-/* TopPosters */
-dl {
-	&.top_posters {
-		dt {
-			img {
-				width: 24px;
-				@include valign;
-			}
-		}
-	}
-}
-
-/* ThemeSwitcher */
-.themeswitcher {
-	select {
-		@include pointer;
-		width: 100%;
-	}
-}
-
-/* Markdown */
-.page_md,
-.block_md {
-	.bbc_code {
-		overflow: auto !important;
-		white-space: pre;
-	}
-
-	.task-list-item {
-		list-style: none;
-		margin-left: -20px;
-	}
-}
-
-.page_md {
-	blockquote {
-		width: 100% !important;
-	}
-}
-
-/* RecentAttachments */
-.recent_attachments {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
-
-	.item {
-		margin: 5px;
-
-		img {
-			object-fit: cover;
-			width: 100%;
-			height: 100%;
-		}
-	}
-}
-
-.column_direction {
-	flex-direction: column !important;
-}
-
-/* VkComments */
-#vk_comments {
-	margin-top: 1em;
-}
-
-/* CurrentMonth */
-$table-bgcolor: #f0f4f7;
-$th-bgcolor: #e7eaef;
-$td-disabled-bgcolor: #eee;
-
-.block_current_month {
-	table {
-		width: 100%;
-		margin-bottom: 10px;
-		border-collapse: collapse;
-		background: $table-bgcolor;
-		border: 1px solid $color-light-gray;
-		text-align: center;
-
-		.windowbg {
-			@include box-shadow(none);
-			@include border-radius(0);
-			box-sizing: content-box;
-			margin: 0;
-		}
-	}
-
-	th {
-		padding: 2px;
-		background: $th-bgcolor;
-		font-size: smaller;
-	}
-
-	td {
-		padding: 2px;
-		width: 12.5%;
-		@include valign(top);
-		border-right: 1px solid $color-light-gray;
-		border-bottom: 1px solid $color-light-gray;
-
-		&.disabled {
-			background: $td-disabled-bgcolor;
-			border: 1px solid $color-light-gray;
-		}
-		&.events {
-			background: rgba(30, 245, 20, .1);
-		}
-		&.holidays {
-			background: rgba(23, 110, 245, .1);
-		}
-		&.birthdays {
-			background: rgba(102, 0, 255, .1);
-		}
-		&.events:hover,
-		&.calendar_today.events {
-			background: rgba(30, 245, 20, .2);
-		}
-		&.holidays:hover,
-		&.calendar_today.holidays {
-			background: rgba(23, 110, 245, .2);
-		}
-		&.birthdays:hover,
-		&.calendar_today.birthdays {
-			background: rgba(153, 51, 255, .2);
-		}
-		&.calendar_today {
-			font-weight: bold;
-		}
-
-		a {
-			display: block;
-
-			&:hover {
-				text-decoration: none;
-				background: rgba(97, 135, 166, .2);
-			}
-		}
-	}
-}
-
-/* BoardList */
-.block_board_list {
-	ul {
-		padding-left: 10px;
-	}
-}
-
-/* ArticleList */
-.article_list {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-	grid-gap: 0 10px;
-
-	> div {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		text-align: center;
-	}
-}
-
-/* FrontpageFlarumStyle */
-.block_flarum_style {
-	nav {
-		ul {
-			list-style: none;
-			padding-left: 0;
-
-			.roundframe {
-				margin-top: 0;
-
-				i {
-					padding-right: 4px;
-				}
-			}
-		}
-	}
-}
-
-/* BoardStats */
-.block_board_stats {
-	.board_stats_areas {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-		grid-gap: 0 10px;
-
-		div {
-			display: flex;
-			flex-direction: column;
-			margin-top: 2px;
-
-			h4 {
-				margin-top: 4px;
-				margin-bottom: 4px;
-			}
-
-			ul {
-				margin-left: -1em;
-			}
-		}
-	}
-}
-
-/* AvatarGenerator */
-.comment_avatar {
-	svg {
-		max-width: 50px;
-	}
-}
-
-/* Todays */
-.block_todays {
-	details {
-		display: contents;
-		position: relative;
-		margin-bottom: .5rem;
-		min-height: 1rem;
-		max-height: 3rem;
-		transition: min-height .15s linear, max-height .5s linear;
-		will-change: max-height;
-		overflow: hidden;
-
-		summary {
-			&::-webkit-details-marker { display: none; }
-			&::-moz-list-bullet { list-style-type: none; }
-			display: inline-block;
-			cursor: pointer;
-			outline: 0;
-			transition: color .12s;
-
-			span {
-				border-bottom: 1px currentColor dotted;
-			}
-
-			&:hover {
-				color: #d06c6c;
-			}
-
-			& ~ * {
-				display: none;
-				transition: opacity .15s linear;
-			}
-		}
-
-		&[open] {
-			min-height: 2em;
-			max-height: 20em;
-
-			summary {
-				color: #d06c6c;
-
-				& ~ * {
-					display: block;
-				}
-			}
-		}
-	}
-}
-
-/* TinySlider */
-.block_tiny_slider {
-	.item {
-		text-align: center;
-	}
-
-	.tns-nav {
-		text-align: center;
-		margin: 10px 0;
-
-		& > [aria-controls] {
-			width: 9px;
-			height: 9px;
-			padding: 0;
-			margin: 0 5px;
-			@include border-radius(50%);
-			background: $color-light-gray;
-			border: 0;
-		}
-
-		& > .tns-nav-active {
-			background: #999;
-		}
-	}
-
-	.customize-tools {
-		position: relative;
-
-		&[hidden] {
-			display: none;
-		}
-
-		.thumbnails {
-			margin: 20px 0 0;
-			text-align: center;
-
-			li {
-				display: inline-block;
-				cursor: pointer;
-				border: 5px solid $color-white;
-				width: 50px;
-			}
-
-			img {
-				@include valign(bottom);
-				height: auto;
-				max-height: 50px;
-			}
-
-			.tns-nav-active {
-				background: none;
-				border-color: $color-black;
-			}
-
-			@media (max-width: 640px) {
-				margin-bottom: 10px;
-			}
-		}
-
-		.controls {
-			text-align: center;
-			margin-top: 10px;
-
-			li {
-				display: block;
-				padding: 0 15px;
-				cursor: pointer;
-				transition: background .3s;
-
-				span::selection {
-					text-shadow: none;
-					background: initial;
-					color: inherit;
-				}
-
-				@media (max-width: 640px) {
-					display: inline-block;
-					position: relative;
-					padding: 0;
-				}
-			}
-		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -58,7 +58,7 @@ class Credits
 	}
 
 	/**
-	 * Prepare information about contrubutors and third party components
+	 * Prepare information about contributors and third party components
 	 *
 	 * Формируем информацию о внесших вклад в развитие портала и об используемых компонентах
 	 */

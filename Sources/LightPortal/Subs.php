@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -140,14 +140,14 @@ class Subs
 	}
 
 	/**
-	 * Remove unnecessary areas for the standalone mode and return the list of these areas
+	 * Remove unnecessary areas for the standalone mode
 	 *
-	 * Удаляем ненужные в автономном режиме области и возвращаем список этих областей
+	 * Удаляем ненужные в автономном режиме области
 	 *
 	 * @param array $data
-	 * @return array
+	 * @return void
 	 */
-	public static function unsetDisabledActions(array &$data): array
+	public static function unsetDisabledActions(array &$data)
 	{
 		global $modSettings, $context;
 
@@ -172,7 +172,7 @@ class Subs
 		if (array_key_exists('mlist', $disabled_actions))
 			$context['allow_memberlist'] = false;
 
-		return $disabled_actions;
+		$context['lp_disabled_actions'] = $disabled_actions;
 	}
 
 	/**
@@ -211,6 +211,27 @@ class Subs
 	}
 
 	/**
+	 * @param string $addon
+	 * @return void
+	 */
+	public static function loadAddonCss(string $addon = '')
+	{
+		global $settings;
+
+		$style = LP_ADDON_DIR . '/' . $addon . '/style.css';
+
+		if (!is_file($style))
+			return;
+
+		$addon = Helpers::getSnakeName($addon);
+
+		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !@copy($style, $settings['default_theme_dir'] . '/css/light_portal/addon_' . $addon . '.css'))
+			return;
+
+		loadCSSFile('light_portal/addon_' . $addon . '.css');
+	}
+
+	/**
 	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
 	 *
 	 * @param string $hook
@@ -234,6 +255,7 @@ class Subs
 
 		foreach ($addons as $id => $addon) {
 			self::loadAddonLanguage($addon);
+			self::loadAddonCss($addon);
 
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
@@ -422,7 +444,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getBlockPlacements()
+	public static function getBlockPlacements(): array
 	{
 		global $txt;
 
@@ -436,7 +458,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPageOptions()
+	public static function getPageOptions(): array
 	{
 		global $txt;
 
@@ -450,7 +472,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPluginTypes()
+	public static function getPluginTypes(): array
 	{
 		global $txt;
 
@@ -464,7 +486,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getPluginOptionTypes()
+	public static function getPluginOptionTypes(): array
 	{
 		global $txt;
 
@@ -478,7 +500,7 @@ class Subs
 	 *
 	 * @return array
 	 */
-	public static function getIconTypes()
+	public static function getIconTypes(): array
 	{
 		global $txt;
 

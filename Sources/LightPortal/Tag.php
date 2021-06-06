@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Tag.php
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -25,7 +27,7 @@ class Tag implements PageListInterface
 	 * Отображение всех страниц портала с указанным тегом
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function show()
 	{
@@ -84,7 +86,7 @@ class Tag implements PageListInterface
 	 * @param int $items_per_page
 	 * @param string $sort
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{

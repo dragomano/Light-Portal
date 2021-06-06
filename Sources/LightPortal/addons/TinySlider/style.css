@@ -1,0 +1,71 @@
+.block_tiny_slider .item {
+	text-align: center;
+}
+.block_tiny_slider .tns-nav {
+	text-align: center;
+	margin: 10px 0;
+}
+.block_tiny_slider .tns-nav > [aria-controls] {
+	width: 9px;
+	height: 9px;
+	padding: 0;
+	margin: 0 5px;
+	border-radius: 50%;
+	background: #ddd;
+	border: 0;
+}
+.block_tiny_slider .tns-nav > .tns-nav-active {
+	background: #999;
+}
+.block_tiny_slider .customize-tools {
+	position: relative;
+}
+.block_tiny_slider .customize-tools[hidden] {
+	display: none;
+}
+.block_tiny_slider .customize-tools .thumbnails {
+	margin: 20px 0 0;
+	text-align: center;
+}
+.block_tiny_slider .customize-tools .thumbnails li {
+	display: inline-block;
+	cursor: pointer;
+	border: 5px solid #fff;
+	width: 50px;
+}
+.block_tiny_slider .customize-tools .thumbnails img {
+	vertical-align: bottom;
+	height: auto;
+	max-height: 50px;
+}
+.block_tiny_slider .customize-tools .thumbnails .tns-nav-active {
+	background: none;
+	border-color: #000;
+}
+@media (max-width: 640px) {
+	.block_tiny_slider .customize-tools .thumbnails {
+		margin-bottom: 10px;
+	}
+}
+.block_tiny_slider .customize-tools .controls {
+	text-align: center;
+	margin-top: 10px;
+}
+.block_tiny_slider .customize-tools .controls li {
+	display: block;
+	padding: 0 15px;
+	cursor: pointer;
+	transition: background 0.3s;
+}
+.block_tiny_slider .customize-tools .controls li span::selection {
+	text-shadow: none;
+	background: initial;
+	color: inherit;
+}
+@media (max-width: 640px) {
+	.block_tiny_slider .customize-tools .controls li {
+		display: inline-block;
+		position: relative;
+		padding: 0;
+	}
+}

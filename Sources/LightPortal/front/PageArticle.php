@@ -2,6 +2,7 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Exception;
 use Bugo\LightPortal\{Helpers, Page, Subs};
 
 /**
@@ -13,7 +14,7 @@ use Bugo\LightPortal\{Helpers, Page, Subs};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -64,7 +65,7 @@ class PageArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getData(int $start, int $limit): array
 	{
@@ -125,11 +126,11 @@ class PageArticle extends AbstractArticle
 						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
 						'link'      => $scripturl . '?page=' . $row['alias'],
 						'views'     => array(
-							'num' => $row['num_views'],
+							'num'   => $row['num_views'],
 							'title' => $txt['lp_views']
 						),
 						'replies'   => array(
-							'num' => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
+							'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
 							'title' => $txt['lp_comments']
 						),
 						'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],

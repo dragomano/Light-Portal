@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 abstract class AbstractArray
@@ -76,67 +76,20 @@ abstract class AbstractArray
 	 *
 	 * Получаем значения только запрошенных ключей $keys в $obj
 	 *
-	 * @param array|string $keys
+	 * @param array $keys
 	 * @return array
 	 */
 	public static function only($keys)
 	{
 		$result = [];
 
-		if (is_string($keys))
-			$keys = explode(',', $keys);
-
 		foreach ($keys as $key) {
+			$key = trim($key);
 			if (isset(static::$obj[$key]))
 				$result[$key] = static::$obj[$key];
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Get only the request keys that not defined in $keys
-	 *
-	 * Получаем значения только тех ключей в $obj, которые не перечислены в $keys
-	 *
-	 * @param array|string $keys
-	 * @return array
-	 */
-	public static function except($keys)
-	{
-		$result = [];
-
-		if (is_string($keys))
-			$keys = explode(',', $keys);
-
-		foreach ($keys as $key) {
-			if (isset(static::$obj[$key]))
-				$result[$key] = static::$obj[$key];
-		}
-
-		return array_diff(static::$obj, $result);
-	}
-
-	/**
-	 * Push a value into the key-array
-	 *
-	 * Сохраняем значение $value в переменную-массив $key
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
-	 */
-	public static function push(string $key, $value)
-	{
-		if (!static::has($key) || !is_array(static::$obj[$key]))
-			return;
-
-		if (strpos($key, '.') !== false) {
-			$subKey = explode('.', $key)[0];
-			static::$obj[$key][$subKey] = $value;
-		} else {
-			static::$obj[$key][] = $value;
-		}
 	}
 
 	/**

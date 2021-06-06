@@ -19,11 +19,12 @@ $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
+$txt['lp_sponsors_only'] = 'For sponsors of the portal';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://www.patreon.com/bugo">become a sponsor on Patreon</a> or <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
 $txt['lp_frontpage_mode'] = 'The portal frontpage';
@@ -56,6 +57,8 @@ $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, t
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
+$txt['lp_show_pagination'] = 'Show the pagination';
+$txt['lp_show_pagination_set'] = array('Bottom only', 'Top and bottom', 'Top only');
 $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
@@ -141,6 +144,7 @@ $txt['lp_action_off'] = 'Disable';
 $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';
+$txt['lp_save_and_exit'] = 'Save and Exit';
 
 // Blocks
 $txt['lp_blocks'] = 'Blocks';

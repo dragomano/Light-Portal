@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal;
 
+use Likes;
+
 /**
  * Integration.php
  *
@@ -11,7 +13,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -73,8 +75,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.7.1',
-			'LP_RELEASE_DATE' => '2021-04-04',
+			'LP_VERSION'      => '1.8',
+			'LP_RELEASE_DATE' => '2021-06-06',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons'
@@ -142,10 +144,12 @@ class Integration
 	 */
 	public function actions(array &$actions)
 	{
-		global $context, $modSettings;
+		global $modSettings, $context;
 
-		$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
-		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
+		if (!empty($modSettings['lp_frontpage_mode']))
+			$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
+
+		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'categories')
 			return call_user_func(array(new Category, 'show'));
@@ -154,9 +158,9 @@ class Integration
 			return call_user_func(array(new Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
-			$disabled_actions = Subs::unsetDisabledActions($actions);
+			Subs::unsetDisabledActions($actions);
 
-			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $disabled_actions))
+			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $context['lp_disabled_actions']))
 				redirectexit();
 		}
 	}
@@ -489,10 +493,10 @@ class Integration
 	 *
 	 * Обновляем кэш при лайке/дизлайке страниц
 	 *
-	 * @param \Likes $obj
+	 * @param Likes $obj
 	 * @return void
 	 */
-	public function issueLike(\Likes $obj)
+	public function issueLike(Likes $obj)
 	{
 		if ($obj->get('type') !== 'lpp')
 			return;

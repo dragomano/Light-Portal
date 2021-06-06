@@ -1,0 +1,10 @@
+.block_flarum_style nav ul {
+	list-style: none;
+	padding-left: 0;
+}
+.block_flarum_style nav ul .roundframe {
+	margin-top: 0;
+}
+.block_flarum_style nav ul .roundframe i {
+	padding-right: 4px;
+}

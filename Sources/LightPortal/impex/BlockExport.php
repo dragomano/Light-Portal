@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, ManageBlocks};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -52,13 +52,9 @@ class BlockExport extends AbstractExport
 	}
 
 	/**
-	 * Creating data in XML format
-	 *
-	 * Формируем данные в XML-формате
-	 *
 	 * @return array
 	 */
-	protected function getData()
+	protected function getData(): array
 	{
 		global $smcFunc;
 
@@ -137,7 +133,7 @@ class BlockExport extends AbstractExport
 				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
 
 				if (in_array($key, ['titles', 'params'])) {
-					foreach ($item[$key] as $k => $v) {
+					foreach ($val as $k => $v) {
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}

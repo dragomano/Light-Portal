@@ -20,7 +20,7 @@ function template_manage_blocks()
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
 			$block_group_type = 'default';
-			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
+			if (!in_array($placement, array_keys($context['lp_block_placements'])))
 				$block_group_type = 'additional';
 
 			echo '
@@ -143,7 +143,7 @@ function show_block_entry($id, $data)
 
 	echo '
 		<td class="title">
-			', $title = $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'];
+			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'] ?? '');
 
 	if (empty($title))
 		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
@@ -354,6 +354,7 @@ function template_block_post()
 	echo '
 				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
 				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($el)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

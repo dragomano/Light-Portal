@@ -88,6 +88,7 @@ function template_page_post()
 	echo '
 				<button type="submit" class="button" name="preview" @click="page.post($el)">', $txt['preview'], '</button>
 				<button type="submit" class="button" name="save" @click="page.post($el)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="page.post($el)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

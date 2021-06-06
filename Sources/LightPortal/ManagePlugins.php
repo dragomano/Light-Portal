@@ -13,7 +13,7 @@ use ReflectionException;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -36,12 +36,12 @@ class ManagePlugins
 	 * Управление плагинами
 	 *
 	 * @return void
-	 * @throws ReflectionException
 	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
 
+		loadLanguage('ManageMaintenance');
 		loadTemplate('LightPortal/ManagePlugins');
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_plugins_manage'];
@@ -52,6 +52,8 @@ class ManagePlugins
 		);
 
 		$context['lp_plugins'] = Subs::getAddons();
+
+		$this->addPluginsForSponsors();
 
 		asort($context['lp_plugins']);
 
@@ -64,8 +66,14 @@ class ManagePlugins
 		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
-			$comments = explode('* ', $addonClass->getDocComment());
+			$donate = false;
+
+			try {
+				$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
+				$comments = explode('* ', $addonClass->getDocComment());
+			} catch (\Exception $e) {
+				$donate = true;
+			}
 
 			return [
 				'name'       => $item,
@@ -74,10 +82,24 @@ class ManagePlugins
 				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
 				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $this->getTypes($snake_name),
+				'types'      => $donate ? $txt['lp_sponsors_only'] : $this->getTypes($snake_name),
 				'settings'   => $this->getSettings($config_vars, $item)
 			];
 		}, $context['lp_plugins']);
+
+		// Sort plugin list
+		$context['current_filter'] = Helpers::post('filter', 'all');
+
+		if (Helpers::post()->has('filter')) {
+			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context)
+			{
+				$filter = Helpers::post('filter');
+
+				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['types'], $context['lp_plugin_types'][$filter]) !== false) {
+					return true;
+				}
+			});
+		}
 
 		$context['sub_template'] = 'manage_plugins';
 
@@ -85,7 +107,7 @@ class ManagePlugins
 			checkSession();
 
 			$plugin_options = [];
-			foreach ($config_vars as $id => $var) {
+			foreach ($config_vars as $var) {
 				if (Helpers::post()->has($var[1])) {
 					if ($var[0] == 'check') {
 						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
@@ -560,7 +582,7 @@ EOF;
 EOF;
 		}
 
-		foreach ($context['lp_plugin']['options'] as $id => $option) {
+		foreach ($context['lp_plugin']['options'] as $option) {
 			if (!empty($option['default'])) {
 				switch ($option['type']) {
 					case 'int';
@@ -621,7 +643,7 @@ EOF;
 
 EOF;
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				if (!empty($option['default'])) {
 					$class_content .= <<<EOF
 
@@ -639,7 +661,7 @@ EOF;
 
 EOF;
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				if ($option['type'] == 'text')
 					$class_content .= <<<EOF
 
@@ -767,7 +789,7 @@ EOF;
 		$addon_content = sprintf($addon_content, LP_NAME, date('Y'), LP_VERSION);
 
 		mkdir($path = LP_ADDON_DIR . '/' . $context['lp_plugin']['name']);
-		file_put_contents($addon_dir = $path . '/' . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
+		file_put_contents($path . '/' . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
 		copy(LP_ADDON_DIR . '/index.php', $path . '/index.php');
 
 		if (!empty($context['lp_plugin']['description'])) {
@@ -800,7 +822,7 @@ EOF;
 				file_put_contents($path . '/langs/' . $lang . '.php', $lang_file, LOCK_EX);
 			}
 
-			foreach ($context['lp_plugin']['options'] as $id => $option) {
+			foreach ($context['lp_plugin']['options'] as $option) {
 				foreach ($option['translations'] as $lang => $value) {
 					$lang_file = <<<EOF
 
@@ -816,10 +838,33 @@ EOF;
 	}
 
 	/**
+	 * @return void
+	 */
+	private function addPluginsForSponsors()
+	{
+		global $context;
+
+		$context['lp_plugins'] = array_merge(
+			$context['lp_plugins'],
+			array(
+				'AvatarGenerator',
+				'ExtUpload',
+				'GoogleAmp',
+				'Jodit',
+				'PageScroll',
+				'SiteList',
+				'YandexTurbo'
+			)
+		);
+
+		$context['lp_plugins'] = array_unique($context['lp_plugins']);
+	}
+
+	/**
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private static function getTypes(string $snake_name): string
+	private function getTypes(string $snake_name): string
 	{
 		global $txt, $context;
 
@@ -848,7 +893,7 @@ EOF;
 	 * @param string $name
 	 * @return array
 	 */
-	private static function getSettings(array $config_vars, $name = ''): array
+	private function getSettings(array $config_vars, string $name = ''): array
 	{
 		if (empty($config_vars))
 			return [];

@@ -19,11 +19,12 @@ $txt['lp_my_pages'] = 'Мої сторінки';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'За замовчуванням';
+$txt['lp_sponsors_only'] = 'Для спонсорів порталу';
 
 // Settings
 $txt['lp_settings'] = 'Налаштування порталу';
 $txt['lp_base'] = 'Налаштування головної сторінки і статей';
-$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форумі розробника</a>.<br>Ви також можете стати спонсором на <a class="bbc_link" href="https://www.patreon.com/bugo">Patreon</a> або на <a class="bbc_link" href="https://boosty.to/bugo">Boosty.to</a>.';
+$txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форумі розробника</a>.<br>Ви також можете <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купити розробнику чашку кави</a> або пожертвувати будь-яку суму на <a class="bbc_link" href="https://qiwi.com/n/DRAGOMANO">QIWI Гаманець</a>.';
 
 $txt['lp_frontpage_title'] = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode'] = 'Перша сторінка порталу';
@@ -56,6 +57,8 @@ $txt['lp_frontpage_article_sorting_help'] = 'При виборі першого 
 $txt['lp_frontpage_layout'] = 'Шаблон оформлення карток статей';
 $txt['lp_frontpage_num_columns'] = 'Кількість колонок для виведення статей';
 $txt['lp_frontpage_num_columns_set'] = array('1 колонка', '2 колонки', '3 колонки', '4 колонки', '6 колонок');
+$txt['lp_show_pagination'] = 'Відображати пагінацію';
+$txt['lp_show_pagination_set'] = array('Тільки внизу', 'Вгорі і внизу', 'Тільки вгорі');
 $txt['lp_num_items_per_page'] = 'Кількість елементів на сторінці (для пагінації)';
 
 $txt['lp_standalone_mode_title'] = 'Автономний режим';
@@ -141,6 +144,7 @@ $txt['lp_action_off'] = 'Вимкнути';
 $txt['lp_action_clone'] = 'Клонувати';
 $txt['lp_action_move'] = 'Перемістити';
 $txt['lp_read_more'] = 'Читати далі...';
+$txt['lp_save_and_exit'] = 'Зберегти і вийти';
 
 // Blocks
 $txt['lp_blocks'] = 'Блоки';

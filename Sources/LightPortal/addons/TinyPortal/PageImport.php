@@ -14,13 +14,13 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class Import extends AbstractImport
+class PageImport extends AbstractImport
 {
 	/**
 	 * TinyPortal pages import
@@ -39,7 +39,7 @@ class Import extends AbstractImport
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_tiny_portal_addon_description']
+			'description' => $txt['lp_tiny_portal_addon_page_import_description']
 		);
 
 		$this->run();

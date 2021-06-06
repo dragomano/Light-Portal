@@ -13,7 +13,7 @@ use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -383,7 +383,7 @@ class Helpers
 	 * @param string $type
 	 * @return void
 	 */
-	public static function findMissingBlockTypes(string $type)
+	public static function prepareMissingBlockTypes(string $type)
 	{
 		global $txt, $context;
 
@@ -533,12 +533,9 @@ class Helpers
 	 * @param string $text
 	 * @return string
 	 */
-	public static function getTeaser($text): string
+	public static function getTeaser(string $text): string
 	{
-		if (empty($text))
-			return '...';
-
-		$text = strip_tags(explode('<br>', $text)[0]);
+		$text = strip_tags($text);
 
 		return $text ?: '...';
 	}
@@ -706,7 +703,7 @@ class Helpers
 	 * Получаем число в приятном глазу формате (для чисел более 10к)
 	 *
 	 * @param int $value
-	 * @return float
+	 * @return int|float
 	 */
 	public static function getFriendlyNumber(int $value = 0)
 	{

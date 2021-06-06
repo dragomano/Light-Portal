@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -90,7 +90,7 @@ class ManageBlocks
 
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 
-			Helpers::findMissingBlockTypes($row['type']);
+			Helpers::prepareMissingBlockTypes($row['type']);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -390,7 +390,7 @@ class ManageBlocks
 	{
 		global $context, $modSettings;
 
-		if (Helpers::post()->has('save') || Helpers::post()->has('preview')) {
+		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_SANITIZE_STRING,
@@ -453,7 +453,7 @@ class ManageBlocks
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
-				if (!empty($parameters[$option]) && !empty($post_data['parameters']) && $post_data['parameters'][$option] === null) {
+				if (!empty($parameters[$option]) && !empty($post_data['parameters']) && !isset($post_data['parameters'][$option])) {
 					if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 						$post_data['parameters'][$option] = 0;
 
@@ -851,11 +851,11 @@ class ManageBlocks
 	 * @param int $item
 	 * @return int|void
 	 */
-	private function setData(int $item = 0): int
+	private function setData(int $item = 0)
 	{
 		global $context;
 
-		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('clone') === false))
+		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('save_exit') === false && Helpers::post()->has('clone') === false))
 			return 0;
 
 		checkSubmitOnce('check');
@@ -871,7 +871,8 @@ class ManageBlocks
 
 		Helpers::cache()->flush();
 
-		redirectexit('action=admin;area=lp_blocks;sa=main');
+		if (Helpers::post()->has('save_exit'))
+			redirectexit('action=admin;area=lp_blocks;sa=main');
 	}
 
 	/**

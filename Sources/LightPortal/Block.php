@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.7
+ * @version 1.8
  */
 
 if (!defined('SMF'))
@@ -66,10 +66,10 @@ class Block
 		loadTemplate('LightPortal/ViewBlock');
 
 		$counter = 0;
-		foreach ($context['template_layers'] as $position => $name) {
+		foreach ($context['template_layers'] as $layer) {
 			$counter++;
 
-			if ($name == 'body')
+			if ($layer === 'body')
 				break;
 		}
 
