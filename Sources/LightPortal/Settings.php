@@ -247,6 +247,7 @@ class Settings
 			array('select', 'lp_frontpage_layout', $context['lp_frontpage_layout']),
 			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
 			array('select', 'lp_show_pagination', $txt['lp_show_pagination_set']),
+			array('check', 'lp_use_simple_pagination'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
@@ -282,7 +283,7 @@ class Settings
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {

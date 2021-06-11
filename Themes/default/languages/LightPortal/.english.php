@@ -59,6 +59,7 @@ $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
 $txt['lp_show_pagination'] = 'Show the pagination';
 $txt['lp_show_pagination_set'] = array('Bottom only', 'Top and bottom', 'Top only');
+$txt['lp_use_simple_pagination'] = 'Use simple pagination';
 $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
