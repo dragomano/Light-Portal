@@ -308,23 +308,23 @@ class FrontPage
 	 * @param int $limit
 	 * @return string
 	 */
-	private function simplePaginate($url, $total, $limit)
+	private function simplePaginate(string $url, int $total, int $limit)
 	{
 		global $context, $txt;
 
 		$max_pages = (($total - 1) / $limit) * $limit;
 
-		$prev = $context['start'] - $limit < 1 ? '' : $context['start'] - $limit;
+		$prev = $context['start'] - $limit;
 
 		$next = $context['start'] + $limit > $max_pages ? '' : $context['start'] + $limit;
 
 		$paginate = '';
 
-		if ($prev)
+		if ($prev >= 0)
 			$paginate .= '<i class="fas fa-arrow-left"></i> <a href="' . $url . ';start=' . $prev . '">' . $txt['prev'] . '</a>';
 
-		if ($prev && $next)
-			$paginate .= ' | ';
+		if ($prev >= 0 && $next)
+			$paginate .= ' <i class="fas fa-map-signs"></i> ';
 
 		if ($next)
 			$paginate .= '<a href="' . $url . ';start=' . $next . '">' . $txt['next'] . '</a> <i class="fas fa-arrow-right"></i>';
