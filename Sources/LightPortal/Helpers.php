@@ -126,16 +126,16 @@ class Helpers
 	}
 
 	/**
-	 * @param string|null $icon
-	 * @param string|null $type
+	 * @param string $icon
+	 * @param string $type
 	 * @return string
 	 */
-	public static function getIcon($icon = null, $type = null): string
+	public static function getIcon(string $icon = '', string $type = ''): string
 	{
 		global $context;
 
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-		$type = $type ?? ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
+		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
+		$type = $type ?: ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
 
 		if (!empty($icon))
 			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
@@ -144,14 +144,20 @@ class Helpers
 	}
 
 	/**
-	 * @param string|null $prefix
+	 * @param string $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle($prefix = null): string
+	public static function getPreviewTitle(string $prefix = ''): string
 	{
 		global $context, $txt;
 
-		return self::getFloatSpan((!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right') . '<br>';
+		return self::getFloatSpan(
+			(!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'],
+			$context['right_to_left'] ? 'right' : 'left'
+		) . self::getFloatSpan(
+			$txt['preview'],
+			$context['right_to_left'] ? 'left' : 'right'
+		) . '<br>';
 	}
 
 	/**
@@ -522,11 +528,10 @@ class Helpers
 	{
 		if (!ctype_lower($value)) {
 			$value = preg_replace('/\s+/u', '', ucwords($value));
-
-			$value = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
+			$value = preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value);
 		}
 
-		return $value;
+		return strtolower($value);
 	}
 
 	/**
