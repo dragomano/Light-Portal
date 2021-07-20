@@ -133,7 +133,7 @@ function show_plugin_settings($plugin_name, $settings)
 
 		if ($value[0] == 'text') {
 			echo '
-					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '"', !empty($value['pattern']) ? (' pattern="' . $value['pattern'] . '"') : '', '>';
 		} elseif ($value[0] == 'large_text') {
 			echo '
 					<br><textarea name="', $value[1], '" id="', $value[1], '">', $modSettings[$value[1]] ?? '', '</textarea>';
