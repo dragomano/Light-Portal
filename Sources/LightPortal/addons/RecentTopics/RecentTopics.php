@@ -32,6 +32,11 @@ class RecentTopics
 	private $no_content_class = true;
 
 	/**
+	 * @var bool
+	 */
+	private $use_simple_style = false;
+
+	/**
 	 * @var int
 	 */
 	private $num_topics = 10;
@@ -64,11 +69,12 @@ class RecentTopics
 	{
 		$options['recent_topics']['no_content_class'] = $this->no_content_class;
 
-		$options['recent_topics']['parameters']['num_topics']      = $this->num_topics;
-		$options['recent_topics']['parameters']['exclude_boards']  = $this->exclude_boards;
-		$options['recent_topics']['parameters']['include_boards']  = $this->include_boards;
-		$options['recent_topics']['parameters']['show_avatars']    = $this->show_avatars;
-		$options['recent_topics']['parameters']['update_interval'] = $this->update_interval;
+		$options['recent_topics']['parameters']['use_simple_style'] = $this->use_simple_style;
+		$options['recent_topics']['parameters']['num_topics']       = $this->num_topics;
+		$options['recent_topics']['parameters']['exclude_boards']   = $this->exclude_boards;
+		$options['recent_topics']['parameters']['include_boards']   = $this->include_boards;
+		$options['recent_topics']['parameters']['show_avatars']     = $this->show_avatars;
+		$options['recent_topics']['parameters']['update_interval']  = $this->update_interval;
 	}
 
 	/**
@@ -81,11 +87,12 @@ class RecentTopics
 		if ($type !== 'recent_topics')
 			return;
 
-		$parameters['num_topics']      = FILTER_VALIDATE_INT;
-		$parameters['exclude_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['include_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval'] = FILTER_VALIDATE_INT;
+		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['num_topics']       = FILTER_VALIDATE_INT;
+		$parameters['exclude_boards']   = FILTER_SANITIZE_STRING;
+		$parameters['include_boards']   = FILTER_SANITIZE_STRING;
+		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
 	/**
@@ -97,6 +104,16 @@ class RecentTopics
 
 		if ($context['lp_block']['type'] !== 'recent_topics')
 			return;
+
+		$context['posting_fields']['use_simple_style']['label']['text'] = $txt['lp_recent_topics_addon_use_simple_style'];
+		$context['posting_fields']['use_simple_style']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'use_simple_style',
+				'checked' => !empty($context['lp_block']['options']['parameters']['use_simple_style'])
+			),
+			'tab' => 'appearance'
+		);
 
 		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics_addon_num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
@@ -135,7 +152,7 @@ class RecentTopics
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
 			)
 		);
 
@@ -174,7 +191,7 @@ class RecentTopics
 		if (empty($topics))
 			return [];
 
-		if (!empty($parameters['show_avatars'])) {
+		if (!empty($parameters['show_avatars']) && empty($parameters['use_simple_style'])) {
 			$posters = array_map(function ($item) {
 				return $item['poster']['id'];
 			}, $topics);
@@ -210,7 +227,7 @@ class RecentTopics
 	 */
 	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
 	{
-		global $user_info, $scripturl, $txt;
+		global $user_info, $scripturl, $txt, $context;
 
 		if ($type !== 'recent_topics')
 			return;
@@ -229,28 +246,46 @@ class RecentTopics
 			echo '
 		<ul class="recent_topics noup">';
 
-			foreach ($recent_topics as $topic) {
-				echo '
+			if (!empty($parameters['use_simple_style'])) {
+				foreach ($recent_topics as $topic) {
+					echo '
+			<li class="windowbg">
+				<div class="smalltext">', $topic['time'], '</div>';
+
+					echo $topic['link'];
+
+					echo '
+				<div class="smalltext', $context['right_to_left'] ? ' floatright' : '', '">
+					<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
+					<i class="fas fa-comment"></i> ', $topic['replies'], '
+				</div>
+			</li>';
+				}
+			} else {
+				foreach ($recent_topics as $topic) {
+					echo '
 			<li class="windowbg">';
 
-				if (!empty($parameters['show_avatars']))
-					echo '
+					if (!empty($parameters['show_avatars']))
+						echo '
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
-				if ($topic['is_new'])
-					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+					if ($topic['is_new'])
+						echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
-				echo $topic['icon'], ' ', $topic['link'];
+					echo $topic['icon'], ' ', $topic['link'];
 
-				if (empty($parameters['show_avatars']))
-					echo '
+					if (empty($parameters['show_avatars']))
+						echo '
 				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
 
-				echo '
+					echo '
 				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
+				}
 			}
+
 
 			echo '
 		</ul>';
