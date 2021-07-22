@@ -791,7 +791,7 @@ class ManagePages
 		}');
 
 		// Prepare the tag list
-		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Tag::class);
+		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Lists\Tag::class);
 
 		$context['lp_all_tags'] = [];
 		foreach ($all_tags as $id => $value) {
@@ -799,7 +799,7 @@ class ManagePages
 		}
 
 		// Prepare the category list
-		$all_categories = Helpers::cache('all_categories', 'getList', Category::class);
+		$all_categories = Helpers::cache('all_categories', 'getList', Lists\Category::class);
 
 		$context['lp_all_categories'] = [];
 		foreach ($all_categories as $id => $category) {

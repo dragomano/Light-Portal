@@ -3,6 +3,7 @@
 namespace Bugo\LightPortal;
 
 use Exception;
+use Bugo\LightPortal\Lists\PageListInterface;
 
 /**
  * Page.php

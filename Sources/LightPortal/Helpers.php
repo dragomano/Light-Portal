@@ -807,7 +807,7 @@ class Helpers
 	 */
 	public static function getAllCategories()
 	{
-		return self::cache('all_categories', 'getList', Category::class);
+		return self::cache('all_categories', 'getList', Lists\Category::class);
 	}
 
 	/**
@@ -815,7 +815,7 @@ class Helpers
 	 */
 	public static function getAllTags()
 	{
-		return self::cache('all_tags', 'getList', Tag::class);
+		return self::cache('all_tags', 'getList', Lists\Tag::class);
 	}
 
 	/**

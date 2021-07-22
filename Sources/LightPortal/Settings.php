@@ -551,7 +551,7 @@ class Settings
 
 		$context['page_title'] = $txt['lp_categories'];
 
-		$category = new Category;
+		$category = new Lists\Category;
 
 		$context['lp_categories'] = $category->getList();
 

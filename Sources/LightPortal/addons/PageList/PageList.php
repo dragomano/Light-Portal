@@ -82,7 +82,7 @@ class PageList
 			return;
 
 		// Prepare the category list
-		$all_categories     = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Category::class);
+		$all_categories     = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
 		$current_categories = $context['lp_block']['options']['parameters']['categories'] ?? [];
 		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
 
