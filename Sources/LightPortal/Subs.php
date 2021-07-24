@@ -225,7 +225,13 @@ class Subs
 
 		$addon = Helpers::getSnakeName($addon);
 
-		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !@copy($style, $settings['default_theme_dir'] . '/css/light_portal/addon_' . $addon . '.css'))
+		$addon_css = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $addon . '.css';
+
+		$css_exists = true;
+		if (!is_file($addon_css))
+			$css_exists = @copy($style, $addon_css);
+
+		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !$css_exists)
 			return;
 
 		loadCSSFile('light_portal/addon_' . $addon . '.css');

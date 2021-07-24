@@ -86,7 +86,7 @@ class FlarumStyle
 		global $context, $txt, $modSettings;
 
 		if ($context['is_portal']) {
-			$all_categories = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Category::class);
+			$all_categories = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
 
 			$categories = array(
 				array(

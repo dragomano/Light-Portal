@@ -124,8 +124,10 @@ class FrontPage
 		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
-		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
+		if (!empty($modSettings['lp_use_simple_pagination']))
+			$context['page_index'] = $this->simplePaginate($scripturl . '?action=portal', $total_items, $limit);
 
+		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
 		$context['lp_frontpage_articles'] = $articles;
 
 		Subs::runAddons('frontAssets');
@@ -298,5 +300,35 @@ class FrontPage
 
 			return $article;
 		}, $articles);
+	}
+
+	/**
+	 * @param string $url
+	 * @param int $total
+	 * @param int $limit
+	 * @return string
+	 */
+	private function simplePaginate(string $url, int $total, int $limit)
+	{
+		global $context, $txt;
+
+		$max_pages = (($total - 1) / $limit) * $limit;
+
+		$prev = $context['start'] - $limit;
+
+		$next = $context['start'] + $limit > $max_pages ? '' : $context['start'] + $limit;
+
+		$paginate = '';
+
+		if ($prev >= 0)
+			$paginate .= '<i class="fas fa-arrow-left"></i> <a href="' . $url . ';start=' . $prev . '">' . $txt['prev'] . '</a>';
+
+		if ($prev >= 0 && $next)
+			$paginate .= ' <i class="fas fa-map-signs"></i> ';
+
+		if ($next)
+			$paginate .= '<a href="' . $url . ';start=' . $next . '">' . $txt['next'] . '</a> <i class="fas fa-arrow-right"></i>';
+
+		return $paginate;
 	}
 }

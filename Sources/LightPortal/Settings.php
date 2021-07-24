@@ -247,6 +247,7 @@ class Settings
 			array('select', 'lp_frontpage_layout', $context['lp_frontpage_layout']),
 			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
 			array('select', 'lp_show_pagination', $txt['lp_show_pagination_set']),
+			array('check', 'lp_use_simple_pagination'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
@@ -282,7 +283,7 @@ class Settings
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
 		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
 		foreach ($frontpage_alias_toggle as $item) {
@@ -437,6 +438,11 @@ class Settings
 		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
 		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = array_merge($modSettings['bbc_disabled_lp_disabled_bbc_in_comments'], explode(',', $modSettings['disabledBBC']));
 
+		$txt['lp_show_comment_block_set']['none']    = $txt['lp_show_comment_block_set'][0];
+		$txt['lp_show_comment_block_set']['default'] = $txt['lp_show_comment_block_set'][1];
+
+		unset($txt['lp_show_comment_block_set'][0], $txt['lp_show_comment_block_set'][1]);
+
 		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
 
 		// Initial settings
@@ -451,7 +457,7 @@ class Settings
 			array('check', 'lp_show_tags_on_page'),
 			array('check', 'lp_show_items_as_articles'),
 			array('check', 'lp_show_related_pages'),
-			array('select', 'lp_show_comment_block', array_combine(array('none', 'default'), $txt['lp_show_comment_block_set'])),
+			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
@@ -545,7 +551,7 @@ class Settings
 
 		$context['page_title'] = $txt['lp_categories'];
 
-		$category = new Category;
+		$category = new Lists\Category;
 
 		$context['lp_categories'] = $category->getList();
 

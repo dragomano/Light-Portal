@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Lists;
 
 /**
  * PageListInterface.php

@@ -1,8 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Lists;
 
 use Exception;
+use Bugo\LightPortal\{Helpers, Page};
 
 /**
  * Tag.php

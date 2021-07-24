@@ -60,6 +60,7 @@ class Integration
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
 		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
 		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
+		$classMap['Bugo\\LightPortal\\Lists\\']  = 'LightPortal/lists/';
 		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 
@@ -75,8 +76,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.8',
-			'LP_RELEASE_DATE' => '2021-06-06',
+			'LP_VERSION'      => '1.8.1',
+			'LP_RELEASE_DATE' => '2021-07-24',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons'
@@ -152,10 +153,10 @@ class Integration
 		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'categories')
-			return call_user_func(array(new Category, 'show'));
+			return call_user_func(array(new Lists\Category, 'show'));
 
 		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
-			return call_user_func(array(new Tag, 'show'));
+			return call_user_func(array(new Lists\Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
 			Subs::unsetDisabledActions($actions);

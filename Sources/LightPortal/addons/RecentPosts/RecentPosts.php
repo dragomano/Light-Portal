@@ -319,10 +319,9 @@ class RecentPosts
 
 				if ($post['is_new'])
 					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
-				echo '
-				', $post[$parameters['link_type']];
+				echo $post[$parameters['link_type']];
 
 				if (empty($parameters['show_avatars']))
 					echo '

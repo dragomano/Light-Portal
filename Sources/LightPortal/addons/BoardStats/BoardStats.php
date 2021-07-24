@@ -154,7 +154,7 @@ class BoardStats
 	{
 		global $boarddir, $modSettings;
 
-		if (empty($parameters['show_basic_info']) && empty($parameters['show_whos_online']))
+		if (empty($parameters['show_latest_member']) && empty($parameters['show_basic_info']) && empty($parameters['show_whos_online']))
 			return [];
 
 		require_once($boarddir . '/SSI.php');
