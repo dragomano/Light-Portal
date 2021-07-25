@@ -788,8 +788,8 @@ EOF;
 
 		$addon_content = sprintf($addon_content, LP_NAME, date('Y'), LP_VERSION);
 
-		mkdir($path = LP_ADDON_DIR . '/' . $context['lp_plugin']['name']);
-		file_put_contents($path . '/' . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
+		mkdir($path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $context['lp_plugin']['name']);
+		file_put_contents($path . DIRECTORY_SEPARATOR . $context['lp_plugin']['name'] . '.php', $addon_content, LOCK_EX);
 		copy(LP_ADDON_DIR . '/index.php', $path . '/index.php');
 
 		if (!empty($context['lp_plugin']['description'])) {

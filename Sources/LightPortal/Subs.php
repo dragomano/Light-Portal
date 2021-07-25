@@ -198,7 +198,7 @@ class Subs
 	{
 		global $user_info, $txt;
 
-		$addon_dir = LP_ADDON_DIR . '/' . $addon . '/langs/';
+		$addon_dir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . '/langs/';
 		$languages = array_unique(['english', $user_info['language']]);
 
 		foreach ($languages as $lang) {
@@ -218,7 +218,7 @@ class Subs
 	{
 		global $settings;
 
-		$style = LP_ADDON_DIR . '/' . $addon . '/style.css';
+		$style = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . '/style.css';
 
 		if (!is_file($style))
 			return;

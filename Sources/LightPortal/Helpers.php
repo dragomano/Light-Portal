@@ -95,10 +95,6 @@ class Helpers
 	}
 
 	/**
-	 * Require $filename only once
-	 *
-	 * Подключаем $filename единожды
-	 *
 	 * @param string $filename
 	 * @return void
 	 */
@@ -109,14 +105,10 @@ class Helpers
 		if (empty($filename))
 			return;
 
-		require_once($sourcedir . '/' . $filename . '.php');
+		require_once($sourcedir . DIRECTORY_SEPARATOR . $filename . '.php');
 	}
 
 	/**
-	 * Remove BBCode from transmitted data
-	 *
-	 * Убираем ББ-код из переданных данных
-	 *
 	 * @param array|string $data
 	 * @return void
 	 */
