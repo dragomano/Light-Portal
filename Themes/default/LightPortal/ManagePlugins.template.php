@@ -163,7 +163,7 @@ function show_plugin_settings($plugin_name, $settings)
 						<ul>';
 
 			$temp[$value[1] . '_options'] = !empty($modSettings[$value[1]]) ? json_decode($modSettings[$value[1]], true) : [];
-			foreach ($context[$value[1] . '_options'] as $key => $option_label) {
+			foreach ($value[2] as $key => $option_label) {
 				echo '
 							<li>
 								<label for="', $value[1], '[', $key, ']">

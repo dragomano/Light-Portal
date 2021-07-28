@@ -51,14 +51,12 @@ class FacebookComments
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $modSettings, $context;
+		global $modSettings;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
 			updateSettings(array('lp_facebook_comments_addon_dark_themes' => $this->dark_themes));
 
-		$context['lp_facebook_comments_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_facebook_comments_addon_dark_themes');
+		$config_vars[] = array('multicheck', 'lp_facebook_comments_addon_dark_themes', Helpers::getForumThemes());
 	}
 
 	/**

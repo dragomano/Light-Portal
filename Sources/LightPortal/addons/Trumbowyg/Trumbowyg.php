@@ -42,16 +42,14 @@ class Trumbowyg
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $modSettings, $context, $txt;
+		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
 			updateSettings(array('lp_trumbowyg_addon_dark_themes' => $this->dark_themes));
 		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
 			updateSettings(array('lp_trumbowyg_addon_auto_grow' => $this->auto_grow));
 
-		$context['lp_trumbowyg_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
+		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes', Helpers::getForumThemes());
 		$config_vars[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
 	}
 
