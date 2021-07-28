@@ -3,7 +3,7 @@
 $txt['lp_block_types']['ads_block']              = 'Blok reklam';
 $txt['lp_block_types_descriptions']['ads_block'] = 'Wyświetla własny kod HTML w działach i wątkach.';
 
-$txt['lp_block_placement_set']['ads']         = 'Działy i wątki';
+$txt['lp_ads_block_addon_ads_type']           = 'Działy i wątki';
 $txt['lp_ads_block_addon_ads_boards']         = 'Działy';
 $txt['lp_ads_block_addon_ads_boards_subtext'] = 'Wpisz ID działów w których chcesz wyświetlać reklamy. Żeby wyświetlać reklamy w każdym dziale pozostaw puste.';
 $txt['lp_ads_block_addon_ads_topics']         = 'Topics';

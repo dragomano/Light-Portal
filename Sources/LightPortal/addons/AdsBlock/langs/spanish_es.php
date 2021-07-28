@@ -5,7 +5,7 @@
 $txt['lp_block_types']['ads_block'] = 'Bloque de anuncios';
 $txt['lp_block_types_descriptions']['ads_block'] = 'Muestra código HTML personalizado en foros y temas.';
 
-$txt['lp_block_placement_set']['ads'] = 'Foros y temas';
+$txt['lp_ads_block_addon_ads_type'] = 'Foros y temas';
 $txt['lp_ads_block_addon_ads_boards'] = 'Foros';
 $txt['lp_ads_block_addon_ads_boards_subtext'] = 'Ingrese la ID del foro para mostrar anuncios solo allí. De lo contrario, el bloque se mostrará en todos los foros.';
 $txt['lp_ads_block_addon_ads_topics'] = 'Temas';

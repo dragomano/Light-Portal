@@ -214,7 +214,9 @@ class AdsBlock
 	 */
 	public function menuButtons()
 	{
-		global $context;
+		global $context, $txt;
+
+		$context['lp_block_placements']['ads'] = $txt['lp_ads_block_addon_ads_type'];
 
 		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
 			require_once(__DIR__ . '/Template.php');
@@ -451,7 +453,20 @@ class AdsBlock
 		global $txt;
 
 		return array_combine(
-			array('board_top', 'board_bottom', 'topic_top', 'topic_bottom', 'before_first_post', 'before_every_first_post', 'before_every_last_post', 'before_last_post','after_first_post', 'after_every_first_post', 'after_every_last_post', 'after_last_post'),
+			array(
+				'board_top',
+				'board_bottom',
+				'topic_top',
+				'topic_bottom',
+				'before_first_post',
+				'before_every_first_post',
+				'before_every_last_post',
+				'before_last_post',
+				'after_first_post',
+				'after_every_first_post',
+				'after_every_last_post',
+				'after_last_post'
+			),
 			$txt['lp_ads_block_addon_placement_set']
 		);
 	}
