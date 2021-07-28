@@ -25,14 +25,6 @@ class EzPortal
 	public $addon_type = 'impex';
 
 	/**
-	 * @return void
-	 */
-	public function init()
-	{
-		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
-	}
-
-	/**
 	 * Add "Import from EzPortal" item to the admin menu
 	 *
 	 * Добавляем в меню админки пункт «Импорт из EzPortal»

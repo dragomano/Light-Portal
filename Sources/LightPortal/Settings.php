@@ -105,6 +105,8 @@ class Settings
 				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_pages_import'])
 			);
 		}
+
+		Subs::runAddons('adminAreas', array(&$admin_areas));
 	}
 
 	/**
