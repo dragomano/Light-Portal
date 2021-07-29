@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\Search;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Helpers, Plugin};
 
 /**
  * Search
@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class Search
+class Search extends Plugin
 {
 	/**
 	 * @var string
@@ -94,7 +94,7 @@ class Search
 
 		$context['search_results'] = $this->getResults();
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate(__DIR__);
 
 		$context['sub_template'] = 'show_results';
 

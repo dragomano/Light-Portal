@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Helpers, Plugin};
 
 /**
  * FlarumStyle
@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class FlarumStyle
+class FlarumStyle extends Plugin
 {
 	/**
 	 * @var string
@@ -44,7 +44,7 @@ class FlarumStyle
 
 		$context['lp_all_categories'] = $this->getCategories();
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate(__DIR__);
 
 		$this->prepareFantomBLock();
 

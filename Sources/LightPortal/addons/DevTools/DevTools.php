@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Addons\DevTools;
 
 use Exception;
-use Bugo\LightPortal\{Helpers, FrontPage};
+use Bugo\LightPortal\{Helpers, FrontPage, Plugin};
 
 /**
  * DevTools
@@ -20,7 +20,7 @@ use Bugo\LightPortal\{Helpers, FrontPage};
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class DevTools
+class DevTools extends Plugin
 {
 	/**
 	 * @var string
@@ -97,7 +97,7 @@ class DevTools
 		if (empty($modSettings['lp_dev_tools_addon_show_template_switcher']))
 			return;
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate(__DIR__);
 
 		$context['frontpage_layouts'] = (new FrontPage)->getLayouts();
 

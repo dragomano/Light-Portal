@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Helpers, Plugin};
 
 /**
  * AdsBlock
@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helpers;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class AdsBlock
+class AdsBlock extends Plugin
 {
 	/**
 	 * @var string
@@ -219,7 +219,7 @@ class AdsBlock
 		$context['lp_block_placements']['ads'] = $txt['lp_ads_block_addon_ads_type'];
 
 		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
-			require_once(__DIR__ . '/Template.php');
+			$this->loadTemplate(__DIR__);
 
 			$context['template_layers'][] = 'ads_block';
 		}
@@ -247,7 +247,7 @@ class AdsBlock
 	{
 		global $context;
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate(__DIR__);
 
 		$context['template_layers'][] = 'ads_placement_board';
 	}
@@ -266,7 +266,7 @@ class AdsBlock
 		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
 			return;
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate(__DIR__);
 
 		$context['template_layers'][] = 'ads_placement_topic';
 	}
