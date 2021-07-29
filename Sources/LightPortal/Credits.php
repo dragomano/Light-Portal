@@ -107,7 +107,7 @@ class Credits
 				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
 				'author' => 'Kristofer Joseph',
 				'license' => array(
-					'name' => 'the Apache License',
+					'name' => 'the Apache License 2.0',
 					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
 				)
 			),
