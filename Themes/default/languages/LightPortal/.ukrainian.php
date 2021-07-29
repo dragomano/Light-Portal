@@ -249,41 +249,9 @@ $txt['lp_export_all'] = 'Експортувати всі';
 // Plugins
 $txt['lp_plugins'] = 'Плагіни';
 $txt['lp_plugins_manage'] = 'Управление плагинами';
-$txt['lp_plugins_manage_description'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a> або кнопочкою «+» нижче.';
+$txt['lp_plugins_manage_description'] = 'Тут перераховані встановлені плагіни порталу. Ви завжди можете створити новий, скориставшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">інструкцією</a>.';
 $txt['lp_plugins_desc'] = 'Плагіни розширюють можливості порталу і його компонентів, надаючи додаткові функції, яких немає в ядрі.';
-$txt['lp_plugins_add'] = 'Додати плагін';
-$txt['lp_plugins_add_title'] = 'Додавання плагіна';
-$txt['lp_plugins_add_description'] = 'Майстер створення плагінів допоможе підготувати болванку для подальших змін. Уважно заповніть пропоновані поля.';
-$txt['lp_plugins_add_information'] = 'Файли плагіна будуть збережені в директорії %1$s<br>Обов\'язково загляньте туди і перевірте/відредагуйте потрібні файли.';
-
-$txt['lp_plugins_tab_content'] = 'Основні дані';
-$txt['lp_plugins_tab_copyrights'] = 'Авторське право';
-$txt['lp_plugins_tab_settings'] = 'Настройка';
-$txt['lp_plugins_tab_tuning'] = 'Додатково';
-
-$txt['lp_plugin_name'] = 'Назва плагіна';
-$txt['lp_plugin_name_subtext'] = 'Латинськими літерами, без пробілів!';
-$txt['lp_plugin_type'] = 'Тип плагіна';
 $txt['lp_plugins_type_set'] = array('Блок', 'Редактор', 'Віджет коментарів', 'Парсер контента', 'Обробка статей', 'Макет головної сторінки', 'Імпорт та експорт', 'Різне');
-$txt['lp_plugin_site_subtext'] = 'Сайт, на якому можна буде завантажити нові версії цього плагіна.';
-$txt['lp_plugin_license'] = 'Ліцензія плагіна';
-$txt['lp_plugin_license_own'] = 'Своя ліцензія';
-$txt['lp_plugin_license_name'] = 'Назва ліцензі';
-$txt['lp_plugin_license_link'] = 'Посилання на ліцензію';
-$txt['lp_plugin_smf_hooks'] = 'Чи використовуються хуки SMF?';
-$txt['lp_plugin_components'] = 'Чи використовуються хуки SMF?';
-$txt['lp_plugin_components_name'] = 'Назва компонента';
-$txt['lp_plugin_components_link'] = 'Посилання на сайт компонента';
-$txt['lp_plugin_components_author'] = 'Автор компонента';
-
-$txt['lp_plugin_option_name'] = 'Ім\'я опції (латиниця)';
-$txt['lp_plugin_option_type'] = 'Тип опції';
-$txt['lp_plugin_option_type_set'] = array('Текстове поле', 'Веб-адрес', 'Вибір кольору', 'Введення чисел', 'Поле-прапорець', 'Список з вибором декількох значень', 'Список');
-$txt['lp_plugin_option_default_value'] = 'Значення за замовчуванням';
-$txt['lp_plugin_option_variants'] = 'Можливі значення';
-$txt['lp_plugin_option_variants_placeholder'] = 'Кілька варіантів через кому';
-$txt['lp_plugin_option_translations'] = 'Локалізація';
-$txt['lp_plugin_new_option'] = 'Додати опцію';
 
 // Tags
 $txt['lp_all_page_tags'] = 'Всі теги сторінок порталу';
@@ -331,11 +299,6 @@ $txt['lp_post_error_no_content'] = 'Не вказано зміст!';
 $txt['lp_post_error_no_areas'] = 'Не вказана область разташування!';
 $txt['lp_post_error_no_valid_areas'] = 'Область розміщення задана неправильно!';
 $txt['lp_post_error_no_name'] = 'Не вказано ім\'я!';
-$txt['lp_post_error_no_valid_name'] = 'Зазначене ім\'я не відповідає правилам!';
-$txt['lp_post_error_no_unique_name'] = 'Плагін з таким ім\'ям вже існує!';
-$txt['lp_post_error_no_description'] = 'Не вказано опис!';
-$txt['lp_addon_not_installed'] = 'Плагін %1$s не встановлений';
-$txt['lp_addon_add_failed'] = 'Директорія <strong>/Sources/LightPortal/addons</strong> повинна мати права на запис!';
 $txt['lp_wrong_import_file'] = 'Неправильний файл для імпорту...';
 $txt['lp_import_failed'] = 'Не вдалося здійснити імпорт...';
 $txt['lp_wrong_template'] = 'Невірний шаблон. Виберіть шаблон, який відповідає вмісту.';

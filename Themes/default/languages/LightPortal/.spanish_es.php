@@ -247,39 +247,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>. or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_add'] = 'Add plugin';
-$txt['lp_plugins_add_title'] = 'Adding a plugin';
-$txt['lp_plugins_add_description'] = 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.';
-$txt['lp_plugins_add_information'] = 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.';
-
-$txt['lp_plugins_tab_content'] = 'Basic information';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Settings';
-$txt['lp_plugins_tab_tuning'] = 'Additional';
-
-$txt['lp_plugin_name'] = 'The plugin name';
-$txt['lp_plugin_name_subtext'] = 'In Latin letters, without spaces!';
-$txt['lp_plugin_type'] = 'The plugin type';
 $txt['lp_plugins_type_set'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'The layout of the frontpage', 'Import and export', 'Otro');
-$txt['lp_plugin_site_subtext'] = 'Website where users can download new versions of this plugin.';
-$txt['lp_plugin_license'] = 'The plugin license';
-$txt['lp_plugin_license_own'] = 'Own license';
-$txt['lp_plugin_license_name'] = 'The license name';
-$txt['lp_plugin_license_link'] = 'The license link';
-$txt['lp_plugin_smf_hooks'] = 'Are you using SMF hooks?';
-$txt['lp_plugin_components'] = 'Are you using third-party scripts?';
-$txt['lp_plugin_components_name'] = 'Component name';
-$txt['lp_plugin_components_link'] = 'Link to component site';
-$txt['lp_plugin_components_author'] = 'Component author';
-
-$txt['lp_plugin_option_name'] = 'Option name (Latin)';
-$txt['lp_plugin_option_type'] = 'Option type';
-$txt['lp_plugin_option_type_set'] = array('Text field', 'Web address', 'Input color', 'Input number', 'Checkbox', 'Multiple select', 'Select');
-$txt['lp_plugin_option_default_value'] = 'Default value';
-$txt['lp_plugin_option_variants'] = 'Possible values';
-$txt['lp_plugin_option_variants_placeholder'] = 'Multiple options separated by commas';
-$txt['lp_plugin_option_translations'] = 'Localization';
-$txt['lp_plugin_new_option'] = 'Add option';
 
 // Tags
 $txt['lp_all_page_tags'] = 'Todas las etiquetas de página del portal';
@@ -327,11 +295,6 @@ $txt['lp_post_error_no_content'] = '¡El contenido no especificado! Es requerido
 $txt['lp_post_error_no_areas'] = 'El campo <strong>areas</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_valid_areas'] = '¡El campo de las <strong>zonas</strong> se configuró incorrectamente!';
 $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled out. It is required.';
-$txt['lp_post_error_no_valid_name'] = 'The specified name does not match the rules!';
-$txt['lp_post_error_no_unique_name'] = 'A plugin with this name already exists!';
-$txt['lp_post_error_no_description'] = 'The description not specified! It is required.';
-$txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
-$txt['lp_addon_add_failed'] = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
 $txt['lp_import_failed'] = 'Error al importar...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';

@@ -56,7 +56,6 @@ class Subs
 		$context['lp_block_placements']    = self::getBlockPlacements();
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
-		$context['lp_plugin_option_types'] = self::getPluginOptionTypes();
 		$context['lp_icon_types']          = self::getIconTypes();
 
 		// Width of some panels | Ширина некоторых панелей
@@ -238,7 +237,7 @@ class Subs
 	}
 
 	/**
-	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
+	 * @see https://dragomano.github.io/Light-Portal/#/plugins/all_hooks
 	 *
 	 * @param string $hook
 	 * @param array $vars (extra variables)
@@ -482,21 +481,7 @@ class Subs
 	{
 		global $txt;
 
-		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugin_type_set']);
-	}
-
-	/**
-	 * Get an array of available plugin option types
-	 *
-	 * Получаем массив доступных типов параметров плагинов
-	 *
-	 * @return array
-	 */
-	public static function getPluginOptionTypes(): array
-	{
-		global $txt;
-
-		return array_combine(array('text', 'url', 'color', 'int', 'check', 'multicheck', 'select'), $txt['lp_plugin_option_type_set']);
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_type_set']);
 	}
 
 	/**

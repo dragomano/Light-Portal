@@ -206,18 +206,6 @@
 .lp_tabs section .choices__inner {
   border-radius: 6px;
 }
-.lp_tabs section .add_option {
-  width: 100%;
-}
-.lp_tabs section .add_option select,
-.lp_tabs section .add_option input {
-  width: 100%;
-}
-@media screen and (max-width: 680px) {
-  .lp_tabs section .add_option .plugin_options td:first-child {
-    display: none;
-  }
-}
 /* Checkbox toggler */
 .checkbox {
   vertical-align: top;

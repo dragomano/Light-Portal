@@ -279,23 +279,6 @@ $tabs-label-hover-color: #888;
 		.choices__inner {
 			@include border-radius(6px);
 		}
-
-		.add_option {
-			width: 100%;
-
-			select,
-			input {
-				width: 100%;
-			}
-
-			@media screen and (max-width: 680px) {
-				.plugin_options {
-					td:first-child {
-						display: none;
-					}
-				}
-			}
-		}
 	}
 }
 

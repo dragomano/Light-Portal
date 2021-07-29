@@ -249,41 +249,9 @@ $txt['lp_export_all'] = 'Экспортировать все';
 // Plugins
 $txt['lp_plugins'] = 'Плагины';
 $txt['lp_plugins_manage'] = 'Управление плагинами';
-$txt['lp_plugins_manage_description'] = 'Здесь перечислены установленные плагины портала. Вы всегда можете создать новый, воспользовавшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">инструкцией</a> или кнопочкой «+» ниже.';
+$txt['lp_plugins_manage_description'] = 'Здесь перечислены установленные плагины портала. Вы всегда можете создать новый, воспользовавшись <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">инструкцией</a>.';
 $txt['lp_plugins_desc'] = 'Плагины расширяют возможности портала и его компонентов, предоставляя дополнительные функции, которых нет в ядре.';
-$txt['lp_plugins_add'] = 'Добавить плагин';
-$txt['lp_plugins_add_title'] = 'Добавление плагина';
-$txt['lp_plugins_add_description'] = 'Мастер создания плагинов поможет подготовить болванку для дальнейших изменений. Внимательно заполните предлагаемые поля.';
-$txt['lp_plugins_add_information'] = 'Файлы плагина будут сохранены в директории %1$s<br>Обязательно загляните туда и проверьте/отредактируйте нужные файлы.';
-
-$txt['lp_plugins_tab_content'] = 'Основные данные';
-$txt['lp_plugins_tab_copyrights'] = 'Авторские права';
-$txt['lp_plugins_tab_settings'] = 'Настройки';
-$txt['lp_plugins_tab_tuning'] = 'Дополнительно';
-
-$txt['lp_plugin_name'] = 'Название плагина';
-$txt['lp_plugin_name_subtext'] = 'Латинскими буквами, без пробелов!';
-$txt['lp_plugin_type'] = 'Тип плагина';
-$txt['lp_plugin_type_set'] = array('Блок', 'Редактор', 'Виджет комментариев', 'Парсер контента', 'Обработка статей', 'Макет главной страницы', 'Импорт и экспорт', 'Разное');
-$txt['lp_plugin_site_subtext'] = 'Сайт, на котором можно будет скачать новые версии этого плагина.';
-$txt['lp_plugin_license'] = 'Лицензия плагина';
-$txt['lp_plugin_license_own'] = 'Своя лицензия';
-$txt['lp_plugin_license_name'] = 'Название лицензии';
-$txt['lp_plugin_license_link'] = 'Ссылка на лицензию';
-$txt['lp_plugin_smf_hooks'] = 'Используются хуки SMF?';
-$txt['lp_plugin_components'] = 'Используются сторонние скрипты?';
-$txt['lp_plugin_components_name'] = 'Название компонента';
-$txt['lp_plugin_components_link'] = 'Ссылка на сайт компонента';
-$txt['lp_plugin_components_author'] = 'Автор компонента';
-
-$txt['lp_plugin_option_name'] = 'Имя опции (латиница)';
-$txt['lp_plugin_option_type'] = 'Тип опции';
-$txt['lp_plugin_option_type_set'] = array('Текстовое поле', 'Веб-адрес', 'Выбор цвета', 'Ввод чисел', 'Поле-флажок', 'Список с выбором нескольких значений', 'Список');
-$txt['lp_plugin_option_default_value'] = 'Значение по умолчанию';
-$txt['lp_plugin_option_variants'] = 'Возможные значения';
-$txt['lp_plugin_option_variants_placeholder'] = 'Несколько вариантов через запятую';
-$txt['lp_plugin_option_translations'] = 'Локализация';
-$txt['lp_plugin_new_option'] = 'Добавить опцию';
+$txt['lp_plugins_type_set'] = array('Блок', 'Редактор', 'Виджет комментариев', 'Парсер контента', 'Обработка статей', 'Макет главной страницы', 'Импорт и экспорт', 'Разное');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Все теги страниц портала';
@@ -331,11 +299,6 @@ $txt['lp_post_error_no_content'] = 'Не указано содержание!';
 $txt['lp_post_error_no_areas'] = 'Не указана область размещения!';
 $txt['lp_post_error_no_valid_areas'] = 'Область размещения задана неправильно!';
 $txt['lp_post_error_no_name'] = 'Не указано имя!';
-$txt['lp_post_error_no_valid_name'] = 'Указанное имя не соответствует правилам!';
-$txt['lp_post_error_no_unique_name'] = 'Плагин с таким именем уже существует!';
-$txt['lp_post_error_no_description'] = 'Не указано описание!';
-$txt['lp_addon_not_installed'] = 'Плагин %1$s не установлен';
-$txt['lp_addon_add_failed'] = 'Директория <strong>/Sources/LightPortal/addons</strong> должна иметь права на запись!';
 $txt['lp_wrong_import_file'] = 'Неправильный файл для импорта...';
 $txt['lp_import_failed'] = 'Не удалось осуществить импорт...';
 $txt['lp_wrong_template'] = 'Неверный шаблон. Выберите шаблон, соответствующий контенту.';

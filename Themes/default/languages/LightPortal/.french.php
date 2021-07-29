@@ -247,39 +247,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Gérer les plugins';
 $txt['lp_plugins_manage_description'] = 'Les plugins de portail installés sont répertoriés ici. Vous pouvez toujours en créer un nouveau en utilisant <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">les instructions</a> ou le bouton "+" ci-dessous.';
 $txt['lp_plugins_desc'] = 'Les plugins étendent les capacités du portail et de ses composants, en fournissant des fonctionnalités supplémentaires qui ne sont pas disponibles dans le système de base';
-$txt['lp_plugins_add'] = 'Ajouter un plugin';
-$txt['lp_plugins_add_title'] = 'Nom du plugin';
-$txt['lp_plugins_add_description'] = 'L\'assistant de création de plugins vous aidera à préparer le squelette de l\'addon pour d\'autres modifications. Remplissez soigneusement les champs suggérés.';
-$txt['lp_plugins_add_information'] = 'Les fichiers du plugin seront enregistrés dans le répertoire %1$s<br> Assurez-vous de regarder là-bas et de vérifier / éditer les fichiers nécessaires.';
-
-$txt['lp_plugins_tab_content'] = 'Informations de base';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Réglages';
-$txt['lp_plugins_tab_tuning'] = 'Supplémentaire';
-
-$txt['lp_plugin_name'] = 'Le nom du plugin';
-$txt['lp_plugin_name_subtext'] = 'En lettres latines, sans espaces!';
-$txt['lp_plugin_type'] = 'Le type de plugin';
 $txt['lp_plugins_type_set'] = array('Bloc', 'Editeur', 'Widget des commenatires', 'Analyseur de contenu', 'Gestion des articles', 'La mise en page de la page d\'accueil', 'Importer et exporter', 'Autre');
-$txt['lp_plugin_site_subtext'] = 'Site Web sur lequel les utilisateurs peuvent télécharger de nouvelles versions de ce plugin.';
-$txt['lp_plugin_license'] = 'La licence du plugin';
-$txt['lp_plugin_license_own'] = 'Licence personnelle';
-$txt['lp_plugin_license_name'] = 'Le nom de la licence';
-$txt['lp_plugin_license_link'] = 'Le lien de licence';
-$txt['lp_plugin_smf_hooks'] = 'Utilisez-vous des hooks SMF?';
-$txt['lp_plugin_components'] = 'Utilisez-vous des scripts tiers?';
-$txt['lp_plugin_components_name'] = 'Nom du composant';
-$txt['lp_plugin_components_link'] = 'Lien vers le site du composant';
-$txt['lp_plugin_components_author'] = 'Auteur du composant';
-
-$txt['lp_plugin_option_name'] = 'Nom de l\'option (latin)';
-$txt['lp_plugin_option_type'] = 'Type d\option';
-$txt['lp_plugin_option_types'] = array('Champ de texte', 'Adresse web', 'Choisir une couleur', 'Chosir un nombre', 'Case à cocher', 'Sélection multiple', 'Sélection');
-$txt['lp_plugin_option_default_value'] = 'Valeur par défaut';
-$txt['lp_plugin_option_variants'] = 'Valeurs possibles';
-$txt['lp_plugin_option_variants_placeholder'] = 'Plusieurs options séparées par des virgules';
-$txt['lp_plugin_option_translations'] = 'Traduction';
-$txt['lp_plugin_new_option'] = 'Ajouter une option';
 
 // Tags
 $txt['lp_all_page_tags'] = 'Toutes les balises de page de portail';
@@ -327,11 +295,6 @@ $txt['lp_post_error_no_content'] = 'Le contenu non spécifié! C\'est requis.';
 $txt['lp_post_error_no_areas'] = 'Le champ <strong> zones </strong> n\'a pas été rempli. C\'est requis';
 $txt['lp_post_error_no_valid_areas'] = 'Le champ <strong> zones </strong> n\'a pas été défini correctement!';
 $txt['lp_post_error_no_name'] = 'Le champ <strong> nom </strong> n\'a pas été rempli. C\'est requis.';
-$txt['lp_post_error_no_valid_name'] = 'Le nom spécifié ne correspond pas aux règles!';
-$txt['lp_post_error_no_unique_name'] = 'Un plugin avec ce nom existe déjà!';
-$txt['lp_post_error_no_description'] = 'La description non spécifiée! C\'est requis.';
-$txt['lp_addon_not_installed'] = 'le plugin %1$s n\'est pas installé';
-$txt['lp_addon_add_failed'] = 'Le répertoire <strong> / Sources / LightPortal / addons </strong> doit être accessible en écriture!';
 $txt['lp_wrong_import_file'] = 'Mauvais fichier à importer...';
 $txt['lp_import_failed'] = 'Échec de l\'importation...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';

@@ -84,8 +84,7 @@ class Settings
 							'amt' => count($context['lp_enabled_plugins']),
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_plugins_manage']),
-								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_plugins_add'])
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_plugins_manage'])
 							)
 						)
 					)
@@ -791,8 +790,7 @@ class Settings
 		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
 
 		$subActions = array(
-			'main' => array(new ManagePlugins, 'main'),
-			'add'  => array(new ManagePlugins, 'add')
+			'main' => array(new ManagePlugins, 'main')
 		);
 
 		Subs::runAddons('addPluginAreas', array(&$subActions));

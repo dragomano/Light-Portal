@@ -201,44 +201,6 @@ class Plugin extends PortalEntity {
 		this.workUrl = smf_scripturl + '?action=admin;area=lp_plugins'
 	}
 
-	change(target, refs) {
-		if (target !== 'block') {
-			refs.icon.style.display = 'none';
-			refs.icon_type.style.display = 'none';
-			refs.icon_label.style.display = 'none';
-			refs.icon_type_label.style.display = 'none';
-			refs.preview.style.display = 'none';
-		} else {
-			refs.icon.style.display = 'inline-block';
-			refs.icon_type.style.display = 'inline-block';
-			refs.icon_label.style.display = 'inline-block';
-			refs.icon_type_label.style.display = 'inline-block';
-			refs.preview.style.display = 'inline-block';
-		}
-	}
-
-	handleOptions() {
-		return {
-			options: [],
-			addNewOption() {
-				this.options.push({
-					name: '',
-					type: 'text',
-					variants: ''
-				});
-			},
-			removeOption(index) {
-				this.options.splice(index, 1);
-			}
-		}
-	}
-
-	updateState(target, refs) {
-		if (target) {
-			refs.plugin_name.innerText = target;
-		}
-	}
-
 	async toggle(target) {
 		const plugin = target.closest('.features').dataset.id;
 
