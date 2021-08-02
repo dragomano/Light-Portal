@@ -29,6 +29,11 @@ class AdsBlock extends Plugin
 	/**
 	 * @var string
 	 */
+	private $loader_code = '';
+
+	/**
+	 * @var string
+	 */
 	private $placement = '';
 
 	/**
@@ -74,6 +79,7 @@ class AdsBlock extends Plugin
 	{
 		$options['ads_block']['content'] = 'html';
 
+		$options['ads_block']['parameters']['loader_code']   = $this->loader_code;
 		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
 		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
 		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
@@ -100,6 +106,7 @@ class AdsBlock extends Plugin
 		if ($type !== 'ads_block')
 			return;
 
+		$parameters['loader_code'] = FILTER_UNSAFE_RAW;
 		$parameters['ads_placement'] = array(
 			'name'   => 'ads_placement',
 			'filter' => FILTER_SANITIZE_STRING,
@@ -118,6 +125,16 @@ class AdsBlock extends Plugin
 
 		if ($context['lp_block']['type'] !== 'ads_block')
 			return;
+
+		$context['posting_fields']['loader_code']['label']['text'] = $txt['lp_ads_block_addon_loader_code'];
+		$context['posting_fields']['loader_code']['input'] = array(
+			'type' => 'textarea',
+			'attributes' => array(
+				'id'    => 'loader_code',
+				'value' => $context['lp_block']['options']['parameters']['loader_code']
+			),
+			'tab' => 'content'
+		);
 
 		$context['posting_fields']['placement']['label']['text'] = '';
 		$context['posting_fields']['placement']['input'] = array(
@@ -224,13 +241,21 @@ class AdsBlock extends Plugin
 			$context['template_layers'][] = 'ads_block';
 		}
 
-		if (empty($context['current_board']))
+		if (empty($context['current_board']) || Helpers::request()->is('xml'))
 			return;
 
 		$context['lp_ads_blocks'] = $this->getData();
 
 		if (!empty($context['lp_ads_blocks']))
 			$context['lp_blocks'] = array_merge($context['lp_blocks'], $context['lp_ads_blocks']);
+
+		if (!empty($context['lp_blocks']['ads'])) {
+			foreach ($context['lp_blocks']['ads'] as $block) {
+				if (!empty($block['parameters']) && !empty($block['parameters']['loader_code'])) {
+					$context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
+				}
+			}
+		}
 
 		if (!function_exists('lp_show_blocks'))
 			loadTemplate('LightPortal/ViewBlock');
