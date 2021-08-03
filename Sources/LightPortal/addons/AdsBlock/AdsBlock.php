@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
-use Bugo\LightPortal\{Helpers, Plugin};
+use Bugo\LightPortal\{Helpers, ManageBlocks, Plugin};
 
 /**
  * AdsBlock
@@ -47,6 +47,16 @@ class AdsBlock extends Plugin
 	private $topics = '';
 
 	/**
+	 * @var string
+	 */
+	private $end_date = '';
+
+	/**
+	 * @var string
+	 */
+	private $end_time = '';
+
+	/**
 	 * @param array $config_vars
 	 * @return void
 	 */
@@ -83,6 +93,8 @@ class AdsBlock extends Plugin
 		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
 		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
 		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
+		$options['ads_block']['parameters']['end_date']      = $this->end_date;
+		$options['ads_block']['parameters']['end_time']      = date('H:i');
 	}
 
 	/**
@@ -114,6 +126,8 @@ class AdsBlock extends Plugin
 		);
 		$parameters['ads_boards'] = FILTER_SANITIZE_STRING;
 		$parameters['ads_topics'] = FILTER_SANITIZE_STRING;
+		$parameters['end_date']   = FILTER_SANITIZE_STRING;
+		$parameters['end_time']   = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -209,6 +223,11 @@ class AdsBlock extends Plugin
 			),
 			'tab' => 'access_placement'
 		);
+
+		$context['posting_fields']['end_time']['label']['html'] = '<label for="end_date">' . $txt['lp_ads_block_addon_end_time'] . '</label>';
+		$context['posting_fields']['end_time']['input']['html'] = '
+			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $context['lp_block']['options']['parameters']['end_date'] . '">
+			<input type="time" name="end_time" value="' . $context['lp_block']['options']['parameters']['end_time'] . '">';
 	}
 
 	/**
@@ -253,6 +272,12 @@ class AdsBlock extends Plugin
 			foreach ($context['lp_blocks']['ads'] as $block) {
 				if (!empty($block['parameters']) && !empty($block['parameters']['loader_code'])) {
 					$context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
+				}
+
+				if (!empty($block['parameters']) && !empty($block['parameters']['end_date'])) {
+					if ($this->getEndTime($block['parameters']) <= time()) {
+						ManageBlocks::toggleStatus([$block['id']]);
+					}
 				}
 			}
 		}
@@ -494,5 +519,22 @@ class AdsBlock extends Plugin
 			),
 			$txt['lp_ads_block_addon_placement_set']
 		);
+	}
+
+	/**
+	 * @param array $params
+	 * @return int
+	 */
+	private function getEndTime(array $params): int
+	{
+		$end_time = time();
+
+		if (!empty($params['end_date']))
+			$end_time = strtotime($params['end_date']);
+
+		if (!empty($params['end_time']))
+			$end_time = strtotime(date('Y-m-d', $end_time) . ' ' . $params['end_time']);
+
+		return $end_time;
 	}
 }
