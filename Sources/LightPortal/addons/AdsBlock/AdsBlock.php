@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\AdsBlock;
-
-use Bugo\LightPortal\{Helpers, ManageBlocks, Plugin};
-
 /**
  * AdsBlock
  *
@@ -16,45 +12,17 @@ use Bugo\LightPortal\{Helpers, ManageBlocks, Plugin};
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\AdsBlock;
+
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\{Helpers, ManageBlocks};
 
 class AdsBlock extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-ad';
-
-	/**
-	 * @var string
-	 */
-	private $loader_code = '';
-
-	/**
-	 * @var string
-	 */
-	private $placement = '';
-
-	/**
-	 * @var string
-	 */
-	private $boards = '';
-
-	/**
-	 * @var string
-	 */
-	private $topics = '';
-
-	/**
-	 * @var string
-	 */
-	private $end_date = '';
-
-	/**
-	 * @var string
-	 */
-	private $end_time = '';
+	public $icon = 'fas fa-ad';
 
 	/**
 	 * @param array $config_vars
@@ -62,7 +30,7 @@ class AdsBlock extends Plugin
 	 */
 	public function addSettings(&$config_vars)
 	{
-		$config_vars[] = array('int', 'lp_ads_block_addon_min_replies');
+		$config_vars['ads_block'][] = array('int', 'min_replies');
 	}
 
 	/**
@@ -89,12 +57,14 @@ class AdsBlock extends Plugin
 	{
 		$options['ads_block']['content'] = 'html';
 
-		$options['ads_block']['parameters']['loader_code']   = $this->loader_code;
-		$options['ads_block']['parameters']['ads_placement'] = $this->placement;
-		$options['ads_block']['parameters']['ads_boards']    = $this->boards;
-		$options['ads_block']['parameters']['ads_topics']    = $this->topics;
-		$options['ads_block']['parameters']['end_date']      = $this->end_date;
-		$options['ads_block']['parameters']['end_time']      = date('H:i');
+		$options['ads_block']['parameters'] = [
+			'loader_code'     => '',
+			'ads_placement'   => '',
+			'included_boards' => '',
+			'included_topics' => '',
+			'end_date'        => '',
+			'end_time'        => date('H:i')
+		];
 	}
 
 	/**
@@ -124,10 +94,10 @@ class AdsBlock extends Plugin
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		);
-		$parameters['ads_boards'] = FILTER_SANITIZE_STRING;
-		$parameters['ads_topics'] = FILTER_SANITIZE_STRING;
-		$parameters['end_date']   = FILTER_SANITIZE_STRING;
-		$parameters['end_time']   = FILTER_SANITIZE_STRING;
+		$parameters['included_boards'] = FILTER_SANITIZE_STRING;
+		$parameters['included_topics'] = FILTER_SANITIZE_STRING;
+		$parameters['end_date']        = FILTER_SANITIZE_STRING;
+		$parameters['end_time']        = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -140,7 +110,7 @@ class AdsBlock extends Plugin
 		if ($context['lp_block']['type'] !== 'ads_block')
 			return;
 
-		$context['posting_fields']['loader_code']['label']['text'] = $txt['lp_ads_block_addon_loader_code'];
+		$context['posting_fields']['loader_code']['label']['text'] = $txt['lp_ads_block']['loader_code'];
 		$context['posting_fields']['loader_code']['input'] = array(
 			'type' => 'textarea',
 			'attributes' => array(
@@ -200,31 +170,31 @@ class AdsBlock extends Plugin
 			);
 		}
 
-		$context['posting_fields']['ads_boards']['label']['text'] = $txt['lp_ads_block_addon_ads_boards'];
-		$context['posting_fields']['ads_boards']['input'] = array(
+		$context['posting_fields']['included_boards']['label']['text'] = $txt['lp_ads_block']['included_boards'];
+		$context['posting_fields']['included_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_ads_block_addon_ads_boards_subtext'],
+			'after' => $txt['lp_ads_block']['included_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
-				'value'     => $context['lp_block']['options']['parameters']['ads_boards'] ?? '',
+				'value'     => $context['lp_block']['options']['parameters']['included_boards'] ?? '',
 				'style'     => 'width: 100%'
 			),
 			'tab' => 'access_placement'
 		);
 
-		$context['posting_fields']['ads_topics']['label']['text'] = $txt['lp_ads_block_addon_ads_topics'];
-		$context['posting_fields']['ads_topics']['input'] = array(
+		$context['posting_fields']['included_topics']['label']['text'] = $txt['lp_ads_block']['included_topics'];
+		$context['posting_fields']['included_topics']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_ads_block_addon_ads_topics_subtext'],
+			'after' => $txt['lp_ads_block']['included_topics_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
-				'value'     => $context['lp_block']['options']['parameters']['ads_topics'] ?? '',
+				'value'     => $context['lp_block']['options']['parameters']['included_topics'] ?? '',
 				'style'     => 'width: 100%'
 			),
 			'tab' => 'access_placement'
 		);
 
-		$context['posting_fields']['end_time']['label']['html'] = '<label for="end_date">' . $txt['lp_ads_block_addon_end_time'] . '</label>';
+		$context['posting_fields']['end_time']['label']['html'] = '<label for="end_date">' . $txt['lp_ads_block']['end_time'] . '</label>';
 		$context['posting_fields']['end_time']['input']['html'] = '
 			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $context['lp_block']['options']['parameters']['end_date'] . '">
 			<input type="time" name="end_time" value="' . $context['lp_block']['options']['parameters']['end_time'] . '">';
@@ -252,10 +222,10 @@ class AdsBlock extends Plugin
 	{
 		global $context, $txt;
 
-		$context['lp_block_placements']['ads'] = $txt['lp_ads_block_addon_ads_type'];
+		$context['lp_block_placements']['ads'] = $txt['lp_ads_block']['ads_type'];
 
 		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
-			$this->loadTemplate(__DIR__);
+			$this->loadTemplate();
 
 			$context['template_layers'][] = 'ads_block';
 		}
@@ -297,7 +267,7 @@ class AdsBlock extends Plugin
 	{
 		global $context;
 
-		$this->loadTemplate(__DIR__);
+		$this->loadTemplate();
 
 		$context['template_layers'][] = 'ads_placement_board';
 	}
@@ -316,7 +286,7 @@ class AdsBlock extends Plugin
 		if (!empty($modSettings['lp_ads_block_addon_min_replies']) && $context['topicinfo']['num_replies'] < $modSettings['lp_ads_block_addon_min_replies'])
 			return;
 
-		$this->loadTemplate(__DIR__);
+		$this->loadTemplate();
 
 		$context['template_layers'][] = 'ads_placement_topic';
 	}
@@ -517,7 +487,7 @@ class AdsBlock extends Plugin
 				'after_every_last_post',
 				'after_last_post'
 			),
-			$txt['lp_ads_block_addon_placement_set']
+			$txt['lp_ads_block']['placement_set']
 		);
 	}
 

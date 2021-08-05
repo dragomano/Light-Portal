@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Likely;
-
 /**
  * Likely
  *
@@ -14,25 +12,16 @@ namespace Bugo\LightPortal\Addons\Likely;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Likely;
 
-class Likely
+use Bugo\LightPortal\Addons\Plugin;
+
+class Likely extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-share-square';
-
-	/**
-	 * @var string
-	 */
-	private $size = 'small';
-
-	/**
-	 * @var string
-	 */
-	private $skin = 'normal';
+	public $icon = 'far fa-share-square';
 
 	/**
 	 * @var string
@@ -45,8 +34,8 @@ class Likely
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['likely']['parameters']['size']    = $this->size;
-		$options['likely']['parameters']['skin']    = $this->skin;
+		$options['likely']['parameters']['size']    = 'small';
+		$options['likely']['parameters']['skin']    = 'normal';
 		$options['likely']['parameters']['buttons'] = $this->buttons;
 	}
 
@@ -75,7 +64,7 @@ class Likely
 		if ($context['lp_block']['type'] !== 'likely')
 			return;
 
-		$context['posting_fields']['size']['label']['text'] = $txt['lp_likely_addon_size'];
+		$context['posting_fields']['size']['label']['text'] = $txt['lp_likely']['size'];
 		$context['posting_fields']['size']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -94,7 +83,7 @@ class Likely
 			)
 		);
 
-		$context['posting_fields']['skin']['label']['text'] = $txt['lp_likely_addon_skin'];
+		$context['posting_fields']['skin']['label']['text'] = $txt['lp_likely']['skin'];
 		$context['posting_fields']['skin']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -113,10 +102,10 @@ class Likely
 			)
 		);
 
-		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely_addon_buttons'];
+		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely']['buttons'];
 		$context['posting_fields']['buttons']['input'] = array(
 			'type' => 'textarea',
-			'after' => sprintf($txt['lp_likely_addon_buttons_subtext'], $this->buttons),
+			'after' => sprintf($txt['lp_likely']['buttons_subtext'], $this->buttons),
 			'attributes' => array(
 				'id'        => 'buttons',
 				'maxlength' => 255,
@@ -154,9 +143,9 @@ class Likely
 			$buttons = explode(',', $parameters['buttons']);
 
 			foreach ($buttons as $service) {
-				if (!empty($txt['lp_likely_addon_buttons_set'][$service])) {
+				if (!empty($txt['lp_likely']['buttons_set'][$service])) {
 					echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely_addon_buttons_set'][$service], '"', (!empty($modSettings['optimus_tw_cards']) && $service == 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (!empty($settings['og_image']) && $service == 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely_addon_buttons_set'][$service], '</div>';
+					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely']['buttons_set'][$service], '"', (!empty($modSettings['optimus_tw_cards']) && $service == 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (!empty($settings['og_image']) && $service == 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely']['buttons_set'][$service], '</div>';
 				}
 			}
 

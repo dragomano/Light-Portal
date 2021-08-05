@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinySlider;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TinySlider
  *
@@ -16,15 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinySlider;
 
-class TinySlider
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TinySlider extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-images';
+	public $icon = 'far fa-images';
 
 	/**
 	 * @var string
@@ -203,7 +201,7 @@ class TinySlider
 		if ($context['lp_block']['type'] !== 'tiny_slider')
 			return;
 
-		$context['posting_fields']['axis']['label']['text'] = $txt['lp_tiny_slider_addon_axis'];
+		$context['posting_fields']['axis']['label']['text'] = $txt['lp_tiny_slider']['axis'];
 		$context['posting_fields']['axis']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -221,9 +219,9 @@ class TinySlider
 			);
 		}
 
-		$context['posting_fields']['items']['label']['text'] = $txt['lp_tiny_slider_addon_items'];
+		$context['posting_fields']['items']['label']['text'] = $txt['lp_tiny_slider']['items'];
 		$context['posting_fields']['items']['input'] = array(
-			'after' => $txt['lp_tiny_slider_addon_items_subtext'],
+			'after' => $txt['lp_tiny_slider']['items_subtext'],
 			'type' => 'number',
 			'attributes' => array(
 				'id'    => 'items',
@@ -232,7 +230,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['gutter']['label']['text'] = $txt['lp_tiny_slider_addon_gutter'];
+		$context['posting_fields']['gutter']['label']['text'] = $txt['lp_tiny_slider']['gutter'];
 		$context['posting_fields']['gutter']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -242,7 +240,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['edge_padding']['label']['text'] = $txt['lp_tiny_slider_addon_edge_padding'];
+		$context['posting_fields']['edge_padding']['label']['text'] = $txt['lp_tiny_slider']['edge_padding'];
 		$context['posting_fields']['edge_padding']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -252,7 +250,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['controls']['label']['text'] = $txt['lp_tiny_slider_addon_controls'];
+		$context['posting_fields']['controls']['label']['text'] = $txt['lp_tiny_slider']['controls'];
 		$context['posting_fields']['controls']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -261,7 +259,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['nav']['label']['text'] = $txt['lp_tiny_slider_addon_nav'];
+		$context['posting_fields']['nav']['label']['text'] = $txt['lp_tiny_slider']['nav'];
 		$context['posting_fields']['nav']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -270,7 +268,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['nav_as_thumbnails']['label']['text'] = $txt['lp_tiny_slider_addon_nav_as_thumbnails'];
+		$context['posting_fields']['nav_as_thumbnails']['label']['text'] = $txt['lp_tiny_slider']['nav_as_thumbnails'];
 		$context['posting_fields']['nav_as_thumbnails']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -279,7 +277,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['arrow_keys']['label']['text'] = $txt['lp_tiny_slider_addon_arrow_keys'];
+		$context['posting_fields']['arrow_keys']['label']['text'] = $txt['lp_tiny_slider']['arrow_keys'];
 		$context['posting_fields']['arrow_keys']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -288,7 +286,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['fixed_width']['label']['text'] = $txt['lp_tiny_slider_addon_fixed_width'];
+		$context['posting_fields']['fixed_width']['label']['text'] = $txt['lp_tiny_slider']['fixed_width'];
 		$context['posting_fields']['fixed_width']['input'] = array(
 			'after' => $txt['zero_for_no_limit'],
 			'type' => 'number',
@@ -299,7 +297,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['auto_width']['label']['text'] = $txt['lp_tiny_slider_addon_auto_width'];
+		$context['posting_fields']['auto_width']['label']['text'] = $txt['lp_tiny_slider']['auto_width'];
 		$context['posting_fields']['auto_width']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -308,7 +306,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['auto_height']['label']['text'] = $txt['lp_tiny_slider_addon_auto_height'];
+		$context['posting_fields']['auto_height']['label']['text'] = $txt['lp_tiny_slider']['auto_height'];
 		$context['posting_fields']['auto_height']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -317,7 +315,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['slide_by']['label']['text'] = $txt['lp_tiny_slider_addon_slide_by'];
+		$context['posting_fields']['slide_by']['label']['text'] = $txt['lp_tiny_slider']['slide_by'];
 		$context['posting_fields']['slide_by']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -327,7 +325,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['speed']['label']['text'] = $txt['lp_tiny_slider_addon_speed'];
+		$context['posting_fields']['speed']['label']['text'] = $txt['lp_tiny_slider']['speed'];
 		$context['posting_fields']['speed']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -337,7 +335,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['autoplay']['label']['text'] = $txt['lp_tiny_slider_addon_autoplay'];
+		$context['posting_fields']['autoplay']['label']['text'] = $txt['lp_tiny_slider']['autoplay'];
 		$context['posting_fields']['autoplay']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -346,7 +344,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['autoplay_timeout']['label']['text'] = $txt['lp_tiny_slider_addon_autoplay_timeout'];
+		$context['posting_fields']['autoplay_timeout']['label']['text'] = $txt['lp_tiny_slider']['autoplay_timeout'];
 		$context['posting_fields']['autoplay_timeout']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -356,7 +354,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['autoplay_direction']['label']['text'] = $txt['lp_tiny_slider_addon_autoplay_direction'];
+		$context['posting_fields']['autoplay_direction']['label']['text'] = $txt['lp_tiny_slider']['autoplay_direction'];
 		$context['posting_fields']['autoplay_direction']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -365,7 +363,7 @@ class TinySlider
 			'options' => array()
 		);
 
-		$autoplay_directions = array_combine(array('forward', 'backward'), $txt['lp_tiny_slider_addon_autoplay_direction_set']);
+		$autoplay_directions = array_combine(array('forward', 'backward'), $txt['lp_tiny_slider']['autoplay_direction_set']);
 
 		foreach ($autoplay_directions as $key => $value) {
 			$context['posting_fields']['autoplay_direction']['input']['options'][$value] = array(
@@ -374,7 +372,7 @@ class TinySlider
 			);
 		}
 
-		$context['posting_fields']['loop']['label']['text'] = $txt['lp_tiny_slider_addon_loop'];
+		$context['posting_fields']['loop']['label']['text'] = $txt['lp_tiny_slider']['loop'];
 		$context['posting_fields']['loop']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -383,7 +381,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['rewind']['label']['text'] = $txt['lp_tiny_slider_addon_rewind'];
+		$context['posting_fields']['rewind']['label']['text'] = $txt['lp_tiny_slider']['rewind'];
 		$context['posting_fields']['rewind']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -392,7 +390,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['lazyload']['label']['text'] = $txt['lp_tiny_slider_addon_lazyload'];
+		$context['posting_fields']['lazyload']['label']['text'] = $txt['lp_tiny_slider']['lazyload'];
 		$context['posting_fields']['lazyload']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -401,7 +399,7 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['mouse_drag']['label']['text'] = $txt['lp_tiny_slider_addon_mouse_drag'];
+		$context['posting_fields']['mouse_drag']['label']['text'] = $txt['lp_tiny_slider']['mouse_drag'];
 		$context['posting_fields']['mouse_drag']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -410,10 +408,10 @@ class TinySlider
 			)
 		);
 
-		$context['posting_fields']['images']['label']['text'] = $txt['lp_tiny_slider_addon_images'];
+		$context['posting_fields']['images']['label']['text'] = $txt['lp_tiny_slider']['images'];
 		$context['posting_fields']['images']['input'] = array(
 			'type' => 'textarea',
-			'after' => $txt['lp_tiny_slider_addon_images_subtext'],
+			'after' => $txt['lp_tiny_slider']['images_subtext'],
 			'attributes' => array(
 				'id'       => 'images',
 				'value'    => $context['lp_block']['options']['parameters']['images'],
@@ -475,7 +473,7 @@ class TinySlider
 		}
 
 		if (!empty($parameters['controls'])) {
-			$buttons = array_combine(array('prev', 'next'), $txt['lp_tiny_slider_addon_controls_buttons']);
+			$buttons = array_combine(array('prev', 'next'), $txt['lp_tiny_slider']['controls_buttons']);
 
 			$html .= '
 			<ul class="controls customize-controls">

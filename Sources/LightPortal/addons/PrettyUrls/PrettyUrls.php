@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\PrettyUrls;
-
 /**
  * PrettyUrls
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\PrettyUrls;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\PrettyUrls;
 
-class PrettyUrls
+use Bugo\LightPortal\Addons\Plugin;
+
+class PrettyUrls extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
+	public $type = 'other';
 
 	/**
 	 * Give a hint to PrettyUrls mod about "action=portal"

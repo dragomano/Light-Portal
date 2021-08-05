@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\BoardNews;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * BoardNews
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\BoardNews;
 
-class BoardNews
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class BoardNews extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-newspaper';
-
-	/**
-	 * @var int
-	 */
-	private $board_id = 0;
-
-	/**
-	 * @var int
-	 */
-	private $num_posts = 5;
+	public $icon = 'fas fa-newspaper';
 
 	/**
 	 * @param array $options
@@ -42,8 +30,10 @@ class BoardNews
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['board_news']['parameters']['board_id']  = $this->board_id;
-		$options['board_news']['parameters']['num_posts'] = $this->num_posts;
+		$options['board_news']['parameters'] = [
+			'board_id'  => 0,
+			'num_posts' => 5,
+		];
 	}
 
 	/**
@@ -90,7 +80,7 @@ class BoardNews
 		if ($context['lp_block']['type'] !== 'board_news')
 			return;
 
-		$context['posting_fields']['board_id']['label']['text'] = $txt['lp_board_news_addon_board_id'];
+		$context['posting_fields']['board_id']['label']['text'] = $txt['lp_board_news']['board_id'];
 		$context['posting_fields']['board_id']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -112,7 +102,7 @@ class BoardNews
 			}
 		}
 
-		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_board_news_addon_num_posts'];
+		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_board_news']['num_posts'];
 		$context['posting_fields']['num_posts']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -136,6 +126,7 @@ class BoardNews
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
 	}
 

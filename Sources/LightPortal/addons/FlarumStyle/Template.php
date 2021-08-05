@@ -18,10 +18,10 @@ function show_ffs_sidebar()
 				<div class="roundframe">
 					<ul>
 						<li>
-							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style_addon_all_boards'], '</a>
+							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style']['all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=portal;sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style_addon_tags'], '</a>
+							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=portal;sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style']['tags'], '</a>
 						</li>
 					</ul>
 				</div>

@@ -374,22 +374,6 @@ class Helpers
 	}
 
 	/**
-	 * Form a list of addons that not installed
-	 *
-	 * Формируем список неустановленных плагинов
-	 *
-	 * @param string $type
-	 * @return void
-	 */
-	public static function prepareMissingBlockTypes(string $type)
-	{
-		global $txt, $context;
-
-		if (empty($txt['lp_block_types'][$type]))
-			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
-	}
-
-	/**
 	 * @param string $content
 	 * @return void
 	 */
@@ -603,7 +587,7 @@ class Helpers
 			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
 			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
-		Subs::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+		Addons::run('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
 	}
 
 	/**
@@ -651,7 +635,7 @@ class Helpers
 				break;
 
 			default:
-				Subs::runAddons('parseContent', array(&$content, $type));
+				Addons::run('parseContent', array(&$content, $type));
 		}
 	}
 

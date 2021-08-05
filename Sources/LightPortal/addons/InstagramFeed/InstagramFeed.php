@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\InstagramFeed;
-
 /**
  * InstagramFeed
  *
@@ -14,70 +12,16 @@ namespace Bugo\LightPortal\Addons\InstagramFeed;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\InstagramFeed;
 
-class InstagramFeed
+use Bugo\LightPortal\Addons\Plugin;
+
+class InstagramFeed extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fab fa-instagram';
-
-	/**
-	 * @var string
-	 */
-	private $username = '';
-
-	/**
-	 * @var string
-	 */
-	private $tag = '';
-
-	/**
-	 * @var bool
-	 */
-	private $display_profile = false;
-
-	/**
-	 * @var bool
-	 */
-	private $display_biography = false;
-
-	/**
-	 * @var bool
-	 */
-	private $display_gallery = true;
-
-	/**
-	 * @var bool
-	 */
-	private $display_captions = false;
-
-	/**
-	 * @var bool
-	 */
-	private $display_igtv = false;
-
-	/**
-	 * @var int
-	 */
-	private $num_items = 8;
-
-	/**
-	 * @var int
-	 */
-	private $num_items_per_row = 4;
-
-	/**
-	 * @var float
-	 */
-	private $margin = 0.5;
-
-	/**
-	 * @var int
-	 */
-	private $image_size = 640;
+	public $icon = 'fab fa-instagram';
 
 	/**
 	 * @var array
@@ -90,17 +34,19 @@ class InstagramFeed
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['instagram_feed']['parameters']['username']          = $this->username;
-		$options['instagram_feed']['parameters']['tag']               = $this->tag;
-		$options['instagram_feed']['parameters']['display_profile']   = $this->display_profile;
-		$options['instagram_feed']['parameters']['display_biography'] = $this->display_biography;
-		$options['instagram_feed']['parameters']['display_gallery']   = $this->display_gallery;
-		$options['instagram_feed']['parameters']['display_captions']  = $this->display_captions;
-		$options['instagram_feed']['parameters']['display_igtv']      = $this->display_igtv;
-		$options['instagram_feed']['parameters']['items']             = $this->num_items;
-		$options['instagram_feed']['parameters']['items_per_row']     = $this->num_items_per_row;
-		$options['instagram_feed']['parameters']['margin']            = $this->margin;
-		$options['instagram_feed']['parameters']['image_size']        = $this->image_size;
+		$options['instagram_feed']['parameters'] = [
+			'username'          => '',
+			'tag'               => '',
+			'display_profile'   => false,
+			'display_biography' => false,
+			'display_gallery'   => true,
+			'display_captions'  => false,
+			'display_igtv'      => false,
+			'items'             => 8,
+			'items_per_row'     => 4,
+			'margin'            => .5,
+			'image_size'        => 640,
+		];
 	}
 
 	/**
@@ -136,10 +82,10 @@ class InstagramFeed
 		if ($context['lp_block']['type'] !== 'instagram_feed')
 			return;
 
-		$context['posting_fields']['username']['label']['text'] = $txt['lp_instagram_feed_addon_username'];
+		$context['posting_fields']['username']['label']['text'] = $txt['lp_instagram_feed']['username'];
 		$context['posting_fields']['username']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_instagram_feed_addon_username_subtext'],
+			'after' => $txt['lp_instagram_feed']['username_subtext'],
 			'attributes' => array(
 				'id'        => 'username',
 				'value'     => $context['lp_block']['options']['parameters']['username'],
@@ -153,11 +99,11 @@ class InstagramFeed
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['tag']['label']['text'] = $txt['lp_instagram_feed_addon_tag'];
+		$context['posting_fields']['tag']['label']['text'] = $txt['lp_instagram_feed']['tag'];
 		$context['posting_fields']['tag']['input'] = array(
 			'type' => 'text',
 			'before' => '<i class="fas fa-hashtag"></i>',
-			'after' => $txt['lp_instagram_feed_addon_tag_subtext'],
+			'after' => $txt['lp_instagram_feed']['tag_subtext'],
 			'attributes' => array(
 				'id'        => 'tag',
 				'value'     => $context['lp_block']['options']['parameters']['tag'],
@@ -171,7 +117,7 @@ class InstagramFeed
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['display_profile']['label']['text'] = $txt['lp_instagram_feed_addon_display_profile'];
+		$context['posting_fields']['display_profile']['label']['text'] = $txt['lp_instagram_feed']['display_profile'];
 		$context['posting_fields']['display_profile']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -180,17 +126,17 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['display_biography']['label']['text'] = $txt['lp_instagram_feed_addon_display_biography'];
+		$context['posting_fields']['display_biography']['label']['text'] = $txt['lp_instagram_feed']['display_biography'];
 		$context['posting_fields']['display_biography']['input'] = array(
 			'type' => 'checkbox',
-			'after' => $txt['lp_instagram_feed_addon_display_biography_subtext'],
+			'after' => $txt['lp_instagram_feed']['display_biography_subtext'],
 			'attributes' => array(
 				'id'      => 'display_biography',
 				'checked' => !empty($context['lp_block']['options']['parameters']['display_biography'])
 			)
 		);
 
-		$context['posting_fields']['display_gallery']['label']['text'] = $txt['lp_instagram_feed_addon_display_gallery'];
+		$context['posting_fields']['display_gallery']['label']['text'] = $txt['lp_instagram_feed']['display_gallery'];
 		$context['posting_fields']['display_gallery']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -199,7 +145,7 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['display_captions']['label']['text'] = $txt['lp_instagram_feed_addon_display_captions'];
+		$context['posting_fields']['display_captions']['label']['text'] = $txt['lp_instagram_feed']['display_captions'];
 		$context['posting_fields']['display_captions']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -208,20 +154,20 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['display_igtv']['label']['text'] = $txt['lp_instagram_feed_addon_display_igtv'];
+		$context['posting_fields']['display_igtv']['label']['text'] = $txt['lp_instagram_feed']['display_igtv'];
 		$context['posting_fields']['display_igtv']['input'] = array(
 			'type' => 'checkbox',
-			'after' => $txt['lp_instagram_feed_addon_display_igtv_subtext'],
+			'after' => $txt['lp_instagram_feed']['display_igtv_subtext'],
 			'attributes' => array(
 				'id'      => 'display_igtv',
 				'checked' => !empty($context['lp_block']['options']['parameters']['display_igtv'])
 			)
 		);
 
-		$context['posting_fields']['items']['label']['text'] = $txt['lp_instagram_feed_addon_items'];
+		$context['posting_fields']['items']['label']['text'] = $txt['lp_instagram_feed']['items'];
 		$context['posting_fields']['items']['input'] = array(
 			'type' => 'number',
-			'after' => $txt['lp_instagram_feed_addon_items_subtext'],
+			'after' => $txt['lp_instagram_feed']['items_subtext'],
 			'attributes' => array(
 				'id'    => 'items',
 				'min'   => 1,
@@ -231,7 +177,7 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['items_per_row']['label']['text'] = $txt['lp_instagram_feed_addon_items_per_row'];
+		$context['posting_fields']['items_per_row']['label']['text'] = $txt['lp_instagram_feed']['items_per_row'];
 		$context['posting_fields']['items_per_row']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -241,7 +187,7 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['margin']['label']['text'] = $txt['lp_instagram_feed_addon_margin'];
+		$context['posting_fields']['margin']['label']['text'] = $txt['lp_instagram_feed']['margin'];
 		$context['posting_fields']['margin']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -252,10 +198,10 @@ class InstagramFeed
 			)
 		);
 
-		$context['posting_fields']['image_size']['label']['text'] = $txt['lp_instagram_feed_addon_image_size'];
+		$context['posting_fields']['image_size']['label']['text'] = $txt['lp_instagram_feed']['image_size'];
 		$context['posting_fields']['image_size']['input'] = array(
 			'type' => 'select',
-			'after' => $txt['lp_instagram_feed_addon_image_size_subtext'],
+			'after' => $txt['lp_instagram_feed']['image_size_subtext'],
 			'attributes' => array(
 				'id'    => 'image_size'
 			),
@@ -295,11 +241,11 @@ class InstagramFeed
 				"display_gallery": ' . (!empty($parameters['display_gallery']) ? 'true' : 'false') . ',
 				"display_captions": ' . (!empty($parameters['display_captions']) ? 'true' : 'false') . ',
 				"display_igtv": ' . (!empty($parameters['display_igtv']) ? 'true' : 'false') . ',
-				"items": ' . (!empty($parameters['items']) ? $parameters['items'] : $this->num_items) . ',
-				"items_per_row": ' . (!empty($parameters['items_per_row']) ? $parameters['items_per_row'] : $this->num_items_per_row) . ',
+				"items": ' . (!empty($parameters['items']) ? $parameters['items'] : 8) . ',
+				"items_per_row": ' . (!empty($parameters['items_per_row']) ? $parameters['items_per_row'] : 4) . ',
 				"lazy_load": true,
-				"margin": ' . (!empty($parameters['margin']) ? $parameters['margin'] : $this->margin) . ',
-				"image_size": ' . (!empty($parameters['image_size']) ? $parameters['image_size'] : $this->image_size) . '
+				"margin": ' . (!empty($parameters['margin']) ? $parameters['margin'] : .5) . ',
+				"image_size": ' . (!empty($parameters['image_size']) ? $parameters['image_size'] : 640) . '
 			});
 		})();', true);
 

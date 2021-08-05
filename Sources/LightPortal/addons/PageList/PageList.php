@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\PageList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * PageList
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\PageList;
 
-class PageList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class PageList extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-file-alt';
-
-	/**
-	 * @var array
-	 */
-	private $categories = [];
-
-	/**
-	 * @var string
-	 */
-	private $sort = 'page_id';
-
-	/**
-	 * @var int
-	 */
-	private $num_pages = 10;
+	public $icon = 'far fa-file-alt';
 
 	/**
 	 * @param array $options
@@ -47,9 +30,11 @@ class PageList
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['page_list']['parameters']['categories'] = $this->categories;
-		$options['page_list']['parameters']['sort']       = $this->sort;
-		$options['page_list']['parameters']['num_pages']  = $this->num_pages;
+		$options['page_list']['parameters'] = [
+			'categories' => [],
+			'sort'       => 'page_id',
+			'num_pages'  => 10,
+		];
 	}
 
 	/**
@@ -98,7 +83,7 @@ class PageList
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_page_list_addon_categories_subtext'] . '",
+			placeholder: "' . $txt['lp_page_list']['categories_subtext'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
@@ -114,7 +99,7 @@ class PageList
 			'options' => array()
 		);
 
-		$context['posting_fields']['sort']['label']['text'] = $txt['lp_page_list_addon_sort'];
+		$context['posting_fields']['sort']['label']['text'] = $txt['lp_page_list']['sort'];
 		$context['posting_fields']['sort']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -123,7 +108,7 @@ class PageList
 			'options' => array()
 		);
 
-		$sort_set = array_combine(array('page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'), $txt['lp_page_list_addon_sort_set']);
+		$sort_set = array_combine(array('page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'), $txt['lp_page_list']['sort_set']);
 
 		foreach ($sort_set as $key => $value) {
 			$context['posting_fields']['sort']['input']['options'][$value] = array(
@@ -132,10 +117,10 @@ class PageList
 			);
 		}
 
-		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list_addon_num_pages'];
+		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list']['num_pages'];
 		$context['posting_fields']['num_pages']['input'] = array(
 			'type' => 'number',
-			'after' => $txt['lp_page_list_addon_num_pages_subtext'],
+			'after' => $txt['lp_page_list']['num_pages_subtext'],
 			'attributes' => array(
 				'id'    => 'num_pages',
 				'min'   => 0,
@@ -253,7 +238,7 @@ class PageList
 			echo '
 		</ul>';
 		} else {
-			echo '<div class="errorbox">', $txt['lp_page_list_addon_no_items'], '</div>';
+			echo '<div class="errorbox">', $txt['lp_page_list']['no_items'], '</div>';
 		}
 
 		$content = ob_get_clean();

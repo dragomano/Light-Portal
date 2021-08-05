@@ -146,12 +146,12 @@ function show_block_entry($id, $data)
 			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'] ?? '');
 
 	if (empty($title))
-		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
+		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
 
 	echo '
 		</td>
 		<td class="type">
-			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
+			', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
 		<td class="areas">
 			', $data['areas'], '
@@ -180,7 +180,7 @@ function show_block_entry($id, $data)
 							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
 						</li>';
 
-	if (isset($txt['lp_block_types'][$data['type']])) {
+	if (isset($txt['lp_' . $data['type']]['title'])) {
 		echo '
 						<li>
 							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
@@ -218,15 +218,14 @@ function template_block_add()
 		<form name="block_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
 			<div class="row">';
 
-	asort($txt['lp_block_types']);
-	foreach ($txt['lp_block_types'] as $type => $title) {
+	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
-					<div class="item roundframe" data-type="', $type, '" @click="block.add($el.children[0])">
-						<i class="', $context['lp_' . $type . '_icon'], '"></i>
-						<strong>', $title, '</strong>
+					<div class="item roundframe" data-type="', $block, '" @click="block.add($el.children[0])">
+						<i class="', $context['lp_' . $block]['icon'], '"></i>
+						<strong>', $txt['lp_' . $block]['title'], '</strong>
 						<hr>
-						<p>', $txt['lp_block_types_descriptions'][$type], '</p>
+						<p>', $txt['lp_' . $block]['block_desc'] ?? $txt['lp_' . $block]['description'], '</p>
 					</div>
 				</div>';
 	}
@@ -271,10 +270,10 @@ function template_block_post()
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_block_types'][$context['lp_block']['type']], '</h3>
+		<h3 class="catbg">', $txt['lp_' . $context['lp_block']['type']]['title'], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+		', $txt['lp_' . $context['lp_block']['type']]['description'], '
 	</div>';
 	}
 

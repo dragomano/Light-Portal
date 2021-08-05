@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\ArticleList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * ArticleList
  *
@@ -16,40 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\ArticleList;
 
-class ArticleList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class ArticleList extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-file-alt';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var string
-	 */
-	private $article_body_class = 'div.descbox';
-
-	/**
-	 * @var int
-	 */
-	private $article_type = 0;
-
-	/**
-	 * @var string
-	 */
-	private $ids = '';
-
-	/**
-	 * @var bool
-	 */
-	private $seek_images = false;
+	public $icon = 'far fa-file-alt';
 
 	/**
 	 * @param array $options
@@ -57,12 +30,14 @@ class ArticleList
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['article_list']['no_content_class'] = $this->no_content_class;
+		$options['article_list']['no_content_class'] = true;
 
-		$options['article_list']['parameters']['article_body_class'] = $this->article_body_class;
-		$options['article_list']['parameters']['article_type']       = $this->article_type;
-		$options['article_list']['parameters']['ids']                = $this->ids;
-		$options['article_list']['parameters']['seek_images']        = $this->seek_images;
+		$options['article_list']['parameters'] = [
+			'body_class'  => 'div.descbox',
+			'type'        => 0,
+			'ids'         => '',
+			'seek_images' => false
+		];
 	}
 
 	/**
@@ -75,10 +50,10 @@ class ArticleList
 		if ($type !== 'article_list')
 			return;
 
-		$parameters['article_body_class'] = FILTER_SANITIZE_STRING;
-		$parameters['article_type']       = FILTER_VALIDATE_INT;
-		$parameters['ids']                = FILTER_SANITIZE_STRING;
-		$parameters['seek_images']        = FILTER_VALIDATE_BOOLEAN;
+		$parameters['body_class']  = FILTER_SANITIZE_STRING;
+		$parameters['type']        = FILTER_VALIDATE_INT;
+		$parameters['ids']         = FILTER_SANITIZE_STRING;
+		$parameters['seek_images'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -91,11 +66,11 @@ class ArticleList
 		if ($context['lp_block']['type'] !== 'article_list')
 			return;
 
-		$context['posting_fields']['article_body_class']['label']['text'] = $txt['lp_article_list_addon_body_class'];
-		$context['posting_fields']['article_body_class']['input'] = array(
+		$context['posting_fields']['body_class']['label']['text'] = $txt['lp_article_list']['body_class'];
+		$context['posting_fields']['body_class']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id' => 'article_body_class'
+				'id' => 'body_class'
 			),
 			'options' => array(),
 			'tab' => 'appearance'
@@ -105,33 +80,33 @@ class ArticleList
 			$value = $key;
 			$key   = $key == '_' ? $txt['no'] : $key;
 
-			$context['posting_fields']['article_body_class']['input']['options'][$key] = array(
+			$context['posting_fields']['body_class']['input']['options'][$key] = array(
 				'value'    => $value,
-				'selected' => $value == $context['lp_block']['options']['parameters']['article_body_class']
+				'selected' => $value == $context['lp_block']['options']['parameters']['body_class']
 			);
 		}
 
-		$context['posting_fields']['article_type']['label']['text'] = $txt['lp_article_list_addon_article_type'];
-		$context['posting_fields']['article_type']['input'] = array(
+		$context['posting_fields']['type']['label']['text'] = $txt['lp_article_list']['type'];
+		$context['posting_fields']['type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id' => 'article_type'
+				'id' => 'type'
 			),
 			'options' => array(),
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_article_list_addon_article_type_set'] as $article_type => $title) {
-			$context['posting_fields']['article_type']['input']['options'][$title] = array(
+		foreach ($txt['lp_article_list']['type_set'] as $article_type => $title) {
+			$context['posting_fields']['type']['input']['options'][$title] = array(
 				'value'    => $article_type,
-				'selected' => $article_type == $context['lp_block']['options']['parameters']['article_type']
+				'selected' => $article_type == $context['lp_block']['options']['parameters']['type']
 			);
 		}
 
-		$context['posting_fields']['ids']['label']['text'] = $txt['lp_article_list_addon_ids'];
+		$context['posting_fields']['ids']['label']['text'] = $txt['lp_article_list']['ids'];
 		$context['posting_fields']['ids']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_article_list_addon_ids_subtext'],
+			'after' => $txt['lp_article_list']['ids_subtext'],
 			'attributes' => array(
 				'id'    => 'ids',
 				'value' => $context['lp_block']['options']['parameters']['ids'],
@@ -140,7 +115,7 @@ class ArticleList
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list_addon_seek_images'];
+		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list']['seek_images'];
 		$context['posting_fields']['seek_images']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -289,7 +264,7 @@ class ArticleList
 			return is_numeric($item);
 		});
 
-		$function     = empty($parameters['article_type']) ? 'getTopics' : 'getPages';
+		$function     = empty($parameters['type']) ? 'getTopics' : 'getPages';
 		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
 		ob_start();
@@ -298,7 +273,7 @@ class ArticleList
 			echo '
 		<div class="article_list">';
 
-			if (empty($parameters['article_type'])) {
+			if (empty($parameters['type'])) {
 				foreach ($article_list as $topic) {
 					$content = '';
 					if (!empty($topic['image'])) {
@@ -310,7 +285,7 @@ class ArticleList
 
 					$content .= '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
+					echo sprintf($context['lp_all_content_classes'][$parameters['body_class'] ?: '_'], $content, null);
 				}
 			} else {
 				foreach ($article_list as $page) {
@@ -327,14 +302,14 @@ class ArticleList
 
 					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['article_body_class'] ?: '_'], $content, null);
+					echo sprintf($context['lp_all_content_classes'][$parameters['body_class'] ?: '_'], $content, null);
 				}
 			}
 
 			echo '
 		</div>';
 		} else {
-			echo '<div class="errorbox">', $txt['lp_article_list_addon_no_items'], '</div>';
+			echo '<div class="errorbox">', $txt['lp_article_list']['no_items'], '</div>';
 		}
 
 		$content = ob_get_clean();

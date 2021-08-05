@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\KarmaPostRating;
-
 /**
  * KarmaPostRating
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\KarmaPostRating;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\KarmaPostRating;
 
-class KarmaPostRating
+use Bugo\LightPortal\Addons\Plugin;
+
+class KarmaPostRating extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select rating column from kpr_ratings table for the frontpage topics

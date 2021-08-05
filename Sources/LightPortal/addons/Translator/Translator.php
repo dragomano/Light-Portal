@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Translator;
-
 /**
  * Translator
  *
@@ -14,35 +12,16 @@ namespace Bugo\LightPortal\Addons\Translator;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Translator;
 
-class Translator
+use Bugo\LightPortal\Addons\Plugin;
+
+class Translator extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-language';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var string
-	 */
-	private $engine = 'google';
-
-	/**
-	 * @var string
-	 */
-	private $widget_theme = 'light';
-
-	/**
-	 * @var bool
-	 */
-	private $auto_mode = false;
+	public $icon = 'fas fa-language';
 
 	/**
 	 * @param array $options
@@ -50,11 +29,13 @@ class Translator
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['translator']['no_content_class'] = $this->no_content_class;
+		$options['translator']['no_content_class'] = true;
 
-		$options['translator']['parameters']['engine']       = $this->engine;
-		$options['translator']['parameters']['widget_theme'] = $this->widget_theme;
-		$options['translator']['parameters']['auto_mode']    = $this->auto_mode;
+		$options['translator']['parameters'] = [
+			'engine'       => 'google',
+			'widget_theme' => 'light',
+			'auto_mode'    => false,
+		];
 	}
 
 	/**
@@ -82,7 +63,7 @@ class Translator
 		if ($context['lp_block']['type'] !== 'translator')
 			return;
 
-		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator_addon_engine'];
+		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator']['engine'];
 		$context['posting_fields']['engine']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -90,7 +71,7 @@ class Translator
 			)
 		);
 
-		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator_addon_engine_set']);
+		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator']['engine_set']);
 
 		foreach ($engines as $key => $value) {
 			$context['posting_fields']['engine']['input']['options'][$value] = array(
@@ -102,7 +83,7 @@ class Translator
 		if ($context['lp_block']['options']['parameters']['engine'] == 'google')
 			return;
 
-		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator_addon_widget_theme'];
+		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator']['widget_theme'];
 		$context['posting_fields']['widget_theme']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -121,7 +102,7 @@ class Translator
 			)
 		);
 
-		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator_addon_auto_mode'];
+		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator']['auto_mode'];
 		$context['posting_fields']['auto_mode']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(

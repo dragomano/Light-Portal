@@ -105,7 +105,7 @@ class Settings
 			);
 		}
 
-		Subs::runAddons('adminAreas', array(&$admin_areas));
+		Addons::run('adminAreas', array(&$admin_areas));
 	}
 
 	/**
@@ -634,7 +634,7 @@ class Settings
 			array('callback', 'panel_direction')
 		);
 
-		Subs::runAddons('addPanels', array(&$config_vars));
+		Addons::run('addPanels', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -692,7 +692,7 @@ class Settings
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
-		Subs::runAddons('addMisc', array(&$config_vars));
+		Addons::run('addMisc', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -738,7 +738,7 @@ class Settings
 			$subActions['import'] = array(new Impex\BlockImport, 'main');
 		}
 
-		Subs::runAddons('addBlockAreas', array(&$subActions));
+		Addons::run('addBlockAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -770,7 +770,7 @@ class Settings
 			$subActions['import'] = array(new Impex\PageImport, 'main');
 		}
 
-		Subs::runAddons('addPageAreas', array(&$subActions));
+		Addons::run('addPageAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -793,7 +793,7 @@ class Settings
 			'main' => array(new ManagePlugins, 'main')
 		);
 
-		Subs::runAddons('addPluginAreas', array(&$subActions));
+		Addons::run('addPluginAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}

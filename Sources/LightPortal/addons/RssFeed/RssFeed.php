@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RssFeed;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RssFeed
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RssFeed;
 
-class RssFeed
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RssFeed extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-rss';
-
-	/**
-	 * @var string
-	 */
-	private $url = '';
-
-	/**
-	 * @var bool
-	 */
-	private $show_text = false;
+	public $icon = 'fas fa-rss';
 
 	/**
 	 * @param array $options
@@ -42,8 +30,10 @@ class RssFeed
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['rss_feed']['parameters']['url']       = $this->url;
-		$options['rss_feed']['parameters']['show_text'] = $this->show_text;
+		$options['rss_feed']['parameters'] = [
+			'url'       => '',
+			'show_text' => false,
+		];
 	}
 
 	/**
@@ -70,7 +60,7 @@ class RssFeed
 		if ($context['lp_block']['type'] !== 'rss_feed')
 			return;
 
-		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed_addon_url'];
+		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed']['url'];
 		$context['posting_fields']['url']['input'] = array(
 			'type' => 'url',
 			'attributes' => array(
@@ -83,7 +73,7 @@ class RssFeed
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed_addon_show_text'];
+		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed']['show_text'];
 		$context['posting_fields']['show_text']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(

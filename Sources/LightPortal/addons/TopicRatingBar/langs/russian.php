@@ -1,3 +1,5 @@
 <?php
 
-$txt['lp_topic_rating_bar_description'] = 'Отображение рейтинга <a class="bbc_link" href="https://dragomano.ru/mods/topic-rating-bar" target="_blank" rel="noopener">Topic Rating Bar</a> для тем в режиме статей на главной странице.';
+return [
+	'description' => 'Отображение рейтинга <a class="bbc_link" href="https://dragomano.ru/mods/topic-rating-bar" target="_blank" rel="noopener">Topic Rating Bar</a> для тем в режиме статей на главной странице.',
+];

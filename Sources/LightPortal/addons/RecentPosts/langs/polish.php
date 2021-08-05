@@ -1,10 +1,19 @@
 <?php
 
-$txt['lp_block_types']['recent_posts']              = 'Ostatnie wiadomości';
-$txt['lp_block_types_descriptions']['recent_posts'] = 'Wyświetla listę najnowszych wiadomości na forum.';
-
-$txt['lp_recent_posts_addon_num_posts']       = 'Liczba wyświetlanych wiadomości';
-$txt['lp_recent_posts_addon_type']            = 'Wyświetl link do wiadomości jako';
-$txt['lp_recent_posts_addon_type_set']        = array('tytuł wiadomości', 'podgląd wiadomości');
-$txt['lp_recent_posts_addon_show_avatars']    = 'Pokaż awatary użytkowników';
-$txt['lp_recent_posts_addon_update_interval'] = 'Interwał odświeżania listy w sekundach';
+return [
+	'title' => 'Ostatnie wiadomości',
+	'description' => 'Wyświetla listę najnowszych wiadomości na forum.',
+	'num_posts' => 'Liczba wyświetlanych wiadomości',
+	'type' => 'Wyświetl link do wiadomości jako',
+	'type_set' => array('tytuł wiadomości', 'podgląd wiadomości'),
+	'exclude_boards' => 'Exclude boards',
+	'exclude_boards_subtext' => 'If you specify the IDs of the boards, recent posts will NOT be displayed from these boards.',
+	'include_boards' => 'Include boards',
+	'include_boards_subtext' => 'If you specify the IDs of the boards, recent posts will be displayed ONLY from those boards.',
+	'exclude_topics' => 'Exclude topics',
+	'exclude_topics_subtext' => 'If you specify the IDs of the topics, recent posts will NOT be displayed from these topics.',
+	'include_topic' => 'Include topics',
+	'include_topics_subtext' => 'If you specify the IDs of the topics, recent posts will be displayed ONLY from those topics.',
+	'show_avatars' => 'Pokaż awatary użytkowników',
+	'update_interval' => 'Interwał odświeżania listy w sekundach',
+];

@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\BoardIndex;
-
 /**
  * BoardIndex
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\BoardIndex;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\BoardIndex;
 
-class BoardIndex
+use Bugo\LightPortal\Addons\Plugin;
+
+class BoardIndex extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
+	public $type = 'other';
 
 	/**
 	 * @return void
@@ -40,12 +39,12 @@ class BoardIndex
 	{
 		global $txt, $scripturl, $modSettings;
 
-		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
+		$txt['lp_board_index']['description'] = sprintf($txt['lp_board_index']['description'], $scripturl . '?action=forum');
 
 		if (!isset($modSettings['lp_board_index_addon_allow_for_spiders']))
 			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);
 
-		$config_vars[] = array('check', 'lp_board_index_addon_allow_for_spiders');
+		$config_vars['board_index'][] = array('check', 'allow_for_spiders');
 	}
 
 	/**

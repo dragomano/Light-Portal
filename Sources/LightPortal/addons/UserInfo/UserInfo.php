@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\UserInfo;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * UserInfo
  *
@@ -16,20 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\UserInfo;
 
-class UserInfo
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class UserInfo extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-user';
-
-	/**
-	 * @var bool
-	 */
-	private $use_fa_icons = true;
+	public $icon = 'fas fa-user';
 
 	/**
 	 * @param array $options
@@ -37,7 +30,7 @@ class UserInfo
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['user_info']['parameters']['use_fa_icons'] = $this->use_fa_icons;
+		$options['user_info']['parameters']['use_fa_icons'] = true;
 	}
 
 	/**
@@ -63,7 +56,7 @@ class UserInfo
 		if ($context['lp_block']['type'] !== 'user_info')
 			return;
 
-		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_user_info_addon_use_fa_icons'];
+		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_user_info']['use_fa_icons'];
 		$context['posting_fields']['use_fa_icons']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(

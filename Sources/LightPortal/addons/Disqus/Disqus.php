@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Disqus;
-
 /**
  * Disqus
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\Disqus;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Disqus;
 
-class Disqus
+use Bugo\LightPortal\Addons\Plugin;
+
+class Disqus extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'comment';
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -46,7 +45,7 @@ class Disqus
 	{
 		global $txt;
 
-		$config_vars[] = array('text', 'lp_disqus_addon_shortname', 'subtext' => $txt['lp_disqus_addon_shortname_subtext']);
+		$config_vars['disqus'][] = array('text', 'shortname', 'subtext' => $txt['lp_disqus']['shortname_subtext']);
 	}
 
 	/**

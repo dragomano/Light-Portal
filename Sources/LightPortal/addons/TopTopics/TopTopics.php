@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopTopics
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopTopics;
 
-class TopTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopTopics extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-balance-scale-left';
-
-	/**
-	 * @var string
-	 */
-	private $type = 'replies';
-
-	/**
-	 * @var int
-	 */
-	private $num_topics = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * @param array $options
@@ -47,9 +30,11 @@ class TopTopics
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['top_topics']['parameters']['popularity_type']   = $this->type;
-		$options['top_topics']['parameters']['num_topics']        = $this->num_topics;
-		$options['top_topics']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_topics']['parameters'] = [
+			'popularity_type'   => 'replies',
+			'num_topics'        => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -77,7 +62,7 @@ class TopTopics
 		if ($context['lp_block']['type'] !== 'top_topics')
 			return;
 
-		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics_addon_type'];
+		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -86,7 +71,7 @@ class TopTopics
 			'options' => array()
 		);
 
-		$types = array_combine(array('replies', 'views'), $txt['lp_top_topics_addon_type_set']);
+		$types = array_combine(array('replies', 'views'), $txt['lp_top_topics']['type_set']);
 
 		foreach ($types as $key => $value) {
 			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
@@ -95,7 +80,7 @@ class TopTopics
 			);
 		}
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics_addon_num_topics'];
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -105,7 +90,7 @@ class TopTopics
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_topics_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_topics']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -128,6 +113,7 @@ class TopTopics
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}
 

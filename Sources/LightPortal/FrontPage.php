@@ -75,7 +75,7 @@ class FrontPage
 		}
 
 		// Mod authors can define their own template
-		Subs::runAddons('frontCustomTemplate');
+		Addons::run('frontCustomTemplate');
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -130,7 +130,7 @@ class FrontPage
 		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
 		$context['lp_frontpage_articles'] = $articles;
 
-		Subs::runAddons('frontAssets');
+		Addons::run('frontAssets');
 	}
 
 	/**

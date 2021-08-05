@@ -90,7 +90,7 @@ class ManageBlocks
 
 			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 
-			Helpers::prepareMissingBlockTypes($row['type']);
+			$this->prepareMissingBlockTypes($row['type']);
 		}
 
 		$smcFunc['db_free_result']($request);
@@ -168,7 +168,7 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries'] += 3;
 
-		Subs::runAddons('onBlockRemoving', array($items));
+		Addons::run('onBlockRemoving', array($items));
 	}
 
 	/**
@@ -301,6 +301,15 @@ class ManageBlocks
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
 
+		$context['lp_all_blocks'] = ['php', 'html', 'bbc'];
+		foreach ($context['lp_enabled_plugins'] as $addon) {
+			$addon = Helpers::getSnakeName($addon);
+
+			if (isset($txt['lp_' . $addon]['title']))
+				$context['lp_all_blocks'][] = $context['lp_' . $addon]['abbr'] ?? $addon;
+		}
+		asort($context['lp_all_blocks']);
+
 		$context['sub_template'] = 'block_add';
 
 		if (Helpers::post()->has('add_block') === false)
@@ -378,7 +387,7 @@ class ManageBlocks
 			]
 		];
 
-		Subs::runAddons('blockOptions', array(&$options));
+		Addons::run('blockOptions', array(&$options));
 
 		return $options;
 	}
@@ -414,7 +423,7 @@ class ManageBlocks
 
 			$parameters = [];
 
-			Subs::runAddons('validateBlockData', array(&$parameters, $context['current_block']['type']));
+			Addons::run('validateBlockData', array(&$parameters, $context['current_block']['type']));
 
 			$post_data = filter_input_array(INPUT_POST, $args);
 			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
@@ -709,7 +718,7 @@ class ManageBlocks
 			);
 		}
 
-		Subs::runAddons('prepareBlockFields');
+		Addons::run('prepareBlockFields');
 
 		Helpers::preparePostFields();
 
@@ -786,7 +795,7 @@ class ManageBlocks
 		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc')
 			Helpers::createBbcEditor($context['lp_block']['content']);
 
-		Subs::runAddons('prepareEditor', array($context['lp_block']));
+		Addons::run('prepareEditor', array($context['lp_block']));
 	}
 
 	/**
@@ -925,7 +934,7 @@ class ManageBlocks
 		if (empty($item))
 			return 0;
 
-		Subs::runAddons('onBlockSaving', array($item));
+		Addons::run('onBlockSaving', array($item));
 
 		if (!empty($context['lp_block']['title'])) {
 			$titles = [];
@@ -1014,7 +1023,7 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries']++;
 
-		Subs::runAddons('onBlockSaving', array($item));
+		Addons::run('onBlockSaving', array($item));
 
 		if (!empty($context['lp_block']['title'])) {
 			$titles = [];
@@ -1150,5 +1159,21 @@ class ManageBlocks
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
 		backButton.setAttribute("href", smf_scripturl + "?action=admin;area=lp_blocks");
 		backButton.className = "button floatnone";', true);
+	}
+
+	/**
+	 * Form a list of addons that not installed
+	 *
+	 * Формируем список неустановленных плагинов
+	 *
+	 * @param string $type
+	 * @return void
+	 */
+	private function prepareMissingBlockTypes(string $type)
+	{
+		global $txt, $context;
+
+		if (empty($txt['lp_block_types'][$type]))
+			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
 	}
 }

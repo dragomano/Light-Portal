@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Trumbowyg;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Trumbowyg
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Trumbowyg;
 
-class Trumbowyg
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Trumbowyg extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'editor';
-
-	/**
-	 * @var string
-	 */
-	private $dark_themes = '';
-
-	/**
-	 * @var bool
-	 */
-	private $auto_grow = 0;
+	public $type = 'editor';
 
 	/**
 	 * @param array $config_vars
@@ -42,15 +30,10 @@ class Trumbowyg
 	 */
 	public function addSettings(&$config_vars)
 	{
-		global $modSettings, $txt;
+		global $txt;
 
-		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
-			updateSettings(array('lp_trumbowyg_addon_dark_themes' => $this->dark_themes));
-		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
-			updateSettings(array('lp_trumbowyg_addon_auto_grow' => $this->auto_grow));
-
-		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes', Helpers::getForumThemes());
-		$config_vars[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
+		$config_vars['trumbowyg'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
+		$config_vars['trumbowyg'][] = array('select', 'auto_grow', $txt['lp_trumbowyg']['auto_grow_set']);
 	}
 
 	/**

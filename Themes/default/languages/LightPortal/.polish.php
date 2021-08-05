@@ -186,12 +186,13 @@ $txt['lp_block_title_style'] = 'Styl CSS tytułu';
 $txt['lp_block_content_class'] = 'Klasa CSS zawartości';
 $txt['lp_block_content_style'] = 'Styl CSS zawartości';
 
-$txt['lp_block_types']['bbc'] = 'Własny BBC';
-$txt['lp_block_types']['html'] = 'Własny HTML';
-$txt['lp_block_types']['php'] = 'Własny PHP';
-$txt['lp_block_types_descriptions']['bbc'] ='W tym bloku można wykorzystać kody BBC do tworzenia zawartości.';
-$txt['lp_block_types_descriptions']['html'] = 'W tym bloku można wykorzystać kod HTML do tworzenia zawartości.';
-$txt['lp_block_types_descriptions']['php'] = 'W tym bloku można wykorzystać kod PHP do tworzenia zawartości.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Własny BBC';
+$txt['lp_html']['title'] = 'Własny HTML';
+$txt['lp_php']['title'] = 'Własny PHP';
+$txt['lp_bbc']['description'] = 'W tym bloku można wykorzystać kody BBC do tworzenia zawartości.';
+$txt['lp_html']['description'] = 'W tym bloku można wykorzystać kod HTML do tworzenia zawartości.';
+$txt['lp_php']['description'] = 'W tym bloku można wykorzystać kod PHP do tworzenia zawartości.';
 
 // Pages
 $txt['lp_pages'] = 'Strony';
@@ -298,6 +299,7 @@ $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled 
 $txt['lp_wrong_import_file'] = 'Nie można importować tego pliku...';
 $txt['lp_import_failed'] = 'Wystąpił błąd podczas importowania...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'Wtyczka %1$s nie jest zainstalowana';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';

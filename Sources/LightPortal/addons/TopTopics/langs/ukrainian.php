@@ -1,9 +1,10 @@
 <?php
 
-$txt['lp_block_types']['top_topics']              = 'Популярні теми';
-$txt['lp_block_types_descriptions']['top_topics'] = 'Відображає список популярних тем форуму.';
-
-$txt['lp_top_topics_addon_type']              = 'Розрахунок популярності';
-$txt['lp_top_topics_addon_type_set']          = array('За кількістю відповідей', 'За кількістю переглядів');
-$txt['lp_top_topics_addon_num_topics']        = 'Кількість тем для відображення';
-$txt['lp_top_topics_addon_show_numbers_only'] = 'Відображати тільки цифри';
+return [
+	'title' => 'Популярні теми',
+	'description' => 'Відображає список популярних тем форуму.',
+	'type' => 'Розрахунок популярності',
+	'type_set' => array('За кількістю відповідей', 'За кількістю переглядів'),
+	'num_topics' => 'Кількість тем для відображення',
+	'show_numbers_only' => 'Відображати тільки цифри',
+];

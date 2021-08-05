@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FaBoardIcons;
-
 /**
  * FaBoardIcons
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\FaBoardIcons;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FaBoardIcons;
 
-class FaBoardIcons
+use Bugo\LightPortal\Addons\Plugin;
+
+class FaBoardIcons extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select columns with icon and color

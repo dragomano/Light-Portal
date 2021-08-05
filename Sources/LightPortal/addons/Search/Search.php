@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Search;
-
-use Bugo\LightPortal\{Helpers, Plugin};
-
 /**
  * Search
  *
@@ -16,20 +12,17 @@ use Bugo\LightPortal\{Helpers, Plugin};
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Search;
+
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
 
 class Search extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-search';
-
-	/**
-	 * @var int
-	 */
-	private $min_chars = 3;
+	public $icon = 'fas fa-search';
 
 	/**
 	 * @return void
@@ -49,11 +42,11 @@ class Search extends Plugin
 
 		$addSettings = [];
 		if (!isset($modSettings['lp_search_addon_min_chars']))
-			$addSettings['lp_search_addon_min_chars'] = $this->min_chars;
+			$addSettings['lp_search_addon_min_chars'] = 3;
 		if (!empty($addSettings))
 			updateSettings($addSettings);
 
-		$config_vars[] = array('int', 'lp_search_addon_min_chars');
+		$config_vars['search'][] = array('int', 'min_chars');
 	}
 
 	/**
@@ -94,7 +87,7 @@ class Search extends Plugin
 
 		$context['search_results'] = $this->getResults();
 
-		$this->loadTemplate(__DIR__);
+		$this->loadTemplate();
 
 		$context['sub_template'] = 'show_results';
 

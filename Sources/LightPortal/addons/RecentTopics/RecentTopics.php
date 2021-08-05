@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RecentTopics
  *
@@ -16,50 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RecentTopics;
 
-class RecentTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RecentTopics extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-book-open';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var bool
-	 */
-	private $use_simple_style = false;
-
-	/**
-	 * @var int
-	 */
-	private $num_topics = 10;
-
-	/**
-	 * @var string
-	 */
-	private $exclude_boards = '';
-
-	/**
-	 * @var string
-	 */
-	private $include_boards = '';
-
-	/**
-	 * @var bool
-	 */
-	private $show_avatars = false;
-
-	/**
-	 * @var int
-	 */
-	private $update_interval = 600;
+	public $icon = 'fas fa-book-open';
 
 	/**
 	 * @param array $options
@@ -67,14 +30,16 @@ class RecentTopics
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['recent_topics']['no_content_class'] = $this->no_content_class;
+		$options['recent_topics']['no_content_class'] =  true;
 
-		$options['recent_topics']['parameters']['use_simple_style'] = $this->use_simple_style;
-		$options['recent_topics']['parameters']['num_topics']       = $this->num_topics;
-		$options['recent_topics']['parameters']['exclude_boards']   = $this->exclude_boards;
-		$options['recent_topics']['parameters']['include_boards']   = $this->include_boards;
-		$options['recent_topics']['parameters']['show_avatars']     = $this->show_avatars;
-		$options['recent_topics']['parameters']['update_interval']  = $this->update_interval;
+		$options['recent_topics']['parameters'] = [
+			'use_simple_style' => false,
+			'num_topics'       => 10,
+			'exclude_boards'   => '',
+			'include_boards'   => '',
+			'show_avatars'     => false,
+			'update_interval'  => 600,
+		];
 	}
 
 	/**
@@ -105,7 +70,7 @@ class RecentTopics
 		if ($context['lp_block']['type'] !== 'recent_topics')
 			return;
 
-		$context['posting_fields']['use_simple_style']['label']['text'] = $txt['lp_recent_topics_addon_use_simple_style'];
+		$context['posting_fields']['use_simple_style']['label']['text'] = $txt['lp_recent_topics']['use_simple_style'];
 		$context['posting_fields']['use_simple_style']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -115,7 +80,7 @@ class RecentTopics
 			'tab' => 'appearance'
 		);
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics_addon_num_topics'];
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -125,10 +90,10 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_topics_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_topics']['exclude_boards'];
 		$context['posting_fields']['exclude_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_topics_addon_exclude_boards_subtext'],
+			'after' => $txt['lp_recent_topics']['exclude_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
@@ -136,10 +101,10 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_topics_addon_include_boards'];
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_topics']['include_boards'];
 		$context['posting_fields']['include_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_topics_addon_include_boards_subtext'],
+			'after' => $txt['lp_recent_topics']['include_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
@@ -147,7 +112,7 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -156,7 +121,7 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics_addon_update_interval'];
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics']['update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(

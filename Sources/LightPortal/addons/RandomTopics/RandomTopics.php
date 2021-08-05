@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RandomTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RandomTopics
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RandomTopics;
 
-class RandomTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RandomTopics extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-random';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var int
-	 */
-	private $num_topics = 10;
+	public $icon = 'fas fa-random';
 
 	/**
 	 * @param array $options
@@ -42,9 +30,9 @@ class RandomTopics
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['random_topics']['no_content_class'] = $this->no_content_class;
+		$options['random_topics']['no_content_class'] = true;
 
-		$options['random_topics']['parameters']['num_topics'] = $this->num_topics;
+		$options['random_topics']['parameters']['num_topics'] = 10;
 	}
 
 	/**
@@ -70,7 +58,7 @@ class RandomTopics
 		if ($context['lp_block']['type'] !== 'random_topics')
 			return;
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_random_topics_addon_num_topics'];
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_random_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(

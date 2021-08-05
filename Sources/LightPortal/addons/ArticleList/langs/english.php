@@ -1,13 +1,13 @@
 <?php
 
-$txt['lp_block_types']['article_list']              = 'Article List';
-$txt['lp_block_types_descriptions']['article_list'] = 'Displays a list of selected articles of the portal (with images if exist).';
-
-$txt['lp_article_list_addon_body_class']       = 'CSS class of article blocks';
-$txt['lp_article_list_addon_article_type']     = 'What should be displayed';
-$txt['lp_article_list_addon_article_type_set'] = array('Forum topics', 'Portal pages');
-$txt['lp_article_list_addon_ids']              = 'IDs of topics or pages to display';
-$txt['lp_article_list_addon_ids_subtext']      = 'Enter the IDs of the desired topics or pages, separated by commas.';
-$txt['lp_article_list_addon_seek_images']      = 'Search for images in the text of articles';
-
-$txt['lp_article_list_addon_no_items'] = 'There are no available articles.';
+return [
+	'title' => 'Article List',
+	'description' => 'Displays a list of selected articles of the portal (with images if exist).',
+	'body_class' => 'CSS class of article blocks',
+	'type' => 'What should be displayed',
+	'type_set' => array('Forum topics', 'Portal pages'),
+	'ids' => 'IDs of topics or pages to display',
+	'ids_subtext' => 'Enter the IDs of the desired topics or pages, separated by commas.',
+	'seek_images' => 'Search for images in the text of articles',
+	'no_items' => 'There are no available articles.'
+];

@@ -1,10 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\DevTools;
-
-use Exception;
-use Bugo\LightPortal\{Helpers, FrontPage, Plugin};
-
 /**
  * DevTools
  *
@@ -17,15 +12,18 @@ use Bugo\LightPortal\{Helpers, FrontPage, Plugin};
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\DevTools;
+
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\{Helpers, FrontPage};
+use Exception;
 
 class DevTools extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'frontpage';
+	public $type = 'frontpage';
 
 	/**
 	 * @param array $config_vars
@@ -35,8 +33,8 @@ class DevTools extends Plugin
 	{
 		global $txt;
 
-		$config_vars[] = array('check', 'lp_dev_tools_addon_show_template_switcher');
-		$config_vars[] = array('check', 'lp_dev_tools_addon_fake_cards', 'subtext' => $txt['lp_dev_tools_addon_fake_cards_subtext']);
+		$config_vars['dev_tools'][] = array('check', 'show_template_switcher');
+		$config_vars['dev_tools'][] = array('check', 'fake_cards', 'subtext' => $txt['lp_dev_tools']['fake_cards_subtext']);
 	}
 
 	/**
@@ -97,7 +95,7 @@ class DevTools extends Plugin
 		if (empty($modSettings['lp_dev_tools_addon_show_template_switcher']))
 			return;
 
-		$this->loadTemplate(__DIR__);
+		$this->loadTemplate();
 
 		$context['frontpage_layouts'] = (new FrontPage)->getLayouts();
 

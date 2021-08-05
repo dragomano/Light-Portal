@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EhPortal;
-
 /**
  * EhPortal
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\EhPortal;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\EhPortal;
 
-class EhPortal
+use Bugo\LightPortal\Addons\Plugin;
+
+class EhPortal extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'impex';
+	public $type = 'impex';
 
 	/**
 	 * Add "Import from EhPortal" item to the admin menu
@@ -37,7 +36,7 @@ class EhPortal
 		global $user_info, $txt;
 
 		if ($user_info['is_admin'])
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ep'] = array($txt['lp_eh_portal_addon_label_name']);
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ep'] = array($txt['lp_eh_portal']['label_name']);
 	}
 
 	/**

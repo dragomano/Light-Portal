@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FlarumStyle;
-
-use Bugo\LightPortal\{Helpers, Plugin};
-
 /**
  * FlarumStyle
  *
@@ -16,15 +12,17 @@ use Bugo\LightPortal\{Helpers, Plugin};
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FlarumStyle;
+
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
 
 class FlarumStyle extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'frontpage';
+	public $type = 'frontpage';
 
 	/**
 	 * Load custom template for frontpage topics
@@ -44,7 +42,7 @@ class FlarumStyle extends Plugin
 
 		$context['lp_all_categories'] = $this->getCategories();
 
-		$this->loadTemplate(__DIR__);
+		$this->loadTemplate();
 
 		$this->prepareFantomBLock();
 

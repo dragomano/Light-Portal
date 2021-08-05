@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\News;
-
 /**
  * News
  *
@@ -14,20 +12,16 @@ namespace Bugo\LightPortal\Addons\News;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\News;
 
-class News
+use Bugo\LightPortal\Addons\Plugin;
+
+class News extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-newspaper';
-
-	/**
-	 * @var int
-	 */
-	private $selected_item = 0;
+	public $icon = 'far fa-newspaper';
 
 	/**
 	 * @param array $options
@@ -35,7 +29,7 @@ class News
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['news']['parameters']['selected_item'] = $this->selected_item;
+		$options['news']['parameters']['selected_item'] = 0;
 	}
 
 	/**
@@ -61,7 +55,7 @@ class News
 		if ($context['lp_block']['type'] !== 'news')
 			return;
 
-		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_news_addon_selected_item'];
+		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_news']['selected_item'];
 		$context['posting_fields']['selected_item']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -73,9 +67,9 @@ class News
 
 		$this->getData();
 
-		$news = [$txt['lp_news_addon_random_news']];
+		$news = [$txt['lp_news']['random_news']];
 		if (!empty($context['news_lines'])) {
-			array_unshift($context['news_lines'], $txt['lp_news_addon_random_news']);
+			array_unshift($context['news_lines'], $txt['lp_news']['random_news']);
 			$news = $context['news_lines'];
 		}
 
@@ -127,7 +121,7 @@ class News
 
 		ob_start();
 
-		echo $news ?: $txt['lp_news_addon_no_items'];
+		echo $news ?: $txt['lp_news']['no_items'];
 
 		$content = ob_get_clean();
 	}

@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopBoards;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopBoards
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopBoards;
 
-class TopBoards
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopBoards extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-balance-scale-left';
-
-	/**
-	 * @var int
-	 */
-	private $num_boards = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * @param array $options
@@ -42,8 +30,10 @@ class TopBoards
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['top_boards']['parameters']['num_boards']        = $this->num_boards;
-		$options['top_boards']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_boards']['parameters'] = [
+			'num_boards'        => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -70,7 +60,7 @@ class TopBoards
 		if ($context['lp_block']['type'] !== 'top_boards')
 			return;
 
-		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards_addon_num_boards'];
+		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards']['num_boards'];
 		$context['posting_fields']['num_boards']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -80,7 +70,7 @@ class TopBoards
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -142,7 +132,7 @@ class TopBoards
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getText($board['num_topics'], $txt['lp_top_boards_addon_topics'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getText($board['num_topics'], $txt['lp_top_boards']['topics'])), '</span>
 			</dd>';
 			}
 

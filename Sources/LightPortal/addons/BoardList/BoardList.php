@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\BoardList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * BoardList
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\BoardList;
 
-class BoardList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class BoardList extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-list-alt';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var string
-	 */
-	private $category_class = 'div.title_bar > h4.titlebg';
-
-	/**
-	 * @var string
-	 */
-	private $board_class = 'div.roundframe';
+	public $icon = 'far fa-list-alt';
 
 	/**
 	 * @param array $options
@@ -47,10 +30,12 @@ class BoardList
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['board_list']['no_content_class'] = $this->no_content_class;
+		$options['board_list']['no_content_class'] = true;
 
-		$options['board_list']['parameters']['category_class'] = $this->category_class;
-		$options['board_list']['parameters']['board_class']    = $this->board_class;
+		$options['board_list']['parameters'] = [
+			'category_class' => 'div.title_bar > h4.titlebg',
+			'board_class'    => 'div.roundframe',
+		];
 	}
 
 	/**
@@ -77,7 +62,7 @@ class BoardList
 		if ($context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$context['posting_fields']['category_class']['label']['text'] = $txt['lp_board_list_addon_category_class'];
+		$context['posting_fields']['category_class']['label']['text'] = $txt['lp_board_list']['category_class'];
 		$context['posting_fields']['category_class']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -94,7 +79,7 @@ class BoardList
 			);
 		}
 
-		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_board_list_addon_board_class'];
+		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_board_list']['board_class'];
 		$context['posting_fields']['board_class']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(

@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
-
 /**
  * TinyPortal
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\TinyPortal;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinyPortal;
 
-class TinyPortal
+use Bugo\LightPortal\Addons\Plugin;
+
+class TinyPortal extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'impex';
+	public $type = 'impex';
 
 	/**
 	 * Add "Import from TinyPortal" item to the admin menu
@@ -37,8 +36,8 @@ class TinyPortal
 		global $user_info, $txt;
 
 		if ($user_info['is_admin']) {
-			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = array($txt['lp_tiny_portal_addon_label_name']);
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal']['label_name']);
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = array($txt['lp_tiny_portal']['label_name']);
 		}
 	}
 

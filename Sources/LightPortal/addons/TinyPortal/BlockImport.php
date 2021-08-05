@@ -1,10 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
-
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
-
 /**
  * Import.php
  *
@@ -17,8 +12,10 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinyPortal;
+
+use Bugo\LightPortal\Impex\AbstractImport;
+use Bugo\LightPortal\Helpers;
 
 class BlockImport extends AbstractImport
 {
@@ -38,13 +35,13 @@ class BlockImport extends AbstractImport
 	{
 		global $context, $txt, $scripturl;
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal_addon_label_name'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal']['label_name'];
 		$context['page_area_title'] = $txt['lp_blocks_import'];
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_tiny_portal_addon_block_import_description']
+			'description' => $txt['lp_tiny_portal']['block_import_desc']
 		);
 
 		$this->run();
@@ -137,8 +134,8 @@ class BlockImport extends AbstractImport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal_addon_button_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal']['button_all'] . '" class="button">'
 				)
 			)
 		);

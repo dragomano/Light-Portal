@@ -153,28 +153,11 @@ class ManagePages
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $scripturl)
+						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
 							$type_hint = $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
 
-							switch ($entry['type']) {
-								case 'html':
-									$icon = 'fab fa-html5';
-									break;
-
-								case 'php':
-									$icon = 'fab fa-php';
-									break;
-
-								case 'md':
-									$icon = 'fab fa-markdown';
-									break;
-
-								default:
-									$icon = 'fab fa-bimobject';
-							}
-
-							return '<i class="' . $icon . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
+							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
 									: '" href="' . $scripturl . '?page=' . $entry['alias']
@@ -481,7 +464,7 @@ class ManagePages
 
 		$smcFunc['lp_num_queries'] += 5;
 
-		Subs::runAddons('onPageRemoving', array($items));
+		Addons::run('onPageRemoving', array($items));
 	}
 
 	/**
@@ -628,7 +611,7 @@ class ManagePages
 			'icon_type'            => 'fas'
 		];
 
-		Subs::runAddons('pageOptions', array(&$options));
+		Addons::run('pageOptions', array(&$options));
 
 		return $options;
 	}
@@ -665,7 +648,7 @@ class ManagePages
 
 			$parameters = [];
 
-			Subs::runAddons('validatePageData', array(&$parameters));
+			Addons::run('validatePageData', array(&$parameters));
 
 			$parameters = array_merge(
 				array(
@@ -1083,7 +1066,7 @@ class ManagePages
 			);
 		}
 
-		Subs::runAddons('preparePageFields');
+		Addons::run('preparePageFields');
 
 		Helpers::preparePostFields();
 	}
@@ -1098,7 +1081,7 @@ class ManagePages
 		if ($context['lp_page']['type'] === 'bbc')
 			Helpers::createBbcEditor($context['lp_page']['content']);
 
-		Subs::runAddons('prepareEditor', array($context['lp_page']));
+		Addons::run('prepareEditor', array($context['lp_page']));
 	}
 
 	/**
@@ -1236,7 +1219,7 @@ class ManagePages
 		if (empty($item))
 			return 0;
 
-		Subs::runAddons('onPageSaving', array($item));
+		Addons::run('onPageSaving', array($item));
 
 		if (!empty($context['lp_page']['title'])) {
 			$titles = [];
@@ -1355,7 +1338,7 @@ class ManagePages
 
 		$smcFunc['lp_num_queries']++;
 
-		Subs::runAddons('onPageSaving', array($item));
+		Addons::run('onPageSaving', array($item));
 
 		if (!empty($context['lp_page']['title'])) {
 			$titles = [];

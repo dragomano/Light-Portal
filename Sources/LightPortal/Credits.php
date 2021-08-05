@@ -158,7 +158,7 @@ class Credits
 		);
 
 		// Adding copyrights of used plugins
-		Subs::runAddons('credits', array(&$links));
+		Addons::run('credits', array(&$links));
 
 		$context['lp_components'] = $links;
 	}

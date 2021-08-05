@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\ThemeSwitcher;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * ThemeSwitcher
  *
@@ -16,15 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
-class ThemeSwitcher
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class ThemeSwitcher extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-desktop';
+	public $icon = 'fas fa-desktop';
 
 	/**
 	 * Get the list of active themes

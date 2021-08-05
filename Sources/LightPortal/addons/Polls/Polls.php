@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Polls;
-
 /**
  * Polls
  *
@@ -14,20 +12,16 @@ namespace Bugo\LightPortal\Addons\Polls;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Polls;
 
-class Polls
+use Bugo\LightPortal\Addons\Plugin;
+
+class Polls extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-poll';
-
-	/**
-	 * @var int
-	 */
-	private $selected_item = 0;
+	public $icon = 'fas fa-poll';
 
 	/**
 	 * @param array $options
@@ -35,7 +29,7 @@ class Polls
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['polls']['parameters']['selected_item'] = $this->selected_item;
+		$options['polls']['parameters']['selected_item'] = 0;
 	}
 
 	/**
@@ -61,7 +55,7 @@ class Polls
 		if ($context['lp_block']['type'] !== 'polls')
 			return;
 
-		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls_addon_selected_item'];
+		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls']['selected_item'];
 		$context['posting_fields']['selected_item']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -163,7 +157,7 @@ class Polls
 		</div>';
 			}
 		} else {
-			echo $txt['lp_polls_addon_no_items'];
+			echo $txt['lp_polls']['no_items'];
 		}
 
 		$content = ob_get_clean();

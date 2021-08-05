@@ -40,7 +40,7 @@ class ManagePlugins
 			'description' => sprintf($txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 		);
 
-		$context['lp_plugins'] = Subs::getAddons();
+		$context['lp_plugins'] = Addons::getAll();
 
 		$this->addPluginsForSponsors();
 
@@ -52,27 +52,28 @@ class ManagePlugins
 		$config_vars = [];
 
 		// You can add settings for your plugins
-		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
+		Addons::run('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
 			$donate = false;
 
 			try {
-				$addonClass = new \ReflectionClass(__NAMESPACE__ . '\Addons\\' . $item . '\\' . $item);
+				$className = __NAMESPACE__ . '\Addons\\' . $item . '\\' . $item;
+				$addonClass = new \ReflectionClass($className);
 				$comments = explode('* ', $addonClass->getDocComment());
-			} catch (\Exception $e) {
+			} catch (\ReflectionException $e) {
 				$donate = true;
 			}
 
 			return [
 				'name'       => $item,
 				'snake_name' => $snake_name = Helpers::getSnakeName($item),
-				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
+				'desc'       => $txt['lp_' . $snake_name]['description'] ?? '',
 				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
 				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => $donate ? $txt['lp_sponsors_only'] : $this->getTypes($snake_name),
-				'settings'   => $this->getSettings($config_vars, $item)
+				'settings'   => $config_vars[$snake_name] ?? []
 			];
 		}, $context['lp_plugins']);
 
@@ -96,24 +97,28 @@ class ManagePlugins
 			checkSession();
 
 			$plugin_options = [];
-			foreach ($config_vars as $var) {
-				if (Helpers::post()->has($var[1])) {
-					if ($var[0] == 'check') {
-						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
-					} elseif ($var[0] == 'int') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
-					} elseif ($var[0] == 'multicheck') {
-						$plugin_options[$var[1]] = [];
+			foreach ($config_vars as $plugin_name => $vars) {
+				foreach ($vars as $var) {
+					$var[1] = 'lp_' . $plugin_name . '_addon_' . $var[1];
 
-						foreach (Helpers::post($var[1]) as $key => $value) {
-							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
+					if (Helpers::post()->has($var[1])) {
+						if ($var[0] == 'check') {
+							$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
+						} elseif ($var[0] == 'int') {
+							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
+						} elseif ($var[0] == 'multicheck') {
+							$plugin_options[$var[1]] = [];
+
+							foreach (Helpers::post($var[1]) as $key => $value) {
+								$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
+							}
+
+							$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
+						} elseif ($var[0] == 'url') {
+							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
+						} else {
+							$plugin_options[$var[1]] = Helpers::post($var[1]);
 						}
-
-						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
-					} elseif ($var[0] == 'url') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
-					} else {
-						$plugin_options[$var[1]] = Helpers::post($var[1]);
 					}
 				}
 			}
@@ -122,7 +127,7 @@ class ManagePlugins
 				updateSettings($plugin_options);
 
 			// You can do additional actions after settings saving
-			Subs::runAddons('onSettingsSaving');
+			Addons::run('onSettingsSaving');
 
 			exit(json_encode('ok'));
 		}
@@ -145,7 +150,15 @@ class ManagePlugins
 			exit(json_encode('ok'));
 		}
 
-		prepareDBSettingContext($config_vars);
+		$prepared_vars = [];
+		foreach ($config_vars as $plugin => $vars) {
+			foreach ($vars as $var) {
+				$var[1] = 'lp_' . $plugin . '_addon_' . $var[1];
+				$prepared_vars[] = $var;
+			}
+		}
+
+		prepareDBSettingContext($prepared_vars);
 	}
 
 	/**
@@ -182,7 +195,7 @@ class ManagePlugins
 		if (empty($snake_name))
 			return $txt['not_applicable'];
 
-		$data = $context['lp_' . $snake_name . '_type'] ?? '';
+		$data = $context['lp_' . $snake_name]['type'] ?? '';
 
 		if (empty($data))
 			return $txt['not_applicable'];
@@ -197,27 +210,5 @@ class ManagePlugins
 		}
 
 		return $context['lp_plugin_types'][$data];
-	}
-
-	/**
-	 * @param array $config_vars
-	 * @param string $name
-	 * @return array
-	 */
-	private function getSettings(array $config_vars, string $name = ''): array
-	{
-		if (empty($config_vars))
-			return [];
-
-		$settings = [];
-		foreach ($config_vars as $var) {
-			$plugin_id   = explode('_addon_', substr($var[1], 3))[0];
-			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
-
-			if ($plugin_name == $name)
-				$settings[] = $var;
-		}
-
-		return $settings;
 	}
 }

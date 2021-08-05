@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\BoardStats;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * BoardStats
  *
@@ -16,40 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\BoardStats;
 
-class BoardStats
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class BoardStats extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-chart-pie';
-
-	/**
-	 * @var bool
-	 */
-	private $show_latest_member = false;
-
-	/**
-	 * @var bool
-	 */
-	private $show_basic_info = true;
-
-	/**
-	 * @var bool
-	 */
-	private $show_whos_online = true;
-
-	/**
-	 * @var bool
-	 */
-	private $use_fa_icons = true;
-
-	/**
-	 * @var int
-	 */
-	private $update_interval = 600;
+	public $icon = 'fas fa-chart-pie';
 
 	/**
 	 * @param array $options
@@ -57,11 +30,13 @@ class BoardStats
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['board_stats']['parameters']['show_latest_member'] = $this->show_latest_member;
-		$options['board_stats']['parameters']['show_basic_info']    = $this->show_basic_info;
-		$options['board_stats']['parameters']['show_whos_online']   = $this->show_whos_online;
-		$options['board_stats']['parameters']['use_fa_icons']       = $this->use_fa_icons;
-		$options['board_stats']['parameters']['update_interval']    = $this->update_interval;
+		$options['board_stats']['parameters'] = [
+			'show_latest_member' => false,
+			'show_basic_info'    => true,
+			'show_whos_online'   => true,
+			'use_fa_icons'       => true,
+			'update_interval'    => 600,
+		];
 	}
 
 	/**
@@ -91,7 +66,7 @@ class BoardStats
 		if ($context['lp_block']['type'] !== 'board_stats')
 			return;
 
-		$context['posting_fields']['show_latest_member']['label']['text'] = $txt['lp_board_stats_addon_show_latest_member'];
+		$context['posting_fields']['show_latest_member']['label']['text'] = $txt['lp_board_stats']['show_latest_member'];
 		$context['posting_fields']['show_latest_member']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -101,7 +76,7 @@ class BoardStats
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['show_basic_info']['label']['text'] = $txt['lp_board_stats_addon_show_basic_info'];
+		$context['posting_fields']['show_basic_info']['label']['text'] = $txt['lp_board_stats']['show_basic_info'];
 		$context['posting_fields']['show_basic_info']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -111,7 +86,7 @@ class BoardStats
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['show_whos_online']['label']['text'] = $txt['lp_board_stats_addon_show_whos_online'];
+		$context['posting_fields']['show_whos_online']['label']['text'] = $txt['lp_board_stats']['show_whos_online'];
 		$context['posting_fields']['show_whos_online']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -121,7 +96,7 @@ class BoardStats
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_board_stats_addon_use_fa_icons'];
+		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_board_stats']['use_fa_icons'];
 		$context['posting_fields']['use_fa_icons']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -131,7 +106,7 @@ class BoardStats
 			'tab' => 'appearance'
 		);
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_board_stats_addon_update_interval'];
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_board_stats']['update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -208,7 +183,7 @@ class BoardStats
 				echo '
 				<div>
 					<h4>
-						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $txt['lp_board_stats_addon_newbies'], '
+						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $txt['lp_board_stats']['newbies'], '
 					</h4>
 					<ul class="bbc_list">
 						<li>', $board_stats['latest_member'], '</li>
@@ -236,9 +211,9 @@ class BoardStats
 				}
 
 				echo '
-						<li>', $txt['lp_board_stats_addon_pages'], ': ', $board_stats['basic_info']['total_pages'], '</li>
-						<li>', $txt['lp_board_stats_addon_online_today'] , ': ', $board_stats['basic_info']['max_online_today'], '</li>
-						<li>', $txt['lp_board_stats_addon_max_online'], ': ', $board_stats['basic_info']['max_online'], '</li>
+						<li>', $txt['lp_board_stats']['pages'], ': ', $board_stats['basic_info']['total_pages'], '</li>
+						<li>', $txt['lp_board_stats']['online_today'] , ': ', $board_stats['basic_info']['max_online_today'], '</li>
+						<li>', $txt['lp_board_stats']['max_online'], ': ', $board_stats['basic_info']['max_online'], '</li>
 					</ul>
 				</div>';
 			}
@@ -253,8 +228,8 @@ class BoardStats
 					</h4>
 					<ul class="bbc_list">
 						<li>', $txt['members'], ': ', comma_format($board_stats['whos_online']['num_users_online']), '</li>
-						<li>', $txt['lp_board_stats_addon_guests'], ': ', comma_format($board_stats['whos_online']['num_guests']), '</li>
-						<li>', $txt['lp_board_stats_addon_spiders'], ': ', comma_format($board_stats['whos_online']['num_spiders']), '</li>
+						<li>', $txt['lp_board_stats']['guests'], ': ', comma_format($board_stats['whos_online']['num_guests']), '</li>
+						<li>', $txt['lp_board_stats']['spiders'], ': ', comma_format($board_stats['whos_online']['num_spiders']), '</li>
 						<li>', $txt['total'], ': ', comma_format($board_stats['whos_online']['total_users']), '</li>
 					</ul>
 				</div>';

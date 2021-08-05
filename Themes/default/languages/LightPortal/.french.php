@@ -186,12 +186,13 @@ $txt['lp_block_title_style'] = 'Style de titre CSS';
 $txt['lp_block_content_class'] = 'Classe de contenu CSS';
 $txt['lp_block_content_style'] = 'Style de contenu CSS';
 
-$txt['lp_block_types']['bbc'] = 'BBC personnalisée';
-$txt['lp_block_types']['html'] = 'HTML personnalisé';
-$txt['lp_block_types']['php'] = 'PHP personnalisé';
-$txt['lp_block_types_descriptions']['bbc'] = 'Dans ce bloc, toutes les balises BBC du forum peuvent être utilisées comme contenu.';
-$txt['lp_block_types_descriptions']['html'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quelle balise HTML comme contenu.';
-$txt['lp_block_types_descriptions']['php'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quel code PHP comme contenu.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'BBC personnalisée';
+$txt['lp_html']['title'] = 'HTML personnalisé';
+$txt['lp_php']['title'] = 'PHP personnalisé';
+$txt['lp_bbc']['description'] = 'Dans ce bloc, toutes les balises BBC du forum peuvent être utilisées comme contenu.';
+$txt['lp_html']['description'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quelle balise HTML comme contenu.';
+$txt['lp_php']['description'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quel code PHP comme contenu.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';
@@ -298,6 +299,7 @@ $txt['lp_post_error_no_name'] = 'Le champ <strong> nom </strong> n\'a pas été 
 $txt['lp_wrong_import_file'] = 'Mauvais fichier à importer...';
 $txt['lp_import_failed'] = 'Échec de l\'importation...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'le plugin %1$s n\'est pas installé';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Affichage de <a href="%1$s">la page d\'accueil du portai</a>.';

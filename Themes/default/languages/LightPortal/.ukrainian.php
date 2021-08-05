@@ -190,12 +190,13 @@ $txt['lp_block_title_style'] = 'CSS стилі заголовка';
 $txt['lp_block_content_class'] = 'CSS клас вмісту';
 $txt['lp_block_content_style'] = 'CSS стилі вмісту';
 
-$txt['lp_block_types']['bbc'] = 'Блок з ББ-кодом';
-$txt['lp_block_types']['html'] = 'Блок з HTML-кодом';
-$txt['lp_block_types']['php'] = 'Блок з PHP-кодом';
-$txt['lp_block_types_descriptions']['bbc'] = 'У цьому блоці як контент можна використовувати будь-які ББ-теги форуму.';
-$txt['lp_block_types_descriptions']['html'] = 'У цьому блоці як контент можна використовувати будь-які теги HTML.';
-$txt['lp_block_types_descriptions']['php'] = 'У цьому блоці як контент можна використовувати довільний код PHP.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Блок з ББ-кодом';
+$txt['lp_html']['title'] = 'Блок з HTML-кодом';
+$txt['lp_php']['title'] = 'Блок з PHP-кодом';
+$txt['lp_bbc']['description'] = 'У цьому блоці як контент можна використовувати будь-які ББ-теги форуму.';
+$txt['lp_html']['description'] = 'У цьому блоці як контент можна використовувати будь-які теги HTML.';
+$txt['lp_php']['description'] = 'У цьому блоці як контент можна використовувати довільний код PHP.';
 
 // Pages
 $txt['lp_pages'] = 'Сторінки';
@@ -302,6 +303,7 @@ $txt['lp_post_error_no_name'] = 'Не вказано ім\'я!';
 $txt['lp_wrong_import_file'] = 'Неправильний файл для імпорту...';
 $txt['lp_import_failed'] = 'Не вдалося здійснити імпорт...';
 $txt['lp_wrong_template'] = 'Невірний шаблон. Виберіть шаблон, який відповідає вмісту.';
+$txt['lp_addon_not_installed'] = 'Плагін %1$s не встановлений';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Переглядає <a href="%1$s">головну сторінку порталу</a>.';

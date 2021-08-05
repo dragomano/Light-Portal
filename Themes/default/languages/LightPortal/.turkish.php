@@ -186,12 +186,13 @@ $txt['lp_block_title_style'] = 'CSS başlık stili';
 $txt['lp_block_content_class'] = 'CSS içerik sınıfı';
 $txt['lp_block_content_style'] = 'CSS içerik stili';
 
-$txt['lp_block_types']['bbc'] = 'Özel BBC';
-$txt['lp_block_types']['html'] = 'Özel HTML';
-$txt['lp_block_types']['php'] = 'Özel PHP';
-$txt['lp_block_types_descriptions']['bbc'] = 'Bu blokta forumun herhangi bir BBC etiketi içerik olarak kullanılabilir.';
-$txt['lp_block_types_descriptions']['html'] = 'Bu blokta, herhangi bir HTML etiketini içerik olarak kullanabilirsiniz.';
-$txt['lp_block_types_descriptions']['php'] = 'Bu blokta, herhangi bir PHP kodunu içerik olarak kullanabilirsiniz.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Özel BBC';
+$txt['lp_html']['title'] = 'Özel HTML';
+$txt['lp_php']['title'] = 'Özel PHP';
+$txt['lp_bbc']['description'] = 'Bu blokta forumun herhangi bir BBC etiketi içerik olarak kullanılabilir.';
+$txt['lp_html']['description'] = 'Bu blokta, herhangi bir HTML etiketini içerik olarak kullanabilirsiniz.';
+$txt['lp_php']['description'] = 'Bu blokta, herhangi bir PHP kodunu içerik olarak kullanabilirsiniz.';
 
 // Sayfalar
 $txt['lp_pages'] = 'Sayfalar';
@@ -298,6 +299,7 @@ $txt['lp_post_error_no_name'] = '<strong>ad</strong> alanı doldurulmadı. Bu ge
 $txt['lp_wrong_import_file'] = 'İçe aktarılacak yanlış dosya...';
 $txt['lp_import_failed'] = 'İçe aktarılamadı...';
 $txt['lp_wrong_template'] = 'Yanlış şablon. İçeriğe uygun bir şablon seçin. ';
+$txt['lp_addon_not_installed'] = '%1$s eklentisi kurulu değil';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = '<a href="%1$s">Portal ön sayfasını</a> görüntülüyor.';

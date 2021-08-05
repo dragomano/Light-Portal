@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentAttachments;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RecentAttachments
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RecentAttachments;
 
-class RecentAttachments
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RecentAttachments extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-paperclip';
-
-	/**
-	 * @var int
-	 */
-	private $num_attachments = 5;
-
-	/**
-	 * @var string
-	 */
-	private $extensions = '';
-
-	/**
-	 * @var string
-	 */
-	private $direction = 'horizontal';
+	public $icon = 'fas fa-paperclip';
 
 	/**
 	 * @param array $options
@@ -47,9 +30,11 @@ class RecentAttachments
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['recent_attachments']['parameters']['num_attachments'] = $this->num_attachments;
-		$options['recent_attachments']['parameters']['extensions']      = $this->extensions;
-		$options['recent_attachments']['parameters']['direction']       = $this->direction;
+		$options['recent_attachments']['parameters'] = [
+			'num_attachments' => 5,
+			'extensions'      => '',
+			'direction'       => 'horizontal',
+		];
 	}
 
 	/**
@@ -77,7 +62,7 @@ class RecentAttachments
 		if ($context['lp_block']['type'] !== 'recent_attachments')
 			return;
 
-		$context['posting_fields']['num_attachments']['label']['text'] = $txt['lp_recent_attachments_addon_num_attachments'];
+		$context['posting_fields']['num_attachments']['label']['text'] = $txt['lp_recent_attachments']['num_attachments'];
 		$context['posting_fields']['num_attachments']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -87,10 +72,10 @@ class RecentAttachments
 			)
 		);
 
-		$context['posting_fields']['extensions']['label']['text']  = $txt['lp_recent_attachments_addon_extensions'];
+		$context['posting_fields']['extensions']['label']['text']  = $txt['lp_recent_attachments']['extensions'];
 		$context['posting_fields']['extensions']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_attachments_addon_extensions_subtext'],
+			'after' => $txt['lp_recent_attachments']['extensions_subtext'],
 			'attributes' => array(
 				'id'        => 'extensions',
 				'maxlength' => 30,
@@ -99,7 +84,7 @@ class RecentAttachments
 			)
 		);
 
-		$context['posting_fields']['direction']['label']['text'] = $txt['lp_recent_attachments_addon_direction'];
+		$context['posting_fields']['direction']['label']['text'] = $txt['lp_recent_attachments']['direction'];
 		$context['posting_fields']['direction']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -133,6 +118,7 @@ class RecentAttachments
 		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
 
 		require_once($boarddir . '/SSI.php');
+
 		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}
 

@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\VkComments;
-
 /**
  * VkComments
  *
@@ -14,25 +12,16 @@ namespace Bugo\LightPortal\Addons\VkComments;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\VkComments;
 
-class VkComments
+use Bugo\LightPortal\Addons\Plugin;
+
+class VkComments extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'comment';
-
-	/**
-	 * @var bool
-	 */
-	private $allow_attachments = true;
-
-	/**
-	 * @var bool
-	 */
-	private $auto_publish = false;
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -57,13 +46,11 @@ class VkComments
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
-			updateSettings(array('lp_vk_comments_addon_allow_attachments' => $this->allow_attachments));
-		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
-			updateSettings(array('lp_vk_comments_addon_auto_publish' => $this->auto_publish));
+			updateSettings(array('lp_vk_comments_addon_allow_attachments' => true));
 
-		$config_vars[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
-		$config_vars[] = array('check', 'lp_vk_comments_addon_allow_attachments');
-		$config_vars[] = array('check', 'lp_vk_comments_addon_auto_publish');
+		$config_vars['vk_comments'][] = array('text', 'api_id', 'subtext' => $txt['lp_vk_comments']['api_id_subtext']);
+		$config_vars['vk_comments'][] = array('check', 'allow_attachments');
+		$config_vars['vk_comments'][] = array('check', 'auto_publish');
 	}
 
 	/**

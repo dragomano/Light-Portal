@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\WhosOnline;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * WhosOnline
  *
@@ -16,25 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\WhosOnline;
 
-class WhosOnline
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class WhosOnline extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-eye';
-
-	/**
-	 * @var bool
-	 */
-	private $show_group_key = false;
-
-	/**
-	 * @var int
-	 */
-	private $update_interval = 600;
+	public $icon = 'far fa-eye';
 
 	/**
 	 * @param array $options
@@ -42,8 +30,10 @@ class WhosOnline
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['whos_online']['parameters']['show_group_key']  = $this->show_group_key;
-		$options['whos_online']['parameters']['update_interval'] = $this->update_interval;
+		$options['whos_online']['parameters'] = [
+			'show_group_key'  => false,
+			'update_interval' => 600,
+		];
 	}
 
 	/**
@@ -70,7 +60,7 @@ class WhosOnline
 		if ($context['lp_block']['type'] !== 'whos_online')
 			return;
 
-		$context['posting_fields']['show_group_key']['label']['text'] = $txt['lp_whos_online_addon_show_group_key'];
+		$context['posting_fields']['show_group_key']['label']['text'] = $txt['lp_whos_online']['show_group_key'];
 		$context['posting_fields']['show_group_key']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -80,7 +70,7 @@ class WhosOnline
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_whos_online_addon_update_interval'];
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_whos_online']['update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(

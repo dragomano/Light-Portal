@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TagList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TagList
  *
@@ -16,20 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TagList;
 
-class TagList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TagList extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-tags';
-
-	/**
-	 * @var string
-	 */
-	private $source = 'lp_tags';
+	public $icon = 'fas fa-tags';
 
 	/**
 	 * @param array $options
@@ -37,7 +30,7 @@ class TagList
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['tag_list']['parameters']['source'] = $this->source;
+		$options['tag_list']['parameters']['source'] = 'lp_tags';
 	}
 
 	/**
@@ -63,12 +56,12 @@ class TagList
 		if ($context['lp_block']['type'] !== 'tag_list')
 			return;
 
-		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list_addon_source_set']);
+		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list']['source_set']);
 
 		if (!class_exists('\Bugo\Optimus\Keywords'))
 			$sources = $sources['lp_tags'];
 
-		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list_addon_source'];
+		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
 		$context['posting_fields']['source']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(

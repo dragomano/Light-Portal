@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopicRatingBar;
-
 /**
  * TopicRatingBar
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\TopicRatingBar;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
-class TopicRatingBar
+use Bugo\LightPortal\Addons\Plugin;
+
+class TopicRatingBar extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics

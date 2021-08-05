@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EzPortal;
-
 /**
  * EzPortal
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\EzPortal;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\EzPortal;
 
-class EzPortal
+use Bugo\LightPortal\Addons\Plugin;
+
+class EzPortal extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'impex';
+	public $type = 'impex';
 
 	/**
 	 * Add "Import from EzPortal" item to the admin menu
@@ -37,7 +36,7 @@ class EzPortal
 		global $user_info, $txt;
 
 		if ($user_info['is_admin'])
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ez'] = array($txt['lp_ez_portal_addon_label_name']);
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ez'] = array($txt['lp_ez_portal']['label_name']);
 	}
 
 	/**

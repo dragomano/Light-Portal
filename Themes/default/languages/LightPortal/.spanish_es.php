@@ -186,12 +186,13 @@ $txt['lp_block_title_style'] = 'Estilo de título CSS';
 $txt['lp_block_content_class'] = 'Clase de contenido CSS';
 $txt['lp_block_content_style'] = 'Estilo de contenido CSS';
 
-$txt['lp_block_types']['bbc'] = 'BBC personalizado';
-$txt['lp_block_types']['html'] ='HTML personalizado';
-$txt['lp_block_types']['php'] = 'PHP personalizado';
-$txt['lp_block_types_descriptions']['bbc'] ='En este bloque, las etiquetas BBC del foro se pueden utilizar como contenido.';
-$txt['lp_block_types_descriptions']['html'] = 'En este bloque, se puede utilizar cualquier etiqueta HTML como contenido.';
-$txt['lp_block_types_descriptions']['php'] = 'En este bloque, puede usar cualquier código PHP como contenido.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'BBC personalizado';
+$txt['lp_html']['title'] = 'HTML personalizado';
+$txt['lp_php']['title'] = 'PHP personalizado';
+$txt['lp_bbc']['description'] = 'En este bloque, las etiquetas BBC del foro se pueden utilizar como contenido.';
+$txt['lp_html']['description'] = 'En este bloque, se puede utilizar cualquier etiqueta HTML como contenido.';
+$txt['lp_php']['description'] = 'En este bloque, puede usar cualquier código PHP como contenido.';
 
 // Pages
 $txt['lp_pages'] = 'Páginas';
@@ -298,6 +299,7 @@ $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled 
 $txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
 $txt['lp_import_failed'] = 'Error al importar...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viendo <a href="%1$s">la página principal del portal</a>.';
@@ -349,7 +351,7 @@ $txt['lp_articles_set'] = 'article, articles';
 $txt['lp_users_set'] = 'usuario, usuarios';
 $txt['lp_guests_set'] = 'invitado, invitados';
 $txt['lp_spiders_set'] = 'araña, arañas';
-$txt['lp_hidden_set'] = 'oculto, oculto';
+$txt['lp_hidden_set'] = 'oculto, ocultos';
 $txt['lp_buddies_set'] = 'amigo, amigos';
 
 // Credits

@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopPosters;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopPosters
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopPosters;
 
-class TopPosters
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopPosters extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-users';
-
-	/**
-	 * @var bool
-	 */
-	private $show_avatars = true;
-
-	/**
-	 * @var int
-	 */
-	private $num_posters = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-users';
 
 	/**
 	 * @param array $options
@@ -47,9 +30,11 @@ class TopPosters
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['top_posters']['parameters']['show_avatars']      = $this->show_avatars;
-		$options['top_posters']['parameters']['num_posters']       = $this->num_posters;
-		$options['top_posters']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_posters']['parameters'] = [
+			'show_avatars'      => true,
+			'num_posters'       => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -77,7 +62,7 @@ class TopPosters
 		if ($context['lp_block']['type'] !== 'top_posters')
 			return;
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -86,7 +71,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters_addon_num_posters'];
+		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters']['num_posters'];
 		$context['posting_fields']['num_posters']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -96,7 +81,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(

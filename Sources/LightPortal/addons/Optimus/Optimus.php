@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Optimus;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Optimus
  *
@@ -16,15 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Optimus;
 
-class Optimus
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Optimus extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * @param array $config_vars
@@ -32,8 +30,8 @@ class Optimus
 	 */
 	public function addSettings(&$config_vars)
 	{
-		$config_vars[] = array('check', 'lp_optimus_addon_use_topic_descriptions');
-		$config_vars[] = array('check', 'lp_optimus_addon_show_topic_keywords');
+		$config_vars['optimus'][] = array('check', 'use_topic_descriptions');
+		$config_vars['optimus'][] = array('check', 'show_topic_keywords');
 	}
 
 	/**

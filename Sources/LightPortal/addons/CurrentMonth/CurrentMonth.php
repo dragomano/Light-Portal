@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\CurrentMonth;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * CurrentMonth
  *
@@ -16,20 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\CurrentMonth;
 
-class CurrentMonth
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class CurrentMonth extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-calendar-check';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
+	public $icon = 'fas fa-calendar-check';
 
 	/**
 	 * @param array $options
@@ -37,7 +30,7 @@ class CurrentMonth
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['current_month']['no_content_class'] = $this->no_content_class;
+		$options['current_month']['no_content_class'] = true;
 	}
 
 	/**

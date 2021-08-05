@@ -39,13 +39,11 @@ function template_manage_plugins()
 	</div>';
 
 	// This is a magic! Пошла магия!
-	$i = 0;
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<span class="counter">', ++$i, '</span>
 				<h4>', $plugin['name'], '</h4>
 				<div class="smalltext">
 					<p>
@@ -65,12 +63,12 @@ function template_manage_plugins()
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
 		if ($plugin['types'] === $txt['lp_sponsors_only'] ) {
 			echo '
-				<i class="fas fa-3x fa-donate"></i>';
+				<a href="https://ko-fi.com/dragomano" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
 		} else {
 			echo '
 				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
@@ -80,7 +78,7 @@ function template_manage_plugins()
 			</div>';
 
 		if (!empty($plugin['settings']))
-			show_plugin_settings($plugin['snake_name'] . $context['session_id'], $plugin['settings']);
+			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
 		</div>
@@ -108,7 +106,7 @@ function show_plugin_settings($plugin_name, $settings)
 
 	echo '
 	<br class="clear">
-	<div class="roundframe" id="', $plugin_name, '_settings" style="display: none" x-data="{success: false}">
+	<div class="roundframe" id="', $plugin_name, '_', $context['session_id'], '_settings" style="display: none" x-data="{success: false}">
 		<div class="title_bar">
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
@@ -118,12 +116,15 @@ function show_plugin_settings($plugin_name, $settings)
 				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
 
 	foreach ($settings as $value) {
+		$label = $txt['lp_' . $plugin_name][$value[1]] ?? '';
+		$value[1] = 'lp_' . $plugin_name . '_addon_' . $value[1];
+
 		echo '
 				<div>';
 
 		if (!in_array($value[0], array('callback', 'desc', 'check'))) {
 			echo '
-					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $txt[$value[1]], '</strong></label>';
+					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $label, '</strong></label>';
 		}
 
 		if ($value[0] == 'text') {
@@ -144,14 +145,14 @@ function show_plugin_settings($plugin_name, $settings)
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
-					<label class="label" for="', $value[1], '"><strong>', $txt[$value[1]], '</strong></label>';
+					<label class="label" for="', $value[1], '"><strong>', $label, '</strong></label>';
 		} elseif ($value[0] == 'callback' && !empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
 			}
 		} elseif ($value[0] == 'desc') {
 			echo '
-					<div class="roundframe">', $txt[$value[1]], '</div>';
+					<div class="roundframe">', $label, '</div>';
 		} elseif ($value[0] == 'multicheck') {
 			echo '
 					<fieldset>

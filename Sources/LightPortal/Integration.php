@@ -121,7 +121,7 @@ class Integration
 
 		Subs::loadBlocks();
 		Subs::loadCssFiles();
-		Subs::runAddons();
+		Addons::run();
 	}
 
 	/**

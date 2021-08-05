@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopPages;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopPages
  *
@@ -16,30 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopPages;
 
-class TopPages
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopPages extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-balance-scale-left';
-
-	/**
-	 * @var string
-	 */
-	private $type = 'comments';
-
-	/**
-	 * @var int
-	 */
-	private $num_pages = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * @param array $options
@@ -47,9 +30,11 @@ class TopPages
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['top_pages']['parameters']['popularity_type']   = $this->type;
-		$options['top_pages']['parameters']['num_pages']         = $this->num_pages;
-		$options['top_pages']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_pages']['parameters'] = [
+			'popularity_type'   => 'comments',
+			'num_pages'         => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -77,7 +62,7 @@ class TopPages
 		if ($context['lp_block']['type'] !== 'top_pages')
 			return;
 
-		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_pages_addon_type'];
+		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_pages']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -86,7 +71,7 @@ class TopPages
 			'options' => array()
 		);
 
-		$types = array_combine(array('comments', 'views'), $txt['lp_top_pages_addon_type_set']);
+		$types = array_combine(array('comments', 'views'), $txt['lp_top_pages']['type_set']);
 
 		foreach ($types as $key => $value) {
 			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
@@ -95,7 +80,7 @@ class TopPages
 			);
 		}
 
-		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_top_pages_addon_num_pages'];
+		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_top_pages']['num_pages'];
 		$context['posting_fields']['num_pages']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -105,7 +90,7 @@ class TopPages
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_pages_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_pages']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -187,7 +172,7 @@ class TopPages
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
-				echo $txt['lp_top_pages_addon_no_items'];
+				echo $txt['lp_top_pages']['no_items'];
 			else {
 				echo '
 		<dl class="stats">';
@@ -212,7 +197,7 @@ class TopPages
 		</dl>';
 			}
 		} else {
-			echo $txt['lp_top_pages_addon_no_items'];
+			echo $txt['lp_top_pages']['no_items'];
 		}
 
 		$content = ob_get_clean();

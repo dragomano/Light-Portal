@@ -257,7 +257,7 @@ class Page
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
 			return;
 
-		Subs::runAddons('comments');
+		Addons::run('comments');
 
 		if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;

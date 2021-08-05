@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 use Exception;
-use Bugo\LightPortal\{Helpers, Page, Subs};
+use Bugo\LightPortal\{Addons, Helpers, Page};
 
 /**
  * PageArticle.php
@@ -54,7 +54,7 @@ class PageArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		Subs::runAddons('frontPages', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+		Addons::run('frontPages', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
 	}
 
 	/**
@@ -155,7 +155,7 @@ class PageArticle extends AbstractArticle
 
 				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
-				Subs::runAddons('frontPagesOutput', array(&$pages, $row));
+				Addons::run('frontPagesOutput', array(&$pages, $row));
 			}
 
 			$smcFunc['db_free_result']($request);

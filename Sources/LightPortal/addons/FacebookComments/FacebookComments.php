@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FacebookComments;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * FacebookComments
  *
@@ -16,20 +12,17 @@ use Bugo\LightPortal\Helpers;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FacebookComments;
 
-class FacebookComments
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class FacebookComments extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'comment';
-
-	/**
-	 * @var string
-	 */
-	private $dark_themes = '';
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -54,9 +47,9 @@ class FacebookComments
 		global $modSettings;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
-			updateSettings(array('lp_facebook_comments_addon_dark_themes' => $this->dark_themes));
+			updateSettings(array('lp_facebook_comments_addon_dark_themes' => ''));
 
-		$config_vars[] = array('multicheck', 'lp_facebook_comments_addon_dark_themes', Helpers::getForumThemes());
+		$config_vars['facebook_comment'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
 	}
 
 	/**

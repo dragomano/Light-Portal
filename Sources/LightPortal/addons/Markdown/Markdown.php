@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Markdown;
-
 /**
  * Markdown
  *
@@ -14,30 +12,34 @@ namespace Bugo\LightPortal\Addons\Markdown;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Markdown;
 
-class Markdown
+use Bugo\LightPortal\Addons\Plugin;
+
+class Markdown extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = array('block', 'parser');
+	public $icon = 'fab fa-markdown';
 
 	/**
-	 * Adding the new content type and block icon
+	 * @var array
+	 */
+	public $type = array('block', 'parser');
+
+	/**
+	 * Adding the new content type
 	 *
-	 * Добавляем новый тип контента и иконку блока
+	 * Добавляем новый тип контента
 	 *
 	 * @return void
 	 */
 	public function init()
 	{
-		global $txt, $context;
+		global $txt;
 
-		$txt['lp_page_types']['md'] = 'Markdown';
-
-		$context['lp_md_icon'] = 'fab fa-markdown';
+		$txt['lp_page_types']['markdown'] = 'Markdown';
 	}
 
 	/**
@@ -46,7 +48,7 @@ class Markdown
 	 */
 	public function blockOptions(&$options)
 	{
-		$options['md'] = array(
+		$options['markdown'] = array(
 			'content' => true
 		);
 	}
@@ -62,7 +64,7 @@ class Markdown
 	 */
 	public function parseContent(&$content, $type)
 	{
-		if ($type == 'md')
+		if ($type == 'markdown')
 			$content = $this->getParsedContent($content);
 	}
 

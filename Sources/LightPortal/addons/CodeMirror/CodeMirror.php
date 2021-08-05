@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\CodeMirror;
-
 /**
  * CodeMirror
  *
@@ -14,15 +12,16 @@ namespace Bugo\LightPortal\Addons\CodeMirror;
  * @version 1.8
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\CodeMirror;
 
-class CodeMirror
+use Bugo\LightPortal\Addons\Plugin;
+
+class CodeMirror extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'editor';
+	public $type = 'editor';
 
 	/**
 	 * @param array $config_vars
@@ -30,10 +29,10 @@ class CodeMirror
 	 */
 	public function addSettings(&$config_vars)
 	{
-		$config_vars[] = array('check', 'lp_code_mirror_addon_php_mode');
-		$config_vars[] = array('check', 'lp_code_mirror_addon_html_mode');
-		$config_vars[] = array('check', 'lp_code_mirror_addon_md_mode');
-		$config_vars[] = array('desc', 'lp_code_mirror_addon_small_hint');
+		$config_vars['code_mirror'][] = array('check', 'php_mode');
+		$config_vars['code_mirror'][] = array('check', 'html_mode');
+		$config_vars['code_mirror'][] = array('check', 'md_mode');
+		$config_vars['code_mirror'][] = array('desc', 'small_hint');
 	}
 
 	/**
