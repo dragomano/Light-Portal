@@ -44,12 +44,9 @@ function template_manage_plugins()
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<h4>', $plugin['name'], '</h4>
+				<h4>', $plugin['name'], ' <strong class="new_posts">', $plugin['types'], '</strong></h4>
 				<div>
-					<p>
-						<strong class="new_posts">', $plugin['types'], '</strong>
-						', $plugin['desc'], '
-					</p>';
+					<p>', $plugin['desc'], '</p>';
 
 		if (!empty($plugin['requires'])) {
 			echo '
