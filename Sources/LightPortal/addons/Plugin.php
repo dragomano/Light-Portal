@@ -23,11 +23,15 @@ if (!defined('SMF'))
 abstract class Plugin
 {
 	/**
+	 * Addon type
+	 *
 	 * @var string
 	 */
 	public $type = 'block';
 
 	/**
+	 * Block icon
+	 *
 	 * @var string
 	 */
 	public $icon = 'fas fa-puzzle-piece';
@@ -37,18 +41,28 @@ abstract class Plugin
 	 *
 	 * @var array
 	 */
-	protected $requires = [];
+	public $requires = [];
 
-	public function getName()
+	/**
+	 * @return string
+	 */
+	public function getName(): string
 	{
 		return (new ReflectionClass(get_called_class()))->getShortName();
 	}
 
-	public function getSnakeName()
+	/**
+	 * @return string
+	 */
+	public function getSnakeName(): string
 	{
 		return Helpers::getSnakeName($this->getName());
 	}
 
+	/**
+	 * @param string $template
+	 * @return void
+	 */
 	public function loadTemplate(string $template = 'template')
 	{
 		require_once dirname((new ReflectionClass(get_called_class()))->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';

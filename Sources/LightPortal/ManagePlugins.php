@@ -56,11 +56,15 @@ class ManagePlugins
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
 			$donate = false;
+			$requires = [];
 
 			try {
 				$className = __NAMESPACE__ . '\Addons\\' . $item . '\\' . $item;
 				$addonClass = new \ReflectionClass($className);
 				$comments = explode('* ', $addonClass->getDocComment());
+
+				if ($addonClass->hasProperty('requires'))
+					$requires = $addonClass->getProperty('requires')->getValue(new $className);
 			} catch (\ReflectionException $e) {
 				$donate = true;
 			}
@@ -73,7 +77,8 @@ class ManagePlugins
 				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => $donate ? $txt['lp_sponsors_only'] : $this->getTypes($snake_name),
-				'settings'   => $config_vars[$snake_name] ?? []
+				'settings'   => $config_vars[$snake_name] ?? [],
+				'requires'   => array_diff($requires, $context['lp_enabled_plugins'])
 			];
 		}, $context['lp_plugins']);
 

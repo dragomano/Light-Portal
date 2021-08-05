@@ -45,11 +45,24 @@ function template_manage_plugins()
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
 				<h4>', $plugin['name'], '</h4>
-				<div class="smalltext">
+				<div>
 					<p>
 						<strong class="new_posts">', $plugin['types'], '</strong>
 						', $plugin['desc'], '
 					</p>';
+
+		if (!empty($plugin['requires'])) {
+			echo '
+					<p class="roundframe">
+						<span class="infobox">
+							<strong>', $txt['lp_plugins_requires'], '</strong>: ';
+
+			echo implode(', ', $plugin['requires']);
+
+			echo '
+						</span>
+					</p>';
+		}
 
 		if (!empty($plugin['author']) && $plugin['author'] !== 'Bugo') {
 			echo '
