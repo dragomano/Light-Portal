@@ -163,7 +163,7 @@ function show_block_entry($id, $data)
 			class="status"
 			data-id="', $id, '"
 			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
-			x-init="$watch(\'status\', value => block.toggleStatus($el, value))"
+			x-init="$watch(\'status\', value => block.toggleStatus($el))"
 		>
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>

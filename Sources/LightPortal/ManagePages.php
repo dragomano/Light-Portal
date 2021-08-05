@@ -178,7 +178,7 @@ class ManagePages
 						'function' => function ($entry) use ($txt)
 						{
 							if (allowedTo('light_portal_approve_pages')) {
-								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>';
 							} else {
@@ -266,8 +266,7 @@ class ManagePages
 					'value' => '
 						<select name="page_actions">
 							<option value="delete">' . $txt['remove'] . '</option>' . (allowedTo('light_portal_approve_pages') ? '
-							<option value="action_on">' . $txt['lp_action_on'] . '</option>
-							<option value="action_off">' . $txt['lp_action_off'] . '</option>' : '') . '
+							<option value="toggle">' . $txt['lp_action_toggle'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
@@ -400,8 +399,8 @@ class ManagePages
 		if (!empty($data['del_item']))
 			$this->remove([(int) $data['del_item']]);
 
-		if (!empty($data['status']) && !empty($data['item']))
-			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
+		if (!empty($data['toggle_item']))
+			$this->toggleStatus([(int) $data['toggle_item']]);
 
 		Helpers::cache()->flush();
 
@@ -469,10 +468,9 @@ class ManagePages
 
 	/**
 	 * @param array $items
-	 * @param int $status
 	 * @return void
 	 */
-	public function toggleStatus(array $items, int $status = 0)
+	public function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -481,11 +479,10 @@ class ManagePages
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET status = {int:status}
+			SET status = !status
 			WHERE page_id IN ({array_int:items})',
 			array(
-				'status' => $status,
-				'items'  => $items
+				'items' => $items
 			)
 		);
 	}
@@ -506,11 +503,7 @@ class ManagePages
 				$this->remove($items);
 				break;
 
-			case 'action_on':
-				$this->toggleStatus($items, Page::STATUS_ACTIVE);
-				break;
-
-			case 'action_off':
+			case 'toggle':
 				$this->toggleStatus($items);
 				break;
 		}

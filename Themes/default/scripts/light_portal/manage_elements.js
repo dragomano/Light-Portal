@@ -7,7 +7,7 @@ class PortalEntity {
 		target.innerHTML = `<i class="${type.querySelector('input:checked').value} fa-${icon.value}"></i>`;
 	}
 
-	async toggleStatus(target, status) {
+	async toggleStatus(target) {
 		const item = target.dataset.id;
 
 		if (item) {
@@ -17,8 +17,7 @@ class PortalEntity {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					status: (status ? 'off' : 'on'),
-					item: item
+					toggle_item: item
 				})
 			});
 

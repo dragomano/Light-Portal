@@ -142,6 +142,7 @@ $txt['lp_title'] = 'Title';
 $txt['lp_actions'] = 'Actions';
 $txt['lp_action_on'] = 'Enable';
 $txt['lp_action_off'] = 'Disable';
+$txt['lp_action_toggle'] = 'Toggle status';
 $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';

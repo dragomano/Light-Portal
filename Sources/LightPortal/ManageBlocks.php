@@ -119,8 +119,8 @@ class ManageBlocks
 		if (!empty($data['clone_block']))
 			$this->makeCopy((int) $data['clone_block']);
 
-		if (!empty($data['status']) && !empty($data['item']))
-			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
+		if (!empty($data['toggle_item']))
+			$this->toggleStatus([(int) $data['toggle_item']]);
 
 		$this->updatePriority();
 
@@ -209,10 +209,9 @@ class ManageBlocks
 
 	/**
 	 * @param array $items
-	 * @param int $status
 	 * @return void
 	 */
-	public function toggleStatus(array $items, int $status = 0)
+	public function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -221,11 +220,10 @@ class ManageBlocks
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
-			SET status = {int:status}
+			SET status = !status
 			WHERE block_id IN ({array_int:items})',
 			array(
-				'status' => $status,
-				'items'  => $items
+				'items' => $items
 			)
 		);
 

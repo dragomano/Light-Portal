@@ -142,6 +142,7 @@ $txt['lp_title'] = 'Заголовок';
 $txt['lp_actions'] = 'Дії';
 $txt['lp_action_on'] = 'Увімкнути';
 $txt['lp_action_off'] = 'Вимкнути';
+$txt['lp_action_toggle'] = 'Переключити статус';
 $txt['lp_action_clone'] = 'Клонувати';
 $txt['lp_action_move'] = 'Перемістити';
 $txt['lp_read_more'] = 'Читати далі...';
