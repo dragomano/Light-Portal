@@ -1138,6 +1138,8 @@ class ManageBlocks
 				$data['options']['parameters'][$row['name']] = $row['value'];
 		}
 
+		$this->prepareMissingBlockTypes($data['type']);
+
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
@@ -1171,7 +1173,7 @@ class ManageBlocks
 	{
 		global $txt, $context;
 
-		if (empty($txt['lp_block_types'][$type]))
+		if (!isset($txt['lp_' . $type]['title']))
 			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
 	}
 }

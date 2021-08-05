@@ -78,7 +78,7 @@ class Search extends Plugin
 	{
 		global $context, $txt;
 
-		$context['page_title']     = $txt['lp_block_types']['search'];
+		$context['page_title']     = $txt['lp_search']['title'];
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -217,7 +217,7 @@ class Search extends Plugin
 
 		echo '
 		<form class="search_addon centertext" action="', $scripturl, '?action=portal;sa=search" method="post" accept-charset="', $context['character_set'], '">
-			<input type="search" name="search" placeholder="', $txt['lp_block_types']['search'], '">
+			<input type="search" name="search" placeholder="', $txt['lp_search']['title'], '">
 		</form>
 		<script>
 			new autoComplete({

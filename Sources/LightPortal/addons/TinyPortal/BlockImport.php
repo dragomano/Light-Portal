@@ -184,7 +184,7 @@ class BlockImport extends AbstractImport
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['id']] = array(
 				'id'        => $row['id'],
-				'type'      => $txt['lp_block_types'][$this->getType($row['type'])],
+				'type'      => $txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
 				'placement' => $context['lp_block_placements'][$this->getPlacement($row['bar'])]
 			);
