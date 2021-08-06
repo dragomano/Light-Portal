@@ -46,7 +46,7 @@ function template_show_articles()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_view"', !empty($context['lp_active_blocks']) && empty($modSettings['lp_show_pagination']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_view">';
 
 	show_pagination();
 
@@ -184,7 +184,7 @@ function template_show_articles_alt()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_alt_view">';
 
 	show_pagination();
 
@@ -391,7 +391,7 @@ function template_show_articles_alt3()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt3_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px; margin-left: 5px"' : '', '>';
+	<div class="lp_frontpage_articles article_alt3_view">';
 
 	show_pagination();
 
@@ -490,7 +490,142 @@ function template_show_articles_alt3()
  *
  * @return void
  */
-function template_show_articles_alt4()
+function template_show_articles_simple()
+{
+	global $context, $txt;
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	<div class="col-xs">';
+
+	echo '
+	<div class="lp_frontpage_articles article_simple_view">';
+
+	show_pagination();
+
+	foreach ($context['lp_frontpage_articles'] as $article) {
+		echo '
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
+
+		if (!empty($article['image'])) {
+			echo '
+			<div class="article_image" style="background-image: url(\'' . $article['image'] . '\')"></div>';
+		}
+
+		echo '
+			<div class="mt-6 body">
+				<a class="article_title" href="', $article['link'], '">', $article['title'], '</a>';
+
+		if (!empty($article['teaser'])) {
+			echo '
+				<p class="article_teaser">', $article['teaser'], '</p>';
+		}
+
+		echo '
+			</div>
+			<div class="mt-6">
+				<a class="bbc_link" href="', $article['link'], '">', $txt['lp_read_more'], '</a>
+			</div>
+		</div>';
+	}
+
+	show_pagination('bottom');
+
+	echo '
+	</div>';
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	</div>';
+}
+
+/**
+ * Example of custom view for frontpage articles
+ *
+ * Пример альтернативного отображения статей
+ *
+ * @return void
+ */
+function template_show_articles_simple2()
+{
+	global $context, $txt;
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	<div class="col-xs">';
+
+	echo '
+	<div class="lp_frontpage_articles article_simple2_view">';
+
+	show_pagination();
+
+	foreach ($context['lp_frontpage_articles'] as $article) {
+		echo '
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>
+					<div class="card-title">
+						<h3>', $article['title'], '</h3>';
+
+		if (!empty($article['datetime'])) {
+			echo '
+						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+		}
+
+		echo '
+					</div>
+					<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+						<polygon points="50,0 100,0 50,100 0,100" />
+					</svg>
+				</div>
+
+				<div class="card-body">
+					<div class="card-body-inner">';
+
+		if (!empty($article['datetime'])) {
+			echo '
+						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+		}
+
+		echo '
+						<h3>', $article['title'], '</h3>';
+
+		if (!empty($article['teaser'])) {
+			echo '
+						<p class="article_teaser">', $article['teaser'], '</p>';
+		}
+
+		echo '
+						<a class="read_more" href="', $article['link'], '">
+							<span>', $txt['lp_read_more'], '</span>
+							<span class="arrow">&#x279c;</span>
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</div>';
+	}
+
+	show_pagination('bottom');
+
+	echo '
+	</div>';
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	</div>';
+}
+
+/**
+ * Example of custom view for frontpage articles
+ *
+ * Пример альтернативного отображения статей
+ *
+ * @return void
+ */
+function template_show_articles_simple3()
 {
 	global $context;
 
@@ -499,47 +634,67 @@ function template_show_articles_alt4()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt4_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+		<div class="article_simple3_view">';
 
 	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<article>
-			<div class="num"></div>
-			<a class="card" href="', $article['link'], '"', !empty($article['image']) ? ' style="--bg-img: url(\'' . $article['image'] . '\')"' : '', '>
-				<div>
-					<h1>', $article['title'], '</h1>';
+			<div>';
+
+		if (!empty($article['image'])) {
+			echo '
+				<img src="', $article['image'], '" alt="', $article['title'], '">';
+		}
+
+		echo '
+				<div class="title">
+					<div>', $article['title'], '</div>';
 
 		if (!empty($article['teaser'])) {
 			echo '
 					<p>', $article['teaser'], '</p>';
 		}
 
-		if (!empty($article['datetime'])) {
+		echo '
+				</div>';
+
+		// Topic keywords
+		if (!empty($article['keywords'])) {
 			echo '
-					<div class="date">
-						<time datetime="', $article['datetime'], '">', $article['date'], '</time>
-					</div>';
+				<div class="tags">';
+
+			foreach ($article['keywords'] as $id => $name) {
+				echo '
+					<a class="new_posts" href="', $scripturl, '?action=keywords;id=', $id, '">#', $name, '</a>';
+			}
+
+			echo '
+				</div>';
 		}
 
-		if (!empty($article['section']['name'])) {
+		// Portal tags
+		if (!empty($article['tags'])) {
 			echo '
-					<div class="tags">
-						<div class="tag">', $article['section']['name'], '</div>
-					</div>';
+				<div class="tags">';
+
+			foreach ($article['tags'] as $id => $name) {
+				echo '
+					<a class="new_posts" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">#', $name, '</a>';
+			}
+
+			echo '
+				</div>';
 		}
 
 		echo '
-				</div>
-			</a>
-		</article>';
+			</div>';
 	}
 
-	show_pagination('bottom');
-
 	echo '
-	</div>';
+		</div>';
+
+	show_pagination('bottom');
 
 	if (empty($context['lp_active_blocks']))
 		echo '
