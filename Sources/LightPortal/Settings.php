@@ -105,7 +105,7 @@ class Settings
 			);
 		}
 
-		Addons::run('adminAreas', array(&$admin_areas));
+		Addons::run('addAdminAreas', array(&$admin_areas));
 	}
 
 	/**

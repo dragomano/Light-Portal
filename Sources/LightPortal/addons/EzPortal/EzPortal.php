@@ -31,7 +31,7 @@ class EzPortal extends Plugin
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public function adminAreas(array &$admin_areas)
+	public function addAdminAreas(array &$admin_areas)
 	{
 		global $user_info, $txt;
 
