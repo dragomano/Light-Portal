@@ -512,13 +512,14 @@ class Helpers
 
 	/**
 	 * @param string $text
+	 * @param int $length
 	 * @return string
 	 */
-	public static function getTeaser(string $text): string
+	public static function getTeaser(string $text, int $length = 150): string
 	{
 		$text = strip_tags($text);
 
-		return $text ?: '...';
+		return shorten_subject($text, $length) ?: '...';
 	}
 
 	/**
