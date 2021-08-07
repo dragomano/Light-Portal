@@ -65,7 +65,7 @@ function template_manage_export_blocks()
 						', $data['note'] ?: $data['title'][$context['user']['language']] ?: $data['title'][$language] ?: $data['title']['english'], '
 					</td>
 					<td class="type centertext">
-						', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
+						', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
 						', $context['lp_block_placements'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '

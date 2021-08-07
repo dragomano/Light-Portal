@@ -33,10 +33,10 @@ class ArticleList extends Plugin
 		$options['article_list']['no_content_class'] = true;
 
 		$options['article_list']['parameters'] = [
-			'body_class'  => 'div.descbox',
-			'type'        => 0,
-			'ids'         => '',
-			'seek_images' => false
+			'body_class'   => 'div.descbox',
+			'display_type' => 0,
+			'ids'          => '',
+			'seek_images'  => false
 		];
 	}
 
@@ -50,10 +50,10 @@ class ArticleList extends Plugin
 		if ($type !== 'article_list')
 			return;
 
-		$parameters['body_class']  = FILTER_SANITIZE_STRING;
-		$parameters['type']        = FILTER_VALIDATE_INT;
-		$parameters['ids']         = FILTER_SANITIZE_STRING;
-		$parameters['seek_images'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['body_class']   = FILTER_SANITIZE_STRING;
+		$parameters['display_type'] = FILTER_VALIDATE_INT;
+		$parameters['ids']          = FILTER_SANITIZE_STRING;
+		$parameters['seek_images']  = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
@@ -86,20 +86,20 @@ class ArticleList extends Plugin
 			);
 		}
 
-		$context['posting_fields']['type']['label']['text'] = $txt['lp_article_list']['type'];
-		$context['posting_fields']['type']['input'] = array(
+		$context['posting_fields']['display_type']['label']['text'] = $txt['lp_article_list']['display_type'];
+		$context['posting_fields']['display_type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id' => 'type'
+				'id' => 'display_type'
 			),
 			'options' => array(),
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_article_list']['type_set'] as $article_type => $title) {
-			$context['posting_fields']['type']['input']['options'][$title] = array(
+		foreach ($txt['lp_article_list']['display_type_set'] as $article_type => $title) {
+			$context['posting_fields']['display_type']['input']['options'][$title] = array(
 				'value'    => $article_type,
-				'selected' => $article_type == $context['lp_block']['options']['parameters']['type']
+				'selected' => $article_type == $context['lp_block']['options']['parameters']['display_type']
 			);
 		}
 
@@ -264,7 +264,7 @@ class ArticleList extends Plugin
 			return is_numeric($item);
 		});
 
-		$function     = empty($parameters['type']) ? 'getTopics' : 'getPages';
+		$function     = empty($parameters['display_type']) ? 'getTopics' : 'getPages';
 		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
 
 		ob_start();
@@ -273,7 +273,7 @@ class ArticleList extends Plugin
 			echo '
 		<div class="article_list">';
 
-			if (empty($parameters['type'])) {
+			if (empty($parameters['display_type'])) {
 				foreach ($article_list as $topic) {
 					$content = '';
 					if (!empty($topic['image'])) {
