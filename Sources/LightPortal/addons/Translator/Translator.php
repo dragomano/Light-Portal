@@ -65,10 +65,11 @@ class Translator extends Plugin
 
 		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator']['engine'];
 		$context['posting_fields']['engine']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'engine'
-			)
+			),
+			'options' => array()
 		);
 
 		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator']['engine_set']);
