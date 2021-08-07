@@ -31,6 +31,9 @@ class Settings
 	{
 		global $txt, $context;
 
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/admin.js', array('minimize' => true));
+
 		loadLanguage('ManageSettings');
 
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
@@ -545,9 +548,6 @@ class Settings
 	{
 		global $context, $txt;
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
-
 		loadTemplate('LightPortal/ManageSettings');
 
 		$context['page_title'] = $txt['lp_categories'];
@@ -724,9 +724,6 @@ class Settings
 
 		isAllowedTo('admin_forum');//isAllowedTo('light_portal_manage_blocks');
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
-
 		$subActions = array(
 			'main' => array(new ManageBlocks, 'main'),
 			'add'  => array(new ManageBlocks, 'add'),
@@ -756,9 +753,6 @@ class Settings
 
 		isAllowedTo('light_portal_manage_own_pages');
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
-
 		$subActions = array(
 			'main' => array(new ManagePages, 'main'),
 			'add'  => array(new ManagePages, 'add'),
@@ -785,9 +779,6 @@ class Settings
 	public function pluginAreas()
 	{
 		isAllowedTo('admin_forum');
-
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-		loadJavaScriptFile('light_portal/manage_elements.js', array('minimize' => true));
 
 		$subActions = array(
 			'main' => array(new ManagePlugins, 'main')

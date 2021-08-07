@@ -106,7 +106,7 @@ class Page
 
 		if ($context['user']['is_logged']) {
 			loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-			loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
+			loadJavaScriptFile('light_portal/user.js', array('minimize' => true));
 		}
 	}
 
