@@ -56,7 +56,6 @@ class Subs
 		$context['lp_block_placements']    = self::getBlockPlacements();
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
-		$context['lp_icon_types']          = self::getIconTypes();
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -90,7 +89,7 @@ class Subs
 		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT
-					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
 					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -110,7 +109,6 @@ class Subs
 					$active_blocks[$row['block_id']] = array(
 						'id'            => $row['block_id'],
 						'icon'          => $row['icon'],
-						'icon_type'     => $row['icon_type'],
 						'type'          => $row['type'],
 						'content'       => $row['content'],
 						'placement'     => $row['placement'],
@@ -295,10 +293,9 @@ class Subs
 
 		if (($pages = Helpers::cache()->get('pages_in_menu', LP_CACHE_TIME * 4)) === null) {
 			$request = $smcFunc['db_query']('', '
-				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon, ps3.value AS icon_type
+				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon
 				FROM {db_prefix}lp_params AS ps
 					LEFT JOIN {db_prefix}lp_params AS ps2 ON (ps.item_id = ps2.item_id AND ps2.name = {literal:icon} AND ps2.type = {literal:page})
-					LEFT JOIN {db_prefix}lp_params AS ps3 ON (ps.item_id = ps3.item_id AND ps3.name = {literal:icon_type} AND ps3.type = {literal:page})
 					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
 				WHERE ps.name = {literal:main_menu_item}
 					AND ps.value != {string:blank_string}
@@ -315,8 +312,7 @@ class Subs
 				$pages[$row['alias']] = array(
 					'title'       => json_decode($row['value'], true),
 					'permissions' => $row['permissions'],
-					'icon'        => $row['icon'],
-					'icon_type'   => $row['icon_type']
+					'icon'        => $row['icon']
 				);
 			}
 
@@ -369,19 +365,5 @@ class Subs
 		global $txt;
 
 		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_type_set']);
-	}
-
-	/**
-	 * Get an array of available icon types
-	 *
-	 * Получаем массив доступных типов иконок
-	 *
-	 * @return array
-	 */
-	public static function getIconTypes(): array
-	{
-		global $txt;
-
-		return array_combine(array('fas', 'far', 'fab'), $txt['lp_block_icon_type_set']);
 	}
 }

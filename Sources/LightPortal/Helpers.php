@@ -119,20 +119,18 @@ class Helpers
 
 	/**
 	 * @param string $icon
-	 * @param string $type
 	 * @return string
 	 */
-	public static function getIcon(string $icon = '', string $type = ''): string
+	public static function getIcon(string $icon = ''): string
 	{
 		global $context;
 
 		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-		$type = $type ?: ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
 
-		if (!empty($icon))
-			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+		if (empty($icon))
+			return '';
 
-		return '';
+		return '<i class="' . $icon . '"></i> ';
 	}
 
 	/**
@@ -796,30 +794,24 @@ class Helpers
 	}
 
 	/**
-	 * Prepare field array with entity options
-	 *
-	 * Формируем массив полей с настройками сущности
-	 *
-	 * @return void
+	 * @return array
 	 */
-	public static function preparePostFields()
+	public static function getFaIcons()
 	{
-		global $context;
+		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
+			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
+			$json = json_decode($content);
+			$icons = [];
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
-
-			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
-				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $data['input']['attributes']['id'] . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
-				$context['posting_fields'][$item] = $data;
+			foreach ($json as $icon => $value) {
+				foreach ($value->styles as $style) {
+					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
+				}
 			}
 
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 4);
 		}
 
-		loadTemplate('LightPortal/ManageSettings');
+		return $icons;
 	}
 }

@@ -95,7 +95,7 @@ function template_page_post()
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
 		const page = new Page();
-		let keywords = new SlimSelect({
+		new SlimSelect({
 			select: "#keywords",
 			data: [';
 
@@ -118,7 +118,33 @@ function template_page_post()
 				}
 			}
 		});
-		let categories = new SlimSelect({
+		let iconSelect = new SlimSelect({
+			select: "#icon",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_all_icons']);
+
+	echo '
+			],
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_block_select_icon'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "fas fa-robot",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});
+		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');
+		new SlimSelect({
 			select: "#category",
 			data: [';
 
@@ -134,7 +160,7 @@ function template_page_post()
 
 	if ($context['user']['is_admin']) {
 		echo '
-		let members = new SlimSelect({
+		new SlimSelect({
 			select: "#page_author",
 			allowDeselect: true,
 			deselectLabel: "<span class=\"red\">✖</span>",

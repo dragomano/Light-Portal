@@ -295,7 +295,7 @@ class Integration
 				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
 					'title' => Helpers::getTitle($item),
 					'href'  => $scripturl . '?page=' . $alias,
-					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon_type'] . ' fa-' . $item['icon']),
+					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
 					'show'  => Helpers::canViewItem($item['permissions'])
 				);
 			}

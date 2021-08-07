@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Bloklar, türlerine bağlı olarak herhangi
 $txt['lp_blocks_add_instruction'] = 'Üzerine tıklayarak istediğiniz bloğu seçin.';
 $txt['lp_blocks_edit_title'] = 'Blok düzenle';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Simgelerin listesi';
 $txt['lp_block_type'] = 'Blok türü';
 $txt['lp_block_note'] = 'Not';
 $txt['lp_block_priority'] = 'Öncelik';
-$txt['lp_block_icon_type'] = 'Simge türü';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Yerleşim';
 $txt['lp_block_placement_set'] = array('Başlık', 'Orta (üst)', 'Sol taraf', 'Sağ taraf', 'Orta (alt)', 'Altbilgi');
 

@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Nie ma jeszcze zbyt wielu bloków, ale najb
 $txt['lp_blocks_add_instruction'] = 'Wybierz blok przez kliknięcie.';
 $txt['lp_blocks_edit_title'] = 'Edytowanie bloku';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Ikony';
 $txt['lp_block_type'] = 'Typ bloku';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Priorytet';
-$txt['lp_block_icon_type'] = 'Typ ikony';
-$txt['lp_block_icon_type_set'] = array('Wypełnione', 'Normalne', 'Marki');
 $txt['lp_block_placement'] = 'Umieszczenie';
 $txt['lp_block_placement_set'] = array('Nagłówek', 'Centralny (na górze)', 'Lewa strona', 'Prawa strona', 'Centralny (na dole)', 'Stopka');
 

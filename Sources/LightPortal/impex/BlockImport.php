@@ -89,7 +89,6 @@ class BlockImport extends AbstractImport
 				$items[] = [
 					'block_id'      => $block_id = intval($item['block_id']),
 					'icon'          => $item->icon,
-					'icon_type'     => $item->icon_type,
 					'type'          => $item->type,
 					'note'          => $item->note,
 					'content'       => $item->content,
@@ -142,7 +141,6 @@ class BlockImport extends AbstractImport
 					array(
 						'block_id'      => 'int',
 						'icon'          => 'string-60',
-						'icon_type'     => 'string-10',
 						'type'          => 'string',
 						'note'          => 'string',
 						'content'       => 'string-65534',

@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
+	use Manage;
+
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
@@ -68,7 +70,7 @@ class ManageBlocks
 		global $smcFunc;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.icon_type, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
@@ -79,7 +81,7 @@ class ManageBlocks
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($current_blocks[$row['placement']][$row['block_id']]))
 				$current_blocks[$row['placement']][$row['block_id']] = array(
-					'icon'        => Helpers::getIcon($row['icon'], $row['icon_type']),
+					'icon'        => Helpers::getIcon($row['icon']),
 					'type'        => $row['type'],
 					'note'        => $row['note'],
 					'priority'    => $row['priority'],
@@ -400,8 +402,7 @@ class ManageBlocks
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
-				'icon'          => FILTER_SANITIZE_STRING,
-				'icon_type'     => FILTER_SANITIZE_STRING,
+				'icon'          => FILTER_UNSAFE_RAW,
 				'type'          => FILTER_SANITIZE_STRING,
 				'note'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
@@ -440,7 +441,6 @@ class ManageBlocks
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
-			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'note'          => $post_data['note'] ?? $context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
@@ -508,22 +508,21 @@ class ManageBlocks
 	}
 
 	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
 	 * @return void
 	 */
 	private function improveSelectFields()
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+		global $context;
 
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
+		Manage::improveSelectFields();
+
+		// Prepare the icon list
+		$all_icons = Helpers::getFaIcons();
+
+		$context['lp_all_icons'] = [];
+		foreach ($all_icons as $icon) {
+			$context['lp_all_icons'][] = "\t\t\t\t" . '{innerHTML: `<i class="' . $icon . '"></i>&nbsp;' . $icon . '`, text: "' . $icon . '", selected: ' . (($context['lp_block']['icon'] === $icon) ? 'true' : 'false') . '}';
 		}
-		.ss-disabled {
-			color: inherit !important;
-		}');
 	}
 
 	/**
@@ -562,38 +561,15 @@ class ManageBlocks
 		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
 		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'type' => 'select',
 			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'tab' => 'appearance'
-		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+				'id'   => 'icon',
+				'name' => 'icon'
 			),
 			'options' => array(),
 			'tab' => 'appearance'
 		);
-
-		foreach ($context['lp_icon_types'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_block']['icon_type']
-			);
-		}
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['placement']['input'] = array(
@@ -718,7 +694,7 @@ class ManageBlocks
 
 		Addons::run('prepareBlockFields');
 
-		Helpers::preparePostFields();
+		$this->preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}
@@ -893,7 +869,6 @@ class ManageBlocks
 			'{db_prefix}lp_blocks',
 			array(
 				'icon'          => 'string-60',
-				'icon_type'     => 'string-10',
 				'type'          => 'string',
 				'note'          => 'string',
 				'content'       => 'string-65534',
@@ -909,7 +884,6 @@ class ManageBlocks
 			),
 			array(
 				$context['lp_block']['icon'],
-				$context['lp_block']['icon_type'],
 				$context['lp_block']['type'],
 				$context['lp_block']['note'],
 				$context['lp_block']['content'],
@@ -1000,12 +974,11 @@ class ManageBlocks
 
 		$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
 			array(
 				'block_id'      => $item,
 				'icon'          => $context['lp_block']['icon'],
-				'icon_type'     => $context['lp_block']['icon_type'],
 				'type'          => $context['lp_block']['type'],
 				'note'          => $context['lp_block']['note'],
 				'content'       => $context['lp_block']['content'],
@@ -1095,7 +1068,7 @@ class ManageBlocks
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
@@ -1117,7 +1090,6 @@ class ManageBlocks
 				$data = array(
 					'id'            => $row['block_id'],
 					'icon'          => $row['icon'],
-					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
 					'note'          => $row['note'],
 					'content'       => $row['content'],

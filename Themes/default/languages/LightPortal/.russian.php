@@ -158,12 +158,9 @@ $txt['lp_blocks_add_description'] = 'Блоки могут содержать л
 $txt['lp_blocks_add_instruction'] = 'Выберите нужный блок, нажав на него.';
 $txt['lp_blocks_edit_title'] = 'Редактирование блока';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Список иконок';
 $txt['lp_block_type'] = 'Тип блока';
 $txt['lp_block_note'] = 'Примечание';
 $txt['lp_block_priority'] = 'Приоритет';
-$txt['lp_block_icon_type'] = 'Тип иконки';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Расположение';
 $txt['lp_block_placement_set'] = array('Шапка', 'Центральная часть (верх)', 'Левая панель', 'Правая панель', 'Центральная часть (низ)', 'Подвал');
 
@@ -186,6 +183,7 @@ $txt['lp_block_areas_values'] = array(
 	'в темах id3 и id7'
 );
 
+$txt['lp_block_select_icon'] = 'Выберите иконку';
 $txt['lp_block_title_class'] = 'CSS класс заголовка';
 $txt['lp_block_title_style'] = 'CSS стили заголовка';
 $txt['lp_block_content_class'] = 'CSS класс содержимого';

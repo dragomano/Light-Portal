@@ -158,12 +158,9 @@ $txt['lp_blocks_add_description'] = 'Blocks can contain any content, depending o
 $txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title'] = 'Editing block';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'List of icons';
 $txt['lp_block_type'] = 'Block type';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Priority';
-$txt['lp_block_icon_type'] = 'Icon type';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer');
 
@@ -186,6 +183,7 @@ $txt['lp_block_areas_values'] = array(
 	'in topics id3, and id7'
 );
 
+$txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';

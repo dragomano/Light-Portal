@@ -3,10 +3,6 @@ class PortalEntity {
 		target.classList.toggle('fa-spin')
 	}
 
-	changeIcon(target, icon, type) {
-		target.innerHTML = `<i class="${type.querySelector('input:checked').value} fa-${icon.value}"></i>`;
-	}
-
 	async toggleStatus(target) {
 		const item = target.dataset.id;
 

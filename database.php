@@ -68,12 +68,6 @@ $tables[] = array(
 			'null' => true
 		),
 		array(
-			'name' => 'icon_type',
-			'type' => 'varchar',
-			'size' => 10,
-			'null' => true
-		),
-		array(
 			'name' => 'type',
 			'type' => 'varchar',
 			'size' => 30,
@@ -461,6 +455,7 @@ foreach ($tables as $table) {
 $smcFunc['db_query']('', "ALTER TABLE {db_prefix}lp_pages CHANGE `type` `type` varchar(10) NOT NULL default 'bbc'", array());
 $smcFunc['db_query']('', "UPDATE `{db_prefix}lp_pages` SET `type` = 'markdown' WHERE `type` = 'md'", array());
 $smcFunc['db_query']('', "UPDATE `{db_prefix}lp_blocks` SET `type` = 'markdown' WHERE `type` = 'md'", array());
+$smcFunc['db_query']('', "DELETE FROM `{db_prefix}lp_params` WHERE `name` = 'icon_type'", array());
 
 if (!isset($modSettings['lp_enabled_plugins']))
 	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));

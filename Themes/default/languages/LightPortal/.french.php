@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Les blocs peuvent contenir n\'importe quel 
 $txt['lp_blocks_add_instruction'] = 'Sélectionnez le bloc souhaité en cliquant dessus.';
 $txt['lp_blocks_edit_title'] = 'editez un bloc';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Liste des icônes';
 $txt['lp_block_type'] = 'Type de bloc';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Prioritée';
-$txt['lp_block_icon_type'] = 'Type d\icönes';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Entête', 'Centre (haut)', 'Côté gauche', 'Côté droit', 'Centre (bas)', 'Bas de page');
 

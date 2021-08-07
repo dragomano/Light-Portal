@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManagePages
 {
+	use Manage;
+
 	/**
 	 * Number pages within tables
 	 *
@@ -600,8 +602,7 @@ class ManagePages
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
 			'main_menu_item'       => '',
-			'icon'                 => '',
-			'icon_type'            => 'fas'
+			'icon'                 => ''
 		];
 
 		Addons::run('pageOptions', array(&$options));
@@ -649,8 +650,7 @@ class ManagePages
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
 					'main_menu_item'       => FILTER_SANITIZE_STRING,
-					'icon'                 => FILTER_SANITIZE_STRING,
-					'icon_type'            => FILTER_SANITIZE_STRING
+					'icon'                 => FILTER_SANITIZE_STRING
 				),
 				$parameters
 			);
@@ -747,35 +747,32 @@ class ManagePages
 	}
 
 	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
 	 * @return void
 	 */
 	private function improveSelectFields()
 	{
 		global $context;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
-
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
-		}
-		.ss-disabled {
-			color: inherit !important;
-		}');
+		Manage::improveSelectFields();
 
 		// Prepare the tag list
-		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Lists\Tag::class);
+		$all_tags = $context['lp_tags'] = Helpers::getAllTags();
 
 		$context['lp_all_tags'] = [];
 		foreach ($all_tags as $id => $value) {
 			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $value . '", value: "' . $id . '", selected: ' . (isset($context['lp_page']['keywords'][$id]) ? 'true' : 'false') . '}';
 		}
 
+		// Prepare the icon list
+		$all_icons = Helpers::getFaIcons();
+
+		$context['lp_all_icons'] = [];
+		foreach ($all_icons as $icon) {
+			$context['lp_all_icons'][] = "\t\t\t\t" . '{innerHTML: `<i class="' . $icon . '"></i>&nbsp;' . $icon . '`, text: "' . $icon . '", selected: ' . (($context['lp_page']['options']['icon'] === $icon) ? 'true' : 'false') . '}';
+		}
+
 		// Prepare the category list
-		$all_categories = Helpers::cache('all_categories', 'getList', Lists\Category::class);
+		$all_categories = Helpers::getAllCategories();
 
 		$context['lp_all_categories'] = [];
 		foreach ($all_categories as $id => $category) {
@@ -950,38 +947,15 @@ class ManagePages
 		}
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
 		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
+			'type' => 'select',
 			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_page']['options']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'tab' => 'menu'
-		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
+				'id'   => 'icon',
+				'name' => 'icon'
 			),
 			'options' => array(),
 			'tab' => 'menu'
 		);
-
-		foreach ($context['lp_icon_types'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_page']['options']['icon_type']
-			);
-		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
@@ -1061,7 +1035,7 @@ class ManagePages
 
 		Addons::run('preparePageFields');
 
-		Helpers::preparePostFields();
+		$this->preparePostFields();
 	}
 
 	/**
