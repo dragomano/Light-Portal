@@ -175,6 +175,11 @@ class Settings
 		);
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
+
+		if (isset($context['settings_title']))
+			$context['settings_title'] .= '<span class="floatright">
+				<i class="fas fa-bug"></i> <a href="https://github.com/dragomano/Light-Portal/issues" target="_blank" rel="noopener">' . $txt['lp_send_issue'] . '</a>
+			</span>';
 	}
 
 	/**

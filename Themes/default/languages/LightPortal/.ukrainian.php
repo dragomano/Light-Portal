@@ -25,6 +25,7 @@ $txt['lp_sponsors_only'] = 'Для спонсорів порталу';
 $txt['lp_settings'] = 'Налаштування порталу';
 $txt['lp_base'] = 'Налаштування головної сторінки і статей';
 $txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форумі розробника</a>.<br>Ви також можете <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купити розробнику чашку кави</a> або пожертвувати будь-яку суму на <a class="bbc_link" href="https://qiwi.com/n/DRAGOMANO">QIWI Гаманець</a>.';
+$txt['lp_send_issue'] = 'Знайшли баг? Передавати';
 
 $txt['lp_frontpage_title'] = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode'] = 'Перша сторінка порталу';
