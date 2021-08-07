@@ -856,6 +856,9 @@ class ManageBlocks
 
 		if (Helpers::post()->has('save_exit'))
 			redirectexit('action=admin;area=lp_blocks;sa=main');
+
+		if (Helpers::post()->has('save'))
+			redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	/**

@@ -1135,7 +1135,7 @@ class ManagePages
 		$this->prepareKeywords();
 
 		if (empty($item)) {
-			$this->addData();
+			$item = $this->addData();
 		} else {
 			$this->updateData($item);
 		}
@@ -1144,6 +1144,9 @@ class ManagePages
 
 		if (Helpers::post()->has('save_exit'))
 			redirectexit('action=admin;area=lp_pages;sa=main');
+
+		if (Helpers::post()->has('save'))
+			redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
 	/**
