@@ -37,9 +37,9 @@ class Markdown extends Plugin
 	 */
 	public function init()
 	{
-		global $txt;
+		global $context;
 
-		$txt['lp_page_types']['markdown'] = 'Markdown';
+		$context['lp_page_types']['markdown'] = 'Markdown';
 	}
 
 	/**

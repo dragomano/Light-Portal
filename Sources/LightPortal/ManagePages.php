@@ -157,7 +157,7 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$type_hint = $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
+							$type_hint = $context['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
 
 							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
@@ -873,7 +873,7 @@ class ManagePages
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_page_types'] as $type => $title) {
+		foreach ($context['lp_page_types'] as $type => $title) {
 			$context['posting_fields']['type']['input']['options'][$title] = array(
 				'value'    => $type,
 				'selected' => $type == $context['lp_page']['type']

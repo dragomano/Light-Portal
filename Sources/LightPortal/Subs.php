@@ -56,6 +56,7 @@ class Subs
 		$context['lp_block_placements']    = self::getBlockPlacements();
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
+		$context['lp_page_types']          = self::getPageTypes();
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -282,10 +283,6 @@ class Subs
 	}
 
 	/**
-	 * Getting a list of pages to display in the main menu
-	 *
-	 * Получаем список страниц для отображения в главном меню
-	 *
 	 * @return array
 	 */
 	public static function getPagesInMenu(): array
@@ -327,10 +324,6 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available block placements
-	 *
-	 * Получаем массив доступных расположений блоков
-	 *
 	 * @return array
 	 */
 	public static function getBlockPlacements(): array
@@ -341,10 +334,6 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available page options
-	 *
-	 * Получаем массив доступных опций страниц
-	 *
 	 * @return array
 	 */
 	public static function getPageOptions(): array
@@ -355,10 +344,6 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available plugin type of the portal
-	 *
-	 * Получаем массив доступных типов плагинов портала
-	 *
 	 * @return array
 	 */
 	public static function getPluginTypes(): array
@@ -366,5 +351,15 @@ class Subs
 		global $txt;
 
 		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_type_set']);
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getPageTypes(): array
+	{
+		global $txt;
+
+		return array_combine(array('bbc', 'html', 'php'), $txt['lp_page_types']);
 	}
 }
