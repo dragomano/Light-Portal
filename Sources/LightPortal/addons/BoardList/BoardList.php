@@ -33,8 +33,8 @@ class BoardList extends Plugin
 		$options['board_list']['no_content_class'] = true;
 
 		$options['board_list']['parameters'] = [
-			'category_class' => 'div.title_bar > h4.titlebg',
-			'board_class'    => 'div.roundframe',
+			'category_class' => 'title_bar > h4',
+			'board_class'    => 'roundframe',
 		];
 	}
 
@@ -72,7 +72,7 @@ class BoardList extends Plugin
 			'tab' => 'appearance'
 		);
 
-		foreach ($context['lp_all_title_classes'] as $key => $data) {
+		foreach ($this->getCategoryClasses() as $key => $data) {
 			$context['posting_fields']['category_class']['input']['options'][$key] = array(
 				'value'    => $key,
 				'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
@@ -91,7 +91,7 @@ class BoardList extends Plugin
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
 			$value = $key;
-			$key   = $key == '_' ? $txt['no'] : $key;
+			$key   = empty($key) ? $txt['no'] : $key;
 
 			$context['posting_fields']['board_class']['input']['options'][$key] = array(
 				'value'    => $value,
@@ -144,7 +144,7 @@ class BoardList extends Plugin
 
 			foreach ($board_list as $category) {
 				if (!empty($parameters['category_class']))
-					echo sprintf($context['lp_all_title_classes'][$parameters['category_class']], $category['name']);
+					echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
 
 				$content = '
 				<ul class="smalltext">';
@@ -170,10 +170,18 @@ class BoardList extends Plugin
 				$content .= '
 				</ul>';
 
-				echo sprintf($context['lp_all_content_classes'][$parameters['board_class'] ?: '_'], $content, null);
+				echo sprintf($context['lp_all_content_classes'][$parameters['board_class']], $content, null);
 			}
 
 			$content = ob_get_clean();
 		}
+	}
+
+	private function getCategoryClasses()
+	{
+		return [
+			'title_bar > h4' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
+			'sub_bar > h4'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
+		];
 	}
 }

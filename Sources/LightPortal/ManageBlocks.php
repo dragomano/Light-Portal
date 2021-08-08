@@ -449,9 +449,9 @@ class ManageBlocks
 			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'        => $context['current_block']['status'] ?? Block::STATUS_ACTIVE,
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
-			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
+			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? array_key_first($context['lp_all_title_classes']),
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',
-			'content_class' => $post_data['content_class'] ?? $context['current_block']['content_class'] ?? '',
+			'content_class' => $post_data['content_class'] ?? $context['current_block']['content_class'] ?? array_key_first($context['lp_all_content_classes']),
 			'content_style' => $post_data['content_style'] ?? $context['current_block']['content_style'] ?? '',
 			'options'       => $options[$context['current_block']['type']]
 		);
@@ -630,9 +630,12 @@ class ManageBlocks
 		);
 
 		foreach ($context['lp_all_title_classes'] as $key => $data) {
+			$value = $key;
+			$key   = empty($key) ? $txt['no'] : $key;
+
 			$context['posting_fields']['title_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['title_class']
+				'value'    => $value,
+				'selected' => $value == $context['lp_block']['title_class']
 			);
 		}
 
@@ -660,7 +663,7 @@ class ManageBlocks
 
 			foreach ($context['lp_all_content_classes'] as $key => $data) {
 				$value = $key;
-				$key   = $key == '_' ? $txt['no'] : $key;
+				$key   = empty($key) ? $txt['no'] : $key;
 
 				$context['posting_fields']['content_class']['input']['options'][$key] = array(
 					'value'    => $value,

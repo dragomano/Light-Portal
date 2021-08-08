@@ -456,6 +456,7 @@ $smcFunc['db_query']('', "ALTER TABLE {db_prefix}lp_pages CHANGE `type` `type` v
 $smcFunc['db_query']('', "UPDATE `{db_prefix}lp_pages` SET `type` = 'markdown' WHERE `type` = 'md'", array());
 $smcFunc['db_query']('', "UPDATE `{db_prefix}lp_blocks` SET `type` = 'markdown' WHERE `type` = 'md'", array());
 $smcFunc['db_query']('', "DELETE FROM `{db_prefix}lp_params` WHERE `name` = 'icon_type'", array());
+$smcFunc['db_query']('', "UPDATE `{db_prefix}lp_blocks` SET `title_class` = 'cat_bar > h3', `content_class` = 'roundframe'", array());
 
 if (!isset($modSettings['lp_enabled_plugins']))
 	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));

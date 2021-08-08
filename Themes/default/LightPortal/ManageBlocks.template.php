@@ -265,7 +265,7 @@ function template_block_post()
 
 		echo '
 	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class'] ?: '_'], $context['preview_content'], $style), '
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style), '
 	</div>';
 	} else {
 		echo '

@@ -33,7 +33,7 @@ class ArticleList extends Plugin
 		$options['article_list']['no_content_class'] = true;
 
 		$options['article_list']['parameters'] = [
-			'body_class'   => 'div.descbox',
+			'body_class'   => 'descbox',
 			'display_type' => 0,
 			'ids'          => '',
 			'seek_images'  => false
@@ -78,7 +78,7 @@ class ArticleList extends Plugin
 
 		foreach ($context['lp_all_content_classes'] as $key => $data) {
 			$value = $key;
-			$key   = $key == '_' ? $txt['no'] : $key;
+			$key   = empty($key) ? $txt['no'] : $key;
 
 			$context['posting_fields']['body_class']['input']['options'][$key] = array(
 				'value'    => $value,
@@ -285,7 +285,7 @@ class ArticleList extends Plugin
 
 					$content .= '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['body_class'] ?: '_'], $content, null);
+					echo sprintf($context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}
 			} else {
 				foreach ($article_list as $page) {
@@ -302,7 +302,7 @@ class ArticleList extends Plugin
 
 					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['body_class'] ?: '_'], $content, null);
+					echo sprintf($context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}
 			}
 

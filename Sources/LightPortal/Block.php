@@ -53,12 +53,10 @@ class Block
 			if (empty($data['title'][$context['user']['language']]))
 				$data['title'][$context['user']['language']] = $context['lp_active_blocks'][$data['id']]['title'][$context['user']['language']] ?? '';
 
-			if (empty($title = Helpers::getTitle($data)))
-				$data['title_class'] = '';
-
 			$context['lp_blocks'][$data['placement']][$item] = $data;
 
-			$icon = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
+			$title = Helpers::getTitle($data);
+			$icon  = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
 
 			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}

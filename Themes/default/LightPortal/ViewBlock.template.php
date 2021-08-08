@@ -170,10 +170,7 @@ function lp_show_blocks($placement = '')
 		if (empty($block['title']))
 			$block['title'] = '';
 
-		if (!empty($block['title_class']))
-			echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
-		else
-			echo $block['title'];
+		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
 
 		if (empty($block['content_class']))
 			$block['content_class'] = '';
@@ -188,7 +185,7 @@ function lp_show_blocks($placement = '')
 		if (!empty($block['content_style']))
 			$style = ' style="' . $block['content_style'] . '"';
 
-		echo sprintf($context['lp_all_content_classes'][$block['content_class'] ?: '_'], $block['content'], $style);
+		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
 
 		echo '
 			</aside>';
