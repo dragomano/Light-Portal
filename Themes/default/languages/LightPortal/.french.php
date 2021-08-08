@@ -243,7 +243,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Gérer les plugins';
 $txt['lp_plugins_manage_description'] = 'Les plugins de portail installés sont répertoriés ici. Vous pouvez toujours en créer un nouveau en utilisant <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">les instructions</a> ou le bouton "+" ci-dessous.';
 $txt['lp_plugins_desc'] = 'Les plugins étendent les capacités du portail et de ses composants, en fournissant des fonctionnalités supplémentaires qui ne sont pas disponibles dans le système de base';
-$txt['lp_plugins_type_set'] = array('Bloc', 'Editeur', 'Widget des commenatires', 'Analyseur de contenu', 'Gestion des articles', 'La mise en page de la page d\'accueil', 'Importer et exporter', 'Autre');
+$txt['lp_plugins_types'] = array('Bloc', 'Editeur', 'Widget des commenatires', 'Analyseur de contenu', 'Gestion des articles', 'La mise en page de la page d\'accueil', 'Importer et exporter', 'Autre');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Toutes les balises de page de portail';

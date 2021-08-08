@@ -243,7 +243,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>. or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_type_set'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'The layout of the frontpage', 'Import and export', 'Otro');
+$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'The layout of the frontpage', 'Import and export', 'Otro');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Todas las etiquetas de página del portal';

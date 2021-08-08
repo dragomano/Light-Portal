@@ -350,7 +350,7 @@ class Subs
 	{
 		global $txt;
 
-		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_type_set']);
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_types']);
 	}
 
 	/**
