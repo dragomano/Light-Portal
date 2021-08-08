@@ -402,7 +402,7 @@ class ManageBlocks
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
-				'icon'          => FILTER_UNSAFE_RAW,
+				'icon'          => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
 				'note'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
@@ -440,7 +440,7 @@ class ManageBlocks
 		$context['lp_block'] = array(
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
 			'title'         => $context['current_block']['title'] ?? [],
-			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
+			'icon'          => !empty($post_data['block_id']) ? ($post_data['icon'] ?? '') : ($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'note'          => $post_data['note'] ?? $context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
@@ -461,6 +461,9 @@ class ManageBlocks
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
 				if (!empty($parameters[$option]) && !empty($post_data['parameters']) && !isset($post_data['parameters'][$option])) {
+					if ($parameters[$option] == FILTER_SANITIZE_STRING)
+						$post_data[$option] = '';
+
 					if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 						$post_data['parameters'][$option] = 0;
 

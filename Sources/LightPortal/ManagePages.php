@@ -684,6 +684,9 @@ class ManagePages
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
 			if (!empty($parameters[$option]) && !empty($post_data) && !isset($post_data[$option])) {
+				if ($parameters[$option] == FILTER_SANITIZE_STRING)
+					$post_data[$option] = '';
+
 				if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 					$post_data[$option] = 0;
 
