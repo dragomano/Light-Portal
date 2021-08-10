@@ -139,7 +139,7 @@ class Import extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
 		global $smcFunc, $db_prefix, $user_info;
 
@@ -187,7 +187,7 @@ class Import extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -321,7 +321,7 @@ class Import extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getItems($pages)
+	private function getItems(?array $pages): array
 	{
 		global $smcFunc, $user_info;
 

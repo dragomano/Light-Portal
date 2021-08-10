@@ -52,7 +52,7 @@ class LanguageAccess extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		global $context;
 
@@ -63,7 +63,7 @@ class LanguageAccess extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters)
+	public function validateBlockData(array &$parameters)
 	{
 		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',

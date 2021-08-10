@@ -31,7 +31,7 @@ class EasyMarkdownEditor extends Plugin
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $txt, $editortxt;
 
@@ -215,7 +215,7 @@ class EasyMarkdownEditor extends Plugin
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'EasyMDE',

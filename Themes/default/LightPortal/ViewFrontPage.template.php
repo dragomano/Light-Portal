@@ -627,7 +627,7 @@ function template_show_articles_simple2()
  */
 function template_show_articles_simple3()
 {
-	global $context;
+	global $context, $scripturl;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
@@ -752,7 +752,7 @@ function template_sorting_below()
  * @param string $position
  * @return void
  */
-function show_pagination($position = 'top')
+function show_pagination(string $position = 'top')
 {
 	global $context, $modSettings;
 

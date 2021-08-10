@@ -133,7 +133,7 @@ class TinySlider extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['tiny_slider']['parameters']['axis']               = $this->axis;
 		$options['tiny_slider']['parameters']['items']              = $this->items;
@@ -163,7 +163,7 @@ class TinySlider extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'tiny_slider')
 			return;
@@ -426,7 +426,7 @@ class TinySlider extends Plugin
 	 * @param array $parameters
 	 * @return string
 	 */
-	public function getHtml($block_id, $parameters)
+	public function getHtml(int $block_id, array $parameters): string
 	{
 		global $txt;
 
@@ -500,17 +500,21 @@ class TinySlider extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'tiny_slider')
 			return;
 
-		$tiny_slider_html = Helpers::cache('tiny_slider_addon_b' . $block_id, 'getHtml', __CLASS__, $cache_time, $block_id, $parameters);
+		$tiny_slider_html = Helpers::cache('tiny_slider_addon_b' . $block_id)
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getHtml', $block_id, $parameters);
 
-		if (!empty($tiny_slider_html)) {
-			loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', array('external' => true));
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js', array('external' => true));
-			addInlineJavaScript('
+		if (empty($tiny_slider_html))
+			return;
+
+		loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js', array('external' => true));
+		addInlineJavaScript('
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->axis) . '",
@@ -554,17 +558,14 @@ class TinySlider extends Plugin
 				freezable: false
 			});', true);
 
-			ob_start();
-			echo $tiny_slider_html;
-			$content = ob_get_clean();
-		}
+		echo $tiny_slider_html;
 	}
 
 	/**
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Tiny Slider 2',

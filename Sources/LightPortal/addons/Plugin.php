@@ -65,6 +65,9 @@ abstract class Plugin
 	 */
 	public function loadTemplate(string $template = 'template')
 	{
-		require_once dirname((new ReflectionClass(get_called_class()))->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
+		$path = dirname((new ReflectionClass(get_called_class()))->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
+
+		if (is_file($path))
+			require_once $path;
 	}
 }

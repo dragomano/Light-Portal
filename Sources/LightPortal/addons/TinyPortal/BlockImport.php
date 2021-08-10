@@ -157,7 +157,7 @@ class BlockImport extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		global $smcFunc, $db_prefix, $txt, $context;
 
@@ -203,7 +203,7 @@ class BlockImport extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -333,7 +333,7 @@ class BlockImport extends AbstractImport
 	 * @param array|null $blocks
 	 * @return array
 	 */
-	private function getItems($blocks)
+	private function getItems(?array $blocks): array
 	{
 		global $smcFunc, $context;
 
@@ -385,7 +385,7 @@ class BlockImport extends AbstractImport
 	 * @param int $type
 	 * @return string
 	 */
-	private function getType($type)
+	private function getType(int $type): string
 	{
 		switch ($type) {
 			case 5:
@@ -402,7 +402,7 @@ class BlockImport extends AbstractImport
 	 * @param int $bar
 	 * @return string
 	 */
-	private function getPlacement($bar)
+	private function getPlacement(int $bar): string
 	{
 		switch ($bar) {
 			case 1:

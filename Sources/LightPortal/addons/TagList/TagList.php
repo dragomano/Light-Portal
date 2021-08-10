@@ -28,7 +28,7 @@ class TagList extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['tag_list']['parameters']['source'] = 'lp_tags';
 	}
@@ -38,7 +38,7 @@ class TagList extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'tag_list')
 			return;
@@ -86,7 +86,7 @@ class TagList extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getAllTopicKeywords()
+	public function getAllTopicKeywords(): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -125,7 +125,7 @@ class TagList extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
@@ -133,14 +133,14 @@ class TagList extends Plugin
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::cache(
-				'tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', \Bugo\LightPortal\Lists\Tag::class, $cache_time, ...array(0, 0, 'value')
-			);
+			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+				->setLifeTime($cache_time)
+				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', ...array(0, 0, 'value'));
 		} else {
-			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);
+			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+				->setLifeTime($cache_time)
+				->setFallback(__CLASS__, 'getAllTopicKeywords');
 		}
-
-		ob_start();
 
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {
@@ -150,7 +150,5 @@ class TagList extends Plugin
 		} else {
 			echo $txt['lp_no_tags'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

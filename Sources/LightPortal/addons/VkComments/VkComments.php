@@ -66,8 +66,8 @@ class VkComments extends Plugin
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
 			$num_comments      = $modSettings['lp_num_comments_per_page'] ?? 10;
-			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? $this->allow_attachments;
-			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? $this->auto_publish;
+			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? true;
+			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? false;
 
 			$context['lp_vk_comment_block'] = '
 				<script src="https://vk.com/js/api/openapi.js?167"></script>

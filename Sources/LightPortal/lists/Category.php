@@ -384,18 +384,16 @@ class Category implements PageListInterface
 		if (empty($conditions))
 			return;
 
-		if (is_array($categories)) {
-			$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_categories
-				SET priority = CASE ' . $conditions . ' ELSE priority END
-				WHERE category_id IN ({array_int:categories})',
-				array(
-					'categories' => $categories
-				)
-			);
+        $smcFunc['db_query']('', '
+            UPDATE {db_prefix}lp_categories
+            SET priority = CASE ' . $conditions . ' ELSE priority END
+            WHERE category_id IN ({array_int:categories})',
+            array(
+                'categories' => $categories
+            )
+        );
 
-			$smcFunc['lp_num_queries']++;
-		}
+        $smcFunc['lp_num_queries']++;
 	}
 
 	/**
@@ -403,7 +401,7 @@ class Category implements PageListInterface
 	 * @param string $desc
 	 * @return void
 	 */
-	public function add(string $name, $desc = '')
+	public function add(string $name, string $desc = '')
 	{
 		global $smcFunc;
 

@@ -28,7 +28,7 @@ class Optimus extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		$config_vars['optimus'][] = array('check', 'use_topic_descriptions');
 		$config_vars['optimus'][] = array('check', 'show_topic_keywords');
@@ -40,10 +40,9 @@ class Optimus extends Plugin
 	 * Выбираем столбец optimus_description из таблицы topics при выборке тем-статей
 	 *
 	 * @param array $custom_columns
-	 * @param array $custom_tables
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(array &$custom_columns)
 	{
 		global $modSettings;
 
@@ -62,7 +61,7 @@ class Optimus extends Plugin
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
 		global $modSettings;
 
@@ -70,7 +69,7 @@ class Optimus extends Plugin
 			return;
 
 		if (!empty($modSettings['lp_optimus_addon_show_topic_keywords']))
-			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords', 'getKeywords', __CLASS__, LP_CACHE_TIME, $row['id_topic']);
+			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', $row['id_topic']);
 
 		if (!empty($modSettings['lp_optimus_addon_use_topic_descriptions']) && !empty($row['optimus_description']) && !empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
@@ -84,7 +83,7 @@ class Optimus extends Plugin
 	 * @param int $topic
 	 * @return array
 	 */
-	public function getKeywords($topic)
+	public function getKeywords(int $topic): array
 	{
 		global $smcFunc;
 

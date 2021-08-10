@@ -28,7 +28,7 @@ class RandomTopics extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['random_topics']['no_content_class'] = true;
 
@@ -40,7 +40,7 @@ class RandomTopics extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'random_topics')
 			return;
@@ -77,7 +77,7 @@ class RandomTopics extends Plugin
 	 * @param int $num_topics
 	 * @return array
 	 */
-	public function getData($num_topics)
+	public function getData(int $num_topics): array
 	{
 		global $modSettings, $user_info, $db_type, $smcFunc, $context, $settings, $scripturl;
 
@@ -220,7 +220,7 @@ class RandomTopics extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
@@ -236,8 +236,6 @@ class RandomTopics extends Plugin
 		);
 
 		if (!empty($random_topics)) {
-			ob_start();
-
 			echo '
 			<ul class="random_topics noup">';
 
@@ -252,8 +250,6 @@ class RandomTopics extends Plugin
 
 			echo '
 			</ul>';
-
-			$content = ob_get_clean();
 		}
 	}
 }

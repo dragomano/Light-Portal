@@ -14,9 +14,9 @@ namespace Bugo\LightPortal\Addons\DevTools;
  * @version 1.8
  */
 
- /**
-  * https://stackoverflow.com/a/39986034/14091866
-  */
+/**
+ * https://stackoverflow.com/a/39986034/14091866
+ */
 abstract class Lorem
 {
 	/**
@@ -75,7 +75,7 @@ abstract class Lorem
 	 * @param int $count
 	 * @return array
 	 */
-	private static function random_values($arr, $count): array
+	private static function random_values(array $arr, int $count): array
 	{
 		$keys = array_rand($arr, $count);
 		if ($count == 1) {

@@ -28,7 +28,7 @@ class Trumbowyg extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt;
 
@@ -44,7 +44,7 @@ class Trumbowyg extends Plugin
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $modSettings, $txt, $editortxt, $settings;
 
@@ -113,7 +113,7 @@ class Trumbowyg extends Plugin
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Trumbowyg',

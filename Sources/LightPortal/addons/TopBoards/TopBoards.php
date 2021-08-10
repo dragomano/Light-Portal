@@ -28,7 +28,7 @@ class TopBoards extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['top_boards']['parameters'] = [
 			'num_boards'        => 10,
@@ -41,7 +41,7 @@ class TopBoards extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_boards')
 			return;
@@ -88,7 +88,7 @@ class TopBoards extends Plugin
 	 * @param int $num_boards
 	 * @return array
 	 */
-	public function getData($num_boards)
+	public function getData(int $num_boards): array
 	{
 		global $boarddir;
 
@@ -105,41 +105,40 @@ class TopBoards extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_boards']);
+		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['num_boards']);
 
-		if (!empty($top_boards)) {
-			ob_start();
+		if (empty($top_boards))
+			return;
 
-			echo '
+		echo '
 		<dl class="stats">';
 
-			$max = $top_boards[0]['num_topics'];
+		$max = $top_boards[0]['num_topics'];
 
-			foreach ($top_boards as $board) {
-				if ($board['num_topics'] < 1)
-					continue;
+		foreach ($top_boards as $board) {
+			if ($board['num_topics'] < 1)
+				continue;
 
-				$width = $board['num_topics'] * 100 / $max;
+			$width = $board['num_topics'] * 100 / $max;
 
-				echo '
+			echo '
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getText($board['num_topics'], $txt['lp_top_boards']['topics'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

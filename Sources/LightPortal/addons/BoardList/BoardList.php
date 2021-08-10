@@ -28,7 +28,7 @@ class BoardList extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['board_list']['no_content_class'] = true;
 
@@ -43,7 +43,7 @@ class BoardList extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_list')
 			return;
@@ -107,8 +107,8 @@ class BoardList extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getData()
-	{
+	public function getData(): array
+    {
 		Helpers::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
@@ -128,57 +128,56 @@ class BoardList extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $context, $scripturl;
 
 		if ($type !== 'board_list')
 			return;
 
-		$board_list = Helpers::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+		$board_list = Helpers::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData');
 
-		if (!empty($board_list)) {
-			$context['current_board'] = $context['current_board'] ?? 0;
+		if (empty($board_list))
+			return;
 
-			ob_start();
+		$context['current_board'] = $context['current_board'] ?? 0;
 
-			foreach ($board_list as $category) {
-				if (!empty($parameters['category_class']))
-					echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
+		foreach ($board_list as $category) {
+			if (!empty($parameters['category_class']))
+				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
 
-				$content = '
+			$content = '
 				<ul class="smalltext">';
 
-				foreach ($category['boards'] as $board) {
-					$content .= '
+			foreach ($category['boards'] as $board) {
+				$content .= '
 					<li>';
 
-					if ($board['child_level']) {
-						$content .= '
+				if ($board['child_level']) {
+					$content .= '
 						<ul class="smalltext">
 							<li>' . ($context['current_board'] == $board['id'] ? '<strong>' : '') . '&raquo; <a href="' . $scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($context['current_board'] == $board['id'] ? '</strong>' : '') . '</li>
 						</ul>';
 					} else {
-						$content .= '
+					$content .= '
 						' . ($context['current_board'] == $board['id'] ? '<strong>' : '') . '<a href="' . $scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($context['current_board'] == $board['id'] ? '</strong>' : '');
 					}
 
-					$content .= '
-					</li>';
-				}
-
 				$content .= '
-				</ul>';
-
-				echo sprintf($context['lp_all_content_classes'][$parameters['board_class']], $content, null);
+					</li>';
 			}
 
-			$content = ob_get_clean();
+			$content .= '
+				</ul>';
+
+			echo sprintf($context['lp_all_content_classes'][$parameters['board_class']], $content, null);
 		}
 	}
 
-	private function getCategoryClasses()
-	{
+	private function getCategoryClasses(): array
+    {
 		return [
 			'title_bar > h4' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
 			'sub_bar > h4'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',

@@ -36,7 +36,7 @@ class Search extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $modSettings;
 
@@ -122,7 +122,7 @@ class Search extends Plugin
 	 *
 	 * @return array
 	 */
-	private function getResults()
+	private function getResults(): array
 	{
 		global $smcFunc;
 
@@ -145,7 +145,7 @@ class Search extends Plugin
 	 * @param string $query
 	 * @return array
 	 */
-	private function query(string $query)
+	private function query(string $query): array
 	{
 		global $smcFunc, $context, $scripturl, $txt;
 
@@ -203,7 +203,7 @@ class Search extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type)
+	public function prepareContent(string &$content, string $type)
 	{
 		global $scripturl, $context, $txt, $modSettings;
 
@@ -212,8 +212,6 @@ class Search extends Plugin
 
 		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', array('external' => true));
-
-		ob_start();
 
 		echo '
 		<form class="search_addon centertext" action="', $scripturl, '?action=portal;sa=search" method="post" accept-charset="', $context['character_set'], '">
@@ -250,15 +248,13 @@ class Search extends Plugin
 				}
 			});
 		</script>';
-
-		$content = ob_get_clean();
 	}
 
 	/**
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Vanilla JavaScript autoComplete',

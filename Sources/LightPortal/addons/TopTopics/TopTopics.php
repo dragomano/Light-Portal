@@ -28,7 +28,7 @@ class TopTopics extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['top_topics']['parameters'] = [
 			'popularity_type'   => 'replies',
@@ -42,7 +42,7 @@ class TopTopics extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_topics')
 			return;
@@ -108,7 +108,7 @@ class TopTopics extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -125,41 +125,40 @@ class TopTopics extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_topics)) {
-			ob_start();
+		if (empty($top_topics))
+			return;
 
-			echo '
+		echo '
 		<dl class="stats">';
 
-			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
+		$max = $top_topics[0]['num_' . $parameters['popularity_type']];
 
-			foreach ($top_topics as $topic) {
-				if ($topic['num_' . $parameters['popularity_type']] < 1)
-					continue;
+		foreach ($top_topics as $topic) {
+			if ($topic['num_' . $parameters['popularity_type']] < 1)
+				continue;
 
-				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
 
-				echo '
+			echo '
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getText($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

@@ -139,7 +139,7 @@ class PageImport extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		global $smcFunc, $db_prefix;
 
@@ -187,7 +187,7 @@ class PageImport extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -355,7 +355,7 @@ class PageImport extends AbstractImport
 		if (!empty($comments) && !empty($result)) {
 			$temp = [];
 
-			foreach ($comments as $item_id => $comment) {
+			foreach ($comments as $comment) {
 				foreach ($comment as $com) {
 					$temp[] = $com;
 				}
@@ -397,7 +397,7 @@ class PageImport extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getItems($pages)
+	private function getItems(?array $pages): array
 	{
 		global $smcFunc;
 
@@ -455,7 +455,7 @@ class PageImport extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getComments($pages)
+	private function getComments(?array $pages): array
 	{
 		global $smcFunc;
 

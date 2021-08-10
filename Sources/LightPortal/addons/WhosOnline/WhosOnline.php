@@ -28,7 +28,7 @@ class WhosOnline extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['whos_online']['parameters'] = [
 			'show_group_key'  => false,
@@ -41,7 +41,7 @@ class WhosOnline extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'whos_online')
 			return;
@@ -88,7 +88,7 @@ class WhosOnline extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getData()
+	public function getData(): array
 	{
 		global $boarddir;
 
@@ -105,7 +105,7 @@ class WhosOnline extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt, $scripturl;
 
@@ -119,47 +119,44 @@ class WhosOnline extends Plugin
 			$parameters['update_interval'] ?? $cache_time
 		);
 
-		if (!empty($whos_online)) {
-			ob_start();
+		if (empty($whos_online))
+			return;
 
-			echo Helpers::getText(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getText(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
+		echo Helpers::getText(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helpers::getText(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
 
-			$online_list = [];
+		$online_list = [];
 
-			if (!empty($user_info['buddies']) && !empty($whos_online['num_buddies']))
-				$online_list[] = Helpers::getText(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
+		if (!empty($user_info['buddies']) && !empty($whos_online['num_buddies']))
+			$online_list[] = Helpers::getText(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
 
-			if (!empty($whos_online['num_spiders']))
-				$online_list[] = Helpers::getText(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
+		if (!empty($whos_online['num_spiders']))
+			$online_list[] = Helpers::getText(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
 
-			if (!empty($whos_online['num_users_hidden']))
-				$online_list[] = Helpers::getText(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
+		if (!empty($whos_online['num_users_hidden']))
+			$online_list[] = Helpers::getText(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
 
-			if (!empty($online_list))
-				echo ' (' . implode(', ', $online_list) . ')';
+		if (!empty($online_list))
+			echo ' (' . implode(', ', $online_list) . ')';
 
-			echo '
+		echo '
 			<br>' . implode(', ', $whos_online['list_users_online']);
 
-			if (!empty($parameters['show_group_key']) && !empty($whos_online['online_groups'])) {
-				$groups = [];
+		if (!empty($parameters['show_group_key']) && !empty($whos_online['online_groups'])) {
+			$groups = [];
 
-				foreach ($whos_online['online_groups'] as $group) {
-					if ($group['hidden'] != 0 || $group['id'] == 3)
-						continue;
+			foreach ($whos_online['online_groups'] as $group) {
+				if ($group['hidden'] != 0 || $group['id'] == 3)
+					continue;
 
-					if (allowedTo('view_mlist')) {
-						$groups[] = '<a href="' . $scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (!empty($group['color']) ? ' style="color: ' . $group['color'] . '"' : '') . '>' . $group['name'] . '</a>';
-					} else {
-						$groups[] = '<span' . (!empty($group['color']) ? ' style="color: ' . $group['color'] . '"' : '') . '>' . $group['name'] . '</span>';
-					}
+				if (allowedTo('view_mlist')) {
+					$groups[] = '<a href="' . $scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (!empty($group['color']) ? ' style="color: ' . $group['color'] . '"' : '') . '>' . $group['name'] . '</a>';
+				} else {
+					$groups[] = '<span' . (!empty($group['color']) ? ' style="color: ' . $group['color'] . '"' : '') . '>' . $group['name'] . '</span>';
 				}
-
-				echo '
-			<br>' . implode(', ', $groups);
 			}
 
-			$content = ob_get_clean();
+			echo '
+			<br>' . implode(', ', $groups);
 		}
 	}
 }

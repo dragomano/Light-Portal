@@ -110,7 +110,7 @@ function template_manage_plugins()
  * @param array $settings
  * @return void
  */
-function show_plugin_settings($plugin_name, $settings)
+function show_plugin_settings(string $plugin_name, array $settings)
 {
 	global $txt, $context, $modSettings;
 
@@ -182,7 +182,7 @@ function show_plugin_settings($plugin_name, $settings)
 						</ul>
 					</fieldset>';
 		} else {
-			$multiple = false;
+			$multiple = $value['multiple'] ?? false;
 
 			echo '
 					<br>
@@ -190,7 +190,7 @@ function show_plugin_settings($plugin_name, $settings)
 
 			if (!empty($multiple)) {
 				if (!empty($modSettings[$value[1]])) {
-					$modSettings[$value[1]] = unserialize($modSettings[$value[1]]);
+					$modSettings[$value[1]] = json_decode($modSettings[$value[1]], true);
 
 					foreach ($value[2] as $option => $option_title) {
 						echo '

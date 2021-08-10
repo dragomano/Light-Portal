@@ -31,7 +31,7 @@ class ThemeSwitcher extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getAvailableThemes()
+	public function getAvailableThemes(): array
 	{
 		global $modSettings;
 
@@ -48,28 +48,30 @@ class ThemeSwitcher extends Plugin
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time)
 	{
 		global $settings;
 
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::cache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::cache('theme_switcher_addon')
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getAvailableThemes');
 
-		if (!empty($available_themes)) {
-			ob_start();
+		if (empty($available_themes))
+			return;
 
-			echo '
+		echo '
 			<div class="themeswitcher centertext">
 				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
 
-			foreach ($available_themes as $theme_id => $name) {
-				echo '
-					<option value="', $theme_id, '"', $settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
-			}
-
+		foreach ($available_themes as $theme_id => $name) {
 			echo '
+					<option value="', $theme_id, '"', $settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
+		}
+
+		echo '
 				</select>
 				<script>
 					function lp_block_', $block_id, '_themeswitcher_change() {
@@ -84,8 +86,5 @@ class ThemeSwitcher extends Plugin
 					}
 				</script>
 			</div>';
-
-			$content = ob_get_clean();
-		}
 	}
 }

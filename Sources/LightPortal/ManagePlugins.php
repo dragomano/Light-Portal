@@ -121,6 +121,8 @@ class ManagePlugins
 							$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 						} elseif ($var[0] == 'url') {
 							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
+						} elseif ($var[0] == 'select' && !empty($var['multiple'])) {
+							$plugin_options[$var[1]] = json_encode(Helpers::post($var[1]));
 						} else {
 							$plugin_options[$var[1]] = Helpers::post($var[1]);
 						}

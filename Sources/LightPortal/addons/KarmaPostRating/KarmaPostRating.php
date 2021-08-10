@@ -34,7 +34,7 @@ class KarmaPostRating extends Plugin
 	 * @param array $custom_params
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_params)
+	public function frontTopics(array &$custom_columns, array &$custom_tables, array &$custom_wheres, array &$custom_params)
 	{
 		global $modSettings;
 
@@ -58,7 +58,7 @@ class KarmaPostRating extends Plugin
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
 		$topics[$row['id_topic']]['kpr_rating'] = $row['rating'] ?? 0;
 	}

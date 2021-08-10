@@ -28,7 +28,7 @@ class RssFeed extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['rss_feed']['parameters'] = [
 			'url'       => '',
@@ -41,7 +41,7 @@ class RssFeed extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'rss_feed')
 			return;
@@ -90,9 +90,9 @@ class RssFeed extends Plugin
 	 * Получаем объект SimpleXML
 	 *
 	 * @param string $url
-	 * @return mixed
+	 * @return \SimpleXMLElement|string|null
 	 */
-	public function getData($url)
+	public function getData(string $url)
 	{
 		if (empty($url))
 			return '';
@@ -111,18 +111,20 @@ class RssFeed extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'rss_feed')
 			return;
 
-		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
+		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id)
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['url']);
 
-		if (!empty($rss_feed)) {
-			ob_start();
+		if (empty($rss_feed))
+			return;
 
-			foreach ($rss_feed as $item) {
-				echo '
+		foreach ($rss_feed as $item) {
+			echo '
 		<div class="windowbg">
 			<div class="block">
 				<span class="floatleft half_content">
@@ -131,18 +133,15 @@ class RssFeed extends Plugin
 				</span>
 			</div>';
 
-				if ($parameters['show_text']) {
-					echo '
+			if ($parameters['show_text']) {
+				echo '
 			<div class="list_posts double_height">
 				' . $item->description . '
 			</div>';
-				}
-
-				echo '
-		</div>';
 			}
 
-			$content = ob_get_clean();
+			echo '
+		</div>';
 		}
 	}
 }

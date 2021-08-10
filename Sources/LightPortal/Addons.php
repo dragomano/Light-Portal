@@ -41,7 +41,7 @@ class Addons
 	 */
 	public static function loadLanguage(string $addon_name, string $snake_name)
 	{
-		global $user_info, $txt;
+		global $txt, $user_info;
 
 		if (isset($txt['lp_' . $snake_name]))
 			return;
@@ -91,7 +91,7 @@ class Addons
 	 *
 	 * @param string $hook
 	 * @param array $vars (extra variables)
-	 * @param array $plugins
+	 * @param array $plugins (that should be loaded)
 	 * @return void
 	 */
 	public static function run(string $hook = '', array $vars = [], array $plugins = [])

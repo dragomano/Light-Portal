@@ -28,7 +28,7 @@ class PageList extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['page_list']['parameters'] = [
 			'categories' => [],
@@ -42,7 +42,7 @@ class PageList extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'page_list')
 			return;
@@ -67,7 +67,7 @@ class PageList extends Plugin
 			return;
 
 		// Prepare the category list
-		$all_categories     = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
+		$all_categories     = Helpers::getAllCategories();
 		$current_categories = $context['lp_block']['options']['parameters']['categories'] ?? [];
 		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
 
@@ -138,7 +138,7 @@ class PageList extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData(array $parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $txt, $scripturl;
 
@@ -205,16 +205,16 @@ class PageList extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
-
-		ob_start();
+		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (!empty($page_list)) {
 			echo '
@@ -240,7 +240,5 @@ class PageList extends Plugin
 		} else {
 			echo '<div class="errorbox">', $txt['lp_page_list']['no_items'], '</div>';
 		}
-
-		$content = ob_get_clean();
 	}
 }

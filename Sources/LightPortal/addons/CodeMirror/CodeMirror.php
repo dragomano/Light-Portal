@@ -27,7 +27,7 @@ class CodeMirror extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		$config_vars['code_mirror'][] = array('check', 'php_mode');
 		$config_vars['code_mirror'][] = array('check', 'html_mode');
@@ -43,7 +43,7 @@ class CodeMirror extends Plugin
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $modSettings, $context, $txt;
 
@@ -122,7 +122,7 @@ class CodeMirror extends Plugin
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'CodeMirror',

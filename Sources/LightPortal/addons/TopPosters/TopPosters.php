@@ -28,7 +28,7 @@ class TopPosters extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['top_posters']['parameters'] = [
 			'show_avatars'      => true,
@@ -42,7 +42,7 @@ class TopPosters extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -100,7 +100,7 @@ class TopPosters extends Plugin
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $memberContext, $scripturl;
 
@@ -150,44 +150,43 @@ class TopPosters extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_posters)) {
-			ob_start();
+		if (empty($top_posters))
+			return;
 
-			echo '
+		echo '
 		<dl class="top_posters stats">';
 
-			$max = $top_posters[0]['posts'];
+		$max = $top_posters[0]['posts'];
 
-			foreach ($top_posters as $poster) {
-				echo '
+		foreach ($top_posters as $poster) {
+			echo '
 			<dt>';
 
-				if (!empty($poster['avatar']))
-					echo $poster['avatar'];
+			if (!empty($poster['avatar']))
+				echo $poster['avatar'];
 
-				$width = $poster['posts'] * 100 / $max;
+			$width = $poster['posts'] * 100 / $max;
 
-				echo ' ', $poster['link'], '
+			echo ' ', $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getText($poster['posts'], $txt['lp_posts_set'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

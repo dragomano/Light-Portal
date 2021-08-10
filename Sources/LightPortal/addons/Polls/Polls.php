@@ -27,7 +27,7 @@ class Polls extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['polls']['parameters']['selected_item'] = 0;
 	}
@@ -37,7 +37,7 @@ class Polls extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'polls')
 			return;
@@ -83,7 +83,7 @@ class Polls extends Plugin
 	 * @param int $topic
 	 * @return array
 	 */
-	public function getData($topic = 0)
+	public function getData(int $topic = 0): array
 	{
 		global $boarddir;
 
@@ -100,7 +100,7 @@ class Polls extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $boardurl, $context, $txt, $scripturl;
 
@@ -108,8 +108,6 @@ class Polls extends Plugin
 			return;
 
 		$poll = $this->getData($parameters['selected_item']);
-
-		ob_start();
 
 		if (!empty($poll)) {
 			if ($poll['allow_vote']) {
@@ -159,8 +157,6 @@ class Polls extends Plugin
 		} else {
 			echo $txt['lp_polls']['no_items'];
 		}
-
-		$content = ob_get_clean();
 	}
 
 	/**
@@ -170,7 +166,7 @@ class Polls extends Plugin
 	 *
 	 * @return array
 	 */
-	private function getAll()
+	private function getAll(): array
 	{
 		global $smcFunc;
 

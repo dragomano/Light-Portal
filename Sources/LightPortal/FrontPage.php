@@ -308,8 +308,8 @@ class FrontPage
 	 * @param int $limit
 	 * @return string
 	 */
-	private function simplePaginate(string $url, int $total, int $limit)
-	{
+	private function simplePaginate(string $url, int $total, int $limit): string
+    {
 		global $context, $txt;
 
 		$max_pages = (($total - 1) / $limit) * $limit;

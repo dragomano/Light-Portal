@@ -62,7 +62,7 @@ class HidingBlocks extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		global $context;
 
@@ -73,7 +73,7 @@ class HidingBlocks extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters)
+	public function validateBlockData(array &$parameters)
 	{
 		$parameters['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',

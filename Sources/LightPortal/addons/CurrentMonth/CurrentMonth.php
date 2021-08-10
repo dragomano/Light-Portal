@@ -28,7 +28,7 @@ class CurrentMonth extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['current_month']['no_content_class'] = true;
 	}
@@ -40,7 +40,7 @@ class CurrentMonth extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getData()
+	public function getData(): array
 	{
 		global $options, $modSettings;
 
@@ -66,7 +66,7 @@ class CurrentMonth extends Plugin
 			'short_day_titles'   => !empty($modSettings['cal_short_days']),
 			'short_month_titles' => !empty($modSettings['cal_short_months']),
 			'show_next_prev'     => !empty($modSettings['cal_prev_next_links']),
-			'show_week_links'    => isset($modSettings['cal_week_links']) ? $modSettings['cal_week_links'] : 0
+			'show_week_links'    => $modSettings['cal_week_links'] ?? 0
 		);
 
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
@@ -80,7 +80,7 @@ class CurrentMonth extends Plugin
 	 * @param array $data
 	 * @return void|bool Returns false if the grid doesn't exist
 	 */
-	private function showCurrentMonthGrid($data)
+	private function showCurrentMonthGrid(array $data)
 	{
 		global $txt, $modSettings, $scripturl;
 
@@ -156,18 +156,18 @@ class CurrentMonth extends Plugin
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time)
 	{
 		global $user_info, $txt, $context;
 
 		if ($type !== 'current_month')
 			return;
 
-		$calendar_data = Helpers::cache('current_month_addon_u' . $user_info['id'], 'getData', __CLASS__, $cache_time);
+		$calendar_data = Helpers::cache('current_month_addon_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData');
 
 		if (!empty($calendar_data)) {
-			ob_start();
-
 			$calendar_data['block_id'] = $block_id;
 
 			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
@@ -179,8 +179,6 @@ class CurrentMonth extends Plugin
 				$context['lp_active_blocks'][$block_id]['title'][$user_info['language']] = $title;
 
 			$this->showCurrentMonthGrid($calendar_data);
-
-			$content = ob_get_clean();
 		}
 	}
 }

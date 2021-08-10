@@ -28,7 +28,7 @@ class RecentPosts extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['recent_posts']['no_content_class'] = true;
 
@@ -49,7 +49,7 @@ class RecentPosts extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_posts')
 			return;
@@ -175,7 +175,7 @@ class RecentPosts extends Plugin
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -241,7 +241,7 @@ class RecentPosts extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 
@@ -256,41 +256,38 @@ class RecentPosts extends Plugin
 			$parameters
 		);
 
-		if (!empty($recent_posts)) {
-			ob_start();
+		if (empty($recent_posts))
+			return;
 
-			echo '
+		echo '
 		<ul class="recent_posts noup">';
 
-			foreach ($recent_posts as $post) {
-				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
-
-				echo '
-			<li class="windowbg">';
-
-				if (!empty($parameters['show_avatars']))
-					echo '
-				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
-
-				if ($post['is_new'])
-					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
-
-				echo $post[$parameters['link_type']];
-
-				if (empty($parameters['show_avatars']))
-					echo '
-				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
-
-				echo '
-				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
-			</li>';
-			}
+		foreach ($recent_posts as $post) {
+			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
 
 			echo '
-		</ul>';
+			<li class="windowbg">';
 
-			$content = ob_get_clean();
+			if (!empty($parameters['show_avatars']))
+				echo '
+				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+
+			if ($post['is_new'])
+				echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
+
+			echo $post[$parameters['link_type']];
+
+			if (empty($parameters['show_avatars']))
+				echo '
+				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
+
+			echo '
+				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
+			</li>';
 		}
+
+		echo '
+		</ul>';
 	}
 }

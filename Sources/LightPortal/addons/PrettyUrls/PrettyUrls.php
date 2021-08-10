@@ -72,7 +72,7 @@ class PrettyUrls extends Plugin
 	 * @param array $urls
 	 * @return array
 	 */
-	public static function filter($urls)
+	public static function filter(array $urls): array
 	{
 		global $scripturl, $boardurl;
 

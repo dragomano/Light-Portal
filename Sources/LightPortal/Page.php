@@ -254,7 +254,7 @@ class Page
 		if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 			return;
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
+		if ($modSettings['lp_show_comment_block'] == 'none')
 			return;
 
 		Addons::run('comments');
@@ -366,7 +366,7 @@ class Page
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
+		$data = Helpers::cache('page_' . $alias)->setFallback(__CLASS__, 'getData', array('alias' => $alias));
 
 		$this->prepareData($data);
 
@@ -528,11 +528,10 @@ class Page
 	 * @param array $items
 	 * @param array $row
 	 * @return void
-	 * @throws Exception
 	 */
 	public function fetchQueryResults(array &$items, array $row)
 	{
-		global $modSettings, $scripturl, $txt, $user_info, $memberContext;
+		global $modSettings, $scripturl, $txt, $user_info;
 
 		Helpers::parseContent($row['content'], $row['type']);
 
@@ -574,12 +573,7 @@ class Page
 
 		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
 
-		loadMemberData($author_id);
-
-		$items[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
-		if (loadMemberContext($author_id, true)) {
-			$items[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
-		}
+        $items[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 		if (!empty($modSettings['lp_show_teaser']))
 			$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);

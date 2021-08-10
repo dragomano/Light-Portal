@@ -55,24 +55,39 @@ function template_page_post()
 				<label for="tab3" class="bg odd">', $txt['lp_tab_menu'], '</label>
 				<input id="tab4" type="radio" name="tabs">
 				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
-				<section id="content-tab1" class="bg even">
-					', template_post_tab($fields);
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+                    </div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab($fields, 'seo'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'seo');
+
+    echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab($fields, 'menu'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'menu');
+
+    echo '
 				</section>
-				<section id="content-tab4" class="bg even">
-					', template_post_tab($fields, 'tuning'), '
+				<section id="content-tab4" class="bg even">';
+
+	template_post_tab($fields, 'tuning');
+
+	echo '
 				</section>
 			</div>
 			<br class="clear">

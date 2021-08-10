@@ -79,12 +79,12 @@ class FlarumStyle extends Plugin
 	 *
 	 * @return array
 	 */
-	private function getCategories()
+	private function getCategories(): array
 	{
 		global $context, $txt, $modSettings;
 
 		if ($context['is_portal']) {
-			$all_categories = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
+			$all_categories = Helpers::getAllCategories();
 
 			$categories = array(
 				array(

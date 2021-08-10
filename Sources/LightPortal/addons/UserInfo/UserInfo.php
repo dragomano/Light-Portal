@@ -28,7 +28,7 @@ class UserInfo extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['user_info']['parameters']['use_fa_icons'] = true;
 	}
@@ -38,7 +38,7 @@ class UserInfo extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'user_info')
 			return;
@@ -95,17 +95,17 @@ class UserInfo extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $context, $txt, $scripturl, $boarddir;
 
 		if ($type !== 'user_info')
 			return;
 
-		ob_start();
-
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'])
+				->setLifeTime($cache_time)
+				->setFallback(__CLASS__, 'getData');
 
 			echo '
 			<ul class="centertext">
@@ -147,7 +147,5 @@ class UserInfo extends Plugin
 			require_once($boarddir . '/SSI.php');
 			ssi_welcome();
 		}
-
-		$content = ob_get_clean();
 	}
 }

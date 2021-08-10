@@ -28,7 +28,7 @@ class BoardStats extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['board_stats']['parameters'] = [
 			'show_latest_member' => false,
@@ -44,7 +44,7 @@ class BoardStats extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_stats')
 			return;
@@ -125,7 +125,7 @@ class BoardStats extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData(array $parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir, $modSettings;
 
@@ -156,31 +156,27 @@ class BoardStats extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt, $scripturl;
 
 		if ($type !== 'board_stats')
 			return;
 
-		$board_stats = Helpers::cache(
-			'board_stats_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$board_stats = Helpers::cache('board_stats_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($board_stats)) {
-			ob_start();
+		if (empty($board_stats))
+			return;
 
-			$fa = !empty($parameters['use_fa_icons']);
+		$fa = !empty($parameters['use_fa_icons']);
 
-			echo '
+		echo '
 			<div class="board_stats_areas">';
 
-			if (!empty($parameters['show_latest_member']) && !empty($board_stats['latest_member'])) {
-				echo '
+		if (!empty($parameters['show_latest_member']) && !empty($board_stats['latest_member'])) {
+			echo '
 				<div>
 					<h4>
 						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $txt['lp_board_stats']['newbies'], '
@@ -189,39 +185,39 @@ class BoardStats extends Plugin
 						<li>', $board_stats['latest_member'], '</li>
 					</ul>
 				</div>';
-			}
+		}
 
-			if (!empty($parameters['show_basic_info']) && !empty($board_stats['basic_info'])) {
-				$stats_title = allowedTo('view_stats') ? '<a href="' . $scripturl . '?action=stats">' . $txt['forum_stats'] . '</a>' : $txt['forum_stats'];
+		if (!empty($parameters['show_basic_info']) && !empty($board_stats['basic_info'])) {
+			$stats_title = allowedTo('view_stats') ? '<a href="' . $scripturl . '?action=stats">' . $txt['forum_stats'] . '</a>' : $txt['forum_stats'];
 
-				echo '
+			echo '
 				<div>
 					<h4>
 						', $fa ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $stats_title, '
 					</h4>';
 
-				echo '
+			echo '
 					<ul class="bbc_list">';
 
-				if (allowedTo('view_stats')) {
-					echo '
+			if (allowedTo('view_stats')) {
+				echo '
 						<li>', $txt['members'], ': ', $board_stats['basic_info']['members'], '</li>
 						<li>', $txt['posts'], ': ', $board_stats['basic_info']['posts'], '</li>
 						<li>', $txt['topics'], ': ', $board_stats['basic_info']['topics'], '</li>';
-				}
+			}
 
-				echo '
+			echo '
 						<li>', $txt['lp_board_stats']['pages'], ': ', $board_stats['basic_info']['total_pages'], '</li>
 						<li>', $txt['lp_board_stats']['online_today'] , ': ', $board_stats['basic_info']['max_online_today'], '</li>
 						<li>', $txt['lp_board_stats']['max_online'], ': ', $board_stats['basic_info']['max_online'], '</li>
 					</ul>
 				</div>';
-			}
+		}
 
-			if (!empty($parameters['show_whos_online']) && !empty($board_stats['whos_online'])) {
-				$online_title = allowedTo('who_view') ? '<a href="' . $scripturl . '?action=who">' . $txt['online_users'] . '</a>' : $txt['online_users'];
+		if (!empty($parameters['show_whos_online']) && !empty($board_stats['whos_online'])) {
+			$online_title = allowedTo('who_view') ? '<a href="' . $scripturl . '?action=who">' . $txt['online_users'] . '</a>' : $txt['online_users'];
 
-				echo '
+			echo '
 				<div>
 					<h4>
 						', $fa ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $online_title, '
@@ -233,12 +229,9 @@ class BoardStats extends Plugin
 						<li>', $txt['total'], ': ', comma_format($board_stats['whos_online']['total_users']), '</li>
 					</ul>
 				</div>';
-			}
-
-			echo '
-			</div>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+			</div>';
 	}
 }

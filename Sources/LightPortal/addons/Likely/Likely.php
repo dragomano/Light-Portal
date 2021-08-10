@@ -32,7 +32,7 @@ class Likely extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['likely']['parameters']['size']    = 'small';
 		$options['likely']['parameters']['skin']    = 'normal';
@@ -44,7 +44,7 @@ class Likely extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'likely')
 			return;
@@ -123,45 +123,42 @@ class Likely extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt, $modSettings, $settings;
 
 		if ($type !== 'likely')
 			return;
 
-		if (!empty($parameters['buttons'])) {
-			loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', array('external' => true));
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', array('external' => true));
+		if (empty($parameters['buttons']))
+			return;
 
-			ob_start();
+		loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', array('external' => true));
 
-			echo '
+		echo '
 			<div class="centertext likely_links">
 				<div class="likely likely-', $parameters['size'], ($parameters['skin'] == 'dark' ? ' likely-light' : ''), '">';
 
-			$buttons = explode(',', $parameters['buttons']);
+		$buttons = explode(',', $parameters['buttons']);
 
-			foreach ($buttons as $service) {
-				if (!empty($txt['lp_likely']['buttons_set'][$service])) {
-					echo '
+		foreach ($buttons as $service) {
+			if (!empty($txt['lp_likely']['buttons_set'][$service])) {
+				echo '
 					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely']['buttons_set'][$service], '"', (!empty($modSettings['optimus_tw_cards']) && $service == 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (!empty($settings['og_image']) && $service == 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely']['buttons_set'][$service], '</div>';
-				}
 			}
+		}
 
-			echo '
+		echo '
 				</div>
 			</div>';
-
-			$content = ob_get_clean();
-		}
 	}
 
 	/**
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Likely',

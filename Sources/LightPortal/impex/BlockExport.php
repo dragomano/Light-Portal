@@ -115,8 +115,8 @@ class BlockExport extends AbstractExport
 	 *
 	 * @return string
 	 */
-	protected function getXmlFile()
-	{
+	protected function getXmlFile(): string
+    {
 		if (empty($items = $this->getData()))
 			return '';
 

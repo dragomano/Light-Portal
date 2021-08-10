@@ -40,7 +40,7 @@ class Todays extends Plugin
 	 * @param array $buttons
 	 * @return void
 	 */
-	public function menuButtons(&$buttons)
+	public function menuButtons(array &$buttons)
 	{
 		global $context, $modSettings;
 
@@ -51,7 +51,7 @@ class Todays extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt, $scripturl;
 
@@ -66,7 +66,7 @@ class Todays extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['todays']['parameters'] = [
 			'widget_type' => 'calendar',
@@ -79,7 +79,7 @@ class Todays extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'todays')
 			return;
@@ -138,7 +138,7 @@ class Todays extends Plugin
 	 * @param string $output_method
 	 * @return string|array
 	 */
-	public function getData($type, $output_method = 'echo')
+	public function getData(string $type, string $output_method = 'echo')
 	{
 		global $boarddir;
 
@@ -157,7 +157,7 @@ class Todays extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt, $scripturl;
 
@@ -165,8 +165,6 @@ class Todays extends Plugin
 			return;
 
 		$result = $this->getData($parameters['widget_type'], 'array');
-
-		ob_start();
 
 		if ($parameters['widget_type'] == 'calendar') {
 			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))
@@ -209,7 +207,5 @@ class Todays extends Plugin
 		} else {
 			echo $txt['lp_todays']['empty_list'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

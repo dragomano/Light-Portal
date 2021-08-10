@@ -21,7 +21,7 @@ trait Manage
 	 *
 	 * @return void
 	 */
-	public function improveSelectFields()
+	public static function improveSelectFields()
 	{
 		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));

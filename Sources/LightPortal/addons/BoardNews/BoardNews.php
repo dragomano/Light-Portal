@@ -28,7 +28,7 @@ class BoardNews extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['board_news']['parameters'] = [
 			'board_id'  => 0,
@@ -41,7 +41,7 @@ class BoardNews extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_news')
 			return;
@@ -53,8 +53,8 @@ class BoardNews extends Plugin
 	/**
 	 * @return array
 	 */
-	private function getBoardList()
-	{
+	private function getBoardList(): array
+    {
 		global $modSettings, $context;
 
 		Helpers::require('Subs-MessageIndex');
@@ -121,8 +121,8 @@ class BoardNews extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData(array $parameters)
-	{
+	public function getData(array $parameters): array
+    {
 		global $boarddir;
 
 		require_once($boarddir . '/SSI.php');
@@ -138,22 +138,24 @@ class BoardNews extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt, $modSettings, $scripturl, $context;
 
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$board_news = Helpers::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($board_news)) {
-			ob_start();
+		if (empty($board_news))
+			return;
 
-			foreach ($board_news as $news) {
-				$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getText($news['replies'], $txt['lp_comments_set']) . '</a>';
+		foreach ($board_news as $news) {
+			$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getText($news['replies'], $txt['lp_comments_set']) . '</a>';
 
-				echo '
+			echo '
 			<div class="news_item">
 				<h3 class="news_header">
 					', $news['icon'], '
@@ -163,42 +165,39 @@ class BoardNews extends Plugin
 				<div class="news_body" style="padding: 2ex 0">', $news['body'], '</div>
 				', $news['link'], ($news['locked'] ? '' : ' | ' . $news['comment_link']), '';
 
-				if (!empty($modSettings['enable_likes'])) {
-					echo '
+			if (!empty($modSettings['enable_likes'])) {
+				echo '
 					<ul>';
 
-					if (!empty($news['likes']['can_like'])) {
-						echo '
+				if (!empty($news['likes']['can_like'])) {
+					echo '
 						<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $context['session_var'], '=', $context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $txt['unlike'] : $txt['like']), '</a></li>';
-					}
+				}
 
-					if (!empty($news['likes']['count'])) {
-						$context['some_likes'] = true;
-						$count = $news['likes']['count'];
-						$base = 'likes_';
-						if ($news['likes']['you']) {
-							$base = 'you_' . $base;
-							$count--;
-						}
-						$base .= (isset($txt[$base . $count])) ? $count : 'n';
-
-						echo '
-						<li class="like_count smalltext">', sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $context['session_var'] . '=' . $context['session_id'], comma_format($count)), '</li>';
+				if (!empty($news['likes']['count'])) {
+					$context['some_likes'] = true;
+					$count = $news['likes']['count'];
+					$base = 'likes_';
+					if ($news['likes']['you']) {
+						$base = 'you_' . $base;
+						$count--;
 					}
+					$base .= (isset($txt[$base . $count])) ? $count : 'n';
 
 					echo '
-					</ul>';
+						<li class="like_count smalltext">', sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $context['session_var'] . '=' . $context['session_id'], comma_format($count)), '</li>';
 				}
 
 				echo '
-			</div>';
-
-				if (!$news['is_last'])
-					echo '
-			<hr>';
+					</ul>';
 			}
 
-			$content = ob_get_clean();
+			echo '
+			</div>';
+
+			if (!$news['is_last'])
+				echo '
+			<hr>';
 		}
 	}
 }

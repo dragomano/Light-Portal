@@ -28,7 +28,7 @@ class TopPages extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['top_pages']['parameters'] = [
 			'popularity_type'   => 'comments',
@@ -42,7 +42,7 @@ class TopPages extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_pages')
 			return;
@@ -108,7 +108,7 @@ class TopPages extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -157,16 +157,16 @@ class TopPages extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
-
-		ob_start();
+		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (!empty($top_pages)) {
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
@@ -199,7 +199,5 @@ class TopPages extends Plugin
 		} else {
 			echo $txt['lp_top_pages']['no_items'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

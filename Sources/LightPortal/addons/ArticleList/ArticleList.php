@@ -28,7 +28,7 @@ class ArticleList extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['article_list']['no_content_class'] = true;
 
@@ -45,7 +45,7 @@ class ArticleList extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'article_list')
 			return;
@@ -133,8 +133,8 @@ class ArticleList extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getTopics(array $parameters)
-	{
+	public function getTopics(array $parameters): array
+    {
 		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
@@ -190,8 +190,8 @@ class ArticleList extends Plugin
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getPages(array $parameters)
-	{
+	public function getPages(array $parameters): array
+    {
 		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
@@ -252,7 +252,7 @@ class ArticleList extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $context, $txt;
 
@@ -264,10 +264,9 @@ class ArticleList extends Plugin
 			return is_numeric($item);
 		});
 
-		$function     = empty($parameters['display_type']) ? 'getTopics' : 'getPages';
-		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'], $function, __CLASS__, $cache_time, $parameters);
-
-		ob_start();
+		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
 		if (!empty($article_list)) {
 			echo '
@@ -311,7 +310,5 @@ class ArticleList extends Plugin
 		} else {
 			echo '<div class="errorbox">', $txt['lp_article_list']['no_items'], '</div>';
 		}
-
-		$content = ob_get_clean();
 	}
 }

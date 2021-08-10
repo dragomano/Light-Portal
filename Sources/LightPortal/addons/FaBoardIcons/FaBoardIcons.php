@@ -31,7 +31,7 @@ class FaBoardIcons extends Plugin
 	 * @param array $custom_columns
 	 * @return void
 	 */
-	public function frontBoards(&$custom_columns)
+	public function frontBoards(array &$custom_columns)
 	{
 		global $sourcedir;
 
@@ -50,7 +50,7 @@ class FaBoardIcons extends Plugin
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontBoardsOutput(&$boards, $row)
+	public function frontBoardsOutput(array &$boards, array $row)
 	{
 		global $sourcedir, $modSettings;
 

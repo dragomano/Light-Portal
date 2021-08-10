@@ -143,7 +143,7 @@ function template_portal_below()
  * @param string $placement
  * @return void
  */
-function lp_show_blocks($placement = '')
+function lp_show_blocks(string $placement = '')
 {
 	global $context, $scripturl;
 
@@ -155,7 +155,7 @@ function lp_show_blocks($placement = '')
 		<div class="row">';
 	}
 
-	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+	foreach ($context['lp_blocks'][$placement] as $block) {
 		$class = 'block_' . $block['type'] . (!empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '') . (!empty($block['custom_class']) ? ' ' . $block['custom_class'] : '');
 
 		echo '
@@ -170,7 +170,8 @@ function lp_show_blocks($placement = '')
 		if (empty($block['title']))
 			$block['title'] = '';
 
-		echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
+		if (!empty($block['title']))
+			echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
 
 		if (empty($block['content_class']))
 			$block['content_class'] = '';

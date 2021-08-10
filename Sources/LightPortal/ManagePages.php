@@ -402,7 +402,7 @@ class ManagePages
 			$this->remove([(int) $data['del_item']]);
 
 		if (!empty($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']]);
+			self::toggleStatus([(int) $data['toggle_item']]);
 
 		Helpers::cache()->flush();
 
@@ -472,7 +472,7 @@ class ManagePages
 	 * @param array $items
 	 * @return void
 	 */
-	public function toggleStatus(array $items = [])
+	public static function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -506,7 +506,7 @@ class ManagePages
 				break;
 
 			case 'toggle':
-				$this->toggleStatus($items);
+				self::toggleStatus($items);
 				break;
 		}
 
@@ -722,7 +722,7 @@ class ManagePages
 
 		$post_errors = [];
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_' . $language]) : false) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) && empty($data['title_' . $language])) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))

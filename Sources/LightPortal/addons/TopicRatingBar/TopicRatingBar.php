@@ -32,7 +32,7 @@ class TopicRatingBar extends Plugin
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(array &$custom_columns, array &$custom_tables)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
@@ -50,9 +50,9 @@ class TopicRatingBar extends Plugin
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
-		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
+		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes']) : 0;
 	}
 
 	/**

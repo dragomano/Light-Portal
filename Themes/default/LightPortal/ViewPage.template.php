@@ -180,7 +180,7 @@ function show_comment_block()
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
 
-	if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
+	if ($modSettings['lp_show_comment_block'] == 'none')
 		return;
 
 	if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
@@ -241,16 +241,19 @@ function show_comment_block()
 					</div>
 				</div>';
 
-	if ($context['user']['is_logged'])
-		echo '
+	if ($context['user']['is_logged']) {
+        echo '
 				<form
 					id="comment_form"
 					class="roundframe descbox"
 					accept-charset="', $context['character_set'], '"
 					x-ref="comment_form"
 					@submit.prevent="comment.add($event.target, $refs)"
-				>
-					', show_toolbar(), '
+				>';
+
+        show_toolbar();
+
+        echo '
 					<textarea
 						id="message"
 						name="message"
@@ -279,6 +282,7 @@ function show_comment_block()
 						disabled
 					>', $txt['post'], '</button>
 				</form>';
+    }
 
 	echo '
 			</div>
@@ -309,7 +313,7 @@ function show_comment_block()
  * @param int $level
  * @return void
  */
-function show_single_comment($comment, $i = 0, $level = 1)
+function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
 	global $context, $txt;
 

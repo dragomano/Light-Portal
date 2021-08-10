@@ -46,7 +46,7 @@ class Markdown extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['markdown'] = array(
 			'content' => true
@@ -62,7 +62,7 @@ class Markdown extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function parseContent(&$content, $type)
+	public function parseContent(string &$content, string $type)
 	{
 		if ($type == 'markdown')
 			$content = $this->getParsedContent($content);
@@ -76,7 +76,7 @@ class Markdown extends Plugin
 	 * @param string $text
 	 * @return string
 	 */
-	private function getParsedContent($text)
+	private function getParsedContent(string $text): string
 	{
 		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
 		require_once(__DIR__ . '/Michelf/Markdown.php');
@@ -90,7 +90,7 @@ class Markdown extends Plugin
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'PHP Markdown',

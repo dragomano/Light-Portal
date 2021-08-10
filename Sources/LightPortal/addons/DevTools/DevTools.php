@@ -51,8 +51,12 @@ class DevTools extends Plugin
 		if (!empty($modSettings['lp_dev_tools_addon_fake_cards'])) {
 			$demo_articles = [];
 
-			$products = Helpers::cache('dev_tools_addon_demo_products', 'getProducts', __CLASS__, 21600);
-			$users    = Helpers::cache('dev_tools_addon_demo_users', 'getUsers', __CLASS__, 21600);
+			$products = Helpers::cache('dev_tools_addon_demo_products')
+				->setLifeTime(21600)
+				->setFallback(__CLASS__, 'getProducts');
+			$users = Helpers::cache('dev_tools_addon_demo_users')
+				->setLifeTime(21600)
+				->setFallback(__CLASS__, 'getUsers');
 
 			foreach ($products as $id => $article) {
 				$date = random_int((new \DateTime('-2 years'))->getTimestamp(), time());
@@ -109,7 +113,7 @@ class DevTools extends Plugin
 	/**
 	 * @return array
 	 */
-	public function getProducts()
+	public function getProducts(): array
 	{
 		$products = fetch_web_data('https://reqres.in/api/products');
 
@@ -119,7 +123,7 @@ class DevTools extends Plugin
 	/**
 	 * @return array
 	 */
-	public function getUsers()
+	public function getUsers(): array
 	{
 		$users = fetch_web_data('https://reqres.in/api/users');
 

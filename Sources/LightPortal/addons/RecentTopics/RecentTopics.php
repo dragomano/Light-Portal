@@ -28,7 +28,7 @@ class RecentTopics extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['recent_topics']['no_content_class'] =  true;
 
@@ -47,7 +47,7 @@ class RecentTopics extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_topics')
 			return;
@@ -139,8 +139,9 @@ class RecentTopics extends Plugin
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -190,7 +191,7 @@ class RecentTopics extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt, $context;
 
@@ -205,57 +206,54 @@ class RecentTopics extends Plugin
 			$parameters
 		);
 
-		if (!empty($recent_topics)) {
-			ob_start();
+		if (empty($recent_topics))
+			return;
 
-			echo '
+		echo '
 		<ul class="recent_topics noup">';
 
-			if (!empty($parameters['use_simple_style'])) {
-				foreach ($recent_topics as $topic) {
-					echo '
+		if (!empty($parameters['use_simple_style'])) {
+			foreach ($recent_topics as $topic) {
+				echo '
 			<li class="windowbg">
 				<div class="smalltext">', $topic['time'], '</div>';
 
-					echo $topic['link'];
+				echo $topic['link'];
 
-					echo '
+				echo '
 				<div class="smalltext', $context['right_to_left'] ? ' floatright' : '', '">
 					<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
 					<i class="fas fa-comment"></i> ', $topic['replies'], '
 				</div>
 			</li>';
-				}
-			} else {
-				foreach ($recent_topics as $topic) {
-					echo '
+			}
+		} else {
+			foreach ($recent_topics as $topic) {
+				echo '
 			<li class="windowbg">';
 
-					if (!empty($parameters['show_avatars']))
-						echo '
+				if (!empty($parameters['show_avatars']))
+					echo '
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
-					if ($topic['is_new'])
-						echo '
+				if ($topic['is_new'])
+					echo '
 				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
-					echo $topic['icon'], ' ', $topic['link'];
+				echo $topic['icon'], ' ', $topic['link'];
 
-					if (empty($parameters['show_avatars']))
-						echo '
+				if (empty($parameters['show_avatars']))
+					echo '
 				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
 
-					echo '
+				echo '
 				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
-				}
 			}
-
-
-			echo '
-		</ul>';
-
-			$content = ob_get_clean();
 		}
+
+
+		echo '
+		</ul>';
 	}
 }

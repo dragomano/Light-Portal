@@ -74,7 +74,7 @@ class Comment
 
 		loadLanguage('Editor');
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments', 'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
+		$comments = Helpers::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
@@ -205,7 +205,7 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => $this->getUserAvatar($user_info['id']),
+				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
@@ -277,23 +277,6 @@ class Comment
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
-	}
-
-	/**
-	 * @param $user_id
-	 * @return string
-	 * @throws Exception
-	 */
-	private function getUserAvatar($user_id): string
-	{
-		global $memberContext;
-
-		if (!isset($memberContext[$user_id])) {
-			loadMemberData($user_id);
-			loadMemberContext($user_id, true);
-		}
-
-		return $memberContext[$user_id]['avatar']['image'];
 	}
 
 	/**
@@ -421,7 +404,7 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			$avatar = $this->getUserAvatar($row['author_id']);
+			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],

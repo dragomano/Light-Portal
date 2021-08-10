@@ -124,7 +124,7 @@ function template_manage_blocks()
  * @param array $data
  * @return void
  */
-function show_block_entry($id, $data)
+function show_block_entry(int $id, array $data)
 {
 	global $modSettings, $context, $language, $txt, $scripturl;
 
@@ -312,27 +312,42 @@ function template_block_post()
 	}
 
 	echo '
-				<section id="content-tab1" class="bg even">
-					', template_post_tab($fields);
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+                    </div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab($fields, 'access_placement'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'access_placement');
+
+	echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab($fields, 'appearance'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'appearance');
+
+	echo '
 				</section>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
-				<section id="content-tab4" class="bg even">
-					', template_post_tab($fields, 'tuning'), '
+				<section id="content-tab4" class="bg even">';
+
+		template_post_tab($fields, 'tuning');
+
+		echo '
 				</section>';
 	}
 

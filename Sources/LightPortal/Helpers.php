@@ -22,20 +22,16 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the cache data or Cache class object
+	 * Get the Cache class object
 	 *
-	 * Получаем данные из кэша или объект класса Cache
+	 * Получаем объект класса Cache
 	 *
 	 * @param string|null $key
-	 * @param string|null $funcName
-	 * @param string|null $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = LP_CACHE_TIME, ...$vars)
+	public static function cache($key = null)
 	{
-		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
 	/**
@@ -347,7 +343,7 @@ class Helpers
 		elseif ($y == date('Y', $current_time))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 
-		// like "20 February, 2019" (last year)
+		// like "20 February 2019" (last year)
 		return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 	}
 
@@ -365,10 +361,12 @@ class Helpers
 	{
 		global $txt;
 
-		if ($txt['lang_locale'] == 'en_US')
-			return $month . ' ' . $day . ', ' . $postfix;
+		$comma = strpos($postfix, ":") === false ? ' ' : ', ';
 
-		return $day . ' ' . $month . (strpos($postfix, ":") === false ? ' ' : ', ') . $postfix;
+		if ($txt['lang_locale'] == 'en_US')
+			return $month . ' ' . $day . $comma . $postfix;
+
+		return $day . ' ' . $month . $comma . $postfix;
 	}
 
 	/**
@@ -586,7 +584,11 @@ class Helpers
 			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
 			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
+		ob_start();
+
 		Addons::run('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+
+		$content = ob_get_clean();
 	}
 
 	/**
@@ -750,7 +752,7 @@ class Helpers
 	 * @param bool $all - подсчитывать все страницы
 	 * @return int
 	 */
-	public static function getNumActivePages($all = false): int
+	public static function getNumActivePages(bool $all = false): int
 	{
 		global $user_info, $smcFunc;
 
@@ -782,7 +784,7 @@ class Helpers
 	 */
 	public static function getAllCategories()
 	{
-		return self::cache('all_categories', 'getList', Lists\Category::class);
+		return self::cache('all_categories')->setFallback(Lists\Category::class, 'getList');
 	}
 
 	/**
@@ -790,14 +792,14 @@ class Helpers
 	 */
 	public static function getAllTags()
 	{
-		return self::cache('all_tags', 'getList', Lists\Tag::class);
+		return self::cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function getFaIcons()
-	{
+	public static function getFaIcons(): array
+    {
 		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
 			$json = json_decode($content);
@@ -813,5 +815,22 @@ class Helpers
 		}
 
 		return $icons;
+	}
+
+	/**
+	 * @param $user_id
+	 * @return array
+	 * @throws Exception
+	 */
+	public static function getUserAvatar($user_id): array
+	{
+		global $memberContext;
+
+		if (!isset($memberContext[$user_id])) {
+			loadMemberData($user_id);
+			loadMemberContext($user_id, true);
+		}
+
+		return $memberContext[$user_id]['avatar'];
 	}
 }

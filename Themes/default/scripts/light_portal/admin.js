@@ -17,14 +17,14 @@ class PortalEntity {
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}
 	}
 
 	async remove(target) {
-		if (!confirm(smf_you_sure)) return false;
+		if (! confirm(smf_you_sure)) return false;
 
 		const item = target.dataset.id;
 
@@ -51,7 +51,7 @@ class PortalEntity {
 		const formElements = target.elements;
 
 		for (let i = 0; i < formElements.length; i++) {
-			if ((formElements[i].required && formElements[i].value === '') || !formElements[i].checkValidity()) {
+			if ((formElements[i].required && formElements[i].value === '') || ! formElements[i].checkValidity()) {
 				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;
@@ -162,11 +162,7 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		if (!refs.title_0.value) {
-			refs.type.disabled = true
-		} else {
-			refs.type.disabled = false
-		}
+		refs.type.disabled = ! refs.title_0.value;
 
 		// Create a page alias on page type changing
 		if (refs.alias.value === '' && typeof (slugify) === 'function') {
@@ -182,7 +178,7 @@ class Page extends PortalEntity {
 
 		ajax_indicator(true);
 
-		if (!pageContent.value) {
+		if (! pageContent.value) {
 			pageContent.value = ' '
 		}
 
@@ -209,7 +205,7 @@ class Plugin extends PortalEntity {
 			})
 		});
 
-		if (!response.ok) {
+		if (! response.ok) {
 			console.error(response)
 		}
 
@@ -295,13 +291,13 @@ class Category extends PortalEntity {
 			})
 		});
 
-		if (!response.ok) {
+		if (! response.ok) {
 			console.error(response.status, priority)
 		}
 	}
 
 	async add(refs) {
-		if (!refs.cat_name) return false;
+		if (! refs.cat_name) return false;
 
 		let response = await fetch(this.workUrl, {
 			method: 'POST',
@@ -345,12 +341,12 @@ class Category extends PortalEntity {
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}
 
-		if (!event.value) {
+		if (! event.value) {
 			event.value = event.defaultValue
 		}
 	}
@@ -370,7 +366,7 @@ class Category extends PortalEntity {
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}

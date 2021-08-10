@@ -122,7 +122,7 @@ class ManageBlocks
 			$this->makeCopy((int) $data['clone_block']);
 
 		if (!empty($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']]);
+			self::toggleStatus([(int) $data['toggle_item']]);
 
 		$this->updatePriority();
 
@@ -213,7 +213,7 @@ class ManageBlocks
 	 * @param array $items
 	 * @return void
 	 */
-	public function toggleStatus(array $items = [])
+	public static function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -1119,7 +1119,8 @@ class ManageBlocks
 				$data['options']['parameters'][$row['name']] = $row['value'];
 		}
 
-		$this->prepareMissingBlockTypes($data['type']);
+		if (!empty($data['type']))
+		    $this->prepareMissingBlockTypes($data['type']);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;

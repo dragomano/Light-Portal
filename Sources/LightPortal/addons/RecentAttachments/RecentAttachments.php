@@ -28,7 +28,7 @@ class RecentAttachments extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['recent_attachments']['parameters'] = [
 			'num_attachments' => 5,
@@ -42,7 +42,7 @@ class RecentAttachments extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_attachments')
 			return;
@@ -109,9 +109,9 @@ class RecentAttachments extends Plugin
 	 * Получаем список последних вложений
 	 *
 	 * @param array $parameters
-	 * @return string
+	 * @return array
 	 */
-	public function getData(array $parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -130,7 +130,7 @@ class RecentAttachments extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $settings;
 
@@ -145,34 +145,31 @@ class RecentAttachments extends Plugin
 			$parameters
 		);
 
-		if (!empty($attachment_list)) {
-			ob_start();
+		if (empty($attachment_list))
+			return;
 
-			$fancybox = class_exists('FancyBox');
+		$fancybox = class_exists('FancyBox');
 
-			echo '
+		echo '
 		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
 
-			foreach ($attachment_list as $attach) {
-				if (!empty($attach['file']['image'])) {
-					echo '
+		foreach ($attachment_list as $attach) {
+			if (!empty($attach['file']['image'])) {
+				echo '
 			<div class="item">
 				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
 			</div>';
-				} else {
-					echo '
+			} else {
+				echo '
 			<div class="item">
 				<a href="', $attach['file']['href'], '">
 					<img class="centericon" src="', $settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
 				</a> (', $attach['file']['filesize'], ')
 			</div>';
-				}
 			}
-
-			echo '
-		</div>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</div>';
 	}
 }

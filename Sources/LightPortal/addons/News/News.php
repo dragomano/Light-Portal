@@ -27,7 +27,7 @@ class News extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['news']['parameters']['selected_item'] = 0;
 	}
@@ -37,7 +37,7 @@ class News extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'news')
 			return;
@@ -89,7 +89,7 @@ class News extends Plugin
 	 * @param int $item
 	 * @return string
 	 */
-	public function getData($item = 0)
+	public function getData(int $item = 0): string
 	{
 		global $boarddir, $context;
 
@@ -110,7 +110,7 @@ class News extends Plugin
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt;
 
@@ -119,10 +119,6 @@ class News extends Plugin
 
 		$news = $this->getData($parameters['selected_item']);
 
-		ob_start();
-
 		echo $news ?: $txt['lp_news']['no_items'];
-
-		$content = ob_get_clean();
 	}
 }

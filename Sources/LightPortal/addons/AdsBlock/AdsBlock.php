@@ -28,7 +28,7 @@ class AdsBlock extends Plugin
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		$config_vars['ads_block'][] = array('int', 'min_replies');
 	}
@@ -53,7 +53,7 @@ class AdsBlock extends Plugin
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		$options['ads_block']['content'] = 'html';
 
@@ -72,7 +72,7 @@ class AdsBlock extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function parseContent(&$content, $type)
+	public function parseContent(string &$content, string $type)
 	{
 		if ($type == 'ads_block')
 			Helpers::parseContent($content, 'html');
@@ -83,7 +83,7 @@ class AdsBlock extends Plugin
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'ads_block')
 			return;
@@ -246,7 +246,7 @@ class AdsBlock extends Plugin
 
 				if (!empty($block['parameters']) && !empty($block['parameters']['end_date'])) {
 					if ($this->getEndTime($block['parameters']) <= time()) {
-						ManageBlocks::toggleStatus([$block['id']]);
+                        ManageBlocks::toggleStatus([$block['id']]);
 					}
 				}
 			}
@@ -301,7 +301,7 @@ class AdsBlock extends Plugin
 	 * @param int $counter
 	 * @return void
 	 */
-	public function prepareDisplayContext(&$output, &$message, $counter)
+	public function prepareDisplayContext(array &$output, array &$message, int $counter)
 	{
 		global $modSettings, $options, $context;
 
@@ -413,8 +413,8 @@ class AdsBlock extends Plugin
 	 *
 	 * @return array
 	 */
-	public function getData()
-	{
+	public function getData(): array
+    {
 		global $context;
 
 		if (empty($context['lp_blocks']['ads']))
@@ -433,8 +433,8 @@ class AdsBlock extends Plugin
 	 * @param string $position
 	 * @return array
 	 */
-	private function getByPosition(string $position)
-	{
+	private function getByPosition(string $position): array
+    {
 		global $context;
 
 		if (empty($position))
@@ -468,8 +468,8 @@ class AdsBlock extends Plugin
 	/**
 	 * @return array
 	 */
-	private function getPlacements()
-	{
+	private function getPlacements(): array
+    {
 		global $txt;
 
 		return array_combine(

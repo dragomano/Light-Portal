@@ -47,7 +47,7 @@ class EzPortal extends Plugin
 	 * @param array $subActions
 	 * @return void
 	 */
-	public function addPageAreas(&$subActions)
+	public function addPageAreas(array &$subActions)
 	{
 		global $user_info;
 

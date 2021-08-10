@@ -65,11 +65,10 @@ class PageArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
-	 * @throws Exception
 	 */
 	public function getData(int $start, int $limit): array
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $memberContext;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
 
 		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return [];
@@ -139,12 +138,7 @@ class PageArticle extends AbstractArticle
 						'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 					);
 
-					loadMemberData($author_id);
-
-					$pages[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
-					if (loadMemberContext($author_id, true)) {
-						$pages[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
-					}
+                    $pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 					if (!empty($modSettings['lp_show_teaser']))
 						$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
