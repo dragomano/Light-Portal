@@ -198,7 +198,8 @@ class EasyMarkdownEditor extends Plugin
 				noticeBlocks.forEach(function (el) {
 					el.style.display = "none";
 				})
-				scrollingButtons.style.display = "none";
+				if (scrollingButtons)
+					scrollingButtons.style.display = "none";
 			} else {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "sticky";
@@ -206,7 +207,8 @@ class EasyMarkdownEditor extends Plugin
 				noticeBlocks.forEach(function (el) {
 					el.style.display = "block";
 				})
-				scrollingButtons.style.display = "block";
+				if (scrollingButtons)
+					scrollingButtons.style.display = "block";
 			}
 		}', true);
 	}
