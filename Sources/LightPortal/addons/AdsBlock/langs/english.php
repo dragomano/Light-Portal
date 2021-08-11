@@ -11,6 +11,7 @@ return [
 	'included_boards_subtext' => 'Enter boards IDs to display ads only there. Otherwise, the block will be displayed in all boards.',
 	'included_topics' => 'Topics',
 	'included_topics_subtext' => 'Enter topic IDs to display ads only there. Otherwise, the block will be displayed in all topics.',
+	'select_placement' => 'Where should the block be displayed?',
 	'placement_set' => array(
 		'At the top of boards',
 		'At the bottom of boards',

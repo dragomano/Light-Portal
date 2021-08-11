@@ -148,6 +148,25 @@ class AdsBlock extends Plugin
 			$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
 		}
 
+		$data = [];
+
+		$placement_set = $this->getPlacements();
+		foreach ($placement_set as $position => $title) {
+			$data[] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $position . '", selected: ' . (in_array($position, $context['lp_block']['options']['parameters']['ads_placement']) ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#ads_placement",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			placeholder: "' . $txt['lp_ads_block']['select_placement'] . '",
+			searchHighlight: true,
+			closeOnSelect: false
+		});', true);
+
 		$context['posting_fields']['ads_placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['ads_placement']['input'] = array(
 			'type' => 'select',
@@ -160,15 +179,6 @@ class AdsBlock extends Plugin
 			'options' => array(),
 			'tab' => 'access_placement'
 		);
-
-		$placement_set = $this->getPlacements();
-
-		foreach ($placement_set as $position => $title) {
-			$context['posting_fields']['ads_placement']['input']['options'][$title] = array(
-				'value'    => $position,
-				'selected' => in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])
-			);
-		}
 
 		$context['posting_fields']['included_boards']['label']['text'] = $txt['lp_ads_block']['included_boards'];
 		$context['posting_fields']['included_boards']['input'] = array(
