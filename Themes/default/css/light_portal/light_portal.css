@@ -279,6 +279,9 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+#lp_layout aside .progress_bar {
+  margin: 0;
+}
 #lp_layout aside[id^="block"]:not(:first-child) {
   clear: both;
   margin-top: 4px;

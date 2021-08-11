@@ -32,6 +32,12 @@ trait Manage
 		}
 		.ss-disabled {
 			color: inherit !important;
+		}
+		.ss-main .ss-single-selected {
+			height: auto;
+		}
+		.placeholder > div {
+			margin: 0 !important;
 		}');
 	}
 

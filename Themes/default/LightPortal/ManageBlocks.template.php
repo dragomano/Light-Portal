@@ -296,7 +296,7 @@ function template_block_post()
 
 	echo '
 	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
-		<div class="roundframe">
+		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
@@ -375,6 +375,7 @@ function template_block_post()
 
 	<script>
 		const block = new Block();
+
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
@@ -401,6 +402,39 @@ function template_block_post()
 			}
 		});
 		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');
+
+		new SlimSelect({
+			select: "#title_class",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_title_classes']);
+
+	echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+
+	if (empty($context['lp_block']['options']['no_content_class'])) {
+		echo '
+		new SlimSelect({
+			select: "#content_class",
+			data: [';
+
+		echo "\n", implode(",\n", $context['lp_content_classes']);
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	echo '
 	</script>';
 }
 

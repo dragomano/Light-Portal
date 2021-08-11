@@ -515,7 +515,7 @@ class ManageBlocks
 	 */
 	private function improveSelectFields()
 	{
-		global $context;
+		global $context, $txt;
 
 		Manage::improveSelectFields();
 
@@ -525,6 +525,20 @@ class ManageBlocks
 		$context['lp_all_icons'] = [];
 		foreach ($all_icons as $icon) {
 			$context['lp_all_icons'][] = "\t\t\t\t" . '{innerHTML: `<i class="' . $icon . '"></i>&nbsp;' . $icon . '`, text: "' . $icon . '", selected: ' . (($context['lp_block']['icon'] === $icon) ? 'true' : 'false') . '}';
+		}
+
+		// Prepare the title classes list
+		$context['lp_title_classes'] = [];
+		foreach ($context['lp_all_title_classes'] as $key => $template) {
+			$context['lp_title_classes'][] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`, text: "' . $key . '", selected: ' . (($key == $context['lp_block']['title_class']) ? 'true' : 'false') . '}';
+		}
+
+		// Prepare the content classes list
+		if (empty($context['lp_block']['options']['no_content_class'])) {
+			$context['lp_content_classes'] = [];
+			foreach ($context['lp_all_content_classes'] as $key => $template) {
+				$context['lp_content_classes'][] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . (($key == $context['lp_block']['content_class']) ? 'true' : 'false') . '}';
+			}
 		}
 	}
 
@@ -632,16 +646,6 @@ class ManageBlocks
 			'tab' => 'appearance'
 		);
 
-		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			$value = $key;
-			$key   = empty($key) ? $txt['no'] : $key;
-
-			$context['posting_fields']['title_class']['input']['options'][$key] = array(
-				'value'    => $value,
-				'selected' => $value == $context['lp_block']['title_class']
-			);
-		}
-
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
 		$context['posting_fields']['title_style']['input'] = array(
 			'type' => 'textarea',
@@ -663,16 +667,6 @@ class ManageBlocks
 				'options' => array(),
 				'tab' => 'appearance'
 			);
-
-			foreach ($context['lp_all_content_classes'] as $key => $data) {
-				$value = $key;
-				$key   = empty($key) ? $txt['no'] : $key;
-
-				$context['posting_fields']['content_class']['input']['options'][$key] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['content_class']
-				);
-			}
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
 			$context['posting_fields']['content_style']['input'] = array(

@@ -183,16 +183,16 @@ class Subs
 	public static function getTitleClasses(): array
 	{
 		return [
-			'cat_bar > h3'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
-			'title_bar > h3'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
-			'sub_bar > h3'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
-			'noticebox > h3'            => '<div class="noticebox"><h3>%1$s</h3></div>',
-			'infobox > h3'              => '<div class="infobox"><h3>%1$s</h3></div>',
-			'descbox > h3'              => '<div class="descbox"><h3>%1$s</h3></div>',
-			'generic_list_wrapper > h3' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
-			'progress_bar > h3'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
-			'popup_content > h3'        => '<div class="popup_content"><h3>%1$s</h3></div>',
-			''                          => '<div>%1$s</div>',
+			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
+			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
+			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
+			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
+			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
+			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
+			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
+			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
+			''                     => '<div>%1$s</div>',
 		];
 	}
 
@@ -206,15 +206,18 @@ class Subs
 	public static function getContentClasses(): array
 	{
 		return [
-			'roundframe'  => '<div class="roundframe noup"%2$s>%1$s</div>',
-			'windowbg'    => '<div class="windowbg noup"%2$s>%1$s</div>',
-			'information' => '<div class="information"%2$s>%1$s</div>',
-			'errorbox'    => '<div class="errorbox"%2$s>%1$s</div>',
-			'noticebox'   => '<div class="noticebox"%2$s>%1$s</div>',
-			'infobox'     => '<div class="infobox"%2$s>%1$s</div>',
-			'descbox'     => '<div class="descbox"%2$s>%1$s</div>',
-			'bbc_code'    => '<div class="bbc_code"%2$s>%1$s</div>',
-			''            => '<div%2$s>%1$s</div>',
+			'roundframe'   => '<div class="roundframe"%2$s>%1$s</div>',
+			'roundframe2'  => '<div class="roundframe noup"%2$s>%1$s</div>',
+			'windowbg'     => '<div class="windowbg"%2$s>%1$s</div>',
+			'windowbg2'    => '<div class="windowbg noup"%2$s>%1$s</div>',
+			'information'  => '<div class="information"%2$s>%1$s</div>',
+			'information2' => '<div class="information noup"%2$s>%1$s</div>',
+			'errorbox'     => '<div class="errorbox"%2$s>%1$s</div>',
+			'noticebox'    => '<div class="noticebox"%2$s>%1$s</div>',
+			'infobox'      => '<div class="infobox"%2$s>%1$s</div>',
+			'descbox'      => '<div class="descbox"%2$s>%1$s</div>',
+			'bbc_code'     => '<div class="bbc_code"%2$s>%1$s</div>',
+			''             => '<div%2$s>%1$s</div>',
 		];
 	}
 
