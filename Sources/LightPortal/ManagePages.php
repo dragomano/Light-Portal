@@ -754,9 +754,19 @@ class ManagePages
 	 */
 	private function improveSelectFields()
 	{
-		global $context;
+		global $context, $txt;
 
 		Manage::improveSelectFields();
+
+		$context['lp_current_page_types'] = [];
+		foreach ($context['lp_page_types'] as $type => $title) {
+			$context['lp_current_page_types'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $type . '", selected: ' . (($type == $context['lp_page']['type']) ? 'true' : 'false') . '}';
+		}
+
+		$context['lp_page_permissions'] = [];
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			$context['lp_page_permissions'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $level . '", selected: ' . (($level == $context['lp_page']['permissions']) ? 'true' : 'false') . '}';
+		}
 
 		// Prepare the tag list
 		$all_tags = $context['lp_tags'] = Helpers::getAllTags();
@@ -873,13 +883,6 @@ class ManagePages
 			'tab' => 'content'
 		);
 
-		foreach ($context['lp_page_types'] as $type => $title) {
-			$context['posting_fields']['type']['input']['options'][$title] = array(
-				'value'    => $type,
-				'selected' => $type == $context['lp_page']['type']
-			);
-		}
-
 		if ($context['lp_page']['type'] !== 'bbc') {
 			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
@@ -968,13 +971,6 @@ class ManagePages
 			),
 			'options' => array()
 		);
-
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_page']['permissions']
-			);
-		}
 
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(

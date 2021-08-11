@@ -376,6 +376,20 @@ function template_block_post()
 	<script>
 		const block = new Block();
 
+		new SlimSelect({
+			select: "#permissions",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_block_permissions']);
+
+	echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,

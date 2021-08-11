@@ -110,6 +110,21 @@ function template_page_post()
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
 		const page = new Page();
+
+		let pageType = new SlimSelect({
+			select: "#type",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_current_page_types']);
+
+	echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
 		new SlimSelect({
 			select: "#keywords",
 			data: [';
@@ -133,6 +148,7 @@ function template_page_post()
 				}
 			}
 		});
+
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
@@ -159,6 +175,21 @@ function template_page_post()
 			}
 		});
 		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');
+
+		new SlimSelect({
+			select: "#permissions",
+			data: [';
+
+	echo "\n", implode(",\n", $context['lp_page_permissions']);
+
+	echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
 		new SlimSelect({
 			select: "#category",
 			data: [';

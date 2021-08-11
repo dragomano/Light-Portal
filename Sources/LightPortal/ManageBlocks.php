@@ -519,6 +519,11 @@ class ManageBlocks
 
 		Manage::improveSelectFields();
 
+		$context['lp_block_permissions'] = [];
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			$context['lp_block_permissions'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $level . '", selected: ' . (($level == $context['lp_block']['permissions']) ? 'true' : 'false') . '}';
+		}
+
 		// Prepare the icon list
 		$all_icons = Helpers::getFaIcons();
 
@@ -614,13 +619,6 @@ class ManageBlocks
 			'options' => array(),
 			'tab' => 'access_placement'
 		);
-
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_block']['permissions']
-			);
-		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
 		$context['posting_fields']['areas']['input'] = array(
