@@ -13,30 +13,27 @@ function template_manage_plugins()
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">
-			', $context['lp_plugins_extra'], '
-		</h3>
-	</div>
-	<div class="information">
-		', $txt['lp_plugins_desc'];
+		<h3 class="catbg">', $context['lp_plugins_extra'];
 
 	echo '
-		<div class="floatright">
-			<form action="', $scripturl . '?action=admin;area=lp_plugins" method="post">
-				<label for="filter">', $txt['apply_filter'], '</label>
-				<select id="filter" name="filter" onchange="this.form.submit()">
-					<option value="all"', $context['current_filter'] == 'all' ? ' selected' : '', '>', $txt['all'], '</option>';
+			<span class="floatright">
+				<form action="', $scripturl . '?action=admin;area=lp_plugins" method="post">
+					<label for="filter">', $txt['apply_filter'], '</label>
+					<select id="filter" name="filter" onchange="this.form.submit()">
+						<option value="all"', $context['current_filter'] == 'all' ? ' selected' : '', '>', $txt['all'], '</option>';
 
 	foreach ($context['lp_plugin_types'] as $type => $title) {
 		echo '
-					<option value="', $type, '"', $context['current_filter'] == $type ? ' selected' : '', '>', $title, '</option>';
+						<option value="', $type, '"', $context['current_filter'] == $type ? ' selected' : '', '>', $title, '</option>';
 	}
 
 	echo '
-				</select>
-			</form>
-		</div>
-	</div>';
+					</select>
+				</form>
+			</span>
+		</h3>
+	</div>
+	<div class="information">', $txt['lp_plugins_desc'], '</div>';
 
 	// This is a magic! Пошла магия!
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
