@@ -66,6 +66,21 @@ class ArticleList extends Plugin
 		if ($context['lp_block']['type'] !== 'article_list')
 			return;
 
+		$data = [];
+		foreach ($context['lp_all_content_classes'] as $key => $template) {
+			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $context['lp_block']['options']['parameters']['body_class'] ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#body_class",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			closeOnSelect: true
+		});', true);
+
 		$context['posting_fields']['body_class']['label']['text'] = $txt['lp_article_list']['body_class'];
 		$context['posting_fields']['body_class']['input'] = array(
 			'type' => 'select',
@@ -76,19 +91,9 @@ class ArticleList extends Plugin
 			'tab' => 'appearance'
 		);
 
-		foreach ($context['lp_all_content_classes'] as $key => $data) {
-			$value = $key;
-			$key   = empty($key) ? $txt['no'] : $key;
-
-			$context['posting_fields']['body_class']['input']['options'][$key] = array(
-				'value'    => $value,
-				'selected' => $value == $context['lp_block']['options']['parameters']['body_class']
-			);
-		}
-
 		$context['posting_fields']['display_type']['label']['text'] = $txt['lp_article_list']['display_type'];
 		$context['posting_fields']['display_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'display_type'
 			),

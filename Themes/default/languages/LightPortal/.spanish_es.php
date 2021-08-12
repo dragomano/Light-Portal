@@ -20,6 +20,7 @@ $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
 $txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
@@ -214,7 +215,6 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 $txt['lp_page_options'] = array('Mostrar el autor y la fecha de creación', 'Show related pages', 'Permitir comentarios', 'Item in main menu');
 
 // Tabs

@@ -24,7 +24,8 @@ trait Manage
 	public static function improveSelectFields()
 	{
 		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+		loadJavaScriptFile('light_portal/slimselect.min.js');
 
 		addInlineCss('
 		.ss-content.ss-open {
@@ -39,6 +40,8 @@ trait Manage
 		.placeholder > div {
 			margin: 0 !important;
 		}');
+
+		self::prepareIconList();
 	}
 
 	/**
@@ -67,5 +70,38 @@ trait Manage
 		}
 
 		loadTemplate('LightPortal/ManageSettings');
+	}
+
+	/**
+	 * @return void
+	 */
+	private static function prepareIconList()
+	{
+		global $smcFunc;
+
+		if (Helpers::request()->has('icons') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$search = trim($smcFunc['strtolower']($search));
+
+		$all_icons = Helpers::getFaIcons();
+		$all_icons = array_filter($all_icons, function ($item) use ($search) {
+			return strpos($item, $search) !== false;
+		});
+
+		$results = [];
+		foreach ($all_icons as $icon) {
+			$results[] = [
+				'innerHTML' => "<i class=\"$icon\"></i>&nbsp;$icon",
+				'text'      => $icon
+			];
+		}
+
+		exit(json_encode($results));
 	}
 }

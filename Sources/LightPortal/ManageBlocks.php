@@ -513,43 +513,6 @@ class ManageBlocks
 	/**
 	 * @return void
 	 */
-	private function improveSelectFields()
-	{
-		global $context, $txt;
-
-		Manage::improveSelectFields();
-
-		$context['lp_block_permissions'] = [];
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['lp_block_permissions'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $level . '", selected: ' . (($level == $context['lp_block']['permissions']) ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the icon list
-		$all_icons = Helpers::getFaIcons();
-
-		$context['lp_all_icons'] = [];
-		foreach ($all_icons as $icon) {
-			$context['lp_all_icons'][] = "\t\t\t\t" . '{innerHTML: `<i class="' . $icon . '"></i>&nbsp;' . $icon . '`, text: "' . $icon . '", selected: ' . (($context['lp_block']['icon'] === $icon) ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the title classes list
-		$context['lp_title_classes'] = [];
-		foreach ($context['lp_all_title_classes'] as $key => $template) {
-			$context['lp_title_classes'][] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`, text: "' . $key . '", selected: ' . (($key == $context['lp_block']['title_class']) ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the content classes list
-		if (empty($context['lp_block']['options']['no_content_class'])) {
-			$context['lp_content_classes'] = [];
-			foreach ($context['lp_all_content_classes'] as $key => $template) {
-				$context['lp_content_classes'][] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . (($key == $context['lp_block']['content_class']) ? 'true' : 'false') . '}';
-			}
-		}
-	}
-
-	/**
-	 * @return void
-	 */
 	private function prepareFormFields()
 	{
 		global $context, $txt;
@@ -586,8 +549,7 @@ class ManageBlocks
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id'   => 'icon',
-				'name' => 'icon'
+				'id' => 'icon'
 			),
 			'options' => array(),
 			'tab' => 'appearance'
@@ -602,13 +564,6 @@ class ManageBlocks
 			'options' => array(),
 			'tab' => 'access_placement'
 		);
-
-		foreach ($context['lp_block_placements'] as $level => $title) {
-			$context['posting_fields']['placement']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_block']['placement']
-			);
-		}
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(

@@ -33,7 +33,7 @@ class BoardList extends Plugin
 		$options['board_list']['no_content_class'] = true;
 
 		$options['board_list']['parameters'] = [
-			'category_class' => 'title_bar > h4',
+			'category_class' => 'title_bar',
 			'board_class'    => 'roundframe',
 		];
 	}
@@ -62,6 +62,21 @@ class BoardList extends Plugin
 		if ($context['lp_block']['type'] !== 'board_list')
 			return;
 
+		$data = [];
+		foreach ($this->getCategoryClasses() as $key => $template) {
+			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $context['lp_block']['options']['parameters']['category_class'] ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#category_class",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			closeOnSelect: true
+		});', true);
+
 		$context['posting_fields']['category_class']['label']['text'] = $txt['lp_board_list']['category_class'];
 		$context['posting_fields']['category_class']['input'] = array(
 			'type' => 'select',
@@ -72,12 +87,20 @@ class BoardList extends Plugin
 			'tab' => 'appearance'
 		);
 
-		foreach ($this->getCategoryClasses() as $key => $data) {
-			$context['posting_fields']['category_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['category_class']
-			);
+		$data = [];
+		foreach ($context['lp_all_content_classes'] as $key => $template) {
+			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $context['lp_block']['options']['parameters']['board_class'] ? 'true' : 'false') . '}';
 		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#board_class",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			closeOnSelect: true
+		});', true);
 
 		$context['posting_fields']['board_class']['label']['text'] = $txt['lp_board_list']['board_class'];
 		$context['posting_fields']['board_class']['input'] = array(
@@ -88,16 +111,6 @@ class BoardList extends Plugin
 			'options' => array(),
 			'tab' => 'appearance'
 		);
-
-		foreach ($context['lp_all_content_classes'] as $key => $data) {
-			$value = $key;
-			$key   = empty($key) ? $txt['no'] : $key;
-
-			$context['posting_fields']['board_class']['input']['options'][$key] = array(
-				'value'    => $value,
-				'selected' => $value == $context['lp_block']['options']['parameters']['board_class']
-			);
-		}
 	}
 
 	/**
@@ -179,8 +192,8 @@ class BoardList extends Plugin
 	private function getCategoryClasses(): array
     {
 		return [
-			'title_bar > h4' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
-			'sub_bar > h4'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
+			'title_bar' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
+			'sub_bar'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
 		];
 	}
 }

@@ -20,6 +20,7 @@ $txt['lp_views'] = $txt['vues'];
 $txt['lp_replies'] = $txt['réponses'];
 $txt['lp_default'] = 'Page par défaut';
 $txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Veuillez saisir au moins %d caractères';
 
 // Settings
 $txt['lp_settings'] = 'Paramètres du portail';
@@ -214,7 +215,6 @@ $txt['lp_page_keywords_placeholder'] = 'Sélectionnez des balises ou ajoutez-en 
 $txt['lp_page_publish_datetime'] = 'Date et heure de publication';
 $txt['lp_page_author'] = 'Modifier l\auteur';
 $txt['lp_page_author_placeholder'] = 'Spécifiez un nom d\'utilisateur pour transférer les droits sur la page';
-$txt['lp_page_author_search_length'] = 'Veuillez saisir au moins 3 caractères';
 $txt['lp_page_options'] = array('Afficher l\'auteur et la date de création', 'Afficher les pages associées', 'Autoriser les commentaires', 'Élément dans le menu principal');
 
 // Tabs

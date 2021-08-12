@@ -66,7 +66,7 @@ function template_page_post()
 		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
 		echo '
-                    </div>';
+					</div>';
 	}
 
 	echo '
@@ -109,29 +109,40 @@ function template_page_post()
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
-		const page = new Page();
+		const page = new Page();';
 
+	if (!empty($context['lp_page_types'])) {
+		echo '
 		let pageType = new SlimSelect({
 			select: "#type",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_current_page_types']);
+		foreach ($context['lp_page_types'] as $value => $text) {
+			echo '
+				{text: "' . $text . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['type'] ? 'true' : 'false') . '},';
+		}
 
-	echo '
+		echo '
 			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});
+		});';
+	}
 
+	if (!empty($context['lp_all_tags'])) {
+		echo '
 		new SlimSelect({
 			select: "#keywords",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_all_tags']);
+		foreach ($context['lp_all_tags'] as $value => $text) {
+			echo '
+				{text: "' . $text . '", value: "' . $value . '", selected: ' . (isset($context['lp_page']['keywords'][$value]) ? 'true' : 'false') . '},';
+		}
 
-	echo '
+		echo '
 			],
 			limit: 10,
 			hideSelectedOption: true,
@@ -147,23 +158,48 @@ function template_page_post()
 					value: value.toLowerCase()
 				}
 			}
-		});
+		});';
+	}
 
+	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
 			deselectLabel: "<span class=\"red\">✖</span>",
-			data: [';
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
 
-	echo "\n", implode(",\n", $context['lp_all_icons']);
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
 
-	echo '
-			],
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
 			hideSelectedOption: true,
 			placeholder: "', $txt['lp_block_select_icon'], '",
 			searchingText: "', $txt['search'], '...",
 			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "fas fa-robot",
+			searchPlaceholder: "cheese",
 			searchHighlight: true,
 			closeOnSelect: false,
 			showContent: "down",
@@ -173,36 +209,53 @@ function template_page_post()
 					value: value.toLowerCase()
 				}
 			}
-		});
-		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');
+		});';
 
+	if (!empty($context['lp_page']['options']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_page']['options']['icon'], '"></i>&nbsp;', $context['lp_page']['options']['icon'], '`, value: "', $context['lp_page']['options']['icon'], '", text: "', $context['lp_page']['options']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
+	}
+
+	if (!empty($txt['lp_permissions'])) {
+		echo '
 		new SlimSelect({
 			select: "#permissions",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_page_permissions']);
+		foreach ($txt['lp_permissions'] as $value => $text) {
+			echo '
+				{text: "' . $text . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['permissions'] ? 'true' : 'false') . '},';
+		}
 
-	echo '
+		echo '
 			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});
+		});';
+	}
 
+	if (!empty($context['lp_all_categories'])) {
+		echo '
 		new SlimSelect({
 			select: "#category",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_all_categories']);
+		foreach ($context['lp_all_categories'] as $value => $category) {
+			echo '
+				{text: "' . $category['name'] . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['category'] ? 'true' : 'false') . '},';
+		}
 
-	echo '
+		echo '
 			],
 			hideSelectedOption: true,
 			searchText: "', $txt['no_matches'], '",
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true
 		});';
+	}
 
 	if ($context['user']['is_admin']) {
 		echo '
@@ -212,7 +265,7 @@ function template_page_post()
 			deselectLabel: "<span class=\"red\">✖</span>",
 			ajax: async function (search, callback) {
 				if (search.length < 3) {
-					callback("', $txt['lp_page_author_search_length'], '");
+					callback("', sprintf($txt['lp_min_search_length'], 3), '");
 					return
 				}
 

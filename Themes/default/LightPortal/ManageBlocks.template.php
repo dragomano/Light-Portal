@@ -374,37 +374,87 @@ function template_block_post()
 	</form>
 
 	<script>
-		const block = new Block();
+		const block = new Block();';
 
+	if (!empty($context['lp_block_placements'])) {
+		echo '
 		new SlimSelect({
-			select: "#permissions",
+			select: "#placement",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_block_permissions']);
+		foreach ($context['lp_block_placements'] as $level => $title) {
+			echo '
+				{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['placement'] ? 'true' : 'false') . '},';
+		}
 
-	echo '
+		echo '
 			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});
+		});';
+	}
 
+	if (!empty($txt['lp_permissions'])) {
+		echo '
+		new SlimSelect({
+			select: "#permissions",
+			data: [';
+
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			echo '
+				{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['permissions'] ? 'true' : 'false') . '},';
+		}
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
 			deselectLabel: "<span class=\"red\">✖</span>",
-			data: [';
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
 
-	echo "\n", implode(",\n", $context['lp_all_icons']);
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
 
-	echo '
-			],
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
 			hideSelectedOption: true,
 			placeholder: "', $txt['lp_block_select_icon'], '",
 			searchingText: "', $txt['search'], '...",
 			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "fas fa-robot",
+			searchPlaceholder: "cheese",
 			searchHighlight: true,
 			closeOnSelect: false,
 			showContent: "down",
@@ -414,30 +464,52 @@ function template_block_post()
 					value: value.toLowerCase()
 				}
 			}
-		});
-		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');
+		});';
 
+	if (!empty($context['lp_block']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_block']['icon'], '"></i>&nbsp;', $context['lp_block']['icon'], '`, value: "', $context['lp_block']['icon'], '", text: "', $context['lp_block']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
+	}
+
+	if (!empty($context['lp_all_title_classes'])) {
+		echo '
 		new SlimSelect({
 			select: "#title_class",
 			data: [';
 
-	echo "\n", implode(",\n", $context['lp_title_classes']);
+		foreach ($context['lp_all_title_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['title_class'] ? 'true' : 'false') . '
+				},';
+		}
 
-	echo '
+		echo '
 			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
 		});';
+	}
 
-	if (empty($context['lp_block']['options']['no_content_class'])) {
+	if (empty($context['lp_block']['options']['no_content_class']) && !empty($context['lp_all_content_classes'])) {
 		echo '
 		new SlimSelect({
 			select: "#content_class",
 			data: [';
 
-		echo "\n", implode(",\n", $context['lp_content_classes']);
+		foreach ($context['lp_all_content_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['content_class'] ? 'true' : 'false') . '
+				},';
+		}
 
 		echo '
 			],

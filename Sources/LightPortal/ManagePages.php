@@ -702,6 +702,8 @@ class ManagePages
 		else
 			$context['lp_page']['options']['main_menu_item'] = [];
 
+		$context['lp_page']['options']['icon'] = $context['lp_page']['options']['icon'] === 'undefined' ? '' : $context['lp_page']['options']['icon'];
+
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
 			$context['lp_page']['options']['main_menu_item'][$lang['filename']] = $post_data['main_menu_item_' . $lang['filename']] ?? $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '';
@@ -754,60 +756,33 @@ class ManagePages
 	 */
 	private function improveSelectFields()
 	{
-		global $context, $txt;
+		global $context;
 
 		Manage::improveSelectFields();
 
-		$context['lp_current_page_types'] = [];
-		foreach ($context['lp_page_types'] as $type => $title) {
-			$context['lp_current_page_types'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $type . '", selected: ' . (($type == $context['lp_page']['type']) ? 'true' : 'false') . '}';
-		}
-
-		$context['lp_page_permissions'] = [];
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['lp_page_permissions'][] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $level . '", selected: ' . (($level == $context['lp_page']['permissions']) ? 'true' : 'false') . '}';
-		}
-
 		// Prepare the tag list
-		$all_tags = $context['lp_tags'] = Helpers::getAllTags();
-
-		$context['lp_all_tags'] = [];
-		foreach ($all_tags as $id => $value) {
-			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $value . '", value: "' . $id . '", selected: ' . (isset($context['lp_page']['keywords'][$id]) ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the icon list
-		$all_icons = Helpers::getFaIcons();
-
-		$context['lp_all_icons'] = [];
-		foreach ($all_icons as $icon) {
-			$context['lp_all_icons'][] = "\t\t\t\t" . '{innerHTML: `<i class="' . $icon . '"></i>&nbsp;' . $icon . '`, text: "' . $icon . '", selected: ' . (($context['lp_page']['options']['icon'] === $icon) ? 'true' : 'false') . '}';
-		}
+		$context['lp_all_tags'] = Helpers::getAllTags();
 
 		// Prepare the category list
-		$all_categories = Helpers::getAllCategories();
+		$context['lp_all_categories'] = Helpers::getAllCategories();
 
-		$context['lp_all_categories'] = [];
-		foreach ($all_categories as $id => $category) {
-			$context['lp_all_categories'][] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . ($id == $context['lp_page']['category'] ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the member list
-		if (Helpers::request()->has('members')) {
-			$data = Helpers::request()->json();
-
-			if (!empty($data['search']))
-				$this->prepareMemberList($data['search']);
-		}
+		$this->prepareMemberList();
 	}
 
 	/**
-	 * @param string $search
 	 * @return void
 	 */
-	private function prepareMemberList(string $search)
+	private function prepareMemberList()
 	{
 		global $smcFunc;
+
+		if (Helpers::request()->has('members') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
 
 		$search = trim($smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
@@ -956,8 +931,7 @@ class ManagePages
 		$context['posting_fields']['icon']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id'   => 'icon',
-				'name' => 'icon'
+				'id' => 'icon'
 			),
 			'options' => array(),
 			'tab' => 'menu'

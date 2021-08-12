@@ -63,7 +63,7 @@ class TagList extends Plugin
 
 		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
 		$context['posting_fields']['source']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'source'
 			),

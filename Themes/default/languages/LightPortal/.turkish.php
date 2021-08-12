@@ -20,6 +20,7 @@ $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Varsayılan';
 $txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Lütfen en az %d karakter girin';
 
 // Ayarlar
 $txt['lp_settings'] = 'Portal ayarları';
@@ -214,7 +215,6 @@ $txt['lp_page_keywords_placeholder'] = 'Etiketleri seçin veya yeni ekleyin';
 $txt['lp_page_publish_datetime'] = 'Yayın tarihi ve saati';
 $txt['lp_page_author'] = 'Yazarlık devri';
 $txt['lp_page_author_placeholder'] = 'Sayfaya hakları aktarmak için bir kullanıcı adı belirtin';
-$txt['lp_page_author_search_length'] = 'Lütfen en az 3 karakter girin';
 $txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver', 'Ana menüdeki öğe');
 
 // Sekmeler
