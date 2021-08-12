@@ -137,7 +137,11 @@ $txt['lp_misc_info'] = 'Здесь находятся дополнительны
 $txt['lp_debug_and_caching'] = 'Отладка и кэширование';
 $txt['lp_show_debug_info'] = 'Отображать время загрузки и количество запросов портала';
 $txt['lp_show_debug_info_help'] = 'Информация будет доступна только администраторам!';
+$txt['lp_show_cache_info'] = 'Отображать информацию о работе портала с кэшем';
 $txt['lp_cache_update_interval'] = 'Интервал обновления кэша';
+$txt['lp_cache_info'] = 'Портал — работа с кэшем';
+$txt['lp_cache_saving'] = 'Сохранение данных в ячейке <strong>%1$s</strong> на %2$d сек.';
+$txt['lp_cache_loading'] = 'Загрузка данных из ячейки <strong>%1$s</strong>';
 
 // Actions
 $txt['lp_title'] = 'Заголовок';

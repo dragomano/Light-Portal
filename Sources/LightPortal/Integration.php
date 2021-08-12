@@ -45,6 +45,8 @@ class Integration
 		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
 		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
+		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
+		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
@@ -686,5 +688,45 @@ class Integration
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 * @param int $ttl
+	 * @return void
+	 */
+	public function cachePutData(&$key, &$value, &$ttl)
+	{
+		global $modSettings, $context, $txt;
+
+		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
+			return;
+
+		$context['lp_detail_cache_info'][] = array(
+			'title'   => sprintf($txt['lp_cache_saving'], $key, $ttl),
+			'details' => json_encode($value, JSON_HEX_TAG),
+			'level'   => 'notice'
+		);
+	}
+
+	/**
+	 * @param string $key
+	 * @param int $ttl
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function cacheGetData(&$key, &$ttl, &$value)
+	{
+		global $modSettings, $context, $txt;
+
+		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
+			return;
+
+		$context['lp_detail_cache_info'][] = array(
+			'title'   => sprintf($txt['lp_cache_loading'], $key),
+			'details' => json_encode($value, JSON_HEX_TAG),
+			'level'   => 'info'
+		);
 	}
 }

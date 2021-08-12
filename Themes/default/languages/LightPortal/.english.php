@@ -137,7 +137,11 @@ $txt['lp_misc_info'] = 'There are additional portal settings that will be useful
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
 $txt['lp_show_debug_info'] = 'Show the loading time and number of the portal queries';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
+$txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
+$txt['lp_cache_info'] = 'Portal — work with the cache';
+$txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
+$txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';
 
 // Actions
 $txt['lp_title'] = 'Title';

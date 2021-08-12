@@ -67,10 +67,10 @@ class Cache
 	}
 
 	/**
-	* @param string $key
-	* @param int $time
-	* @return mixed
-	*/
+	 * @param string $key
+	 * @param int|null $time
+	 * @return mixed
+	 */
 	public function get(string $key, int $time = null)
 	{
 		return cache_get_data($this->prefix . $key, $time ?? $this->lifeTime);
@@ -79,7 +79,7 @@ class Cache
 	/**
 	 * @param string $key
 	 * @param mixed $value
-	 * @param int $time
+	 * @param int|null $time
 	 * @return void
 	 */
 	public function put(string $key, $value, int $time = null)
