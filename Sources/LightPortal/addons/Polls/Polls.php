@@ -56,22 +56,35 @@ class Polls extends Plugin
 			return;
 
 		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls']['selected_item'];
-		$context['posting_fields']['selected_item']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'selected_item'
-			),
-			'options' => array(),
-			'tab' => 'content'
-		);
 
 		$polls = $this->getAll();
 
-		foreach ($polls as $key => $value) {
-			$context['posting_fields']['selected_item']['input']['options'][$value] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+		if (empty($polls)) {
+			$context['posting_fields']['selected_item']['input'] = array(
+				'type' => 'input',
+				'after' => $txt['lp_polls']['no_items'],
+				'attributes' => array(
+					'id' => 'selected_item',
+					'disabled' => true
+				),
+				'tab' => 'content'
 			);
+		} else {
+			$context['posting_fields']['selected_item']['input'] = array(
+				'type' => 'select',
+				'attributes' => array(
+					'id' => 'selected_item'
+				),
+				'options' => array(),
+				'tab' => 'content'
+			);
+
+			foreach ($polls as $key => $value) {
+				$context['posting_fields']['selected_item']['input']['options'][$value] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+				);
+			}
 		}
 	}
 

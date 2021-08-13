@@ -112,12 +112,9 @@ class WhosOnline extends Plugin
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helpers::cache(
-			'whos_online_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time
-		);
+		$whos_online = Helpers::cache('whos_online_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData');
 
 		if (empty($whos_online))
 			return;

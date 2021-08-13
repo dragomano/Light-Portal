@@ -56,7 +56,7 @@ trait Manage
 		global $context;
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
+			if (!empty($data['input']['after']))
 				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {

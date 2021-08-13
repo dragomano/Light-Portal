@@ -210,7 +210,7 @@ class TinySlider extends Plugin
 			'options' => array()
 		);
 
-		$axis_directions = array_combine(array('horizontal', 'vertical'), $txt['lp_panel_direction_set']);
+		$axis_directions = array_combine(array('vertical', 'horizontal'), $txt['lp_panel_direction_set']);
 
 		foreach ($axis_directions as $key => $value) {
 			$context['posting_fields']['axis']['input']['options'][$value] = array(

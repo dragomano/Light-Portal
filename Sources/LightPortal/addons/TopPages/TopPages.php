@@ -64,7 +64,7 @@ class TopPages extends Plugin
 
 		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_pages']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'popularity_type'
 			),

@@ -24,9 +24,9 @@ class Likely extends Plugin
 	public $icon = 'far fa-share-square';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	private $buttons = 'facebook,twitter,vkontakte,pinterest,odnoklassniki,telegram,linkedin,whatsapp';
+	private $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
 
 	/**
 	 * @param array $options
@@ -51,7 +51,11 @@ class Likely extends Plugin
 
 		$parameters['size']    = FILTER_SANITIZE_STRING;
 		$parameters['skin']    = FILTER_SANITIZE_STRING;
-		$parameters['buttons'] = FILTER_SANITIZE_STRING;
+		$parameters['buttons'] = array(
+			'name'   => 'buttons',
+			'filter' => FILTER_SANITIZE_STRING,
+			'flags'  => FILTER_REQUIRE_ARRAY
+		);
 	}
 
 	/**
@@ -66,51 +70,67 @@ class Likely extends Plugin
 
 		$context['posting_fields']['size']['label']['text'] = $txt['lp_likely']['size'];
 		$context['posting_fields']['size']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'size'
-			)
+			),
+			'options' => array()
 		);
 
-		$context['posting_fields']['size']['input']['options'] = array(
-			'small' => array(
-				'value'    => 'small',
-				'selected' => 'small' == $context['lp_block']['options']['parameters']['size']
-			),
-			'big' => array(
-				'value'    => 'big',
-				'selected' => 'big' == $context['lp_block']['options']['parameters']['size']
-			)
-		);
+		foreach ($txt['lp_likely']['size_set'] as $value => $title) {
+			$context['posting_fields']['size']['input']['options'][$title] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_block']['options']['parameters']['size']
+			);
+		}
 
 		$context['posting_fields']['skin']['label']['text'] = $txt['lp_likely']['skin'];
 		$context['posting_fields']['skin']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'skin'
-			)
+			),
+			'options' => array()
 		);
 
-		$context['posting_fields']['skin']['input']['options'] = array(
-			'normal' => array(
-				'value'    => 'normal',
-				'selected' => 'normal' == $context['lp_block']['options']['parameters']['skin']
-			),
-			'light' => array(
-				'value'    => 'light',
-				'selected' => 'light' == $context['lp_block']['options']['parameters']['skin']
-			)
-		);
+		foreach ($txt['lp_likely']['skin_set'] as $value => $title) {
+			$context['posting_fields']['skin']['input']['options'][$title] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_block']['options']['parameters']['skin']
+			);
+		}
+
+		if (!is_array($context['lp_block']['options']['parameters']['buttons'])) {
+			$context['lp_block']['options']['parameters']['buttons'] = explode(',', $context['lp_block']['options']['parameters']['buttons']);
+		}
+
+		$data = [];
+		foreach ($this->buttons as $button) {
+			$data[] = "\t\t\t\t" . '{text: "' . $button . '", selected: ' . (in_array($button, $context['lp_block']['options']['parameters']['buttons']) ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#buttons",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			placeholder: "' . $txt['lp_likely']['select_buttons'] . '",
+			searchHighlight: true,
+			closeOnSelect: false
+		});', true);
 
 		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely']['buttons'];
 		$context['posting_fields']['buttons']['input'] = array(
-			'type' => 'textarea',
-			'after' => sprintf($txt['lp_likely']['buttons_subtext'], $this->buttons),
+			'type' => 'select',
 			'attributes' => array(
-				'id'        => 'buttons',
-				'maxlength' => 255,
-				'value'     => $context['lp_block']['options']['parameters']['buttons']
+				'id'       => 'buttons',
+				'name'     => 'buttons[]',
+				'multiple' => true,
+				'style'    => 'height: auto'
 			),
+			'options' => array(),
 			'tab' => 'content'
 		);
 	}
@@ -138,9 +158,9 @@ class Likely extends Plugin
 
 		echo '
 			<div class="centertext likely_links">
-				<div class="likely likely-', $parameters['size'], ($parameters['skin'] == 'dark' ? ' likely-light' : ''), '">';
+				<div class="likely likely-', $parameters['size'], ($parameters['skin'] == 'light' ? ' likely-light' : ''), '">';
 
-		$buttons = explode(',', $parameters['buttons']);
+		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
 
 		foreach ($buttons as $service) {
 			if (!empty($txt['lp_likely']['buttons_set'][$service])) {

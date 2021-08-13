@@ -24,9 +24,9 @@ class EasyMarkdownEditor extends Plugin
 	public $type = 'editor';
 
 	/**
-	 * Adding the editor for 'md' content
+	 * Adding the editor for 'markdown' content
 	 *
-	 * Подключаем редактор для контента 'md'
+	 * Подключаем редактор для контента 'markdown'
 	 *
 	 * @param array $object
 	 * @return void

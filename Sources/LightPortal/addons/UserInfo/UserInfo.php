@@ -81,7 +81,7 @@ class UserInfo extends Plugin
 
 		if (!isset($memberContext[$user_info['id']])) {
 			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id'], true);
+			loadMemberContext($user_info['id']);
 		}
 
 		return $memberContext[$user_info['id']];

@@ -248,13 +248,9 @@ class RecentPosts extends Plugin
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::cache(
-			'recent_posts_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$recent_posts = Helpers::cache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (empty($recent_posts))
 			return;

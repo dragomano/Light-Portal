@@ -227,13 +227,9 @@ class RandomTopics extends Plugin
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::cache(
-			'random_topics_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$cache_time,
-			$parameters['num_topics']
-		);
+		$random_topics = Helpers::cache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
 
 		if (!empty($random_topics)) {
 			echo '

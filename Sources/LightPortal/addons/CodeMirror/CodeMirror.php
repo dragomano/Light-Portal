@@ -54,8 +54,8 @@ class CodeMirror extends Plugin
 			$current_mode = 'html';
 		} elseif (($object['type'] === 'php' || (!empty($object['options']['content']) && $object['options']['content'] === 'php')) && !empty($modSettings['lp_code_mirror_addon_php_mode'])) {
 			$current_mode = 'php';
-		} elseif (($object['type'] === 'md' || (!empty($object['options']['content']) && $object['options']['content'] === 'md')) && !empty($modSettings['lp_code_mirror_addon_md_mode'])) {
-			$current_mode = 'md';
+		} elseif (($object['type'] === 'markdown' || (!empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && !empty($modSettings['lp_code_mirror_addon_md_mode'])) {
+			$current_mode = 'markdown';
 		}
 
 		if (empty($current_mode))

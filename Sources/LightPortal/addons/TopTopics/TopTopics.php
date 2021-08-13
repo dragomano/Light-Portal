@@ -64,7 +64,7 @@ class TopTopics extends Plugin
 
 		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'popularity_type'
 			),

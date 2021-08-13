@@ -145,7 +145,7 @@ class PageList extends Plugin
 		$titles = Helpers::getAllTitles();
 		$all_categories = Helpers::getAllCategories();
 
-		$categories = !empty($parameters['categories']) ? explode(',', $parameters['categories']) : [];
+		$categories = is_array($parameters['categories']) ? $parameters['categories'] : explode(',', $parameters['categories']);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT

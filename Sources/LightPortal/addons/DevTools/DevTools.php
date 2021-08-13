@@ -84,9 +84,9 @@ class DevTools extends Plugin
 					'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
 					'can_edit'  => true,
 					'edit_link' => '',
-					'teaser'    => Lorem::ipsum(4),
+					'teaser'    => Helpers::getTeaser(Lorem::ipsum(4)),
 					'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
-					'keywords'  => ['Tag1', 'Tag2', 'Tag3'],
+					'keywords'  => [1 => 'Tag1', 'Tag2', 'Tag3'],
 					'datetime'  => date('Y-m-d', $date)
 				);
 			}

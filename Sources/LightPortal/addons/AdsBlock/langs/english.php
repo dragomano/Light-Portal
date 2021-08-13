@@ -26,4 +26,5 @@ return [
 		'After each last message on the page',
 		'After the last message'
 	),
+	'no_ads_placement' => 'The <strong>placement</strong> field was not filled out. It is required.',
 ];

@@ -211,6 +211,24 @@ class AdsBlock extends Plugin
 	}
 
 	/**
+	 * @param array $data
+	 * @param array $post_errors
+	 * @return void
+	 */
+	public function findBlockErrors(array $data, array &$post_errors)
+	{
+		global $txt;
+
+		if ($data['placement'] !== 'ads')
+			return;
+
+		$txt['lp_post_error_no_ads_placement'] = $txt['lp_ads_block']['no_ads_placement'];
+
+		if (empty($data['parameters']['ads_placement']))
+			$post_errors[] = 'no_ads_placement';
+	}
+
+	/**
 	 * @return void
 	 */
 	public function init()

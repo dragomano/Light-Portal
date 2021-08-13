@@ -86,14 +86,14 @@ class RecentAttachments extends Plugin
 
 		$context['posting_fields']['direction']['label']['text'] = $txt['lp_recent_attachments']['direction'];
 		$context['posting_fields']['direction']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'direction'
 			),
 			'options' => array()
 		);
 
-		$directions = array_combine(array('horizontal', 'vertical'), $txt['lp_panel_direction_set']);
+		$directions = array_combine(array('vertical', 'horizontal'), $txt['lp_panel_direction_set']);
 
 		foreach ($directions as $direction => $title) {
 			$context['posting_fields']['direction']['input']['options'][$title] = array(
@@ -137,13 +137,9 @@ class RecentAttachments extends Plugin
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::cache(
-			'recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$cache_time,
-			$parameters
-		);
+		$attachment_list = Helpers::cache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (empty($attachment_list))
 			return;

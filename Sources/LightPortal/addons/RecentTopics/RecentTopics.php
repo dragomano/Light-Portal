@@ -198,13 +198,9 @@ class RecentTopics extends Plugin
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::cache(
-			'recent_topics_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$recent_topics = Helpers::cache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (empty($recent_topics))
 			return;

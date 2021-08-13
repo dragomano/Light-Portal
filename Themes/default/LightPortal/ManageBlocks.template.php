@@ -378,22 +378,26 @@ function template_block_post()
 
 	if (!empty($context['lp_block_placements'])) {
 		echo '
-		new SlimSelect({
-			select: "#placement",
-			data: [';
+		const placementSelect = document.getElementById("placement");
+
+		if (placementSelect.style.display !== "none") {
+			new SlimSelect({
+				select: placementSelect,
+				data: [';
 
 		foreach ($context['lp_block_placements'] as $level => $title) {
 			echo '
-				{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['placement'] ? 'true' : 'false') . '},';
+					{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['placement'] ? 'true' : 'false') . '},';
 		}
 
 		echo '
-			],
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});';
+				],
+				showSearch: false,
+				hideSelectedOption: true,
+				closeOnSelect: true,
+				showContent: "down"
+			});
+		}';
 	}
 
 	if (!empty($txt['lp_permissions'])) {

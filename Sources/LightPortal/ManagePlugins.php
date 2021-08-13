@@ -152,7 +152,7 @@ class ManagePlugins
 				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
 			}
 
-			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
+			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
 
 			exit(json_encode('ok'));
 		}

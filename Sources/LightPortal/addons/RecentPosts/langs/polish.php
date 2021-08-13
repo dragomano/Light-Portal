@@ -12,7 +12,7 @@ return [
 	'include_boards_subtext' => 'If you specify the IDs of the boards, recent posts will be displayed ONLY from those boards.',
 	'exclude_topics' => 'Exclude topics',
 	'exclude_topics_subtext' => 'If you specify the IDs of the topics, recent posts will NOT be displayed from these topics.',
-	'include_topic' => 'Include topics',
+	'include_topics' => 'Include topics',
 	'include_topics_subtext' => 'If you specify the IDs of the topics, recent posts will be displayed ONLY from those topics.',
 	'show_avatars' => 'Pokaż awatary użytkowników',
 	'update_interval' => 'Interwał odświeżania listy w sekundach',
