@@ -501,6 +501,8 @@ class ManageBlocks
 		if (!empty($data['areas']) && empty(Helpers::validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
 
+		Addons::run('findBlockErrors', array($data, &$post_errors));
+
 		if (!empty($post_errors)) {
 			Helpers::post()->put('preview', true);
 			$context['post_errors'] = [];

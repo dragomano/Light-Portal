@@ -742,6 +742,8 @@ class ManagePages
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
 
+		Addons::run('findPageErrors', array($data, &$post_errors));
+
 		if (!empty($post_errors)) {
 			Helpers::post()->put('preview', true);
 			$context['post_errors'] = [];
