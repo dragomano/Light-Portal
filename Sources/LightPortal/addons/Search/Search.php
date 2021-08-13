@@ -199,11 +199,10 @@ class Search extends Plugin
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @return void
 	 */
-	public function prepareContent(string &$content, string $type)
+	public function prepareContent(string $type)
 	{
 		global $scripturl, $context, $txt, $modSettings;
 

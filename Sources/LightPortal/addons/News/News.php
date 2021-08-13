@@ -103,14 +103,13 @@ class News extends Plugin
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(string &$content, string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt;
 

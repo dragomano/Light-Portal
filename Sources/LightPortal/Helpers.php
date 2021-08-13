@@ -586,7 +586,7 @@ class Helpers
 
 		ob_start();
 
-		Addons::run('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+		Addons::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
 
 		$content = ob_get_clean();
 	}
