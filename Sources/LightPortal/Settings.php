@@ -681,6 +681,8 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
+		loadTemplate('LightPortal/ManageSettings');
+
 		$context['page_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
@@ -695,7 +697,9 @@ class Settings
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('check', 'lp_show_cache_info', 'disabled' => empty($modSettings['lp_show_debug_info'])),
-			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
+			'',
+			array('callback', 'misc')
 		);
 
 		Addons::run('addMisc', array(&$config_vars));

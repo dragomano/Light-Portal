@@ -139,7 +139,8 @@ $txt['lp_show_debug_info'] = 'Show the loading time and number of the portal que
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
 $txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
-$txt['lp_cache_info'] = 'Portal — work with the cache';
+$txt['lp_active_plugins'] = 'Active plugins';
+$txt['lp_cache_info'] = 'Portal — using the cache';
 $txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
 $txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';
 

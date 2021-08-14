@@ -139,7 +139,8 @@ $txt['lp_show_debug_info'] = 'Відображати час завантажен
 $txt['lp_show_debug_info_help'] = 'Інформація буде доступна тільки адміністраторам!';
 $txt['lp_show_cache_info'] = 'Відображати інформацію про роботу порталу з кешем';
 $txt['lp_cache_update_interval'] = 'Інтервал оновлення кешу';
-$txt['lp_cache_info'] = 'Портал — робота з кешем';
+$txt['lp_active_plugins'] = 'Активні плагіни';
+$txt['lp_cache_info'] = 'Портал — використання кешу';
 $txt['lp_cache_saving'] = 'Збереження даних у комірці <strong>%1$s</strong> на %2$d сек.';
 $txt['lp_cache_loading'] = 'Завантаження даних з комірки <strong>%1$s</strong>';
 
