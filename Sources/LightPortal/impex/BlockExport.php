@@ -95,10 +95,10 @@ class BlockExport extends AbstractExport
 					'content_style' => $row['content_style']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 

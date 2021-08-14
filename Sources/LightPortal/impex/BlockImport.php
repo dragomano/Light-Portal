@@ -89,7 +89,7 @@ class BlockImport extends AbstractImport
 				$items[] = [
 					'block_id'      => $block_id = intval($item['block_id']),
 					'icon'          => $item->icon,
-					'type'          => $item->type,
+					'type'          => str_replace('md', 'markdown', $item->type),
 					'note'          => $item->note,
 					'content'       => $item->content,
 					'placement'     => $item->placement,
@@ -97,9 +97,9 @@ class BlockImport extends AbstractImport
 					'permissions'   => intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
-					'title_class'   => $item->title_class,
+					'title_class'   => strpos($item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,
 					'title_style'   => $item->title_style,
-					'content_class' => $item->content_class,
+					'content_class' => strpos($item->content_class, 'div.') !== false ? 'roundframe' : $item->content_class,
 					'content_style' => $item->content_style
 				];
 

@@ -110,7 +110,7 @@ class PageImport extends AbstractImport
 						'alias'        => (string) $item->alias,
 						'description'  => $item->description,
 						'content'      => $item->content,
-						'type'         => (string) $item->type,
+						'type'         => str_replace('md', 'markdown', $item->type),
 						'permissions'  => intval($item['permissions']),
 						'status'       => intval($item['status']),
 						'num_views'    => intval($item['num_views']),

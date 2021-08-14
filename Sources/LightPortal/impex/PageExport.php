@@ -183,13 +183,13 @@ class PageExport extends AbstractExport
 					'updated_at'   => $row['updated_at']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (!empty($row['message'])) {
+			if (!empty(trim($row['message']))) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
