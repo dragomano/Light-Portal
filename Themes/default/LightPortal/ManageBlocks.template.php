@@ -221,11 +221,11 @@ function template_block_add()
 	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
-					<div class="item roundframe" data-type="', $block, '" @click="block.add($el.children[0])">
-						<i class="', $context['lp_' . $block]['icon'], '"></i>
-						<strong>', $txt['lp_' . $block]['title'], '</strong>
+					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el.children[0])">
+						<i class="', $block['icon'], '"></i>
+						<strong>', $block['title'], '</strong>
 						<hr>
-						<p>', $txt['lp_' . $block]['block_desc'] ?? $txt['lp_' . $block]['description'], '</p>
+						<p>', $block['desc'], '</p>
 					</div>
 				</div>';
 	}

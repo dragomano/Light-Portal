@@ -301,14 +301,26 @@ class ManageBlocks
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
 
-		$context['lp_all_blocks'] = ['php', 'html', 'bbc'];
+		$context['lp_enabled_plugins'] = array_merge($context['lp_enabled_plugins'], ['php', 'html', 'bbc']);
+
+		$context['lp_all_blocks'] = [];
 		foreach ($context['lp_enabled_plugins'] as $addon) {
 			$addon = Helpers::getSnakeName($addon);
 
-			if (isset($txt['lp_' . $addon]['title']))
-				$context['lp_all_blocks'][] = $context['lp_' . $addon]['abbr'] ?? $addon;
+			// We need blocks only
+			if (!isset($txt['lp_' . $addon]['title']))
+				continue;
+
+			$context['lp_all_blocks'][] = [
+				'type'  => $addon,
+				'icon'  => $context['lp_' . $addon]['icon'],
+				'title' => $txt['lp_' . $addon]['title'],
+				'desc'  => $txt['lp_' . $addon]['block_desc'] ?? $txt['lp_' . $addon]['description']
+			];
 		}
-		asort($context['lp_all_blocks']);
+
+		$titles = array_column($context['lp_all_blocks'], 'title');
+		array_multisort($titles, SORT_ASC, $context['lp_all_blocks']);
 
 		$context['sub_template'] = 'block_add';
 
