@@ -303,7 +303,7 @@ class ArticleList extends Plugin
 				</div>';
 					}
 
-					$content .= '<a href="' . $scripturl . '?page=' . $page['alias'] . '">' . $title . '</a>';
+					$content .= '<a href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $page['alias'] . '">' . $title . '</a>';
 
 					echo sprintf($context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}

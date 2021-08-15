@@ -81,9 +81,9 @@ function template_show_page()
 		echo '
 			<div class="smalltext">';
 
-		foreach ($context['lp_page']['keywords'] as $id => $keyword) {
+		foreach ($context['lp_page']['keywords'] as $id => $key) {
 			echo '
-				<a class="button" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">', $keyword, '</a>';
+				<a class="button" href="', $key['link'], '">', $key['name'], '</a>';
 		}
 
 		echo '
@@ -420,7 +420,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
  */
 function show_related_pages()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt;
 
 	if (empty($context['lp_page']['related_pages']))
 		return;
@@ -436,7 +436,7 @@ function show_related_pages()
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
 					<div class="windowbg">
-						<a href="', $scripturl, '?page=', $page['alias'], '">';
+						<a href="', $page['link'], '">';
 
 		if (!empty($page['image'])) {
 			echo '
@@ -447,7 +447,7 @@ function show_related_pages()
 
 		echo '
 						</a>
-						<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a>
+						<a href="', $page['link'], '">', $page['title'], '</a>
 					</div>';
 	}
 

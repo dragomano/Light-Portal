@@ -81,10 +81,12 @@ class Integration
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
 			'LP_VERSION'      => '1.9 alpha',
-			'LP_RELEASE_DATE' => '2021-08-12',
+			'LP_RELEASE_DATE' => '2021-08-15',
 			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
-			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons'
+			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
+			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
+			'LP_PAGE_ACTION'  => $modSettings['lp_page_action'] ?? 'page'
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -152,14 +154,14 @@ class Integration
 		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_frontpage_mode']))
-			$actions['portal'] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
+			$actions[LP_ACTION] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
 
 		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'categories')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'categories')
 			return call_user_func(array(new Lists\Category, 'show'));
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'tags')
 			return call_user_func(array(new Lists\Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
@@ -177,7 +179,7 @@ class Integration
 	{
 		global $modSettings;
 
-		if (Helpers::request()->filled('page'))
+		if (Helpers::request()->filled(LP_PAGE_ACTION))
 			return call_user_func(array(new Page, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
@@ -205,15 +207,15 @@ class Integration
 			return;
 
 		if (Helpers::request()->isEmpty('action')) {
-			$current_action = 'portal';
+			$current_action = LP_ACTION;
 
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
-			if (Helpers::request()->filled('page')) {
-				$current_action = 'portal';
+			if (Helpers::request()->filled(LP_PAGE_ACTION)) {
+				$current_action = LP_ACTION;
 
-				$page = Helpers::request('page');
+				$page = Helpers::request(LP_PAGE_ACTION);
 				if (isset(Subs::getPagesInMenu()[$page]))
 					$current_action = 'portal_' . $page;
 			}
@@ -225,7 +227,7 @@ class Integration
 		$disabled_actions[] = 'home';
 
 		if (!empty($context['current_board']) || Helpers::request()->is(['keywords']))
-			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
+			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION) : 'home';
 	}
 
 	/**
@@ -297,7 +299,7 @@ class Integration
 			foreach ($pages_in_menu as $alias => $item) {
 				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
 					'title' => Helpers::getTitle($item),
-					'href'  => $scripturl . '?page=' . $alias,
+					'href'  => $scripturl . '?' . LP_PAGE_ACTION . '=' . $alias,
 					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
 					'show'  => Helpers::canViewItem($item['permissions'])
 				);
@@ -327,7 +329,7 @@ class Integration
 		$buttons = array_merge(
 			array_slice($buttons, 0, 0, true),
 			array(
-				'portal' => array(
+				LP_ACTION => array(
 					'title'       => $txt['lp_portal'],
 					'href'        => $scripturl,
 					'icon'        => 'home',
@@ -347,10 +349,10 @@ class Integration
 
 		// Standalone mode
 		if (!empty($modSettings['lp_standalone_mode'])) {
-			$buttons['portal']['title']   = $txt['lp_portal'];
-			$buttons['portal']['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
-			$buttons['portal']['icon']    = 'home';
-			$buttons['portal']['is_last'] = $context['right_to_left'];
+			$buttons[LP_ACTION]['title']   = $txt['lp_portal'];
+			$buttons[LP_ACTION]['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
+			$buttons[LP_ACTION]['icon']    = 'home';
+			$buttons[LP_ACTION]['is_last'] = $context['right_to_left'];
 
 			$buttons = array_merge(
 				array_slice($buttons, 0, 2, true),
@@ -487,7 +489,7 @@ class Integration
 		return [
 			'type'        => $type,
 			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
-			'redirect'    => 'page=' . $alias,
+			'redirect'    => LP_PAGE_ACTION . '=' . $alias,
 			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
 		];
 	}
@@ -646,28 +648,28 @@ class Integration
 				$result = sprintf($txt['lp_who_viewing_index'], $modSettings['lp_standalone_url'], $scripturl);
 		}
 
-		if (!empty($actions['action']) && $actions['action'] == 'portal') {
+		if (!empty($actions['action']) && $actions['action'] == LP_ACTION) {
 			if (!empty($actions['sa']) && $actions['sa'] == 'tags') {
 				!empty($actions['key'])
-					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $actions['key'], $actions['key'])
-					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
+					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=' . LP_ACTION . ';sa=tags;key=' . $actions['key'], $actions['key'])
+					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=' . LP_ACTION . ';sa=tags');
 			} else {
-				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
+				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=' . LP_ACTION);
 			}
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'forum')
 			$result = sprintf($txt['who_index'], $scripturl . '?action=forum', $context['forum_name']);
 
-		if (!empty($actions['page']))
-			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?page=' . $actions['page']);
+		if (!empty($actions[LP_PAGE_ACTION]))
+			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_ACTION . '=' . $actions[LP_PAGE_ACTION]);
 
 		if (!empty($actions['action']) && $actions['action'] == 'lp_settings')
 			$result = sprintf($txt['lp_who_viewing_portal_settings'], $scripturl . '?action=admin;area=lp_settings');
 
 		if (!empty($actions['action']) && $actions['action'] == 'lp_blocks') {
 			if (!empty($actions['area']) && $actions['area'] == 'lp_blocks') {
-				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action==admin;area=lp_blocks');
+				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action=admin;area=lp_blocks');
 
 				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
 					$result = sprintf($txt['lp_who_viewing_editing_block'], $actions['id']);

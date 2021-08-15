@@ -51,12 +51,12 @@ class Category implements PageListInterface
 			$context['page_title'] = sprintf($txt['lp_all_pages_with_category'], $category['name']);
 		}
 
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=categories;id=' . $context['lp_category'];
+		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $context['lp_category'];
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
 			'name' => $txt['lp_all_categories'],
-			'url'  => $scripturl . '?action=portal;sa=categories'
+			'url'  => $scripturl . '?action=' . LP_ACTION . ';sa=categories'
 		);
 
 		$context['linktree'][] = array(
@@ -193,7 +193,7 @@ class Category implements PageListInterface
 		global $context, $txt, $scripturl;
 
 		$context['page_title']     = $txt['lp_all_categories'];
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=categories';
+		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=categories';
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -322,7 +322,7 @@ class Category implements PageListInterface
 				$items[$row['category_id']] = array(
 					'name'      => $row['name'] ?: $txt['lp_no_category'],
 					'desc'      => $row['description'],
-					'link'      => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'],
+					'link'      => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
 					'num_pages' => 0
 				);
 			}
@@ -574,7 +574,7 @@ class Category implements PageListInterface
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
 		if (!document.referrer) {
 			backButton.text = "' . $txt['lp_all_categories'] . '";
-			backButton.setAttribute("href", smf_scripturl + "?action=portal;sa=categories");
+			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=categories");
 		}', true);
 	}
 }

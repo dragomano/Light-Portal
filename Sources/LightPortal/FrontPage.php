@@ -121,13 +121,13 @@ class FrontPage
 		$articles = $entityClass->getData($start, $limit);
 		$articles = $this->postProcess($entity, $articles);
 
-		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
+		$context['page_index'] = constructPageIndex($scripturl . '?action=' . LP_ACTION, Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
 		if (!empty($modSettings['lp_use_simple_pagination']))
-			$context['page_index'] = $this->simplePaginate($scripturl . '?action=portal', $total_items, $limit);
+			$context['page_index'] = $this->simplePaginate($scripturl . '?action=' . LP_ACTION, $total_items, $limit);
 
-		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
+		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=' . LP_ACTION . ';start=' . (Helpers::request('start') + $limit) : '';
 		$context['lp_frontpage_articles'] = $articles;
 
 		Addons::run('frontAssets');

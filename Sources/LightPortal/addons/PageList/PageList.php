@@ -145,6 +145,9 @@ class PageList extends Plugin
 		$titles = Helpers::getAllTitles();
 		$all_categories = Helpers::getAllCategories();
 
+		if (empty($parameters['categories']))
+			$parameters['categories'] = [];
+
 		$categories = is_array($parameters['categories']) ? $parameters['categories'] : explode(',', $parameters['categories']);
 
 		$request = $smcFunc['db_query']('', '
@@ -179,7 +182,7 @@ class PageList extends Plugin
 				'id'            => $row['page_id'],
 				'category_id'   => $row['category_id'],
 				'category_name' => $all_categories[$row['category_id']]['name'],
-				'category_link' => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'],
+				'category_link' => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
@@ -225,7 +228,7 @@ class PageList extends Plugin
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?', LP_PAGE_ACTION, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ' . Helpers::getText($page['num_comments'], $txt['lp_comments_set']);

@@ -45,12 +45,12 @@ class Tag implements PageListInterface
 		}
 
 		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], Helpers::getAllTags()[$context['lp_tag']]);
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags;id=' . $context['lp_tag'];
+		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $context['lp_tag'];
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
 			'name' => $txt['lp_all_page_tags'],
-			'url'  => $scripturl . '?action=portal;sa=tags'
+			'url'  => $scripturl . '?action=' . LP_ACTION . ';sa=tags'
 		);
 
 		$context['linktree'][] = array(
@@ -128,7 +128,7 @@ class Tag implements PageListInterface
 			if (!empty($row['category_id'])) {
 				$items[$row['page_id']]['section'] = array(
 					'name' => Helpers::getAllCategories()[$row['category_id']]['name'],
-					'link' => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id']
+					'link' => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id']
 				);
 			}
 		}
@@ -186,7 +186,7 @@ class Tag implements PageListInterface
 		global $context, $txt, $scripturl, $modSettings;
 
 		$context['page_title']     = $txt['lp_all_page_tags'];
-		$context['canonical_url']  = $scripturl . '?action=portal;sa=tags';
+		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=tags';
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -320,7 +320,7 @@ class Tag implements PageListInterface
 
 			$items[$row['tag_id']] = array(
 				'value'     => $row['value'],
-				'link'      => $scripturl . '?action=portal;sa=tags;id=' . $row['tag_id'],
+				'link'      => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => $i
 			);
 		}
@@ -383,7 +383,7 @@ class Tag implements PageListInterface
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
 		if (!document.referrer) {
 			backButton.text = "' . $txt['lp_all_page_tags'] . '";
-			backButton.setAttribute("href", smf_scripturl + "?action=portal;sa=tags");
+			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=tags");
 		}', true);
 	}
 }

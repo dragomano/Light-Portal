@@ -162,7 +162,7 @@ class ManagePages
 							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
 							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'

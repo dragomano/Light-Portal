@@ -681,7 +681,7 @@ class ManageBlocks
 			'all',
 			'custom_action',
 			'pages',
-			'page=alias',
+			LP_PAGE_ACTION . '=alias',
 			'boards',
 			'board=id',
 			'board=id1-id3',

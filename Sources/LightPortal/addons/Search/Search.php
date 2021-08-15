@@ -60,10 +60,10 @@ class Search extends Plugin
 	{
 		global $context;
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'qsearch')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'qsearch')
 			return call_user_func(array($this, 'prepareQuickResults'));
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'search')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'search')
 			return call_user_func(array($this, 'showResults'));
 	}
 
@@ -184,7 +184,7 @@ class Search extends Plugin
 			Helpers::parseContent($row['content'], $row['type']);
 
 			$results[] = array(
-				'link'    => $scripturl . '?page=' . $row['alias'],
+				'link'    => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 				'title'   => $row['title'],
 				'content' => Helpers::getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
@@ -213,7 +213,7 @@ class Search extends Plugin
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', array('external' => true));
 
 		echo '
-		<form class="search_addon centertext" action="', $scripturl, '?action=portal;sa=search" method="post" accept-charset="', $context['character_set'], '">
+		<form class="search_addon centertext" action="', $scripturl, '?action=', LP_ACTION, ';sa=search" method="post" accept-charset="', $context['character_set'], '">
 			<input type="search" name="search" placeholder="', $txt['lp_search']['title'], '">
 		</form>
 		<script>
@@ -221,7 +221,7 @@ class Search extends Plugin
 				selector: ".search_addon input",' . (!empty($modSettings['lp_search_addon_min_chars']) ? '
 				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',' : '') . '
 				source: async function(term, response) {
-					const results = await fetch("', $scripturl, '?action=portal;sa=qsearch", {
+					const results = await fetch("', $scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"

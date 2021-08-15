@@ -21,7 +21,7 @@ function show_ffs_sidebar()
 							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style']['all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=portal;sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style']['tags'], '</a>
+							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=' . LP_ACTION . ';sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style']['tags'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -45,12 +45,12 @@ function show_ffs_sidebar()
 					echo '
 							<ul>
 								<li style="margin-left: 1em">
-									<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=portal;sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>
+									<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>
 								</li>
 							</ul>';
 				} else {
 					echo '
-							<i class="far fa-circle"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=portal;sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
+							<i class="far fa-circle"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
 				}
 
 				echo '

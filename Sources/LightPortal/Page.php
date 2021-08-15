@@ -39,7 +39,7 @@ class Page
 
 		isAllowedTo('light_portal_view');
 
-		$alias = Helpers::request('page');
+		$alias = Helpers::request(LP_PAGE_ACTION);
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
@@ -81,13 +81,13 @@ class Page
 			);
 		} else {
 			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
-			$context['canonical_url']       = $scripturl . '?page=' . $alias;
+			$context['canonical_url']       = $scripturl . '?' . LP_PAGE_ACTION . '=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 
 			if (!empty($context['lp_page']['category'])) {
 				$context['linktree'][] = array(
 					'name' => $context['lp_page']['category'],
-					'url'  => $scripturl . '?action=portal;sa=categories;id=' . $context['lp_page']['category_id']
+					'url'  => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $context['lp_page']['category_id']
 				);
 			}
 
@@ -181,7 +181,7 @@ class Page
 	 */
 	public function getRelatedPages(): array
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings, $context, $scripturl;
 
 		if (empty($item = $context['lp_page']))
 			return [];
@@ -233,6 +233,7 @@ class Page
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
 				'alias' => $row['alias'],
+				'link'  => $scripturl . '?' . LP_ACTION_PAGE . '=' . $row['alias'],
 				'image' => $image
 			);
 		}
@@ -275,7 +276,7 @@ class Page
 	 */
 	public function getData(array $params): array
 	{
-		global $smcFunc, $txt, $modSettings;
+		global $smcFunc, $txt, $modSettings, $scripturl;
 
 		if (empty($params))
 			return [];
@@ -347,7 +348,10 @@ class Page
 		if (!empty($data['options']['keywords'])) {
 			$keywords = explode(',', $data['options']['keywords']);
 			foreach ($keywords as $key) {
-				$data['keywords'][$key] = Helpers::getAllTags()[$key];
+				$data['keywords'][$key] = array(
+					'name' => Helpers::getAllTags()[$key],
+					'link' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $key
+				);
 			}
 		}
 
@@ -472,7 +476,7 @@ class Page
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
 							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
@@ -554,7 +558,7 @@ class Page
 			),
 			'date'      => Helpers::getFriendlyTime($row['date']),
 			'datetime'  => date('Y-m-d', $row['date']),
-			'link'      => $scripturl . '?page=' . $row['alias'],
+			'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 			'views'     => array(
 				'num'   => $row['num_views'],
 				'title' => $txt['lp_views']

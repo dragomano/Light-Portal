@@ -115,7 +115,7 @@ class PageArticle extends AbstractArticle
 						'id'        => $row['page_id'],
 						'section'   => array(
 							'name' => !empty($row['category_id']) ? $categories[$row['category_id']]['name'] : '',
-							'link' => !empty($row['category_id']) ? $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'] : ''
+							'link' => !empty($row['category_id']) ? $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'] : ''
 						),
 						'author'    => array(
 							'id'   => $author_id = empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id'],
@@ -123,7 +123,7 @@ class PageArticle extends AbstractArticle
 							'name' => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name']
 						),
 						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'link'      => $scripturl . '?page=' . $row['alias'],
+						'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 						'views'     => array(
 							'num'   => $row['num_views'],
 							'title' => $txt['lp_views']

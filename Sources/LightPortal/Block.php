@@ -85,11 +85,11 @@ class Block
 	{
 		global $context, $modSettings;
 
-		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? 'portal' : 'forum');
+		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? LP_ACTION : 'forum');
 
 		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
 			if (Helpers::server()->filled('REQUEST_URL') && $modSettings['lp_standalone_url'] == Helpers::server('REQUEST_URL')) {
-				$area = 'portal';
+				$area = LP_ACTION;
 			} elseif (empty($context['current_action'])) {
 				$area = 'forum';
 			}
@@ -99,7 +99,7 @@ class Block
 			$area = '';
 
 		if (!empty($context['lp_page']) && Helpers::isFrontPage($context['lp_page']['alias']))
-			$area = 'portal';
+			$area = LP_ACTION;
 
 		return array_filter($context['lp_active_blocks'], function($block) use ($context, $area) {
 			$temp_areas     = $block['areas'];
@@ -108,7 +108,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas']['page=' . $context['lp_page']['alias']])))
+			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_ACTION . '=' . $context['lp_page']['alias']])))
 				return true;
 
 			if (empty($context['current_board']))

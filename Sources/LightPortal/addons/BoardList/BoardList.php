@@ -121,7 +121,7 @@ class BoardList extends Plugin
 	 * @return array
 	 */
 	public function getData(): array
-    {
+	{
 		Helpers::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
@@ -189,7 +189,7 @@ class BoardList extends Plugin
 	}
 
 	private function getCategoryClasses(): array
-    {
+	{
 		return [
 			'title_bar' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
 			'sub_bar'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',

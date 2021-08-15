@@ -94,7 +94,7 @@ class Comment
 
 		$page_index_url = $context['canonical_url'];
 		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
-			$page_index_url = $scripturl . '?action=portal';
+			$page_index_url = $scripturl . '?action=' . LP_ACTION;
 
 		$temp_start            = Helpers::request('start');
 		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);

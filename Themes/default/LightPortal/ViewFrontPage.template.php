@@ -678,9 +678,9 @@ function template_show_articles_simple3()
 			echo '
 				<div class="tags">';
 
-			foreach ($article['tags'] as $id => $name) {
+			foreach ($article['tags'] as $id => $key) {
 				echo '
-					<a class="new_posts" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">#', $name, '</a>';
+					<a class="new_posts" href="', $key['link'], '">#', $key['name'], '</a>';
 			}
 
 			echo '
