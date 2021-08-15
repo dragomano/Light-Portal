@@ -20,6 +20,7 @@ $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'За замовчуванням';
 $txt['lp_sponsors_only'] = 'Для спонсорів порталу';
+$txt['lp_can_download'] = 'Можна завантажити безкоштовно';
 $txt['lp_min_search_length'] = 'Введіть не менше %d символів';
 
 // Settings
@@ -361,6 +362,10 @@ $txt['lp_guests_set'] = 'гість, гостя, гостей';
 $txt['lp_spiders_set'] = 'павук, павука, павуків';
 $txt['lp_hidden_set'] = 'прихований, прихованих';
 $txt['lp_buddies_set'] = 'друг, друга, друзів';
+
+// Packages
+$txt['lp_addon_package'] = 'Плагіни Light Portal';
+$txt['install_lp_addon'] = 'Встановити аддон';
 
 // Credits
 $txt['lp_contributors'] = 'Внесок у розвиток порталу';

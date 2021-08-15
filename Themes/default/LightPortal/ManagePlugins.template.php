@@ -73,9 +73,12 @@ function template_manage_plugins()
 				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if ($plugin['types'] === $txt['lp_sponsors_only'] ) {
+		if ($plugin['types'] === $txt['lp_sponsors_only']) {
 			echo '
-				<a href="https://ko-fi.com/dragomano" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+				<a href="', $context['lp_can_donate'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+		} elseif ($plugin['types'] === $txt['lp_can_download']) {
+			echo '
+				<a href="', $context['lp_can_download'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
 		} else {
 			echo '
 				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';

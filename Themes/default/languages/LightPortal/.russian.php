@@ -20,6 +20,7 @@ $txt['lp_views'] = 'Просмотры';
 $txt['lp_replies'] = 'Ответы';
 $txt['lp_default'] = 'По умолчанию';
 $txt['lp_sponsors_only'] = 'Для спонсоров портала';
+$txt['lp_can_download'] = 'Можно скачать бесплатно';
 $txt['lp_min_search_length'] = 'Введите не менее %d символов';
 
 // Settings
@@ -361,6 +362,10 @@ $txt['lp_guests_set'] = 'гость, гостя, гостей';
 $txt['lp_spiders_set'] = 'бот, бота, ботов';
 $txt['lp_hidden_set'] = 'скрытый, скрытых';
 $txt['lp_buddies_set'] = 'друг, друга, друзей';
+
+// Packages
+$txt['lp_addon_package'] = 'Плагины Light Portal';
+$txt['install_lp_addon'] = 'Установить аддон';
 
 // Credits
 $txt['lp_contributors'] = 'Вклад в развитие портала';

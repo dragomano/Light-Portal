@@ -47,6 +47,8 @@ class Integration
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
 		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
+		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
+		add_integration_function('integrate_packages_sort_id', __CLASS__ . '::packagesSortId#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
@@ -728,5 +730,24 @@ class Integration
 			'details' => json_encode($value, JSON_HEX_TAG),
 			'level'   => 'info'
 		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function modificationTypes()
+	{
+		global $context;
+
+		$context['modification_types'][] = 'lp_addon';
+	}
+
+	/**
+	 * @param array $sort_id
+	 * @return void
+	 */
+	public function packagesSortId(array &$sort_id)
+	{
+		$sort_id['lp_addon'] = 1;
 	}
 }

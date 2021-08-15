@@ -20,6 +20,7 @@ $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
 $txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_can_download'] = 'Can download for free';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings
@@ -361,6 +362,10 @@ $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';
 $txt['lp_hidden_set'] = 'hidden, hidden';
 $txt['lp_buddies_set'] = 'buddy, buddies';
+
+// Packages
+$txt['lp_addon_package'] = 'Light Portal addons';
+$txt['install_lp_addon'] = 'Install addon';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon-list>
+	<sponsorable>
+		<addon>
+			<name>AvatarGenerator</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>ExtUpload</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>GoogleAmp</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>Jodit</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>PageScroll</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>SiteList</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+		<addon>
+			<name>YandexTurbo</name>
+			<link>https://ko-fi.com/dragomano</link>
+		</addon>
+	</sponsorable>
+
+	<downloadable>
+		<addon>
+			<name>InitialAvatars</name>
+			<link>https://vexfile.com/download/0MonuPeAmG</link>
+		</addon>
+		<addon>
+			<name>PluginMaker</name>
+			<link>https://vexfile.com/download/Rv9J50nCwP</link>
+		</addon>
+	</downloadable>
+</addon-list>
