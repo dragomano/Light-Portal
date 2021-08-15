@@ -452,12 +452,6 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
-$smcFunc['db_query']('', "ALTER TABLE {db_prefix}lp_pages CHANGE `type` `type` varchar(10) NOT NULL default 'bbc'", array());
-$smcFunc['db_query']('', "UPDATE `{db_prefix}lp_pages` SET `type` = 'markdown' WHERE `type` = 'md'", array());
-$smcFunc['db_query']('', "UPDATE `{db_prefix}lp_blocks` SET `type` = 'markdown' WHERE `type` = 'md'", array());
-$smcFunc['db_query']('', "DELETE FROM `{db_prefix}lp_params` WHERE `name` = 'icon_type'", array());
-$smcFunc['db_query']('', "UPDATE `{db_prefix}lp_blocks` SET `title_class` = 'cat_bar', `content_class` = 'roundframe'", array());
-
 if (!isset($modSettings['lp_enabled_plugins']))
 	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));
 
