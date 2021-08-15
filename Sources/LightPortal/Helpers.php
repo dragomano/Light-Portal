@@ -664,6 +664,10 @@ class Helpers
 				$filter = FILTER_VALIDATE_INT;
 				break;
 
+			case 'float':
+				$filter = FILTER_VALIDATE_FLOAT;
+				break;
+
 			case 'bool':
 				$filter = FILTER_VALIDATE_BOOLEAN;
 				break;

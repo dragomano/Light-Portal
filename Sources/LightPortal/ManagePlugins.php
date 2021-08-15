@@ -111,6 +111,8 @@ class ManagePlugins
 							$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
 						} elseif ($var[0] == 'int') {
 							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
+						} elseif ($var[0] == 'float') {
+							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'float');
 						} elseif ($var[0] == 'multicheck') {
 							$plugin_options[$var[1]] = [];
 

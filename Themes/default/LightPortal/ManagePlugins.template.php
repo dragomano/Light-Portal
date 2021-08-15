@@ -147,8 +147,19 @@ function show_plugin_settings(string $plugin_name, array $settings)
 			echo '
 					<br><input type="color" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'int') {
+			$min = ' min="' . ($value['min'] ?? 0) . '"';
+			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
+			$step = ' step="' . ($value['step'] ?? 1) . '"';
+
 			echo '
-					<br><input type="number" min="0" step="1" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
+					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
+		} elseif ($value[0] == 'float') {
+			$min = ' min="' . ($value['min'] ?? 0) . '"';
+			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
+			$step = ' step="' . ($value['step'] ?? 0.01) . '"';
+
+			echo '
+					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
@@ -208,6 +219,11 @@ function show_plugin_settings(string $plugin_name, array $settings)
 
 			echo '
 					</select>';
+		}
+
+		if (!empty($value['postfix'])) {
+			echo '
+					', $value['postfix'];
 		}
 
 		if (!empty($value['subtext'])) {
