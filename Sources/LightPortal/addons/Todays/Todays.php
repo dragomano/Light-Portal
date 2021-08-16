@@ -144,7 +144,7 @@ class Todays extends Plugin
 
 		$funcName = 'ssi_todays' . ucfirst($type);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return function_exists($funcName) ? $funcName($output_method) : '';
 	}

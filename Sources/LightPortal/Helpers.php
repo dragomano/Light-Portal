@@ -101,7 +101,7 @@ class Helpers
 		if (empty($filename))
 			return;
 
-		require_once($sourcedir . DIRECTORY_SEPARATOR . $filename . '.php');
+		require_once $sourcedir . DIRECTORY_SEPARATOR . $filename . '.php';
 	}
 
 	/**

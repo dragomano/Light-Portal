@@ -100,7 +100,7 @@ class Polls extends Plugin
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_showPoll($topic, 'array');
 	}

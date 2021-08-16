@@ -112,7 +112,7 @@ class TopTopics extends Plugin
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}

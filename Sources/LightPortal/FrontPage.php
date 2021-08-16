@@ -192,7 +192,7 @@ class FrontPage
 
 		$allFunctions = get_defined_functions()['user'];
 
-		require_once($settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php');
+		require_once $settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php';
 
 		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
 

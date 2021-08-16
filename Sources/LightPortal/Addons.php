@@ -53,7 +53,7 @@ class Addons
 		foreach ($languages as $lang) {
 			$lang_file = $addon_dir . $lang . '.php';
 
-			$addon_languages[$lang] = is_file($lang_file) ? require_once($lang_file) : [];
+			$addon_languages[$lang] = is_file($lang_file) ? require_once $lang_file : [];
 		}
 
 		if (is_array($addon_languages['english']))

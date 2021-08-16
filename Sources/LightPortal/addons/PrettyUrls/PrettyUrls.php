@@ -45,7 +45,7 @@ class PrettyUrls extends Plugin
 		if (isset($prettyFilters['lp-pages']))
 			return;
 
-		require_once($sourcedir . '/Subs-PrettyUrls.php');
+		require_once $sourcedir . '/Subs-PrettyUrls.php';
 
 		$prettyFilters['lp-pages'] = array(
 			'description' => 'Rewrite Light Portal pages URLs',

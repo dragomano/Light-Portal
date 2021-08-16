@@ -93,7 +93,8 @@ class News extends Plugin
 	{
 		global $boarddir, $context;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
+
 		setupThemeContext();
 
 		if ($item > 0)

@@ -125,7 +125,7 @@ class BoardNews extends Plugin
     {
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
 	}

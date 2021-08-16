@@ -143,7 +143,7 @@ class UserInfo extends Plugin
 				</li>
 			</ul>';
 		} else {
-			require_once($boarddir . '/SSI.php');
+			require_once $boarddir . '/SSI.php';
 			ssi_welcome();
 		}
 	}

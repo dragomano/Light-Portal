@@ -185,7 +185,7 @@ class RecentPosts extends Plugin
 		if (!empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 		$posts = ssi_recentPosts($parameters['num_posts'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 
 		if (empty($posts))

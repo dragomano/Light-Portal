@@ -132,7 +132,7 @@ class BoardStats extends Plugin
 		if (empty($parameters['show_latest_member']) && empty($parameters['show_basic_info']) && empty($parameters['show_whos_online']))
 			return [];
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		if (!empty($parameters['show_basic_info'])) {
 			$basic_info = ssi_boardStats('array');

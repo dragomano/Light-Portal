@@ -151,7 +151,7 @@ class RecentTopics extends Plugin
 		if (!empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 		$topics = ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 
 		if (empty($topics))

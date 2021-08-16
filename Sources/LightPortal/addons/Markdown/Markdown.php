@@ -54,9 +54,9 @@ class Markdown extends Plugin
 	}
 
 	/**
-	 * Parse 'md' content
+	 * Parse 'markdown' content
 	 *
-	 * Парсим контент типа 'md'
+	 * Парсим контент типа 'markdown'
 	 *
 	 * @param string $content
 	 * @param string $type
@@ -78,10 +78,10 @@ class Markdown extends Plugin
 	 */
 	private function getParsedContent(string $text): string
 	{
-		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
-		require_once(__DIR__ . '/Michelf/Markdown.php');
-		require_once(__DIR__ . '/Michelf/MarkdownExtra.php');
-		require_once(__DIR__ . '/Michelf/MarkdownSMF.php');
+		require_once __DIR__ . '/Michelf/MarkdownInterface.php';
+		require_once __DIR__ . '/Michelf/Markdown.php';
+		require_once __DIR__ . '/Michelf/MarkdownExtra.php';
+		require_once __DIR__ . '/Michelf/MarkdownSMF.php';
 
 		return Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));
 	}

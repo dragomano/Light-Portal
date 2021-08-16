@@ -117,7 +117,7 @@ class RecentAttachments extends Plugin
 
 		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}
