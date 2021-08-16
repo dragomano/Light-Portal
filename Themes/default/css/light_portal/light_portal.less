@@ -407,10 +407,16 @@
 				white-space: nowrap;
 				text-overflow: ellipsis;
 			}
+
+			margin: 0;
+		}
+
+		div + div {
+			margin: 1px;
 		}
 
 		.progress_bar {
-			margin: 0;
+			max-width: initial;
 		}
 
 		&[id^="block"]:not(:first-child) {

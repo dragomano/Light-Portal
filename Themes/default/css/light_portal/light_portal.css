@@ -274,13 +274,19 @@
   position: -webkit-sticky;
   top: 5px;
 }
+#lp_layout aside > div {
+  margin: 0;
+}
 #lp_layout aside > div > h3,
 #lp_layout aside > div > h4 {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+#lp_layout aside div + div {
+  margin: 1px;
+}
 #lp_layout aside .progress_bar {
-  margin: 0;
+  max-width: initial;
 }
 #lp_layout aside[id^="block"]:not(:first-child) {
   clear: both;
