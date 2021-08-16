@@ -39,15 +39,10 @@ function template_manage_blocks()
 			if (is_array($blocks)) {
 				echo '
 		<thead>
-			<tr class="title_bar">';
-
-				if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
-					echo '
+			<tr class="title_bar">
 				<th scope="col" class="icon">
 					', $txt['custom_profile_icon'], '
-				</th>';
-
-				echo '
+				</th>
 				<th scope="col" class="title">
 					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 				</th>
@@ -132,16 +127,10 @@ function show_block_entry(int $id, array $data)
 		return;
 
 	echo '
-	<tr id="lp_block_', $id, '" class="windowbg">';
-
-	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none') {
-		echo '
+	<tr id="lp_block_', $id, '" class="windowbg">
 		<td class="icon">
 			', $data['icon'], '
-		</td>';
-	}
-
-	echo '
+		</td>
 		<td class="title">
 			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'] ?? '');
 
@@ -438,7 +427,8 @@ function template_block_post()
 						"Content-Type": "application/json; charset=utf-8"
 					},
 					body: JSON.stringify({
-						search
+						search,
+						add_block: "', $context['lp_block']['type'], '"
 					})
 				})
 				.then(response => response.json())

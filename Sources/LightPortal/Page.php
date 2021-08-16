@@ -147,7 +147,15 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
-		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
+		if (!empty($context['lp_page']['keywords'])) {
+			$keywords = [];
+			foreach ($context['lp_page']['keywords'] as $id => $key) {
+				$keywords[] = $key['name'];
+			}
+
+			$modSettings['meta_keywords'] = implode(', ', $keywords);
+		}
+
 		$context['meta_description']  = $context['lp_page']['description'];
 
 		$context['optimus_og_type']['article'] = array(

@@ -324,10 +324,12 @@ class ManageBlocks
 
 		$context['sub_template'] = 'block_add';
 
-		if (Helpers::post()->has('add_block') === false)
+		$json = Helpers::request()->json();
+		$type = $json['add_block'] ?? Helpers::post('add_block', '') ?? '';
+
+		if (empty($type))
 			return;
 
-		$type = Helpers::post('add_block', '');
 		$context['current_block']['type'] = $type;
 
 		Helpers::prepareForumLanguages();
