@@ -32,6 +32,7 @@ class CodeMirror extends Plugin
 		$config_vars['code_mirror'][] = array('check', 'php_mode');
 		$config_vars['code_mirror'][] = array('check', 'html_mode');
 		$config_vars['code_mirror'][] = array('check', 'md_mode');
+		$config_vars['code_mirror'][] = array('check', 'pug_mode');
 		$config_vars['code_mirror'][] = array('desc', 'small_hint');
 	}
 
@@ -56,6 +57,8 @@ class CodeMirror extends Plugin
 			$current_mode = 'php';
 		} elseif (($object['type'] === 'markdown' || (!empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && !empty($modSettings['lp_code_mirror_addon_md_mode'])) {
 			$current_mode = 'markdown';
+		} elseif (($object['type'] === 'pug' || (!empty($object['options']['content']) && $object['options']['content'] === 'pug')) && !empty($modSettings['lp_code_mirror_addon_pug_mode'])) {
+			$current_mode = 'pug';
 		}
 
 		if (empty($current_mode))
@@ -85,6 +88,8 @@ class CodeMirror extends Plugin
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/clike/clike.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/php/php.min.js', array('external' => true));
+		} elseif ($current_mode === 'pug') {
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/pug/pug.min.js', array('external' => true));
 		} else {
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/markdown/markdown.min.js', array('external' => true));
 		}
@@ -92,10 +97,24 @@ class CodeMirror extends Plugin
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js', array('external' => true));
 
+		switch ($current_mode) {
+			case 'html':
+				$mode = 'text/html';
+				break;
+			case 'php':
+				$mode = 'text/x-php';
+				break;
+			case 'pug':
+				$mode = 'text/x-pug';
+				break;
+			default:
+				$mode = 'text/x-markdown';
+		}
+
 		addInlineJavaScript('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {
 			lineNumbers: true,
-			mode: "'. ($current_mode === 'html' ? 'text/html' : ($current_mode === 'php' ? 'text/x-php' : 'text/x-markdown')) . '",
+			mode: "'. $mode . '",
 			firstLineNumber: 1,
 			lineWrapping: true,
 			direction: "' . ($context['right_to_left'] ? 'rtl' : 'ltr') . '",
