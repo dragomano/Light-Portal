@@ -19,8 +19,8 @@ $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
-$txt['lp_can_download'] = 'Can download for free';
+$txt['lp_sponsorable'] = 'For sponsors';
+$txt['lp_downloadable'] = 'Can download';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings

@@ -19,7 +19,6 @@ $txt['lp_my_pages'] = 'Mes pages';
 $txt['lp_views'] = $txt['vues'];
 $txt['lp_replies'] = $txt['réponses'];
 $txt['lp_default'] = 'Page par défaut';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
 $txt['lp_min_search_length'] = 'Veuillez saisir au moins %d caractères';
 
 // Settings

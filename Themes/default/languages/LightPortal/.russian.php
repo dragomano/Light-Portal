@@ -19,8 +19,8 @@ $txt['lp_my_pages'] = 'Мои страницы';
 $txt['lp_views'] = 'Просмотры';
 $txt['lp_replies'] = 'Ответы';
 $txt['lp_default'] = 'По умолчанию';
-$txt['lp_sponsors_only'] = 'Для спонсоров портала';
-$txt['lp_can_download'] = 'Можно скачать бесплатно';
+$txt['lp_sponsorable'] = 'Доступен спонсорам';
+$txt['lp_downloadable'] = 'Скачивается отдельно';
 $txt['lp_min_search_length'] = 'Введите не менее %d символов';
 
 // Settings

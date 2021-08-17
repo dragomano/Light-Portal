@@ -19,7 +19,6 @@ $txt['lp_my_pages'] = 'Sayfalarım';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Varsayılan';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
 $txt['lp_min_search_length'] = 'Lütfen en az %d karakter girin';
 
 // Ayarlar

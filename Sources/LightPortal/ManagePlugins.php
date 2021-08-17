@@ -55,8 +55,7 @@ class ManagePlugins
 		Addons::run('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			$sponsorable = false;
-			$downloadable = false;
+			$custom_type = '';
 			$requires = [];
 
 			try {
@@ -68,10 +67,10 @@ class ManagePlugins
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item]))
-					$sponsorable = true;
+					$custom_type = $txt['lp_sponsorable'];
 
 				if (isset($context['lp_can_download'][$item]))
-					$downloadable = true;
+					$custom_type = $txt['lp_downloadable'];
 			}
 
 			return [
@@ -81,7 +80,7 @@ class ManagePlugins
 				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
 				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $sponsorable ? $txt['lp_sponsors_only'] : ($downloadable ? $txt['lp_can_download'] : $this->getTypes($snake_name)),
+				'types'      => $custom_type ?: $this->getTypes($snake_name),
 				'settings'   => $config_vars[$snake_name] ?? [],
 				'requires'   => array_diff($requires, $context['lp_enabled_plugins'])
 			];
@@ -198,15 +197,21 @@ class ManagePlugins
 			return;
 
 		$data = $xml->sponsorable;
-		foreach ($data->addon as $addon) {
-			$context['lp_plugins'][] = (string) $addon->name;
-			$context['lp_can_donate'][(string) $addon->name] = (string) $addon->link;
+
+		if (!empty($data)) {
+			foreach ($data->addon as $addon) {
+				$context['lp_plugins'][] = (string) $addon->name;
+				$context['lp_can_donate'][(string) $addon->name] = (string) $addon->link;
+			}
 		}
 
 		$data = $xml->downloadable;
-		foreach ($data->addon as $addon) {
-			$context['lp_plugins'][] = (string) $addon->name;
-			$context['lp_can_download'][(string) $addon->name] = (string) $addon->link;
+
+		if (!empty($data)) {
+			foreach ($data->addon as $addon) {
+				$context['lp_plugins'][] = (string) $addon->name;
+				$context['lp_can_download'][(string) $addon->name] = (string) $addon->link;
+			}
 		}
 
 		$context['lp_plugins'] = array_unique($context['lp_plugins']);

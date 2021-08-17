@@ -9,7 +9,7 @@
  */
 function template_manage_plugins()
 {
-	global $scripturl, $context, $txt, $settings;
+	global $context, $scripturl, $txt, $settings;
 
 	echo '
 	<div class="cat_bar">
@@ -73,10 +73,10 @@ function template_manage_plugins()
 				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if ($plugin['types'] === $txt['lp_sponsors_only']) {
+		if ($plugin['types'] === $txt['lp_sponsorable']) {
 			echo '
 				<a href="', $context['lp_can_donate'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
-		} elseif ($plugin['types'] === $txt['lp_can_download']) {
+		} elseif ($plugin['types'] === $txt['lp_downloadable']) {
 			echo '
 				<a href="', $context['lp_can_download'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
 		} else {
