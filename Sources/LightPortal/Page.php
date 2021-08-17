@@ -437,7 +437,7 @@ class Page
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
-		$context['sub_template']      = 'show_articles';
+		$context['sub_template']      = !empty($modSettings['lp_frontpage_layout']) ? 'show_' . $modSettings['lp_frontpage_layout'] : 'wrong_template';
 		$context['template_layers'][] = 'sorting';
 
 		obExit();
