@@ -126,7 +126,11 @@ class Helpers
 		if (empty($icon))
 			return '';
 
-		return '<i class="' . $icon . '"></i> ';
+		$template = '<i class="' . $icon . '"></i> ';
+
+		Addons::run('prepareIconTemplate', array(&$template, $icon));
+
+		return $template;
 	}
 
 	/**

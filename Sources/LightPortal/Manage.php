@@ -89,7 +89,12 @@ trait Manage
 
 		$search = trim($smcFunc['strtolower']($search));
 
-		$all_icons = Helpers::getFaIcons();
+		$all_icons = [];
+		$template = '<i class="%1$s"></i>&nbsp;%1$s';
+
+		Addons::run('prepareIconList', array(&$all_icons, &$template));
+
+		$all_icons = $all_icons ?: Helpers::getFaIcons();
 		$all_icons = array_filter($all_icons, function ($item) use ($search) {
 			return strpos($item, $search) !== false;
 		});
@@ -97,7 +102,7 @@ trait Manage
 		$results = [];
 		foreach ($all_icons as $icon) {
 			$results[] = [
-				'innerHTML' => "<i class=\"$icon\"></i>&nbsp;$icon",
+				'innerHTML' => sprintf($template, $icon),
 				'text'      => $icon
 			];
 		}
