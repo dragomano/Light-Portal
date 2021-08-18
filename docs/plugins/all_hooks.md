@@ -13,6 +13,8 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom content of your addon
 ### credits
 > adding copyrights of used libraries/scripts, etc.
+### addAdminAreas
+> adding custom areas to SMF's integrate_admin_areas hook
 
 ## Work with blocks
 
@@ -22,6 +24,8 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom fields to the block post area
 ### validateBlockData
 > adding your own validating data when block adding/edition
+### findBlockErrors
+> adding custom error handling when block adding/edition
 ### onBlockSaving
 > custom actions on saving/edition blocks
 ### onBlockRemoving
@@ -35,6 +39,8 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom fields to the page post area
 ### validatePageData
 > adding your own validating data when page adding/edition
+### findPageErrors
+> adding custom error handling when page adding/edition
 ### onPageSaving
 > custom actions on saving/edition pages
 ### onPageRemoving
