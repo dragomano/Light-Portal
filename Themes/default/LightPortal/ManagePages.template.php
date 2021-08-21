@@ -109,41 +109,18 @@ function template_page_post()
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
-		const page = new Page();';
+		const page = new Page();
 
-	if (!empty($context['lp_page_types'])) {
-		echo '
 		let pageType = new SlimSelect({
 			select: "#type",
-			data: [';
-
-		foreach ($context['lp_page_types'] as $value => $text) {
-			echo '
-				{text: "' . $text . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['type'] ? 'true' : 'false') . '},';
-		}
-
-		echo '
-			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});';
-	}
+		});
 
-	if (!empty($context['lp_all_tags'])) {
-		echo '
 		new SlimSelect({
 			select: "#keywords",
-			data: [';
-
-		foreach ($context['lp_all_tags'] as $value => $text) {
-			echo '
-				{text: "' . $text . '", value: "' . $value . '", selected: ' . (isset($context['lp_page']['keywords'][$value]) ? 'true' : 'false') . '},';
-		}
-
-		echo '
-			],
 			limit: 10,
 			hideSelectedOption: true,
 			placeholder: "', $txt['lp_page_keywords_placeholder'], '",
@@ -158,10 +135,8 @@ function template_page_post()
 					value: value.toLowerCase()
 				}
 			}
-		});';
-	}
+		});
 
-	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
@@ -217,45 +192,22 @@ function template_page_post()
 		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
 	}
 
-	if (!empty($txt['lp_permissions'])) {
-		echo '
+	echo '
 		new SlimSelect({
 			select: "#permissions",
-			data: [';
-
-		foreach ($txt['lp_permissions'] as $value => $text) {
-			echo '
-				{text: "' . $text . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['permissions'] ? 'true' : 'false') . '},';
-		}
-
-		echo '
-			],
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});';
-	}
+		});
 
-	if (!empty($context['lp_all_categories'])) {
-		echo '
 		new SlimSelect({
 			select: "#category",
-			data: [';
-
-		foreach ($context['lp_all_categories'] as $value => $category) {
-			echo '
-				{text: "' . $category['name'] . '", value: "' . $value . '", selected: ' . ($value == $context['lp_page']['category'] ? 'true' : 'false') . '},';
-		}
-
-		echo '
-			],
 			hideSelectedOption: true,
 			searchText: "', $txt['no_matches'], '",
 			searchPlaceholder: "', $txt['search'], '",
 			searchHighlight: true
 		});';
-	}
 
 	if ($context['user']['is_admin']) {
 		echo '

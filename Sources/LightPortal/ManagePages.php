@@ -756,70 +756,6 @@ class ManagePages
 	/**
 	 * @return void
 	 */
-	private function improveSelectFields()
-	{
-		global $context;
-
-		Manageable::improveSelectFields();
-
-		// Prepare the tag list
-		$context['lp_all_tags'] = Helpers::getAllTags();
-
-		// Prepare the category list
-		$context['lp_all_categories'] = Helpers::getAllCategories();
-
-		$this->prepareMemberList();
-	}
-
-	/**
-	 * @return void
-	 */
-	private function prepareMemberList()
-	{
-		global $smcFunc;
-
-		if (Helpers::request()->has('members') === false)
-			return;
-
-		$data = Helpers::request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$search = trim($smcFunc['strtolower']($search)) . '*';
-		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
-
-		$request = $smcFunc['db_query']('', '
-			SELECT id_member, real_name
-			FROM {db_prefix}members
-			WHERE {raw:real_name} LIKE {string:search}
-				AND is_activated IN (1, 11)
-			LIMIT 1000',
-			array(
-				'real_name' => $smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
-				'search'    => $search
-			)
-		);
-
-		$members = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$row['real_name'] = strtr($row['real_name'], array('&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;'));
-
-			$members[] = [
-				'text'  => $row['real_name'],
-				'value' => $row['id_member']
-			];
-		}
-
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
-
-		exit(json_encode($members));
-	}
-
-	/**
-	 * @return void
-	 */
 	private function prepareFormFields()
 	{
 		global $modSettings, $language, $context, $txt;
@@ -859,6 +795,13 @@ class ManagePages
 			'options' => array(),
 			'tab' => 'content'
 		);
+
+		foreach ($context['lp_page_types'] as $value => $text) {
+			$context['posting_fields']['type']['input']['options'][$text] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_page']['type']
+			);
+		}
 
 		if ($context['lp_page']['type'] !== 'bbc') {
 			$context['posting_fields']['content']['label']['text'] = '';
@@ -913,6 +856,15 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
+		$all_tags = Helpers::getAllTags();
+
+		foreach ($all_tags as $value => $text) {
+			$context['posting_fields']['keywords']['input']['options'][$text] = array(
+				'value'    => $value,
+				'selected' => isset($context['lp_page']['keywords'][$value])
+			);
+		}
+
 		if ($context['user']['is_admin']) {
 			foreach ($context['languages'] as $lang) {
 				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $context['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
@@ -948,6 +900,13 @@ class ManagePages
 			'options' => array()
 		);
 
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_page']['permissions']
+			);
+		}
+
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
 			'type' => 'select',
@@ -958,6 +917,15 @@ class ManagePages
 			'options' => array()
 		);
 
+		$all_categories = Helpers::getAllCategories();
+
+		foreach ($all_categories as $value => $category) {
+			$context['posting_fields']['category']['input']['options'][$category['name']] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_page']['category']
+			);
+		}
+
 		if ($context['lp_page']['created_at'] >= time()) {
 			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
 			$context['posting_fields']['datetime']['input']['html'] = '
@@ -966,6 +934,8 @@ class ManagePages
 		}
 
 		if ($context['user']['is_admin']) {
+			$this->prepareMemberList();
+
 			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
 			$context['posting_fields']['page_author']['input'] = array(
 				'type' => 'select',
@@ -1011,6 +981,52 @@ class ManagePages
 		Addons::run('preparePageFields');
 
 		$this->preparePostFields();
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareMemberList()
+	{
+		global $smcFunc;
+
+		if (Helpers::request()->has('members') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$search = trim($smcFunc['strtolower']($search)) . '*';
+		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
+
+		$request = $smcFunc['db_query']('', '
+			SELECT id_member, real_name
+			FROM {db_prefix}members
+			WHERE {raw:real_name} LIKE {string:search}
+				AND is_activated IN (1, 11)
+			LIMIT 1000',
+			array(
+				'real_name' => $smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
+				'search'    => $search
+			)
+		);
+
+		$members = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$row['real_name'] = strtr($row['real_name'], array('&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;'));
+
+			$members[] = [
+				'text'  => $row['real_name'],
+				'value' => $row['id_member']
+			];
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		exit(json_encode($members));
 	}
 
 	/**

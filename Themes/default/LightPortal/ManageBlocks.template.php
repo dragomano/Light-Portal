@@ -363,53 +363,28 @@ function template_block_post()
 	</form>
 
 	<script>
-		const block = new Block();';
+		const block = new Block();
 
-	if (!empty($context['lp_block_placements'])) {
-		echo '
 		const placementSelect = document.getElementById("placement");
 
 		if (placementSelect.style.display !== "none") {
 			new SlimSelect({
 				select: placementSelect,
-				data: [';
-
-		foreach ($context['lp_block_placements'] as $level => $title) {
-			echo '
-					{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['placement'] ? 'true' : 'false') . '},';
-		}
-
-		echo '
-				],
 				showSearch: false,
 				hideSelectedOption: true,
 				closeOnSelect: true,
 				showContent: "down"
 			});
-		}';
-	}
-
-	if (!empty($txt['lp_permissions'])) {
-		echo '
-		new SlimSelect({
-			select: "#permissions",
-			data: [';
-
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			echo '
-				{text: "' . $title . '", value: "' . $level . '", selected: ' . ($level == $context['lp_block']['permissions'] ? 'true' : 'false') . '},';
 		}
 
-		echo '
-			],
+		new SlimSelect({
+			select: "#permissions",
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});';
-	}
+		});
 
-	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,

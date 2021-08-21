@@ -21,7 +21,7 @@ trait Manageable
 	 *
 	 * @return void
 	 */
-	public static function improveSelectFields()
+	public function improveSelectFields()
 	{
 		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
 		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
@@ -41,7 +41,7 @@ trait Manageable
 			margin: 0 !important;
 		}');
 
-		self::prepareIconList();
+		$this->prepareIconList();
 	}
 
 	/**
@@ -75,7 +75,7 @@ trait Manageable
 	/**
 	 * @return void
 	 */
-	private static function prepareIconList()
+	private function prepareIconList()
 	{
 		global $smcFunc;
 

@@ -581,6 +581,13 @@ class ManageBlocks
 			'tab' => 'access_placement'
 		);
 
+		foreach ($context['lp_block_placements'] as $level => $title) {
+			$context['posting_fields']['placement']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['placement']
+			);
+		}
+
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
 			'type' => 'select',
@@ -590,6 +597,13 @@ class ManageBlocks
 			'options' => array(),
 			'tab' => 'access_placement'
 		);
+
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['permissions']
+			);
+		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
 		$context['posting_fields']['areas']['input'] = array(
@@ -1083,7 +1097,7 @@ class ManageBlocks
 		}
 
 		if (!empty($data['type']))
-		    $this->prepareMissingBlockTypes($data['type']);
+			$this->prepareMissingBlockTypes($data['type']);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
