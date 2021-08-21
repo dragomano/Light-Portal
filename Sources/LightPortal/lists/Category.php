@@ -51,6 +51,8 @@ class Category implements PageListInterface
 			$context['page_title'] = sprintf($txt['lp_all_pages_with_category'], $category['name']);
 		}
 
+		$context['description'] = $category['desc'] ?? '';
+
 		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $context['lp_category'];
 		$context['robot_no_index'] = true;
 

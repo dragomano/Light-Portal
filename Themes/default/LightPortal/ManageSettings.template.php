@@ -417,40 +417,6 @@ function template_callback_panel_direction()
 }
 
 /**
- * Callback template to display a summary of portal settings and active plugins
- *
- * Callback-шаблон для отображения сводки настроек портала и активных плагинов
- *
- * @return void
- */
-function template_callback_misc()
-{
-	global $modSettings, $txt, $context;
-
-	echo '
-	<dt style="width: 0"></dt>
-	<dd style="width: 100%">';
-
-	$portal_settings = '';
-	foreach ($modSettings as $key => $value) {
-		if (strpos($key, 'lp_') === 0 && isset($txt[$key])) {
-			$portal_settings .= $key . ' = ' . $value . PHP_EOL;
-		}
-	}
-
-	echo '
-		<details>
-			<summary class="infobox">', $txt['lp_settings'], '</summary>
-			<figure>', parse_bbc('[code]' . $portal_settings . '[/code]'), '</figure>
-		</details>
-		<details>
-			<summary class="infobox">', $txt['lp_active_plugins'], '</summary>
-			<figure>', parse_bbc('[code]' . implode(PHP_EOL, $context['lp_enabled_plugins']) . '[/code]'), '</figure>
-		</details>
-	</dd>';
-}
-
-/**
  * Display settings on multiple tabs
  *
  * Вывод настроек на нескольких вкладках

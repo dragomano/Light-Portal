@@ -19,7 +19,7 @@ if (!defined('SMF'))
 
 class ManagePages
 {
-	use Manage;
+	use Manageable;
 
 	/**
 	 * Number pages within tables
@@ -760,7 +760,7 @@ class ManagePages
 	{
 		global $context;
 
-		Manage::improveSelectFields();
+		Manageable::improveSelectFields();
 
 		// Prepare the tag list
 		$context['lp_all_tags'] = Helpers::getAllTags();

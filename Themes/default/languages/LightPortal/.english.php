@@ -28,6 +28,7 @@ $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 $txt['lp_send_issue'] = 'Did you find a bug? Let me know';
+$txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
 $txt['lp_frontpage_mode'] = 'The portal frontpage';
@@ -140,7 +141,6 @@ $txt['lp_show_debug_info'] = 'Show the loading time and number of the portal que
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
 $txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
-$txt['lp_active_plugins'] = 'Active plugins';
 $txt['lp_cache_info'] = 'Portal — using the cache';
 $txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
 $txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';

@@ -184,33 +184,39 @@ class ManagePlugins
 		$context['lp_can_donate']   = [];
 		$context['lp_can_download'] = [];
 
-		$branch = Helpers::server('SERVER_ADDR') === '127.0.0.1' ? 'develop' : 'master';
+		if (($xml = Helpers::cache()->get('custom_addon_list')) === null) {
+			$branch = Helpers::server('SERVER_ADDR') === '127.0.0.1' ? 'develop' : 'master';
 
-		$addon_list = fetch_web_data('https://raw.githubusercontent.com/dragomano/Light-Portal/' . $branch . '/addons.xml');
+			$addon_list = fetch_web_data('https://raw.githubusercontent.com/dragomano/Light-Portal/' . $branch . '/addons.xml');
 
-		if (empty($addon_list))
+			if (empty($addon_list))
+				return;
+
+			$xml = simplexml_load_string($addon_list);
+
+			$xml = json_decode(json_encode($xml), true);
+
+			Helpers::cache()->put('custom_addon_list', $xml);
+		}
+
+		if (empty($xml))
 			return;
 
-		$xml = simplexml_load_string($addon_list);
-
-		if (!$xml instanceof \SimpleXMLElement)
-			return;
-
-		$data = $xml->sponsorable;
+		$data = $xml['sponsorable'] ?? [];
 
 		if (!empty($data)) {
-			foreach ($data->addon as $addon) {
-				$context['lp_plugins'][] = (string) $addon->name;
-				$context['lp_can_donate'][(string) $addon->name] = (string) $addon->link;
+			foreach ($data['addon'] as $addon) {
+				$context['lp_plugins'][] = $addon['name'];
+				$context['lp_can_donate'][$addon['name']] = $addon['link'];
 			}
 		}
 
-		$data = $xml->downloadable;
+		$data = $xml['downloadable'] ?? [];
 
 		if (!empty($data)) {
-			foreach ($data->addon as $addon) {
-				$context['lp_plugins'][] = (string) $addon->name;
-				$context['lp_can_download'][(string) $addon->name] = (string) $addon->link;
+			foreach ($data['addon'] as $addon) {
+				$context['lp_plugins'][] = $addon['name'];
+				$context['lp_can_download'][$addon['name']] = $addon['link'];
 			}
 		}
 

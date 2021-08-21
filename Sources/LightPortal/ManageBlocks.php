@@ -19,7 +19,7 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
-	use Manage;
+	use Manageable;
 
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters

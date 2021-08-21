@@ -51,7 +51,7 @@ class Settings
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'basic'      => array('<i class="fas fa-cogs"></i> ' . $txt['mods_cat_features']),
+								'basic'      => array('<i class="fas fa-cog fa-spin"></i> ' . $txt['mods_cat_features']),
 								'extra'      => array('<i class="fas fa-pager"></i> ' . $txt['lp_extra']),
 								'categories' => array('<i class="fas fa-folder"></i> ' . $txt['lp_categories']),
 								'panels'     => array('<i class="fas fa-columns"></i> ' . $txt['lp_panels']),
@@ -66,7 +66,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
-								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
+								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
@@ -77,7 +77,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
-								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
+								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_pages_add'])
 							)
 						),
 						'lp_plugins' => array(
@@ -138,7 +138,7 @@ class Settings
 	 */
 	public function settingAreas()
 	{
-		global $context, $txt, $smcFunc;
+		global $context, $txt, $smcFunc, $scripturl, $modSettings;
 
 		isAllowedTo('admin_forum');
 
@@ -176,10 +176,15 @@ class Settings
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
 
-		if (isset($context['settings_title']))
-			$context['settings_title'] .= '<span class="floatright">
-				<a href="https://github.com/dragomano/Light-Portal/issues" title="' . $txt['lp_send_issue'] . '" target="_blank" rel="noopener"><i class="fas fa-bug"></i> </a>
-			</span>';
+		if (Helpers::request()->has('getDebugInfo'))
+			$this->generateDumpFile();
+
+		if (!isset($context['settings_title']))
+			return;
+
+		$context['settings_title'] .= '<span class="floatright" x-data>
+			<a href="https://github.com/dragomano/Light-Portal/issues" title="' . $txt['lp_send_issue'] . '" target="_blank" rel="noopener"><i class="fas fa-bug" @mouseover="$event.target.style.color = \'limegreen\'; $event.target.className = \'fas fa-bug fa-spin\'" @mouseout="$event.target.style.color = \'white\'; $event.target.className = \'fas fa-bug\'"></i></a> <a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $txt['lp_debug_info'] . '"><i class="fas fa-info-circle"></i></a>
+		</span>';
 	}
 
 	/**
@@ -681,8 +686,6 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		loadTemplate('LightPortal/ManageSettings');
-
 		$context['page_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
@@ -697,9 +700,7 @@ class Settings
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('check', 'lp_show_cache_info', 'disabled' => empty($modSettings['lp_show_debug_info'])),
-			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
-			'',
-			array('callback', 'misc')
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
 		);
 
 		Addons::run('addMisc', array(&$config_vars));
@@ -865,5 +866,30 @@ class Settings
 		$context['sub_action'] = $subAction;
 
 		call_helper($subActions[$subAction]);
+	}
+
+	/**
+	 * @return void
+	 */
+	private function generateDumpFile()
+	{
+		global $context, $modSettings, $txt;
+
+		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $context['lp_enabled_plugins']) . "'" . PHP_EOL;
+		foreach ($modSettings as $key => $value) {
+			if (strpos($key, 'lp_') === 0 && isset($txt[$key]) && !empty($modSettings[$key])) {
+				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
+			}
+		}
+
+		if (ob_get_level())
+			ob_end_clean();
+
+		header('Content-disposition: attachment; filename=portal_settings.txt');
+		header('Content-type: text/plain');
+
+		echo $portal_settings;
+
+		exit;
 	}
 }

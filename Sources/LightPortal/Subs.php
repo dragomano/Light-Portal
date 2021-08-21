@@ -276,7 +276,7 @@ class Subs
 	{
 		global $context, $scripturl;
 
-		if (empty($context['current_board']) || empty($context['linktree'][1]))
+		if (empty($context['current_board']) && Helpers::request()->has('c') === false || empty($context['linktree'][1]))
 			return;
 
 		$old_url = explode('#', $context['linktree'][1]['url']);

@@ -28,6 +28,7 @@ $txt['lp_settings'] = 'Налаштування порталу';
 $txt['lp_base'] = 'Налаштування головної сторінки і статей';
 $txt['lp_base_info'] = 'Версія моду: <strong>%1$s</strong>, версія PHP: <strong>%2$s</strong>, версія %3$s: <strong>%4$s</strong>.<br>Обговорити баги і фічі порталу можна на <a class="bbc_link" href="https://dragomano.ru/forum/index.php?board=4.0">форумі розробника</a>.<br>Ви також можете <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">купити розробнику чашку кави</a> або пожертвувати будь-яку суму на <a class="bbc_link" href="https://qiwi.com/n/DRAGOMANO">QIWI Гаманець</a>.';
 $txt['lp_send_issue'] = 'Знайшли баг? Передавати';
+$txt['lp_debug_info'] = 'Інформація для налагодження';
 
 $txt['lp_frontpage_title'] = 'Заголовок головної сторінки';
 $txt['lp_frontpage_mode'] = 'Перша сторінка порталу';
@@ -140,7 +141,6 @@ $txt['lp_show_debug_info'] = 'Відображати час завантажен
 $txt['lp_show_debug_info_help'] = 'Інформація буде доступна тільки адміністраторам!';
 $txt['lp_show_cache_info'] = 'Відображати інформацію про роботу порталу з кешем';
 $txt['lp_cache_update_interval'] = 'Інтервал оновлення кешу';
-$txt['lp_active_plugins'] = 'Активні плагіни';
 $txt['lp_cache_info'] = 'Портал — використання кешу';
 $txt['lp_cache_saving'] = 'Збереження даних у комірці <strong>%1$s</strong> на %2$d сек.';
 $txt['lp_cache_loading'] = 'Завантаження даних з комірки <strong>%1$s</strong>';

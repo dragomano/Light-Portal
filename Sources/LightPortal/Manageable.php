@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal;
 
 /**
- * Manage.php
+ * Manageable.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,7 +14,7 @@ namespace Bugo\LightPortal;
  * @version 1.8
  */
 
-trait Manage
+trait Manageable
 {
 	/**
 	 * @see https://github.com/brianvoe/slim-select

@@ -23,15 +23,17 @@ class Credits
 	 * Display credits on action=credits area
 	 *
 	 * Отображаем копирайты на странице action=credits
+	 *
+	 * @return void
 	 */
 	public function show()
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = $this->getCopyrights();
+		$context['credits_modifications'][] = $this->getLink();
 
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
-			$this->getComponentList();
+			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
 
@@ -44,11 +46,9 @@ class Credits
 	}
 
 	/**
-	 * Return copyright information
-	 *
-	 * Возвращаем информацию об авторских правах
+	 * @return string
 	 */
-	public function getCopyrights(): string
+	public function getLink(): string
 	{
 		global $user_info, $scripturl;
 
@@ -58,11 +58,9 @@ class Credits
 	}
 
 	/**
-	 * Prepare information about contributors and third party components
-	 *
-	 * Формируем информацию о внесших вклад в развитие портала и об используемых компонентах
+	 * @return void
 	 */
-	public function getComponentList()
+	public function prepareComponents()
 	{
 		global $context;
 

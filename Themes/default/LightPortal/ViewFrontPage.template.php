@@ -722,7 +722,14 @@ function template_sorting_above()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		echo '
-	<div class="information">
+	<div class="information">';
+
+		if (!empty($context['description'])) {
+			echo '
+		<div class="floatleft">', $context['description'], '</div>';
+		}
+
+		echo '
 		<div class="floatright">
 			<form action="', $context['canonical_url'], '" method="post">
 				<label for="sort">', $txt['lp_sorting_label'], '</label>
