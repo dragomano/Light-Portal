@@ -3,7 +3,7 @@ Plugins, or addons - add-ons that expand the capabilities of the Light Portal. T
 
 !> Since version 1.5, Light Portal has built-in functionality for creating plugin skeletons. To use it, go to the section _Admin -> Portal settings -> Plugins -> Add plugin_.
 
-!> Since version 1.9, the functionality for creating plugins has been moved to a separate [plugin](https://vexfile.com/download/Rv9J50nCwP). Install it like any other plugin so that the "Add plugin" button appears in the "Plugins" area.
+!> Since version 1.9, the functionality for creating plugins has been moved to a separate plugin — **PluginMaker**. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
 
 ## Choosing the type of addon
 Currently, the following types of addons are available:
