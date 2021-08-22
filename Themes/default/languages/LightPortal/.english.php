@@ -366,6 +366,7 @@ $txt['lp_buddies_set'] = 'buddy, buddies';
 // Packages
 $txt['lp_addon_package'] = 'Light Portal addons';
 $txt['install_lp_addon'] = 'Install addon';
+$txt['uninstall_lp_addon'] = 'Uninstall addon';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';

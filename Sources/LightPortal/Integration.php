@@ -73,7 +73,7 @@ class Integration
 	 */
 	public function userInfo()
 	{
-		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
+		global $context, $smcFunc, $modSettings, $sourcedir;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
 		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
@@ -82,9 +82,8 @@ class Integration
 			'LP_NAME'         => 'Light Portal',
 			'LP_VERSION'      => '1.9 alpha',
 			'LP_RELEASE_DATE' => '2021-08-21',
-			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
-			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
+			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
 			'LP_PAGE_ACTION'  => $modSettings['lp_page_action'] ?? 'page'
 		];
@@ -114,19 +113,14 @@ class Integration
 	 */
 	public function loadTheme()
 	{
-		global $context, $modSettings;
-
 		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
 		loadLanguage('LightPortal/');
 
-		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
-
-		$context['lp_num_active_pages'] = Helpers::getNumActivePages();
-
-		Subs::loadBlocks();
+		Subs::defineVars();
 		Subs::loadCssFiles();
+
 		Addons::run();
 	}
 
@@ -327,7 +321,6 @@ class Integration
 
 		// Display "Portal" item in Main Menu
 		$buttons = array_merge(
-			array_slice($buttons, 0, 0, true),
 			array(
 				LP_ACTION => array(
 					'title'       => $txt['lp_portal'],
@@ -338,7 +331,7 @@ class Integration
 					'is_last'     => $context['right_to_left']
 				)
 			),
-			array_slice($buttons, 0, null, true)
+			$buttons
 		);
 
 		// "Forum"
@@ -709,7 +702,7 @@ class Integration
 
 		$context['lp_detail_cache_info'][] = array(
 			'title'   => sprintf($txt['lp_cache_saving'], $key, $ttl),
-			'details' => json_encode($value, JSON_HEX_TAG),
+			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
 			'level'   => 'notice'
 		);
 	}
@@ -729,7 +722,7 @@ class Integration
 
 		$context['lp_detail_cache_info'][] = array(
 			'title'   => sprintf($txt['lp_cache_loading'], $key),
-			'details' => json_encode($value, JSON_HEX_TAG),
+			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
 			'level'   => 'info'
 		);
 	}

@@ -60,8 +60,6 @@ class ManagePages
 			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_description']
 		);
 
-		loadJavaScriptFile('light_portal/manage_pages.js');
-
 		$this->doActions();
 		$this->massActions();
 
@@ -487,6 +485,8 @@ class ManagePages
 				'items' => $items
 			)
 		);
+
+		$smcFunc['lp_num_queries']++;
 	}
 
 	/**

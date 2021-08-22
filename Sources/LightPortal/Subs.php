@@ -40,16 +40,14 @@ class Subs
 	}
 
 	/**
-	 *
-	 * Prepare information about current blocks of the portal
-	 *
-	 * Собираем информацию о текущих блоках портала
-	 *
 	 * @return void
 	 */
-	public static function loadBlocks()
+	public static function defineVars()
 	{
 		global $context, $modSettings;
+
+		$context['lp_enabled_plugins']  = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
+		$context['lp_num_active_pages'] = Helpers::getNumActivePages();
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
@@ -230,23 +228,24 @@ class Subs
 	 */
 	public static function showDebugInfo()
 	{
-		global $context, $txt, $smcFunc;
+		global $modSettings, $context, $txt, $smcFunc;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']) : false;
+		if (empty($modSettings['lp_show_debug_info']) || empty($context['user']['is_admin']) || empty($context['template_layers']))
+			return;
 
-		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
-			loadTemplate('LightPortal/ViewDebug');
+		$context['lp_load_page_stats'] = sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']);
 
-			$key = array_search('portal', $context['template_layers']);
-			if (empty($key)) {
-				$context['template_layers'][] = 'debug';
-			} else {
-				$context['template_layers'] = array_merge(
-					array_slice($context['template_layers'], 0, $key, true),
-					array('debug'),
-					array_slice($context['template_layers'], $key, null, true)
-				);
-			}
+		loadTemplate('LightPortal/ViewDebug');
+
+		$key = array_search('portal', $context['template_layers']);
+		if (empty($key)) {
+			$context['template_layers'][] = 'debug';
+		} else {
+			$context['template_layers'] = array_merge(
+				array_slice($context['template_layers'], 0, $key, true),
+				array('debug'),
+				array_slice($context['template_layers'], $key, null, true)
+			);
 		}
 	}
 

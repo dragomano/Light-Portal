@@ -366,6 +366,7 @@ $txt['lp_buddies_set'] = 'друг, друга, друзей';
 // Packages
 $txt['lp_addon_package'] = 'Плагины Light Portal';
 $txt['install_lp_addon'] = 'Установить аддон';
+$txt['uninstall_lp_addon'] = 'Удалить аддон';
 
 // Credits
 $txt['lp_contributors'] = 'Вклад в развитие портала';
