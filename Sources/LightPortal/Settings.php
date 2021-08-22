@@ -693,6 +693,10 @@ class Settings
 		$add_settings = [];
 		if (!isset($modSettings['lp_cache_update_interval']))
 			$add_settings['lp_cache_update_interval'] = LP_CACHE_TIME;
+		if (!isset($modSettings['lp_portal_action']))
+			$add_settings['lp_portal_action'] = LP_ACTION;
+		if (!isset($modSettings['lp_page_action']))
+			$add_settings['lp_page_action'] = LP_PAGE_ACTION;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -700,7 +704,10 @@ class Settings
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
 			array('check', 'lp_show_cache_info', 'disabled' => empty($modSettings['lp_show_debug_info'])),
-			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
+			array('title', 'lp_compatibility_mode'),
+			array('text', 'lp_portal_action', 'preinput' => $scripturl . '?action='),
+			array('text', 'lp_page_action', 'preinput' => $scripturl . '?', 'postinput' => '=somealias'),
 		);
 
 		Addons::run('addMisc', array(&$config_vars));
