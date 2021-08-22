@@ -144,6 +144,7 @@ $txt['lp_cache_update_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
 $txt['lp_portal_action'] = 'The portal action';
 $txt['lp_page_action'] = 'The portal page action';
+$txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
 $txt['lp_cache_info'] = 'Portal — using the cache';
 $txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
 $txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';

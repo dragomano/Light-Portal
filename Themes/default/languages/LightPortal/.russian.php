@@ -144,6 +144,7 @@ $txt['lp_cache_update_interval'] = 'Интервал обновления кэш
 $txt['lp_compatibility_mode'] = 'Режим совместимости';
 $txt['lp_portal_action'] = 'Action портала';
 $txt['lp_page_action'] = 'Action страниц портала';
+$txt['lp_weekly_cleaning'] = 'Еженедельная оптимизация таблиц портала';
 $txt['lp_cache_info'] = 'Портал — использование кэша';
 $txt['lp_cache_saving'] = 'Сохранение данных в ячейке <strong>%1$s</strong> на %2$d сек.';
 $txt['lp_cache_loading'] = 'Загрузка данных из ячейки <strong>%1$s</strong>';

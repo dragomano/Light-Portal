@@ -684,7 +684,7 @@ class Settings
 	 */
 	public function misc(bool $return_config = false)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings, $smcFunc;
 
 		$context['page_title'] = $txt['lp_misc'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
@@ -708,6 +708,8 @@ class Settings
 			array('title', 'lp_compatibility_mode'),
 			array('text', 'lp_portal_action', 'preinput' => $scripturl . '?action='),
 			array('text', 'lp_page_action', 'preinput' => $scripturl . '?', 'postinput' => '=somealias'),
+			array('title', 'admin_maintenance'),
+			array('check', 'lp_weekly_cleaning')
 		);
 
 		Addons::run('addMisc', array(&$config_vars));
@@ -719,6 +721,23 @@ class Settings
 
 		if (Helpers::request()->has('save')) {
 			checkSession();
+
+			$smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}background_tasks
+				WHERE task_class = {string:task_class}',
+				array(
+					'task_class' => '\Bugo\LightPortal\Task'
+				)
+			);
+
+			if (Helpers::post()->has('lp_weekly_cleaning')) {
+				$smcFunc['db_insert']('insert',
+					'{db_prefix}background_tasks',
+					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
+					array('$sourcedir/LightPortal/Task.php', '\Bugo\LightPortal\Task', ''),
+					array('id_task')
+				);
+			}
 
 			$save_vars = $config_vars;
 			saveDBSettings($save_vars);

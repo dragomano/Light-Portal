@@ -144,6 +144,7 @@ $txt['lp_cache_update_interval'] = 'Інтервал оновлення кешу
 $txt['lp_compatibility_mode'] = 'Режим сумісності';
 $txt['lp_portal_action'] = 'Action порталу';
 $txt['lp_page_action'] = 'Action сторінок порталу';
+$txt['lp_weekly_cleaning'] = 'Щотижнева оптимізація таблиць порталу';
 $txt['lp_cache_info'] = 'Портал — використання кешу';
 $txt['lp_cache_saving'] = 'Збереження даних у комірці <strong>%1$s</strong> на %2$d сек.';
 $txt['lp_cache_loading'] = 'Завантаження даних з комірки <strong>%1$s</strong>';
