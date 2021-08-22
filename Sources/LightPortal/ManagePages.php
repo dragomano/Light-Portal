@@ -772,7 +772,6 @@ class ManagePages
 			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
 				'type' => 'text',
 				'attributes' => array(
-					'id'        => 'title_' . $lang['filename'],
 					'maxlength' => 255,
 					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
 					'required'  => in_array($lang['filename'], $languages),
@@ -787,12 +786,10 @@ class ManagePages
 		$context['posting_fields']['type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id'       => 'type',
 				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
 				'x-ref'    => 'type',
 				'@change'  => 'page.toggleType($el)'
 			),
-			'options' => array(),
 			'tab' => 'content'
 		);
 
@@ -808,7 +805,6 @@ class ManagePages
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'id'       => 'content',
 					'value'    => $context['lp_page']['content'],
 					'required' => true,
 					'style'    => 'height: 300px'
@@ -822,7 +818,6 @@ class ManagePages
 			'type' => 'text',
 			'after' => $txt['lp_page_alias_subtext'],
 			'attributes' => array(
-				'id'        => 'alias',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['alias'],
 				'required'  => true,
@@ -837,7 +832,6 @@ class ManagePages
 		$context['posting_fields']['description']['input'] = array(
 			'type' => 'textarea',
 			'attributes' => array(
-				'id'        => 'description',
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['description']
 			),
@@ -848,17 +842,15 @@ class ManagePages
 		$context['posting_fields']['keywords']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
-				'id'       => 'keywords',
 				'name'     => 'keywords[]',
 				'multiple' => true
 			),
-			'options' => array(),
 			'tab' => 'seo'
 		);
 
-		$all_tags = Helpers::getAllTags();
+		$context['lp_tags'] = Helpers::getAllTags();
 
-		foreach ($all_tags as $value => $text) {
+		foreach ($context['lp_tags'] as $value => $text) {
 			$context['posting_fields']['keywords']['input']['options'][$text] = array(
 				'value'    => $value,
 				'selected' => isset($context['lp_page']['keywords'][$value])
@@ -871,7 +863,6 @@ class ManagePages
 				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
 					'type' => 'text',
 					'attributes' => array(
-						'id'        => 'main_menu_item_' . $lang['filename'],
 						'maxlength' => 255,
 						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
 						'style'     => 'width: 100%'
@@ -883,21 +874,14 @@ class ManagePages
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
 		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'icon'
-			),
-			'options' => array(),
-			'tab' => 'menu'
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'menu'
 		);
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'permissions'
-			),
-			'options' => array()
+			'type' => 'select'
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
@@ -909,12 +893,7 @@ class ManagePages
 
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'   => 'category',
-				'name' => 'category'
-			),
-			'options' => array()
+			'type' => 'select'
 		);
 
 		$all_categories = Helpers::getAllCategories();
@@ -938,12 +917,8 @@ class ManagePages
 
 			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
 			$context['posting_fields']['page_author']['input'] = array(
-				'type' => 'select',
-				'attributes' => array(
-					'id'   => 'page_author',
-					'name' => 'page_author'
-				),
-				'options' => array()
+				'type'    => 'select',
+				'options' => []
 			);
 		}
 
@@ -961,7 +936,6 @@ class ManagePages
 			$context['posting_fields']['show_related_pages']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
-					'id'      => 'show_related_pages',
 					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
 				)
 			);
@@ -972,7 +946,6 @@ class ManagePages
 			$context['posting_fields']['allow_comments']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
-					'id'      => 'allow_comments',
 					'checked' => !empty($context['lp_page']['options']['allow_comments'])
 				)
 			);

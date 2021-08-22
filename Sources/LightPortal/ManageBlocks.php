@@ -563,22 +563,14 @@ class ManageBlocks
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
 		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'icon'
-			),
-			'options' => array(),
-			'tab' => 'appearance'
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'appearance'
 		);
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['placement']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'placement'
-			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'type' => 'select'
 		);
 
 		foreach ($context['lp_block_placements'] as $level => $title) {
@@ -590,12 +582,7 @@ class ManageBlocks
 
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'permissions'
-			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'type' => 'select'
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
@@ -615,18 +602,14 @@ class ManageBlocks
 				'required'  => true,
 				'pattern'   => $this->areas_pattern,
 				'style'     => 'width: 100%'
-			),
-			'tab' => 'access_placement'
+			)
 		);
 
 		$context['posting_fields']['title_class']['label']['text'] = $txt['lp_block_title_class'];
 		$context['posting_fields']['title_class']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'title_class'
-			),
-			'options' => array(),
-			'tab' => 'appearance'
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'appearance'
 		);
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
@@ -643,12 +626,9 @@ class ManageBlocks
 		if (empty($context['lp_block']['options']['no_content_class'])) {
 			$context['posting_fields']['content_class']['label']['text'] = $txt['lp_block_content_class'];
 			$context['posting_fields']['content_class']['input'] = array(
-				'type' => 'select',
-				'attributes' => array(
-					'id' => 'content_class'
-				),
-				'options' => array(),
-				'tab' => 'appearance'
+				'type'    => 'select',
+				'options' => [],
+				'tab'     => 'appearance'
 			);
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
@@ -668,7 +648,6 @@ class ManageBlocks
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'id'    => 'content',
 					'value' => $context['lp_block']['content']
 				),
 				'tab' => 'content'
@@ -677,7 +656,7 @@ class ManageBlocks
 
 		Addons::run('prepareBlockFields');
 
-		$this->preparePostFields();
+		$this->preparePostFields('access_placement');
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}

@@ -49,9 +49,10 @@ trait Manageable
 	 *
 	 * Формируем массив полей с настройками сущности
 	 *
+	 * @param string $defaultTab
 	 * @return void
 	 */
-	public function preparePostFields()
+	public function preparePostFields(string $defaultTab = 'tuning')
 	{
 		global $context;
 
@@ -61,12 +62,12 @@ trait Manageable
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $data['input']['attributes']['id'] . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
 				$context['posting_fields'][$item] = $data;
 			}
 
 			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+				$context['posting_fields'][$item]['input']['tab'] = $defaultTab;
 		}
 
 		loadTemplate('LightPortal/ManageSettings');
