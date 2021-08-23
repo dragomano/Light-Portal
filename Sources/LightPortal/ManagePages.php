@@ -28,7 +28,7 @@ class ManagePages
 	 *
 	 * @var int
 	 */
-	public $num_pages = 20;
+	private const NUM_PAGES = 20;
 
 	/**
 	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
@@ -37,7 +37,7 @@ class ManagePages
 	 *
 	 * @var string
 	 */
-	private $alias_pattern = '^[a-z][a-z0-9_]+$';
+	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 
 	/**
 	 * Manage pages
@@ -75,7 +75,7 @@ class ManagePages
 
 		$listOptions = array(
 			'id' => 'lp_pages',
-			'items_per_page' => $this->num_pages,
+			'items_per_page' => self::NUM_PAGES,
 			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
@@ -731,7 +731,7 @@ class ManagePages
 			$post_errors[] = 'no_alias';
 
 		$alias_format = array(
-			'options' => array("regexp" => '/' . $this->alias_pattern . '/')
+			'options' => array("regexp" => '/' . self::ALIAS_PATTERN . '/')
 		);
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
@@ -821,7 +821,7 @@ class ManagePages
 				'maxlength' => 255,
 				'value'     => $context['lp_page']['alias'],
 				'required'  => true,
-				'pattern'   => $this->alias_pattern,
+				'pattern'   => self::ALIAS_PATTERN,
 				'style'     => 'width: 100%',
 				'x-ref'     => 'alias'
 			),

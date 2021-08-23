@@ -28,7 +28,7 @@ class ManageBlocks
 	 *
 	 * @var string
 	 */
-	private $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
 
 	/**
 	 * Manage blocks
@@ -510,7 +510,7 @@ class ManageBlocks
 			$post_errors[] = 'no_areas';
 
 		$areas_format = array(
-			'options' => array("regexp" => '/' . $this->areas_pattern . '/')
+			'options' => array("regexp" => '/' . self::AREAS_PATTERN . '/')
 		);
 		if (!empty($data['areas']) && empty(Helpers::validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
@@ -600,7 +600,7 @@ class ManageBlocks
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
 				'required'  => true,
-				'pattern'   => $this->areas_pattern,
+				'pattern'   => self::AREAS_PATTERN,
 				'style'     => 'width: 100%'
 			)
 		);
