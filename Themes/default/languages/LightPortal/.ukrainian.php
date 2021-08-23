@@ -20,8 +20,8 @@ $txt['lp_my_pages'] = 'Мої сторінки';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'За замовчуванням';
-$txt['lp_sponsorable'] = 'Для спонсорів';
-$txt['lp_downloadable'] = 'Можна завантажити';
+$txt['lp_can_donate'] = 'Для спонсорів';
+$txt['lp_can_download'] = 'Можна завантажити';
 $txt['lp_min_search_length'] = 'Введіть не менше %d символів';
 
 // Settings

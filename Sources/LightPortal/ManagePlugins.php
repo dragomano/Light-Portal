@@ -67,10 +67,10 @@ class ManagePlugins
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item]))
-					$custom_type = $txt['lp_sponsorable'];
+					$custom_type = $txt['lp_can_donate'];
 
 				if (isset($context['lp_can_download'][$item]))
-					$custom_type = $txt['lp_downloadable'];
+					$custom_type = $txt['lp_can_download'];
 			}
 
 			return [
@@ -179,44 +179,38 @@ class ManagePlugins
 	 */
 	private function extendPluginList()
 	{
-		global $context;
+		global $context, $boardurl;
 
 		$context['lp_can_donate']   = [];
 		$context['lp_can_download'] = [];
 
-		if (($xml = Helpers::cache()->get('custom_addon_list')) === null) {
-			$branch = Helpers::server('SERVER_ADDR') === '127.0.0.1' ? 'develop' : 'master';
+		if (($xml = Helpers::cache()->get('custom_addon_list', 259200)) === null) {
+			$link = Helpers::server('SERVER_ADDR') === '127.0.0.1' ? $boardurl . '/addons.json' : 'https://dragomano.ru/addons.json';
 
-			$addon_list = fetch_web_data('https://raw.githubusercontent.com/dragomano/Light-Portal/' . $branch . '/addons.xml');
+			$addon_list = fetch_web_data($link);
 
 			if (empty($addon_list))
 				return;
 
-			$xml = simplexml_load_string($addon_list);
+			$xml = json_decode($addon_list, true);
 
-			$xml = json_decode(json_encode($xml), true);
-
-			Helpers::cache()->put('custom_addon_list', $xml);
+			Helpers::cache()->put('custom_addon_list', $xml, 259200);
 		}
 
-		if (empty($xml))
+		if (empty($xml) || !is_array($xml))
 			return;
 
-		$data = $xml['sponsorable'] ?? [];
-
-		if (!empty($data)) {
-			foreach ($data['addon'] as $addon) {
+		if (!empty($xml['donate'])) {
+			foreach ($xml['donate'] as $addon) {
 				$context['lp_plugins'][] = $addon['name'];
-				$context['lp_can_donate'][$addon['name']] = $addon['link'];
+				$context['lp_can_donate'][$addon['name']] = $addon;
 			}
 		}
 
-		$data = $xml['downloadable'] ?? [];
-
-		if (!empty($data)) {
-			foreach ($data['addon'] as $addon) {
+		if (!empty($xml['download'])) {
+			foreach ($xml['download'] as $addon) {
 				$context['lp_plugins'][] = $addon['name'];
-				$context['lp_can_download'][$addon['name']] = $addon['link'];
+				$context['lp_can_download'][$addon['name']] = $addon;
 			}
 		}
 

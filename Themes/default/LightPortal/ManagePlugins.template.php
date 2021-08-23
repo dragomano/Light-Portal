@@ -43,7 +43,20 @@ function template_manage_plugins()
 			<div class="floatleft">
 				<h4>', $plugin['name'], ' <strong class="new_posts">', $plugin['types'], '</strong></h4>
 				<div>
-					<p>', $plugin['desc'], '</p>';
+					<p>';
+
+		if ($plugin['types'] === $txt['lp_can_donate']) {
+			$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
+			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+		} elseif ($plugin['types'] === $txt['lp_can_download']) {
+			$lang = $context['lp_can_download'][$plugin['name']]['languages'];
+			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+		} else {
+			echo $plugin['desc'];
+		}
+
+		echo '
+					</p>';
 
 		if (!empty($plugin['requires'])) {
 			echo '
@@ -73,12 +86,12 @@ function template_manage_plugins()
 				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if ($plugin['types'] === $txt['lp_sponsorable']) {
+		if ($plugin['types'] === $txt['lp_can_donate']) {
 			echo '
-				<a href="', $context['lp_can_donate'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
-		} elseif ($plugin['types'] === $txt['lp_downloadable']) {
+				<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+		} elseif ($plugin['types'] === $txt['lp_can_download']) {
 			echo '
-				<a href="', $context['lp_can_download'][$plugin['name']], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
+				<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
 		} else {
 			echo '
 				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
