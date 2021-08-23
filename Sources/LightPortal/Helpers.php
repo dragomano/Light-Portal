@@ -497,17 +497,11 @@ class Helpers
 
 	/**
 	 * @param string $value
-	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $value, string $delimiter = '_'): string
+	public static function getSnakeName(string $value): string
 	{
-		if (!ctype_lower($value)) {
-			$value = preg_replace('/\s+/u', '', ucwords($value));
-			$value = preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value);
-		}
-
-		return strtolower($value);
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	/**

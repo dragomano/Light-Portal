@@ -164,7 +164,7 @@ function lp_show_blocks(string $placement = '')
 		if (!empty($block['title_style']) && !empty($block['title']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
 
-		if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
+		if (!empty($block['can_edit']) && !empty($block['title']))
 			$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
 
 		if (empty($block['title']))

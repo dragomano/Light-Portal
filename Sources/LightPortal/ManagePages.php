@@ -615,7 +615,7 @@ class ManagePages
 	 */
 	private function validateData()
 	{
-		global $context, $modSettings, $user_info;
+		global $context, $user_info, $modSettings;
 
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
