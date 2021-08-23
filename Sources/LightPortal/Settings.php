@@ -43,7 +43,7 @@ class Settings
 			array(
 				'lp_portal' => array(
 					'title' => $txt['lp_portal'],
-					'permission' => array('admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_own_pages'),
+					'permission' => array('admin_forum', 'light_portal_manage_own_blocks', 'light_portal_manage_own_pages'),
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
@@ -63,7 +63,7 @@ class Settings
 							'function' => array($this, 'blockAreas'),
 							'icon' => 'modifications',
 							'amt' => count($context['lp_active_blocks']),
-							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
+							'permission' => array('admin_forum', 'light_portal_manage_own_blocks'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
 								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_blocks_add'])
@@ -204,18 +204,17 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
 
-		//$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
-		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
-		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_own_blocks'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
+		$context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
 		$context['lp_all_categories']       = Helpers::getAllCategories();
 		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
-		$context['lp_frontpage_layout']     = (new FrontPage)->getLayouts();
+		$context['lp_frontpage_layout']     = FrontPage::getLayouts();
 
 		loadTemplate('LightPortal/ManageSettings');
 
 		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
-		$txt['lp_manage_permissions']   = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
 
 		// Initial settings
 		$add_settings = [];
@@ -231,6 +230,8 @@ class Settings
 			$add_settings['lp_num_items_per_page'] = 10;
 		if (!isset($modSettings['lp_standalone_url']))
 			$add_settings['lp_standalone_url'] = $boardurl . '/portal.php';
+		if (!isset($modSettings['lp_prohibit_php']))
+			$add_settings['lp_prohibit_php'] = 1;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -279,9 +280,9 @@ class Settings
 				'help' => 'lp_standalone_mode_disabled_actions_help'
 			),
 			array('title', 'edit_permissions'),
-			array('desc', 'lp_manage_permissions'),
+			array('check', 'lp_prohibit_php', 'invalid' => true),
 			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
-			//array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
+			array('permissions', 'light_portal_manage_own_blocks', 'help' => 'permissionhelp_light_portal_manage_own_blocks'),
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);
@@ -759,7 +760,7 @@ class Settings
 	{
 		global $user_info;
 
-		isAllowedTo('admin_forum');//isAllowedTo('light_portal_manage_blocks');
+		isAllowedTo('light_portal_manage_own_blocks');
 
 		$subActions = array(
 			'main' => array(new ManageBlocks, 'main'),

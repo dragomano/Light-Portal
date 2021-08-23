@@ -44,6 +44,7 @@ class Integration
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
 		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
 		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
+		add_integration_function('integrate_theme_options', __CLASS__ . '::themeOptions#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
 		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
@@ -235,9 +236,9 @@ class Integration
 		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
-		$context['allow_light_portal_view']             = allowedTo('light_portal_view');
-		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
-		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
+		$context['allow_light_portal_view']              = allowedTo('light_portal_view');
+		$context['allow_light_portal_manage_own_blocks'] = allowedTo('light_portal_manage_own_blocks');
+		$context['allow_light_portal_manage_own_pages']  = allowedTo('light_portal_manage_own_pages');
 
 		(new Block)->show();
 
@@ -414,7 +415,7 @@ class Integration
 		$context['non_guest_permissions'] = array_merge(
 			$context['non_guest_permissions'],
 			array(
-				//'light_portal_manage_blocks',
+				'light_portal_manage_own_blocks',
 				'light_portal_manage_own_pages',
 				'light_portal_approve_pages'
 			)
@@ -433,14 +434,14 @@ class Integration
 
 		$txt['permissiongroup_light_portal'] = LP_NAME;
 
-		//$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
-		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
-		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
+		$context['permissions_excluded']['light_portal_manage_own_blocks'][] = 0;
+		$context['permissions_excluded']['light_portal_manage_own_pages'][]  = 0;
+		$context['permissions_excluded']['light_portal_approve_pages'][]     = 0;
 
-		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
-		//$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_view']              = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_own_blocks'] = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_own_pages']  = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_approve_pages']     = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
 	}
@@ -578,6 +579,17 @@ class Integration
 		if (!empty($context['user']['is_admin']))
 			return;
 
+		$profile_areas['info']['areas']['lp_my_blocks'] = array(
+			'label' => $txt['lp_my_blocks'],
+			'custom_url' => $scripturl . '?action=admin;area=lp_blocks',
+			'icon' => 'modifications',
+			'enabled' => Helpers::request('area') === 'popup',
+			'permission' => array(
+				'own' => array('light_portal_manage_own_blocks'),
+				'any' => array()
+			)
+		);
+
 		$profile_areas['info']['areas']['lp_my_pages'] = array(
 			'label' => $txt['lp_my_pages'],
 			'custom_url' => $scripturl . '?action=admin;area=lp_pages',
@@ -602,7 +614,7 @@ class Integration
 	{
 		global $context;
 
-		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_pages'))
+		if (!empty($context['user']['is_admin']))
 			return;
 
 		$counter = 0;
@@ -616,13 +628,40 @@ class Integration
 		$profile_items = array_merge(
 			array_slice($profile_items, 0, $counter, true),
 			array(
-				array(
+				allowedTo('light_portal_manage_own_blocks') ? array(
+					'menu' => 'info',
+					'area' => 'lp_my_blocks'
+				) : null,
+				allowedTo('light_portal_manage_own_pages') ? array(
 					'menu' => 'info',
 					'area' => 'lp_my_pages'
-				)
+				) : null,
 			),
 			array_slice($profile_items, $counter, null, true)
 		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function themeOptions()
+	{
+		global $context, $txt;
+
+		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_blocks'))
+			return;
+
+		$settings = array(
+			LP_NAME,
+			array(
+				'id'      => 'lp_show_own_blocks',
+				'label'   => $txt['lp_show_own_blocks'],
+				'options' => $txt['lp_show_own_blocks_set'],
+				'default' => false
+			)
+		);
+
+		$context['theme_options'] = array_merge($context['theme_options'], $settings);
 	}
 
 	/**

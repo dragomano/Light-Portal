@@ -65,7 +65,7 @@ class Subs
 		// Block direction in panels | Направление блоков в панелях
 		$context['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? json_decode($modSettings['lp_panel_direction'], true) : [];
 
-		$context['lp_active_blocks'] = self::getActiveBlocks();
+		$context['lp_active_blocks'] = Block::getActive();
 	}
 
 	/**
@@ -76,63 +76,6 @@ class Subs
 		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCSSFile('light_portal/flexboxgrid.css');
 		loadCSSFile('light_portal/light_portal.css');
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function getActiveBlocks(): array
-	{
-		global $smcFunc;
-
-		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-					bt.lang, bt.title, bp.name, bp.value
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}
-				ORDER BY b.placement, b.priority',
-				array(
-					'status' => Block::STATUS_ACTIVE
-				)
-			);
-
-			$active_blocks = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				censorText($row['content']);
-
-				if (!isset($active_blocks[$row['block_id']]))
-					$active_blocks[$row['block_id']] = array(
-						'id'            => $row['block_id'],
-						'icon'          => $row['icon'],
-						'type'          => $row['type'],
-						'content'       => $row['content'],
-						'placement'     => $row['placement'],
-						'priority'      => $row['priority'],
-						'permissions'   => $row['permissions'],
-						'areas'         => explode(',', $row['areas']),
-						'title_class'   => $row['title_class'],
-						'title_style'   => $row['title_style'],
-						'content_class' => $row['content_class'],
-						'content_style' => $row['content_style']
-					);
-
-				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
-
-				if (!empty($row['name']))
-					$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('active_blocks', $active_blocks);
-		}
-
-		return $active_blocks;
 	}
 
 	/**
@@ -360,8 +303,12 @@ class Subs
 	 */
 	public static function getPageTypes(): array
 	{
-		global $txt;
+		global $txt, $user_info, $modSettings;
 
-		return array_combine(array('bbc', 'html', 'php'), $txt['lp_page_types']);
+		$types = array_combine(array('bbc', 'html', 'php'), $txt['lp_page_types']);
+
+		$types = $user_info['is_admin'] || empty($modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
+
+		return $types;
 	}
 }

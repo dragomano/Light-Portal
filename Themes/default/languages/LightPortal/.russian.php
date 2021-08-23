@@ -15,6 +15,7 @@ $txt['lp_article'] = 'Статья';
 $txt['lp_no_items'] = 'Нет элементов для отображения.';
 $txt['lp_example'] = 'Пример: ';
 $txt['lp_content'] = 'Содержимое';
+$txt['lp_my_blocks'] = 'Мои блоки';
 $txt['lp_my_pages'] = 'Мои страницы';
 $txt['lp_views'] = 'Просмотры';
 $txt['lp_replies'] = 'Ответы';
@@ -74,10 +75,10 @@ $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Укажите облас
 $txt['lp_standalone_mode_disabled_actions_help'] = 'Например, если нужно отключить область «Поиск» (index.php?action=<strong>search</strong>), добавьте <strong>search</strong> в текстовое поле.';
 
 $txt['groups_light_portal_view'] = 'Кто может просматривать элементы портала';
-$txt['groups_light_portal_manage_blocks'] = 'Кто может управлять блоками';
+$txt['groups_light_portal_manage_own_blocks'] = 'Кто может управлять своими блоками';
 $txt['groups_light_portal_manage_own_pages'] = 'Кто может управлять своими страницами';
 $txt['groups_light_portal_approve_pages'] = 'Кто может размещать свои страницы без модерации';
-$txt['lp_manage_permissions'] = 'Некоторые страницы могут содержать опасный HTML/PHP контент, поэтому не разрешайте их создавать всем подряд!';
+$txt['lp_prohibit_php'] = 'Запретить всем, кроме администраторов, создание PHP-страниц и PHP-блоков';
 
 // Pages and blocks
 $txt['lp_extra'] = 'Страницы и блоки';
@@ -285,6 +286,10 @@ $txt['lp_sort_by_num_views'] = 'По количеству просмотров (
 // Related pages
 $txt['lp_related_pages'] = 'Похожие страницы';
 
+// Profile
+$txt['lp_show_own_blocks'] = 'Отображение индивидуальных блоков';
+$txt['lp_show_own_blocks_set'] = array('Вместе с созданными администратором', 'Вместо созданных администратором');
+
 // Comments
 $txt['lp_comments'] = 'Комментарии';
 $txt['lp_comment_placeholder'] = 'Введите текст комментария...';
@@ -330,15 +335,15 @@ $txt['lp_who_viewing_adding_page'] = 'Добавляет страницу пор
 
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'Просмотр элементов портала';
-$txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Управление блоками';
+$txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Управление своими блоками';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Управление своими страницами';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Публикация страниц без модерации';
 $txt['permissionhelp_light_portal_view'] = 'Возможность просматривать страницы и блоки портала.';
-$txt['permissionhelp_light_portal_manage_blocks'] = 'Доступ к управлению блоками портала.';
+$txt['permissionhelp_light_portal_manage_own_blocks'] = 'Доступ к управлению своими блоками.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Доступ к управлению своими страницами.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Возможность размещать свои страницы без модерации.';
 $txt['cannot_light_portal_view'] = 'Извините, вам запрещен просмотр портала!';
-$txt['cannot_light_portal_manage_blocks'] = 'Извините, вам запрещено управление блоками портала!';
+$txt['cannot_light_portal_manage_own_blocks'] = 'Извините, вам запрещено управление блоками портала!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Извините, вам запрещено управление страницами портала!';
 $txt['cannot_light_portal_approve_pages'] = 'Извините, вам запрещено размещать страницы без модерации!';
 $txt['cannot_light_portal_view_page'] = 'Извините, вам не разрешен просмотр этой страницы!';

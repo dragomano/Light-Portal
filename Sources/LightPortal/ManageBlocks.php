@@ -67,20 +67,25 @@ class ManageBlocks
 	 */
 	public function getAll(): array
 	{
-		global $smcFunc;
+		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($user_info['is_admin'] ? '
+				WHERE b.user_id = 0' : '
+				WHERE b.user_id = {int:user_id}') . '
 			ORDER BY b.placement DESC, b.priority',
-			array()
+			array(
+				'user_id' => $user_info['id']
+			)
 		);
 
 		$current_blocks = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			if (!isset($current_blocks[$row['placement']][$row['block_id']]))
 				$current_blocks[$row['placement']][$row['block_id']] = array(
+					'user_id'     => $row['user_id'],
 					'icon'        => Helpers::getIcon($row['icon']),
 					'type'        => $row['type'],
 					'note'        => $row['note'],
@@ -301,17 +306,17 @@ class ManageBlocks
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
 
-		$context['lp_enabled_plugins'] = array_merge($context['lp_enabled_plugins'], ['php', 'html', 'bbc']);
+		$plugins = array_merge($context['lp_enabled_plugins'], array_keys($context['lp_page_types']));
 
 		$context['lp_all_blocks'] = [];
-		foreach ($context['lp_enabled_plugins'] as $addon) {
+		foreach ($plugins as $addon) {
 			$addon = Helpers::getSnakeName($addon);
 
 			// We need blocks only
-			if (!isset($txt['lp_' . $addon]['title']))
+			if (!isset($txt['lp_' . $addon]['title']) || isset($context['lp_all_blocks'][$addon]))
 				continue;
 
-			$context['lp_all_blocks'][] = [
+			$context['lp_all_blocks'][$addon] = [
 				'type'  => $addon,
 				'icon'  => $context['lp_' . $addon]['icon'],
 				'title' => $txt['lp_' . $addon]['title'],
@@ -411,7 +416,7 @@ class ManageBlocks
 	 */
 	private function validateData()
 	{
-		global $context, $modSettings;
+		global $context, $user_info, $modSettings;
 
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
@@ -453,6 +458,7 @@ class ManageBlocks
 
 		$context['lp_block'] = array(
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
+			'user_id'       => $user_info['is_admin'] || ! allowedTo('light_portal_manage_own_blocks') ? 0 : ($context['current_block']['user_id'] ?? $user_info['id']),
 			'title'         => $context['current_block']['title'] ?? [],
 			'icon'          => !empty($post_data['block_id']) ? ($post_data['icon'] ?? '') : ($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
@@ -469,6 +475,10 @@ class ManageBlocks
 			'content_style' => $post_data['content_style'] ?? $context['current_block']['content_style'] ?? '',
 			'options'       => $options[$context['current_block']['type']]
 		);
+
+		if (!$user_info['is_admin']) {
+			$context['lp_block']['permissions'] = 2;
+		}
 
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? $this->getPriority() : $context['lp_block']['priority'];
 
@@ -580,16 +590,18 @@ class ManageBlocks
 			);
 		}
 
-		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
-		$context['posting_fields']['permissions']['input'] = array(
-			'type' => 'select'
-		);
-
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_block']['permissions']
+		if ($context['user']['is_admin']) {
+			$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
+			$context['posting_fields']['permissions']['input'] = array(
+				'type' => 'select'
 			);
+
+			foreach ($txt['lp_permissions'] as $level => $title) {
+				$context['posting_fields']['permissions']['input']['options'][$title] = array(
+					'value'    => $level,
+					'selected' => $level == $context['lp_block']['permissions']
+				);
+			}
 		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
@@ -833,6 +845,7 @@ class ManageBlocks
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
 			array(
+				'user_id'       => 'int',
 				'icon'          => 'string-60',
 				'type'          => 'string',
 				'note'          => 'string',
@@ -848,6 +861,7 @@ class ManageBlocks
 				'content_style' => 'string'
 			),
 			array(
+				$context['lp_block']['user_id'],
 				$context['lp_block']['icon'],
 				$context['lp_block']['type'],
 				$context['lp_block']['note'],
@@ -1033,7 +1047,7 @@ class ManageBlocks
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
@@ -1054,6 +1068,7 @@ class ManageBlocks
 			if (!isset($data))
 				$data = array(
 					'id'            => $row['block_id'],
+					'user_id'       => $row['user_id'],
 					'icon'          => $row['icon'],
 					'type'          => $row['type'],
 					'note'          => $row['note'],

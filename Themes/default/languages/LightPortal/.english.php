@@ -15,6 +15,7 @@ $txt['lp_article'] = 'Article';
 $txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
+$txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
@@ -74,10 +75,10 @@ $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that sh
 $txt['lp_standalone_mode_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
 $txt['groups_light_portal_view'] = 'Who can view the portal elements';
-$txt['groups_light_portal_manage_blocks'] = 'Who can manage blocks';
+$txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
-$txt['lp_manage_permissions'] = 'Some pages may contain dangerous HTML/PHP content, so do not allow their creation to everyone!';
+$txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 
 // Pages and blocks
 $txt['lp_extra'] = 'Pages and blocks';
@@ -285,6 +286,10 @@ $txt['lp_sort_by_num_views'] = 'Number of views (asc)';
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';
 
+// Profile
+$txt['lp_show_own_blocks'] = 'Displaying my own blocks';
+$txt['lp_show_own_blocks_set'] = array('Together with created by the administrator', 'Instead of created by the administrator');
+
 // Comments
 $txt['lp_comments'] = 'Comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
@@ -330,15 +335,15 @@ $txt['lp_who_viewing_adding_page'] = 'Adding a page for the portal.';
 
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
-$txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Manage blocks';
+$txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Manage own blocks';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
-$txt['permissionhelp_light_portal_manage_blocks'] = 'Access to manage portal blocks.';
+$txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
-$txt['cannot_light_portal_manage_blocks'] = 'Sorry, you are not allowed to manage blocks!';
+$txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';

@@ -31,14 +31,15 @@ class Block
 	 */
 	public function show()
 	{
-		global $context, $modSettings;
+		global $modSettings, $context, $options;
+
+		if (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin'))
+			return;
 
 		if (empty($context['allow_light_portal_view']) || empty($context['template_layers']) || empty($context['lp_active_blocks']))
 			return;
 
-		$blocks = $this->getFilteredByAreas();
-
-		if (empty($blocks) || (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin')))
+		if (empty($blocks = $this->getFilteredByAreas()))
 			return;
 
 		// Block placement
@@ -46,6 +47,20 @@ class Block
 			if (Helpers::canViewItem($data['permissions']) === false)
 				continue;
 
+			// Admins cannot see other member's blocks
+			if (!empty($context['user']['is_admin']) && !empty($data['user_id']))
+				continue;
+
+			// Display personal blocks
+			if (!empty($options['lp_show_own_blocks'])) {
+				if (empty($data['user_id']) || $data['user_id'] != $context['user']['id'])
+					continue;
+			} else {
+				if (!empty($data['user_id']) && $data['user_id'] != $context['user']['id'])
+					continue;
+			}
+
+			// Other block properties
 			empty($data['content'])
 				? Helpers::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
 				: Helpers::parseContent($data['content'], $data['type']);
@@ -76,6 +91,65 @@ class Block
 			array('portal'),
 			array_slice($context['template_layers'], $counter, null, true)
 		);
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getActive(): array
+	{
+		global $smcFunc, $user_info;
+
+		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT
+					b.block_id, b.user_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+					bt.lang, bt.title, bp.name, bp.value
+				FROM {db_prefix}lp_blocks AS b
+					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
+				WHERE b.status = {int:status}
+				ORDER BY b.placement, b.priority',
+				array(
+					'status' => self::STATUS_ACTIVE
+				)
+			);
+
+			$active_blocks = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				censorText($row['content']);
+
+				if (!isset($active_blocks[$row['block_id']]))
+					$active_blocks[$row['block_id']] = array(
+						'id'            => $row['block_id'],
+						'user_id'       => $row['user_id'],
+						'icon'          => $row['icon'],
+						'type'          => $row['type'],
+						'content'       => $row['content'],
+						'placement'     => $row['placement'],
+						'priority'      => $row['priority'],
+						'permissions'   => $row['permissions'],
+						'areas'         => explode(',', $row['areas']),
+						'title_class'   => $row['title_class'],
+						'title_style'   => $row['title_style'],
+						'content_class' => $row['content_class'],
+						'content_style' => $row['content_style'],
+						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_blocks') && $row['user_id'] == $user_info['id'])
+					);
+
+				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
+
+				if (!empty($row['name']))
+					$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('active_blocks', $active_blocks);
+		}
+
+		return $active_blocks;
 	}
 
 	/**

@@ -184,7 +184,7 @@ class FrontPage
 	 *
 	 * Получаем доступные макеты главной страницы
 	 */
-	public function getLayouts(): array
+	public static function getLayouts(): array
 	{
 		global $settings, $txt;
 
