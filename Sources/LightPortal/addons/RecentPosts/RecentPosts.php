@@ -86,7 +86,7 @@ class RecentPosts extends Plugin
 
 		$context['posting_fields']['link_type']['label']['text'] = $txt['lp_recent_posts']['type'];
 		$context['posting_fields']['link_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'link_type'
 			),

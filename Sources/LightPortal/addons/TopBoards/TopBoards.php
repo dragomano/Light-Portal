@@ -32,6 +32,7 @@ class TopBoards extends Plugin
 	{
 		$options['top_boards']['parameters'] = [
 			'num_boards'        => 10,
+			'entity_type'       => 'num_topics',
 			'show_numbers_only' => false,
 		];
 	}
@@ -47,6 +48,7 @@ class TopBoards extends Plugin
 			return;
 
 		$parameters['num_boards']        = FILTER_VALIDATE_INT;
+		$parameters['entity_type']       = FILTER_SANITIZE_STRING;
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
@@ -69,6 +71,24 @@ class TopBoards extends Plugin
 				'value' => $context['lp_block']['options']['parameters']['num_boards']
 			)
 		);
+
+		$context['posting_fields']['entity_type']['label']['text'] = $txt['lp_top_boards']['entity_type'];
+		$context['posting_fields']['entity_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'entity_type'
+			),
+			'options' => array()
+		);
+
+		$entity_types = array_combine(array('num_topics', 'num_posts'), $txt['lp_top_boards']['entity_type_set']);
+
+		foreach ($entity_types as $key => $value) {
+			$context['posting_fields']['entity_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['entity_type']
+			);
+		}
 
 		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
@@ -121,19 +141,21 @@ class TopBoards extends Plugin
 		echo '
 		<dl class="stats">';
 
-		$max = $top_boards[0]['num_topics'];
+		$type = $parameters['entity_type'] === 'num_posts' ? 'posts' : 'topics';
+
+		$max = $top_boards[0]['num_' . $type];
 
 		foreach ($top_boards as $board) {
-			if ($board['num_topics'] < 1)
+			if ($board['num_' . $type] < 1)
 				continue;
 
-			$width = $board['num_topics'] * 100 / $max;
+			$width = $board['num_' . $type] * 100 / $max;
 
 			echo '
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
-				<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getText($board['num_topics'], $txt['lp_top_boards']['topics'])), '</span>
+				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helpers::getText($board['num_' . $type], $txt['lp_top_boards'][$type])), '</span>
 			</dd>';
 		}
 

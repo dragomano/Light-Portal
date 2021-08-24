@@ -101,7 +101,7 @@ class DevTools extends Plugin
 
 		$this->loadTemplate();
 
-		$context['frontpage_layouts'] = (new FrontPage)->getLayouts();
+		$context['frontpage_layouts'] = FrontPage::getLayouts();
 
 		$context['template_layers'][] = 'layout_switcher';
 

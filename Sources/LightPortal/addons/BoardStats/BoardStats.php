@@ -136,7 +136,6 @@ class BoardStats extends Plugin
 
 		if (!empty($parameters['show_basic_info'])) {
 			$basic_info = ssi_boardStats('array');
-			$basic_info['total_pages']      = Helpers::getNumActivePages(true);
 			$basic_info['max_online_today'] = comma_format($modSettings['mostOnlineToday']);
 			$basic_info['max_online']       = comma_format($modSettings['mostOnline']);
 		}
@@ -178,7 +177,7 @@ class BoardStats extends Plugin
 			echo '
 				<div>
 					<h4>
-						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $txt['lp_board_stats']['newbies'], '
+						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $txt['lp_board_stats']['newbie'], '
 					</h4>
 					<ul class="bbc_list">
 						<li>', $board_stats['latest_member'], '</li>
@@ -206,7 +205,6 @@ class BoardStats extends Plugin
 			}
 
 			echo '
-						<li>', $txt['lp_board_stats']['pages'], ': ', $board_stats['basic_info']['total_pages'], '</li>
 						<li>', $txt['lp_board_stats']['online_today'] , ': ', $board_stats['basic_info']['max_online_today'], '</li>
 						<li>', $txt['lp_board_stats']['max_online'], ': ', $board_stats['basic_info']['max_online'], '</li>
 					</ul>

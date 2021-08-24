@@ -79,16 +79,10 @@ class RandomTopics extends Plugin
 	 */
 	public function getData(int $num_topics): array
 	{
-		global $modSettings, $user_info, $db_type, $smcFunc, $context, $settings, $scripturl;
+		global $db_type, $smcFunc, $user_info, $context, $modSettings, $settings, $scripturl;
 
 		if (empty($num_topics))
 			return [];
-
-		$ignore_boards = !empty($modSettings['recycle_board']) ? [(int) $modSettings['recycle_board']] : [];
-
-		if (!empty($modSettings['allow_ignore_boards'])) {
-			$ignore_boards = array_unique(array_merge($ignore_boards, $user_info['ignoreboards']));
-		}
 
 		if ($db_type == 'postgresql') {
 			$request = $smcFunc['db_query']('', '
@@ -96,29 +90,29 @@ class RandomTopics extends Plugin
 					WITH b AS (
 						SELECT min(t.id_topic), (
 							SELECT t.id_topic FROM {db_prefix}topics AS t
-							WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
-								AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+							WHERE {query_wanna_see_topic_board}
+								AND t.approved = {int:is_approved}
 							ORDER BY t.id_topic DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
-						WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+						WHERE {query_wanna_see_topic_board}
+							AND t.approved = {int:is_approved}
 					)
 					(
 						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
 						FROM {db_prefix}topics AS t, b
-						WHERE t.id_topic >= min + ((max - min) * random())::int' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+						WHERE {query_wanna_see_topic_board}
+							AND t.id_topic >= min + ((max - min) * random())::int
 							AND	t.approved = {int:is_approved}
 						LIMIT 1
 					) UNION ALL (
 						SELECT t.id_topic, min, max, a || t.id_topic, r.n + 1 AS n
 						FROM {db_prefix}topics AS t, r
-						WHERE t.id_topic >= min + ((max - min) * random())::int
+						WHERE {query_wanna_see_topic_board}
+							AND t.id_topic >= min + ((max - min) * random())::int
 							AND t.id_topic <> all(a)
-							AND r.n + 1 < {int:limit}' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+							AND r.n + 1 < {int:limit}
 							AND t.approved = {int:is_approved}
 						LIMIT 1
 					)
@@ -127,9 +121,8 @@ class RandomTopics extends Plugin
 				FROM {db_prefix}topics AS t, r
 				WHERE r.id_topic = t.id_topic',
 				array(
-					'is_approved'   => 1,
-					'ignore_boards' => $ignore_boards,
-					'limit'         => $num_topics
+					'is_approved' => 1,
+					'limit'       => $num_topics
 				)
 			);
 
@@ -154,7 +147,8 @@ class RandomTopics extends Plugin
 					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE t.id_topic IN ({array_int:topic_ids})',
+				WHERE {query_wanna_see_topic_board}
+					AND t.id_topic IN ({array_int:topic_ids})',
 				array(
 					'current_member' => $user_info['id'],
 					'topic_ids'      => $topic_ids
@@ -172,14 +166,13 @@ class RandomTopics extends Plugin
 					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE t.approved = {int:is_approved}
-					AND t.id_board NOT IN ({array_int:ignore_boards})
+				WHERE {query_wanna_see_topic_board}
+					AND t.approved = {int:is_approved}
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				array(
 					'current_member' => $user_info['id'],
 					'is_approved'    => 1,
-					'ignore_boards'  => $ignore_boards,
 					'limit'          => $num_topics
 				)
 			);
@@ -237,7 +230,7 @@ class RandomTopics extends Plugin
 			foreach ($random_topics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
-					<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
+					<span class="new_posts">' . $txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
 					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
 					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
 				</li>';
