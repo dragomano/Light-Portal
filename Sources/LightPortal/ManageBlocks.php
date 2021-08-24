@@ -476,6 +476,10 @@ class ManageBlocks
 			'options'       => $options[$context['current_block']['type']]
 		);
 
+		if (!empty($context['lp_block']['options']['no_content_class'])) {
+			$context['lp_block']['content_class'] = '';
+		}
+
 		if (!$user_info['is_admin']) {
 			$context['lp_block']['permissions'] = 2;
 		}

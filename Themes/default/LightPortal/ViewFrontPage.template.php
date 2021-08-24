@@ -55,31 +55,27 @@ function template_show_articles()
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
 			<article class="roundframe', $article['css_class'] ?? '', '">';
 
-		if ($article['is_new']) {
-			echo '
-				<div class="new_hover">
-					<div class="new_icon">
-						<span class="new_posts">', $txt['new'], '</span>
-					</div>
-				</div>';
-		}
-
-		echo '
-				<div class="info_hover">';
-
-		if ($article['can_edit']) {
-			echo '
-					<div class="edit_icon">
-						<a href="', $article['edit_link'], '">
-							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
-						</a>
-					</div>';
-		}
-
-		echo '
-				</div>';
-
 		if (!empty($article['image'])) {
+			if ($article['is_new']) {
+				echo '
+					<div class="new_hover">
+						<div class="new_icon">
+							<span class="new_posts">', $txt['new'], '</span>
+						</div>
+					</div>';
+			}
+
+			if ($article['can_edit']) {
+				echo '
+					<div class="info_hover">
+						<div class="edit_icon">
+							<a href="', $article['edit_link'], '">
+								<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+							</a>
+						</div>
+					</div>';
+			}
+
 			echo '
 				<div class="card_img"></div>
 				<a href="', $article['link'], '">
@@ -95,6 +91,12 @@ function template_show_articles()
 			echo '
 						<a class="floatleft" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
 		}
+
+		if ($article['is_new'] && empty($article['image'])) {
+			echo '
+						&nbsp;<span class="new_posts">', $txt['new'], '</span>';
+		}
+
 
 		if (!empty($article['datetime'])) {
 			echo '
@@ -649,7 +651,7 @@ function template_show_articles_simple3()
 
 		echo '
 				<div class="title">
-					<div>', $article['title'], '</div>';
+					<div><a class="bbc_link" href="', $article['link'], '">', $article['title'], '</a></div>';
 
 		if (!empty($article['teaser'])) {
 			echo '

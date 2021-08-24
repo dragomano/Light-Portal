@@ -460,7 +460,7 @@ foreach ($tables as $table) {
 }
 
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo, ThemeSwitcher'));
+	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher'));
 
 if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
 	smf_chmod($css_dir, 0755);
