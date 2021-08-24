@@ -72,19 +72,18 @@ class ManageBlocks
 		$request = $smcFunc['db_query']('', '
 			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($user_info['is_admin'] ? '
-				WHERE b.user_id = 0' : '
-				WHERE b.user_id = {int:user_id}') . '
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($user_info['is_admin'] ? '' : '
+			WHERE b.user_id = {int:user_id}') . '
 			ORDER BY b.placement DESC, b.priority',
 			array(
 				'user_id' => $user_info['id']
 			)
 		);
 
-		$current_blocks = [];
+		$currentBlocks = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($current_blocks[$row['placement']][$row['block_id']]))
-				$current_blocks[$row['placement']][$row['block_id']] = array(
+			if (!isset($currentBlocks[$row['placement']][$row['block_id']]))
+				$currentBlocks[$row['placement']][$row['block_id']] = array(
 					'user_id'     => $row['user_id'],
 					'icon'        => Helpers::getIcon($row['icon']),
 					'type'        => $row['type'],
@@ -95,7 +94,7 @@ class ManageBlocks
 					'areas'       => str_replace(',', PHP_EOL, $row['areas'])
 				);
 
-			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
+			$currentBlocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
@@ -103,7 +102,7 @@ class ManageBlocks
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return $current_blocks;
+		return $currentBlocks;
 	}
 
 	/**
@@ -201,11 +200,10 @@ class ManageBlocks
 
 			ob_start();
 			show_block_entry($context['lp_block']['id'], $context['lp_block']);
-			$new_block = ob_get_clean();
 
 			$result = [
 				'success' => true,
-				'block'   => $new_block
+				'block'   => ob_get_clean()
 			];
 		}
 
@@ -374,6 +372,9 @@ class ManageBlocks
 		$context['sub_template']  = 'block_post';
 		$context['current_block'] = $this->getData($item);
 
+		if (empty($context['user']['is_admin']) && $context['user']['id'] != $context['current_block']['user_id'])
+			fatal_lang_error('lp_block_not_editable', false);
+
 		if (Helpers::post()->has('remove')) {
 			$this->remove([$item]);
 			redirectexit('action=admin;area=lp_blocks;sa=main');
@@ -439,12 +440,13 @@ class ManageBlocks
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
+			$post_data = filter_input_array(INPUT_POST, $args);
+
 			$parameters = [];
 
 			Addons::run('validateBlockData', array(&$parameters, $context['current_block']['type']));
 
-			$post_data = filter_input_array(INPUT_POST, $args);
-			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
+			$post_data['parameters'] = filter_var_array(Helpers::post()->only(array_keys($parameters)), $parameters);
 
 			$this->findErrors($post_data);
 		}
@@ -480,10 +482,6 @@ class ManageBlocks
 			$context['lp_block']['content_class'] = '';
 		}
 
-		if (!$user_info['is_admin']) {
-			$context['lp_block']['permissions'] = 2;
-		}
-
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? $this->getPriority() : $context['lp_block']['priority'];
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
@@ -506,6 +504,8 @@ class ManageBlocks
 		foreach ($context['languages'] as $lang) {
 			$context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_block']['title'][$lang['filename']] ?? '';
 		}
+
+		$context['lp_block']['title'] = array_filter($context['lp_block']['title']);
 
 		Helpers::cleanBbcode($context['lp_block']['title']);
 	}
@@ -584,7 +584,8 @@ class ManageBlocks
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['placement']['input'] = array(
-			'type' => 'select'
+			'type' => 'select',
+			'tab'  => 'access_placement'
 		);
 
 		foreach ($context['lp_block_placements'] as $level => $title) {
@@ -594,18 +595,20 @@ class ManageBlocks
 			);
 		}
 
-		if ($context['user']['is_admin']) {
-			$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
-			$context['posting_fields']['permissions']['input'] = array(
-				'type' => 'select'
-			);
+		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
+		$context['posting_fields']['permissions']['input'] = array(
+			'type' => 'select',
+			'tab'  => 'access_placement'
+		);
 
-			foreach ($txt['lp_permissions'] as $level => $title) {
-				$context['posting_fields']['permissions']['input']['options'][$title] = array(
-					'value'    => $level,
-					'selected' => $level == $context['lp_block']['permissions']
-				);
-			}
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			if (empty($context['user']['is_admin']) && empty($level))
+				continue;
+
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_block']['permissions']
+			);
 		}
 
 		$context['posting_fields']['areas']['label']['text'] = $txt['lp_block_areas'];
@@ -618,7 +621,8 @@ class ManageBlocks
 				'required'  => true,
 				'pattern'   => self::AREAS_PATTERN,
 				'style'     => 'width: 100%'
-			)
+			),
+			'tab' => 'access_placement'
 		);
 
 		$context['posting_fields']['title_class']['label']['text'] = $txt['lp_block_title_class'];
@@ -672,7 +676,7 @@ class ManageBlocks
 
 		Addons::run('prepareBlockFields');
 
-		$this->preparePostFields('access_placement');
+		$this->preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}
@@ -1088,7 +1092,8 @@ class ManageBlocks
 					'content_style' => $row['content_style']
 				);
 
-			$data['title'][$row['lang']] = $row['title'];
+			if (!empty($row['lang']))
+				$data['title'][$row['lang']] = $row['title'];
 
 			if (!empty($row['name']))
 				$data['options']['parameters'][$row['name']] = $row['value'];

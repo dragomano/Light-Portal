@@ -28,7 +28,6 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
-$txt['lp_send_issue'] = 'Did you find a bug? Let me know';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -88,8 +87,8 @@ $txt['lp_show_page_permissions'] = 'Show information about the page permissions'
 $txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
-$txt['lp_show_related_pages'] = 'Show related pages block';
-$txt['lp_show_comment_block'] = 'Show comments block';
+$txt['lp_show_related_pages'] = 'Show related pages';
+$txt['lp_show_comment_block'] = 'Show page comments';
 $txt['lp_disabled_bbc_in_comments'] = 'Allowed BBC in comments';
 $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = array('None', 'Integrated');
@@ -286,10 +285,6 @@ $txt['lp_sort_by_num_views'] = 'Number of views (asc)';
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';
 
-// Profile
-$txt['lp_show_own_blocks'] = 'Displaying my own blocks';
-$txt['lp_show_own_blocks_set'] = array('Together with created by the administrator', 'Instead of created by the administrator');
-
 // Comments
 $txt['lp_comments'] = 'Comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
@@ -306,6 +301,7 @@ $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';
 $txt['lp_page_visible_but_disabled'] = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found'] = 'Block not found!';
+$txt['lp_block_not_editable'] = 'You are not allowed to edit this block!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias'] = 'The <strong>alias</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_alias'] = 'The specified alias is not correct!';

@@ -269,6 +269,10 @@
 #lp_layout .row > aside {
   margin: 0 !important;
 }
+#lp_layout .between-xs + .row,
+#lp_layout .row + .between-xs {
+  margin-top: 5px;
+}
 #lp_layout .sticky_sidebar {
   position: sticky;
   position: -webkit-sticky;
@@ -1279,4 +1283,17 @@ section #display_head span {
   to {
     opacity: 1;
   }
+}
+/* Temp fixes */
+.popup_container {
+  z-index: 6 !important;
+}
+#genericmenu > .popup_container {
+  z-index: 5 !important;
+}
+div.sceditor-container {
+  z-index: 6;
+}
+div.sceditor-container:not(.sceditor-maximize) {
+  z-index: 4 !important;
 }

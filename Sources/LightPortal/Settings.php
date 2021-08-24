@@ -62,7 +62,7 @@ class Settings
 							'label' => $txt['lp_blocks'],
 							'function' => array($this, 'blockAreas'),
 							'icon' => 'modifications',
-							'amt' => count($context['lp_active_blocks']),
+							'amt' => $context['lp_num_active_blocks'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_blocks'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
@@ -183,7 +183,7 @@ class Settings
 			return;
 
 		$context['settings_title'] .= '<span class="floatright" x-data>
-			<a href="https://github.com/dragomano/Light-Portal/issues" title="' . $txt['lp_send_issue'] . '" target="_blank" rel="noopener"><i class="fas fa-bug" @mouseover="$event.target.style.color = \'limegreen\'; $event.target.className = \'fas fa-bug fa-spin\'" @mouseout="$event.target.style.color = \'white\'; $event.target.className = \'fas fa-bug\'"></i></a> <a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $txt['lp_debug_info'] . '"><i class="fas fa-info-circle"></i></a>
+			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $txt['lp_debug_info'] . '"><i class="fas fa-info-circle"></i></a>
 		</span>';
 	}
 

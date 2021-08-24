@@ -28,7 +28,7 @@ class ManagePages
 	 *
 	 * @var int
 	 */
-	private const NUM_PAGES = 20;
+	public const NUM_PAGES = 20;
 
 	/**
 	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
@@ -682,6 +682,10 @@ class ManagePages
 			'options'     => $options
 		);
 
+		if (!empty($modSettings['lp_prohibit_php']) && !empty($modSettings['lp_page_editor_type_default']) && $modSettings['lp_page_editor_type_default'] == 'php') {
+			$context['lp_page']['type'] = 'bbc';
+		}
+
 		foreach ($context['lp_page']['options'] as $option => $value) {
 			if (!empty($parameters[$option]) && !empty($post_data) && !isset($post_data[$option])) {
 				if ($parameters[$option] == FILTER_SANITIZE_STRING)
@@ -845,6 +849,7 @@ class ManagePages
 				'name'     => 'keywords[]',
 				'multiple' => true
 			),
+			'options' => [],
 			'tab' => 'seo'
 		);
 
@@ -885,20 +890,26 @@ class ManagePages
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
+			if (empty($context['user']['is_admin']) && empty($level))
+				continue;
+
 			$context['posting_fields']['permissions']['input']['options'][$title] = array(
 				'value'    => $level,
 				'selected' => $level == $context['lp_page']['permissions']
 			);
 		}
 
+		$allCategories = Helpers::getAllCategories();
+
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
-			'type' => 'select'
+			'type'     => 'select',
+			'attributes' => array(
+				'disabled' => empty($allCategories[1])
+			)
 		);
 
-		$all_categories = Helpers::getAllCategories();
-
-		foreach ($all_categories as $value => $category) {
+		foreach ($allCategories as $value => $category) {
 			$context['posting_fields']['category']['input']['options'][$category['name']] = array(
 				'value'    => $value,
 				'selected' => $value == $context['lp_page']['category']

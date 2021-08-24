@@ -31,7 +31,7 @@ class Block
 	 */
 	public function show()
 	{
-		global $modSettings, $context, $options;
+		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_hide_blocks_in_admin_section']) && Helpers::request()->is('admin'))
 			return;
@@ -47,20 +47,6 @@ class Block
 			if (Helpers::canViewItem($data['permissions']) === false)
 				continue;
 
-			// Admins cannot see other member's blocks
-			if (!empty($context['user']['is_admin']) && !empty($data['user_id']))
-				continue;
-
-			// Display personal blocks
-			if (!empty($options['lp_show_own_blocks'])) {
-				if (empty($data['user_id']) || $data['user_id'] != $context['user']['id'])
-					continue;
-			} else {
-				if (!empty($data['user_id']) && $data['user_id'] != $context['user']['id'])
-					continue;
-			}
-
-			// Other block properties
 			empty($data['content'])
 				? Helpers::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
 				: Helpers::parseContent($data['content'], $data['type']);

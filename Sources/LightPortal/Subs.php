@@ -46,8 +46,8 @@ class Subs
 	{
 		global $context, $modSettings;
 
-		$context['lp_enabled_plugins']  = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
-		$context['lp_num_active_pages'] = Helpers::getNumActivePages();
+		$context['lp_num_active_blocks'] = self::getNumActiveBlocks();
+		$context['lp_num_active_pages']  = self::getNumActivePages();
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
@@ -55,6 +55,8 @@ class Subs
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
 		$context['lp_page_types']          = self::getPageTypes();
+
+		$context['lp_enabled_plugins']   = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -75,7 +77,7 @@ class Subs
 	{
 		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCSSFile('light_portal/flexboxgrid.css');
-		loadCSSFile('light_portal/light_portal.css');
+		loadCSSFile('light_portal/portal.css');
 	}
 
 	/**
@@ -310,5 +312,65 @@ class Subs
 		$types = $user_info['is_admin'] || empty($modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
 
 		return $types;
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function getNumActiveBlocks(): int
+	{
+		global $user_info, $smcFunc;
+
+		if (($num_blocks = Helpers::cache()->get('num_active_blocks_u' . $user_info['id'])) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(block_id)
+				FROM {db_prefix}lp_blocks
+				WHERE status = {int:status}' . ($user_info['is_admin'] ? '' : '
+					AND user_id = {int:user_id}'),
+				array(
+					'status'  => Block::STATUS_ACTIVE,
+					'user_id' => $user_info['id']
+				)
+			);
+
+			[$num_blocks] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('num_active_blocks_u' . $user_info['id'], $num_blocks);
+		}
+
+		return (int) $num_blocks;
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function getNumActivePages(): int
+	{
+		global $user_info, $smcFunc;
+
+		if (($num_pages = Helpers::cache()->get('num_active_pages_u' . $user_info['id'])) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}' . ($user_info['is_admin'] ? '' : '
+					AND author_id = {int:user_id}'),
+				array(
+					'status'  => Page::STATUS_ACTIVE,
+					'user_id' => $user_info['id']
+				)
+			);
+
+			[$num_pages] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('num_active_pages_u' . $user_info['id'], $num_pages);
+		}
+
+		return (int) $num_pages;
 	}
 }

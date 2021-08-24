@@ -43,9 +43,11 @@ class PageExport extends AbstractExport
 
 		$this->run();
 
+		$pages = new ManagePages();
+
 		$listOptions = array(
 			'id' => 'lp_pages',
-			'items_per_page' => ($pages = new ManagePages)->num_pages,
+			'items_per_page' => ManagePages::NUM_PAGES,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',

@@ -44,7 +44,6 @@ class Integration
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
 		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
 		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
-		add_integration_function('integrate_theme_options', __CLASS__ . '::themeOptions#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
 		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
@@ -263,7 +262,7 @@ class Integration
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
-								'amt'   => count($context['lp_active_blocks']),
+								'amt'   => $context['lp_num_active_blocks'],
 								'show'  => true
 							),
 							'pages' => array(
@@ -639,29 +638,6 @@ class Integration
 			),
 			array_slice($profile_items, $counter, null, true)
 		);
-	}
-
-	/**
-	 * @return void
-	 */
-	public function themeOptions()
-	{
-		global $context, $txt;
-
-		if (!empty($context['user']['is_admin']) || !allowedTo('light_portal_manage_own_blocks'))
-			return;
-
-		$settings = array(
-			LP_NAME,
-			array(
-				'id'      => 'lp_show_own_blocks',
-				'label'   => $txt['lp_show_own_blocks'],
-				'options' => $txt['lp_show_own_blocks_set'],
-				'default' => false
-			)
-		);
-
-		$context['theme_options'] = array_merge($context['theme_options'], $settings);
 	}
 
 	/**

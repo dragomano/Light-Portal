@@ -747,41 +747,6 @@ class Helpers
 	}
 
 	/**
-	 * Get the total number of active pages
-	 *
-	 * Подсчитываем общее количество активных страниц
-	 *
-	 * @param bool $all - подсчитывать все страницы
-	 * @return int
-	 */
-	public static function getNumActivePages(bool $all = false): int
-	{
-		global $user_info, $smcFunc;
-
-		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])))) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}' . ($user_info['is_admin'] || $all ? '' : '
-					AND author_id = {int:user_id}'),
-				array(
-					'status'  => Page::STATUS_ACTIVE,
-					'user_id' => $user_info['id']
-				)
-			);
-
-			[$num_pages] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages);
-		}
-
-		return (int) $num_pages;
-	}
-
-	/**
 	 * @return array
 	 */
 	public static function getAllCategories()
