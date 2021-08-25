@@ -32,7 +32,7 @@ class TinySlider extends Plugin
 	/**
 	 * @var int
 	 */
-	private $items = 1;
+	private $num_items = 1;
 
 	/**
 	 * @var int
@@ -136,7 +136,7 @@ class TinySlider extends Plugin
 	public function blockOptions(array &$options)
 	{
 		$options['tiny_slider']['parameters']['axis']               = $this->axis;
-		$options['tiny_slider']['parameters']['items']              = $this->items;
+		$options['tiny_slider']['parameters']['num_items']          = $this->num_items;
 		$options['tiny_slider']['parameters']['gutter']             = $this->gutter;
 		$options['tiny_slider']['parameters']['edge_padding']       = $this->edge_padding;
 		$options['tiny_slider']['parameters']['controls']           = $this->controls;
@@ -168,8 +168,25 @@ class TinySlider extends Plugin
 		if ($type !== 'tiny_slider')
 			return;
 
+		$data = Helpers::post()->only(['image_title', 'image_link']);
+
+		$images = [];
+		if (!empty($data) && !empty($data['image_title']) && !empty($data['image_link'])) {
+			foreach ($data['image_title'] as $key => $item) {
+				if (empty($link = $data['image_link'][$key]))
+					continue;
+
+				$images[] = [
+					'title' => $item,
+					'link'  => $link
+				];
+			}
+
+			Helpers::post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
+		}
+
 		$parameters['axis']               = FILTER_SANITIZE_STRING;
-		$parameters['items']              = FILTER_VALIDATE_INT;
+		$parameters['num_items']          = FILTER_VALIDATE_INT;
 		$parameters['gutter']             = FILTER_VALIDATE_INT;
 		$parameters['edge_padding']       = FILTER_VALIDATE_INT;
 		$parameters['controls']           = FILTER_VALIDATE_BOOLEAN;
@@ -188,7 +205,7 @@ class TinySlider extends Plugin
 		$parameters['rewind']             = FILTER_VALIDATE_BOOLEAN;
 		$parameters['lazyload']           = FILTER_VALIDATE_BOOLEAN;
 		$parameters['mouse_drag']         = FILTER_VALIDATE_BOOLEAN;
-		$parameters['images']             = FILTER_SANITIZE_STRING;
+		$parameters['images']             = FILTER_DEFAULT;
 	}
 
 	/**
@@ -219,14 +236,14 @@ class TinySlider extends Plugin
 			);
 		}
 
-		$context['posting_fields']['items']['label']['text'] = $txt['lp_tiny_slider']['items'];
-		$context['posting_fields']['items']['input'] = array(
-			'after' => $txt['lp_tiny_slider']['items_subtext'],
+		$context['posting_fields']['num_items']['label']['text'] = $txt['lp_tiny_slider']['num_items'];
+		$context['posting_fields']['num_items']['input'] = array(
+			'after' => $txt['lp_tiny_slider']['num_items_subtext'],
 			'type' => 'number',
 			'attributes' => array(
-				'id'    => 'items',
+				'id'    => 'num_items',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['items']
+				'value' => $context['lp_block']['options']['parameters']['num_items']
 			)
 		);
 
@@ -408,17 +425,27 @@ class TinySlider extends Plugin
 			)
 		);
 
-		$context['posting_fields']['images']['label']['text'] = $txt['lp_tiny_slider']['images'];
-		$context['posting_fields']['images']['input'] = array(
-			'type' => 'textarea',
-			'after' => $txt['lp_tiny_slider']['images_subtext'],
-			'attributes' => array(
-				'id'       => 'images',
-				'value'    => $context['lp_block']['options']['parameters']['images'],
-				'required' => true
-			),
-			'tab' => 'content'
-		);
+		$this->loadTemplate();
+
+		addInlineJavaScript('
+		function handleImages() {
+			return {
+				images: ' . ($context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
+				addNewImage() {
+					this.images.push({
+						link: "",
+						title: ""
+					})
+				},
+				removeImage(index) {
+					this.images.splice(index, 1)
+				}
+			}
+		}');
+
+		$context['posting_fields']['images']['label']['html'] = $txt['lp_tiny_slider']['images'];
+		$context['posting_fields']['images']['input']['html'] = tiny_slider_images();
+		$context['posting_fields']['images']['input']['tab']  = 'content';
 	}
 
 	/**
@@ -436,17 +463,18 @@ class TinySlider extends Plugin
 		$html = '
 		<div id="tiny_slider' . $block_id . '">';
 
-		$images = explode(PHP_EOL, $parameters['images']);
+		$images = json_decode($parameters['images'], true);
+
 		foreach ($images as $image) {
-			$image = explode("|", $image);
+			[$link, $title] = [$image['link'], $image['title']];
 
 			$html .= '
 			<div class="item">
-				<img ' . (!empty($parameters['lazyload']) ? 'class="tns-lazy-img" data-' : '') . 'src="' . $image[0] . '" alt="' . (!empty($image[1]) ? $image['1'] : '') . '"' . (!empty($parameters['fixed_width']) ? ' width="' . $parameters['fixed_width'] . '"' : '') . '>';
+				<img ' . (!empty($parameters['lazyload']) ? 'class="tns-lazy-img" data-' : '') . 'src="' . $link . '" alt="' . (!empty($title) ? $title : '') . '"' . (!empty($parameters['fixed_width']) ? ' width="' . $parameters['fixed_width'] . '"' : '') . '>';
 
-			if (!empty($image[1])) {
+			if (!empty($title)) {
 				$html .= '
-				<p>' . $image['1'] . '</p>';
+				<p>' . $title . '</p>';
 			}
 
 			$html .= '
@@ -462,10 +490,10 @@ class TinySlider extends Plugin
 			<ul class="thumbnails customize-thumbnails"' . (!empty($parameters['controls']) ? ' style="margin-bottom: -30px"' : '') . '>';
 
 			foreach ($images as $image) {
-				$image = explode("|", $image);
+				[$link, $title] = [$image['link'], $image['title']];
 
 				$html .= '
-				<li><img src="' . $image[0] . '" alt="' . (!empty($image[1]) ? $image['1'] : '') . '"></li>';
+				<li><img src="' . $link . '" alt="' . (!empty($title) ? $title : '') . '"></li>';
 			}
 
 			$html .= '
@@ -517,7 +545,7 @@ class TinySlider extends Plugin
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->axis) . '",
-				items: ' . (!empty($parameters['items']) ? $parameters['items'] : $this->items) . ',
+				items: ' . (!empty($parameters['num_items']) ? $parameters['num_items'] : $this->num_items) . ',
 				gutter: ' . (!empty($parameters['gutter']) ? $parameters['gutter'] : $this->gutter) . ',
 				edgePadding: ' . (!empty($parameters['edge_padding']) ? $parameters['edge_padding'] : $this->edge_padding) . ',
 				fixedWidth: ' . (!empty($parameters['fixed_width']) ? $parameters['fixed_width'] : $this->fixed_width) . ',

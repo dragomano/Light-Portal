@@ -132,10 +132,10 @@ class WhosOnline extends Plugin
 			$online_list[] = Helpers::getText(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
 
 		if (!empty($online_list))
-			echo ' (' . implode(', ', $online_list) . ')';
+			echo ' (' . sentence_list($online_list) . ')';
 
 		echo '
-			<br>' . implode(', ', $whos_online['list_users_online']);
+			<br>' . sentence_list($whos_online['list_users_online']);
 
 		if (!empty($parameters['show_group_key']) && !empty($whos_online['online_groups'])) {
 			$groups = [];

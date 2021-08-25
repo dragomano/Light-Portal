@@ -4,8 +4,8 @@ return [
 	'title' => 'Image slider',
 	'description' => 'Tiny slider for all purposes.',
 	'axis' => 'The axis of the slider',
-	'items' => 'Number of slides being displayed in the viewport',
-	'items_subtext' => 'If slides less or equal than items, the slider won\'t be initialized.',
+	'num_items' => 'Number of slides being displayed in the viewport',
+	'num_items_subtext' => 'If slides less or equal than items, the slider won\'t be initialized.',
 	'gutter' => 'Space between slides (in pixels)',
 	'edge_padding' => 'Space on the outside (in pixels)',
 	'controls' => 'Display prev/next buttons',
@@ -27,28 +27,7 @@ return [
 	'mouse_drag' => 'Changing slides by dragging them',
 	'lazyload' => 'Enable lazyloading images that are currently not viewed, thus saving bandwidth',
 	'images' => 'Image list',
-	'images_subtext' => 'One image url per line. Example:<br>
-		<pre>
-			<code class="bbc_code">
-				https://picsum.photos/seed/picsum1/300/200
-				<br>
-				https://picsum.photos/seed/picsum2/300/200
-				<br>
-				https://picsum.photos/seed/picsum3/300/200
-				<br>
-				https://picsum.photos/seed/picsum4/300/200
-			</code>
-		</pre>
-		<br>You can specify captions:<br>
-		<pre>
-			<code class="bbc_code">
-				https://picsum.photos/seed/picsum1/300/200|Caption 1
-				<br>
-				https://picsum.photos/seed/picsum2/300/200|Caption 2
-				<br>
-				https://picsum.photos/seed/picsum3/300/200|Caption 3
-				<br>
-				https://picsum.photos/seed/picsum4/300/200|Caption 4
-			</code>
-		</pre>',
+	'title_placeholder' => 'Title (optional)',
+	'link_placeholder' => 'Image link',
+	'image_add' => 'Add new image',
 ];
