@@ -172,10 +172,11 @@ class CurrentMonth extends Plugin
 			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
 
 			// Auto title
-			if (isset($context['preview_title']) && empty($context['preview_title']))
+			if (isset($context['preview_title']) && empty($context['preview_title'])) {
 				$context['preview_title'] = $title;
-			elseif (empty($context['lp_active_blocks'][$block_id]['title'][$user_info['language']]))
+			} elseif (!empty($block_id) && empty($context['lp_active_blocks'][$block_id]['title'][$user_info['language']])) {
 				$context['lp_active_blocks'][$block_id]['title'][$user_info['language']] = $title;
+			}
 
 			$this->showCurrentMonthGrid($calendar_data);
 		}

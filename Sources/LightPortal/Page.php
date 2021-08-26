@@ -241,7 +241,7 @@ class Page
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
 				'alias' => $row['alias'],
-				'link'  => $scripturl . '?' . LP_ACTION_PAGE . '=' . $row['alias'],
+				'link'  => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 				'image' => $image
 			);
 		}

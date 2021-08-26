@@ -206,6 +206,18 @@
 .lp_tabs section .choices__inner {
   border-radius: 6px;
 }
+.lp_tabs section .add_option {
+  width: 100%;
+}
+.lp_tabs section .add_option select,
+.lp_tabs section .add_option input {
+  width: 100%;
+}
+@media screen and (max-width: 680px) {
+  .lp_tabs section .add_option .plugin_options td:first-child {
+    display: none;
+  }
+}
 /* Checkbox toggler */
 .checkbox {
   vertical-align: top;
@@ -302,10 +314,15 @@
 .related_pages {
   margin-top: 1em;
 }
-.related_pages .article_list {
-  grid-template-columns: repeat(4, 1fr);
+.related_pages .cat_bar {
+  border-radius: 6px;
 }
-.related_pages .article_list .windowbg {
+.related_pages .article_list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-gap: 0 10px;
+}
+.related_pages .article_list > div {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

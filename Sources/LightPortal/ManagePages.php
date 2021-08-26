@@ -682,7 +682,7 @@ class ManagePages
 			'options'     => $options
 		);
 
-		if (!empty($modSettings['lp_prohibit_php']) && !empty($modSettings['lp_page_editor_type_default']) && $modSettings['lp_page_editor_type_default'] == 'php') {
+		if (!empty($modSettings['lp_prohibit_php']) && !$user_info['is_admin'] && $context['lp_page']['type'] == 'php') {
 			$context['lp_page']['type'] = 'bbc';
 		}
 
@@ -905,7 +905,7 @@ class ManagePages
 		$context['posting_fields']['category']['input'] = array(
 			'type'     => 'select',
 			'attributes' => array(
-				'disabled' => empty($allCategories[1])
+				'disabled' => count($allCategories) < 2
 			)
 		);
 

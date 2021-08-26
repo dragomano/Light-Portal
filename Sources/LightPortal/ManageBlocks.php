@@ -505,8 +505,6 @@ class ManageBlocks
 			$context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_block']['title'][$lang['filename']] ?? '';
 		}
 
-		$context['lp_block']['title'] = array_filter($context['lp_block']['title']);
-
 		Helpers::cleanBbcode($context['lp_block']['title']);
 	}
 
@@ -766,7 +764,7 @@ class ManageBlocks
 
 		checkSubmitOnce('free');
 
-		$context['preview_title']   = $context['lp_block']['title'][$context['user']['language']];
+		$context['preview_title']   = $context['lp_block']['title'][$context['user']['language']] ?? '';
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
 		Helpers::cleanBbcode($context['preview_title']);
@@ -854,7 +852,7 @@ class ManageBlocks
 			'{db_prefix}lp_blocks',
 			array(
 				'user_id'       => 'int',
-				'icon'          => 'string-60',
+				'icon'          => 'string',
 				'type'          => 'string',
 				'note'          => 'string',
 				'content'       => 'string-65534',

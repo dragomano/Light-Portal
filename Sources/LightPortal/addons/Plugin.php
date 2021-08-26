@@ -37,6 +37,20 @@ abstract class Plugin
 	public $icon = 'fas fa-puzzle-piece';
 
 	/**
+	 * Addon author
+	 *
+	 * @var string
+	 */
+	public $author = '';
+
+	/**
+	 * Addon site link
+	 *
+	 * @var string
+	 */
+	public $link = '';
+
+	/**
 	 * List of required addons separated by comma
 	 *
 	 * @var array

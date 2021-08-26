@@ -71,9 +71,9 @@ function template_manage_plugins()
 					</p>';
 		}
 
-		if (!empty($plugin['author']) && $plugin['author'] !== 'Bugo') {
+		if (!empty($plugin['author'])) {
 			echo '
-					<p>', $plugin['author'], (!empty($plugin['link']) && $plugin['link'] !== 'https://dragomano.ru/mods/light-portal' ? (' | ' . $plugin['link']) : ''), '</p>';
+					<p>', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '</p>';
 		}
 
 		echo '

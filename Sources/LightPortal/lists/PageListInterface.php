@@ -22,5 +22,4 @@ interface PageListInterface
 	public function showAll();
 	public function getList(): array;
 	public function getAll(int $start, int $items_per_page, string $sort): array;
-	public function getTotalCount(): int;
 }

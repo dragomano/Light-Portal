@@ -135,7 +135,7 @@ class WhosOnline extends Plugin
 			echo ' (' . sentence_list($online_list) . ')';
 
 		echo '
-			<br>' . sentence_list($whos_online['list_users_online']);
+			<br>' . implode(', ', $whos_online['list_users_online']);
 
 		if (!empty($parameters['show_group_key']) && !empty($whos_online['online_groups'])) {
 			$groups = [];

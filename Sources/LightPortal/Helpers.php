@@ -114,10 +114,10 @@ class Helpers
 	}
 
 	/**
-	 * @param string $icon
+	 * @param null|string $icon
 	 * @return string
 	 */
-	public static function getIcon(string $icon = ''): string
+	public static function getIcon(?string $icon = ''): string
 	{
 		global $context;
 

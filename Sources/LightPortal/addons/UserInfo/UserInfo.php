@@ -121,6 +121,16 @@ class UserInfo extends Plugin
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>';
 
+			if (!empty($context['allow_light_portal_manage_own_blocks'])) {
+				echo '
+				<li>
+					<hr>
+					', $fa ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], '">
+						', $txt['lp_blocks_add'], '
+					</a>
+				</li>';
+			}
+
 			if (!empty($context['allow_light_portal_manage_own_pages'])) {
 				echo '
 				<li>

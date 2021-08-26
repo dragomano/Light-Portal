@@ -308,6 +308,21 @@
 		.choices__inner {
 			.border-radius;
 		}
+
+		.add_option {
+			width: 100%;
+
+			select,
+			input {
+				width: 100%;
+			}
+
+			@media screen and (max-width: 680px) {
+				.plugin_options td:first-child {
+					display: none;
+				}
+			}
+		}
 	}
 }
 
@@ -438,10 +453,16 @@
 .related_pages {
 	margin-top: 1em;
 
-	.article_list {
-		grid-template-columns: repeat(4, 1fr);
+	.cat_bar {
+		border-radius: 6px;
+	}
 
-		.windowbg {
+	.article_list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		grid-gap: 0 10px;
+
+		& > div {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;

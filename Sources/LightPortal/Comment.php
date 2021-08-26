@@ -349,7 +349,7 @@ class Comment
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE WHEN num_comments > 0 THEN num_comments - {int:num_items}
+			SET num_comments = CASE WHEN num_comments - {int:num_items} >= 0 THEN num_comments - {int:num_items}
 				ELSE num_comments END
 			WHERE alias = {string:alias}',
 			array(

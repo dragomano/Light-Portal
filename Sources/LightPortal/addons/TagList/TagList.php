@@ -30,7 +30,8 @@ class TagList extends Plugin
 	 */
 	public function blockOptions(array &$options)
 	{
-		$options['tag_list']['parameters']['source'] = 'lp_tags';
+		$options['tag_list']['parameters']['source']  = 'lp_tags';
+		$options['tag_list']['parameters']['sorting'] = 'name';
 	}
 
 	/**
@@ -43,7 +44,8 @@ class TagList extends Plugin
 		if ($type !== 'tag_list')
 			return;
 
-		$parameters['source'] = FILTER_SANITIZE_STRING;
+		$parameters['source']  = FILTER_SANITIZE_STRING;
+		$parameters['sorting'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**
@@ -59,7 +61,7 @@ class TagList extends Plugin
 		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list']['source_set']);
 
 		if (!class_exists('\Bugo\Optimus\Keywords'))
-			$sources = $sources['lp_tags'];
+			unset($sources['keywords']);
 
 		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
 		$context['posting_fields']['source']['input'] = array(
@@ -77,6 +79,23 @@ class TagList extends Plugin
 				'selected' => $key == $context['lp_block']['options']['parameters']['source']
 			);
 		}
+
+		$context['posting_fields']['sorting']['label']['text'] = $txt['lp_tag_list']['sorting'];
+		$context['posting_fields']['sorting']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'sorting'
+			),
+			'options' => array()
+		);
+
+		$sortingSet = array_combine(array('name', 'frequency'), $txt['lp_tag_list']['sorting_set']);
+		foreach ($sortingSet as $key => $value) {
+			$context['posting_fields']['sorting']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['sorting']
+			);
+		}
 	}
 
 	/**
@@ -84,9 +103,10 @@ class TagList extends Plugin
 	 *
 	 * Получаем ключевые слова всех тем
 	 *
+	 * @param string $sort
 	 * @return array
 	 */
-	public function getAllTopicKeywords(): array
+	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -98,8 +118,10 @@ class TagList extends Plugin
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
 			GROUP BY ok.id, ok.name
-			ORDER BY ok.name DESC',
-			array()
+			ORDER BY {raw:sort}',
+			array(
+				'sort' => $sort
+			)
 		);
 
 		$keywords = [];
@@ -134,11 +156,11 @@ class TagList extends Plugin
 		if ($parameters['source'] == 'lp_tags') {
 			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', ...array(0, 0, 'value'));
+				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', ...array(0, 0, $parameters['sorting'] == 'name' ? 'value' : 'num DESC'));
 		} else {
 			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(__CLASS__, 'getAllTopicKeywords');
+				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] == 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
 		if (!empty($tag_list)) {

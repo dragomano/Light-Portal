@@ -118,7 +118,8 @@ class RecentTopics extends Plugin
 			'attributes' => array(
 				'id'      => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics']['update_interval'];

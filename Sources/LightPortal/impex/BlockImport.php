@@ -142,7 +142,7 @@ class BlockImport extends AbstractImport
 					array(
 						'block_id'      => 'int',
 						'user_id'       => 'int',
-						'icon'          => 'string-60',
+						'icon'          => 'string',
 						'type'          => 'string',
 						'note'          => 'string',
 						'content'       => 'string-65534',

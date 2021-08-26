@@ -192,7 +192,7 @@ class Category implements PageListInterface
 	 */
 	public function showAll()
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings;
 
 		$context['page_title']     = $txt['lp_all_categories'];
 		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=categories';
@@ -204,15 +204,18 @@ class Category implements PageListInterface
 
 		$listOptions = array(
 			'id' => 'categories',
-			'items_per_page' => 0,
+			'items_per_page' => $modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $context['page_title'],
 			'no_items_label' => $txt['lp_no_categories'],
 			'base_href' => $context['canonical_url'],
+			'default_sort_col' => 'name',
 			'get_items' => array(
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalCount')
+				'function' => function () {
+					return count($this->getAll());
+				}
 			),
 			'columns' => array(
 				'name' => array(
@@ -225,6 +228,10 @@ class Category implements PageListInterface
 							return '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' . (!empty($entry['desc']) ? '<p class="smalltext">' . $entry['desc'] . '</p>' : '');
 						},
 						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'c.name DESC',
+						'reverse' => 'c.name'
 					)
 				),
 				'num_pages' => array(
@@ -234,6 +241,10 @@ class Category implements PageListInterface
 					'data' => array(
 						'db'    => 'num_pages',
 						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'frequency DESC',
+						'reverse' => 'frequency'
 					)
 				)
 			),
@@ -295,17 +306,18 @@ class Category implements PageListInterface
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.priority'): array
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
 		global $smcFunc, $scripturl, $txt;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, COALESCE(c.category_id, 0) AS category_id, c.name, c.description, c.priority
+			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
+			GROUP BY c.category_id, c.name, c.description
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
@@ -320,51 +332,18 @@ class Category implements PageListInterface
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($items[$row['category_id']])) {
-				$items[$row['category_id']] = array(
-					'name'      => $row['name'] ?: $txt['lp_no_category'],
-					'desc'      => $row['description'],
-					'link'      => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
-					'num_pages' => 0
-				);
-			}
-
-			$items[$row['category_id']]['num_pages']++;
+			$items[$row['category_id']] = array(
+				'name'      => $row['name'] ?: $txt['lp_no_category'],
+				'desc'      => $row['description'],
+				'link'      => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
+				'num_pages' => $row['frequency']
+			);
 		}
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		uasort($items, function ($a, $b) {
-			return $a['num_pages'] < $b['num_pages'];
-		});
-
 		return $items;
-	}
-
-	/**
-	 * Get the total number of categories
-	 *
-	 * Подсчитываем общее количество рубрик
-	 *
-	 * @return int
-	 */
-	public function getTotalCount(): int
-	{
-		global $smcFunc;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT COUNT(category_id)
-			FROM {db_prefix}lp_categories',
-			array()
-		);
-
-		[$num_items] = $smcFunc['db_fetch_row']($request);
-
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
-
-		return $num_items + 1;
 	}
 
 	/**

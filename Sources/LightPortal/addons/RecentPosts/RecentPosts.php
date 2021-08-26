@@ -90,7 +90,8 @@ class RecentPosts extends Plugin
 			'attributes' => array(
 				'id' => 'link_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
 		$link_types = array_combine(array('link', 'preview'), $txt['lp_recent_posts']['type_set']);
@@ -152,7 +153,8 @@ class RecentPosts extends Plugin
 			'attributes' => array(
 				'id'      => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
-			)
+			),
+			'tab' => 'appearance'
 		);
 
 		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_posts']['update_interval'];

@@ -386,7 +386,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-					<span class="remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)"><i class="fas fa-trash-alt"></i> ', $txt['remove'], '</span>';
+					<span class="remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')"><i class="fas fa-minus-circle"></i> ', $txt['remove'], '</span>';
 
 		echo '
 				</div>';
@@ -426,35 +426,33 @@ function show_related_pages()
 		return;
 
 	echo '
-		<aside class="related_pages">
+		<div class="related_pages">
 			<div class="cat_bar">
 				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
 			</div>
-			<div class="roundframe">
-				<div class="article_list">';
+			<div class="article_list">';
 
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
-					<div class="windowbg">
-						<a href="', $page['link'], '">';
+				<div class="windowbg">
+					<a href="', $page['link'], '">';
 
 		if (!empty($page['image'])) {
 			echo '
-							<div class="article_image">
-								<img alt="" src="', $page['image'], '">
-							</div>';
+						<div class="article_image">
+							<img alt="" src="', $page['image'], '">
+						</div>';
 		}
 
 		echo '
-						</a>
-						<a href="', $page['link'], '">', $page['title'], '</a>
-					</div>';
+					</a>
+					<a href="', $page['link'], '">', $page['title'], '</a>
+				</div>';
 	}
 
 	echo '
-				</div>
 			</div>
-		</aside>';
+		</div>';
 }
 
 /**

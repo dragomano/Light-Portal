@@ -71,13 +71,13 @@ $tables[] = array(
 		array(
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 60,
+			'size' => 255,
 			'null' => true
 		),
 		array(
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 30,
+			'size' => 255,
 			'null' => false
 		),
 		array(

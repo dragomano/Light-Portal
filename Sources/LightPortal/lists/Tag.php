@@ -204,7 +204,9 @@ class Tag implements PageListInterface
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => array($this, 'getTotalCount')
+				'function' => function () {
+					return count($this->getAll());
+				}
 			),
 			'columns' => array(
 				'value' => array(
@@ -230,6 +232,10 @@ class Tag implements PageListInterface
 					'data' => array(
 						'db'    => 'frequency',
 						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'num DESC',
+						'reverse' => 'num'
 					)
 				)
 			),
@@ -286,18 +292,19 @@ class Tag implements PageListInterface
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start, int $items_per_page, string $sort): array
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
-		global $smcFunc, $scripturl;
+		global $smcFunc, $scripturl, $context;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT t.tag_id, t.value
+			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
+			GROUP BY t.tag_id, t.value
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
@@ -311,61 +318,18 @@ class Tag implements PageListInterface
 		);
 
 		$items = [];
-		$i = 1;
-
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			!isset($items[$row['tag_id']])
-				? $i = 1
-				: $i++;
-
 			$items[$row['tag_id']] = array(
 				'value'     => $row['value'],
 				'link'      => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id'],
-				'frequency' => $i
+				'frequency' => $row['num']
 			);
 		}
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		uasort($items, function ($a, $b) {
-			return $a['frequency'] < $b['frequency'];
-		});
-
 		return $items;
-	}
-
-	/**
-	 * Get the total number of pages with tags
-	 *
-	 * Подсчитываем общее количество страниц с тегами
-	 *
-	 * @return int
-	 */
-	public function getTotalCount(): int
-	{
-		global $smcFunc;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT COUNT(p.page_id)
-			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
-			WHERE p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})',
-			array(
-				'status'       => Page::STATUS_ACTIVE,
-				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
-			)
-		);
-
-		[$num_items] = $smcFunc['db_fetch_row']($request);
-
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
-
-		return $num_items;
 	}
 
 	/**

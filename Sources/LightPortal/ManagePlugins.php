@@ -56,12 +56,19 @@ class ManagePlugins
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
 			$custom_type = '';
+			$author = '';
+			$link = '';
 			$requires = [];
 
 			try {
 				$className = __NAMESPACE__ . '\Addons\\' . $item . '\\' . $item;
 				$addonClass = new \ReflectionClass($className);
-				$comments = explode('* ', $addonClass->getDocComment());
+
+				if ($addonClass->hasProperty('author'))
+					$author = $addonClass->getProperty('author')->getValue(new $className);
+
+				if ($addonClass->hasProperty('link'))
+					$link = $addonClass->getProperty('link')->getValue(new $className);
 
 				if ($addonClass->hasProperty('requires'))
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
@@ -77,8 +84,8 @@ class ManagePlugins
 				'name'       => $item,
 				'snake_name' => $snake_name = Helpers::getSnakeName($item),
 				'desc'       => $txt['lp_' . $snake_name]['description'] ?? '',
-				'link'       => !empty($comments[3]) ? trim(explode(' ', $comments[3])[1]) : '',
-				'author'     => !empty($comments[4]) ? trim(explode(' ', $comments[4])[1]) : '',
+				'author'     => $author ?: '',
+				'link'       => $link ?: '',
 				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'      => $custom_type ?: $this->getTypes($snake_name),
 				'settings'   => $config_vars[$snake_name] ?? [],
