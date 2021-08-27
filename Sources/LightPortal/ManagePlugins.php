@@ -81,15 +81,16 @@ class ManagePlugins
 			}
 
 			return [
-				'name'       => $item,
-				'snake_name' => $snake_name = Helpers::getSnakeName($item),
-				'desc'       => $txt['lp_' . $snake_name]['description'] ?? '',
-				'author'     => $author ?: '',
-				'link'       => $link ?: '',
-				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $custom_type ?: $this->getTypes($snake_name),
-				'settings'   => $config_vars[$snake_name] ?? [],
-				'requires'   => array_diff($requires, $context['lp_enabled_plugins'])
+				'name'        => $item,
+				'snake_name'  => $snake_name = Helpers::getSnakeName($item),
+				'label_class' => $this->getLabelClass($snake_name),
+				'desc'        => $txt['lp_' . $snake_name]['description'] ?? '',
+				'author'      => $author ?: '',
+				'link'        => $link ?: '',
+				'status'      => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
+				'types'       => $custom_type ?: $this->getTypes($snake_name),
+				'settings'    => $config_vars[$snake_name] ?? [],
+				'requires'    => array_diff($requires, $context['lp_enabled_plugins'])
 			];
 		}, $context['lp_plugins']);
 
@@ -222,6 +223,22 @@ class ManagePlugins
 		}
 
 		$context['lp_plugins'] = array_unique($context['lp_plugins']);
+	}
+
+	/**
+	 * @param string $snake_name
+	 * @return string
+	 */
+	private function getLabelClass(string $snake_name): string
+	{
+		global $context;
+
+		if (empty($context['lp_' . $snake_name]) || empty($type = $context['lp_' . $snake_name]['type']))
+			return '';
+
+		$type = is_array($type) ? implode('_', $type) : $type;
+
+		return ' lp_type_' . $type;
 	}
 
 	/**

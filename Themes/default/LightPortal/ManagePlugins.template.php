@@ -41,7 +41,7 @@ function template_manage_plugins()
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<h4>', $plugin['name'], ' <strong class="new_posts">', $plugin['types'], '</strong></h4>
+				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['types'], '</strong></h4>
 				<div>
 					<p>';
 

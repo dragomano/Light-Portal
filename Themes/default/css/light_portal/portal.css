@@ -1173,6 +1173,27 @@ section #display_head span {
 .form_settings input[type="url"] {
   width: 100%;
 }
+.new_posts.lp_type_block {
+  background: #667d99;
+}
+.new_posts.lp_type_other {
+  background: #414141;
+}
+.new_posts.lp_type_impex {
+  background: #4b93d1;
+}
+.new_posts.lp_type_editor {
+  background: #48bf83;
+}
+.new_posts.lp_type_article {
+  background: #ef564f;
+}
+.new_posts.lp_type_comment {
+  background: #9354ca;
+}
+.new_posts.lp_type_frontpage {
+  background: #d68b4f;
+}
 .lp_categories input {
   width: 100%;
 }
