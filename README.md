@@ -5,7 +5,7 @@
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
-* **Compatible with:** SMF 2.1 RC3+ / PHP 7.3+
+* **Compatible with:** SMF 2.1 RC4+ / PHP 7.3+
 * **Tested on:** PHP 8.0.9 / MariaDB 10.5.10 / MySQL 5.7.25 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
 * **Languages:** English, Russian, Ukrainian, Polish, Spanish, French, Turkish
