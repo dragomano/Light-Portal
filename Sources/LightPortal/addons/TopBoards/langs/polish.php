@@ -1,8 +1,9 @@
 <?php
 
-$txt['lp_block_types']['top_boards']              = 'Popularne działy';
-$txt['lp_block_types_descriptions']['top_boards'] = 'Wyświetla listę popularnych działów.';
-
-$txt['lp_top_boards_addon_num_boards']        = 'Liczba wyświetlanych działów';
-$txt['lp_top_boards_addon_show_numbers_only'] = 'Wyświetlaj tylko liczby';
-$txt['lp_top_boards_addon_topics']            = 'wątek, wątków';
+return [
+	'title' => 'Popularne działy',
+	'description' => 'Wyświetla listę popularnych działów.',
+	'num_boards' => 'Liczba wyświetlanych działów',
+	'show_numbers_only' => 'Wyświetlaj tylko liczby',
+	'topics' => 'wątek, wątków'
+];

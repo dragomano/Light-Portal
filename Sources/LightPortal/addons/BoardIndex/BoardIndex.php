@@ -1,28 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\BoardIndex;
-
 /**
  * BoardIndex
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\BoardIndex;
 
-class BoardIndex
+use Bugo\LightPortal\Addons\Plugin;
+
+class BoardIndex extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
+	public $type = 'other';
 
 	/**
 	 * @return void
@@ -36,16 +35,16 @@ class BoardIndex
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt, $scripturl, $modSettings;
 
-		$txt['lp_board_index_description'] = sprintf($txt['lp_board_index_description'], $scripturl . '?action=forum');
+		$txt['lp_board_index']['description'] = sprintf($txt['lp_board_index']['description'], $scripturl . '?action=forum');
 
 		if (!isset($modSettings['lp_board_index_addon_allow_for_spiders']))
 			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);
 
-		$config_vars[] = array('check', 'lp_board_index_addon_allow_for_spiders');
+		$config_vars['board_index'][] = array('check', 'allow_for_spiders');
 	}
 
 	/**

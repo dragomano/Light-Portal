@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -88,9 +88,9 @@ class BlockImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'block_id'      => $block_id = intval($item['block_id']),
+					'user_id'       => intval($item['user_id']),
 					'icon'          => $item->icon,
-					'icon_type'     => $item->icon_type,
-					'type'          => $item->type,
+					'type'          => str_replace('md', 'markdown', $item->type),
 					'note'          => $item->note,
 					'content'       => $item->content,
 					'placement'     => $item->placement,
@@ -98,9 +98,9 @@ class BlockImport extends AbstractImport
 					'permissions'   => intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
-					'title_class'   => $item->title_class,
+					'title_class'   => strpos($item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,
 					'title_style'   => $item->title_style,
-					'content_class' => $item->content_class,
+					'content_class' => strpos($item->content_class, 'div.') !== false ? 'roundframe' : $item->content_class,
 					'content_style' => $item->content_style
 				];
 
@@ -141,8 +141,8 @@ class BlockImport extends AbstractImport
 					'{db_prefix}lp_blocks',
 					array(
 						'block_id'      => 'int',
-						'icon'          => 'string-60',
-						'icon_type'     => 'string-10',
+						'user_id'       => 'int',
+						'icon'          => 'string',
 						'type'          => 'string',
 						'note'          => 'string',
 						'content'       => 'string-65534',

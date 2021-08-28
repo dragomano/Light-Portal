@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, ManageBlocks};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -65,7 +65,7 @@ class BlockExport extends AbstractExport
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, pt.lang, pt.title, pp.name, pp.value
+				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (!empty($blocks) ? '
@@ -80,7 +80,8 @@ class BlockExport extends AbstractExport
 			if (!isset($items[$row['block_id']]))
 				$items[$row['block_id']] = array(
 					'block_id'      => $row['block_id'],
-					'icon'          => $row['icon_type'] . 'fa-' . $row['icon'],
+					'user_id'       => $row['user_id'],
+					'icon'          => $row['icon'],
 					'type'          => $row['type'],
 					'note'          => $row['note'],
 					'content'       => $row['content'],
@@ -95,10 +96,10 @@ class BlockExport extends AbstractExport
 					'content_style' => $row['content_style']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
@@ -115,8 +116,8 @@ class BlockExport extends AbstractExport
 	 *
 	 * @return string
 	 */
-	protected function getXmlFile()
-	{
+	protected function getXmlFile(): string
+    {
 		if (empty($items = $this->getData()))
 			return '';
 
@@ -129,7 +130,7 @@ class BlockExport extends AbstractExport
 		foreach ($items as $item) {
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
-				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'user_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
 
 				if (in_array($key, ['titles', 'params'])) {
 					foreach ($val as $k => $v) {

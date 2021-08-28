@@ -19,7 +19,7 @@ $txt['lp_my_pages'] = 'Sayfalarım';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Varsayılan';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Lütfen en az %d karakter girin';
 
 // Ayarlar
 $txt['lp_settings'] = 'Portal ayarları';
@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Bloklar, türlerine bağlı olarak herhangi
 $txt['lp_blocks_add_instruction'] = 'Üzerine tıklayarak istediğiniz bloğu seçin.';
 $txt['lp_blocks_edit_title'] = 'Blok düzenle';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Simgelerin listesi';
 $txt['lp_block_type'] = 'Blok türü';
 $txt['lp_block_note'] = 'Not';
 $txt['lp_block_priority'] = 'Öncelik';
-$txt['lp_block_icon_type'] = 'Simge türü';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Yerleşim';
 $txt['lp_block_placement_set'] = array('Başlık', 'Orta (üst)', 'Sol taraf', 'Sağ taraf', 'Orta (alt)', 'Altbilgi');
 
@@ -186,12 +183,13 @@ $txt['lp_block_title_style'] = 'CSS başlık stili';
 $txt['lp_block_content_class'] = 'CSS içerik sınıfı';
 $txt['lp_block_content_style'] = 'CSS içerik stili';
 
-$txt['lp_block_types']['bbc'] = 'Özel BBC';
-$txt['lp_block_types']['html'] = 'Özel HTML';
-$txt['lp_block_types']['php'] = 'Özel PHP';
-$txt['lp_block_types_descriptions']['bbc'] = 'Bu blokta forumun herhangi bir BBC etiketi içerik olarak kullanılabilir.';
-$txt['lp_block_types_descriptions']['html'] = 'Bu blokta, herhangi bir HTML etiketini içerik olarak kullanabilirsiniz.';
-$txt['lp_block_types_descriptions']['php'] = 'Bu blokta, herhangi bir PHP kodunu içerik olarak kullanabilirsiniz.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Özel BBC';
+$txt['lp_html']['title'] = 'Özel HTML';
+$txt['lp_php']['title'] = 'Özel PHP';
+$txt['lp_bbc']['description'] = 'Bu blokta forumun herhangi bir BBC etiketi içerik olarak kullanılabilir.';
+$txt['lp_html']['description'] = 'Bu blokta, herhangi bir HTML etiketini içerik olarak kullanabilirsiniz.';
+$txt['lp_php']['description'] = 'Bu blokta, herhangi bir PHP kodunu içerik olarak kullanabilirsiniz.';
 
 // Sayfalar
 $txt['lp_pages'] = 'Sayfalar';
@@ -206,19 +204,16 @@ $txt['lp_pages_edit_title'] = 'Sayfayı düzenle';
 $txt['lp_pages_edit_description'] = 'Gerekli değişiklikleri yapın.';
 $txt['lp_pages_extra'] = 'Portal sayfaları';
 $txt['lp_pages_search'] = 'Takma ad veya başlık';
-$txt['lp_page_types']['bbc'] = 'BBC';
-$txt['lp_page_types']['html'] = 'HTML';
-$txt['lp_page_types']['php'] = 'PHP';
 $txt['lp_page_alias'] = 'Takma Ad';
 $txt['lp_page_alias_subtext'] = 'Sayfa takma adı Latin harfiyle başlamalı ve küçük Latin harfleri, sayıları ve alt çizgiden oluşmalıdır.';
 $txt['lp_page_type'] = 'Sayfa türü';
+$txt['lp_page_types'] = array('BBC', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Açıklama';
 $txt['lp_page_keywords'] = 'Anahtar Kelimeler';
 $txt['lp_page_keywords_placeholder'] = 'Etiketleri seçin veya yeni ekleyin';
 $txt['lp_page_publish_datetime'] = 'Yayın tarihi ve saati';
 $txt['lp_page_author'] = 'Yazarlık devri';
 $txt['lp_page_author_placeholder'] = 'Sayfaya hakları aktarmak için bir kullanıcı adı belirtin';
-$txt['lp_page_author_search_length'] = 'Lütfen en az 3 karakter girin';
 $txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver', 'Ana menüdeki öğe');
 
 // Sekmeler
@@ -247,39 +242,7 @@ $txt['lp_plugins'] = 'Eklentiler';
 $txt['lp_plugins_manage'] = 'Eklentileri yönet';
 $txt['lp_plugins_manage_description'] = 'Yüklü portal eklentileri burada listelenmiştir. <a class="bbc_link" href="%1$s" target="_blank" rel="noopener"> Talimatları </a> veya aşağıdaki "+" düğmesini kullanarak yeni bir tane oluşturabilirsiniz.';
 $txt['lp_plugins_desc'] = 'Eklentiler, portalın ve bileşenlerinin yeteneklerini artırarak çekirdekte bulunmayan ek özellikler sağlar.';
-$txt['lp_plugins_add'] = 'Eklenti ekle';
-$txt['lp_plugins_add_title'] = 'Eklenti ekleniyor';
-$txt['lp_plugins_add_description'] = 'Eklenti oluşturma sihirbazı, daha fazla değişiklik için eklenti iskeletini hazırlamanıza yardımcı olacaktır. Önerilen alanları dikkatlice doldurun.';
-$txt['lp_plugins_add_information'] = 'Eklenti dosyaları %1$s dizinine kaydedilecektir <br> Oraya baktığınızdan ve gerekli dosyaları kontrol ettiğinizden/düzenlediğinden emin olun.';
-
-$txt['lp_plugins_tab_content'] = 'Temel bilgiler';
-$txt['lp_plugins_tab_copyrights'] = 'Telif Hakları';
-$txt['lp_plugins_tab_settings'] = 'Ayarlar';
-$txt['lp_plugins_tab_tuning'] = 'Ek';
-
-$txt['lp_plugin_name'] = 'Eklenti adı';
-$txt['lp_plugin_name_subtext'] = 'Latin harfleriyle, boşluksuz!';
-$txt['lp_plugin_type'] = 'Eklenti türü';
-$txt['lp_plugin_type_set'] = array('Blok', 'Düzenleyici', 'Yorum widget\'i', 'İçerik ayrıştırıcı', 'Makaleler işleniyor', 'Ön sayfanın düzeni', 'İçe ve dışa aktar', 'Diğer');
-$txt['lp_plugin_site_subtext'] = 'Kullanıcıların bu eklentinin yeni sürümlerini indirebileceği web sitesi.';
-$txt['lp_plugin_license'] = 'Eklenti lisansı';
-$txt['lp_plugin_license_own'] = 'Kendi lisansı';
-$txt['lp_plugin_license_name'] = 'Lisans adı';
-$txt['lp_plugin_license_link'] = 'Lisans bağlantısı';
-$txt['lp_plugin_smf_hooks'] = 'SMF kancaları kullanıyor musunuz?';
-$txt['lp_plugin_components'] = 'Üçüncü şahıs betikleri mi kullanıyorsunuz?';
-$txt['lp_plugin_components_name'] = 'Bileşen adı';
-$txt['lp_plugin_components_link'] = 'Bileşen sitesine bağlantı';
-$txt['lp_plugin_components_author'] = 'Bileşen yazarı';
-
-$txt['lp_plugin_option_name'] = 'Seçenek adı (Latin)';
-$txt['lp_plugin_option_type'] = 'Seçenek türü';
-$txt['lp_plugin_option_type_set'] = array('Metin alanı', 'Web adresi', 'Giriş rengi', 'Giriş numarası', 'Onay Kutusu', 'Çoklu seçim', 'Seç');
-$txt['lp_plugin_option_default_value'] = 'Varsayılan değer';
-$txt['lp_plugin_option_variants'] = 'Olası değerler';
-$txt['lp_plugin_option_variants_placeholder'] = 'Virgülle ayrılmış çoklu seçenekler';
-$txt['lp_plugin_option_translations'] = 'Yerelleştirme';
-$txt['lp_plugin_new_option'] = 'Seçenek ekle';
+$txt['lp_plugins_types'] = array('Blok', 'Düzenleyici', 'Yorum widget\'i', 'İçerik ayrıştırıcı', 'Makaleler işleniyor', 'Ön sayfanın düzeni', 'İçe ve dışa aktar', 'Diğer');
 
 // Etiketler
 $txt['lp_all_page_tags'] = 'Tüm portal sayfası etiketleri';
@@ -327,14 +290,10 @@ $txt['lp_post_error_no_content'] = 'İçerik belirtilmedi! Bu gereklidir. ';
 $txt['lp_post_error_no_areas'] = '<strong>alanlar</strong> doldurulmadı. Bu gereklidir. ';
 $txt['lp_post_error_no_valid_areas'] = '<strong>alanlar</strong> yanlış ayarlandı!';
 $txt['lp_post_error_no_name'] = '<strong>ad</strong> alanı doldurulmadı. Bu gereklidir. ';
-$txt['lp_post_error_no_valid_name'] = 'Belirtilen isim kurallara uymuyor!';
-$txt['lp_post_error_no_unique_name'] = 'Bu isimde bir eklenti zaten var!';
-$txt['lp_post_error_no_description'] = 'Açıklama belirtilmedi! Bu gereklidir. ';
-$txt['lp_addon_not_installed'] = '%1$s eklentisi kurulu değil';
-$txt['lp_addon_add_failed'] = '<strong>/Sources/LightPortal/addons</strong> dizini yazılabilir olmalıdır!';
 $txt['lp_wrong_import_file'] = 'İçe aktarılacak yanlış dosya...';
 $txt['lp_import_failed'] = 'İçe aktarılamadı...';
 $txt['lp_wrong_template'] = 'Yanlış şablon. İçeriğe uygun bir şablon seçin. ';
+$txt['lp_addon_not_installed'] = '%1$s eklentisi kurulu değil';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = '<a href="%1$s">Portal ön sayfasını</a> görüntülüyor.';

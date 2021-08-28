@@ -19,7 +19,7 @@ $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Todavía no hay muchos bloques, pero existe
 $txt['lp_blocks_add_instruction'] = 'Seleccione el bloque deseado haciendo clic en él.';
 $txt['lp_blocks_edit_title'] = 'Edición de bloques';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Lista de los iconos';
 $txt['lp_block_type'] = 'Tipo de bloque';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Prioridad';
-$txt['lp_block_icon_type'] = 'Tipo de icono';
-$txt['lp_block_icon_type_set'] = array('Sólido', 'Regular', 'Marcas'); // Review later
 $txt['lp_block_placement'] = 'Colocación';
 $txt['lp_block_placement_set'] = array('Encabezado', 'Centro (arriba)', 'Lado izquierdo', 'Lado derecho', 'Centro (abajo)', 'Pie de página');
 
@@ -186,12 +183,13 @@ $txt['lp_block_title_style'] = 'Estilo de título CSS';
 $txt['lp_block_content_class'] = 'Clase de contenido CSS';
 $txt['lp_block_content_style'] = 'Estilo de contenido CSS';
 
-$txt['lp_block_types']['bbc'] = 'BBC personalizado';
-$txt['lp_block_types']['html'] ='HTML personalizado';
-$txt['lp_block_types']['php'] = 'PHP personalizado';
-$txt['lp_block_types_descriptions']['bbc'] ='En este bloque, las etiquetas BBC del foro se pueden utilizar como contenido.';
-$txt['lp_block_types_descriptions']['html'] = 'En este bloque, se puede utilizar cualquier etiqueta HTML como contenido.';
-$txt['lp_block_types_descriptions']['php'] = 'En este bloque, puede usar cualquier código PHP como contenido.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'BBC personalizado';
+$txt['lp_html']['title'] = 'HTML personalizado';
+$txt['lp_php']['title'] = 'PHP personalizado';
+$txt['lp_bbc']['description'] = 'En este bloque, las etiquetas BBC del foro se pueden utilizar como contenido.';
+$txt['lp_html']['description'] = 'En este bloque, se puede utilizar cualquier etiqueta HTML como contenido.';
+$txt['lp_php']['description'] = 'En este bloque, puede usar cualquier código PHP como contenido.';
 
 // Pages
 $txt['lp_pages'] = 'Páginas';
@@ -206,19 +204,16 @@ $txt['lp_pages_edit_title'] = 'Página de edición';
 $txt['lp_pages_edit_description'] = $txt['lp_pages_add_description'];
 $txt['lp_pages_extra'] = 'Páginas del portal';
 $txt['lp_pages_search'] = 'Alias o título';
-$txt['lp_page_types']['bbc'] = 'BBC';
-$txt['lp_page_types']['html'] = 'HTML';
-$txt['lp_page_types']['php'] = 'PHP';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'El alias de la página debe comenzar con una letra latina y consistir en letras minúsculas latinas, números y guiones bajos.';
 $txt['lp_page_type'] = 'Tipo de página';
+$txt['lp_page_types'] = array('BBC', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Descripción';
 $txt['lp_page_keywords'] = 'Palabras claves';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 $txt['lp_page_options'] = array('Mostrar el autor y la fecha de creación', 'Show related pages', 'Permitir comentarios', 'Item in main menu');
 
 // Tabs
@@ -247,39 +242,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>. or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_add'] = 'Add plugin';
-$txt['lp_plugins_add_title'] = 'Adding a plugin';
-$txt['lp_plugins_add_description'] = 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.';
-$txt['lp_plugins_add_information'] = 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.';
-
-$txt['lp_plugins_tab_content'] = 'Basic information';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Settings';
-$txt['lp_plugins_tab_tuning'] = 'Additional';
-
-$txt['lp_plugin_name'] = 'The plugin name';
-$txt['lp_plugin_name_subtext'] = 'In Latin letters, without spaces!';
-$txt['lp_plugin_type'] = 'The plugin type';
-$txt['lp_plugins_type_set'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'The layout of the frontpage', 'Import and export', 'Otro');
-$txt['lp_plugin_site_subtext'] = 'Website where users can download new versions of this plugin.';
-$txt['lp_plugin_license'] = 'The plugin license';
-$txt['lp_plugin_license_own'] = 'Own license';
-$txt['lp_plugin_license_name'] = 'The license name';
-$txt['lp_plugin_license_link'] = 'The license link';
-$txt['lp_plugin_smf_hooks'] = 'Are you using SMF hooks?';
-$txt['lp_plugin_components'] = 'Are you using third-party scripts?';
-$txt['lp_plugin_components_name'] = 'Component name';
-$txt['lp_plugin_components_link'] = 'Link to component site';
-$txt['lp_plugin_components_author'] = 'Component author';
-
-$txt['lp_plugin_option_name'] = 'Option name (Latin)';
-$txt['lp_plugin_option_type'] = 'Option type';
-$txt['lp_plugin_option_type_set'] = array('Text field', 'Web address', 'Input color', 'Input number', 'Checkbox', 'Multiple select', 'Select');
-$txt['lp_plugin_option_default_value'] = 'Default value';
-$txt['lp_plugin_option_variants'] = 'Possible values';
-$txt['lp_plugin_option_variants_placeholder'] = 'Multiple options separated by commas';
-$txt['lp_plugin_option_translations'] = 'Localization';
-$txt['lp_plugin_new_option'] = 'Add option';
+$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'The layout of the frontpage', 'Import and export', 'Otro');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Todas las etiquetas de página del portal';
@@ -327,14 +290,10 @@ $txt['lp_post_error_no_content'] = '¡El contenido no especificado! Es requerido
 $txt['lp_post_error_no_areas'] = 'El campo <strong>areas</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_valid_areas'] = '¡El campo de las <strong>zonas</strong> se configuró incorrectamente!';
 $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled out. It is required.';
-$txt['lp_post_error_no_valid_name'] = 'The specified name does not match the rules!';
-$txt['lp_post_error_no_unique_name'] = 'A plugin with this name already exists!';
-$txt['lp_post_error_no_description'] = 'The description not specified! It is required.';
-$txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
-$txt['lp_addon_add_failed'] = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
 $txt['lp_import_failed'] = 'Error al importar...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'Plugin %1$s no instalado';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viendo <a href="%1$s">la página principal del portal</a>.';
@@ -386,7 +345,7 @@ $txt['lp_articles_set'] = 'article, articles';
 $txt['lp_users_set'] = 'usuario, usuarios';
 $txt['lp_guests_set'] = 'invitado, invitados';
 $txt['lp_spiders_set'] = 'araña, arañas';
-$txt['lp_hidden_set'] = 'oculto, oculto';
+$txt['lp_hidden_set'] = 'oculto, ocultos';
 $txt['lp_buddies_set'] = 'amigo, amigos';
 
 // Credits

@@ -81,9 +81,9 @@ function template_show_page()
 		echo '
 			<div class="smalltext">';
 
-		foreach ($context['lp_page']['keywords'] as $id => $keyword) {
+		foreach ($context['lp_page']['keywords'] as $id => $key) {
 			echo '
-				<a class="button" href="', $scripturl, '?action=portal;sa=tags;id=', $id, '">', $keyword, '</a>';
+				<a class="button" href="', $key['link'], '">', $key['name'], '</a>';
 		}
 
 		echo '
@@ -180,7 +180,7 @@ function show_comment_block()
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
 
-	if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
+	if ($modSettings['lp_show_comment_block'] == 'none')
 		return;
 
 	if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
@@ -241,16 +241,19 @@ function show_comment_block()
 					</div>
 				</div>';
 
-	if ($context['user']['is_logged'])
-		echo '
+	if ($context['user']['is_logged']) {
+        echo '
 				<form
 					id="comment_form"
 					class="roundframe descbox"
 					accept-charset="', $context['character_set'], '"
 					x-ref="comment_form"
 					@submit.prevent="comment.add($event.target, $refs)"
-				>
-					', show_toolbar(), '
+				>';
+
+        show_toolbar();
+
+        echo '
 					<textarea
 						id="message"
 						name="message"
@@ -279,6 +282,7 @@ function show_comment_block()
 						disabled
 					>', $txt['post'], '</button>
 				</form>';
+    }
 
 	echo '
 			</div>
@@ -309,7 +313,7 @@ function show_comment_block()
  * @param int $level
  * @return void
  */
-function show_single_comment($comment, $i = 0, $level = 1)
+function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
 	global $context, $txt;
 
@@ -382,7 +386,7 @@ function show_single_comment($comment, $i = 0, $level = 1)
 		// Only comment author or admin can remove comments
 		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
 			echo '
-					<span class="remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)"><i class="fas fa-trash-alt"></i> ', $txt['remove'], '</span>';
+					<span class="remove_button floatright" data-id="', $comment['id'], '" @click="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')"><i class="fas fa-minus-circle"></i> ', $txt['remove'], '</span>';
 
 		echo '
 				</div>';
@@ -416,41 +420,39 @@ function show_single_comment($comment, $i = 0, $level = 1)
  */
 function show_related_pages()
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt;
 
 	if (empty($context['lp_page']['related_pages']))
 		return;
 
 	echo '
-		<aside class="related_pages">
+		<div class="related_pages">
 			<div class="cat_bar">
 				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
 			</div>
-			<div class="roundframe">
-				<div class="article_list">';
+			<div class="article_list">';
 
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
-					<div class="windowbg">
-						<a href="', $scripturl, '?page=', $page['alias'], '">';
+				<div class="windowbg">
+					<a href="', $page['link'], '">';
 
 		if (!empty($page['image'])) {
 			echo '
-							<div class="article_image">
-								<img alt="" src="', $page['image'], '">
-							</div>';
+						<div class="article_image">
+							<img alt="" src="', $page['image'], '">
+						</div>';
 		}
 
 		echo '
-						</a>
-						<a href="', $scripturl, '?page=', $page['alias'], '">', $page['title'], '</a>
-					</div>';
+					</a>
+					<a href="', $page['link'], '">', $page['title'], '</a>
+				</div>';
 	}
 
 	echo '
-				</div>
 			</div>
-		</aside>';
+		</div>';
 }
 
 /**

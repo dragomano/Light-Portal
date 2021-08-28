@@ -3,6 +3,8 @@ Plugins, or addons - add-ons that expand the capabilities of the Light Portal. T
 
 !> Since version 1.5, Light Portal has built-in functionality for creating plugin skeletons. To use it, go to the section _Admin -> Portal settings -> Plugins -> Add plugin_.
 
+!> Since version 1.9, the functionality for creating plugins has been moved to a separate plugin — **PluginMaker**. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
+
 ## Choosing the type of addon
 Currently, the following types of addons are available:
 
@@ -31,10 +33,6 @@ The `langs` directory is optional and is intended for language files if they are
 ```php
 <?php
 
-namespace Bugo\LightPortal\Addons\MyAddon;
-
-use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
-
 /**
  * MyAddon
  *
@@ -42,15 +40,17 @@ use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
  * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your addon, if it is not included with the portal)
  * @author Your nickname and email address
  * @copyright Year of creation of the addon and your nickname (again)
- * @license link to the license under which your addon is distributed and the name of the license
+ * @license Link to the license under which your addon is distributed and the name of the license
  *
- * @version 1.6 (version of the portal where your addon was developed and tested)
+ * @version 1.9 (version of the portal where your addon was developed and tested)
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\MyAddon;
 
-class MyAddon
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
+
+class MyAddon extends Plugin
 {
     // Used properties and methods
 }

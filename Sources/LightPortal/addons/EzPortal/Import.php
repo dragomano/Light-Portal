@@ -1,24 +1,21 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EzPortal;
-
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
-
 /**
  * Import.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\EzPortal;
+
+use Bugo\LightPortal\Impex\AbstractImport;
+use Bugo\LightPortal\Helpers;
 
 class Import extends AbstractImport
 {
@@ -33,13 +30,13 @@ class Import extends AbstractImport
 	{
 		global $context, $txt, $scripturl;
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_ez_portal_addon_label_name'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_ez_portal']['label_name'];
 		$context['page_area_title'] = $txt['lp_pages_import'];
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_ez_portal_addon_description']
+			'description' => $txt['lp_ez_portal']['desc']
 		);
 
 		$this->run();
@@ -115,8 +112,8 @@ class Import extends AbstractImport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $txt['lp_ez_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_ez_portal_addon_button_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . $txt['lp_ez_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $txt['lp_ez_portal']['button_all'] . '" class="button">'
 				)
 			)
 		);
@@ -138,7 +135,7 @@ class Import extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
 		global $smcFunc, $db_prefix, $user_info;
 
@@ -186,7 +183,7 @@ class Import extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -234,7 +231,7 @@ class Import extends AbstractImport
 
 		$items = $this->getItems($pages);
 
-		$titles = $params = [];
+		$titles = [];
 		foreach ($items as $page_id => $item) {
 			$titles[] = [
 				'item_id' => $page_id,
@@ -319,7 +316,7 @@ class Import extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getItems($pages)
+	private function getItems(?array $pages): array
 	{
 		global $smcFunc, $user_info;
 

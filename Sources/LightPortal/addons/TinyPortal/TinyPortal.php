@@ -1,36 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
-
 /**
  * TinyPortal
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinyPortal;
 
-class TinyPortal
+use Bugo\LightPortal\Addons\Plugin;
+
+class TinyPortal extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'impex';
-
-	/**
-	 * @return void
-	 */
-	public function init()
-	{
-		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
-	}
+	public $type = 'impex';
 
 	/**
 	 * Add "Import from TinyPortal" item to the admin menu
@@ -40,13 +31,13 @@ class TinyPortal
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public function adminAreas(array &$admin_areas)
+	public function addAdminAreas(array &$admin_areas)
 	{
 		global $user_info, $txt;
 
 		if ($user_info['is_admin']) {
-			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal_addon_label_name']);
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = array($txt['lp_tiny_portal_addon_label_name']);
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = array($txt['lp_tiny_portal']['label_name']);
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = array($txt['lp_tiny_portal']['label_name']);
 		}
 	}
 
@@ -58,7 +49,7 @@ class TinyPortal
 	 * @param array $subActions
 	 * @return void
 	 */
-	public function addBlockAreas(&$subActions)
+	public function addBlockAreas(array &$subActions)
 	{
 		global $user_info;
 
@@ -74,7 +65,7 @@ class TinyPortal
 	 * @param array $subActions
 	 * @return void
 	 */
-	public function addPageAreas(&$subActions)
+	public function addPageAreas(array &$subActions)
 	{
 		global $user_info;
 

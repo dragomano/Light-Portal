@@ -11,7 +11,7 @@ namespace Bugo\LightPortal\Utils;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 class Request extends AbstractArray
@@ -31,8 +31,8 @@ class Request extends AbstractArray
 	 * @param string|array ...$patterns
 	 * @return bool
 	 */
-	public static function is(...$patterns)
-	{
+	public static function is(...$patterns): bool
+    {
 		if (static::has('action') === false)
 			return false;
 
@@ -58,7 +58,7 @@ class Request extends AbstractArray
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function json($key = null, $default = null)
+	public static function json(string $key = null, $default = null)
 	{
 		$data = json_decode(file_get_contents('php://input'), true);
 

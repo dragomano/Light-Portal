@@ -1,92 +1,47 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentPosts;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RecentPosts
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RecentPosts;
 
-class RecentPosts
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RecentPosts extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-comment-alt';
-
-	/**
-	 * @var bool
-	 */
-	private $no_content_class = true;
-
-	/**
-	 * @var int
-	 */
-	private $num_posts = 10;
-
-	/**
-	 * @var string
-	 */
-	private $type = 'link';
-
-	/**
-	 * @var string
-	 */
-	private $exclude_boards = '';
-
-	/**
-	 * @var string
-	 */
-	private $include_boards = '';
-
-	/**
-	 * @var string
-	 */
-	private $exclude_topics = '';
-
-	/**
-	 * @var string
-	 */
-	private $include_topics = '';
-
-	/**
-	 * @var bool
-	 */
-	private $show_avatars = false;
-
-	/**
-	 * @var int
-	 */
-	private $update_interval = 600;
+	public $icon = 'far fa-comment-alt';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['recent_posts']['no_content_class'] = $this->no_content_class;
+		$options['recent_posts']['no_content_class'] = true;
 
-		$options['recent_posts']['parameters']['num_posts']       = $this->num_posts;
-		$options['recent_posts']['parameters']['link_type']       = $this->type;
-		$options['recent_posts']['parameters']['exclude_boards' ] = $this->exclude_boards;
-		$options['recent_posts']['parameters']['include_boards']  = $this->include_boards;
-		$options['recent_posts']['parameters']['exclude_topics']  = $this->exclude_topics;
-		$options['recent_posts']['parameters']['include_topics']  = $this->include_topics;
-		$options['recent_posts']['parameters']['show_avatars']    = $this->show_avatars;
-		$options['recent_posts']['parameters']['update_interval'] = $this->update_interval;
+		$options['recent_posts']['parameters'] = [
+			'num_posts'       => 10,
+			'link_type'       => 'link',
+			'exclude_boards'  => '',
+			'include_boards'  => '',
+			'exclude_topics'  => '',
+			'include_topics'  => '',
+			'show_avatars'    => false,
+			'update_interval' => 600,
+		];
 	}
 
 	/**
@@ -94,7 +49,7 @@ class RecentPosts
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_posts')
 			return;
@@ -119,7 +74,7 @@ class RecentPosts
 		if ($context['lp_block']['type'] !== 'recent_posts')
 			return;
 
-		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_recent_posts_addon_num_posts'];
+		$context['posting_fields']['num_posts']['label']['text'] = $txt['lp_recent_posts']['num_posts'];
 		$context['posting_fields']['num_posts']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -129,16 +84,17 @@ class RecentPosts
 			)
 		);
 
-		$context['posting_fields']['link_type']['label']['text'] = $txt['lp_recent_posts_addon_type'];
+		$context['posting_fields']['link_type']['label']['text'] = $txt['lp_recent_posts']['type'];
 		$context['posting_fields']['link_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'link_type'
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'content'
 		);
 
-		$link_types = array_combine(array('link', 'preview'), $txt['lp_recent_posts_addon_type_set']);
+		$link_types = array_combine(array('link', 'preview'), $txt['lp_recent_posts']['type_set']);
 
 		foreach ($link_types as $key => $value) {
 			$context['posting_fields']['link_type']['input']['options'][$value] = array(
@@ -147,10 +103,10 @@ class RecentPosts
 			);
 		}
 
-		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_posts_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_posts']['exclude_boards'];
 		$context['posting_fields']['exclude_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_posts_addon_exclude_boards_subtext'],
+			'after' => $txt['lp_recent_posts']['exclude_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
@@ -158,10 +114,10 @@ class RecentPosts
 			)
 		);
 
-		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_posts_addon_include_boards'];
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_posts']['include_boards'];
 		$context['posting_fields']['include_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_posts_addon_include_boards_subtext'],
+			'after' => $txt['lp_recent_posts']['include_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
@@ -169,10 +125,10 @@ class RecentPosts
 			)
 		);
 
-		$context['posting_fields']['exclude_topics']['label']['text'] = $txt['lp_recent_posts_addon_exclude_topics'];
+		$context['posting_fields']['exclude_topics']['label']['text'] = $txt['lp_recent_posts']['exclude_topics'];
 		$context['posting_fields']['exclude_topics']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_posts_addon_exclude_topics_subtext'],
+			'after' => $txt['lp_recent_posts']['exclude_topics_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
@@ -180,10 +136,10 @@ class RecentPosts
 			)
 		);
 
-		$context['posting_fields']['include_topics']['label']['text'] = $txt['lp_recent_posts_addon_include_topics'];
+		$context['posting_fields']['include_topics']['label']['text'] = $txt['lp_recent_posts']['include_topics'];
 		$context['posting_fields']['include_topics']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_posts_addon_include_topics_subtext'],
+			'after' => $txt['lp_recent_posts']['include_topics_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['include_topics'] ?? '',
@@ -191,16 +147,17 @@ class RecentPosts
 			)
 		);
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_posts_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_posts']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
 				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
-			)
+			),
+			'tab' => 'appearance'
 		);
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_posts_addon_update_interval'];
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_posts']['update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -220,7 +177,7 @@ class RecentPosts
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -230,7 +187,7 @@ class RecentPosts
 		if (!empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 		$posts = ssi_recentPosts($parameters['num_posts'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 
 		if (empty($posts))
@@ -279,63 +236,55 @@ class RecentPosts
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::cache(
-			'recent_posts_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$recent_posts = Helpers::cache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($recent_posts)) {
-			ob_start();
+		if (empty($recent_posts))
+			return;
 
-			echo '
+		echo '
 		<ul class="recent_posts noup">';
 
-			foreach ($recent_posts as $post) {
-				$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
-
-				echo '
-			<li class="windowbg">';
-
-				if (!empty($parameters['show_avatars']))
-					echo '
-				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
-
-				if ($post['is_new'])
-					echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
-
-				echo $post[$parameters['link_type']];
-
-				if (empty($parameters['show_avatars']))
-					echo '
-				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
-
-				echo '
-				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
-			</li>';
-			}
+		foreach ($recent_posts as $post) {
+			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
 
 			echo '
-		</ul>';
+			<li class="windowbg">';
 
-			$content = ob_get_clean();
+			if (!empty($parameters['show_avatars']))
+				echo '
+				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+
+			if ($post['is_new'])
+				echo '
+				<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
+
+			echo $post[$parameters['link_type']];
+
+			if (empty($parameters['show_avatars']))
+				echo '
+				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
+
+			echo '
+				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
+			</li>';
 		}
+
+		echo '
+		</ul>';
 	}
 }

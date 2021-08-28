@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManagePages
 {
+	use Manageable;
+
 	/**
 	 * Number pages within tables
 	 *
@@ -26,7 +28,7 @@ class ManagePages
 	 *
 	 * @var int
 	 */
-	public $num_pages = 20;
+	public const NUM_PAGES = 20;
 
 	/**
 	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
@@ -35,7 +37,7 @@ class ManagePages
 	 *
 	 * @var string
 	 */
-	private $alias_pattern = '^[a-z][a-z0-9_]+$';
+	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 
 	/**
 	 * Manage pages
@@ -58,8 +60,6 @@ class ManagePages
 			'description' => $txt['lp_pages_manage_' . ($context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $txt['lp_pages_manage_description']
 		);
 
-		loadJavaScriptFile('light_portal/manage_pages.js');
-
 		$this->doActions();
 		$this->massActions();
 
@@ -75,7 +75,7 @@ class ManagePages
 
 		$listOptions = array(
 			'id' => 'lp_pages',
-			'items_per_page' => $this->num_pages,
+			'items_per_page' => self::NUM_PAGES,
 			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
@@ -153,31 +153,14 @@ class ManagePages
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $scripturl)
+						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$type_hint = $txt['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
+							$type_hint = $context['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
 
-							switch ($entry['type']) {
-								case 'html':
-									$icon = 'fab fa-html5';
-									break;
-
-								case 'php':
-									$icon = 'fab fa-php';
-									break;
-
-								case 'md':
-									$icon = 'fab fa-markdown';
-									break;
-
-								default:
-									$icon = 'fab fa-bimobject';
-							}
-
-							return '<i class="' . $icon . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
+							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
 							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
@@ -195,7 +178,7 @@ class ManagePages
 						'function' => function ($entry) use ($txt)
 						{
 							if (allowedTo('light_portal_approve_pages')) {
-								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el, value))">
+								return '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $txt['lp_action_off'] . '\' : \'' . $txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>';
 							} else {
@@ -283,8 +266,7 @@ class ManagePages
 					'value' => '
 						<select name="page_actions">
 							<option value="delete">' . $txt['remove'] . '</option>' . (allowedTo('light_portal_approve_pages') ? '
-							<option value="action_on">' . $txt['lp_action_on'] . '</option>
-							<option value="action_off">' . $txt['lp_action_off'] . '</option>' : '') . '
+							<option value="toggle">' . $txt['lp_action_toggle'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $txt['quick_mod_go'] . '" class="button" onclick="return document.forms.manage_pages.page_actions.value && confirm(\'' . $txt['quickmod_confirm'] . '\');">',
 					'class' => 'floatright'
@@ -417,8 +399,8 @@ class ManagePages
 		if (!empty($data['del_item']))
 			$this->remove([(int) $data['del_item']]);
 
-		if (!empty($data['status']) && !empty($data['item']))
-			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Page::STATUS_ACTIVE : Page::STATUS_INACTIVE);
+		if (!empty($data['toggle_item']))
+			self::toggleStatus([(int) $data['toggle_item']]);
 
 		Helpers::cache()->flush();
 
@@ -481,15 +463,14 @@ class ManagePages
 
 		$smcFunc['lp_num_queries'] += 5;
 
-		Subs::runAddons('onPageRemoving', array($items));
+		Addons::run('onPageRemoving', array($items));
 	}
 
 	/**
 	 * @param array $items
-	 * @param int $status
 	 * @return void
 	 */
-	public function toggleStatus(array $items, int $status = 0)
+	public static function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -498,13 +479,14 @@ class ManagePages
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET status = {int:status}
+			SET status = !status
 			WHERE page_id IN ({array_int:items})',
 			array(
-				'status' => $status,
-				'items'  => $items
+				'items' => $items
 			)
 		);
+
+		$smcFunc['lp_num_queries']++;
 	}
 
 	/**
@@ -523,12 +505,8 @@ class ManagePages
 				$this->remove($items);
 				break;
 
-			case 'action_on':
-				$this->toggleStatus($items, Page::STATUS_ACTIVE);
-				break;
-
-			case 'action_off':
-				$this->toggleStatus($items);
+			case 'toggle':
+				self::toggleStatus($items);
 				break;
 		}
 
@@ -624,11 +602,10 @@ class ManagePages
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
 			'main_menu_item'       => '',
-			'icon'                 => '',
-			'icon_type'            => 'fas'
+			'icon'                 => ''
 		];
 
-		Subs::runAddons('pageOptions', array(&$options));
+		Addons::run('pageOptions', array(&$options));
 
 		return $options;
 	}
@@ -638,7 +615,7 @@ class ManagePages
 	 */
 	private function validateData()
 	{
-		global $context, $modSettings, $user_info;
+		global $context, $user_info, $modSettings;
 
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
@@ -665,7 +642,7 @@ class ManagePages
 
 			$parameters = [];
 
-			Subs::runAddons('validatePageData', array(&$parameters));
+			Addons::run('validatePageData', array(&$parameters));
 
 			$parameters = array_merge(
 				array(
@@ -673,8 +650,7 @@ class ManagePages
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
 					'main_menu_item'       => FILTER_SANITIZE_STRING,
-					'icon'                 => FILTER_SANITIZE_STRING,
-					'icon_type'            => FILTER_SANITIZE_STRING
+					'icon'                 => FILTER_SANITIZE_STRING
 				),
 				$parameters
 			);
@@ -706,8 +682,15 @@ class ManagePages
 			'options'     => $options
 		);
 
+		if (!empty($modSettings['lp_prohibit_php']) && !$user_info['is_admin'] && $context['lp_page']['type'] == 'php') {
+			$context['lp_page']['type'] = 'bbc';
+		}
+
 		foreach ($context['lp_page']['options'] as $option => $value) {
 			if (!empty($parameters[$option]) && !empty($post_data) && !isset($post_data[$option])) {
+				if ($parameters[$option] == FILTER_SANITIZE_STRING)
+					$post_data[$option] = '';
+
 				if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 					$post_data[$option] = 0;
 
@@ -722,6 +705,8 @@ class ManagePages
 			$context['lp_page']['options']['main_menu_item'] = json_decode($context['lp_page']['options']['main_menu_item'], true);
 		else
 			$context['lp_page']['options']['main_menu_item'] = [];
+
+		$context['lp_page']['options']['icon'] = $context['lp_page']['options']['icon'] === 'undefined' ? '' : $context['lp_page']['options']['icon'];
 
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
@@ -743,14 +728,14 @@ class ManagePages
 
 		$post_errors = [];
 
-		if ((!empty($modSettings['userLanguage']) ? empty($data['title_' . $language]) : false) || empty($data['title_' . $context['user']['language']]))
+		if ((!empty($modSettings['userLanguage']) && empty($data['title_' . $language])) || empty($data['title_' . $context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
 			$post_errors[] = 'no_alias';
 
 		$alias_format = array(
-			'options' => array("regexp" => '/' . $this->alias_pattern . '/')
+			'options' => array("regexp" => '/' . self::ALIAS_PATTERN . '/')
 		);
 		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
@@ -760,6 +745,8 @@ class ManagePages
 
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
+
+		Addons::run('findPageErrors', array($data, &$post_errors));
 
 		if (!empty($post_errors)) {
 			Helpers::post()->put('preview', true);
@@ -771,57 +758,229 @@ class ManagePages
 	}
 
 	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
 	 * @return void
 	 */
-	private function improveSelectFields()
+	private function prepareFormFields()
 	{
-		global $context;
+		global $modSettings, $language, $context, $txt;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
+		checkSubmitOnce('register');
 
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
-		}
-		.ss-disabled {
-			color: inherit !important;
-		}');
+		$this->improveSelectFields();
 
-		// Prepare the tag list
-		$all_tags = $context['lp_tags'] = Helpers::cache('all_tags', 'getList', Lists\Tag::class);
+		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
-		$context['lp_all_tags'] = [];
-		foreach ($all_tags as $id => $value) {
-			$context['lp_all_tags'][] = "\t\t\t\t" . '{text: "' . $value . '", value: "' . $id . '", selected: ' . (isset($context['lp_page']['keywords'][$id]) ? 'true' : 'false') . '}';
-		}
-
-		// Prepare the category list
-		$all_categories = Helpers::cache('all_categories', 'getList', Lists\Category::class);
-
-		$context['lp_all_categories'] = [];
-		foreach ($all_categories as $id => $category) {
-			$context['lp_all_categories'][] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . ($id == $context['lp_page']['category'] ? 'true' : 'false') . '}';
+		$i = 0;
+		foreach ($context['languages'] as $lang) {
+			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
+				'type' => 'text',
+				'attributes' => array(
+					'maxlength' => 255,
+					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
+					'required'  => in_array($lang['filename'], $languages),
+					'style'     => 'width: 100%',
+					'x-ref'     => 'title_' . $i++
+				),
+				'tab' => 'content'
+			);
 		}
 
-		// Prepare the member list
-		if (Helpers::request()->has('members')) {
-			$data = Helpers::request()->json();
+		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
+		$context['posting_fields']['type']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
+				'x-ref'    => 'type',
+				'@change'  => 'page.toggleType($el)'
+			),
+			'tab' => 'content'
+		);
 
-			if (!empty($data['search']))
-				$this->prepareMemberList($data['search']);
+		foreach ($context['lp_page_types'] as $value => $text) {
+			$context['posting_fields']['type']['input']['options'][$text] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_page']['type']
+			);
 		}
+
+		if ($context['lp_page']['type'] !== 'bbc') {
+			$context['posting_fields']['content']['label']['text'] = '';
+			$context['posting_fields']['content']['input'] = array(
+				'type' => 'textarea',
+				'attributes' => array(
+					'value'    => $context['lp_page']['content'],
+					'required' => true,
+					'style'    => 'height: 300px'
+				),
+				'tab' => 'content'
+			);
+		}
+
+		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
+		$context['posting_fields']['alias']['input'] = array(
+			'type' => 'text',
+			'after' => $txt['lp_page_alias_subtext'],
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_page']['alias'],
+				'required'  => true,
+				'pattern'   => self::ALIAS_PATTERN,
+				'style'     => 'width: 100%',
+				'x-ref'     => 'alias'
+			),
+			'tab' => 'seo'
+		);
+
+		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
+		$context['posting_fields']['description']['input'] = array(
+			'type' => 'textarea',
+			'attributes' => array(
+				'maxlength' => 255,
+				'value'     => $context['lp_page']['description']
+			),
+			'tab' => 'seo'
+		);
+
+		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
+		$context['posting_fields']['keywords']['input'] = array(
+			'type' => 'select',
+			'attributes' => array(
+				'name'     => 'keywords[]',
+				'multiple' => true
+			),
+			'options' => [],
+			'tab' => 'seo'
+		);
+
+		$context['lp_tags'] = Helpers::getAllTags();
+
+		foreach ($context['lp_tags'] as $value => $text) {
+			$context['posting_fields']['keywords']['input']['options'][$text] = array(
+				'value'    => $value,
+				'selected' => isset($context['lp_page']['keywords'][$value])
+			);
+		}
+
+		if ($context['user']['is_admin']) {
+			foreach ($context['languages'] as $lang) {
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $context['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
+					'type' => 'text',
+					'attributes' => array(
+						'maxlength' => 255,
+						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
+						'style'     => 'width: 100%'
+					),
+					'tab' => 'menu'
+				);
+			}
+		}
+
+		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
+		$context['posting_fields']['icon']['input'] = array(
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'menu'
+		);
+
+		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
+		$context['posting_fields']['permissions']['input'] = array(
+			'type' => 'select'
+		);
+
+		foreach ($txt['lp_permissions'] as $level => $title) {
+			if (empty($context['user']['is_admin']) && empty($level))
+				continue;
+
+			$context['posting_fields']['permissions']['input']['options'][$title] = array(
+				'value'    => $level,
+				'selected' => $level == $context['lp_page']['permissions']
+			);
+		}
+
+		$allCategories = Helpers::getAllCategories();
+
+		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
+		$context['posting_fields']['category']['input'] = array(
+			'type'     => 'select',
+			'attributes' => array(
+				'disabled' => count($allCategories) < 2
+			)
+		);
+
+		foreach ($allCategories as $value => $category) {
+			$context['posting_fields']['category']['input']['options'][$category['name']] = array(
+				'value'    => $value,
+				'selected' => $value == $context['lp_page']['category']
+			);
+		}
+
+		if ($context['lp_page']['created_at'] >= time()) {
+			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
+			$context['posting_fields']['datetime']['input']['html'] = '
+			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $context['lp_page']['date'] . '">
+			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
+		}
+
+		if ($context['user']['is_admin']) {
+			$this->prepareMemberList();
+
+			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
+			$context['posting_fields']['page_author']['input'] = array(
+				'type'    => 'select',
+				'options' => []
+			);
+		}
+
+		$context['posting_fields']['show_author_and_date']['label']['text'] = $context['lp_page_options']['show_author_and_date'];
+		$context['posting_fields']['show_author_and_date']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'show_author_and_date',
+				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
+			)
+		);
+
+		if (!empty($modSettings['lp_show_related_pages'])) {
+			$context['posting_fields']['show_related_pages']['label']['text'] = $context['lp_page_options']['show_related_pages'];
+			$context['posting_fields']['show_related_pages']['input'] = array(
+				'type' => 'checkbox',
+				'attributes' => array(
+					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
+				)
+			);
+		}
+
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
+			$context['posting_fields']['allow_comments']['label']['text'] = $context['lp_page_options']['allow_comments'];
+			$context['posting_fields']['allow_comments']['input'] = array(
+				'type' => 'checkbox',
+				'attributes' => array(
+					'checked' => !empty($context['lp_page']['options']['allow_comments'])
+				)
+			);
+		}
+
+		Addons::run('preparePageFields');
+
+		$this->preparePostFields();
 	}
 
 	/**
-	 * @param string $search
 	 * @return void
 	 */
-	private function prepareMemberList(string $search)
+	private function prepareMemberList()
 	{
 		global $smcFunc;
+
+		if (Helpers::request()->has('members') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
 
 		$search = trim($smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, array('%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;'));
@@ -857,240 +1016,6 @@ class ManagePages
 	/**
 	 * @return void
 	 */
-	private function prepareFormFields()
-	{
-		global $modSettings, $language, $context, $txt;
-
-		checkSubmitOnce('register');
-
-		$this->improveSelectFields();
-
-		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
-
-		$i = 0;
-		foreach ($context['languages'] as $lang) {
-			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-			$context['posting_fields']['title_' . $lang['filename']]['input'] = array(
-				'type' => 'text',
-				'attributes' => array(
-					'id'        => 'title_' . $lang['filename'],
-					'maxlength' => 255,
-					'value'     => $context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $i++
-				),
-				'tab' => 'content'
-			);
-		}
-
-		$context['posting_fields']['type']['label']['text'] = $txt['lp_page_type'];
-		$context['posting_fields']['type']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'       => 'type',
-				'disabled' => empty($context['lp_page']['title'][$context['user']['language']]) && empty($context['lp_page']['alias']),
-				'x-ref'    => 'type',
-				'@change'  => 'page.toggleType($el)'
-			),
-			'options' => array(),
-			'tab' => 'content'
-		);
-
-		foreach ($txt['lp_page_types'] as $type => $title) {
-			$context['posting_fields']['type']['input']['options'][$title] = array(
-				'value'    => $type,
-				'selected' => $type == $context['lp_page']['type']
-			);
-		}
-
-		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = '';
-			$context['posting_fields']['content']['input'] = array(
-				'type' => 'textarea',
-				'attributes' => array(
-					'id'       => 'content',
-					'value'    => $context['lp_page']['content'],
-					'required' => true,
-					'style'    => 'height: 300px'
-				),
-				'tab' => 'content'
-			);
-		}
-
-		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
-		$context['posting_fields']['alias']['input'] = array(
-			'type' => 'text',
-			'after' => $txt['lp_page_alias_subtext'],
-			'attributes' => array(
-				'id'        => 'alias',
-				'maxlength' => 255,
-				'value'     => $context['lp_page']['alias'],
-				'required'  => true,
-				'pattern'   => $this->alias_pattern,
-				'style'     => 'width: 100%',
-				'x-ref'     => 'alias'
-			),
-			'tab' => 'seo'
-		);
-
-		$context['posting_fields']['description']['label']['text'] = $txt['lp_page_description'];
-		$context['posting_fields']['description']['input'] = array(
-			'type' => 'textarea',
-			'attributes' => array(
-				'id'        => 'description',
-				'maxlength' => 255,
-				'value'     => $context['lp_page']['description']
-			),
-			'tab' => 'seo'
-		);
-
-		$context['posting_fields']['keywords']['label']['text'] = $txt['lp_page_keywords'];
-		$context['posting_fields']['keywords']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'       => 'keywords',
-				'name'     => 'keywords[]',
-				'multiple' => true
-			),
-			'options' => array(),
-			'tab' => 'seo'
-		);
-
-		if ($context['user']['is_admin']) {
-			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $context['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
-					'type' => 'text',
-					'attributes' => array(
-						'id'        => 'main_menu_item_' . $lang['filename'],
-						'maxlength' => 255,
-						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
-						'style'     => 'width: 100%'
-					),
-					'tab' => 'menu'
-				);
-			}
-		}
-
-		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
-		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
-			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_page']['options']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'tab' => 'menu'
-		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'page.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'options' => array(),
-			'tab' => 'menu'
-		);
-
-		foreach ($context['lp_icon_types'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_page']['options']['icon_type']
-			);
-		}
-
-		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
-		$context['posting_fields']['permissions']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'permissions'
-			),
-			'options' => array()
-		);
-
-		foreach ($txt['lp_permissions'] as $level => $title) {
-			$context['posting_fields']['permissions']['input']['options'][$title] = array(
-				'value'    => $level,
-				'selected' => $level == $context['lp_page']['permissions']
-			);
-		}
-
-		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
-		$context['posting_fields']['category']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id'   => 'category',
-				'name' => 'category'
-			),
-			'options' => array()
-		);
-
-		if ($context['lp_page']['created_at'] >= time()) {
-			$context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $txt['lp_page_publish_datetime'] . '</label>';
-			$context['posting_fields']['datetime']['input']['html'] = '
-			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $context['lp_page']['date'] . '">
-			<input type="time" name="time" value="' . $context['lp_page']['time'] . '">';
-		}
-
-		if ($context['user']['is_admin']) {
-			$context['posting_fields']['page_author']['label']['text'] = $txt['lp_page_author'];
-			$context['posting_fields']['page_author']['input'] = array(
-				'type' => 'select',
-				'attributes' => array(
-					'id'   => 'page_author',
-					'name' => 'page_author'
-				),
-				'options' => array()
-			);
-		}
-
-		$context['posting_fields']['show_author_and_date']['label']['text'] = $context['lp_page_options']['show_author_and_date'];
-		$context['posting_fields']['show_author_and_date']['input'] = array(
-			'type' => 'checkbox',
-			'attributes' => array(
-				'id'      => 'show_author_and_date',
-				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
-			)
-		);
-
-		if (!empty($modSettings['lp_show_related_pages'])) {
-			$context['posting_fields']['show_related_pages']['label']['text'] = $context['lp_page_options']['show_related_pages'];
-			$context['posting_fields']['show_related_pages']['input'] = array(
-				'type' => 'checkbox',
-				'attributes' => array(
-					'id'      => 'show_related_pages',
-					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
-				)
-			);
-		}
-
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
-			$context['posting_fields']['allow_comments']['label']['text'] = $context['lp_page_options']['allow_comments'];
-			$context['posting_fields']['allow_comments']['input'] = array(
-				'type' => 'checkbox',
-				'attributes' => array(
-					'id'      => 'allow_comments',
-					'checked' => !empty($context['lp_page']['options']['allow_comments'])
-				)
-			);
-		}
-
-		Subs::runAddons('preparePageFields');
-
-		Helpers::preparePostFields();
-	}
-
-	/**
-	 * @return void
-	 */
 	private function prepareEditor()
 	{
 		global $context;
@@ -1098,7 +1023,7 @@ class ManagePages
 		if ($context['lp_page']['type'] === 'bbc')
 			Helpers::createBbcEditor($context['lp_page']['content']);
 
-		Subs::runAddons('prepareEditor', array($context['lp_page']));
+		Addons::run('prepareEditor', array($context['lp_page']));
 	}
 
 	/**
@@ -1185,7 +1110,7 @@ class ManagePages
 		$this->prepareKeywords();
 
 		if (empty($item)) {
-			$this->addData();
+			$item = $this->addData();
 		} else {
 			$this->updateData($item);
 		}
@@ -1194,6 +1119,9 @@ class ManagePages
 
 		if (Helpers::post()->has('save_exit'))
 			redirectexit('action=admin;area=lp_pages;sa=main');
+
+		if (Helpers::post()->has('save'))
+			redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
 	/**
@@ -1236,7 +1164,7 @@ class ManagePages
 		if (empty($item))
 			return 0;
 
-		Subs::runAddons('onPageSaving', array($item));
+		Addons::run('onPageSaving', array($item));
 
 		if (!empty($context['lp_page']['title'])) {
 			$titles = [];
@@ -1355,7 +1283,7 @@ class ManagePages
 
 		$smcFunc['lp_num_queries']++;
 
-		Subs::runAddons('onPageSaving', array($item));
+		Addons::run('onPageSaving', array($item));
 
 		if (!empty($context['lp_page']['title'])) {
 			$titles = [];

@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\{Helpers, Subs};
+use Bugo\LightPortal\{Addons, Helpers};
 
 /**
  * BoardArticle.php
@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, Subs};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -52,7 +52,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC'
 		];
 
-		Subs::runAddons('frontBoards', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+		Addons::run('frontBoards', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
 	}
 
 	/**
@@ -139,7 +139,7 @@ class BoardArticle extends AbstractArticle
 				if (empty($boards[$row['id_board']]['is_redirect']))
 					$boards[$row['id_board']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
 
-				Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
+				Addons::run('frontBoardsOutput', array(&$boards, $row));
 			}
 
 			$smcFunc['db_free_result']($request);

@@ -1,43 +1,36 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\UserInfo;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * UserInfo
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\UserInfo;
 
-class UserInfo
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class UserInfo extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-user';
-
-	/**
-	 * @var bool
-	 */
-	private $use_fa_icons = true;
+	public $icon = 'fas fa-user';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['user_info']['parameters']['use_fa_icons'] = $this->use_fa_icons;
+		$options['user_info']['parameters']['use_fa_icons'] = true;
 	}
 
 	/**
@@ -45,7 +38,7 @@ class UserInfo
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'user_info')
 			return;
@@ -63,7 +56,7 @@ class UserInfo
 		if ($context['lp_block']['type'] !== 'user_info')
 			return;
 
-		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_user_info_addon_use_fa_icons'];
+		$context['posting_fields']['use_fa_icons']['label']['text'] = $txt['lp_user_info']['use_fa_icons'];
 		$context['posting_fields']['use_fa_icons']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -88,31 +81,30 @@ class UserInfo
 
 		if (!isset($memberContext[$user_info['id']])) {
 			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id'], true);
+			loadMemberContext($user_info['id']);
 		}
 
 		return $memberContext[$user_info['id']];
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $context, $txt, $scripturl, $boarddir;
 
 		if ($type !== 'user_info')
 			return;
 
-		ob_start();
-
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'], 'getData', __CLASS__, $cache_time);
+			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'])
+				->setLifeTime($cache_time)
+				->setFallback(__CLASS__, 'getData');
 
 			echo '
 			<ul class="centertext">
@@ -128,6 +120,16 @@ class UserInfo
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>';
+
+			if (!empty($context['allow_light_portal_manage_own_blocks'])) {
+				echo '
+				<li>
+					<hr>
+					', $fa ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], '">
+						', $txt['lp_blocks_add'], '
+					</a>
+				</li>';
+			}
 
 			if (!empty($context['allow_light_portal_manage_own_pages'])) {
 				echo '
@@ -151,10 +153,8 @@ class UserInfo
 				</li>
 			</ul>';
 		} else {
-			require_once($boarddir . '/SSI.php');
+			require_once $boarddir . '/SSI.php';
 			ssi_welcome();
 		}
-
-		$content = ob_get_clean();
 	}
 }

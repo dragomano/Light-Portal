@@ -13,7 +13,7 @@ use Exception;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -74,7 +74,7 @@ class Comment
 
 		loadLanguage('Editor');
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments', 'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
+		$comments = Helpers::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
@@ -94,7 +94,7 @@ class Comment
 
 		$page_index_url = $context['canonical_url'];
 		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
-			$page_index_url = $scripturl . '?action=portal';
+			$page_index_url = $scripturl . '?action=' . LP_ACTION;
 
 		$temp_start            = Helpers::request('start');
 		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);
@@ -205,7 +205,7 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => $this->getUserAvatar($user_info['id']),
+				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
@@ -280,23 +280,6 @@ class Comment
 	}
 
 	/**
-	 * @param $user_id
-	 * @return string
-	 * @throws Exception
-	 */
-	private function getUserAvatar($user_id): string
-	{
-		global $memberContext;
-
-		if (!isset($memberContext[$user_id])) {
-			loadMemberData($user_id);
-			loadMemberContext($user_id, true);
-		}
-
-		return $memberContext[$user_id]['avatar']['image'];
-	}
-
-	/**
 	 * Creating a background task to notify subscribers of new comments
 	 *
 	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
@@ -366,7 +349,7 @@ class Comment
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE WHEN num_comments > 0 THEN num_comments - {int:num_items}
+			SET num_comments = CASE WHEN num_comments - {int:num_items} >= 0 THEN num_comments - {int:num_items}
 				ELSE num_comments END
 			WHERE alias = {string:alias}',
 			array(
@@ -421,7 +404,7 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			$avatar = $this->getUserAvatar($row['author_id']);
+			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],

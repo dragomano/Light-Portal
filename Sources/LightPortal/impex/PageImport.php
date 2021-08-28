@@ -13,7 +13,7 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -110,7 +110,7 @@ class PageImport extends AbstractImport
 						'alias'        => (string) $item->alias,
 						'description'  => $item->description,
 						'content'      => $item->content,
-						'type'         => (string) $item->type,
+						'type'         => str_replace('md', 'markdown', $item->type),
 						'permissions'  => intval($item['permissions']),
 						'status'       => intval($item['status']),
 						'num_views'    => intval($item['num_views']),

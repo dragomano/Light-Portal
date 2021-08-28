@@ -1,35 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Search;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Search
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Search;
 
-class Search
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Search extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-search';
-
-	/**
-	 * @var int
-	 */
-	private $min_chars = 3;
+	public $icon = 'fas fa-search';
 
 	/**
 	 * @return void
@@ -43,17 +36,17 @@ class Search
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $modSettings;
 
 		$addSettings = [];
 		if (!isset($modSettings['lp_search_addon_min_chars']))
-			$addSettings['lp_search_addon_min_chars'] = $this->min_chars;
+			$addSettings['lp_search_addon_min_chars'] = 3;
 		if (!empty($addSettings))
 			updateSettings($addSettings);
 
-		$config_vars[] = array('int', 'lp_search_addon_min_chars');
+		$config_vars['search'][] = array('int', 'min_chars');
 	}
 
 	/**
@@ -67,10 +60,10 @@ class Search
 	{
 		global $context;
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'qsearch')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'qsearch')
 			return call_user_func(array($this, 'prepareQuickResults'));
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'search')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'search')
 			return call_user_func(array($this, 'showResults'));
 	}
 
@@ -85,7 +78,7 @@ class Search
 	{
 		global $context, $txt;
 
-		$context['page_title']     = $txt['lp_block_types']['search'];
+		$context['page_title']     = $txt['lp_search']['title'];
 		$context['robot_no_index'] = true;
 
 		$context['linktree'][] = array(
@@ -94,7 +87,7 @@ class Search
 
 		$context['search_results'] = $this->getResults();
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate();
 
 		$context['sub_template'] = 'show_results';
 
@@ -129,7 +122,7 @@ class Search
 	 *
 	 * @return array
 	 */
-	private function getResults()
+	private function getResults(): array
 	{
 		global $smcFunc;
 
@@ -152,7 +145,7 @@ class Search
 	 * @param string $query
 	 * @return array
 	 */
-	private function query(string $query)
+	private function query(string $query): array
 	{
 		global $smcFunc, $context, $scripturl, $txt;
 
@@ -191,7 +184,7 @@ class Search
 			Helpers::parseContent($row['content'], $row['type']);
 
 			$results[] = array(
-				'link'    => $scripturl . '?page=' . $row['alias'],
+				'link'    => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 				'title'   => $row['title'],
 				'content' => Helpers::getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
@@ -206,11 +199,10 @@ class Search
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type)
+	public function prepareContent(string $type)
 	{
 		global $scripturl, $context, $txt, $modSettings;
 
@@ -220,18 +212,16 @@ class Search
 		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', array('external' => true));
 
-		ob_start();
-
 		echo '
-		<form class="search_addon centertext" action="', $scripturl, '?action=portal;sa=search" method="post" accept-charset="', $context['character_set'], '">
-			<input type="search" name="search" placeholder="', $txt['lp_block_types']['search'], '">
+		<form class="search_addon centertext" action="', $scripturl, '?action=', LP_ACTION, ';sa=search" method="post" accept-charset="', $context['character_set'], '">
+			<input type="search" name="search" placeholder="', $txt['lp_search']['title'], '">
 		</form>
 		<script>
 			new autoComplete({
 				selector: ".search_addon input",' . (!empty($modSettings['lp_search_addon_min_chars']) ? '
 				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',' : '') . '
 				source: async function(term, response) {
-					const results = await fetch("', $scripturl, '?action=portal;sa=qsearch", {
+					const results = await fetch("', $scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"
@@ -257,15 +247,13 @@ class Search
 				}
 			});
 		</script>';
-
-		$content = ob_get_clean();
 	}
 
 	/**
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Vanilla JavaScript autoComplete',

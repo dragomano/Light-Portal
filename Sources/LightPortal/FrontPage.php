@@ -13,7 +13,7 @@ use Bugo\LightPortal\Front\AbstractArticle;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 class FrontPage
@@ -75,7 +75,7 @@ class FrontPage
 		}
 
 		// Mod authors can define their own template
-		Subs::runAddons('frontCustomTemplate');
+		Addons::run('frontCustomTemplate');
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -121,16 +121,16 @@ class FrontPage
 		$articles = $entityClass->getData($start, $limit);
 		$articles = $this->postProcess($entity, $articles);
 
-		$context['page_index'] = constructPageIndex($scripturl . '?action=portal', Helpers::request()->get('start'), $total_items, $limit);
+		$context['page_index'] = constructPageIndex($scripturl . '?action=' . LP_ACTION, Helpers::request()->get('start'), $total_items, $limit);
 		$context['start']      = Helpers::request()->get('start');
 
 		if (!empty($modSettings['lp_use_simple_pagination']))
-			$context['page_index'] = $this->simplePaginate($scripturl . '?action=portal', $total_items, $limit);
+			$context['page_index'] = $this->simplePaginate($scripturl . '?action=' . LP_ACTION, $total_items, $limit);
 
-		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=portal;start=' . (Helpers::request('start') + $limit) : '';
+		$context['portal_next_page'] = Helpers::request('start') + $limit < $total_items ? $scripturl . '?action=' . LP_ACTION . ';start=' . (Helpers::request('start') + $limit) : '';
 		$context['lp_frontpage_articles'] = $articles;
 
-		Subs::runAddons('frontAssets');
+		Addons::run('frontAssets');
 	}
 
 	/**
@@ -184,7 +184,7 @@ class FrontPage
 	 *
 	 * Получаем доступные макеты главной страницы
 	 */
-	public function getLayouts(): array
+	public static function getLayouts(): array
 	{
 		global $settings, $txt;
 
@@ -192,7 +192,7 @@ class FrontPage
 
 		$allFunctions = get_defined_functions()['user'];
 
-		require_once($settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php');
+		require_once $settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php';
 
 		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
 
@@ -308,8 +308,8 @@ class FrontPage
 	 * @param int $limit
 	 * @return string
 	 */
-	private function simplePaginate(string $url, int $total, int $limit)
-	{
+	private function simplePaginate(string $url, int $total, int $limit): string
+    {
 		global $context, $txt;
 
 		$max_pages = (($total - 1) / $limit) * $limit;

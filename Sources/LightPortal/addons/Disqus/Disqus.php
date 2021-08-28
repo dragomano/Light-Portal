@@ -1,28 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Disqus;
-
 /**
  * Disqus
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Disqus;
 
-class Disqus
+use Bugo\LightPortal\Addons\Plugin;
+
+class Disqus extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'comment';
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -42,11 +41,11 @@ class Disqus
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt;
 
-		$config_vars[] = array('text', 'lp_disqus_addon_shortname', 'subtext' => $txt['lp_disqus_addon_shortname_subtext']);
+		$config_vars['disqus'][] = array('text', 'shortname', 'subtext' => $txt['lp_disqus']['shortname_subtext']);
 	}
 
 	/**

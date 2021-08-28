@@ -1,39 +1,39 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\CodeMirror;
-
 /**
  * CodeMirror
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\CodeMirror;
 
-class CodeMirror
+use Bugo\LightPortal\Addons\Plugin;
+
+class CodeMirror extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'editor';
+	public $type = 'editor';
 
 	/**
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
-		$config_vars[] = array('check', 'lp_code_mirror_addon_php_mode');
-		$config_vars[] = array('check', 'lp_code_mirror_addon_html_mode');
-		$config_vars[] = array('check', 'lp_code_mirror_addon_md_mode');
-		$config_vars[] = array('desc', 'lp_code_mirror_addon_small_hint');
+		$config_vars['code_mirror'][] = array('check', 'php_mode');
+		$config_vars['code_mirror'][] = array('check', 'html_mode');
+		$config_vars['code_mirror'][] = array('check', 'md_mode');
+		$config_vars['code_mirror'][] = array('check', 'pug_mode');
+		$config_vars['code_mirror'][] = array('desc', 'small_hint');
 	}
 
 	/**
@@ -44,7 +44,7 @@ class CodeMirror
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $modSettings, $context, $txt;
 
@@ -55,8 +55,10 @@ class CodeMirror
 			$current_mode = 'html';
 		} elseif (($object['type'] === 'php' || (!empty($object['options']['content']) && $object['options']['content'] === 'php')) && !empty($modSettings['lp_code_mirror_addon_php_mode'])) {
 			$current_mode = 'php';
-		} elseif (($object['type'] === 'md' || (!empty($object['options']['content']) && $object['options']['content'] === 'md')) && !empty($modSettings['lp_code_mirror_addon_md_mode'])) {
-			$current_mode = 'md';
+		} elseif (($object['type'] === 'markdown' || (!empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && !empty($modSettings['lp_code_mirror_addon_md_mode'])) {
+			$current_mode = 'markdown';
+		} elseif (($object['type'] === 'pug' || (!empty($object['options']['content']) && $object['options']['content'] === 'pug')) && !empty($modSettings['lp_code_mirror_addon_pug_mode'])) {
+			$current_mode = 'pug';
 		}
 
 		if (empty($current_mode))
@@ -86,6 +88,8 @@ class CodeMirror
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/clike/clike.min.js', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/php/php.min.js', array('external' => true));
+		} elseif ($current_mode === 'pug') {
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/pug/pug.min.js', array('external' => true));
 		} else {
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/markdown/markdown.min.js', array('external' => true));
 		}
@@ -93,10 +97,24 @@ class CodeMirror
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js', array('external' => true));
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js', array('external' => true));
 
+		switch ($current_mode) {
+			case 'html':
+				$mode = 'text/html';
+				break;
+			case 'php':
+				$mode = 'text/x-php';
+				break;
+			case 'pug':
+				$mode = 'text/x-pug';
+				break;
+			default:
+				$mode = 'text/x-markdown';
+		}
+
 		addInlineJavaScript('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {
 			lineNumbers: true,
-			mode: "'. ($current_mode === 'html' ? 'text/html' : ($current_mode === 'php' ? 'text/x-php' : 'text/x-markdown')) . '",
+			mode: "'. $mode . '",
 			firstLineNumber: 1,
 			lineWrapping: true,
 			direction: "' . ($context['right_to_left'] ? 'rtl' : 'ltr') . '",
@@ -123,7 +141,7 @@ class CodeMirror
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'CodeMirror',

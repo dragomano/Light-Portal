@@ -1,35 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FacebookComments;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * FacebookComments
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FacebookComments;
 
-class FacebookComments
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class FacebookComments extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'comment';
-
-	/**
-	 * @var string
-	 */
-	private $dark_themes = '';
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -49,16 +42,14 @@ class FacebookComments
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
-		global $modSettings, $context;
+		global $modSettings;
 
 		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
-			updateSettings(array('lp_facebook_comments_addon_dark_themes' => $this->dark_themes));
+			updateSettings(array('lp_facebook_comments_addon_dark_themes' => ''));
 
-		$context['lp_facebook_comments_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_facebook_comments_addon_dark_themes');
+		$config_vars['facebook_comment'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
 	}
 
 	/**

@@ -1,24 +1,21 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
-
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
-
 /**
  * Import.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinyPortal;
+
+use Bugo\LightPortal\Impex\AbstractImport;
+use Bugo\LightPortal\Helpers;
 
 class PageImport extends AbstractImport
 {
@@ -33,13 +30,13 @@ class PageImport extends AbstractImport
 	{
 		global $context, $txt, $scripturl;
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal_addon_label_name'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal']['label_name'];
 		$context['page_area_title'] = $txt['lp_pages_import'];
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=import_from_tp';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_tiny_portal_addon_page_import_description']
+			'description' => $txt['lp_tiny_portal']['page_import_desc']
 		);
 
 		$this->run();
@@ -119,8 +116,8 @@ class PageImport extends AbstractImport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal_addon_button_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal']['button_all'] . '" class="button">'
 				)
 			)
 		);
@@ -142,7 +139,7 @@ class PageImport extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		global $smcFunc, $db_prefix;
 
@@ -190,7 +187,7 @@ class PageImport extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -358,7 +355,7 @@ class PageImport extends AbstractImport
 		if (!empty($comments) && !empty($result)) {
 			$temp = [];
 
-			foreach ($comments as $item_id => $comment) {
+			foreach ($comments as $comment) {
 				foreach ($comment as $com) {
 					$temp[] = $com;
 				}
@@ -400,7 +397,7 @@ class PageImport extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getItems($pages)
+	private function getItems(?array $pages): array
 	{
 		global $smcFunc;
 
@@ -458,7 +455,7 @@ class PageImport extends AbstractImport
 	 * @param array|null $pages
 	 * @return array
 	 */
-	private function getComments($pages)
+	private function getComments(?array $pages): array
 	{
 		global $smcFunc;
 

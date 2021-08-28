@@ -1,24 +1,21 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
-
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
-
 /**
  * Import.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TinyPortal;
+
+use Bugo\LightPortal\Impex\AbstractImport;
+use Bugo\LightPortal\Helpers;
 
 class BlockImport extends AbstractImport
 {
@@ -38,13 +35,13 @@ class BlockImport extends AbstractImport
 	{
 		global $context, $txt, $scripturl;
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal_addon_label_name'];
+		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_tiny_portal']['label_name'];
 		$context['page_area_title'] = $txt['lp_blocks_import'];
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_tiny_portal_addon_block_import_description']
+			'description' => $txt['lp_tiny_portal']['block_import_desc']
 		);
 
 		$this->run();
@@ -137,8 +134,8 @@ class BlockImport extends AbstractImport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal_addon_button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal_addon_button_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . $txt['lp_tiny_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $txt['lp_tiny_portal']['button_all'] . '" class="button">'
 				)
 			)
 		);
@@ -160,7 +157,7 @@ class BlockImport extends AbstractImport
 	 * @param string $sort
 	 * @return array
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id')
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		global $smcFunc, $db_prefix, $txt, $context;
 
@@ -187,7 +184,7 @@ class BlockImport extends AbstractImport
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['id']] = array(
 				'id'        => $row['id'],
-				'type'      => $txt['lp_block_types'][$this->getType($row['type'])],
+				'type'      => $txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
 				'placement' => $context['lp_block_placements'][$this->getPlacement($row['bar'])]
 			);
@@ -206,7 +203,7 @@ class BlockImport extends AbstractImport
 	 *
 	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
 
@@ -336,7 +333,7 @@ class BlockImport extends AbstractImport
 	 * @param array|null $blocks
 	 * @return array
 	 */
-	private function getItems($blocks)
+	private function getItems(?array $blocks): array
 	{
 		global $smcFunc, $context;
 
@@ -388,7 +385,7 @@ class BlockImport extends AbstractImport
 	 * @param int $type
 	 * @return string
 	 */
-	private function getType($type)
+	private function getType(int $type): string
 	{
 		switch ($type) {
 			case 5:
@@ -405,7 +402,7 @@ class BlockImport extends AbstractImport
 	 * @param int $bar
 	 * @return string
 	 */
-	private function getPlacement($bar)
+	private function getPlacement(int $bar): string
 	{
 		switch ($bar) {
 			case 1:

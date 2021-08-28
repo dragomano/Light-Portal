@@ -13,7 +13,7 @@ use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -22,20 +22,16 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the cache data or Cache class object
+	 * Get the Cache class object
 	 *
-	 * Получаем данные из кэша или объект класса Cache
+	 * Получаем объект класса Cache
 	 *
 	 * @param string|null $key
-	 * @param string|null $funcName
-	 * @param string|null $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = null, int $time = LP_CACHE_TIME, ...$vars)
+	public static function cache($key = null)
 	{
-		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
 	/**
@@ -95,10 +91,6 @@ class Helpers
 	}
 
 	/**
-	 * Require $filename only once
-	 *
-	 * Подключаем $filename единожды
-	 *
 	 * @param string $filename
 	 * @return void
 	 */
@@ -109,14 +101,10 @@ class Helpers
 		if (empty($filename))
 			return;
 
-		require_once($sourcedir . '/' . $filename . '.php');
+		require_once $sourcedir . DIRECTORY_SEPARATOR . $filename . '.php';
 	}
 
 	/**
-	 * Remove BBCode from transmitted data
-	 *
-	 * Убираем ББ-код из переданных данных
-	 *
 	 * @param array|string $data
 	 * @return void
 	 */
@@ -126,21 +114,23 @@ class Helpers
 	}
 
 	/**
-	 * @param string $icon
-	 * @param string $type
+	 * @param null|string $icon
 	 * @return string
 	 */
-	public static function getIcon(string $icon = '', string $type = ''): string
+	public static function getIcon(?string $icon = ''): string
 	{
 		global $context;
 
 		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-		$type = $type ?: ($context['lp_block']['icon_type'] ?? $context['lp_page']['options']['icon_type'] ?? 'fas');
 
-		if (!empty($icon))
-			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+		if (empty($icon))
+			return '';
 
-		return '';
+		$template = '<i class="' . $icon . '"></i> ';
+
+		Addons::run('prepareIconTemplate', array(&$template, $icon));
+
+		return $template;
 	}
 
 	/**
@@ -357,7 +347,7 @@ class Helpers
 		elseif ($y == date('Y', $current_time))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 
-		// like "20 February, 2019" (last year)
+		// like "20 February 2019" (last year)
 		return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 	}
 
@@ -375,26 +365,12 @@ class Helpers
 	{
 		global $txt;
 
+		$comma = strpos($postfix, ":") === false ? ' ' : ', ';
+
 		if ($txt['lang_locale'] == 'en_US')
-			return $month . ' ' . $day . ', ' . $postfix;
+			return $month . ' ' . $day . $comma . $postfix;
 
-		return $day . ' ' . $month . (strpos($postfix, ":") === false ? ' ' : ', ') . $postfix;
-	}
-
-	/**
-	 * Form a list of addons that not installed
-	 *
-	 * Формируем список неустановленных плагинов
-	 *
-	 * @param string $type
-	 * @return void
-	 */
-	public static function prepareMissingBlockTypes(string $type)
-	{
-		global $txt, $context;
-
-		if (empty($txt['lp_block_types'][$type]))
-			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
+		return $day . ' ' . $month . $comma . $postfix;
 	}
 
 	/**
@@ -521,28 +497,23 @@ class Helpers
 
 	/**
 	 * @param string $value
-	 * @param string $delimiter
 	 * @return string
 	 */
-	public static function getSnakeName(string $value, string $delimiter = '_'): string
+	public static function getSnakeName(string $value): string
 	{
-		if (!ctype_lower($value)) {
-			$value = preg_replace('/\s+/u', '', ucwords($value));
-			$value = preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value);
-		}
-
-		return strtolower($value);
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	/**
 	 * @param string $text
+	 * @param int $length
 	 * @return string
 	 */
-	public static function getTeaser(string $text): string
+	public static function getTeaser(string $text, int $length = 150): string
 	{
 		$text = strip_tags($text);
 
-		return $text ?: '...';
+		return shorten_subject($text, $length) ?: '...';
 	}
 
 	/**
@@ -611,7 +582,11 @@ class Helpers
 			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
 			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
-		Subs::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+		ob_start();
+
+		Addons::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
+
+		$content = ob_get_clean();
 	}
 
 	/**
@@ -659,7 +634,7 @@ class Helpers
 				break;
 
 			default:
-				Subs::runAddons('parseContent', array(&$content, $type));
+				Addons::run('parseContent', array(&$content, $type));
 		}
 	}
 
@@ -685,6 +660,10 @@ class Helpers
 
 			case 'int':
 				$filter = FILTER_VALIDATE_INT;
+				break;
+
+			case 'float':
+				$filter = FILTER_VALIDATE_FLOAT;
 				break;
 
 			case 'bool':
@@ -768,46 +747,11 @@ class Helpers
 	}
 
 	/**
-	 * Get the total number of active pages
-	 *
-	 * Подсчитываем общее количество активных страниц
-	 *
-	 * @param bool $all - подсчитывать все страницы
-	 * @return int
-	 */
-	public static function getNumActivePages($all = false): int
-	{
-		global $user_info, $smcFunc;
-
-		if (($num_pages = self::cache()->get('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])))) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}' . ($user_info['is_admin'] || $all ? '' : '
-					AND author_id = {int:user_id}'),
-				array(
-					'status'  => Page::STATUS_ACTIVE,
-					'user_id' => $user_info['id']
-				)
-			);
-
-			[$num_pages] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			self::cache()->put('num_active_pages' . ($all ? '' : ('_u' . $user_info['id'])), $num_pages);
-		}
-
-		return (int) $num_pages;
-	}
-
-	/**
 	 * @return array
 	 */
 	public static function getAllCategories()
 	{
-		return self::cache('all_categories', 'getList', Lists\Category::class);
+		return self::cache('all_categories')->setFallback(Lists\Category::class, 'getList');
 	}
 
 	/**
@@ -815,34 +759,45 @@ class Helpers
 	 */
 	public static function getAllTags()
 	{
-		return self::cache('all_tags', 'getList', Lists\Tag::class);
+		return self::cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
 	}
 
 	/**
-	 * Prepare field array with entity options
-	 *
-	 * Формируем массив полей с настройками сущности
-	 *
-	 * @return void
+	 * @return array
 	 */
-	public static function preparePostFields()
-	{
-		global $context;
+	public static function getFaIcons(): array
+    {
+		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
+			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
+			$json = json_decode($content);
+			$icons = [];
 
-		foreach ($context['posting_fields'] as $item => $data) {
-			if ($item !== 'icon' && !empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
-
-			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
-				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $data['input']['attributes']['id'] . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
-				$context['posting_fields'][$item] = $data;
+			foreach ($json as $icon => $value) {
+				foreach ($value->styles as $style) {
+					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
+				}
 			}
 
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 4);
 		}
 
-		loadTemplate('LightPortal/ManageSettings');
+		return $icons;
+	}
+
+	/**
+	 * @param $user_id
+	 * @return array
+	 * @throws Exception
+	 */
+	public static function getUserAvatar($user_id): array
+	{
+		global $memberContext;
+
+		if (!isset($memberContext[$user_id])) {
+			loadMemberData($user_id);
+			loadMemberContext($user_id, true);
+		}
+
+		return $memberContext[$user_id]['avatar'];
 	}
 }

@@ -9,58 +9,71 @@
  */
 function template_manage_plugins()
 {
-	global $scripturl, $context, $txt, $settings;
+	global $context, $scripturl, $txt, $settings;
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">
-			<span class="floatright">
-				<a href="', $scripturl, '?action=admin;area=lp_plugins;sa=add;', $context['session_var'], '=', $context['session_id'], '" x-data>
-					<i class="fas fa-plus" @mouseover="plugin.toggleSpin($event.target)" @mouseout="plugin.toggleSpin($event.target)" title="', $txt['lp_plugins_add'], '"></i>
-				</a>
-			</span>
-			', $txt['lp_plugins_extra'], '
-		</h3>
-	</div>
-	<div class="information">
-		', $txt['lp_plugins_desc'];
+		<h3 class="catbg">', $context['lp_plugins_extra'];
 
 	echo '
-		<div class="floatright">
-			<form action="', $scripturl . '?action=admin;area=lp_plugins" method="post">
-				<label for="filter">', $txt['apply_filter'], '</label>
-				<select id="filter" name="filter" onchange="this.form.submit()">
-					<option value="all"', $context['current_filter'] == 'all' ? ' selected' : '', '>', $txt['all'], '</option>';
+			<span class="floatright">
+				<form action="', $scripturl . '?action=admin;area=lp_plugins" method="post">
+					<label for="filter">', $txt['apply_filter'], '</label>
+					<select id="filter" name="filter" onchange="this.form.submit()">
+						<option value="all"', $context['current_filter'] == 'all' ? ' selected' : '', '>', $txt['all'], '</option>';
 
 	foreach ($context['lp_plugin_types'] as $type => $title) {
 		echo '
-					<option value="', $type, '"', $context['current_filter'] == $type ? ' selected' : '', '>', $title, '</option>';
+						<option value="', $type, '"', $context['current_filter'] == $type ? ' selected' : '', '>', $title, '</option>';
 	}
 
 	echo '
-				</select>
-			</form>
-		</div>
-	</div>';
+					</select>
+				</form>
+			</span>
+		</h3>
+	</div>
+	<div class="information">', $txt['lp_plugins_desc'], '</div>';
 
 	// This is a magic! Пошла магия!
-	$i = 0;
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<span class="counter">', ++$i, '</span>
-				<h4>', $plugin['name'], '</h4>
-				<div class="smalltext">
-					<p>
-						<strong class="new_posts">', $plugin['types'], '</strong>
-						', $plugin['desc'], '
+				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['types'], '</strong></h4>
+				<div>
+					<p>';
+
+		if ($plugin['types'] === $txt['lp_can_donate']) {
+			$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
+			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+		} elseif ($plugin['types'] === $txt['lp_can_download']) {
+			$lang = $context['lp_can_download'][$plugin['name']]['languages'];
+			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+		} else {
+			echo $plugin['desc'];
+		}
+
+		echo '
 					</p>';
 
-		if (!empty($plugin['author']) && $plugin['author'] !== 'Bugo') {
+		if (!empty($plugin['requires'])) {
 			echo '
-					<p>', $plugin['author'], (!empty($plugin['link']) && $plugin['link'] !== 'https://dragomano.ru/mods/light-portal' ? (' | ' . $plugin['link']) : ''), '</p>';
+					<p class="roundframe">
+						<span class="infobox">
+							<strong>', $txt['lp_plugins_requires'], '</strong>: ';
+
+			echo implode(', ', $plugin['requires']);
+
+			echo '
+						</span>
+					</p>';
+		}
+
+		if (!empty($plugin['author'])) {
+			echo '
+					<p>', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '</p>';
 		}
 
 		echo '
@@ -70,12 +83,15 @@ function template_manage_plugins()
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if ($plugin['types'] === $txt['lp_sponsors_only'] ) {
+		if ($plugin['types'] === $txt['lp_can_donate']) {
 			echo '
-				<i class="fas fa-3x fa-donate"></i>';
+				<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+		} elseif ($plugin['types'] === $txt['lp_can_download']) {
+			echo '
+				<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
 		} else {
 			echo '
 				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
@@ -85,7 +101,7 @@ function template_manage_plugins()
 			</div>';
 
 		if (!empty($plugin['settings']))
-			show_plugin_settings($plugin['snake_name'] . $context['session_id'], $plugin['settings']);
+			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
 		</div>
@@ -107,13 +123,13 @@ function template_manage_plugins()
  * @param array $settings
  * @return void
  */
-function show_plugin_settings($plugin_name, $settings)
+function show_plugin_settings(string $plugin_name, array $settings)
 {
 	global $txt, $context, $modSettings;
 
 	echo '
 	<br class="clear">
-	<div class="roundframe" id="', $plugin_name, '_settings" style="display: none" x-data="{success: false}">
+	<div class="roundframe" id="', $plugin_name, '_', $context['session_id'], '_settings" style="display: none" x-data="{success: false}">
 		<div class="title_bar">
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
@@ -123,12 +139,15 @@ function show_plugin_settings($plugin_name, $settings)
 				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
 
 	foreach ($settings as $value) {
+		$label = $txt['lp_' . $plugin_name][$value[1]] ?? '';
+		$value[1] = 'lp_' . $plugin_name . '_addon_' . $value[1];
+
 		echo '
 				<div>';
 
 		if (!in_array($value[0], array('callback', 'desc', 'check'))) {
 			echo '
-					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $txt[$value[1]], '</strong></label>';
+					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $label, '</strong></label>';
 		}
 
 		if ($value[0] == 'text') {
@@ -144,26 +163,37 @@ function show_plugin_settings($plugin_name, $settings)
 			echo '
 					<br><input type="color" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'int') {
+			$min = ' min="' . ($value['min'] ?? 0) . '"';
+			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
+			$step = ' step="' . ($value['step'] ?? 1) . '"';
+
 			echo '
-					<br><input type="number" min="0" step="1" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
+					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
+		} elseif ($value[0] == 'float') {
+			$min = ' min="' . ($value['min'] ?? 0) . '"';
+			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
+			$step = ' step="' . ($value['step'] ?? 0.01) . '"';
+
+			echo '
+					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
-					<label class="label" for="', $value[1], '"><strong>', $txt[$value[1]], '</strong></label>';
+					<label class="label" for="', $value[1], '"><strong>', $label, '</strong></label>';
 		} elseif ($value[0] == 'callback' && !empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
 			}
 		} elseif ($value[0] == 'desc') {
 			echo '
-					<div class="roundframe">', $txt[$value[1]], '</div>';
+					<div class="roundframe">', $label, '</div>';
 		} elseif ($value[0] == 'multicheck') {
 			echo '
 					<fieldset>
 						<ul>';
 
 			$temp[$value[1] . '_options'] = !empty($modSettings[$value[1]]) ? json_decode($modSettings[$value[1]], true) : [];
-			foreach ($context[$value[1] . '_options'] as $key => $option_label) {
+			foreach ($value[2] as $key => $option_label) {
 				echo '
 							<li>
 								<label for="', $value[1], '[', $key, ']">
@@ -176,7 +206,7 @@ function show_plugin_settings($plugin_name, $settings)
 						</ul>
 					</fieldset>';
 		} else {
-			$multiple = false;
+			$multiple = $value['multiple'] ?? false;
 
 			echo '
 					<br>
@@ -184,7 +214,7 @@ function show_plugin_settings($plugin_name, $settings)
 
 			if (!empty($multiple)) {
 				if (!empty($modSettings[$value[1]])) {
-					$modSettings[$value[1]] = unserialize($modSettings[$value[1]]);
+					$modSettings[$value[1]] = json_decode($modSettings[$value[1]], true);
 
 					foreach ($value[2] as $option => $option_title) {
 						echo '
@@ -207,6 +237,11 @@ function show_plugin_settings($plugin_name, $settings)
 					</select>';
 		}
 
+		if (!empty($value['postfix'])) {
+			echo '
+					', $value['postfix'];
+		}
+
 		if (!empty($value['subtext'])) {
 			echo '
 					<div class="roundframe">', $value['subtext'], '</div>';
@@ -225,185 +260,4 @@ function show_plugin_settings($plugin_name, $settings)
 			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $txt['save'], '</button>
 		</div>
 	</div>';
-}
-
-/**
- * The plugin creation/editing template
- *
- * Шаблон создания/редактирования плагина
- *
- * @return void
- */
-function template_plugin_post()
-{
-	global $context, $txt;
-
-	if (!empty($context['lp_addon_dir_is_not_writable'])) {
-		echo '
-	<div class="errorbox">', $txt['lp_addon_add_failed'], '</div>';
-	}
-
-	echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_area_title'], '</h3>
-	</div>';
-
-	if (!empty($context['post_errors'])) {
-		echo '
-	<div class="errorbox">
-		<ul>';
-
-		foreach ($context['post_errors'] as $error) {
-			echo '
-			<li>', $error, '</li>';
-		}
-
-		echo '
-		</ul>
-	</div>';
-	}
-
-	$fields = $context['posting_fields'];
-
-	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
-		<div class="roundframe noup">
-			<div class="lp_tabs">
-				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">', $txt['lp_plugins_tab_content'], '</label>
-				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $txt['lp_plugins_tab_copyrights'], '</label>
-				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_plugins_tab_settings'], '</label>
-				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">', $txt['lp_plugins_tab_tuning'], '</label>
-				<section id="content-tab1" class="bg even">
-					', template_post_tab($fields), '
-				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab($fields, 'copyrights'), '
-				</section>
-				<section id="content-tab3" class="bg even">
-					<table class="add_option centertext" x-data="plugin.handleOptions()">
-						<tbody>
-							<template x-for="(option, index) in options" :key="index">
-								<tr class="windowbg">
-									<td colspan="4">
-										<table class="plugin_options table_grid">
-											<thead>
-												<tr class="title_bar">
-													<th>#</th>
-													<th colspan="3">', $txt['lp_plugin_option_name'], '</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr class="windowbg">
-													<td x-text="index + 1"></td>
-													<td colspan="2">
-														<input type="text" x-model="option.name" name="option_name[]" pattern="^[a-z][a-z_]+$" maxlength="255" placeholder="option_name">
-													</td>
-													<td>
-														<button type="button" class="button" @click="removeOption(index)" style="width: 100%">
-															<span class="main_icons delete"></span> ', $txt['remove'], '
-														</button>
-													</td>
-												</tr>
-												<tr class="windowbg">
-													<td><strong>', $txt['lp_plugin_option_type'], '</strong></td>
-													<td>
-														<select x-model="option.type" name="option_type[]">';
-
-	foreach ($context['lp_plugin_option_types'] as $type => $name) {
-		echo '
-															<option value="', $type, '">', $name, '</option>';
-	}
-
-	echo '
-														</select>
-													</td>
-													<td><strong>', $txt['lp_plugin_option_default_value'], '</strong></td>
-													<td>
-														<template x-if="option.type == \'text\'">
-															<input name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'url\'">
-															<input type="url" name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'color\'">
-															<input type="color" name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'int\'">
-															<input type="number" min="0" step="1" name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'check\'">
-															<input type="checkbox" name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'multicheck\'">
-															<input name="option_defaults[]">
-														</template>
-														<template x-if="option.type == \'select\'">
-															<input name="option_defaults[]">
-														</template>
-													</td>
-												</tr>
-												<template x-if="[\'multicheck\', \'select\'].includes(option.type)">
-													<tr class="windowbg">
-														<td colspan="1"><strong>', $txt['lp_plugin_option_variants'], '</strong></td>
-														<td colspan="3">
-															<input x-model="option.variants" name="option_variants[]" placeholder="', $txt['lp_plugin_option_variants_placeholder'], '">
-														</td>
-													</tr>
-												</template>
-												<tr class="windowbg">
-													<td colspan="1"><strong>', $txt['lp_plugin_option_translations'], '</strong></td>
-													<td colspan="3">
-														<table class="table_grid">
-															<tbody>';
-
-	foreach ($context['languages'] as $lang) {
-		echo '
-																<tr class="windowbg">
-																	<td><strong>', $lang['name'], '</strong></td>
-																	<td>
-																		<input type="text" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
-																	</td>
-																</tr>';
-	}
-
-	echo '
-															</tbody>
-														</table>
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</td>
-								</tr>
-							</template>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan="4">
-									<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', $txt['lp_plugin_new_option'], '</button>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</section>
-				<section id="content-tab4" class="bg even">
-					', template_post_tab($fields, 'tuning'), '
-				</section>
-			</div>
-			<br class="clear">
-			<div class="centertext">
-				<div class="noticebox">', $txt['lp_plugins_add_information'], '</div>
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
-				<button type="submit" class="button" name="save" @click="plugin.post($el)">', $txt['save'], '</button>
-			</div>
-		</div>
-	</form>
-	<script>
-		const plugin = new Plugin();
-	</script>';
 }

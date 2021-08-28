@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -40,24 +40,23 @@ class Subs
 	}
 
 	/**
-	 *
-	 * Prepare information about current blocks of the portal
-	 *
-	 * Собираем информацию о текущих блоках портала
-	 *
 	 * @return void
 	 */
-	public static function loadBlocks()
+	public static function defineVars()
 	{
 		global $context, $modSettings;
+
+		$context['lp_num_active_blocks'] = self::getNumActiveBlocks();
+		$context['lp_num_active_pages']  = self::getNumActivePages();
 
 		$context['lp_all_title_classes']   = self::getTitleClasses();
 		$context['lp_all_content_classes'] = self::getContentClasses();
 		$context['lp_block_placements']    = self::getBlockPlacements();
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
-		$context['lp_plugin_option_types'] = self::getPluginOptionTypes();
-		$context['lp_icon_types']          = self::getIconTypes();
+		$context['lp_page_types']          = self::getPageTypes();
+
+		$context['lp_enabled_plugins']   = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;
@@ -68,7 +67,7 @@ class Subs
 		// Block direction in panels | Направление блоков в панелях
 		$context['lp_panel_direction'] = !empty($modSettings['lp_panel_direction']) ? json_decode($modSettings['lp_panel_direction'], true) : [];
 
-		$context['lp_active_blocks'] = self::getActiveBlocks();
+		$context['lp_active_blocks'] = Block::getActive();
 	}
 
 	/**
@@ -78,65 +77,7 @@ class Subs
 	{
 		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCSSFile('light_portal/flexboxgrid.css');
-		loadCSSFile('light_portal/light_portal.css');
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function getActiveBlocks(): array
-	{
-		global $smcFunc;
-
-		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT
-					b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-					bt.lang, bt.title, bp.name, bp.value
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}
-				ORDER BY b.placement, b.priority',
-				array(
-					'status' => Block::STATUS_ACTIVE
-				)
-			);
-
-			$active_blocks = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				censorText($row['content']);
-
-				if (!isset($active_blocks[$row['block_id']]))
-					$active_blocks[$row['block_id']] = array(
-						'id'            => $row['block_id'],
-						'icon'          => $row['icon'],
-						'icon_type'     => $row['icon_type'],
-						'type'          => $row['type'],
-						'content'       => $row['content'],
-						'placement'     => $row['placement'],
-						'priority'      => $row['priority'],
-						'permissions'   => $row['permissions'],
-						'areas'         => explode(',', $row['areas']),
-						'title_class'   => $row['title_class'],
-						'title_style'   => $row['title_style'],
-						'content_class' => $row['content_class'],
-						'content_style' => $row['content_style']
-					);
-
-				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
-
-				if (!empty($row['name']))
-					$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('active_blocks', $active_blocks);
-		}
-
-		return $active_blocks;
+		loadCSSFile('light_portal/portal.css');
 	}
 
 	/**
@@ -176,119 +117,6 @@ class Subs
 	}
 
 	/**
-	 * @return array
-	 */
-	public static function getAddons(): array
-	{
-		$dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR) or array();
-
-		$addons = [];
-		foreach ($dirs as $dir) {
-			$addons[] = basename($dir);
-		}
-
-		return $addons;
-	}
-
-	/**
-	 * @param string $addon
-	 * @return void
-	 */
-	public static function loadAddonLanguage(string $addon = '')
-	{
-		global $user_info, $txt;
-
-		$addon_dir = LP_ADDON_DIR . '/' . $addon . '/langs/';
-		$languages = array_unique(['english', $user_info['language']]);
-
-		foreach ($languages as $lang) {
-			$lang_file = $addon_dir . $lang . '.php';
-
-			if (is_file($lang_file)) {
-				require_once($lang_file);
-			}
-		}
-	}
-
-	/**
-	 * @param string $addon
-	 * @return void
-	 */
-	public static function loadAddonCss(string $addon = '')
-	{
-		global $settings;
-
-		$style = LP_ADDON_DIR . '/' . $addon . '/style.css';
-
-		if (!is_file($style))
-			return;
-
-		$addon = Helpers::getSnakeName($addon);
-
-		$addon_css = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $addon . '.css';
-
-		$css_exists = true;
-		if (!is_file($addon_css))
-			$css_exists = @copy($style, $addon_css);
-
-		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !$css_exists)
-			return;
-
-		loadCSSFile('light_portal/addon_' . $addon . '.css');
-	}
-
-	/**
-	 * @see https://github.com/dragomano/Light-Portal/wiki/Available-hooks
-	 *
-	 * @param string $hook
-	 * @param array $vars (extra variables)
-	 * @param array $plugins
-	 * @return void
-	 */
-	public static function runAddons(string $hook = '', array $vars = [], array $plugins = [])
-	{
-		global $context;
-		static $results = [];
-
-		$context['lp_bbc_icon']  = 'fab fa-bimobject';
-		$context['lp_html_icon'] = 'fab fa-html5';
-		$context['lp_php_icon']  = 'fab fa-php';
-
-		$addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
-
-		if (empty($addons))
-			return;
-
-		foreach ($addons as $id => $addon) {
-			self::loadAddonLanguage($addon);
-			self::loadAddonCss($addon);
-
-			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
-
-			if (!class_exists($className))
-				continue;
-
-			$class = new $className;
-
-			if (!isset($snake_name[$id])) {
-				$snake_name[$id] = Helpers::getSnakeName($addon);
-
-				$context['lp_' . $snake_name[$id] . '_type'] = property_exists($class, 'addon_type') ? $class->addon_type : 'block';
-				$context['lp_' . $snake_name[$id] . '_icon'] = property_exists($class, 'addon_icon') ? $class->addon_icon : 'fas fa-puzzle-piece';
-			}
-
-			// Hook init should run only once
-			if (empty($results[$id]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
-				$class->init();
-				$results[$id]['init'] = $addon;
-			}
-
-			if (method_exists($class, $hook))
-				$class->$hook(...$vars);
-		}
-	}
-
-	/**
 	 * Get a list of all used classes for blocks with a header
 	 *
 	 * Получаем список всех используемых классов для блоков с заголовком
@@ -298,16 +126,16 @@ class Subs
 	public static function getTitleClasses(): array
 	{
 		return [
-			'div.cat_bar > h3.catbg'        => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
-			'div.title_bar > h3.titlebg'    => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
-			'div.title_bar > h4.titlebg'    => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
-			'div.sub_bar > h3.subbg'        => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
-			'div.sub_bar > h4.subbg'        => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
-			'div.errorbox > h3'             => '<div class="errorbox"><h3>%1$s</h3></div>',
-			'div.noticebox > h3'            => '<div class="noticebox"><h3>%1$s</h3></div>',
-			'div.infobox > h3'              => '<div class="infobox"><h3>%1$s</h3></div>',
-			'div.descbox > h3'              => '<div class="descbox"><h3>%1$s</h3></div>',
-			'div.generic_list_wrapper > h3' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>'
+			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
+			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
+			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
+			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
+			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
+			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
+			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
+			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
+			''                     => '<div>%1$s</div>',
 		];
 	}
 
@@ -321,14 +149,18 @@ class Subs
 	public static function getContentClasses(): array
 	{
 		return [
-			'div.roundframe'  => '<div class="roundframe noup"%2$s>%1$s</div>',
-			'div.windowbg'    => '<div class="windowbg noup"%2$s>%1$s</div>',
-			'div.information' => '<div class="information"%2$s>%1$s</div>',
-			'div.errorbox'    => '<div class="errorbox"%2$s>%1$s</div>',
-			'div.noticebox'   => '<div class="noticebox"%2$s>%1$s</div>',
-			'div.infobox'     => '<div class="infobox"%2$s>%1$s</div>',
-			'div.descbox'     => '<div class="descbox"%2$s>%1$s</div>',
-			'_'               => '<div%2$s>%1$s</div>' // Empty class
+			'roundframe'           => '<div class="roundframe noup"%2$s>%1$s</div>',
+			'roundframe2'          => '<div class="roundframe"%2$s>%1$s</div>',
+			'windowbg'             => '<div class="windowbg noup"%2$s>%1$s</div>',
+			'windowbg2'            => '<div class="windowbg"%2$s>%1$s</div>',
+			'information'          => '<div class="information"%2$s>%1$s</div>',
+			'errorbox'             => '<div class="errorbox"%2$s>%1$s</div>',
+			'noticebox'            => '<div class="noticebox"%2$s>%1$s</div>',
+			'infobox'              => '<div class="infobox"%2$s>%1$s</div>',
+			'descbox'              => '<div class="descbox"%2$s>%1$s</div>',
+			'bbc_code'             => '<div class="bbc_code"%2$s>%1$s</div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper"%2$s>%1$s</div>',
+			''                     => '<div%2$s>%1$s</div>',
 		];
 	}
 
@@ -341,23 +173,24 @@ class Subs
 	 */
 	public static function showDebugInfo()
 	{
-		global $context, $txt, $smcFunc;
+		global $modSettings, $context, $txt, $smcFunc;
 
-		$context['lp_load_page_stats'] = LP_DEBUG ? sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']) : false;
+		if (empty($modSettings['lp_show_debug_info']) || empty($context['user']['is_admin']) || empty($context['template_layers']))
+			return;
 
-		if (!empty($context['lp_load_page_stats']) && !empty($context['template_layers'])) {
-			loadTemplate('LightPortal/ViewDebug');
+		$context['lp_load_page_stats'] = sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']);
 
-			$key = array_search('portal', $context['template_layers']);
-			if (empty($key)) {
-				$context['template_layers'][] = 'debug';
-			} else {
-				$context['template_layers'] = array_merge(
-					array_slice($context['template_layers'], 0, $key, true),
-					array('debug'),
-					array_slice($context['template_layers'], $key, null, true)
-				);
-			}
+		loadTemplate('LightPortal/ViewDebug');
+
+		$key = array_search('portal', $context['template_layers']);
+		if (empty($key)) {
+			$context['template_layers'][] = 'debug';
+		} else {
+			$context['template_layers'] = array_merge(
+				array_slice($context['template_layers'], 0, $key, true),
+				array('debug'),
+				array_slice($context['template_layers'], $key, null, true)
+			);
 		}
 	}
 
@@ -387,7 +220,7 @@ class Subs
 	{
 		global $context, $scripturl;
 
-		if (empty($context['current_board']) || empty($context['linktree'][1]))
+		if (empty($context['current_board']) && Helpers::request()->has('c') === false || empty($context['linktree'][1]))
 			return;
 
 		$old_url = explode('#', $context['linktree'][1]['url']);
@@ -397,10 +230,6 @@ class Subs
 	}
 
 	/**
-	 * Getting a list of pages to display in the main menu
-	 *
-	 * Получаем список страниц для отображения в главном меню
-	 *
 	 * @return array
 	 */
 	public static function getPagesInMenu(): array
@@ -409,10 +238,9 @@ class Subs
 
 		if (($pages = Helpers::cache()->get('pages_in_menu', LP_CACHE_TIME * 4)) === null) {
 			$request = $smcFunc['db_query']('', '
-				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon, ps3.value AS icon_type
+				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon
 				FROM {db_prefix}lp_params AS ps
 					LEFT JOIN {db_prefix}lp_params AS ps2 ON (ps.item_id = ps2.item_id AND ps2.name = {literal:icon} AND ps2.type = {literal:page})
-					LEFT JOIN {db_prefix}lp_params AS ps3 ON (ps.item_id = ps3.item_id AND ps3.name = {literal:icon_type} AND ps3.type = {literal:page})
 					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
 				WHERE ps.name = {literal:main_menu_item}
 					AND ps.value != {string:blank_string}
@@ -429,8 +257,7 @@ class Subs
 				$pages[$row['alias']] = array(
 					'title'       => json_decode($row['value'], true),
 					'permissions' => $row['permissions'],
-					'icon'        => $row['icon'],
-					'icon_type'   => $row['icon_type']
+					'icon'        => $row['icon']
 				);
 			}
 
@@ -444,10 +271,6 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available block placements
-	 *
-	 * Получаем массив доступных расположений блоков
-	 *
 	 * @return array
 	 */
 	public static function getBlockPlacements(): array
@@ -458,10 +281,6 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available page options
-	 *
-	 * Получаем массив доступных опций страниц
-	 *
 	 * @return array
 	 */
 	public static function getPageOptions(): array
@@ -472,44 +291,86 @@ class Subs
 	}
 
 	/**
-	 * Get an array of available plugin type of the portal
-	 *
-	 * Получаем массив доступных типов плагинов портала
-	 *
 	 * @return array
 	 */
 	public static function getPluginTypes(): array
 	{
 		global $txt;
 
-		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugin_type_set']);
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_types']);
 	}
 
 	/**
-	 * Get an array of available plugin option types
-	 *
-	 * Получаем массив доступных типов параметров плагинов
-	 *
 	 * @return array
 	 */
-	public static function getPluginOptionTypes(): array
+	public static function getPageTypes(): array
 	{
-		global $txt;
+		global $txt, $user_info, $modSettings;
 
-		return array_combine(array('text', 'url', 'color', 'int', 'check', 'multicheck', 'select'), $txt['lp_plugin_option_type_set']);
+		$types = array_combine(array('bbc', 'html', 'php'), $txt['lp_page_types']);
+
+		$types = $user_info['is_admin'] || empty($modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
+
+		return $types;
 	}
 
 	/**
-	 * Get an array of available icon types
-	 *
-	 * Получаем массив доступных типов иконок
-	 *
-	 * @return array
+	 * @return int
 	 */
-	public static function getIconTypes(): array
+	public static function getNumActiveBlocks(): int
 	{
-		global $txt;
+		global $user_info, $smcFunc;
 
-		return array_combine(array('fas', 'far', 'fab'), $txt['lp_block_icon_type_set']);
+		if (($num_blocks = Helpers::cache()->get('num_active_blocks_u' . $user_info['id'])) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(block_id)
+				FROM {db_prefix}lp_blocks
+				WHERE status = {int:status}' . ($user_info['is_admin'] ? '' : '
+					AND user_id = {int:user_id}'),
+				array(
+					'status'  => Block::STATUS_ACTIVE,
+					'user_id' => $user_info['id']
+				)
+			);
+
+			[$num_blocks] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('num_active_blocks_u' . $user_info['id'], $num_blocks);
+		}
+
+		return (int) $num_blocks;
+	}
+
+	/**
+	 * @return int
+	 */
+	public static function getNumActivePages(): int
+	{
+		global $user_info, $smcFunc;
+
+		if (($num_pages = Helpers::cache()->get('num_active_pages_u' . $user_info['id'])) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}' . ($user_info['is_admin'] ? '' : '
+					AND author_id = {int:user_id}'),
+				array(
+					'status'  => Page::STATUS_ACTIVE,
+					'user_id' => $user_info['id']
+				)
+			);
+
+			[$num_pages] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('num_active_pages_u' . $user_info['id'], $num_pages);
+		}
+
+		return (int) $num_pages;
 	}
 }

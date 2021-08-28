@@ -19,7 +19,7 @@ $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings
 $txt['lp_settings'] = 'Ustawienia portalu';
@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Nie ma jeszcze zbyt wielu bloków, ale najb
 $txt['lp_blocks_add_instruction'] = 'Wybierz blok przez kliknięcie.';
 $txt['lp_blocks_edit_title'] = 'Edytowanie bloku';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Ikony';
 $txt['lp_block_type'] = 'Typ bloku';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Priorytet';
-$txt['lp_block_icon_type'] = 'Typ ikony';
-$txt['lp_block_icon_type_set'] = array('Wypełnione', 'Normalne', 'Marki');
 $txt['lp_block_placement'] = 'Umieszczenie';
 $txt['lp_block_placement_set'] = array('Nagłówek', 'Centralny (na górze)', 'Lewa strona', 'Prawa strona', 'Centralny (na dole)', 'Stopka');
 
@@ -186,12 +183,13 @@ $txt['lp_block_title_style'] = 'Styl CSS tytułu';
 $txt['lp_block_content_class'] = 'Klasa CSS zawartości';
 $txt['lp_block_content_style'] = 'Styl CSS zawartości';
 
-$txt['lp_block_types']['bbc'] = 'Własny BBC';
-$txt['lp_block_types']['html'] = 'Własny HTML';
-$txt['lp_block_types']['php'] = 'Własny PHP';
-$txt['lp_block_types_descriptions']['bbc'] ='W tym bloku można wykorzystać kody BBC do tworzenia zawartości.';
-$txt['lp_block_types_descriptions']['html'] = 'W tym bloku można wykorzystać kod HTML do tworzenia zawartości.';
-$txt['lp_block_types_descriptions']['php'] = 'W tym bloku można wykorzystać kod PHP do tworzenia zawartości.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Własny BBC';
+$txt['lp_html']['title'] = 'Własny HTML';
+$txt['lp_php']['title'] = 'Własny PHP';
+$txt['lp_bbc']['description'] = 'W tym bloku można wykorzystać kody BBC do tworzenia zawartości.';
+$txt['lp_html']['description'] = 'W tym bloku można wykorzystać kod HTML do tworzenia zawartości.';
+$txt['lp_php']['description'] = 'W tym bloku można wykorzystać kod PHP do tworzenia zawartości.';
 
 // Pages
 $txt['lp_pages'] = 'Strony';
@@ -206,19 +204,16 @@ $txt['lp_pages_edit_title'] = 'Edytowanie strony';
 $txt['lp_pages_edit_description'] = $txt['lp_pages_add_description'];
 $txt['lp_pages_extra'] = 'Strony portalu';
 $txt['lp_pages_search'] = 'Alias lub tytuł';
-$txt['lp_page_types']['bbc'] = 'BBC';
-$txt['lp_page_types']['html'] = 'HTML';
-$txt['lp_page_types']['php'] = 'PHP';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'Alias strony musi zaczynać się od litery, może zawierać małe litery, cyfry oraz podkreślenie.';
 $txt['lp_page_type'] = 'Typ strony';
+$txt['lp_page_types'] = array('BBC', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Opis';
 $txt['lp_page_keywords'] = 'Słowa kluczowe';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Data i czas publikacji';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 $txt['lp_page_options'] = array('Wyświetlaj datę oraz nazwę autora', 'Show related pages', 'Włącz komentarze', 'Item in main menu');
 
 // Tabs
@@ -247,39 +242,7 @@ $txt['lp_plugins'] = 'Wtyczki';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a> or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_add'] = 'Add plugin';
-$txt['lp_plugins_add_title'] = 'Adding a plugin';
-$txt['lp_plugins_add_description'] = 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.';
-$txt['lp_plugins_add_information'] = 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.';
-
-$txt['lp_plugins_tab_content'] = 'Basic information';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Settings';
-$txt['lp_plugins_tab_tuning'] = 'Additional';
-
-$txt['lp_plugin_name'] = 'The plugin name';
-$txt['lp_plugin_name_subtext'] = 'In Latin letters, without spaces!';
-$txt['lp_plugin_type'] = 'The plugin type';
-$txt['lp_plugins_type_set'] = array('Blok', 'Edytor', 'Widget komentarzy', 'Parser zawartości', 'Przetwarzanie artykułów', 'The layout of the frontpage', 'Import and export', 'Inne');
-$txt['lp_plugin_site_subtext'] = 'Website where users can download new versions of this plugin.';
-$txt['lp_plugin_license'] = 'The plugin license';
-$txt['lp_plugin_license_own'] = 'Own license';
-$txt['lp_plugin_license_name'] = 'The license name';
-$txt['lp_plugin_license_link'] = 'The license link';
-$txt['lp_plugin_smf_hooks'] = 'Are you using SMF hooks?';
-$txt['lp_plugin_components'] = 'Are you using third-party scripts?';
-$txt['lp_plugin_components_name'] = 'Component name';
-$txt['lp_plugin_components_link'] = 'Link to component site';
-$txt['lp_plugin_components_author'] = 'Component author';
-
-$txt['lp_plugin_option_name'] = 'Option name (Latin)';
-$txt['lp_plugin_option_type'] = 'Option type';
-$txt['lp_plugin_option_type_set'] = array('Text field', 'Web address', 'Input color', 'Input number', 'Checkbox', 'Multiple select', 'Select');
-$txt['lp_plugin_option_default_value'] = 'Default value';
-$txt['lp_plugin_option_variants'] = 'Possible values';
-$txt['lp_plugin_option_variants_placeholder'] = 'Multiple options separated by commas';
-$txt['lp_plugin_option_translations'] = 'Localization';
-$txt['lp_plugin_new_option'] = 'Add option';
+$txt['lp_plugins_types'] = array('Blok', 'Edytor', 'Widget komentarzy', 'Parser zawartości', 'Przetwarzanie artykułów', 'The layout of the frontpage', 'Import and export', 'Inne');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Wszystkie tagi stron portalu';
@@ -327,14 +290,10 @@ $txt['lp_post_error_no_content'] = 'Nie wpisano zawartości!';
 $txt['lp_post_error_no_areas'] = 'Pole <strong>Akcje</strong> nie zostało wypełnione.';
 $txt['lp_post_error_no_valid_areas'] = 'W polu <strong>Akcje</strong> podano niewłaściwą akcję!';
 $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled out. It is required.';
-$txt['lp_post_error_no_valid_name'] = 'The specified name does not match the rules!';
-$txt['lp_post_error_no_unique_name'] = 'A plugin with this name already exists!';
-$txt['lp_post_error_no_description'] = 'The description not specified! It is required.';
-$txt['lp_addon_not_installed'] = 'Wtyczka %1$s nie jest zainstalowana';
-$txt['lp_addon_add_failed'] = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file'] = 'Nie można importować tego pliku...';
 $txt['lp_import_failed'] = 'Wystąpił błąd podczas importowania...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'Wtyczka %1$s nie jest zainstalowana';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Przegląda <a href="%1$s">stronę główną portalu</a>.';

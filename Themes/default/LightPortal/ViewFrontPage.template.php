@@ -46,7 +46,7 @@ function template_show_articles()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_view"', !empty($context['lp_active_blocks']) && empty($modSettings['lp_show_pagination']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_view">';
 
 	show_pagination();
 
@@ -55,31 +55,27 @@ function template_show_articles()
 		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
 			<article class="roundframe', $article['css_class'] ?? '', '">';
 
-		if ($article['is_new']) {
-			echo '
-				<div class="new_hover">
-					<div class="new_icon">
-						<span class="new_posts">', $txt['new'], '</span>
-					</div>
-				</div>';
-		}
-
-		echo '
-				<div class="info_hover">';
-
-		if ($article['can_edit']) {
-			echo '
-					<div class="edit_icon">
-						<a href="', $article['edit_link'], '">
-							<i class="fas fa-edit" title="', $txt['edit'], '"></i>
-						</a>
-					</div>';
-		}
-
-		echo '
-				</div>';
-
 		if (!empty($article['image'])) {
+			if ($article['is_new']) {
+				echo '
+					<div class="new_hover">
+						<div class="new_icon">
+							<span class="new_posts">', $txt['new'], '</span>
+						</div>
+					</div>';
+			}
+
+			if ($article['can_edit']) {
+				echo '
+					<div class="info_hover">
+						<div class="edit_icon">
+							<a href="', $article['edit_link'], '">
+								<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+							</a>
+						</div>
+					</div>';
+			}
+
 			echo '
 				<div class="card_img"></div>
 				<a href="', $article['link'], '">
@@ -95,6 +91,12 @@ function template_show_articles()
 			echo '
 						<a class="floatleft" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
 		}
+
+		if ($article['is_new'] && empty($article['image'])) {
+			echo '
+						&nbsp;<span class="new_posts">', $txt['new'], '</span>';
+		}
+
 
 		if (!empty($article['datetime'])) {
 			echo '
@@ -184,7 +186,7 @@ function template_show_articles_alt()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_alt_view">';
 
 	show_pagination();
 
@@ -391,7 +393,7 @@ function template_show_articles_alt3()
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt3_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px; margin-left: 5px"' : '', '>';
+	<div class="lp_frontpage_articles article_alt3_view">';
 
 	show_pagination();
 
@@ -490,56 +492,211 @@ function template_show_articles_alt3()
  *
  * @return void
  */
-function template_show_articles_alt4()
+function template_show_articles_simple()
 {
-	global $context;
+	global $context, $txt;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
 	<div class="col-xs">';
 
 	echo '
-	<div class="lp_frontpage_articles article_alt4_view"', !empty($context['lp_active_blocks']) ? ' style="margin-top: -10px"' : '', '>';
+	<div class="lp_frontpage_articles article_simple_view">';
 
 	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<article>
-			<div class="num"></div>
-			<a class="card" href="', $article['link'], '"', !empty($article['image']) ? ' style="--bg-img: url(\'' . $article['image'] . '\')"' : '', '>
-				<div>
-					<h1>', $article['title'], '</h1>';
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
 
-		if (!empty($article['teaser'])) {
+		if (!empty($article['image'])) {
 			echo '
-					<p>', $article['teaser'], '</p>';
-		}
-
-		if (!empty($article['datetime'])) {
-			echo '
-					<div class="date">
-						<time datetime="', $article['datetime'], '">', $article['date'], '</time>
-					</div>';
-		}
-
-		if (!empty($article['section']['name'])) {
-			echo '
-					<div class="tags">
-						<div class="tag">', $article['section']['name'], '</div>
-					</div>';
+			<div class="article_image" style="background-image: url(\'' . $article['image'] . '\')"></div>';
 		}
 
 		echo '
-				</div>
-			</a>
-		</article>';
+			<div class="mt-6 body">
+				<a class="article_title" href="', $article['link'], '">', $article['title'], '</a>';
+
+		if (!empty($article['teaser'])) {
+			echo '
+				<p class="article_teaser">', $article['teaser'], '</p>';
+		}
+
+		echo '
+			</div>
+			<div class="mt-6">
+				<a class="bbc_link" href="', $article['link'], '">', $txt['lp_read_more'], '</a>
+			</div>
+		</div>';
 	}
 
 	show_pagination('bottom');
 
 	echo '
 	</div>';
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	</div>';
+}
+
+/**
+ * Example of custom view for frontpage articles
+ *
+ * Пример альтернативного отображения статей
+ *
+ * @return void
+ */
+function template_show_articles_simple2()
+{
+	global $context, $txt;
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	<div class="col-xs">';
+
+	echo '
+	<div class="lp_frontpage_articles article_simple2_view">';
+
+	show_pagination();
+
+	foreach ($context['lp_frontpage_articles'] as $article) {
+		echo '
+		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>
+					<div class="card-title">
+						<h3>', $article['title'], '</h3>';
+
+		if (!empty($article['datetime'])) {
+			echo '
+						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+		}
+
+		echo '
+					</div>
+					<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+						<polygon points="50,0 100,0 50,100 0,100" />
+					</svg>
+				</div>
+
+				<div class="card-body">
+					<div class="card-body-inner">';
+
+		if (!empty($article['datetime'])) {
+			echo '
+						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+		}
+
+		echo '
+						<h3>', $article['title'], '</h3>';
+
+		if (!empty($article['teaser'])) {
+			echo '
+						<p class="article_teaser">', $article['teaser'], '</p>';
+		}
+
+		echo '
+						<a class="read_more" href="', $article['link'], '">
+							<span>', $txt['lp_read_more'], '</span>
+							<span class="arrow">&#x279c;</span>
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</div>';
+	}
+
+	show_pagination('bottom');
+
+	echo '
+	</div>';
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	</div>';
+}
+
+/**
+ * Example of custom view for frontpage articles
+ *
+ * Пример альтернативного отображения статей
+ *
+ * @return void
+ */
+function template_show_articles_simple3()
+{
+	global $context, $scripturl;
+
+	if (empty($context['lp_active_blocks']))
+		echo '
+	<div class="col-xs">';
+
+	echo '
+		<div class="article_simple3_view">';
+
+	show_pagination();
+
+	foreach ($context['lp_frontpage_articles'] as $article) {
+		echo '
+			<div>';
+
+		if (!empty($article['image'])) {
+			echo '
+				<img src="', $article['image'], '" alt="', $article['title'], '">';
+		}
+
+		echo '
+				<div class="title">
+					<div><a class="bbc_link" href="', $article['link'], '">', $article['title'], '</a></div>';
+
+		if (!empty($article['teaser'])) {
+			echo '
+					<p>', $article['teaser'], '</p>';
+		}
+
+		echo '
+				</div>';
+
+		// Topic keywords
+		if (!empty($article['keywords'])) {
+			echo '
+				<div class="tags">';
+
+			foreach ($article['keywords'] as $id => $name) {
+				echo '
+					<a class="new_posts" href="', $scripturl, '?action=keywords;id=', $id, '">#', $name, '</a>';
+			}
+
+			echo '
+				</div>';
+		}
+
+		// Portal tags
+		if (!empty($article['tags'])) {
+			echo '
+				<div class="tags">';
+
+			foreach ($article['tags'] as $id => $key) {
+				echo '
+					<a class="new_posts" href="', $key['link'], '">#', $key['name'], '</a>';
+			}
+
+			echo '
+				</div>';
+		}
+
+		echo '
+			</div>';
+	}
+
+	echo '
+		</div>';
+
+	show_pagination('bottom');
 
 	if (empty($context['lp_active_blocks']))
 		echo '
@@ -567,7 +724,14 @@ function template_sorting_above()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		echo '
-	<div class="information">
+	<div class="information">';
+
+		if (!empty($context['description'])) {
+			echo '
+		<div class="floatleft">', $context['description'], '</div>';
+		}
+
+		echo '
 		<div class="floatright">
 			<form action="', $context['canonical_url'], '" method="post">
 				<label for="sort">', $txt['lp_sorting_label'], '</label>
@@ -597,7 +761,7 @@ function template_sorting_below()
  * @param string $position
  * @return void
  */
-function show_pagination($position = 'top')
+function show_pagination(string $position = 'top')
 {
 	global $context, $modSettings;
 

@@ -143,7 +143,7 @@ function template_portal_below()
  * @param string $placement
  * @return void
  */
-function lp_show_blocks($placement = '')
+function lp_show_blocks(string $placement = '')
 {
 	global $context, $scripturl;
 
@@ -155,7 +155,7 @@ function lp_show_blocks($placement = '')
 		<div class="row">';
 	}
 
-	foreach ($context['lp_blocks'][$placement] as $id => $block) {
+	foreach ($context['lp_blocks'][$placement] as $block) {
 		$class = 'block_' . $block['type'] . (!empty($context['lp_panel_direction'][$placement]) ? ' col-xs' : '') . (!empty($block['custom_class']) ? ' ' . $block['custom_class'] : '');
 
 		echo '
@@ -164,16 +164,14 @@ function lp_show_blocks($placement = '')
 		if (!empty($block['title_style']) && !empty($block['title']))
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
 
-		if ($context['allow_light_portal_manage_blocks'] && !empty($block['title']))
+		if (!empty($block['can_edit']) && !empty($block['title']))
 			$block['title'] = '<a href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $block['title'] . '</a>';
 
 		if (empty($block['title']))
 			$block['title'] = '';
 
-		if (!empty($block['title_class']))
+		if (!empty($block['title']))
 			echo sprintf($context['lp_all_title_classes'][$block['title_class']], $block['title']);
-		else
-			echo $block['title'];
 
 		if (empty($block['content_class']))
 			$block['content_class'] = '';
@@ -188,7 +186,7 @@ function lp_show_blocks($placement = '')
 		if (!empty($block['content_style']))
 			$style = ' style="' . $block['content_style'] . '"';
 
-		echo sprintf($context['lp_all_content_classes'][$block['content_class'] ?: '_'], $block['content'], $style);
+		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
 
 		echo '
 			</aside>';

@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 use Exception;
-use Bugo\LightPortal\{Helpers, Subs};
+use Bugo\LightPortal\{Addons, Helpers};
 
 /**
  * TopicArticle.php
@@ -14,7 +14,7 @@ use Bugo\LightPortal\{Helpers, Subs};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -56,7 +56,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		Subs::runAddons('frontTopics', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+		Addons::run('frontTopics', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
 	}
 
 	/**
@@ -196,7 +196,7 @@ class TopicArticle extends AbstractArticle
 						$topics[$row['id_topic']]['date'] = $row['date'];
 				}
 
-				Subs::runAddons('frontTopicsOutput', array(&$topics, $row));
+				Addons::run('frontTopicsOutput', array(&$topics, $row));
 			}
 
 			$smcFunc['db_free_result']($request);

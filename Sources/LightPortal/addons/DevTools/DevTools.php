@@ -1,31 +1,29 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\DevTools;
-
-use Exception;
-use Bugo\LightPortal\{Helpers, FrontPage};
-
 /**
  * DevTools
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\DevTools;
 
-class DevTools
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\{Helpers, FrontPage};
+use Exception;
+
+class DevTools extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'frontpage';
+	public $type = 'frontpage';
 
 	/**
 	 * @param array $config_vars
@@ -35,8 +33,8 @@ class DevTools
 	{
 		global $txt;
 
-		$config_vars[] = array('check', 'lp_dev_tools_addon_show_template_switcher');
-		$config_vars[] = array('check', 'lp_dev_tools_addon_fake_cards', 'subtext' => $txt['lp_dev_tools_addon_fake_cards_subtext']);
+		$config_vars['dev_tools'][] = array('check', 'show_template_switcher');
+		$config_vars['dev_tools'][] = array('check', 'fake_cards', 'subtext' => $txt['lp_dev_tools']['fake_cards_subtext']);
 	}
 
 	/**
@@ -53,8 +51,12 @@ class DevTools
 		if (!empty($modSettings['lp_dev_tools_addon_fake_cards'])) {
 			$demo_articles = [];
 
-			$products = Helpers::cache('dev_tools_addon_demo_products', 'getProducts', __CLASS__, 21600);
-			$users    = Helpers::cache('dev_tools_addon_demo_users', 'getUsers', __CLASS__, 21600);
+			$products = Helpers::cache('dev_tools_addon_demo_products')
+				->setLifeTime(21600)
+				->setFallback(__CLASS__, 'getProducts');
+			$users = Helpers::cache('dev_tools_addon_demo_users')
+				->setLifeTime(21600)
+				->setFallback(__CLASS__, 'getUsers');
 
 			foreach ($products as $id => $article) {
 				$date = random_int((new \DateTime('-2 years'))->getTimestamp(), time());
@@ -82,9 +84,9 @@ class DevTools
 					'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
 					'can_edit'  => true,
 					'edit_link' => '',
-					'teaser'    => Lorem::ipsum(4),
+					'teaser'    => Helpers::getTeaser(Lorem::ipsum(4)),
 					'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
-					'keywords'  => ['Tag1', 'Tag2', 'Tag3'],
+					'keywords'  => [1 => 'Tag1', 'Tag2', 'Tag3'],
 					'datetime'  => date('Y-m-d', $date)
 				);
 			}
@@ -97,9 +99,9 @@ class DevTools
 		if (empty($modSettings['lp_dev_tools_addon_show_template_switcher']))
 			return;
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate();
 
-		$context['frontpage_layouts'] = (new FrontPage)->getLayouts();
+		$context['frontpage_layouts'] = FrontPage::getLayouts();
 
 		$context['template_layers'][] = 'layout_switcher';
 
@@ -111,7 +113,7 @@ class DevTools
 	/**
 	 * @return array
 	 */
-	public function getProducts()
+	public function getProducts(): array
 	{
 		$products = fetch_web_data('https://reqres.in/api/products');
 
@@ -121,7 +123,7 @@ class DevTools
 	/**
 	 * @return array
 	 */
-	public function getUsers()
+	public function getUsers(): array
 	{
 		$users = fetch_web_data('https://reqres.in/api/users');
 

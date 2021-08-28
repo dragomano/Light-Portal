@@ -14,7 +14,7 @@ use Bugo\LightPortal\Lists\PageListInterface;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -39,7 +39,7 @@ class Page
 
 		isAllowedTo('light_portal_view');
 
-		$alias = Helpers::request('page');
+		$alias = Helpers::request(LP_PAGE_ACTION);
 
 		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
@@ -81,13 +81,13 @@ class Page
 			);
 		} else {
 			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
-			$context['canonical_url']       = $scripturl . '?page=' . $alias;
+			$context['canonical_url']       = $scripturl . '?' . LP_PAGE_ACTION . '=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 
 			if (!empty($context['lp_page']['category'])) {
 				$context['linktree'][] = array(
 					'name' => $context['lp_page']['category'],
-					'url'  => $scripturl . '?action=portal;sa=categories;id=' . $context['lp_page']['category_id']
+					'url'  => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $context['lp_page']['category_id']
 				);
 			}
 
@@ -106,7 +106,7 @@ class Page
 
 		if ($context['user']['is_logged']) {
 			loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
-			loadJavaScriptFile('light_portal/view_page.js', array('minimize' => true));
+			loadJavaScriptFile('light_portal/user.js', array('minimize' => true));
 		}
 	}
 
@@ -147,7 +147,15 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
-		$modSettings['meta_keywords'] = implode(', ', $context['lp_page']['keywords']);
+		if (!empty($context['lp_page']['keywords'])) {
+			$keywords = [];
+			foreach ($context['lp_page']['keywords'] as $id => $key) {
+				$keywords[] = $key['name'];
+			}
+
+			$modSettings['meta_keywords'] = implode(', ', $keywords);
+		}
+
 		$context['meta_description']  = $context['lp_page']['description'];
 
 		$context['optimus_og_type']['article'] = array(
@@ -181,7 +189,7 @@ class Page
 	 */
 	public function getRelatedPages(): array
 	{
-		global $smcFunc, $modSettings, $context;
+		global $smcFunc, $modSettings, $context, $scripturl;
 
 		if (empty($item = $context['lp_page']))
 			return [];
@@ -233,6 +241,7 @@ class Page
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
 				'alias' => $row['alias'],
+				'link'  => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 				'image' => $image
 			);
 		}
@@ -254,10 +263,10 @@ class Page
 		if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 			return;
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'none')
+		if ($modSettings['lp_show_comment_block'] == 'none')
 			return;
 
-		Subs::runAddons('comments');
+		Addons::run('comments');
 
 		if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;
@@ -275,7 +284,7 @@ class Page
 	 */
 	public function getData(array $params): array
 	{
-		global $smcFunc, $txt, $modSettings;
+		global $smcFunc, $txt, $modSettings, $scripturl;
 
 		if (empty($params))
 			return [];
@@ -347,7 +356,10 @@ class Page
 		if (!empty($data['options']['keywords'])) {
 			$keywords = explode(',', $data['options']['keywords']);
 			foreach ($keywords as $key) {
-				$data['keywords'][$key] = Helpers::getAllTags()[$key];
+				$data['keywords'][$key] = array(
+					'name' => Helpers::getAllTags()[$key],
+					'link' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $key
+				);
 			}
 		}
 
@@ -366,7 +378,7 @@ class Page
 		if (empty($alias))
 			return [];
 
-		$data = Helpers::cache('page_' . $alias, 'getData', __CLASS__, LP_CACHE_TIME, array('alias' => $alias));
+		$data = Helpers::cache('page_' . $alias)->setFallback(__CLASS__, 'getData', array('alias' => $alias));
 
 		$this->prepareData($data);
 
@@ -425,7 +437,7 @@ class Page
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
-		$context['sub_template']      = 'show_articles';
+		$context['sub_template']      = !empty($modSettings['lp_frontpage_layout']) ? 'show_' . $modSettings['lp_frontpage_layout'] : 'wrong_template';
 		$context['template_layers'][] = 'sorting';
 
 		obExit();
@@ -472,7 +484,7 @@ class Page
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
 							) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
@@ -528,11 +540,10 @@ class Page
 	 * @param array $items
 	 * @param array $row
 	 * @return void
-	 * @throws Exception
 	 */
 	public function fetchQueryResults(array &$items, array $row)
 	{
-		global $modSettings, $scripturl, $txt, $user_info, $memberContext;
+		global $modSettings, $scripturl, $txt, $user_info;
 
 		Helpers::parseContent($row['content'], $row['type']);
 
@@ -555,7 +566,7 @@ class Page
 			),
 			'date'      => Helpers::getFriendlyTime($row['date']),
 			'datetime'  => date('Y-m-d', $row['date']),
-			'link'      => $scripturl . '?page=' . $row['alias'],
+			'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 			'views'     => array(
 				'num'   => $row['num_views'],
 				'title' => $txt['lp_views']
@@ -574,12 +585,7 @@ class Page
 
 		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
 
-		loadMemberData($author_id);
-
-		$items[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
-		if (loadMemberContext($author_id, true)) {
-			$items[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
-		}
+        $items[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 		if (!empty($modSettings['lp_show_teaser']))
 			$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);

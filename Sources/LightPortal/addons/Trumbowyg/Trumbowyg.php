@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Trumbowyg;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Trumbowyg
  *
@@ -13,46 +9,31 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Trumbowyg;
 
-class Trumbowyg
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Trumbowyg extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'editor';
-
-	/**
-	 * @var string
-	 */
-	private $dark_themes = '';
-
-	/**
-	 * @var bool
-	 */
-	private $auto_grow = 0;
+	public $type = 'editor';
 
 	/**
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
-		global $modSettings, $context, $txt;
+		global $txt;
 
-		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
-			updateSettings(array('lp_trumbowyg_addon_dark_themes' => $this->dark_themes));
-		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
-			updateSettings(array('lp_trumbowyg_addon_auto_grow' => $this->auto_grow));
-
-		$context['lp_trumbowyg_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
-		$config_vars[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
+		$config_vars['trumbowyg'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
+		$config_vars['trumbowyg'][] = array('select', 'auto_grow', $txt['lp_trumbowyg']['auto_grow_set']);
 	}
 
 	/**
@@ -63,7 +44,7 @@ class Trumbowyg
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $modSettings, $txt, $editortxt, $settings;
 
@@ -132,7 +113,7 @@ class Trumbowyg
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Trumbowyg',

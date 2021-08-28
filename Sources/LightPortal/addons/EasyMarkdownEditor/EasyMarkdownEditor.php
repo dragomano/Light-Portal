@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
-
 /**
  * EasyMarkdownEditor
  *
@@ -11,50 +9,53 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
-class EasyMarkdownEditor
+use Bugo\LightPortal\Addons\Plugin;
+
+class EasyMarkdownEditor extends Plugin
 {
 	/**
 	 * @var array
 	 */
-	public $addon_type = 'editor';
+	public $type = 'editor';
 
 	/**
-	 * Adding the editor for 'md' content
+	 * Adding the editor for 'markdown' content
 	 *
-	 * Подключаем редактор для контента 'md'
+	 * Подключаем редактор для контента 'markdown'
 	 *
 	 * @param array $object
 	 * @return void
 	 */
-	public function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $txt, $editortxt;
 
-		if ($object['type'] == 'md') {
-			loadLanguage('Editor');
+		if ($object['type'] !== 'markdown')
+			return;
 
-			loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
-			addInlineCss('
+		loadLanguage('Editor');
+
+		loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
+		addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . $txt['lp_easy_markdown_editor_addon_lines'] . '"
+			content: "' . $txt['lp_easy_markdown_editor']['lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
+			content: "' . $txt['lp_easy_markdown_editor']['words'] . '"
 		}
 		.CodeMirror pre {
 			max-height: none;
 		}');
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
-			addInlineJavaScript('
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
+		addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autofocus: true,
@@ -145,7 +146,7 @@ class EasyMarkdownEditor
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . $txt['lp_easy_markdown_editor_addon_tasks'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
@@ -164,7 +165,7 @@ class EasyMarkdownEditor
 					name: "side-by-side",
 					action: EasyMDE.toggleSideBySide,
 					className: "fas fa-columns no-disable no-mobile",
-					title: "' . $txt['lp_easy_markdown_editor_addon_toggle'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['toggle'] . '"
 				},
 				{
 					name: "fullscreen",
@@ -177,7 +178,7 @@ class EasyMarkdownEditor
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . $txt['lp_easy_markdown_editor_addon_guide'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['guide'] . '"
 				}
 			]
 		});
@@ -197,7 +198,8 @@ class EasyMarkdownEditor
 				noticeBlocks.forEach(function (el) {
 					el.style.display = "none";
 				})
-				scrollingButtons.style.display = "none";
+				if (scrollingButtons)
+					scrollingButtons.style.display = "none";
 			} else {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "sticky";
@@ -205,17 +207,17 @@ class EasyMarkdownEditor
 				noticeBlocks.forEach(function (el) {
 					el.style.display = "block";
 				})
-				scrollingButtons.style.display = "block";
+				if (scrollingButtons)
+					scrollingButtons.style.display = "block";
 			}
 		}', true);
-		}
 	}
 
 	/**
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'EasyMDE',

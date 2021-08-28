@@ -1,33 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\LanguageAccess;
-
 /**
  * LanguageAccess
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\LanguageAccess;
 
-class LanguageAccess
+use Bugo\LightPortal\Addons\Plugin;
+
+class LanguageAccess extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
-
-	/**
-	 * @var array
-	 */
-	public $allowed_languages = [];
+	public $type = 'other';
 
 	/**
 	 * Fill additional block classes
@@ -58,18 +52,18 @@ class LanguageAccess
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		global $context;
 
-		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = $this->allowed_languages;
+		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = [];
 	}
 
 	/**
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters)
+	public function validateBlockData(array &$parameters)
 	{
 		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
@@ -101,12 +95,12 @@ class LanguageAccess
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_language_access_addon_allowed_languages_subtext'] . '",
+			placeholder: "' . $txt['lp_language_access']['allowed_languages_subtext'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
 
-		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access_addon_allowed_languages'];
+		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access']['allowed_languages'];
 		$context['posting_fields']['allowed_languages']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(

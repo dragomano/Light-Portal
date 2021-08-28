@@ -21,9 +21,9 @@ function template_portal_credits()
 		</div>
 		<ul>';
 
-	foreach ($context['translators'] as $translator) {
+	foreach ($context['portal_translations'] as $lang => $translators) {
 		echo '
-			<li class="windowbg">', $translator['name'], ' <span class="new_posts">', $translator['lang'], '</span></li>';
+			<li class="windowbg"><span class="new_posts">', $lang, '</span> ', implode(', ', $translators), '</li>';
 	}
 
 	echo '

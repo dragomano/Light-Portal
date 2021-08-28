@@ -1,9 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\ThemeSwitcher;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * ThemeSwitcher
  *
@@ -13,18 +9,20 @@ use Bugo\LightPortal\Helpers;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
-class ThemeSwitcher
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class ThemeSwitcher extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-desktop';
+	public $icon = 'fas fa-desktop';
 
 	/**
 	 * Get the list of active themes
@@ -33,7 +31,7 @@ class ThemeSwitcher
 	 *
 	 * @return array
 	 */
-	public function getAvailableThemes()
+	public function getAvailableThemes(): array
 	{
 		global $modSettings;
 
@@ -44,34 +42,35 @@ class ThemeSwitcher
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time)
+	public function prepareContent(string $type, int $block_id, int $cache_time)
 	{
 		global $settings;
 
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helpers::cache('theme_switcher_addon', 'getAvailableThemes', __CLASS__, $cache_time);
+		$available_themes = Helpers::cache('theme_switcher_addon')
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getAvailableThemes');
 
-		if (!empty($available_themes)) {
-			ob_start();
+		if (empty($available_themes))
+			return;
 
-			echo '
+		echo '
 			<div class="themeswitcher centertext">
 				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
 
-			foreach ($available_themes as $theme_id => $name) {
-				echo '
-					<option value="', $theme_id, '"', $settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
-			}
-
+		foreach ($available_themes as $theme_id => $name) {
 			echo '
+					<option value="', $theme_id, '"', $settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
+		}
+
+		echo '
 				</select>
 				<script>
 					function lp_block_', $block_id, '_themeswitcher_change() {
@@ -86,8 +85,5 @@ class ThemeSwitcher
 					}
 				</script>
 			</div>';
-
-			$content = ob_get_clean();
-		}
 	}
 }

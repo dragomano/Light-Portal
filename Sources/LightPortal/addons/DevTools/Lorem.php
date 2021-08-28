@@ -8,15 +8,15 @@ namespace Bugo\LightPortal\Addons\DevTools;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
- /**
-  * https://stackoverflow.com/a/39986034/14091866
-  */
+/**
+ * https://stackoverflow.com/a/39986034/14091866
+ */
 abstract class Lorem
 {
 	/**
@@ -75,7 +75,7 @@ abstract class Lorem
 	 * @param int $count
 	 * @return array
 	 */
-	private static function random_values($arr, $count): array
+	private static function random_values(array $arr, int $count): array
 	{
 		$keys = array_rand($arr, $count);
 		if ($count == 1) {

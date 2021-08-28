@@ -1,49 +1,39 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RssFeed;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RssFeed
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RssFeed;
 
-class RssFeed
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RssFeed extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-rss';
-
-	/**
-	 * @var string
-	 */
-	private $url = '';
-
-	/**
-	 * @var bool
-	 */
-	private $show_text = false;
+	public $icon = 'fas fa-rss';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['rss_feed']['parameters']['url']       = $this->url;
-		$options['rss_feed']['parameters']['show_text'] = $this->show_text;
+		$options['rss_feed']['parameters'] = [
+			'url'       => '',
+			'show_text' => false,
+		];
 	}
 
 	/**
@@ -51,7 +41,7 @@ class RssFeed
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'rss_feed')
 			return;
@@ -70,7 +60,7 @@ class RssFeed
 		if ($context['lp_block']['type'] !== 'rss_feed')
 			return;
 
-		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed_addon_url'];
+		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed']['url'];
 		$context['posting_fields']['url']['input'] = array(
 			'type' => 'url',
 			'attributes' => array(
@@ -83,7 +73,7 @@ class RssFeed
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed_addon_show_text'];
+		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed']['show_text'];
 		$context['posting_fields']['show_text']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -100,9 +90,9 @@ class RssFeed
 	 * Получаем объект SimpleXML
 	 *
 	 * @param string $url
-	 * @return mixed
+	 * @return \SimpleXMLElement|string|null
 	 */
-	public function getData($url)
+	public function getData(string $url)
 	{
 		if (empty($url))
 			return '';
@@ -114,25 +104,26 @@ class RssFeed
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'rss_feed')
 			return;
 
-		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id, 'getData', __CLASS__, $cache_time, $parameters['url']);
+		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id)
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['url']);
 
-		if (!empty($rss_feed)) {
-			ob_start();
+		if (empty($rss_feed))
+			return;
 
-			foreach ($rss_feed as $item) {
-				echo '
+		foreach ($rss_feed as $item) {
+			echo '
 		<div class="windowbg">
 			<div class="block">
 				<span class="floatleft half_content">
@@ -141,18 +132,15 @@ class RssFeed
 				</span>
 			</div>';
 
-				if ($parameters['show_text']) {
-					echo '
+			if ($parameters['show_text']) {
+				echo '
 			<div class="list_posts double_height">
 				' . $item->description . '
 			</div>';
-				}
-
-				echo '
-		</div>';
 			}
 
-			$content = ob_get_clean();
+			echo '
+		</div>';
 		}
 	}
 }

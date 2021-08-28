@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -19,6 +19,8 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
+	use Manageable;
+
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
@@ -26,7 +28,7 @@ class ManageBlocks
 	 *
 	 * @var string
 	 */
-	private $areas_pattern = '^[a-z][a-z0-9=|\-,]+$';
+	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
 
 	/**
 	 * Manage blocks
@@ -65,21 +67,25 @@ class ManageBlocks
 	 */
 	public function getAll(): array
 	{
-		global $smcFunc;
+		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.icon_type, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($user_info['is_admin'] ? '' : '
+			WHERE b.user_id = {int:user_id}') . '
 			ORDER BY b.placement DESC, b.priority',
-			array()
+			array(
+				'user_id' => $user_info['id']
+			)
 		);
 
-		$current_blocks = [];
+		$currentBlocks = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($current_blocks[$row['placement']][$row['block_id']]))
-				$current_blocks[$row['placement']][$row['block_id']] = array(
-					'icon'        => Helpers::getIcon($row['icon'], $row['icon_type']),
+			if (!isset($currentBlocks[$row['placement']][$row['block_id']]))
+				$currentBlocks[$row['placement']][$row['block_id']] = array(
+					'user_id'     => $row['user_id'],
+					'icon'        => Helpers::getIcon($row['icon']),
 					'type'        => $row['type'],
 					'note'        => $row['note'],
 					'priority'    => $row['priority'],
@@ -88,15 +94,15 @@ class ManageBlocks
 					'areas'       => str_replace(',', PHP_EOL, $row['areas'])
 				);
 
-			$current_blocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
+			$currentBlocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
 
-			Helpers::prepareMissingBlockTypes($row['type']);
+			$this->prepareMissingBlockTypes($row['type']);
 		}
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return $current_blocks;
+		return $currentBlocks;
 	}
 
 	/**
@@ -119,8 +125,8 @@ class ManageBlocks
 		if (!empty($data['clone_block']))
 			$this->makeCopy((int) $data['clone_block']);
 
-		if (!empty($data['status']) && !empty($data['item']))
-			$this->toggleStatus([(int) $data['item']], $data['status'] == 'off' ? Block::STATUS_ACTIVE : Block::STATUS_INACTIVE);
+		if (!empty($data['toggle_item']))
+			self::toggleStatus([(int) $data['toggle_item']]);
 
 		$this->updatePriority();
 
@@ -168,7 +174,7 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries'] += 3;
 
-		Subs::runAddons('onBlockRemoving', array($items));
+		Addons::run('onBlockRemoving', array($items));
 	}
 
 	/**
@@ -194,11 +200,10 @@ class ManageBlocks
 
 			ob_start();
 			show_block_entry($context['lp_block']['id'], $context['lp_block']);
-			$new_block = ob_get_clean();
 
 			$result = [
 				'success' => true,
-				'block'   => $new_block
+				'block'   => ob_get_clean()
 			];
 		}
 
@@ -209,10 +214,9 @@ class ManageBlocks
 
 	/**
 	 * @param array $items
-	 * @param int $status
 	 * @return void
 	 */
-	public function toggleStatus(array $items, int $status = 0)
+	public static function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
 
@@ -221,11 +225,10 @@ class ManageBlocks
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
-			SET status = {int:status}
+			SET status = !status
 			WHERE block_id IN ({array_int:items})',
 			array(
-				'status' => $status,
-				'items'  => $items
+				'items' => $items
 			)
 		);
 
@@ -301,12 +304,35 @@ class ManageBlocks
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
 
+		$plugins = array_merge($context['lp_enabled_plugins'], array_keys($context['lp_page_types']));
+
+		$context['lp_all_blocks'] = [];
+		foreach ($plugins as $addon) {
+			$addon = Helpers::getSnakeName($addon);
+
+			// We need blocks only
+			if (!isset($txt['lp_' . $addon]['title']) || isset($context['lp_all_blocks'][$addon]))
+				continue;
+
+			$context['lp_all_blocks'][$addon] = [
+				'type'  => $addon,
+				'icon'  => $context['lp_' . $addon]['icon'],
+				'title' => $txt['lp_' . $addon]['title'],
+				'desc'  => $txt['lp_' . $addon]['block_desc'] ?? $txt['lp_' . $addon]['description']
+			];
+		}
+
+		$titles = array_column($context['lp_all_blocks'], 'title');
+		array_multisort($titles, SORT_ASC, $context['lp_all_blocks']);
+
 		$context['sub_template'] = 'block_add';
 
-		if (Helpers::post()->has('add_block') === false)
+		$json = Helpers::request()->json();
+		$type = $json['add_block'] ?? Helpers::post('add_block', '') ?? '';
+
+		if (empty($type))
 			return;
 
-		$type = Helpers::post('add_block', '');
 		$context['current_block']['type'] = $type;
 
 		Helpers::prepareForumLanguages();
@@ -346,6 +372,9 @@ class ManageBlocks
 		$context['sub_template']  = 'block_post';
 		$context['current_block'] = $this->getData($item);
 
+		if (empty($context['user']['is_admin']) && $context['user']['id'] != $context['current_block']['user_id'])
+			fatal_lang_error('lp_block_not_editable', false);
+
 		if (Helpers::post()->has('remove')) {
 			$this->remove([$item]);
 			redirectexit('action=admin;area=lp_blocks;sa=main');
@@ -378,7 +407,7 @@ class ManageBlocks
 			]
 		];
 
-		Subs::runAddons('blockOptions', array(&$options));
+		Addons::run('blockOptions', array(&$options));
 
 		return $options;
 	}
@@ -388,13 +417,12 @@ class ManageBlocks
 	 */
 	private function validateData()
 	{
-		global $context, $modSettings;
+		global $context, $user_info, $modSettings;
 
 		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_SANITIZE_STRING,
-				'icon_type'     => FILTER_SANITIZE_STRING,
 				'type'          => FILTER_SANITIZE_STRING,
 				'note'          => FILTER_SANITIZE_STRING,
 				'content'       => FILTER_UNSAFE_RAW,
@@ -412,12 +440,13 @@ class ManageBlocks
 				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
+			$post_data = filter_input_array(INPUT_POST, $args);
+
 			$parameters = [];
 
-			Subs::runAddons('validateBlockData', array(&$parameters, $context['current_block']['type']));
+			Addons::run('validateBlockData', array(&$parameters, $context['current_block']['type']));
 
-			$post_data = filter_input_array(INPUT_POST, $args);
-			$post_data['parameters'] = filter_input_array(INPUT_POST, $parameters);
+			$post_data['parameters'] = filter_var_array(Helpers::post()->only(array_keys($parameters)), $parameters);
 
 			$this->findErrors($post_data);
 		}
@@ -431,9 +460,9 @@ class ManageBlocks
 
 		$context['lp_block'] = array(
 			'id'            => $post_data['block_id'] ?? $context['current_block']['id'] ?? 0,
+			'user_id'       => $user_info['is_admin'] || ! allowedTo('light_portal_manage_own_blocks') ? 0 : ($context['current_block']['user_id'] ?? $user_info['id']),
 			'title'         => $context['current_block']['title'] ?? [],
-			'icon'          => trim($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
-			'icon_type'     => $post_data['icon_type'] ?? $context['current_block']['icon_type'] ?? 'fas',
+			'icon'          => !empty($post_data['block_id']) ? ($post_data['icon'] ?? '') : ($post_data['icon'] ?? $context['current_block']['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $context['current_block']['type'] ?? '',
 			'note'          => $post_data['note'] ?? $context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $context['current_block']['content'] ?? '',
@@ -442,18 +471,25 @@ class ManageBlocks
 			'permissions'   => $post_data['permissions'] ?? $context['current_block']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'        => $context['current_block']['status'] ?? Block::STATUS_ACTIVE,
 			'areas'         => $post_data['areas'] ?? $context['current_block']['areas'] ?? 'all',
-			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? '',
+			'title_class'   => $post_data['title_class'] ?? $context['current_block']['title_class'] ?? array_key_first($context['lp_all_title_classes']),
 			'title_style'   => $post_data['title_style'] ?? $context['current_block']['title_style'] ?? '',
-			'content_class' => $post_data['content_class'] ?? $context['current_block']['content_class'] ?? '',
+			'content_class' => $post_data['content_class'] ?? $context['current_block']['content_class'] ?? array_key_first($context['lp_all_content_classes']),
 			'content_style' => $post_data['content_style'] ?? $context['current_block']['content_style'] ?? '',
 			'options'       => $options[$context['current_block']['type']]
 		);
+
+		if (!empty($context['lp_block']['options']['no_content_class'])) {
+			$context['lp_block']['content_class'] = '';
+		}
 
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? $this->getPriority() : $context['lp_block']['priority'];
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
 			foreach ($context['lp_block']['options']['parameters'] as $option => $value) {
 				if (!empty($parameters[$option]) && !empty($post_data['parameters']) && !isset($post_data['parameters'][$option])) {
+					if ($parameters[$option] == FILTER_SANITIZE_STRING)
+						$post_data[$option] = '';
+
 					if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
 						$post_data['parameters'][$option] = 0;
 
@@ -486,10 +522,12 @@ class ManageBlocks
 			$post_errors[] = 'no_areas';
 
 		$areas_format = array(
-			'options' => array("regexp" => '/' . $this->areas_pattern . '/')
+			'options' => array("regexp" => '/' . self::AREAS_PATTERN . '/')
 		);
 		if (!empty($data['areas']) && empty(Helpers::validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
+
+		Addons::run('findBlockErrors', array($data, &$post_errors));
 
 		if (!empty($post_errors)) {
 			Helpers::post()->put('preview', true);
@@ -498,25 +536,6 @@ class ManageBlocks
 			foreach ($post_errors as $error)
 				$context['post_errors'][] = $txt['lp_post_error_' . $error];
 		}
-	}
-
-	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
-	 * @return void
-	 */
-	private function improveSelectFields()
-	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
-
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
-		}
-		.ss-disabled {
-			color: inherit !important;
-		}');
 	}
 
 	/**
@@ -555,47 +574,16 @@ class ManageBlocks
 		);
 
 		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['label']['after'] = '(<span class="smalltext"><a href="https://fontawesome.com/cheatsheet/free" target="_blank" rel="noopener">' . $txt['lp_block_icon_cheatsheet'] . '</a></span>)';
 		$context['posting_fields']['icon']['input'] = array(
-			'type' => 'text',
-			'after' => '<span x-ref="preview">' . Helpers::getIcon() . '</span>',
-			'attributes' => array(
-				'id'        => 'icon',
-				'maxlength' => 30,
-				'value'     => $context['lp_block']['icon'],
-				'x-ref'     => 'icon',
-				'@change'   => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'tab' => 'appearance'
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'appearance'
 		);
-
-		$context['posting_fields']['icon_type']['label']['text'] = $txt['lp_block_icon_type'];
-		$context['posting_fields']['icon_type']['input'] = array(
-			'type' => 'radio_select',
-			'attributes' => array(
-				'id'      => 'icon_type',
-				'x-ref'   => 'icon_type',
-				'@change' => 'block.changeIcon($refs.preview, $refs.icon, $refs.icon_type)'
-			),
-			'options' => array(),
-			'tab' => 'appearance'
-		);
-
-		foreach ($context['lp_icon_types'] as $type => $title) {
-			$context['posting_fields']['icon_type']['input']['options'][$title] = array(
-				'value'   => $type,
-				'checked' => $type == $context['lp_block']['icon_type']
-			);
-		}
 
 		$context['posting_fields']['placement']['label']['text'] = $txt['lp_block_placement'];
 		$context['posting_fields']['placement']['input'] = array(
 			'type' => 'select',
-			'attributes' => array(
-				'id' => 'placement'
-			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'tab'  => 'access_placement'
 		);
 
 		foreach ($context['lp_block_placements'] as $level => $title) {
@@ -608,14 +596,13 @@ class ManageBlocks
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
 			'type' => 'select',
-			'attributes' => array(
-				'id' => 'permissions'
-			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'tab'  => 'access_placement'
 		);
 
 		foreach ($txt['lp_permissions'] as $level => $title) {
+			if (empty($context['user']['is_admin']) && empty($level))
+				continue;
+
 			$context['posting_fields']['permissions']['input']['options'][$title] = array(
 				'value'    => $level,
 				'selected' => $level == $context['lp_block']['permissions']
@@ -630,7 +617,7 @@ class ManageBlocks
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['areas'],
 				'required'  => true,
-				'pattern'   => $this->areas_pattern,
+				'pattern'   => self::AREAS_PATTERN,
 				'style'     => 'width: 100%'
 			),
 			'tab' => 'access_placement'
@@ -638,20 +625,10 @@ class ManageBlocks
 
 		$context['posting_fields']['title_class']['label']['text'] = $txt['lp_block_title_class'];
 		$context['posting_fields']['title_class']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'title_class'
-			),
-			'options' => array(),
-			'tab' => 'appearance'
+			'type'    => 'select',
+			'options' => [],
+			'tab'     => 'appearance'
 		);
-
-		foreach ($context['lp_all_title_classes'] as $key => $data) {
-			$context['posting_fields']['title_class']['input']['options'][$key] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['title_class']
-			);
-		}
 
 		$context['posting_fields']['title_style']['label']['text'] = $txt['lp_block_title_style'];
 		$context['posting_fields']['title_style']['input'] = array(
@@ -667,23 +644,10 @@ class ManageBlocks
 		if (empty($context['lp_block']['options']['no_content_class'])) {
 			$context['posting_fields']['content_class']['label']['text'] = $txt['lp_block_content_class'];
 			$context['posting_fields']['content_class']['input'] = array(
-				'type' => 'select',
-				'attributes' => array(
-					'id' => 'content_class'
-				),
-				'options' => array(),
-				'tab' => 'appearance'
+				'type'    => 'select',
+				'options' => [],
+				'tab'     => 'appearance'
 			);
-
-			foreach ($context['lp_all_content_classes'] as $key => $data) {
-				$value = $key;
-				$key   = $key == '_' ? $txt['no'] : $key;
-
-				$context['posting_fields']['content_class']['input']['options'][$key] = array(
-					'value'    => $value,
-					'selected' => $value == $context['lp_block']['content_class']
-				);
-			}
 
 			$context['posting_fields']['content_style']['label']['text'] = $txt['lp_block_content_style'];
 			$context['posting_fields']['content_style']['input'] = array(
@@ -702,16 +666,15 @@ class ManageBlocks
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
-					'id'    => 'content',
 					'value' => $context['lp_block']['content']
 				),
 				'tab' => 'content'
 			);
 		}
 
-		Subs::runAddons('prepareBlockFields');
+		Addons::run('prepareBlockFields');
 
-		Helpers::preparePostFields();
+		$this->preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}
@@ -731,7 +694,7 @@ class ManageBlocks
 			'all',
 			'custom_action',
 			'pages',
-			'page=alias',
+			LP_PAGE_ACTION . '=alias',
 			'boards',
 			'board=id',
 			'board=id1-id3',
@@ -786,7 +749,7 @@ class ManageBlocks
 		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc')
 			Helpers::createBbcEditor($context['lp_block']['content']);
 
-		Subs::runAddons('prepareEditor', array($context['lp_block']));
+		Addons::run('prepareEditor', array($context['lp_block']));
 	}
 
 	/**
@@ -801,7 +764,7 @@ class ManageBlocks
 
 		checkSubmitOnce('free');
 
-		$context['preview_title']   = $context['lp_block']['title'][$context['user']['language']];
+		$context['preview_title']   = $context['lp_block']['title'][$context['user']['language']] ?? '';
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_block']['content'], ENT_QUOTES);
 
 		Helpers::cleanBbcode($context['preview_title']);
@@ -873,6 +836,9 @@ class ManageBlocks
 
 		if (Helpers::post()->has('save_exit'))
 			redirectexit('action=admin;area=lp_blocks;sa=main');
+
+		if (Helpers::post()->has('save'))
+			redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	/**
@@ -885,8 +851,8 @@ class ManageBlocks
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
 			array(
-				'icon'          => 'string-60',
-				'icon_type'     => 'string-10',
+				'user_id'       => 'int',
+				'icon'          => 'string',
 				'type'          => 'string',
 				'note'          => 'string',
 				'content'       => 'string-65534',
@@ -901,8 +867,8 @@ class ManageBlocks
 				'content_style' => 'string'
 			),
 			array(
+				$context['lp_block']['user_id'],
 				$context['lp_block']['icon'],
-				$context['lp_block']['icon_type'],
 				$context['lp_block']['type'],
 				$context['lp_block']['note'],
 				$context['lp_block']['content'],
@@ -925,7 +891,7 @@ class ManageBlocks
 		if (empty($item))
 			return 0;
 
-		Subs::runAddons('onBlockSaving', array($item));
+		Addons::run('onBlockSaving', array($item));
 
 		if (!empty($context['lp_block']['title'])) {
 			$titles = [];
@@ -993,12 +959,11 @@ class ManageBlocks
 
 		$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, icon_type = {string:icon_type}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+				SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 				WHERE block_id = {int:block_id}',
 			array(
 				'block_id'      => $item,
 				'icon'          => $context['lp_block']['icon'],
-				'icon_type'     => $context['lp_block']['icon_type'],
 				'type'          => $context['lp_block']['type'],
 				'note'          => $context['lp_block']['note'],
 				'content'       => $context['lp_block']['content'],
@@ -1014,7 +979,7 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries']++;
 
-		Subs::runAddons('onBlockSaving', array($item));
+		Addons::run('onBlockSaving', array($item));
 
 		if (!empty($context['lp_block']['title'])) {
 			$titles = [];
@@ -1088,7 +1053,7 @@ class ManageBlocks
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
@@ -1109,8 +1074,8 @@ class ManageBlocks
 			if (!isset($data))
 				$data = array(
 					'id'            => $row['block_id'],
+					'user_id'       => $row['user_id'],
 					'icon'          => $row['icon'],
-					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
 					'note'          => $row['note'],
 					'content'       => $row['content'],
@@ -1125,11 +1090,15 @@ class ManageBlocks
 					'content_style' => $row['content_style']
 				);
 
-			$data['title'][$row['lang']] = $row['title'];
+			if (!empty($row['lang']))
+				$data['title'][$row['lang']] = $row['title'];
 
 			if (!empty($row['name']))
 				$data['options']['parameters'][$row['name']] = $row['value'];
 		}
+
+		if (!empty($data['type']))
+			$this->prepareMissingBlockTypes($data['type']);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
@@ -1150,5 +1119,21 @@ class ManageBlocks
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
 		backButton.setAttribute("href", smf_scripturl + "?action=admin;area=lp_blocks");
 		backButton.className = "button floatnone";', true);
+	}
+
+	/**
+	 * Form a list of addons that not installed
+	 *
+	 * Формируем список неустановленных плагинов
+	 *
+	 * @param string $type
+	 * @return void
+	 */
+	private function prepareMissingBlockTypes(string $type)
+	{
+		global $txt, $context;
+
+		if (!isset($txt['lp_' . $type]['title']))
+			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
 	}
 }

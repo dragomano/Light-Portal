@@ -1,4 +1,6 @@
 <?php
 
-$txt['lp_block_types']['current_month']              = 'Поточний місяць';
-$txt['lp_block_types_descriptions']['current_month'] = 'Відображає віджет з поточним місяцем.';
+return [
+	'title' => 'Поточний місяць',
+	'description' => 'Відображає віджет з поточним місяцем.',
+];

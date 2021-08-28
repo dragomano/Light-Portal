@@ -1,40 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Todays;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Todays
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Todays;
 
-class Todays
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Todays extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-calendar-day';
-
-	/**
-	 * @var string
-	 */
-	private $type = 'calendar';
-
-	/**
-	 * @var int
-	 */
-	private $max_items = 1;
+	public $icon = 'fas fa-calendar-day';
 
 	/**
 	 * @return void
@@ -52,7 +40,7 @@ class Todays
 	 * @param array $buttons
 	 * @return void
 	 */
-	public function menuButtons(&$buttons)
+	public function menuButtons(array &$buttons)
 	{
 		global $context, $modSettings;
 
@@ -63,14 +51,14 @@ class Todays
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $txt, $scripturl;
 
-		$config_vars[] = array(
+		$config_vars['todays'][] = array(
 			'check',
-			'lp_todays_addon_hide_calendar_in_menu',
-			'subtext' => sprintf($txt['lp_todays_addon_hide_calendar_in_menu_subtext'], $scripturl . '?action=admin;area=managecalendar;sa=settings')
+			'hide_calendar_in_menu',
+			'subtext' => sprintf($txt['lp_todays']['hide_calendar_in_menu_subtext'], $scripturl . '?action=admin;area=managecalendar;sa=settings')
 		);
 	}
 
@@ -78,10 +66,12 @@ class Todays
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['todays']['parameters']['widget_type'] = $this->type;
-		$options['todays']['parameters']['max_items']   = $this->max_items;
+		$options['todays']['parameters'] = [
+			'widget_type' => 'calendar',
+			'max_items'   => 1,
+		];
 	}
 
 	/**
@@ -89,7 +79,7 @@ class Todays
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'todays')
 			return;
@@ -108,7 +98,7 @@ class Todays
 		if ($context['lp_block']['type'] !== 'todays')
 			return;
 
-		$context['posting_fields']['widget_type']['label']['text'] = $txt['lp_todays_addon_type'];
+		$context['posting_fields']['widget_type']['label']['text'] = $txt['lp_todays']['type'];
 		$context['posting_fields']['widget_type']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -118,7 +108,7 @@ class Todays
 			'tab' => 'content'
 		);
 
-		$types = array_combine(array('birthdays', 'holidays', 'events', 'calendar'), $txt['lp_todays_addon_type_set']);
+		$types = array_combine(array('birthdays', 'holidays', 'events', 'calendar'), $txt['lp_todays']['type_set']);
 
 		foreach ($types as $key => $value) {
 			$context['posting_fields']['widget_type']['input']['options'][$value] = array(
@@ -127,10 +117,10 @@ class Todays
 			);
 		}
 
-		$context['posting_fields']['max_items']['label']['text'] = $txt['lp_todays_addon_max_items'];
+		$context['posting_fields']['max_items']['label']['text'] = $txt['lp_todays']['max_items'];
 		$context['posting_fields']['max_items']['input'] = array(
 			'type' => 'number',
-			'after' => $txt['lp_todays_addon_max_items_subtext'],
+			'after' => $txt['lp_todays']['max_items_subtext'],
 			'attributes' => array(
 				'id'    => 'max_items',
 				'min'   => 1,
@@ -148,26 +138,25 @@ class Todays
 	 * @param string $output_method
 	 * @return string|array
 	 */
-	public function getData($type, $output_method = 'echo')
+	public function getData(string $type, string $output_method = 'echo')
 	{
 		global $boarddir;
 
 		$funcName = 'ssi_todays' . ucfirst($type);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return function_exists($funcName) ? $funcName($output_method) : '';
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt, $scripturl;
 
@@ -176,13 +165,11 @@ class Todays
 
 		$result = $this->getData($parameters['widget_type'], 'array');
 
-		ob_start();
-
 		if ($parameters['widget_type'] == 'calendar') {
 			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))
 				$this->getData($parameters['widget_type']);
 			else
-				echo $txt['lp_todays_addon_empty_list'];
+				echo $txt['lp_todays']['empty_list'];
 		} elseif (!empty($result)) {
 			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);
@@ -208,18 +195,16 @@ class Todays
 
 				// HTML5 spoiler
 				if (!empty($hiddenContent))
-					echo $txt['lp_todays_addon_and_more'], '
+					echo $txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', Helpers::getText(count($result) - $parameters['max_items'], $txt['lp_todays_addon_birthdays_set']), '</span>
+				<span>', Helpers::getText(count($result) - $parameters['max_items'], $txt['lp_todays']['birthdays_set']), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';
 			}
 		} else {
-			echo $txt['lp_todays_addon_empty_list'];
+			echo $txt['lp_todays']['empty_list'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

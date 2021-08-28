@@ -19,7 +19,7 @@ $txt['lp_my_pages'] = 'Mes pages';
 $txt['lp_views'] = $txt['vues'];
 $txt['lp_replies'] = $txt['réponses'];
 $txt['lp_default'] = 'Page par défaut';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_min_search_length'] = 'Veuillez saisir au moins %d caractères';
 
 // Settings
 $txt['lp_settings'] = 'Paramètres du portail';
@@ -153,12 +153,9 @@ $txt['lp_blocks_add_description'] = 'Les blocs peuvent contenir n\'importe quel 
 $txt['lp_blocks_add_instruction'] = 'Sélectionnez le bloc souhaité en cliquant dessus.';
 $txt['lp_blocks_edit_title'] = 'editez un bloc';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'Liste des icônes';
 $txt['lp_block_type'] = 'Type de bloc';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Prioritée';
-$txt['lp_block_icon_type'] = 'Type d\icönes';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Entête', 'Centre (haut)', 'Côté gauche', 'Côté droit', 'Centre (bas)', 'Bas de page');
 
@@ -186,12 +183,13 @@ $txt['lp_block_title_style'] = 'Style de titre CSS';
 $txt['lp_block_content_class'] = 'Classe de contenu CSS';
 $txt['lp_block_content_style'] = 'Style de contenu CSS';
 
-$txt['lp_block_types']['bbc'] = 'BBC personnalisée';
-$txt['lp_block_types']['html'] = 'HTML personnalisé';
-$txt['lp_block_types']['php'] = 'PHP personnalisé';
-$txt['lp_block_types_descriptions']['bbc'] = 'Dans ce bloc, toutes les balises BBC du forum peuvent être utilisées comme contenu.';
-$txt['lp_block_types_descriptions']['html'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quelle balise HTML comme contenu.';
-$txt['lp_block_types_descriptions']['php'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quel code PHP comme contenu.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'BBC personnalisée';
+$txt['lp_html']['title'] = 'HTML personnalisé';
+$txt['lp_php']['title'] = 'PHP personnalisé';
+$txt['lp_bbc']['description'] = 'Dans ce bloc, toutes les balises BBC du forum peuvent être utilisées comme contenu.';
+$txt['lp_html']['description'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quelle balise HTML comme contenu.';
+$txt['lp_php']['description'] = 'Dans ce bloc, vous pouvez utiliser n\'importe quel code PHP comme contenu.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';
@@ -206,19 +204,16 @@ $txt['lp_pages_edit_title'] = 'Editer la page';
 $txt['lp_pages_edit_description'] = 'Apportez les modifications nécessaires.';
 $txt['lp_pages_extra'] = 'Pages du portail';
 $txt['lp_pages_search'] = 'Alias ou titre';
-$txt['lp_page_types']['bbc'] = 'BBC';
-$txt['lp_page_types']['html'] = 'HTML';
-$txt['lp_page_types']['php'] = 'PHP';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'L\'alias de page doit commencer par une lettre latine et être composé de lettres latines minuscules, de chiffres et de trait de soulignement.';
 $txt['lp_page_type'] = 'Type de page';
+$txt['lp_page_types']= array('BBC', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Mots clés';
 $txt['lp_page_keywords_placeholder'] = 'Sélectionnez des balises ou ajoutez-en de nouvelles';
 $txt['lp_page_publish_datetime'] = 'Date et heure de publication';
 $txt['lp_page_author'] = 'Modifier l\auteur';
 $txt['lp_page_author_placeholder'] = 'Spécifiez un nom d\'utilisateur pour transférer les droits sur la page';
-$txt['lp_page_author_search_length'] = 'Veuillez saisir au moins 3 caractères';
 $txt['lp_page_options'] = array('Afficher l\'auteur et la date de création', 'Afficher les pages associées', 'Autoriser les commentaires', 'Élément dans le menu principal');
 
 // Tabs
@@ -247,39 +242,7 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Gérer les plugins';
 $txt['lp_plugins_manage_description'] = 'Les plugins de portail installés sont répertoriés ici. Vous pouvez toujours en créer un nouveau en utilisant <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">les instructions</a> ou le bouton "+" ci-dessous.';
 $txt['lp_plugins_desc'] = 'Les plugins étendent les capacités du portail et de ses composants, en fournissant des fonctionnalités supplémentaires qui ne sont pas disponibles dans le système de base';
-$txt['lp_plugins_add'] = 'Ajouter un plugin';
-$txt['lp_plugins_add_title'] = 'Nom du plugin';
-$txt['lp_plugins_add_description'] = 'L\'assistant de création de plugins vous aidera à préparer le squelette de l\'addon pour d\'autres modifications. Remplissez soigneusement les champs suggérés.';
-$txt['lp_plugins_add_information'] = 'Les fichiers du plugin seront enregistrés dans le répertoire %1$s<br> Assurez-vous de regarder là-bas et de vérifier / éditer les fichiers nécessaires.';
-
-$txt['lp_plugins_tab_content'] = 'Informations de base';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Réglages';
-$txt['lp_plugins_tab_tuning'] = 'Supplémentaire';
-
-$txt['lp_plugin_name'] = 'Le nom du plugin';
-$txt['lp_plugin_name_subtext'] = 'En lettres latines, sans espaces!';
-$txt['lp_plugin_type'] = 'Le type de plugin';
-$txt['lp_plugins_type_set'] = array('Bloc', 'Editeur', 'Widget des commenatires', 'Analyseur de contenu', 'Gestion des articles', 'La mise en page de la page d\'accueil', 'Importer et exporter', 'Autre');
-$txt['lp_plugin_site_subtext'] = 'Site Web sur lequel les utilisateurs peuvent télécharger de nouvelles versions de ce plugin.';
-$txt['lp_plugin_license'] = 'La licence du plugin';
-$txt['lp_plugin_license_own'] = 'Licence personnelle';
-$txt['lp_plugin_license_name'] = 'Le nom de la licence';
-$txt['lp_plugin_license_link'] = 'Le lien de licence';
-$txt['lp_plugin_smf_hooks'] = 'Utilisez-vous des hooks SMF?';
-$txt['lp_plugin_components'] = 'Utilisez-vous des scripts tiers?';
-$txt['lp_plugin_components_name'] = 'Nom du composant';
-$txt['lp_plugin_components_link'] = 'Lien vers le site du composant';
-$txt['lp_plugin_components_author'] = 'Auteur du composant';
-
-$txt['lp_plugin_option_name'] = 'Nom de l\'option (latin)';
-$txt['lp_plugin_option_type'] = 'Type d\option';
-$txt['lp_plugin_option_types'] = array('Champ de texte', 'Adresse web', 'Choisir une couleur', 'Chosir un nombre', 'Case à cocher', 'Sélection multiple', 'Sélection');
-$txt['lp_plugin_option_default_value'] = 'Valeur par défaut';
-$txt['lp_plugin_option_variants'] = 'Valeurs possibles';
-$txt['lp_plugin_option_variants_placeholder'] = 'Plusieurs options séparées par des virgules';
-$txt['lp_plugin_option_translations'] = 'Traduction';
-$txt['lp_plugin_new_option'] = 'Ajouter une option';
+$txt['lp_plugins_types'] = array('Bloc', 'Editeur', 'Widget des commenatires', 'Analyseur de contenu', 'Gestion des articles', 'La mise en page de la page d\'accueil', 'Importer et exporter', 'Autre');
 
 // Tags
 $txt['lp_all_page_tags'] = 'Toutes les balises de page de portail';
@@ -327,14 +290,10 @@ $txt['lp_post_error_no_content'] = 'Le contenu non spécifié! C\'est requis.';
 $txt['lp_post_error_no_areas'] = 'Le champ <strong> zones </strong> n\'a pas été rempli. C\'est requis';
 $txt['lp_post_error_no_valid_areas'] = 'Le champ <strong> zones </strong> n\'a pas été défini correctement!';
 $txt['lp_post_error_no_name'] = 'Le champ <strong> nom </strong> n\'a pas été rempli. C\'est requis.';
-$txt['lp_post_error_no_valid_name'] = 'Le nom spécifié ne correspond pas aux règles!';
-$txt['lp_post_error_no_unique_name'] = 'Un plugin avec ce nom existe déjà!';
-$txt['lp_post_error_no_description'] = 'La description non spécifiée! C\'est requis.';
-$txt['lp_addon_not_installed'] = 'le plugin %1$s n\'est pas installé';
-$txt['lp_addon_add_failed'] = 'Le répertoire <strong> / Sources / LightPortal / addons </strong> doit être accessible en écriture!';
 $txt['lp_wrong_import_file'] = 'Mauvais fichier à importer...';
 $txt['lp_import_failed'] = 'Échec de l\'importation...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'le plugin %1$s n\'est pas installé';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Affichage de <a href="%1$s">la page d\'accueil du portai</a>.';

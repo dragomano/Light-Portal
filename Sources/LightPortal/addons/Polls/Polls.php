@@ -1,41 +1,35 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Polls;
-
 /**
  * Polls
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Polls;
 
-class Polls
+use Bugo\LightPortal\Addons\Plugin;
+
+class Polls extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-poll';
-
-	/**
-	 * @var int
-	 */
-	private $selected_item = 0;
+	public $icon = 'fas fa-poll';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['polls']['parameters']['selected_item'] = $this->selected_item;
+		$options['polls']['parameters']['selected_item'] = 0;
 	}
 
 	/**
@@ -43,7 +37,7 @@ class Polls
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'polls')
 			return;
@@ -61,23 +55,36 @@ class Polls
 		if ($context['lp_block']['type'] !== 'polls')
 			return;
 
-		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls_addon_selected_item'];
-		$context['posting_fields']['selected_item']['input'] = array(
-			'type' => 'select',
-			'attributes' => array(
-				'id' => 'selected_item'
-			),
-			'options' => array(),
-			'tab' => 'content'
-		);
+		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls']['selected_item'];
 
 		$polls = $this->getAll();
 
-		foreach ($polls as $key => $value) {
-			$context['posting_fields']['selected_item']['input']['options'][$value] = array(
-				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+		if (empty($polls)) {
+			$context['posting_fields']['selected_item']['input'] = array(
+				'type' => 'input',
+				'after' => $txt['lp_polls']['no_items'],
+				'attributes' => array(
+					'id' => 'selected_item',
+					'disabled' => true
+				),
+				'tab' => 'content'
 			);
+		} else {
+			$context['posting_fields']['selected_item']['input'] = array(
+				'type' => 'select',
+				'attributes' => array(
+					'id' => 'selected_item'
+				),
+				'options' => array(),
+				'tab' => 'content'
+			);
+
+			foreach ($polls as $key => $value) {
+				$context['posting_fields']['selected_item']['input']['options'][$value] = array(
+					'value'    => $key,
+					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
+				);
+			}
 		}
 	}
 
@@ -89,24 +96,23 @@ class Polls
 	 * @param int $topic
 	 * @return array
 	 */
-	public function getData($topic = 0)
+	public function getData(int $topic = 0): array
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_showPoll($topic, 'array');
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $boardurl, $context, $txt, $scripturl;
 
@@ -114,8 +120,6 @@ class Polls
 			return;
 
 		$poll = $this->getData($parameters['selected_item']);
-
-		ob_start();
 
 		if (!empty($poll)) {
 			if ($poll['allow_vote']) {
@@ -163,10 +167,8 @@ class Polls
 		</div>';
 			}
 		} else {
-			echo $txt['lp_polls_addon_no_items'];
+			echo $txt['lp_polls']['no_items'];
 		}
-
-		$content = ob_get_clean();
 	}
 
 	/**
@@ -176,7 +178,7 @@ class Polls
 	 *
 	 * @return array
 	 */
-	private function getAll()
+	private function getAll(): array
 	{
 		global $smcFunc;
 

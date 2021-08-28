@@ -3,7 +3,7 @@
 namespace Bugo\LightPortal\Front;
 
 use Exception;
-use Bugo\LightPortal\{Helpers, Page, Subs};
+use Bugo\LightPortal\{Addons, Helpers, Page};
 
 /**
  * PageArticle.php
@@ -14,7 +14,7 @@ use Bugo\LightPortal\{Helpers, Page, Subs};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -54,7 +54,7 @@ class PageArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		Subs::runAddons('frontPages', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+		Addons::run('frontPages', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
 	}
 
 	/**
@@ -65,11 +65,10 @@ class PageArticle extends AbstractArticle
 	 * @param int $start
 	 * @param int $limit
 	 * @return array
-	 * @throws Exception
 	 */
 	public function getData(int $start, int $limit): array
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt, $memberContext;
+		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
 
 		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
 			return [];
@@ -116,7 +115,7 @@ class PageArticle extends AbstractArticle
 						'id'        => $row['page_id'],
 						'section'   => array(
 							'name' => !empty($row['category_id']) ? $categories[$row['category_id']]['name'] : '',
-							'link' => !empty($row['category_id']) ? $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'] : ''
+							'link' => !empty($row['category_id']) ? $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'] : ''
 						),
 						'author'    => array(
 							'id'   => $author_id = empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id'],
@@ -124,7 +123,7 @@ class PageArticle extends AbstractArticle
 							'name' => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name']
 						),
 						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'link'      => $scripturl . '?page=' . $row['alias'],
+						'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
 						'views'     => array(
 							'num'   => $row['num_views'],
 							'title' => $txt['lp_views']
@@ -139,12 +138,7 @@ class PageArticle extends AbstractArticle
 						'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 					);
 
-					loadMemberData($author_id);
-
-					$pages[$row['page_id']]['author']['avatar'] = $modSettings['avatar_url'] . '/default.png';
-					if (loadMemberContext($author_id, true)) {
-						$pages[$row['page_id']]['author']['avatar'] = $memberContext[$author_id]['avatar']['href'];
-					}
+                    $pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 					if (!empty($modSettings['lp_show_teaser']))
 						$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
@@ -155,7 +149,7 @@ class PageArticle extends AbstractArticle
 
 				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
-				Subs::runAddons('frontPagesOutput', array(&$pages, $row));
+				Addons::run('frontPagesOutput', array(&$pages, $row));
 			}
 
 			$smcFunc['db_free_result']($request);

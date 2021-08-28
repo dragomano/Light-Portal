@@ -62,21 +62,22 @@ $tables[] = array(
 			'auto'     => true
 		),
 		array(
-			'name' => 'icon',
-			'type' => 'varchar',
-			'size' => 60,
-			'null' => true
+			'name'     => 'user_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
-			'name' => 'icon_type',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 10,
+			'size' => 255,
 			'null' => true
 		),
 		array(
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 30,
+			'size' => 255,
 			'null' => false
 		),
 		array(
@@ -251,7 +252,7 @@ $tables[] = array(
 		array(
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 6,
+			'size'    => 10,
 			'default' => 'bbc',
 			'null'    => false
 		),
@@ -459,7 +460,7 @@ foreach ($tables as $table) {
 }
 
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor, Markdown, Trumbowyg, UserInfo'));
+	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher'));
 
 if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
 	smf_chmod($css_dir, 0755);

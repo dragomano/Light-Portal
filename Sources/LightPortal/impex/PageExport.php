@@ -13,7 +13,7 @@ use Bugo\LightPortal\{Helpers, ManagePages};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -43,9 +43,11 @@ class PageExport extends AbstractExport
 
 		$this->run();
 
+		$pages = new ManagePages();
+
 		$listOptions = array(
 			'id' => 'lp_pages',
-			'items_per_page' => ($pages = new ManagePages)->num_pages,
+			'items_per_page' => ManagePages::NUM_PAGES,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
@@ -94,7 +96,7 @@ class PageExport extends AbstractExport
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
 								) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
@@ -183,13 +185,13 @@ class PageExport extends AbstractExport
 					'updated_at'   => $row['updated_at']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (!empty($row['message'])) {
+			if (!empty(trim($row['message']))) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
@@ -218,7 +220,6 @@ class PageExport extends AbstractExport
 		$categories = (new \Bugo\LightPortal\Lists\Category)->getList();
 
 		unset($categories[0]);
-
 		ksort($categories);
 
 		return $categories;

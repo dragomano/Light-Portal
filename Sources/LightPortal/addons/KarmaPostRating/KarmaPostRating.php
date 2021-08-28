@@ -1,28 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\KarmaPostRating;
-
 /**
  * KarmaPostRating
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\KarmaPostRating;
 
-class KarmaPostRating
+use Bugo\LightPortal\Addons\Plugin;
+
+class KarmaPostRating extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select rating column from kpr_ratings table for the frontpage topics
@@ -35,7 +34,7 @@ class KarmaPostRating
 	 * @param array $custom_params
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_params)
+	public function frontTopics(array &$custom_columns, array &$custom_tables, array &$custom_wheres, array &$custom_params)
 	{
 		global $modSettings;
 
@@ -59,7 +58,7 @@ class KarmaPostRating
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
 		$topics[$row['id_topic']]['kpr_rating'] = $row['rating'] ?? 0;
 	}

@@ -1,55 +1,40 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopPages;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopPages
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopPages;
 
-class TopPages
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopPages extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-balance-scale-left';
-
-	/**
-	 * @var string
-	 */
-	private $type = 'comments';
-
-	/**
-	 * @var int
-	 */
-	private $num_pages = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['top_pages']['parameters']['popularity_type']   = $this->type;
-		$options['top_pages']['parameters']['num_pages']         = $this->num_pages;
-		$options['top_pages']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_pages']['parameters'] = [
+			'popularity_type'   => 'comments',
+			'num_pages'         => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -57,7 +42,7 @@ class TopPages
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_pages')
 			return;
@@ -77,16 +62,16 @@ class TopPages
 		if ($context['lp_block']['type'] !== 'top_pages')
 			return;
 
-		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_pages_addon_type'];
+		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_pages']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'popularity_type'
 			),
 			'options' => array()
 		);
 
-		$types = array_combine(array('comments', 'views'), $txt['lp_top_pages_addon_type_set']);
+		$types = array_combine(array('comments', 'views'), $txt['lp_top_pages']['type_set']);
 
 		foreach ($types as $key => $value) {
 			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
@@ -95,7 +80,7 @@ class TopPages
 			);
 		}
 
-		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_top_pages_addon_num_pages'];
+		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_top_pages']['num_pages'];
 		$context['posting_fields']['num_pages']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -105,7 +90,7 @@ class TopPages
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_pages_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_pages']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -123,7 +108,7 @@ class TopPages
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -154,7 +139,7 @@ class TopPages
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => $scripturl . '?page=' . $row['alias']
+				'href'         => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias']
 			);
 		}
 
@@ -165,29 +150,28 @@ class TopPages
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
-
-		ob_start();
+		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (!empty($top_pages)) {
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
-				echo $txt['lp_top_pages_addon_no_items'];
+				echo $txt['lp_top_pages']['no_items'];
 			else {
 				echo '
 		<dl class="stats">';
@@ -212,9 +196,7 @@ class TopPages
 		</dl>';
 			}
 		} else {
-			echo $txt['lp_top_pages_addon_no_items'];
+			echo $txt['lp_top_pages']['no_items'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

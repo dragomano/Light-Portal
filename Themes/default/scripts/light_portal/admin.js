@@ -3,11 +3,7 @@ class PortalEntity {
 		target.classList.toggle('fa-spin')
 	}
 
-	changeIcon(target, icon, type) {
-		target.innerHTML = `<i class="${type.querySelector('input:checked').value} fa-${icon.value}"></i>`;
-	}
-
-	async toggleStatus(target, status) {
+	async toggleStatus(target) {
 		const item = target.dataset.id;
 
 		if (item) {
@@ -17,19 +13,18 @@ class PortalEntity {
 					'Content-Type': 'application/json; charset=utf-8'
 				},
 				body: JSON.stringify({
-					status: (status ? 'off' : 'on'),
-					item: item
+					toggle_item: item
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}
 	}
 
 	async remove(target) {
-		if (!confirm(smf_you_sure)) return false;
+		if (! confirm(smf_you_sure)) return false;
 
 		const item = target.dataset.id;
 
@@ -56,7 +51,7 @@ class PortalEntity {
 		const formElements = target.elements;
 
 		for (let i = 0; i < formElements.length; i++) {
-			if ((formElements[i].required && formElements[i].value === '') || !formElements[i].checkValidity()) {
+			if ((formElements[i].required && formElements[i].value === '') || ! formElements[i].checkValidity()) {
 				let elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;
@@ -167,10 +162,10 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		if (!refs.title_0.value) {
-			refs.type.disabled = true
+		if (! refs.title_0.value) {
+			pageType.disable()
 		} else {
-			refs.type.disabled = false
+			pageType.enable()
 		}
 
 		// Create a page alias on page type changing
@@ -187,7 +182,7 @@ class Page extends PortalEntity {
 
 		ajax_indicator(true);
 
-		if (!pageContent.value) {
+		if (! pageContent.value) {
 			pageContent.value = ' '
 		}
 
@@ -199,44 +194,6 @@ class Plugin extends PortalEntity {
 	constructor() {
 		super()
 		this.workUrl = smf_scripturl + '?action=admin;area=lp_plugins'
-	}
-
-	change(target, refs) {
-		if (target !== 'block') {
-			refs.icon.style.display = 'none';
-			refs.icon_type.style.display = 'none';
-			refs.icon_label.style.display = 'none';
-			refs.icon_type_label.style.display = 'none';
-			refs.preview.style.display = 'none';
-		} else {
-			refs.icon.style.display = 'inline-block';
-			refs.icon_type.style.display = 'inline-block';
-			refs.icon_label.style.display = 'inline-block';
-			refs.icon_type_label.style.display = 'inline-block';
-			refs.preview.style.display = 'inline-block';
-		}
-	}
-
-	handleOptions() {
-		return {
-			options: [],
-			addNewOption() {
-				this.options.push({
-					name: '',
-					type: 'text',
-					variants: ''
-				});
-			},
-			removeOption(index) {
-				this.options.splice(index, 1);
-			}
-		}
-	}
-
-	updateState(target, refs) {
-		if (target) {
-			refs.plugin_name.innerText = target;
-		}
 	}
 
 	async toggle(target) {
@@ -252,7 +209,7 @@ class Plugin extends PortalEntity {
 			})
 		});
 
-		if (!response.ok) {
+		if (! response.ok) {
 			console.error(response)
 		}
 
@@ -338,13 +295,13 @@ class Category extends PortalEntity {
 			})
 		});
 
-		if (!response.ok) {
+		if (! response.ok) {
 			console.error(response.status, priority)
 		}
 	}
 
 	async add(refs) {
-		if (!refs.cat_name) return false;
+		if (! refs.cat_name) return false;
 
 		let response = await fetch(this.workUrl, {
 			method: 'POST',
@@ -388,12 +345,12 @@ class Category extends PortalEntity {
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}
 
-		if (!event.value) {
+		if (! event.value) {
 			event.value = event.defaultValue
 		}
 	}
@@ -413,7 +370,7 @@ class Category extends PortalEntity {
 				})
 			});
 
-			if (!response.ok) {
+			if (! response.ok) {
 				console.error(response)
 			}
 		}

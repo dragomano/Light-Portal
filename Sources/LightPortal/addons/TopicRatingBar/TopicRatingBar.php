@@ -1,28 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopicRatingBar;
-
 /**
  * TopicRatingBar
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
-class TopicRatingBar
+use Bugo\LightPortal\Addons\Plugin;
+
+class TopicRatingBar extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics
@@ -33,7 +32,7 @@ class TopicRatingBar
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(array &$custom_columns, array &$custom_tables)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
@@ -51,9 +50,9 @@ class TopicRatingBar
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
-		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
+		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes']) : 0;
 	}
 
 	/**

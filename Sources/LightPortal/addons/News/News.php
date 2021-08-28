@@ -1,41 +1,35 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\News;
-
 /**
  * News
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\News;
 
-class News
+use Bugo\LightPortal\Addons\Plugin;
+
+class News extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-newspaper';
-
-	/**
-	 * @var int
-	 */
-	private $selected_item = 0;
+	public $icon = 'far fa-newspaper';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['news']['parameters']['selected_item'] = $this->selected_item;
+		$options['news']['parameters']['selected_item'] = 0;
 	}
 
 	/**
@@ -43,7 +37,7 @@ class News
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'news')
 			return;
@@ -61,7 +55,7 @@ class News
 		if ($context['lp_block']['type'] !== 'news')
 			return;
 
-		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_news_addon_selected_item'];
+		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_news']['selected_item'];
 		$context['posting_fields']['selected_item']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -73,9 +67,9 @@ class News
 
 		$this->getData();
 
-		$news = [$txt['lp_news_addon_random_news']];
+		$news = [$txt['lp_news']['random_news']];
 		if (!empty($context['news_lines'])) {
-			array_unshift($context['news_lines'], $txt['lp_news_addon_random_news']);
+			array_unshift($context['news_lines'], $txt['lp_news']['random_news']);
 			$news = $context['news_lines'];
 		}
 
@@ -95,11 +89,12 @@ class News
 	 * @param int $item
 	 * @return string
 	 */
-	public function getData($item = 0)
+	public function getData(int $item = 0): string
 	{
 		global $boarddir, $context;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
+
 		setupThemeContext();
 
 		if ($item > 0)
@@ -109,14 +104,13 @@ class News
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt;
 
@@ -125,10 +119,6 @@ class News
 
 		$news = $this->getData($parameters['selected_item']);
 
-		ob_start();
-
-		echo $news ?: $txt['lp_news_addon_no_items'];
-
-		$content = ob_get_clean();
+		echo $news ?: $txt['lp_news']['no_items'];
 	}
 }

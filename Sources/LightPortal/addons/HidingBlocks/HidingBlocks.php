@@ -1,38 +1,32 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\HidingBlocks;
-
 /**
  * HidingBlocks
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\HidingBlocks;
 
-class HidingBlocks
+use Bugo\LightPortal\Addons\Plugin;
+
+class HidingBlocks extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'other';
+	public $type = 'other';
 
 	/**
 	 * @var array
 	 */
 	public $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
-
-	/**
-	 * @var array
-	 */
-	private $hidden_breakpoints = [];
 
 	/**
 	 * Fill additional block classes
@@ -68,18 +62,18 @@ class HidingBlocks
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		global $context;
 
-		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = $this->hidden_breakpoints;
+		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
 	}
 
 	/**
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters)
+	public function validateBlockData(array &$parameters)
 	{
 		$parameters['hidden_breakpoints'] = array(
 			'name'   => 'hidden_breakpoints',
@@ -99,7 +93,7 @@ class HidingBlocks
 		$current_breakpoints = $context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
 		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
 
-		$breakpoints = array_combine(array('xs', 'sm', 'md', 'lg', 'xl'), $txt['lp_hiding_blocks_addon_hidden_breakpoints_set']);
+		$breakpoints = array_combine(array('xs', 'sm', 'md', 'lg', 'xl'), $txt['lp_hiding_blocks']['hidden_breakpoints_set']);
 
 		$data = [];
 		foreach ($breakpoints as $bp => $name) {
@@ -113,12 +107,12 @@ class HidingBlocks
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_hiding_blocks_addon_hidden_breakpoints_subtext'] . '",
+			placeholder: "' . $txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
 
-		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks_addon_hidden_breakpoints'];
+		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks']['hidden_breakpoints'];
 		$context['posting_fields']['hidden_breakpoints']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(

@@ -1,55 +1,40 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopPosters;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopPosters
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopPosters;
 
-class TopPosters
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopPosters extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'fas fa-users';
-
-	/**
-	 * @var bool
-	 */
-	private $show_avatars = true;
-
-	/**
-	 * @var int
-	 */
-	private $num_posters = 10;
-
-	/**
-	 * @var bool
-	 */
-	private $show_numbers_only = false;
+	public $icon = 'fas fa-users';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['top_posters']['parameters']['show_avatars']      = $this->show_avatars;
-		$options['top_posters']['parameters']['num_posters']       = $this->num_posters;
-		$options['top_posters']['parameters']['show_numbers_only'] = $this->show_numbers_only;
+		$options['top_posters']['parameters'] = [
+			'show_avatars'      => true,
+			'num_posters'       => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
@@ -57,7 +42,7 @@ class TopPosters
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -77,7 +62,7 @@ class TopPosters
 		if ($context['lp_block']['type'] !== 'top_posters')
 			return;
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -86,7 +71,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters_addon_num_posters'];
+		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters']['num_posters'];
 		$context['posting_fields']['num_posters']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -96,7 +81,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -115,7 +100,7 @@ class TopPosters
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $memberContext, $scripturl;
 
@@ -158,51 +143,49 @@ class TopPosters
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_posters)) {
-			ob_start();
+		if (empty($top_posters))
+			return;
 
-			echo '
+		echo '
 		<dl class="top_posters stats">';
 
-			$max = $top_posters[0]['posts'];
+		$max = $top_posters[0]['posts'];
 
-			foreach ($top_posters as $poster) {
-				echo '
+		foreach ($top_posters as $poster) {
+			echo '
 			<dt>';
 
-				if (!empty($poster['avatar']))
-					echo $poster['avatar'];
+			if (!empty($poster['avatar']))
+				echo $poster['avatar'];
 
-				$width = $poster['posts'] * 100 / $max;
+			$width = $poster['posts'] * 100 / $max;
 
-				echo ' ', $poster['link'], '
+			echo ' ', $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getText($poster['posts'], $txt['lp_posts_set'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

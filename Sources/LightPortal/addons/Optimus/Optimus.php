@@ -1,39 +1,37 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Optimus;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Optimus
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Optimus;
 
-class Optimus
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Optimus extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
-		$config_vars[] = array('check', 'lp_optimus_addon_use_topic_descriptions');
-		$config_vars[] = array('check', 'lp_optimus_addon_show_topic_keywords');
+		$config_vars['optimus'][] = array('check', 'use_topic_descriptions');
+		$config_vars['optimus'][] = array('check', 'show_topic_keywords');
 	}
 
 	/**
@@ -42,10 +40,9 @@ class Optimus
 	 * Выбираем столбец optimus_description из таблицы topics при выборке тем-статей
 	 *
 	 * @param array $custom_columns
-	 * @param array $custom_tables
 	 * @return void
 	 */
-	public function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(array &$custom_columns)
 	{
 		global $modSettings;
 
@@ -64,7 +61,7 @@ class Optimus
 	 * @param array $row
 	 * @return void
 	 */
-	public function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
 		global $modSettings;
 
@@ -72,7 +69,7 @@ class Optimus
 			return;
 
 		if (!empty($modSettings['lp_optimus_addon_show_topic_keywords']))
-			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords', 'getKeywords', __CLASS__, LP_CACHE_TIME, $row['id_topic']);
+			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', $row['id_topic']);
 
 		if (!empty($modSettings['lp_optimus_addon_use_topic_descriptions']) && !empty($row['optimus_description']) && !empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
@@ -86,7 +83,7 @@ class Optimus
 	 * @param int $topic
 	 * @return array
 	 */
-	public function getKeywords($topic)
+	public function getKeywords(int $topic): array
 	{
 		global $smcFunc;
 

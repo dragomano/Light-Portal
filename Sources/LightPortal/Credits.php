@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -23,15 +23,17 @@ class Credits
 	 * Display credits on action=credits area
 	 *
 	 * Отображаем копирайты на странице action=credits
+	 *
+	 * @return void
 	 */
 	public function show()
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = $this->getCopyrights();
+		$context['credits_modifications'][] = $this->getLink();
 
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
-			$this->getComponentList();
+			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
 
@@ -44,47 +46,31 @@ class Credits
 	}
 
 	/**
-	 * Return copyright information
-	 *
-	 * Возвращаем информацию об авторских правах
+	 * @return string
 	 */
-	public function getCopyrights(): string
+	public function getLink(): string
 	{
-		global $user_info, $scripturl;
+		global $user_info, $scripturl, $txt;
 
 		$link = $user_info['language'] == 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | ' . $txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
 	/**
-	 * Prepare information about contributors and third party components
-	 *
-	 * Формируем информацию о внесших вклад в развитие портала и об используемых компонентах
+	 * @return void
 	 */
-	public function getComponentList()
+	public function prepareComponents()
 	{
 		global $context;
 
 		isAllowedTo('light_portal_view');
 
-		$context['translators'] = array(
-			array(
-				'name' => 'Adrek',
-				'lang' => 'Polish'
-			),
-			array(
-				'name' => 'Rock Lee',
-				'lang' => 'Spanish'
-			),
-			array(
-				'name' => 'Papoune57',
-				'lang' => 'French'
-			),
-			array(
-				'name' => 'gevv',
-				'lang' => 'Turkish'
-			)
+		$context['portal_translations'] = array(
+			'Polish'  => array('Adrek'),
+			'Spanish' => array('Rock Lee'),
+			'French'  => array('Papoune57'),
+			'Turkish' => array('gevv')
 		);
 
 		$context['testers'] = array(
@@ -107,7 +93,7 @@ class Credits
 				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
 				'author' => 'Kristofer Joseph',
 				'license' => array(
-					'name' => 'the Apache License',
+					'name' => 'the Apache License 2.0',
 					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
 				)
 			),
@@ -158,7 +144,7 @@ class Credits
 		);
 
 		// Adding copyrights of used plugins
-		Subs::runAddons('credits', array(&$links));
+		Addons::run('credits', array(&$links));
 
 		$context['lp_components'] = $links;
 	}

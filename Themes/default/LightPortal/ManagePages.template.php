@@ -55,24 +55,39 @@ function template_page_post()
 				<label for="tab3" class="bg odd">', $txt['lp_tab_menu'], '</label>
 				<input id="tab4" type="radio" name="tabs">
 				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
-				<section id="content-tab1" class="bg even">
-					', template_post_tab($fields);
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+					</div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab($fields, 'seo'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'seo');
+
+    echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab($fields, 'menu'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'menu');
+
+    echo '
 				</section>
-				<section id="content-tab4" class="bg even">
-					', template_post_tab($fields, 'tuning'), '
+				<section id="content-tab4" class="bg even">';
+
+	template_post_tab($fields, 'tuning');
+
+	echo '
 				</section>
 			</div>
 			<br class="clear">
@@ -95,14 +110,17 @@ function template_page_post()
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
 		const page = new Page();
-		let keywords = new SlimSelect({
+
+		let pageType = new SlimSelect({
+			select: "#type",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
+		new SlimSelect({
 			select: "#keywords",
-			data: [';
-
-	echo "\n", implode(",\n", $context['lp_all_tags']);
-
-	echo '
-			],
 			limit: 10,
 			hideSelectedOption: true,
 			placeholder: "', $txt['lp_page_keywords_placeholder'], '",
@@ -118,14 +136,73 @@ function template_page_post()
 				}
 			}
 		});
-		let categories = new SlimSelect({
-			select: "#category",
-			data: [';
 
-	echo "\n", implode(",\n", $context['lp_all_categories']);
+		let iconSelect = new SlimSelect({
+			select: "#icon",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
+
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
+
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_block_select_icon'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "cheese",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});';
+
+	if (!empty($context['lp_page']['options']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_page']['options']['icon'], '"></i>&nbsp;', $context['lp_page']['options']['icon'], '`, value: "', $context['lp_page']['options']['icon'], '", text: "', $context['lp_page']['options']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
+	}
 
 	echo '
-			],
+		new SlimSelect({
+			select: "#permissions",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
+		new SlimSelect({
+			select: "#category",
 			hideSelectedOption: true,
 			searchText: "', $txt['no_matches'], '",
 			searchPlaceholder: "', $txt['search'], '",
@@ -134,13 +211,13 @@ function template_page_post()
 
 	if ($context['user']['is_admin']) {
 		echo '
-		let members = new SlimSelect({
+		new SlimSelect({
 			select: "#page_author",
 			allowDeselect: true,
 			deselectLabel: "<span class=\"red\">✖</span>",
 			ajax: async function (search, callback) {
 				if (search.length < 3) {
-					callback("', $txt['lp_page_author_search_length'], '");
+					callback("', sprintf($txt['lp_min_search_length'], 3), '");
 					return
 				}
 

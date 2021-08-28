@@ -1,68 +1,70 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Markdown;
-
 /**
  * Markdown
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Markdown;
 
-class Markdown
+use Bugo\LightPortal\Addons\Plugin;
+
+class Markdown extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = array('block', 'parser');
+	public $icon = 'fab fa-markdown';
 
 	/**
-	 * Adding the new content type and block icon
+	 * @var array
+	 */
+	public $type = array('block', 'parser');
+
+	/**
+	 * Adding the new content type
 	 *
-	 * Добавляем новый тип контента и иконку блока
+	 * Добавляем новый тип контента
 	 *
 	 * @return void
 	 */
 	public function init()
 	{
-		global $txt, $context;
+		global $context;
 
-		$txt['lp_page_types']['md'] = 'Markdown';
-
-		$context['lp_md_icon'] = 'fab fa-markdown';
+		$context['lp_page_types']['markdown'] = 'Markdown';
 	}
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['md'] = array(
+		$options['markdown'] = array(
 			'content' => true
 		);
 	}
 
 	/**
-	 * Parse 'md' content
+	 * Parse 'markdown' content
 	 *
-	 * Парсим контент типа 'md'
+	 * Парсим контент типа 'markdown'
 	 *
 	 * @param string $content
 	 * @param string $type
 	 * @return void
 	 */
-	public function parseContent(&$content, $type)
+	public function parseContent(string &$content, string $type)
 	{
-		if ($type == 'md')
+		if ($type == 'markdown')
 			$content = $this->getParsedContent($content);
 	}
 
@@ -74,12 +76,12 @@ class Markdown
 	 * @param string $text
 	 * @return string
 	 */
-	private function getParsedContent($text)
+	private function getParsedContent(string $text): string
 	{
-		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
-		require_once(__DIR__ . '/Michelf/Markdown.php');
-		require_once(__DIR__ . '/Michelf/MarkdownExtra.php');
-		require_once(__DIR__ . '/Michelf/MarkdownSMF.php');
+		require_once __DIR__ . '/Michelf/MarkdownInterface.php';
+		require_once __DIR__ . '/Michelf/Markdown.php';
+		require_once __DIR__ . '/Michelf/MarkdownExtra.php';
+		require_once __DIR__ . '/Michelf/MarkdownSMF.php';
 
 		return Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));
 	}
@@ -88,7 +90,7 @@ class Markdown
 	 * @param array $links
 	 * @return void
 	 */
-	public function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'PHP Markdown',

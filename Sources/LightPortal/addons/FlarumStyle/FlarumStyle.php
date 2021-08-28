@@ -1,30 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FlarumStyle;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * FlarumStyle
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FlarumStyle;
 
-class FlarumStyle
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class FlarumStyle extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_type = 'frontpage';
+	public $type = 'frontpage';
 
 	/**
 	 * Load custom template for frontpage topics
@@ -44,7 +42,7 @@ class FlarumStyle
 
 		$context['lp_all_categories'] = $this->getCategories();
 
-		require_once(__DIR__ . '/Template.php');
+		$this->loadTemplate();
 
 		$this->prepareFantomBLock();
 
@@ -69,6 +67,7 @@ class FlarumStyle
 		$content = ob_get_clean();
 
 		$context['lp_blocks']['left'][] = [
+			'id'      => uniqid(),
 			'type'    => 'flarum_style',
 			'content' => $content
 		];
@@ -81,12 +80,12 @@ class FlarumStyle
 	 *
 	 * @return array
 	 */
-	private function getCategories()
+	private function getCategories(): array
 	{
 		global $context, $txt, $modSettings;
 
 		if ($context['is_portal']) {
-			$all_categories = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
+			$all_categories = Helpers::getAllCategories();
 
 			$categories = array(
 				array(

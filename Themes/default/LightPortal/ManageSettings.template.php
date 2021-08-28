@@ -126,7 +126,7 @@ function template_category_settings()
  * @param array $cat
  * @return void
  */
-function show_single_category($id, $cat)
+function show_single_category(int $id, array $cat)
 {
 	global $txt;
 
@@ -425,7 +425,7 @@ function template_callback_panel_direction()
  * @param string $tab
  * @return void
  */
-function template_post_tab($fields, $tab = 'content')
+function template_post_tab(array $fields, string $tab = 'content')
 {
 	global $context;
 

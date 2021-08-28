@@ -39,15 +39,10 @@ function template_manage_blocks()
 			if (is_array($blocks)) {
 				echo '
 		<thead>
-			<tr class="title_bar">';
-
-				if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
-					echo '
+			<tr class="title_bar">
 				<th scope="col" class="icon">
 					', $txt['custom_profile_icon'], '
-				</th>';
-
-				echo '
+				</th>
 				<th scope="col" class="title">
 					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 				</th>
@@ -124,7 +119,7 @@ function template_manage_blocks()
  * @param array $data
  * @return void
  */
-function show_block_entry($id, $data)
+function show_block_entry(int $id, array $data)
 {
 	global $modSettings, $context, $language, $txt, $scripturl;
 
@@ -132,26 +127,20 @@ function show_block_entry($id, $data)
 		return;
 
 	echo '
-	<tr id="lp_block_', $id, '" class="windowbg">';
-
-	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none') {
-		echo '
+	<tr id="lp_block_', $id, '" class="windowbg">
 		<td class="icon">
 			', $data['icon'], '
-		</td>';
-	}
-
-	echo '
+		</td>
 		<td class="title">
-			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'] ?? '');
+			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? '');
 
 	if (empty($title))
-		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
+		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
 
 	echo '
 		</td>
 		<td class="type">
-			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
+			', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
 		<td class="areas">
 			', $data['areas'], '
@@ -163,7 +152,7 @@ function show_block_entry($id, $data)
 			class="status"
 			data-id="', $id, '"
 			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
-			x-init="$watch(\'status\', value => block.toggleStatus($el, value))"
+			x-init="$watch(\'status\', value => block.toggleStatus($el))"
 		>
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
@@ -180,7 +169,7 @@ function show_block_entry($id, $data)
 							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
 						</li>';
 
-	if (isset($txt['lp_block_types'][$data['type']])) {
+	if (isset($txt['lp_' . $data['type']]['title'])) {
 		echo '
 						<li>
 							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
@@ -218,15 +207,14 @@ function template_block_add()
 		<form name="block_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
 			<div class="row">';
 
-	asort($txt['lp_block_types']);
-	foreach ($txt['lp_block_types'] as $type => $title) {
+	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
-					<div class="item roundframe" data-type="', $type, '" @click="block.add($el.children[0])">
-						<i class="', $context['lp_' . $type . '_icon'], '"></i>
-						<strong>', $title, '</strong>
+					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el.children[0])">
+						<i class="', $block['icon'], '"></i>
+						<strong>', $block['title'], '</strong>
 						<hr>
-						<p>', $txt['lp_block_types_descriptions'][$type], '</p>
+						<p>', $block['desc'], '</p>
 					</div>
 				</div>';
 	}
@@ -266,15 +254,15 @@ function template_block_post()
 
 		echo '
 	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class'] ?: '_'], $context['preview_content'], $style), '
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style), '
 	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_block_types'][$context['lp_block']['type']], '</h3>
+		<h3 class="catbg">', $txt['lp_' . $context['lp_block']['type']]['title'], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+		', $txt['lp_' . $context['lp_block']['type']]['description'], '
 	</div>';
 	}
 
@@ -297,7 +285,7 @@ function template_block_post()
 
 	echo '
 	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
-		<div class="roundframe">
+		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
@@ -313,27 +301,42 @@ function template_block_post()
 	}
 
 	echo '
-				<section id="content-tab1" class="bg even">
-					', template_post_tab($fields);
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+                    </div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab($fields, 'access_placement'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'access_placement');
+
+	echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab($fields, 'appearance'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'appearance');
+
+	echo '
 				</section>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
-				<section id="content-tab4" class="bg even">
-					', template_post_tab($fields, 'tuning'), '
+				<section id="content-tab4" class="bg even">';
+
+		template_post_tab($fields, 'tuning');
+
+		echo '
 				</section>';
 	}
 
@@ -361,6 +364,132 @@ function template_block_post()
 
 	<script>
 		const block = new Block();
+
+		const placementSelect = document.getElementById("placement");
+
+		if (placementSelect.style.display !== "none") {
+			new SlimSelect({
+				select: placementSelect,
+				showSearch: false,
+				hideSelectedOption: true,
+				closeOnSelect: true,
+				showContent: "down"
+			});
+		}
+
+		new SlimSelect({
+			select: "#permissions",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
+		let iconSelect = new SlimSelect({
+			select: "#icon",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
+
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search,
+						add_block: "', $context['lp_block']['type'], '"
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
+
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_block_select_icon'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "cheese",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});';
+
+	if (!empty($context['lp_block']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_block']['icon'], '"></i>&nbsp;', $context['lp_block']['icon'], '`, value: "', $context['lp_block']['icon'], '", text: "', $context['lp_block']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
+	}
+
+	if (!empty($context['lp_all_title_classes'])) {
+		echo '
+		new SlimSelect({
+			select: "#title_class",
+			data: [';
+
+		foreach ($context['lp_all_title_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['title_class'] ? 'true' : 'false') . '
+				},';
+		}
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	if (empty($context['lp_block']['options']['no_content_class']) && !empty($context['lp_all_content_classes'])) {
+		echo '
+		new SlimSelect({
+			select: "#content_class",
+			data: [';
+
+		foreach ($context['lp_all_content_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['content_class'] ? 'true' : 'false') . '
+				},';
+		}
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	echo '
 	</script>';
 }
 

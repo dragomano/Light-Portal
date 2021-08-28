@@ -1,55 +1,40 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\PageList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * PageList
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.8
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\PageList;
 
-class PageList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class PageList extends Plugin
 {
 	/**
 	 * @var string
 	 */
-	public $addon_icon = 'far fa-file-alt';
-
-	/**
-	 * @var array
-	 */
-	private $categories = [];
-
-	/**
-	 * @var string
-	 */
-	private $sort = 'page_id';
-
-	/**
-	 * @var int
-	 */
-	private $num_pages = 10;
+	public $icon = 'far fa-file-alt';
 
 	/**
 	 * @param array $options
 	 * @return void
 	 */
-	public function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['page_list']['parameters']['categories'] = $this->categories;
-		$options['page_list']['parameters']['sort']       = $this->sort;
-		$options['page_list']['parameters']['num_pages']  = $this->num_pages;
+		$options['page_list']['parameters'] = [
+			'categories' => [],
+			'sort'       => 'page_id',
+			'num_pages'  => 10,
+		];
 	}
 
 	/**
@@ -57,7 +42,7 @@ class PageList
 	 * @param string $type
 	 * @return void
 	 */
-	public function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'page_list')
 			return;
@@ -82,7 +67,7 @@ class PageList
 			return;
 
 		// Prepare the category list
-		$all_categories     = Helpers::cache('all_categories', 'getList', \Bugo\LightPortal\Lists\Category::class);
+		$all_categories     = Helpers::getAllCategories();
 		$current_categories = $context['lp_block']['options']['parameters']['categories'] ?? [];
 		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
 
@@ -98,7 +83,7 @@ class PageList
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_page_list_addon_categories_subtext'] . '",
+			placeholder: "' . $txt['lp_page_list']['categories_subtext'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
@@ -114,7 +99,7 @@ class PageList
 			'options' => array()
 		);
 
-		$context['posting_fields']['sort']['label']['text'] = $txt['lp_page_list_addon_sort'];
+		$context['posting_fields']['sort']['label']['text'] = $txt['lp_page_list']['sort'];
 		$context['posting_fields']['sort']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -123,7 +108,7 @@ class PageList
 			'options' => array()
 		);
 
-		$sort_set = array_combine(array('page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'), $txt['lp_page_list_addon_sort_set']);
+		$sort_set = array_combine(array('page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'), $txt['lp_page_list']['sort_set']);
 
 		foreach ($sort_set as $key => $value) {
 			$context['posting_fields']['sort']['input']['options'][$value] = array(
@@ -132,10 +117,10 @@ class PageList
 			);
 		}
 
-		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list_addon_num_pages'];
+		$context['posting_fields']['num_pages']['label']['text'] = $txt['lp_page_list']['num_pages'];
 		$context['posting_fields']['num_pages']['input'] = array(
 			'type' => 'number',
-			'after' => $txt['lp_page_list_addon_num_pages_subtext'],
+			'after' => $txt['lp_page_list']['num_pages_subtext'],
 			'attributes' => array(
 				'id'    => 'num_pages',
 				'min'   => 0,
@@ -153,14 +138,17 @@ class PageList
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function getData(array $parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $txt, $scripturl;
 
 		$titles = Helpers::getAllTitles();
 		$all_categories = Helpers::getAllCategories();
 
-		$categories = !empty($parameters['categories']) ? explode(',', $parameters['categories']) : [];
+		if (empty($parameters['categories']))
+			$parameters['categories'] = [];
+
+		$categories = is_array($parameters['categories']) ? $parameters['categories'] : explode(',', $parameters['categories']);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -194,7 +182,7 @@ class PageList
 				'id'            => $row['page_id'],
 				'category_id'   => $row['category_id'],
 				'category_name' => $all_categories[$row['category_id']]['name'],
-				'category_link' => $scripturl . '?action=portal;sa=categories;id=' . $row['category_id'],
+				'category_link' => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
@@ -213,23 +201,22 @@ class PageList
 	}
 
 	/**
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt;
 
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
-
-		ob_start();
+		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (!empty($page_list)) {
 			echo '
@@ -241,7 +228,7 @@ class PageList
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?page=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?', LP_PAGE_ACTION, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ' . Helpers::getText($page['num_comments'], $txt['lp_comments_set']);
@@ -253,9 +240,7 @@ class PageList
 			echo '
 		</ul>';
 		} else {
-			echo '<div class="errorbox">', $txt['lp_page_list_addon_no_items'], '</div>';
+			echo '<div class="errorbox">', $txt['lp_page_list']['no_items'], '</div>';
 		}
-
-		$content = ob_get_clean();
 	}
 }

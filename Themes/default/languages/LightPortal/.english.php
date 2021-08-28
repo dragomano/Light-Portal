@@ -15,16 +15,20 @@ $txt['lp_article'] = 'Article';
 $txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
+$txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Default';
-$txt['lp_sponsors_only'] = 'For sponsors of the portal';
+$txt['lp_can_donate'] = 'For sponsors';
+$txt['lp_can_download'] = 'Can download';
+$txt['lp_min_search_length'] = 'Please enter at least %d characters';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
+$txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
 $txt['lp_frontpage_mode'] = 'The portal frontpage';
@@ -70,10 +74,10 @@ $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that sh
 $txt['lp_standalone_mode_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
 $txt['groups_light_portal_view'] = 'Who can view the portal elements';
-$txt['groups_light_portal_manage_blocks'] = 'Who can manage blocks';
+$txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
-$txt['lp_manage_permissions'] = 'Some pages may contain dangerous HTML/PHP content, so do not allow their creation to everyone!';
+$txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 
 // Pages and blocks
 $txt['lp_extra'] = 'Pages and blocks';
@@ -83,8 +87,8 @@ $txt['lp_show_page_permissions'] = 'Show information about the page permissions'
 $txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
-$txt['lp_show_related_pages'] = 'Show related pages block';
-$txt['lp_show_comment_block'] = 'Show comments block';
+$txt['lp_show_related_pages'] = 'Show related pages';
+$txt['lp_show_comment_block'] = 'Show page comments';
 $txt['lp_disabled_bbc_in_comments'] = 'Allowed BBC in comments';
 $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = array('None', 'Integrated');
@@ -135,13 +139,22 @@ $txt['lp_misc_info'] = 'There are additional portal settings that will be useful
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
 $txt['lp_show_debug_info'] = 'Show the loading time and number of the portal queries';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
+$txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
+$txt['lp_compatibility_mode'] = 'Compatibility mode';
+$txt['lp_portal_action'] = 'The portal action';
+$txt['lp_page_action'] = 'The portal page action';
+$txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
+$txt['lp_cache_info'] = 'Portal — using the cache';
+$txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
+$txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';
 
 // Actions
 $txt['lp_title'] = 'Title';
 $txt['lp_actions'] = 'Actions';
 $txt['lp_action_on'] = 'Enable';
 $txt['lp_action_off'] = 'Disable';
+$txt['lp_action_toggle'] = 'Toggle status';
 $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';
@@ -157,12 +170,9 @@ $txt['lp_blocks_add_description'] = 'Blocks can contain any content, depending o
 $txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it.';
 $txt['lp_blocks_edit_title'] = 'Editing block';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
-$txt['lp_block_icon_cheatsheet'] = 'List of icons';
 $txt['lp_block_type'] = 'Block type';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Priority';
-$txt['lp_block_icon_type'] = 'Icon type';
-$txt['lp_block_icon_type_set'] = array('Solid', 'Regular', 'Brands');
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer');
 
@@ -185,17 +195,19 @@ $txt['lp_block_areas_values'] = array(
 	'in topics id3, and id7'
 );
 
+$txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_content_style'] = 'CSS content style';
 
-$txt['lp_block_types']['bbc'] = 'Custom BBC';
-$txt['lp_block_types']['html'] = 'Custom HTML';
-$txt['lp_block_types']['php'] = 'Custom PHP';
-$txt['lp_block_types_descriptions']['bbc'] = 'In this block, any BBC tags of the forum can be used as content.';
-$txt['lp_block_types_descriptions']['html'] = 'In this block, you can use any HTML tags as content.';
-$txt['lp_block_types_descriptions']['php'] = 'In this block, you can use any PHP code as content.';
+// Internal blocks
+$txt['lp_bbc']['title'] = 'Custom BBC';
+$txt['lp_html']['title'] = 'Custom HTML';
+$txt['lp_php']['title'] = 'Custom PHP';
+$txt['lp_bbc']['description'] = 'In this block, any BBC tags of the forum can be used as content.';
+$txt['lp_html']['description'] = 'In this block, you can use any HTML tags as content.';
+$txt['lp_php']['description'] = 'In this block, you can use any PHP code as content.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';
@@ -210,19 +222,16 @@ $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Alias or title';
-$txt['lp_page_types']['bbc'] = 'BBC';
-$txt['lp_page_types']['html'] = 'HTML';
-$txt['lp_page_types']['php'] = 'PHP';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type'] = 'Page type';
+$txt['lp_page_types'] = array('BBC', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Keywords';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_author_search_length'] = 'Please enter at least 3 characters';
 $txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments', 'Item in main menu');
 
 // Tabs
@@ -249,41 +258,10 @@ $txt['lp_export_all'] = 'Export all';
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
-$txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a> or the "+" button below.';
+$txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_add'] = 'Add plugin';
-$txt['lp_plugins_add_title'] = 'Adding a plugin';
-$txt['lp_plugins_add_description'] = 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.';
-$txt['lp_plugins_add_information'] = 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.';
-
-$txt['lp_plugins_tab_content'] = 'Basic information';
-$txt['lp_plugins_tab_copyrights'] = 'Copyrights';
-$txt['lp_plugins_tab_settings'] = 'Settings';
-$txt['lp_plugins_tab_tuning'] = 'Additional';
-
-$txt['lp_plugin_name'] = 'The plugin name';
-$txt['lp_plugin_name_subtext'] = 'In Latin letters, without spaces!';
-$txt['lp_plugin_type'] = 'The plugin type';
-$txt['lp_plugin_type_set'] = array('Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other');
-$txt['lp_plugin_site_subtext'] = 'Website where users can download new versions of this plugin.';
-$txt['lp_plugin_license'] = 'The plugin license';
-$txt['lp_plugin_license_own'] = 'Own license';
-$txt['lp_plugin_license_name'] = 'The license name';
-$txt['lp_plugin_license_link'] = 'The license link';
-$txt['lp_plugin_smf_hooks'] = 'Are you using SMF hooks?';
-$txt['lp_plugin_components'] = 'Are you using third-party scripts?';
-$txt['lp_plugin_components_name'] = 'Component name';
-$txt['lp_plugin_components_link'] = 'Link to component site';
-$txt['lp_plugin_components_author'] = 'Component author';
-
-$txt['lp_plugin_option_name'] = 'Option name (Latin)';
-$txt['lp_plugin_option_type'] = 'Option type';
-$txt['lp_plugin_option_type_set'] = array('Text field', 'Web address', 'Input color', 'Input number', 'Checkbox', 'Multiple select', 'Select');
-$txt['lp_plugin_option_default_value'] = 'Default value';
-$txt['lp_plugin_option_variants'] = 'Possible values';
-$txt['lp_plugin_option_variants_placeholder'] = 'Multiple options separated by commas';
-$txt['lp_plugin_option_translations'] = 'Localization';
-$txt['lp_plugin_new_option'] = 'Add option';
+$txt['lp_plugins_types'] = array('Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other');
+$txt['lp_plugins_requires'] = 'Required plugins for work';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';
@@ -323,6 +301,7 @@ $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';
 $txt['lp_page_visible_but_disabled'] = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found'] = 'Block not found!';
+$txt['lp_block_not_editable'] = 'You are not allowed to edit this block!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias'] = 'The <strong>alias</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_alias'] = 'The specified alias is not correct!';
@@ -331,14 +310,10 @@ $txt['lp_post_error_no_content'] = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas'] = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_areas'] = 'The <strong>areas</strong> field was set incorrectly!';
 $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled out. It is required.';
-$txt['lp_post_error_no_valid_name'] = 'The specified name does not match the rules!';
-$txt['lp_post_error_no_unique_name'] = 'A plugin with this name already exists!';
-$txt['lp_post_error_no_description'] = 'The description not specified! It is required.';
-$txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
-$txt['lp_addon_add_failed'] = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
+$txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
@@ -356,15 +331,15 @@ $txt['lp_who_viewing_adding_page'] = 'Adding a page for the portal.';
 
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
-$txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Manage blocks';
+$txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Manage own blocks';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
-$txt['permissionhelp_light_portal_manage_blocks'] = 'Access to manage portal blocks.';
+$txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
-$txt['cannot_light_portal_manage_blocks'] = 'Sorry, you are not allowed to manage blocks!';
+$txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
@@ -392,6 +367,11 @@ $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';
 $txt['lp_hidden_set'] = 'hidden, hidden';
 $txt['lp_buddies_set'] = 'buddy, buddies';
+
+// Packages
+$txt['lp_addon_package'] = 'Light Portal addons';
+$txt['install_lp_addon'] = 'Install addon';
+$txt['uninstall_lp_addon'] = 'Uninstall addon';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
