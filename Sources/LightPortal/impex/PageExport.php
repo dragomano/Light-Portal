@@ -215,7 +215,7 @@ class PageExport extends AbstractExport
 	 */
 	protected function getCategories(): array
 	{
-		$categories = (new \Bugo\LightPortal\Category)->getList();
+		$categories = (new \Bugo\LightPortal\Lists\Category)->getList();
 
 		unset($categories[0]);
 
@@ -233,7 +233,7 @@ class PageExport extends AbstractExport
 	 */
 	protected function getTags(): array
 	{
-		$tags = (new \Bugo\LightPortal\Tag)->getList();
+		$tags = (new \Bugo\LightPortal\Lists\Tag)->getList();
 
 		ksort($tags);
 
