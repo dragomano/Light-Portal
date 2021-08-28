@@ -164,7 +164,7 @@ class PageImport extends AbstractImport
 		}
 
 		if (!empty($categories)) {
-			$result = $smcFunc['db_insert']('replace',
+			$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_categories',
 				array(
 					'category_id' => 'int',
@@ -180,12 +180,12 @@ class PageImport extends AbstractImport
 			$smcFunc['lp_num_queries']++;
 		}
 
-		if (!empty($tags) && !empty($result)) {
+		if (!empty($tags)) {
 			$tags  = array_chunk($tags, 100);
 			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_tags',
 					array(
 						'tag_id' => 'int',
@@ -200,7 +200,7 @@ class PageImport extends AbstractImport
 			}
 		}
 
-		if (!empty($items) && !empty($result)) {
+		if (!empty($items)) {
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 

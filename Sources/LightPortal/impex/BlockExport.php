@@ -80,8 +80,7 @@ class BlockExport extends AbstractExport
 			if (!isset($items[$row['block_id']]))
 				$items[$row['block_id']] = array(
 					'block_id'      => $row['block_id'],
-					'icon'          => $row['icon'],
-					'icon_type'     => $row['icon_type'],
+					'icon'          => $row['icon_type'] . 'fa-' . $row['icon'],
 					'type'          => $row['type'],
 					'note'          => $row['note'],
 					'content'       => $row['content'],
