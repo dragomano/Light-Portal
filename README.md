@@ -9,6 +9,7 @@
 * **Tested on:** PHP 8.0.9 / MariaDB 10.5.10 / MySQL 5.7.25 / PostgreSQL 9.6.18
 * **Hooks only:** Yes
 * **Languages:** English, Russian, Ukrainian, Polish, Spanish, French, Turkish
+* **Demo:** [Demo Forum](http://toster12.qlihost.ru/)
 
 ## Description
 This modification will transform your forum into a portal that includes:
