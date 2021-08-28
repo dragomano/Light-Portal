@@ -79,12 +79,12 @@ function template_show_articles_as_flarum_style()
 
 	echo '
 	<div class="row">
-		<div class="col-xs-12">';
+		<div class="flarum_template col-xs-12">';
 
 	show_pagination();
 
 	echo '
-			<div class="title_bar" style="margin-bottom: 1px">
+			<div class="title_bar">
 				<h2 class="titlebg">', $context['page_title'], '</h2>
 			</div>';
 
@@ -106,12 +106,12 @@ function template_show_articles_as_flarum_style()
 			}
 
 			echo '
-				<div class="floatleft" style="margin-left: 20px; width: 70%">
+				<div class="header_area floatleft">
 					<h3>
 						<a href="', $article['msg_link'], '">', $article['title'], '</a>', $article['is_new'] ? '
 						<span class="new_posts">' . $txt['new'] . '</span> ' : '', '
 					</h3>
-					<div class="smalltext" style="opacity: .5">';
+					<div class="smalltext">';
 
 			if (!empty($article['replies']['num'])) {
 				echo '
@@ -132,7 +132,7 @@ function template_show_articles_as_flarum_style()
 
 			if (!empty($article['teaser'])) {
 				echo '
-					<p style="margin-bottom: 5px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.4em">
+					<p>
 						', $article['teaser'], '
 					</p>';
 			}

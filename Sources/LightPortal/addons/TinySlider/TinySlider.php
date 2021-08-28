@@ -529,10 +529,12 @@ class TinySlider extends Plugin
 	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
+		global $user_info;
+
 		if ($type !== 'tiny_slider')
 			return;
 
-		$tiny_slider_html = Helpers::cache('tiny_slider_addon_b' . $block_id)
+		$tiny_slider_html = Helpers::cache('tiny_slider_addon_b' . $block_id . '_' . $user_info['language'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getHtml', $block_id, $parameters);
 

@@ -67,6 +67,7 @@ class FlarumStyle extends Plugin
 		$content = ob_get_clean();
 
 		$context['lp_blocks']['left'][] = [
+			'id'      => uniqid(),
 			'type'    => 'flarum_style',
 			'content' => $content
 		];
