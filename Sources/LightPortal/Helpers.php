@@ -787,7 +787,7 @@ class Helpers
 	/**
 	 * @param $user_id
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public static function getUserAvatar($user_id): array
 	{
