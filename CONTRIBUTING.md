@@ -13,13 +13,13 @@
 
 ## How to submit a pull request
 * If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. "Fix page permissions").
-* If you want to send a new feature or a new translation, use `Add` word in the title of your PR (i.e `Add new frontpage template`, `Add Chinese translation`).
+* If you want to send a new feature or a new translation, use `Add` word in the title of your PR (i.e `Add a new frontpage template`, `Add Chinese translation`).
 In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update Polish`, etc.)
 
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use PHP 7.2+
+* Use PHP 7.3+
 * Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
 
 ```php
@@ -87,8 +87,8 @@ $test = isset($variable) ? $variable : 'default_value';
 ```
 
 ### JavaScript Styleguide
-* Use native JavaScript instead of jQuery.
-* Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts or functions.
+* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) (2.x) instead of jQuery.
+* Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts.
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
 ```js

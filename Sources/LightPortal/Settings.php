@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -27,62 +27,67 @@ class Settings
 	 * @param array $admin_areas
 	 * @return void
 	 */
-	public static function adminAreas(array &$admin_areas)
+	public function adminAreas(array &$admin_areas)
 	{
-		global $sourcedir, $txt, $context;
+		global $txt, $context;
 
-		require_once($sourcedir . '/ManageSettings.php');
+		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
+		loadJavaScriptFile('light_portal/admin.js', array('minimize' => true));
+
 		loadLanguage('ManageSettings');
 
-		// Looking for the "Forum" section... | Ищем раздел "Форум"...
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
-		// ... and add a "Portal" section from the right | ... и добавляем справа раздел "Портал"
 		$admin_areas = array_merge(
 			array_slice($admin_areas, 0, (int) $counter, true),
 			array(
 				'lp_portal' => array(
 					'title' => $txt['lp_portal'],
-					'permission' => array('admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_own_pages'),
+					'permission' => array('admin_forum', 'light_portal_manage_own_blocks', 'light_portal_manage_own_pages'),
 					'areas' => array(
 						'lp_settings' => array(
 							'label' => $txt['settings'],
-							'function' => function () {
-								self::settingArea();
-							},
+							'function' => array($this, 'settingAreas'),
 							'icon' => 'features',
 							'permission' => array('admin_forum'),
 							'subsections' => array(
-								'basic'   => array($txt['mods_cat_features']),
-								'extra'   => array($txt['lp_extra']),
-								'panels'  => array($txt['lp_panels']),
-								'plugins' => array($txt['lp_plugins'])
+								'basic'      => array('<i class="fas fa-cog fa-spin"></i> ' . $txt['mods_cat_features']),
+								'extra'      => array('<i class="fas fa-pager"></i> ' . $txt['lp_extra']),
+								'categories' => array('<i class="fas fa-folder"></i> ' . $txt['lp_categories']),
+								'panels'     => array('<i class="fas fa-columns"></i> ' . $txt['lp_panels']),
+								'misc'       => array('<i class="fas fa-tools"></i> ' . $txt['lp_misc'])
 							)
 						),
 						'lp_blocks' => array(
 							'label' => $txt['lp_blocks'],
-							'function' => function () {
-								self::blockArea();
-							},
+							'function' => array($this, 'blockAreas'),
 							'icon' => 'modifications',
-							'amt' => count($context['lp_active_blocks']),
-							'permission' => array('admin_forum', 'light_portal_manage_blocks'),
+							'amt' => $context['lp_num_active_blocks'],
+							'permission' => array('admin_forum', 'light_portal_manage_own_blocks'),
 							'subsections' => array(
-								'main' => array($txt['lp_blocks_manage']),
-								'add'  => array($txt['lp_blocks_add'])
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
+								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
 							'label' => $txt['lp_pages'],
-							'function' => function () {
-								self::pageArea();
-							},
-							'icon' => 'posts',
+							'function' => array($this, 'pageAreas'),
+							'icon' => 'reports',
 							'amt' => $context['lp_num_active_pages'],
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
-								'main' => array($txt['lp_pages_manage']),
-								'add'  => array($txt['lp_pages_add'])
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
+								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_pages_add'])
+							)
+						),
+						'lp_plugins' => array(
+							'label' => $txt['lp_plugins'],
+							'function' => array($this, 'pluginAreas'),
+							'icon' => 'maintain',
+							'amt' => count($context['lp_enabled_plugins']),
+							'permission' => array('admin_forum'),
+							'subsections' => array(
+								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_plugins_manage'])
 							)
 						)
 					)
@@ -93,15 +98,17 @@ class Settings
 
 		if ($context['user']['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += array(
-				'export' => array($txt['lp_blocks_export']),
-				'import' => array($txt['lp_blocks_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_blocks_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_blocks_import'])
 			);
 
 			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += array(
-				'export' => array($txt['lp_pages_export']),
-				'import' => array($txt['lp_pages_import'])
+				'export' => array('<i class="fas fa-file-export"></i> ' . $txt['lp_pages_export']),
+				'import' => array('<i class="fas fa-file-import"></i> ' . $txt['lp_pages_import'])
 			);
 		}
+
+		Addons::run('addAdminAreas', array(&$admin_areas));
 	}
 
 	/**
@@ -114,11 +121,12 @@ class Settings
 	 * @param array $settings_search
 	 * @return void
 	 */
-	public static function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
+	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
-		$settings_search[] = array(__CLASS__ . '::basic', 'area=lp_settings;sa=basic');
-		$settings_search[] = array(__CLASS__ . '::extra', 'area=lp_settings;sa=extra');
-		$settings_search[] = array(__CLASS__ . '::panels', 'area=lp_settings;sa=panels');
+		$settings_search[] = array(array($this, 'basic'), 'area=lp_settings;sa=basic');
+		$settings_search[] = array(array($this, 'extra'), 'area=lp_settings;sa=extra');
+		$settings_search[] = array(array($this, 'panels'), 'area=lp_settings;sa=panels');
+		$settings_search[] = array(array($this, 'misc'), 'area=lp_settings;sa=misc');
 	}
 
 	/**
@@ -128,24 +136,25 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function settingArea()
+	public function settingAreas()
 	{
-		global $context, $txt, $smcFunc;
+		global $context, $txt, $smcFunc, $scripturl, $modSettings;
 
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'basic'   => 'Settings::basic',
-			'extra'   => 'Settings::extra',
-			'panels'  => 'Settings::panels',
-			'plugins' => 'Settings::plugins'
+			'basic'      => array($this, 'basic'),
+			'extra'      => array($this, 'extra'),
+			'categories' => array($this, 'categories'),
+			'panels'     => array($this, 'panels'),
+			'misc'       => array($this, 'misc')
 		);
 
 		db_extend();
 
 		// Tabs
 		$context[$context['admin_menu_name']]['tab_data'] = array(
-			'title' => LP_NAME,
+			'title' => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'tabs' => array(
 				'basic' => array(
 					'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
@@ -153,20 +162,29 @@ class Settings
 				'extra' => array(
 					'description' => $txt['lp_extra_info']
 				),
+				'categories' => array(
+					'description' => $txt['lp_categories_info']
+				),
 				'panels' => array(
 					'description' => sprintf($txt['lp_panels_info'], LP_NAME, 'https://evgenyrodionov.github.io/flexboxgrid2/')
 				),
-				'plugins' => array(
-					'description' => sprintf(
-						$txt['lp_plugins_info'],
-						'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon',
-						'https://github.com/dragomano/Light-Portal/wiki/Addon-list-for-sponsors'
-					)
+				'misc' => array(
+					'description' => $txt['lp_misc_info']
 				)
 			)
 		);
 
-		self::loadGeneralSettingParameters($subActions, 'basic');
+		$this->loadGeneralSettingParameters($subActions, 'basic');
+
+		if (Helpers::request()->has('getDebugInfo'))
+			$this->generateDumpFile();
+
+		if (!isset($context['settings_title']))
+			return;
+
+		$context['settings_title'] .= '<span class="floatright" x-data>
+			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $txt['lp_debug_info'] . '"><i class="fas fa-info-circle"></i></a>
+		</span>';
 	}
 
 	/**
@@ -177,57 +195,77 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function basic(bool $return_config = false)
+	public function basic(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings, $settings, $boardurl;
+		global $context, $txt, $scripturl, $modSettings, $boardurl, $settings;
 
-		require_once($sourcedir . '/ManageServer.php');
-
-		self::checkNewVersion();
+		$this->checkNewVersion();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
 
-		$context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
-		$context['permissions_excluded']['light_portal_manage_own_pages'] = [-1, 0];
-		$context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_own_blocks'] = [-1, 0];
+		$context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
+		$context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
-		$txt['lp_manage_permissions'] = '<p class="errorbox">' . $txt['lp_manage_permissions'] . '</p>';
+		$context['lp_all_categories']       = Helpers::getAllCategories();
+		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+		$context['lp_frontpage_layout']     = FrontPage::getLayouts();
 
-		// Initial settings | Первоначальные настройки
+		loadTemplate('LightPortal/ManageSettings');
+
+		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
+
+		// Initial settings
 		$add_settings = [];
 		if (!isset($modSettings['lp_frontpage_title']))
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
 		if (!isset($modSettings['lp_frontpage_alias']))
 			$add_settings['lp_frontpage_alias'] = 'home';
+		if (!isset($modSettings['lp_show_num_views_and_comments']))
+			$add_settings['lp_show_num_views_and_comments'] = 1;
 		if (!isset($modSettings['lp_frontpage_article_sorting']))
 			$add_settings['lp_frontpage_article_sorting'] = 1;
-		if (!isset($modSettings['lp_teaser_size']))
-			$add_settings['lp_teaser_size'] = 255;
 		if (!isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
-		if (!isset($modSettings['lp_num_comments_per_page']))
-			$add_settings['lp_num_comments_per_page'] = 12;
-		if (!isset($modSettings['lp_cache_update_interval']))
-			$add_settings['lp_cache_update_interval'] = 3600;
+		if (!isset($modSettings['lp_standalone_url']))
+			$add_settings['lp_standalone_url'] = $boardurl . '/portal.php';
+		if (!isset($modSettings['lp_prohibit_php']))
+			$add_settings['lp_prohibit_php'] = 1;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
 		$config_vars = array(
-			array('select', 'lp_frontpage_mode', $txt['lp_frontpage_mode_set']),
+			array(
+				'select',
+				'lp_frontpage_mode',
+				array_combine(
+					array(0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'),
+					$txt['lp_frontpage_mode_set']
+				)
+			),
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
 			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
+			array('callback', 'frontpage_categories'),
 			array('boards', 'lp_frontpage_boards'),
-			array('check', 'lp_show_images_in_articles'),
+			array('large_text', 'lp_frontpage_pages', 'subtext' => $txt['lp_frontpage_pages_subtext']),
+			array('large_text', 'lp_frontpage_topics', 'subtext' => $txt['lp_frontpage_topics_subtext']),
+			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
-			array('check', 'lp_frontpage_card_alt_layout', 'help' => 'lp_frontpage_card_alt_layout_help'),
+			array('select', 'lp_frontpage_time_format', $txt['lp_frontpage_time_format_set']),
+			array('text', 'lp_frontpage_custom_time_format', 'help' => 'lp_frontpage_custom_time_format_help'),
+			array('check', 'lp_show_teaser'),
+			array('check', 'lp_show_author', 'help' => 'lp_show_author_help'),
+			array('check', 'lp_show_num_views_and_comments'),
 			array('check', 'lp_frontpage_order_by_num_replies'),
 			array('select', 'lp_frontpage_article_sorting', $txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'),
-			array('select', 'lp_frontpage_layout', $txt['lp_frontpage_layout_set']),
-			array('int', 'lp_teaser_size', 'min' => 0, 'help' => 'lp_teaser_size_help'),
+			array('select', 'lp_frontpage_layout', $context['lp_frontpage_layout']),
+			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
+			array('select', 'lp_show_pagination', $txt['lp_show_pagination_set']),
+			array('check', 'lp_use_simple_pagination'),
 			array('int', 'lp_num_items_per_page'),
 			array('title', 'lp_standalone_mode_title'),
-			array('check', 'lp_standalone_mode'),
+			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
 			array(
 				'text',
 				'lp_standalone_url',
@@ -242,76 +280,114 @@ class Settings
 				'help' => 'lp_standalone_mode_disabled_actions_help'
 			),
 			array('title', 'edit_permissions'),
-			array('desc', 'lp_manage_permissions'),
+			array('check', 'lp_prohibit_php', 'invalid' => true),
 			array('permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'),
-			array('permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'),
+			array('permissions', 'light_portal_manage_own_blocks', 'help' => 'permissionhelp_light_portal_manage_own_blocks'),
 			array('permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'),
-			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'),
-			array('title', 'lp_debug_and_caching'),
-			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
-			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds'])
+			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);
 
 		if ($return_config)
 			return $config_vars;
 
 		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
 		$frontpage_mode_toggle_dt = [];
-		foreach ($frontpage_mode_toggle as $item)
+		foreach ($frontpage_mode_toggle as $item) {
 			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+		}
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_boards', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_card_alt_layout', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_teaser_size', 'lp_num_items_per_page');
+		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
 		$frontpage_alias_toggle_dt = [];
-		foreach ($frontpage_alias_toggle as $item)
+		foreach ($frontpage_alias_toggle as $item) {
 			$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+		}
 
-		addInlineJavaScript('
+		$context['settings_post_javascript'] = '
 		function toggleFrontpageMode() {
-			let change_mode = $("#lp_frontpage_mode").val() > 0;
+			let front_mode = $("#lp_frontpage_mode").val();
+			let change_mode = front_mode > 0;
 			let board_selector = $(".board_selector").parent("dd");
+
+			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
+
+			if (front_mode == 0) {
+				$("#lp_standalone_mode").prop("checked", false);
+			}
 
 			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
 			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
 			board_selector.toggle(change_mode);
 
-			let allow_change_title = $("#lp_frontpage_mode").val() > 1;
+			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
 
 			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
 			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
 			board_selector.toggle(allow_change_title);
 
-			let allow_change_alias = $("#lp_frontpage_mode").val() == 1;
+			let allow_change_alias = front_mode == "chosen_page";
 
 			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
 			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
 
-			if ($("#lp_frontpage_mode").val() == 3) {
+			let allow_change_chosen_topics = front_mode == "chosen_topics";
+
+			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
+			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
+
+			let allow_change_chosen_pages = front_mode == "chosen_pages";
+
+			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
+			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
+
+			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
 				let boards = $("#setting_lp_frontpage_boards").closest("dt");
 
 				boards.hide();
 				boards.next("dd").hide();
-			} else {
-				board_selector.toggle(allow_change_title);
+			}
+
+			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
+				let categories = $("#setting_lp_frontpage_categories").closest("dt");
+
+				categories.hide();
+				categories.next("dd").hide();
 			}
 		};
 
 		toggleFrontpageMode();
 
-		$("#lp_frontpage_mode").on("click", function () {
-			toggleFrontpageMode()
-		});', true);
+		$("#lp_frontpage_mode").on("change", function () {
+			toggleFrontpageMode();
+			toggleTimeFormat();
+		});';
+
+		// Time format toggle
+		$context['settings_post_javascript'] .= '
+		function toggleTimeFormat() {
+			let change_mode = $("#lp_frontpage_time_format").val() == 2;
+
+			$("#lp_frontpage_custom_time_format").closest("dd").toggle(change_mode);
+			$("#setting_lp_frontpage_custom_time_format").closest("dt").toggle(change_mode);
+		};
+
+		toggleTimeFormat();
+
+		$("#lp_frontpage_time_format").on("change", function () {
+			toggleTimeFormat()
+		});';
 
 		// Standalone mode toggle
 		$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
 
 		$standalone_mode_toggle_dt = [];
-		foreach ($standalone_mode_toggle as $item)
+		foreach ($standalone_mode_toggle as $item) {
 			$standalone_mode_toggle_dt[] = 'setting_' . $item;
+		}
 
-		addInlineJavaScript('
+		$context['settings_post_javascript'] .= '
 		function toggleStandaloneMode() {
 			let change_mode = $("#lp_standalone_mode").prop("checked");
 
@@ -323,7 +399,7 @@ class Settings
 
 		$("#lp_standalone_mode").on("click", function () {
 			toggleStandaloneMode()
-		});', true);
+		});';
 
 		// Save
 		if (Helpers::request()->has('save')) {
@@ -338,7 +414,17 @@ class Settings
 			if (Helpers::post()->filled('lp_standalone_url'))
 				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
+			$frontpage_categories = [];
+			if (Helpers::post()->filled('lp_frontpage_categories')) {
+				foreach (Helpers::post('lp_frontpage_categories') as $id => $dummy)
+					if (isset($context['lp_all_categories'][$id]))
+						$frontpage_categories[] = $id;
+			}
+
+			Helpers::post()->put('lp_frontpage_categories', !empty($frontpage_categories) ? implode(',', $frontpage_categories) : '');
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_frontpage_categories'];
 			saveDBSettings($save_vars);
 
 			Helpers::cache()->flush();
@@ -357,7 +443,7 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function extra(bool $return_config = false)
+	public function extra(bool $return_config = false)
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
@@ -365,18 +451,35 @@ class Settings
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
 		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
+		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = array_merge($modSettings['bbc_disabled_lp_disabled_bbc_in_comments'], explode(',', $modSettings['disabledBBC']));
+
+		$txt['lp_show_comment_block_set']['none']    = $txt['lp_show_comment_block_set'][0];
+		$txt['lp_show_comment_block_set']['default'] = $txt['lp_show_comment_block_set'][1];
+
+		unset($txt['lp_show_comment_block_set'][0], $txt['lp_show_comment_block_set'][1]);
+
+		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
+
+		// Initial settings
+		$add_settings = [];
+		if (!isset($modSettings['lp_num_comments_per_page']))
+			$add_settings['lp_num_comments_per_page'] = 12;
+		if (!empty($add_settings))
+			updateSettings($add_settings);
 
 		$config_vars = array(
+			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
-			array('check', 'lp_show_tags_as_articles'),
+			array('check', 'lp_show_items_as_articles'),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-			array('bbc', 'lp_disabled_bbc_in_comments'),
+			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
-			array('select', 'lp_page_editor_type_default', $txt['lp_page_types']),
+			array('select', 'lp_page_editor_type_default', $context['lp_page_types']),
+			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
-			array('title', 'lp_open_graph'),
+			array('title', 'lp_schema_org'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
 			array('text', 'lp_page_itemprop_phone', 80)
@@ -389,8 +492,9 @@ class Settings
 		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
 
 		$show_comment_block_toggle_dt = [];
-		foreach ($show_comment_block_toggle as $item)
+		foreach ($show_comment_block_toggle as $item) {
 			$show_comment_block_toggle_dt[] = 'setting_' . $item;
+		}
 
 		addInlineJavaScript('
 		function toggleShowCommentBlock() {
@@ -417,13 +521,17 @@ class Settings
 
 			// Clean up the tags
 			$bbcTags = [];
-			foreach (parse_bbc(false) as $tag)
-				$bbcTags[] = $tag['tag'];
+			$parse_tags = parse_bbc(false);
 
-			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false)
+			foreach ($parse_tags as $tag) {
+				$bbcTags[] = $tag['tag'];
+			}
+
+			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
 				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
-			elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')))
+			} elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))) {
 				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
+			}
 
 			Helpers::post()->put('lp_enabled_bbc_in_comments', implode(',', Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
 			Helpers::post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))));
@@ -441,6 +549,51 @@ class Settings
 	}
 
 	/**
+	 * Output category settings
+	 *
+	 * Выводим настройки рубрик
+	 *
+	 * @return void
+	 */
+	public function categories()
+	{
+		global $context, $txt;
+
+		loadTemplate('LightPortal/ManageSettings');
+
+		$context['page_title'] = $txt['lp_categories'];
+
+		$category = new Lists\Category;
+
+		$context['lp_categories'] = $category->getList();
+
+		unset($context['lp_categories'][0]);
+
+		if (Helpers::request()->has('actions')) {
+			$data = Helpers::request()->json();
+
+			if (!empty($data['update_priority']))
+				$category->updatePriority($data['update_priority']);
+
+			if (!empty($data['new_name']))
+				$category->add($data['new_name'], $data['new_desc'] ?? '');
+
+			if (!empty($data['name']))
+				$category->updateName((int) $data['item'], $data['name']);
+
+			if (!empty($data['desc']))
+				$category->updateDescription((int) $data['item'], $data['desc']);
+
+			if (!empty($data['del_item']))
+				$category->remove([(int) $data['del_item']]);
+
+			exit;
+		}
+
+		$context['sub_template'] = 'category_settings';
+	}
+
+	/**
 	 * Output panel settings
 	 *
 	 * Выводим настройки панелей
@@ -448,13 +601,11 @@ class Settings
 	 * @param bool $return_config
 	 * @return array|void
 	 */
-	public static function panels(bool $return_config = false)
+	public function panels(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
 		loadTemplate('LightPortal/ManageSettings');
-
-		require_once($sourcedir . '/ManageServer.php');
 
 		addInlineCss('
 		dl.settings {
@@ -483,12 +634,8 @@ class Settings
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
-		$context['lp_panels'] = $txt['lp_block_placement_set'];
-
 		$context['lp_left_right_width_values']    = [2, 3, 4];
 		$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
-
-		Subs::runAddons('addPanels');
 
 		$config_vars = array(
 			array('check', 'lp_swap_header_footer'),
@@ -497,6 +644,8 @@ class Settings
 			array('callback', 'panel_layout'),
 			array('callback', 'panel_direction')
 		);
+
+		Addons::run('addPanels', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -527,149 +676,77 @@ class Settings
 	}
 
 	/**
-	 * Output the list and settings of plugins
+	 * Output additional settings
 	 *
-	 * Выводим список и настройки плагинов
+	 * Выводим дополнительные настройки
 	 *
-	 * @return void
+	 * @param bool $return_config
+	 * @return array|void
 	 */
-	public static function plugins()
+	public function misc(bool $return_config = false)
 	{
-		global $sourcedir, $context, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings, $smcFunc;
 
-		loadTemplate('LightPortal/ManagePlugins');
+		$context['page_title'] = $txt['lp_misc'];
+		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
-		require_once($sourcedir . '/ManageServer.php');
+		// Initial settings
+		$add_settings = [];
+		if (!isset($modSettings['lp_cache_update_interval']))
+			$add_settings['lp_cache_update_interval'] = LP_CACHE_TIME;
+		if (!isset($modSettings['lp_portal_action']))
+			$add_settings['lp_portal_action'] = LP_ACTION;
+		if (!isset($modSettings['lp_page_action']))
+			$add_settings['lp_page_action'] = LP_PAGE_ACTION;
+		if (!empty($add_settings))
+			updateSettings($add_settings);
 
-		$context['lp_plugins'] = Subs::getAddons();
-		asort($context['lp_plugins']);
+		$config_vars = array(
+			array('title', 'lp_debug_and_caching'),
+			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
+			array('check', 'lp_show_cache_info', 'disabled' => empty($modSettings['lp_show_debug_info'])),
+			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
+			array('title', 'lp_compatibility_mode'),
+			array('text', 'lp_portal_action', 'preinput' => $scripturl . '?action='),
+			array('text', 'lp_page_action', 'preinput' => $scripturl . '?', 'postinput' => '=somealias'),
+			array('title', 'admin_maintenance'),
+			array('check', 'lp_weekly_cleaning')
+		);
 
-		$context['page_title'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
-		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=plugins;save';
+		Addons::run('addMisc', array(&$config_vars));
 
-		$config_vars = [];
+		if ($return_config)
+			return $config_vars;
 
-		// The mod authors can add their own settings | Авторы модов модут добавлять собственные настройки
-		Subs::runAddons('addSettings', array(&$config_vars), $context['lp_plugins']);
-
-		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			return [
-				'name'       => $item,
-				'snake_name' => $snake_name = Helpers::getSnakeName($item),
-				'desc'       => $txt['lp_block_types_descriptions'][$snake_name] ?? $txt['lp_' . $snake_name . '_description'] ?? '',
-				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => self::getPluginTypes($snake_name),
-				'settings'   => self::getPluginSettings($config_vars, $item)
-			];
-		}, $context['lp_plugins']);
-
-		$context['sub_template'] = 'plugin_settings';
+		$context['sub_template'] = 'show_settings';
 
 		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			$plugin_options = [];
-			foreach ($config_vars as $id => $var) {
-				if (Helpers::post()->has($var[1])) {
-					if ($var[0] == 'check') {
-						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
-					} elseif ($var[0] == 'int') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
-					} elseif ($var[0] == 'multicheck') {
-						$plugin_options[$var[1]] = [];
+			$smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}background_tasks
+				WHERE task_class = {string:task_class}',
+				array(
+					'task_class' => '\Bugo\LightPortal\Task'
+				)
+			);
 
-						foreach (Helpers::post($var[1]) as $key => $value) {
-							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
-						}
-
-						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
-					} elseif ($var[0] == 'url') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
-					} else {
-						$plugin_options[$var[1]] = Helpers::post($var[1]);
-					}
-				}
+			if (Helpers::post()->has('lp_weekly_cleaning')) {
+				$smcFunc['db_insert']('insert',
+					'{db_prefix}background_tasks',
+					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
+					array('$sourcedir/LightPortal/Task.php', '\Bugo\LightPortal\Task', ''),
+					array('id_task')
+				);
 			}
 
-			if (!empty($plugin_options))
-				updateSettings($plugin_options);
+			$save_vars = $config_vars;
+			saveDBSettings($save_vars);
 
-			// Additional actions after settings saving | Дополнительные действия после сохранения настроек
-			Subs::runAddons('onSettingsSaving');
-		}
-
-		// Enable/disable plugins | Включаем/выключаем плагины
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
-
-		if (isset($data['toggle_plugin'])) {
-			$plugin_id = (int) $data['toggle_plugin'];
-
-			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
-				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
-				unset($context['lp_enabled_plugins'][$key]);
-			} else {
-				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
-			}
-
-			updateSettings(array('lp_enabled_plugins' => implode(',', $context['lp_enabled_plugins'])));
+			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
 		prepareDBSettingContext($config_vars);
-	}
-
-	/**
-	 * Get all types of the plugin
-	 *
-	 * Получаем все типы плагина
-	 *
-	 * @param string $snake_name
-	 * @return string
-	 */
-	private static function getPluginTypes($snake_name)
-	{
-		global $txt;
-
-		if (empty($snake_name))
-			return $txt['not_applicable'];
-
-		$data = $txt['lp_' . $snake_name . '_type'] ?? '';
-
-		if (empty($data))
-			return $txt['not_applicable'];
-
-		if (is_array($data)) {
-			$all_types = [];
-			foreach ($data as $type)
-				$all_types[] = $txt['lp_plugins_hooks_types'][$type];
-
-			return implode(' + ', $all_types);
-		}
-
-		return $txt['lp_plugins_hooks_types'][$data];
-	}
-
-	/**
-	 * Undocumented function
-	 *
-	 * @param array $config_vars
-	 * @param string $name
-	 * @return array
-	 */
-	private static function getPluginSettings(array $config_vars, $name = '')
-	{
-		if (empty($config_vars))
-			return [];
-
-		$settings = [];
-		foreach ($config_vars as $var) {
-			$plugin_id   = explode('_addon_', substr($var[1], 3))[0];
-			$plugin_name = str_replace('_', '', ucwords($plugin_id, '_'));
-			if ($plugin_name == $name)
-				$settings[] = $var;
-		}
-
-		return $settings;
 	}
 
 	/**
@@ -679,24 +756,26 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function blockArea()
+	public function blockAreas()
 	{
 		global $user_info;
 
-		isAllowedTo('light_portal_manage_blocks');
+		isAllowedTo('light_portal_manage_own_blocks');
 
 		$subActions = array(
-			'main' => 'ManageBlocks::main',
-			'add'  => 'ManageBlocks::add',
-			'edit' => 'ManageBlocks::edit'
+			'main' => array(new ManageBlocks, 'main'),
+			'add'  => array(new ManageBlocks, 'add'),
+			'edit' => array(new ManageBlocks, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\BlockExport::main';
-			$subActions['import'] = 'Impex\BlockImport::main';
+			$subActions['export'] = array(new Impex\BlockExport, 'main');
+			$subActions['import'] = array(new Impex\BlockImport, 'main');
 		}
 
-		self::loadGeneralSettingParameters($subActions, 'main');
+		Addons::run('addBlockAreas', array(&$subActions));
+
+		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
 	/**
@@ -706,24 +785,88 @@ class Settings
 	 *
 	 * @return void
 	 */
-	public static function pageArea()
+	public function pageAreas()
 	{
 		global $user_info;
 
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => 'ManagePages::main',
-			'add'  => 'ManagePages::add',
-			'edit' => 'ManagePages::edit'
+			'main' => array(new ManagePages, 'main'),
+			'add'  => array(new ManagePages, 'add'),
+			'edit' => array(new ManagePages, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = 'Impex\PageExport::main';
-			$subActions['import'] = 'Impex\PageImport::main';
+			$subActions['export'] = array(new Impex\PageExport, 'main');
+			$subActions['import'] = array(new Impex\PageImport, 'main');
 		}
 
-		self::loadGeneralSettingParameters($subActions, 'main');
+		Addons::run('addPageAreas', array(&$subActions));
+
+		$this->loadGeneralSettingParameters($subActions, 'main');
+	}
+
+	/**
+	 * The list of available fields to control the plugins
+	 *
+	 * Список доступных областей для управления плагинами
+	 *
+	 * @return void
+	 */
+	public function pluginAreas()
+	{
+		isAllowedTo('admin_forum');
+
+		$subActions = array(
+			'main' => array(new ManagePlugins, 'main')
+		);
+
+		Addons::run('addPluginAreas', array(&$subActions));
+
+		$this->loadGeneralSettingParameters($subActions, 'main');
+	}
+
+	/**
+	 * Get the number of the last version
+	 *
+	 * Получаем номер последней версии LP
+	 *
+	 * @return string
+	 */
+	public function getLastVersion(): string
+	{
+		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
+
+		if (empty($data))
+			return LP_VERSION;
+
+		$data = json_decode($data, true);
+
+		if (LP_RELEASE_DATE < $data['published_at'])
+			return str_replace('v', '', $data['tag_name']);
+
+		return LP_VERSION;
+	}
+
+	/**
+	 * Check new version status
+	 *
+	 * Проверяем наличие новой версии
+	 *
+	 * @return void
+	 */
+	private function checkNewVersion()
+	{
+		global $context, $txt;
+
+		// Check once a week | Проверяем раз в неделю
+		if (version_compare(LP_VERSION, $new_version = Helpers::cache('last_version')->setLifeTime(604800)->setFallback(__CLASS__, 'getLastVersion'), '<')) {
+			$context['settings_insert_above'] = '
+			<div class="noticebox">
+				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
+			</div>';
+		}
 	}
 
 	/**
@@ -735,11 +878,11 @@ class Settings
 	 * @param string|null $defaultAction
 	 * @return void
 	 */
-	private static function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
+	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
 	{
-		global $sourcedir, $context;
+		global $context;
 
-		require_once($sourcedir . '/ManageServer.php');
+		Helpers::require('ManageServer');
 
 		$context['sub_template'] = 'show_settings';
 
@@ -749,58 +892,31 @@ class Settings
 
 		$context['sub_action'] = $subAction;
 
-		call_helper(__NAMESPACE__ . '\\' . $subActions[$subAction]);
+		call_helper($subActions[$subAction]);
 	}
 
 	/**
-	 * Check new version status
-	 *
-	 * Проверяем наличие новой версии
-	 *
 	 * @return void
 	 */
-	private static function checkNewVersion()
+	private function generateDumpFile()
 	{
-		global $context, $txt;
+		global $context, $modSettings, $txt;
 
-		// Check once a week | Проверяем раз в неделю
-		if (LP_VERSION < $new_version = Helpers::cache('last_version', 'getLastVersion', __CLASS__, 604800)) {
-			$context['settings_insert_above'] = '
-			<div class="noticebox">
-				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
-			</div>';
+		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $context['lp_enabled_plugins']) . "'" . PHP_EOL;
+		foreach ($modSettings as $key => $value) {
+			if (strpos($key, 'lp_') === 0 && isset($txt[$key]) && !empty($modSettings[$key])) {
+				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
+			}
 		}
-	}
 
-	/**
-	 * Get the number of the last version
-	 *
-	 * Получаем номер последней версии LP
-	 *
-	 * @return string
-	 */
-	public static function getLastVersion()
-	{
-		if (!extension_loaded('curl'))
-			return LP_VERSION;
+		if (ob_get_level())
+			ob_end_clean();
 
-		$ch = curl_init('https://api.github.com/repos/dragomano/light-portal/releases/latest');
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, [
-			"User-Agent: dragomano"
-		]);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		$data = curl_exec($ch);
-		curl_close($ch);
+		header('Content-disposition: attachment; filename=portal_settings.txt');
+		header('Content-type: text/plain');
 
-		if (empty($data))
-			return LP_VERSION;
+		echo $portal_settings;
 
-		$data = json_decode($data);
-
-		if (LP_RELEASE_DATE < $data->published_at)
-			return str_replace('v', '', $data->tag_name);
-
-		return LP_VERSION;
+		exit;
 	}
 }

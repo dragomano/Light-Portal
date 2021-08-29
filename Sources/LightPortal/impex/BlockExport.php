@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Helpers, ManageBlocks};
 
 /**
  * BlockExport.php
@@ -10,16 +10,16 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class BlockExport extends Export
+class BlockExport extends AbstractExport
 {
 	/**
 	 * The page of export blocks
@@ -28,11 +28,11 @@ class BlockExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
 		global $context, $txt, $scripturl;
 
-		loadTemplate('LightPortal/ManageExport');
+		loadTemplate('LightPortal/ManageImpex');
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
 		$context['page_area_title'] = $txt['lp_blocks_export'];
@@ -40,42 +40,38 @@ class BlockExport extends Export
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_export_tab_description']
+			'description' => $txt['lp_blocks_export_description']
 		);
 
-		self::run();
+		$this->run();
 
-		$context['lp_current_blocks'] = \Bugo\LightPortal\ManageBlocks::getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($txt['lp_block_placement_set'])), $context['lp_current_blocks']);
+		$context['lp_current_blocks'] = (new ManageBlocks)->getAll();
+		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($context['lp_block_placements'])), $context['lp_current_blocks']);
 
 		$context['sub_template'] = 'manage_export_blocks';
 	}
 
 	/**
-	 * Creating data in XML format
-	 *
-	 * Формируем данные в XML-формате
-	 *
 	 * @return array
 	 */
-	protected static function getData()
+	protected function getData(): array
 	{
 		global $smcFunc;
 
-		if (Helpers::post()->isEmpty('items'))
+		if (Helpers::post()->isEmpty('blocks') && Helpers::post()->has('export_all') === false)
 			return [];
+
+		$blocks = !empty(Helpers::post('blocks')) && Helpers::post()->has('export_all') === false ? Helpers::post('blocks') : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.icon_type, b.type, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
-				pt.lang, pt.title, pp.name, pp.value
+				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {string:type})
-			WHERE b.block_id IN ({array_int:blocks})',
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (!empty($blocks) ? '
+			WHERE b.block_id IN ({array_int:blocks})' : ''),
 			array(
-				'type'   => 'block',
-				'blocks' => Helpers::post('items')
+				'blocks' => $blocks
 			)
 		);
 
@@ -84,9 +80,10 @@ class BlockExport extends Export
 			if (!isset($items[$row['block_id']]))
 				$items[$row['block_id']] = array(
 					'block_id'      => $row['block_id'],
+					'user_id'       => $row['user_id'],
 					'icon'          => $row['icon'],
-					'icon_type'     => $row['icon_type'],
 					'type'          => $row['type'],
+					'note'          => $row['note'],
 					'content'       => $row['content'],
 					'placement'     => $row['placement'],
 					'priority'      => $row['priority'],
@@ -99,10 +96,10 @@ class BlockExport extends Export
 					'content_style' => $row['content_style']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
@@ -119,9 +116,9 @@ class BlockExport extends Export
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
-	{
-		if (empty($items = self::getData()))
+	protected function getXmlFile(): string
+    {
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');
@@ -133,10 +130,10 @@ class BlockExport extends Export
 		foreach ($items as $item) {
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
-				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+				$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'user_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
 
 				if (in_array($key, ['titles', 'params'])) {
-					foreach ($item[$key] as $k => $v) {
+					foreach ($val as $k => $v) {
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}

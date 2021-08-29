@@ -1,32 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopicRatingBar;
-
 /**
  * TopicRatingBar
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
-class TopicRatingBar
+use Bugo\LightPortal\Addons\Plugin;
+
+class TopicRatingBar extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics
@@ -37,7 +32,7 @@ class TopicRatingBar
 	 * @param array $custom_tables
 	 * @return void
 	 */
-	public static function frontTopics(&$custom_columns, &$custom_tables)
+	public function frontTopics(array &$custom_columns, array &$custom_tables)
 	{
 		if (!class_exists('TopicRatingBar'))
 			return;
@@ -55,9 +50,9 @@ class TopicRatingBar
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontTopicsOutput(&$topics, $row)
+	public function frontTopicsOutput(array &$topics, array $row)
 	{
-		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes'], 0) : 0;
+		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes']) : 0;
 	}
 
 	/**
@@ -65,7 +60,7 @@ class TopicRatingBar
 	 *
 	 * @return void
 	 */
-	public static function frontAssets()
+	public function frontAssets()
 	{
 		global $context;
 
@@ -74,7 +69,7 @@ class TopicRatingBar
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['rating'])) {
-				$context['lp_frontpage_articles'][$id]['num_replies'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
+				$context['lp_frontpage_articles'][$id]['replies']['num'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}
 	}

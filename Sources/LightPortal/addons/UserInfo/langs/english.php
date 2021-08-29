@@ -1,4 +1,7 @@
 <?php
 
-$txt['lp_block_types']['user_info']              = 'User Info';
-$txt['lp_block_types_descriptions']['user_info'] = 'Displays a info about the current user.';
+return [
+	'title' => 'User Info',
+	'description' => 'Displays a info about the current user.',
+	'use_fa_icons' => 'Use Font Awesome icons',
+];

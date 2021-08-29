@@ -5,13 +5,51 @@ if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF'))
 elseif(!defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
-if (version_compare(PHP_VERSION, '7.2', '<'))
-	die('This mod needs PHP 7.2 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '7.3', '<'))
+	die('This mod needs PHP 7.3 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
-global $user_info, $mbname, $modSettings;
+global $user_info, $mbname, $modSettings, $settings;
 
 if ((SMF == 'SSI') && !$user_info['is_admin'])
 	die('Admin privileges required.');
+
+$tables[] = array(
+	'name' => 'lp_categories',
+	'columns' => array(
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'name',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		),
+		array(
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
+			'name'     => 'priority',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 0
+		)
+	),
+	'indexes' => array(
+			array(
+			'type'    => 'primary',
+			'columns' => array('category_id')
+		)
+	)
+);
 
 $tables[] = array(
 	'name' => 'lp_blocks',
@@ -19,27 +57,34 @@ $tables[] = array(
 		array(
 			'name'     => 'block_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
 		array(
-			'name' => 'icon',
-			'type' => 'varchar',
-			'size' => 60,
-			'null' => true
+			'name'     => 'user_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
-			'name' => 'icon_type',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 10,
+			'size' => 255,
 			'null' => true
 		),
 		array(
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 30,
+			'size' => 255,
 			'null' => false
+		),
+		array(
+			'name' => 'note',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
 		),
 		array(
 			'name' => 'content',
@@ -56,22 +101,22 @@ $tables[] = array(
 			'name'     => 'priority',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'    => 'areas',
@@ -106,10 +151,10 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('block_id')
-		 )
+		)
 	)
 );
 
@@ -119,21 +164,21 @@ $tables[] = array(
 		array(
 			'name'     => 'id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		),
 		array(
 			'name'     => 'parent_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'default'  => 0
 		),
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -151,15 +196,15 @@ $tables[] = array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('id', 'page_id')
-		 )
+		)
 	)
 );
 
@@ -169,9 +214,16 @@ $tables[] = array(
 		array(
 			'name'     => 'page_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
+		),
+		array(
+			'name'     => 'category_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'author_id',
@@ -194,13 +246,13 @@ $tables[] = array(
 		),
 		array(
 			'name' => 'content',
-			'type' => 'text',
+			'type' => 'mediumtext',
 			'null' => false
 		),
 		array(
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 6,
+			'size'    => 10,
 			'default' => 'bbc',
 			'null'    => false
 		),
@@ -208,54 +260,54 @@ $tables[] = array(
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'status',
 			'type'     => 'tinyint',
 			'size'     => 1,
-			'default'  => 1,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 1
 		),
 		array(
 			'name'     => 'num_views',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'num_comments',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'created_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		),
 		array(
 			'name'     => 'updated_at',
 			'type'     => 'int',
 			'size'     => 10,
-			'default'  => 0,
-			'unsigned' => true
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('page_id')
-		 ),
-		 array(
-			 'type'    => 'unique',
-			 'columns' => array('alias')
-		 )
+		),
+		array(
+			'type'    => 'unique',
+			'columns' => array('alias')
+		)
 	),
 	'default' => array(
 		'columns' => array(
@@ -282,7 +334,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -305,7 +357,7 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('item_id', 'type', 'name')
 		)
@@ -328,10 +380,11 @@ $tables[] = array(
 	'name' => 'lp_tags',
 	'columns' => array(
 		array(
-			'name'     => 'page_id',
+			'name'     => 'tag_id',
 			'type'     => 'int',
-			'size'     => 11,
-			'unsigned' => true
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
 		),
 		array(
 			'name' => 'value',
@@ -341,10 +394,10 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
-			'columns' => array('page_id', 'value')
-		 )
+			'columns' => array('tag_id')
+		)
 	)
 );
 
@@ -354,7 +407,7 @@ $tables[] = array(
 		array(
 			'name'     => 'item_id',
 			'type'     => 'int',
-			'size'     => 11,
+			'size'     => 10,
 			'unsigned' => true
 		),
 		array(
@@ -378,7 +431,7 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-		 array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('item_id', 'type', 'lang')
 		)
@@ -399,7 +452,7 @@ $tables[] = array(
 
 db_extend('packages');
 
-foreach($tables as $table) {
+foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
 	if (isset($table['default']))
@@ -407,7 +460,10 @@ foreach($tables as $table) {
 }
 
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'Trumbowyg'));
+	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher'));
+
+if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
+	smf_chmod($css_dir, 0755);
 
 if (SMF == 'SSI')
 	echo 'Database changes are complete! Please wait...';

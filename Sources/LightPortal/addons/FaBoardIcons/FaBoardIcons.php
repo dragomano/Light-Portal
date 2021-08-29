@@ -1,32 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\FaBoardIcons;
-
 /**
  * FaBoardIcons
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\FaBoardIcons;
 
-class FaBoardIcons
+use Bugo\LightPortal\Addons\Plugin;
+
+class FaBoardIcons extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'article';
+	public $type = 'article';
 
 	/**
 	 * Select columns with icon and color
@@ -36,7 +31,7 @@ class FaBoardIcons
 	 * @param array $custom_columns
 	 * @return void
 	 */
-	public static function frontBoards(&$custom_columns)
+	public function frontBoards(array &$custom_columns)
 	{
 		global $sourcedir;
 
@@ -55,7 +50,7 @@ class FaBoardIcons
 	 * @param array $row
 	 * @return void
 	 */
-	public static function frontBoardsOutput(&$boards, $row)
+	public function frontBoardsOutput(array &$boards, array $row)
 	{
 		global $sourcedir, $modSettings;
 

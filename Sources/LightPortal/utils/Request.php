@@ -8,74 +8,19 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-class Request extends Arr
+class Request extends AbstractArray
 {
 	public static $obj;
 
 	public function __construct()
 	{
 		static::$obj = &$_REQUEST;
-	}
-
-	/**
-	 * Get the current $_SERVER['REQUEST_URI']
-	 *
-	 * Получаем текущий $_SERVER['REQUEST_URI']
-	 *
-	 * @return string
-	 */
-	public static function path()
-	{
-		return Server('REQUEST_URI', '');
-	}
-
-	/**
-	 * Get the full url without queries
-	 *
-	 * Получаем полный URL без параметров
-	 *
-	 * @return string
-	 */
-	public static function url()
-	{
-		return explode(';', static::fullUrl())[0];
-	}
-
-	/**
-	 * Get the current page url
-	 *
-	 * Получаем URL текущей страницы
-	 *
-	 * @return string
-	 */
-	public static function fullUrl()
-	{
-		return Server('REQUEST_URL', '');
-	}
-
-	/**
-	 * Get the current page url with queries
-	 *
-	 * Получаем URL текущей страницы, вместе с параметрами запроса
-	 *
-	 * @param array $query
-	 * @return string
-	 */
-	public static function fullUrlWithQuery(array $query = [])
-	{
-		$queries = '';
-
-		foreach ($query as $key => $value) {
-			$queries .= ";{$key}={$value}";
-		}
-
-		return static::fullUrl() . $queries;
 	}
 
 	/**
@@ -86,8 +31,8 @@ class Request extends Arr
 	 * @param string|array ...$patterns
 	 * @return bool
 	 */
-	public static function is(...$patterns)
-	{
+	public static function is(...$patterns): bool
+    {
 		if (static::has('action') === false)
 			return false;
 
@@ -102,5 +47,25 @@ class Request extends Arr
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the JSON payload for the request
+	 *
+	 * Получаем данные JSON из запроса
+	 *
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public static function json(string $key = null, $default = null)
+	{
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if (isset($data[$key])) {
+			return $data[$key] ?: $default;
+		}
+
+		return $data;
 	}
 }

@@ -2,11 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\Cache;
-use Bugo\LightPortal\Utils\Post;
-use Bugo\LightPortal\Utils\Request;
-use Bugo\LightPortal\Utils\Server;
-use Bugo\LightPortal\Utils\Session;
+use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
 
 /**
  * Helpers.php
@@ -14,10 +10,10 @@ use Bugo\LightPortal\Utils\Session;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -26,20 +22,16 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the cache data or Cache class object
+	 * Get the Cache class object
 	 *
-	 * Получаем данные из кэша или объект класса Cache
+	 * Получаем объект класса Cache
 	 *
 	 * @param string|null $key
-	 * @param string|null $funcName
-	 * @param string $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
 	 * @return mixed
 	 */
-	public static function cache(string $key = null, string $funcName = null, string $class = 'self', int $time = 3600, ...$vars)
+	public static function cache($key = null)
 	{
-		return $key ? (new Cache)($key, $funcName, $class, $time, ...$vars) : new Cache;
+		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
 	/**
@@ -48,7 +40,7 @@ class Helpers
 	 * Получаем объект $_POST
 	 *
 	 * @param string|null $key
-	 * @param mixed|null $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function post($key = null, $default = null)
@@ -99,10 +91,20 @@ class Helpers
 	}
 
 	/**
-	 * Remove BBCode from transmitted data
-	 *
-	 * Убираем ББ-код из переданных данных
-	 *
+	 * @param string $filename
+	 * @return void
+	 */
+	public static function require(string $filename)
+	{
+		global $sourcedir;
+
+		if (empty($filename))
+			return;
+
+		require_once $sourcedir . DIRECTORY_SEPARATOR . $filename . '.php';
+	}
+
+	/**
 	 * @param array|string $data
 	 * @return void
 	 */
@@ -112,63 +114,40 @@ class Helpers
 	}
 
 	/**
-	 * Get the block icon
-	 *
-	 * Получаем иконку блока
-	 *
-	 * @param string|null $icon
-	 * @param string|null $type
+	 * @param null|string $icon
 	 * @return string
 	 */
-	public static function getIcon($icon = null, $type = null)
+	public static function getIcon(?string $icon = ''): string
 	{
 		global $context;
 
-		$icon = $icon ?? ($context['lp_block']['icon'] ?? '');
-		$type = $type ?? ($context['lp_block']['icon_type'] ?? 'fas');
+		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
 
-		if (!empty($icon))
-			return '<i class="' . $type . ' fa-' . $icon . '"></i> ';
+		if (empty($icon))
+			return '';
 
-		return '';
+		$template = '<i class="' . $icon . '"></i> ';
+
+		Addons::run('prepareIconTemplate', array(&$template, $icon));
+
+		return $template;
 	}
 
 	/**
-	 * Checking whether the current theme contains a set of FontAwesome icons
-	 *
-	 * Проверяем, содержит ли текущая тема набор иконок FontAwesome
-	 *
-	 * @return bool
-	 */
-	public static function doesThisThemeUseFontAwesome()
-	{
-		global $settings;
-
-		$supported_themes = [
-			'Badem',
-			'Endless',
-			'Lunarfall',
-			'Wide'
-		];
-
-		// Add ability to manually change the list of themes that support FontAwesome | Возможность вручную изменить список тем, поддерживающих FontAwesome
-		Subs::runAddons('fontAwesomeThemes', array(&$supported_themes));
-
-		return in_array(explode('_', $settings['name'])[0], $supported_themes);
-	}
-
-	/**	 * Get a title for preview block
-	 *
-	 * Получаем заголовок блока превью
-	 *
-	 * @param string|null $prefix
+	 * @param string $prefix
 	 * @return string
 	 */
-	public static function getPreviewTitle(string $prefix = null)
+	public static function getPreviewTitle(string $prefix = ''): string
 	{
 		global $context, $txt;
 
-		return self::getFloatSpan((!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'], $context['right_to_left'] ? 'right' : 'left') . self::getFloatSpan($txt['preview'], $context['right_to_left'] ? 'left' : 'right') . '<br>';
+		return self::getFloatSpan(
+			(!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'],
+			$context['right_to_left'] ? 'right' : 'left'
+		) . self::getFloatSpan(
+			$txt['preview'],
+			$context['right_to_left'] ? 'left' : 'right'
+		) . '<br>';
 	}
 
 	/**
@@ -180,31 +159,35 @@ class Helpers
 	 * @param string $direction
 	 * @return string
 	 */
-	private static function getFloatSpan(string $text, string $direction = 'left')
+	private static function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}
 
 	/**
-	 * Get the word in the correct declension, depending on the number $num and the array|string $str with declension forms
+	 * Get the word with the correct ending, depending on the number $num and the array|string $str with possible forms
 	 *
-	 * Получаем слово в правильном склонении, в зависимости от числа $num и массива|строки $str с формами склонения
+	 * Получаем слово с правильным окончанием, в зависимости от числа $num и массива|строки $str с возможными формами
 	 *
+	 * @see https://github.com/dragomano/Light-Portal/wiki/To-translators
 	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
 	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
 	 *
 	 * @param int $num
-	 * @param array|string $str массив или строка с формами склонения (если в языке только одна форма склонения, см. rule #0)
+	 * @param array|string $str массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
 	 * @return string
 	 */
-	public static function getCorrectDeclension(int $num, $str)
+	public static function getText(int $num, $str): string
 	{
 		global $txt;
+
+		$str = is_array($str) ? $str : explode(',', $str);
+		$str = array_map('trim', $str);
 
 		// Plural rule #0 (Chinese, Japanese, Persian, Turkish, Thai, Indonesian, Malay)
 		$rule_zero = array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms');
 		if (in_array($txt['lang_dictionary'], $rule_zero))
-			return $num . ' ' . (is_string($str) ? $str : $str[0]);
+			return $num . ' ' . $str[0];
 
 		// Plural rule #2 (French, Portuguese_brazilian)
 		$rule_two = array('fr', 'pt');
@@ -212,6 +195,8 @@ class Helpers
 			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
 
 		// Just in case
+		if (!isset($str[1]))
+			$str[1] = $str[0];
 		if (!isset($str[2]))
 			$str[2] = $str[1];
 
@@ -270,13 +255,13 @@ class Helpers
 	 * @param bool $use_user_offset
 	 * @return string
 	 */
-	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false)
+	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false): string
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
 		$current_time = time();
 
-		$tm = date('H:i', $timestamp);
+		$tm = date('H:i', $timestamp); // Use 'g:i a' for am/pm
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);
@@ -302,7 +287,7 @@ class Helpers
 			// like "In n days"
 			if ($days > 1) {
 				if ($days < 7)
-					return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($days, $txt['lp_days_set']));
+					return sprintf($txt['lp_time_label_in'], self::getText($days, $txt['lp_days_set']));
 
 				// Future date in current month
 				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
@@ -322,19 +307,19 @@ class Helpers
 
 			// like "In n hours"
 			if ($hours > 1)
-				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension($hours, $txt['lp_hours_set']));
+				return sprintf($txt['lp_time_label_in'], self::getText($hours, $txt['lp_hours_set']));
 
 			$minutes = ($timestamp - $current_time) / 60;
 			// like "In a minute"
 			if ($minutes == 1)
-				return sprintf($txt['lp_time_label_in'], $txt['lp_minutes_set'][0]);
+				return sprintf($txt['lp_time_label_in'], explode(',', $txt['lp_minutes_set'])[0]);
 
 			// like "In n minutes"
 			if ($minutes > 1)
-				return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(ceil($minutes), $txt['lp_minutes_set']));
+				return sprintf($txt['lp_time_label_in'], self::getText(ceil($minutes), $txt['lp_minutes_set']));
 
 			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getCorrectDeclension(abs($time_difference), $txt['lp_seconds_set']));
+			return sprintf($txt['lp_time_label_in'], self::getText(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
 		// Less than an hour
@@ -342,13 +327,13 @@ class Helpers
 
 		// like "n seconds ago"
 		if ($time_difference < 60)
-			return self::getCorrectDeclension($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+			return self::getText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
-			return $smcFunc['ucfirst']($txt['lp_minutes_set'][0]) . $txt['lp_time_label_ago'];
+			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
-			return self::getCorrectDeclension((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+			return self::getText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $current_time))
 			return $txt['today'] . $tm;
@@ -362,7 +347,7 @@ class Helpers
 		elseif ($y == date('Y', $current_time))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 
-		// like "20 February, 2019" (last year)
+		// like "20 February 2019" (last year)
 		return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 	}
 
@@ -376,30 +361,42 @@ class Helpers
 	 * @param string $postfix
 	 * @return string
 	 */
-	public static function getDateFormat(int $day, string $month, string $postfix)
+	public static function getDateFormat(int $day, string $month, string $postfix): string
 	{
 		global $txt;
 
-		if ($txt['lang_locale'] == 'en_US')
-			return $month . ' ' . $day . ', ' . $postfix;
+		$comma = strpos($postfix, ":") === false ? ' ' : ', ';
 
-		return $day . ' ' . $month . (strpos($postfix, ":") === false ? ' ' : ', ') . $postfix;
+		if ($txt['lang_locale'] == 'en_US')
+			return $month . ' ' . $day . $comma . $postfix;
+
+		return $day . ' ' . $month . $comma . $postfix;
 	}
 
 	/**
-	 * Form a list of addons that not installed
-	 *
-	 * Формируем список неустановленных плагинов
-	 *
-	 * @param string $type
+	 * @param string $content
 	 * @return void
 	 */
-	public static function findMissingBlockTypes(string $type)
+	public static function createBbcEditor(string $content = '')
 	{
-		global $txt, $context;
+		global $context;
 
-		if (empty($txt['lp_block_types'][$type]))
-			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
+		$editorOptions = array(
+			'id'           => 'content',
+			'value'        => $content,
+			'height'       => '1px',
+			'width'        => '100%',
+			'preview_type' => 2,
+			'required'     => true
+		);
+
+		Helpers::require('Subs-Editor');
+		create_control_richedit($editorOptions);
+
+		$context['post_box_name'] = $editorOptions['id'];
+
+		addJavaScriptVar('oEditorID', $context['post_box_name'], true);
+		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $context['post_box_name'], true);
 	}
 
 	/**
@@ -410,7 +407,7 @@ class Helpers
 	 * @param int $permissions
 	 * @return bool
 	 */
-	public static function canViewItem(int $permissions)
+	public static function canViewItem(int $permissions): bool
 	{
 		global $user_info;
 
@@ -436,7 +433,7 @@ class Helpers
 	 *
 	 * @return array
 	 */
-	public static function getPermissions()
+	public static function getPermissions(): array
 	{
 		global $user_info;
 
@@ -458,7 +455,7 @@ class Helpers
 	 * @param string $alias
 	 * @return bool
 	 */
-	public static function isFrontpage(string $alias)
+	public static function isFrontpage(string $alias): bool
 	{
 		global $modSettings;
 
@@ -466,7 +463,7 @@ class Helpers
 			return false;
 
 		return !empty($modSettings['lp_frontpage_mode'])
-			&& $modSettings['lp_frontpage_mode'] == 1
+			&& $modSettings['lp_frontpage_mode'] == 'chosen_page'
 			&& !empty($modSettings['lp_frontpage_alias'])
 			&& $modSettings['lp_frontpage_alias'] == $alias;
 	}
@@ -479,92 +476,50 @@ class Helpers
 	 * @param array $object
 	 * @return string
 	 */
-	public static function getTitle(array $object)
+	public static function getTitle(array $object): string
 	{
 		global $user_info, $language;
 
 		if (empty($object) || !isset($object['title']))
 			return '';
 
-		return $object['title'][$user_info['language']]
-			?? $object['title'][$language]
-			?? $object['title']['english']
-			?? '';
+		if (!empty($object['title'][$user_info['language']]))
+			return $object['title'][$user_info['language']];
+
+		if (!empty($object['title'][$language]))
+			return $object['title'][$language];
+
+		if (!empty($object['title']['english']))
+			return $object['title']['english'];
+
+		return '';
 	}
 
 	/**
-	 * Getting a string converted to snake_case
-	 *
-	 * Получаем строку, преобразованную в snake_case
-	 *
-	 * @param string $str
-	 * @param string $glue
+	 * @param string $value
 	 * @return string
 	 */
-	public static function getSnakeName(string $str, string $glue = '_')
+	public static function getSnakeName(string $value): string
 	{
-		$counter  = 0;
-		$uc_chars = '';
-		$new_str  = [];
-		$str_len  = strlen($str);
-
-		for ($x = 0; $x < $str_len; ++$x) {
-			$ascii_val = ord($str[$x]);
-
-			if ($ascii_val >= 65 && $ascii_val <= 90)
-				$uc_chars .= $str[$x];
-		}
-
-		$tok = strtok($str, $uc_chars);
-
-		while ($tok !== false) {
-			$new_char  = chr(ord($uc_chars[$counter]) + 32);
-			$new_str[] = $new_char . $tok;
-			$tok       = strtok($uc_chars);
-
-			++$counter;
-		}
-
-		return implode($glue, $new_str);
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	/**
-	 * Get the article teaser
-	 *
-	 * Получаем тизер статьи
-	 *
-	 * @param string $text
-	 * @return string
-	 */
-	public static function getTeaser($text)
-	{
-		global $modSettings;
-
-		return !empty($modSettings['lp_teaser_size']) ? self::getShortenText(trim($text), $modSettings['lp_teaser_size']) : trim($text);
-	}
-
-	/**
-	 * Get the shorten text cut to the given length
-	 *
-	 * Получаем обрезанный до заданной длины текст
-	 *
 	 * @param string $text
 	 * @param int $length
 	 * @return string
 	 */
-	public static function getShortenText($text, $length = MAX_MSG_LENGTH)
+	public static function getTeaser(string $text, int $length = 150): string
 	{
-		return shorten_subject($text, $length);
+		$text = strip_tags($text);
+
+		return shorten_subject($text, $length) ?: '...';
 	}
 
 	/**
-	 * Get an array with names of installed themes
-	 *
-	 * Получаем массив с названиями установленных тем оформления
-	 *
 	 * @return array
 	 */
-	public static function getForumThemes()
+	public static function getForumThemes(): array
 	{
 		global $smcFunc;
 
@@ -588,6 +543,27 @@ class Helpers
 	}
 
 	/**
+	 * @return void
+	 */
+	public static function prepareForumLanguages()
+	{
+		global $modSettings, $context, $language;
+
+		getLanguages();
+
+		if (empty($modSettings['userLanguage'])) {
+			$default_lang = $context['languages'][$language];
+			$context['languages'] = [];
+			$context['languages'][$language] = $default_lang;
+		}
+
+		// Move default lang to the top
+		$default_lang = $context['languages'][$language];
+		unset($context['languages'][$language]);
+		array_unshift($context['languages'], $default_lang);
+	}
+
+	/**
 	 * Prepare content to display
 	 *
 	 * Готовим контент к отображению в браузере
@@ -606,7 +582,11 @@ class Helpers
 			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
 			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
-		Subs::runAddons('prepareContent', array(&$content, $type, $block_id, $cache_time, $parameters));
+		ob_start();
+
+		Addons::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
+
+		$content = ob_get_clean();
 	}
 
 	/**
@@ -620,8 +600,6 @@ class Helpers
 	 */
 	public static function parseContent(string &$content, string $type = 'bbc')
 	{
-		global $context;
-
 		switch ($type) {
 			case 'bbc':
 				$content = parse_bbc($content);
@@ -644,7 +622,8 @@ class Helpers
 				ob_start();
 
 				try {
-					$content = html_entity_decode($content, ENT_COMPAT, $context['character_set'] ?? 'UTF-8');
+					$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
+
 					eval($content);
 				} catch (\ParseError $p) {
 					echo $p->getMessage();
@@ -655,7 +634,7 @@ class Helpers
 				break;
 
 			default:
-				Subs::runAddons('parseContent', array(&$content, $type));
+				Addons::run('parseContent', array(&$content, $type));
 		}
 	}
 
@@ -683,6 +662,10 @@ class Helpers
 				$filter = FILTER_VALIDATE_INT;
 				break;
 
+			case 'float':
+				$filter = FILTER_VALIDATE_FLOAT;
+				break;
+
 			case 'bool':
 				$filter = FILTER_VALIDATE_BOOLEAN;
 				break;
@@ -699,16 +682,122 @@ class Helpers
 	}
 
 	/**
-	 * Check whether need to display dates in lowercase for the current language
+	 * Get a number in friendly format ("1K" instead "1000", etc)
 	 *
-	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 * Получаем число в приятном глазу формате (для чисел более 10к)
 	 *
-	 * @return bool
+	 * @param int $value
+	 * @return int|float
 	 */
-	public static function isLowerCaseForDates()
+	public static function getFriendlyNumber(int $value = 0)
 	{
-		global $txt;
+		if ($value < 10000)
+			return $value;
 
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
+		$k   = pow(10, 3);
+		$mil = pow(10, 6);
+		$bil = pow(10, 9);
+
+		if ($value >= $bil)
+			return number_format($value / $bil, 1) . 'B';
+		else if ($value >= $mil)
+			return number_format($value / $mil, 1) . 'M';
+		else if ($value >= $k)
+			return number_format($value / $k, 1) . 'K';
+
+		return $value;
+	}
+
+	/**
+	 * Get array of titles for page/block object type
+	 *
+	 * Получаем массив всех заголовков для объекта типа page/block
+	 *
+	 * @param string $type
+	 * @return array
+	 */
+	public static function getAllTitles(string $type = 'page'): array
+	{
+		global $smcFunc;
+
+		if (($titles = self::cache()->get('all_titles')) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT item_id, lang, title
+				FROM {db_prefix}lp_titles
+				WHERE type = {string:type}
+				ORDER BY lang, title',
+				array(
+					'type' => $type
+				)
+			);
+
+			$titles = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				if (!empty($row['lang']))
+					$titles[$row['item_id']][$row['lang']] = $row['title'];
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			self::cache()->put('all_titles', $titles);
+		}
+
+		return $titles;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getAllCategories()
+	{
+		return self::cache('all_categories')->setFallback(Lists\Category::class, 'getList');
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getAllTags()
+	{
+		return self::cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getFaIcons(): array
+    {
+		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
+			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
+			$json = json_decode($content);
+			$icons = [];
+
+			foreach ($json as $icon => $value) {
+				foreach ($value->styles as $style) {
+					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
+				}
+			}
+
+			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 4);
+		}
+
+		return $icons;
+	}
+
+	/**
+	 * @param $user_id
+	 * @return array
+	 * @throws Exception
+	 */
+	public static function getUserAvatar($user_id): array
+	{
+		global $memberContext;
+
+		if (!isset($memberContext[$user_id])) {
+			loadMemberData($user_id);
+			loadMemberContext($user_id, true);
+		}
+
+		return $memberContext[$user_id]['avatar'];
 	}
 }

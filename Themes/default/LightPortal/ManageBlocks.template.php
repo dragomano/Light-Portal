@@ -9,24 +9,6 @@
  */
 function template_manage_blocks()
 {
-	global $settings;
-
-	show_block_table();
-
-	echo '
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/manage_blocks.js"></script>';
-}
-
-/**
- * Displaying a table with blocks
- *
- * Отображение таблицы с блоками
- *
- * @return void
- */
-function show_block_table()
-{
 	global $context, $txt, $scripturl, $modSettings;
 
 	if (empty($context['lp_current_blocks'])) {
@@ -37,37 +19,32 @@ function show_block_table()
 	<div class="information">', $txt['lp_no_items'], '</div>';
 	} else {
 		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
-			$bloсk_group_type = 'default';
-			if (!in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']))
-				$bloсk_group_type = 'additional';
+			$block_group_type = 'default';
+			if (!in_array($placement, array_keys($context['lp_block_placements'])))
+				$block_group_type = 'additional';
 
 			echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
-				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '">
-					<i class="fas fa-plus" title="' . $txt['lp_blocks_add'] . '"></i>
+				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
+					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '"></i>
 				</a>
 			</span>
-			', $txt['lp_block_placement_set'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
+			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
-	<table class="lp_', $bloсk_group_type, '_blocks table_grid centertext">';
+	<table class="lp_', $block_group_type, '_blocks table_grid centertext">';
 
 			if (is_array($blocks)) {
 				echo '
 		<thead>
-			<tr class="title_bar">';
-
-				if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
-					echo '
+			<tr class="title_bar">
 				<th scope="col" class="icon">
 					', $txt['custom_profile_icon'], '
-				</th>';
-
-				echo '
+				</th>
 				<th scope="col" class="title">
-					', $txt['lp_title'], '
+					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 				</th>
 				<th scope="col" class="type">
 					', $txt['lp_block_type'], '
@@ -77,6 +54,9 @@ function show_block_table()
 				</th>
 				<th scope="col" class="priority">
 					', $txt['lp_block_priority'], '
+				</th>
+				<th scope="col" class="status">
+					', $txt['status'], '
 				</th>
 				<th scope="col" class="actions">
 					', $txt['lp_actions'], '
@@ -99,6 +79,34 @@ function show_block_table()
 		</tbody>
 	</table>';
 		}
+
+		echo '
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const block = new Block(),
+			defaultBlocks = document.querySelectorAll(".lp_default_blocks tbody"),
+			additionalBlocks = document.querySelectorAll(".lp_additional_blocks tbody");
+
+		defaultBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "default_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+
+		additionalBlocks.forEach(function (el) {
+			Sortable.create(el, {
+				group: "additional_blocks",
+				animation: 500,
+				handle: ".handle",
+				draggable: "tr.windowbg",
+				onSort: e => block.sort(e)
+			});
+		});
+	</script>';
 	}
 }
 
@@ -111,57 +119,70 @@ function show_block_table()
  * @param array $data
  * @return void
  */
-function show_block_entry($id, $data)
+function show_block_entry(int $id, array $data)
 {
-	global $modSettings, $context, $language, $txt, $settings, $scripturl;
+	global $modSettings, $context, $language, $txt, $scripturl;
 
 	if (empty($id) || empty($data))
 		return;
 
 	echo '
-	<tr id="lp_block_', $id, '" class="windowbg">';
-
-	if (!empty($modSettings['lp_use_block_icons']) && $modSettings['lp_use_block_icons'] != 'none')
-		echo '
+	<tr id="lp_block_', $id, '" class="windowbg">
 		<td class="icon">
 			', $data['icon'], '
-		</td>';
+		</td>
+		<td class="title">
+			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? '');
+
+	if (empty($title))
+		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
 
 	echo '
-		<td class="title">
-			', $data['title'][$context['user']['language']] ?? $data['title'][$language] ?? $data['title']['english'], '
 		</td>
 		<td class="type">
-			', $txt['lp_block_types'][$data['type']] ?? $context['lp_missing_block_types'][$data['type']], '
+			', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
 		<td class="areas">
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' <span class="handle ', ($context['lp_fontawesome_enabled'] ? 'fas fa-sort' : 'main_icons select_here'), '" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td class="actions">';
+		<td
+			class="status"
+			data-id="', $id, '"
+			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
+			x-init="$watch(\'status\', value => block.toggleStatus($el))"
+		>
+			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
+		</td>
+		<td
+			class="actions"
+			data-id="', $id, '"
+			x-data="{showContextMenu: false}"
+		>
+			<div class="context_menu" @click.away="showContextMenu = false">
+				<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
+				<div class="roundframe" x-show="showContextMenu">
+					<ul>
+						<li>
+							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
+						</li>';
 
-		if (empty($data['status']))
-			echo '
-			<span class="toggle_status off" data-id="', $id, '" title="', $txt['lp_action_on'], '"></span>';
-		else
-			echo '
-			<span class="toggle_status on" data-id="', $id, '" title="', $txt['lp_action_off'], '"></span>';
-
-		if ($context['lp_fontawesome_enabled']) {
-			echo '
-			<span class="fas fa-clone reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="fas fa-tools" title="', $txt['edit'], '"></span></a>
-			<span class="fas fa-trash del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
-		} else {
-			echo '
-			<span class="main_icons reports" data-id="', $id, '" title="', $txt['lp_action_clone'], '"></span>
-			<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '"><span class="main_icons settings" title="', $txt['edit'], '"></span></a>
-			<span class="main_icons unread_button del_block" data-id="', $id, '" title="', $txt['remove'], '"></span>';
-		}
-
+	if (isset($txt['lp_' . $data['type']]['title'])) {
 		echo '
+						<li>
+							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
+						</li>';
+	}
+
+	echo '
+						<li>
+							<a @click.prevent="showContextMenu = false; block.remove($el)" class="button error">', $txt['remove'], '</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</td>
 	</tr>';
 }
@@ -175,7 +196,7 @@ function show_block_entry($id, $data)
  */
 function template_block_add()
 {
-	global $txt, $context, $settings;
+	global $txt, $context;
 
 	echo '
 	<div class="cat_bar">
@@ -186,15 +207,14 @@ function template_block_add()
 		<form name="block_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
 			<div class="row">';
 
-	asort($txt['lp_block_types']);
-	foreach ($txt['lp_block_types'] as $type => $title) {
+	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
-				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-					<div class="item roundframe" data-type="', $type, '">
-						<i class="', $txt['lp_' . $type . '_icon'], '"></i>
-						<strong>', $title, '</strong>
+				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
+					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el.children[0])">
+						<i class="', $block['icon'], '"></i>
+						<strong>', $block['title'], '</strong>
 						<hr>
-						<p>', $txt['lp_block_types_descriptions'][$type], '</p>
+						<p>', $block['desc'], '</p>
 					</div>
 				</div>';
 	}
@@ -204,8 +224,11 @@ function template_block_add()
 			<input type="hidden" name="add_block">
 			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
 		</form>
-		<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>
-	</div>';
+	</div>
+
+	<script>
+		const block = new Block();
+	</script>';
 }
 
 /**
@@ -217,7 +240,7 @@ function template_block_add()
  */
 function template_block_post()
 {
-	global $context, $txt, $settings;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		if (!empty($context['lp_block']['title_style']))
@@ -231,15 +254,15 @@ function template_block_post()
 
 		echo '
 	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class'] ?: '_'], $context['preview_content'], $style), '
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style), '
 	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_block_types'][$context['lp_block']['type']], '</h3>
+		<h3 class="catbg">', $txt['lp_' . $context['lp_block']['type']]['title'], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_block_types_descriptions'][$context['lp_block']['type']], '
+		', $txt['lp_' . $context['lp_block']['type']]['description'], '
 	</div>';
 	}
 
@@ -258,9 +281,11 @@ function template_block_post()
 	</div>';
 	}
 
+	$fields = $context['posting_fields'];
+
 	echo '
-	<form id="postblock" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
-		<div class="roundframe">
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
@@ -276,27 +301,42 @@ function template_block_post()
 	}
 
 	echo '
-				<section id="content-tab1" class="bg even">
-					', template_post_tab();
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+                    </div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab('access_placement'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'access_placement');
+
+	echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab('appearance'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'appearance');
+
+	echo '
 				</section>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
-				<section id="content-tab4" class="bg even">
-					', template_post_tab('tuning'), '
+				<section id="content-tab4" class="bg even">';
+
+		template_post_tab($fields, 'tuning');
+
+		echo '
 				</section>';
 	}
 
@@ -315,12 +355,142 @@ function template_block_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save">', $txt['save'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($el)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_block.js"></script>';
+
+	<script>
+		const block = new Block();
+
+		const placementSelect = document.getElementById("placement");
+
+		if (placementSelect.style.display !== "none") {
+			new SlimSelect({
+				select: placementSelect,
+				showSearch: false,
+				hideSelectedOption: true,
+				closeOnSelect: true,
+				showContent: "down"
+			});
+		}
+
+		new SlimSelect({
+			select: "#permissions",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
+		let iconSelect = new SlimSelect({
+			select: "#icon",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
+
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search,
+						add_block: "', $context['lp_block']['type'], '"
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
+
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_block_select_icon'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "cheese",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});';
+
+	if (!empty($context['lp_block']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_block']['icon'], '"></i>&nbsp;', $context['lp_block']['icon'], '`, value: "', $context['lp_block']['icon'], '", text: "', $context['lp_block']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
+	}
+
+	if (!empty($context['lp_all_title_classes'])) {
+		echo '
+		new SlimSelect({
+			select: "#title_class",
+			data: [';
+
+		foreach ($context['lp_all_title_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['title_class'] ? 'true' : 'false') . '
+				},';
+		}
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	if (empty($context['lp_block']['options']['no_content_class']) && !empty($context['lp_all_content_classes'])) {
+		echo '
+		new SlimSelect({
+			select: "#content_class",
+			data: [';
+
+		foreach ($context['lp_all_content_classes'] as $key => $template) {
+			echo '
+				{
+					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`,
+					text: "' . $key . '",
+					selected: ' . ($key == $context['lp_block']['content_class'] ? 'true' : 'false') . '
+				},';
+		}
+
+		echo '
+			],
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});';
+	}
+
+	echo '
+	</script>';
 }
 
 /**

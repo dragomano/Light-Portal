@@ -1,6 +1,163 @@
 <?php
 
 /**
+ * Callback template for selecting categories-sources of articles
+ *
+ * Callback-шаблон для выбора рубрик-источников статей
+ *
+ * @return void
+ */
+function template_callback_frontpage_categories()
+{
+	global $txt, $context;
+
+	echo '
+	<dt>
+		<a id="setting_lp_frontpage_categories"></a>
+		<span><label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label></span>
+	</dt>
+	<dd>
+		<a href="#" class="board_selector">[ ', $txt['lp_select_categories_from_list'], ' ]</a>
+		<fieldset>
+			<legend class="board_selector">
+				<a href="#">', $txt['lp_select_categories_from_list'], '</a>
+			</legend>
+			<ul>';
+
+	foreach ($context['lp_all_categories'] as $id => $cat) {
+		echo '
+				<li>
+					<label>
+						<input type="checkbox" name="lp_frontpage_categories[', $id, ']" value="1"', in_array($id, $context['lp_frontpage_categories']) ? ' checked' : '', '> ', $cat['name'], '
+					</label>
+				</li>';
+	}
+
+	echo '
+				<li>
+					<input type="checkbox" onclick="invertAll(this, this.form, \'lp_frontpage_categories[\');">
+					<span>', $txt['check_all'], '</span>
+				</li>
+			</ul>
+		</fieldset>
+	</dd>';
+}
+
+/**
+ * Template for the category management page
+ *
+ * Шаблон страницы управления рубриками
+ *
+ * @return void
+ */
+function template_category_settings()
+{
+	global $txt, $context;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_categories_manage'], '</h3>
+	</div>
+	<div class="windowbg noup">
+		<dl class="lp_categories settings" x-data>
+			<dt>
+				<form accept-charset="', $context['character_set'], '">
+					<table class="table_grid">
+						<tbody id="lp_categories" x-ref="category_list">';
+
+	foreach ($context['lp_categories'] as $id => $cat)
+		show_single_category($id, $cat);
+
+	echo '
+						</tbody>
+					</table>
+				</form>
+			</dt>
+			<dd>
+				<div class="roundframe">
+					<div class="noticebox">
+						<form
+							id="add_category_form"
+							name="add_category_form"
+							accept-charset="', $context['character_set'], '"
+							@submit.prevent="category.add($refs)"
+						>
+							<input
+								name="new_category_name"
+								type="text"
+								placeholder="', $txt['title'], '"
+								maxlength="255"
+								form="add_category_form"
+								required
+								x-ref="cat_name"
+							>
+							<textarea
+								placeholder="', $txt['lp_categories_desc'], '"
+								maxlength="255"
+								x-ref="cat_desc"
+							></textarea>
+						</form>
+					</div>
+					<div class="centertext">
+						<input form="add_category_form" class="button" type="submit" value="', $txt['lp_categories_add'], '">
+					</div>
+				</div>
+			</dd>
+		</dl>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const category = new Category();
+		new Sortable(document.getElementById("lp_categories"), {
+			handle: ".handle",
+			animation: 150,
+			onSort: e => category.updatePriority(e)
+		});
+	</script>';
+}
+
+/**
+ * Single category template
+ *
+ * Шаблон одиночной рубрики
+ *
+ * @param int $id
+ * @param array $cat
+ * @return void
+ */
+function show_single_category(int $id, array $cat)
+{
+	global $txt;
+
+	echo '
+	<tr class="windowbg" x-data data-id="', $id, '">
+		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
+		<td>
+			<span class="floatright">
+				<span @click="category.remove($el)" title="', $txt['remove'], '" class="error">&times;</span>
+			</span>
+			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], '</label>
+			<input
+				id="category_name', $id, '"
+				name="category_name[', $id, ']"
+				type="text"
+				value="', $cat['name'], '"
+				maxlength="255"
+				@change="category.updateName($el, $event.target)"
+			>
+			<br>
+			<textarea
+				rows="2"
+				placeholder="', $txt['lp_page_description'], '"
+				maxlength="255"
+				@change="category.updateDescription($el, $event.target.value)"
+			>', $cat['desc'], '</textarea>
+		</td>
+	</tr>';
+}
+
+/**
  * Callback template to configure panel layouts
  *
  * Callback-шаблон для настройки макета панелей
@@ -14,44 +171,12 @@ function template_callback_panel_layout()
 	echo '
 	<dt style="width: 0"></dt>
 	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_layout_note'], '</div>
-		<table class="table_grid centertext">
-			<thead>
-				<tr class="title_bar">
-					<th>', $txt['lp_browser_width'], '</th>
-					<th>', $txt['lp_used_class'], '</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr class="windowbg">
-					<td> >= 0px</td>
-					<td>col-xs-* <span class="hidden-sm hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 576px</td>
-					<td>col-sm-* <span class="hidden-xs hidden-md hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 768px</td>
-					<td>col-md-* <span class="hidden-xs hidden-sm hidden-lg hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 992px</td>
-					<td>col-lg-* <span class="hidden-xs hidden-sm hidden-md hidden-xl"><i class="fas fa-grin"></i></span></td>
-				</tr>
-				<tr class="windowbg">
-					<td> >= 1200px</td>
-					<td>col-xl-* <span class="hidden-xs hidden-sm hidden-md hidden-lg"><i class="fas fa-grin"></i></span></td>
-				</tr>
-			</tbody>
-		</table>
-		<br>
 		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
 		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row column-reverse' : '', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['header'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['header'], '</h3>
 					</div>
 					<div class="information">
 						<label class="centericon" for="lp_header_panel_width">col-xs-</label>
@@ -72,7 +197,7 @@ function template_callback_panel_layout()
 			<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['left'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
 					</div>
 					<div class="information">
 						<ul class="righttext">
@@ -117,7 +242,7 @@ function template_callback_panel_layout()
 									</option>';
 	}
 
-echo '
+	echo '
 								</select>
 							</li>
 						</ul>
@@ -132,7 +257,7 @@ echo '
 						<div class="row">
 							<div class="col-xs">
 								<div class="title_bar">
-									<h3 class="titlebg">', $txt['lp_block_placement_set']['top'], '</h3>
+									<h3 class="titlebg">', $context['lp_block_placements']['top'], '</h3>
 								</div>
 								<div class="information">
 									col-xs (auto)
@@ -151,7 +276,7 @@ echo '
 						<div class="row">
 							<div class="col-xs">
 								<div class="title_bar">
-									<h3 class="titlebg">', $txt['lp_block_placement_set']['bottom'], '</h3>
+									<h3 class="titlebg">', $context['lp_block_placements']['bottom'], '</h3>
 								</div>
 								<div class="information">
 									col-xs (auto)
@@ -162,7 +287,7 @@ echo '
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['right'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['right'], '</h3>
 					</div>
 					<div class="information">
 						<ul class="righttext">
@@ -220,7 +345,7 @@ echo '
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_footer_panel_width'], '">
 					<div class="title_bar">
-						<h3 class="titlebg">', $txt['lp_block_placement_set']['footer'], '</h3>
+						<h3 class="titlebg">', $context['lp_block_placements']['footer'], '</h3>
 					</div>
 					<div class="information">
 						<label class="centericon" for="lp_footer_panel_width">col-xs-</label>
@@ -251,7 +376,7 @@ echo '
  */
 function template_callback_panel_direction()
 {
-	global $txt, $context, $modSettings;
+	global $txt, $context;
 
 	echo '
 	<dt style="width: 0"></dt>
@@ -265,7 +390,7 @@ function template_callback_panel_direction()
 			</thead>
 			<tbody>';
 
-	foreach ($context['lp_panels'] as $key => $label) {
+	foreach ($context['lp_block_placements'] as $key => $label) {
 		echo '
 				<tr class="windowbg">
 					<td>
@@ -296,216 +421,27 @@ function template_callback_panel_direction()
  *
  * Вывод настроек на нескольких вкладках
  *
+ * @param array $fields
  * @param string $tab
  * @return void
  */
-function template_post_tab($tab = 'content')
+function template_post_tab(array $fields, string $tab = 'content')
 {
 	global $context;
 
-	echo '
-					<dl>';
+	$fields['subject'] = ['no'];
 
-	foreach ($context['posting_fields'] as $pfid => $pf) {
+	foreach ($fields as $pfid => $pf) {
 		if (empty($pf['input']['tab']))
 			$pf['input']['tab'] = 'tuning';
 
 		if ($pf['input']['tab'] != $tab)
-			continue;
-
-		if (empty($pf['label']) || empty($pf['input']))
-			continue;
-
-		echo '
-						<dt class="clear pf_', $pfid, '">';
-
-		if (!empty($pf['label']['before']))
-			echo '
-							', $pf['label']['before'];
-
-		if (!empty($pf['label']['html']))
-			echo $pf['label']['html'];
-		else
-			echo '
-							<label', ($pf['input']['type'] === 'radio_select' ? '' : ' for="' . (!empty($pf['input']['attributes']['id']) ? $pf['input']['attributes']['id'] : $pfid) . '"'), ' id="caption_', $pfid, '"', !empty($pf['label']['class']) ? ' class="' . $pf['label']['class'] . '"' : '', '>', $pf['label']['text'], '</label>';
-
-		if (!empty($pf['label']['after']))
-			echo '
-							', $pf['label']['after'];
-
-		echo '
-						</dt>
-						<dd class="pf_', $pfid, '">';
-
-		if (!empty($pf['input']['before']))
-			echo '
-							', $pf['input']['before'];
-
-		if (!empty($pf['input']['html'])) {
-			echo $pf['input']['html'];
-		} elseif (in_array($pf['input']['type'], array('text', 'password', 'color', 'date', 'datetime-local', 'email', 'month', 'number', 'range', 'tel', 'time', 'url', 'week', 'checkbox'))) {
-			echo '
-							<input type="', $pf['input']['type'], '"';
-
-			if (empty($pf['input']['attributes']['id']))
-				echo ' id="', $pfid, '"';
-
-			if (empty($pf['input']['attributes']['name']))
-				echo ' name="', $pfid, '"';
-
-			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
-				foreach ($pf['input']['attributes'] as $attribute => $value) {
-					if (is_bool($value))
-						echo $value ? ' ' . $attribute : '';
-					else
-						echo ' ', $attribute, '="', $value, '"';
-				}
-			}
-
-			echo ' tabindex="', $context['tabindex']++, '">';
-		} elseif ($pf['input']['type'] === 'textarea') {
-			echo '
-							<textarea';
-
-			if (empty($pf['input']['attributes']['id']))
-				echo ' id="', $pfid, '"';
-
-			if (empty($pf['input']['attributes']['name']))
-				echo ' name="', $pfid, '"';
-
-			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
-				foreach ($pf['input']['attributes'] as $attribute => $value) {
-					if ($attribute === 'value')
-						continue;
-					elseif (is_bool($value))
-						echo $value ? ' ' . $attribute : '';
-					else
-						echo ' ', $attribute, '="', $value, '"';
-				}
-			}
-
-			echo ' tabindex="', $context['tabindex']++, '">', !empty($pf['input']['attributes']['value']) ? $pf['input']['attributes']['value'] : '', '</textarea>';
-		} elseif ($pf['input']['type'] === 'select' && is_array($pf['input']['options'])) {
-			echo '
-							<select';
-
-			if (empty($pf['input']['attributes']['id']))
-				echo ' id="', $pfid, '"';
-
-			if (empty($pf['input']['attributes']['name']))
-				echo ' name="', $pfid, '"';
-
-			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
-				foreach ($pf['input']['attributes'] as $attribute => $value) {
-					if (is_bool($value))
-						echo $value ? ' ' . $attribute : '';
-					else
-						echo ' ', $attribute, '="', $value, '"';
-				}
-			}
-
-			echo ' tabindex="', $context['tabindex']++, '">';
-
-			foreach ($pf['input']['options'] as $optlabel => $option) {
-				if (!empty($option['options']) && is_array($option['options'])) {
-					echo '
-								<optgroup';
-
-					if (empty($option['label']))
-						echo ' label="', $optlabel, '"';
-
-					if (!empty(RC2_CLEAN ? $option['attributes'] : $option) && is_array(RC2_CLEAN ? $option['attributes'] : $option)) {
-						foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
-							if ($attribute === 'options')
-								continue;
-							elseif (is_bool($value))
-								echo $value ? ' ' . $attribute : '';
-							else
-								echo ' ', $attribute, '="', $value, '"';
-						}
-					}
-
-					echo '>';
-
-					foreach ($option['options'] as $grouped_optlabel => $grouped_option) {
-						echo '
-									<option';
-
-						foreach (RC2_CLEAN ? $grouped_option['attributes'] : $grouped_option as $attribute => $value) {
-							if (is_bool($value))
-								echo $value ? ' ' . $attribute : '';
-							else
-								echo ' ', $attribute, '="', $value, '"';
-						}
-
-						echo '>', $grouped_option['label'], '</option>';
-
-					}
-
-					echo '
-								</optgroup>';
-				} else {
-					echo '
-								<option';
-
-					foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
-						if (is_bool($value))
-							echo $value ? (' ' . $attribute) : '';
-						else
-							echo ' ', $attribute, '="', $value, '"';
-					}
-
-					echo '>', $optlabel, '</option>';
-				}
-			}
-
-			echo '
-							</select>';
-		} elseif ($pf['input']['type'] === 'radio_select' && is_array($pf['input']['options'])) {
-			echo '
-							<div';
-
-			if (!empty($pf['input']['attributes']) && is_array($pf['input']['attributes'])) {
-				foreach ($pf['input']['attributes'] as $attribute => $value) {
-					if ($attribute === 'name')
-						continue;
-					elseif (is_bool($value))
-						echo $value ? ' ' . $attribute : '';
-					else
-						echo ' ', $attribute, '="', $value, '"';
-				}
-			}
-
-			echo '>';
-
-			foreach ($pf['input']['options'] as $optlabel => $option) {
-				echo '
-							<label style="margin-right:2ch"><input type="radio" name="', !empty($pf['input']['attributes']['name']) ? $pf['input']['attributes']['name'] : $pfid, '"';
-
-				foreach (RC2_CLEAN ? $option['attributes'] : $option as $attribute => $value) {
-					if ($attribute === 'label')
-						continue;
-					elseif (is_bool($value))
-						echo $value ? ' ' . ($attribute === 'selected' ? 'checked' : $attribute) : '';
-					else
-						echo ' ', $attribute, '="', $value, '"';
-				}
-
-				echo ' tabindex="', $context['tabindex']++, '"> ', isset($option['label']) ? $option['label'] : $optlabel, '</label>';
-			}
-
-			echo '
-							</div>';
-		}
-
-		if (!empty($pf['input']['after']))
-			echo '
-							', $pf['input']['after'];
-
-		echo '
-						</dd>';
+			$fields[$pfid] = ['no'];
 	}
 
-	echo '
-					</dl>';
+	$context['posting_fields'] = $fields;
+
+	LoadTemplate('Post');
+
+	template_post_header();
 }

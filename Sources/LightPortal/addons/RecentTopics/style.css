@@ -1,0 +1,16 @@
+.recent_topics {
+	list-style: none;
+	padding-left: 0;
+}
+.recent_topics li {
+	margin: 4px 0 0 0;
+	padding: 6px 12px;
+}
+.recent_topics .poster_avatar {
+	float: left;
+	padding: 3px 11px 0 0;
+}
+.recent_topics .avatar {
+	width: 40px;
+	height: 40px;
+}

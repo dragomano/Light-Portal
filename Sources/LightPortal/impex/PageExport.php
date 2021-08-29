@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\{Helpers, ManagePages};
 
 /**
  * PageExport.php
@@ -10,16 +10,16 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class PageExport extends Export
+class PageExport extends AbstractExport
 {
 	/**
 	 * Prepare to export
@@ -28,9 +28,9 @@ class PageExport extends Export
 	 *
 	 * @return void
 	 */
-	public static function main()
+	public function main()
 	{
-		global $context, $txt, $scripturl, $sourcedir;
+		global $context, $txt, $scripturl;
 
 		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_export'];
 		$context['page_area_title'] = $txt['lp_pages_export'];
@@ -38,23 +38,25 @@ class PageExport extends Export
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_export_tab_description']
+			'description' => $txt['lp_pages_export_description']
 		);
 
-		self::run();
+		$this->run();
+
+		$pages = new ManagePages();
 
 		$listOptions = array(
-			'id' => 'pages',
-			'items_per_page' => \Bugo\LightPortal\ManagePages::$num_pages,
+			'id' => 'lp_pages',
+			'items_per_page' => ManagePages::NUM_PAGES,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getAll'
+				'function' => array($pages, 'getAll')
 			),
 			'get_count' => array(
-				'function' => '\Bugo\LightPortal\ManagePages::getTotalQuantity'
+				'function' => array($pages, 'getTotalCount')
 			),
 			'columns' => array(
 				'id' => array(
@@ -91,13 +93,11 @@ class PageExport extends Export
 					'data' => array(
 						'function' => function ($entry) use ($scripturl)
 						{
-							$title = Helpers::getTitle($entry);
-
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?page=' . $entry['alias']
-								) . '">' . $title . '</a>';
+									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
+								) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'
 					),
@@ -126,48 +126,42 @@ class PageExport extends Export
 				array(
 					'position' => 'below_table_data',
 					'value' => '
+						<input type="hidden">
 						<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
-						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">',
-					'class' => 'floatright'
+						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">'
 				)
 			)
 		);
 
-		require_once($sourcedir . '/Subs-List.php');
+		Helpers::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'pages';
+		$context['default_list'] = 'lp_pages';
 	}
 
 	/**
-	 * Creating data in XML format
-	 *
-	 * Формируем данные в XML-формате
-	 *
-	 * @return mixed
+	 * @return array
 	 */
-	protected static function getData()
+	protected function getData(): array
 	{
 		global $smcFunc;
 
 		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
-			return false;
+			return [];
 
 		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, t.value AS keyword, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {string:type})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {string:type})
-				LEFT JOIN {db_prefix}lp_tags AS t ON (p.page_id = t.page_id)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
 			WHERE p.page_id IN ({array_int:pages})' : ''),
 			array(
-				'type'  => 'page',
 				'pages' => $pages
 			)
 		);
@@ -177,6 +171,7 @@ class PageExport extends Export
 			if (!isset($items[$row['page_id']]))
 				$items[$row['page_id']] = array(
 					'page_id'      => $row['page_id'],
+					'category_id'  => $row['category_id'],
 					'author_id'    => $row['author_id'],
 					'alias'        => $row['alias'],
 					'description'  => trim($row['description']),
@@ -190,16 +185,13 @@ class PageExport extends Export
 					'updated_at'   => $row['updated_at']
 				);
 
-			if (!empty($row['lang']))
+			if (!empty($row['lang']) && !empty($row['title']))
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']))
+			if (!empty($row['name']) && !empty($row['value']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (!empty($row['keyword']))
-				$items[$row['page_id']]['keywords'][] = $row['keyword'];
-
-			if (!empty($row['message'])) {
+			if (!empty(trim($row['message']))) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
@@ -217,15 +209,48 @@ class PageExport extends Export
 	}
 
 	/**
+	 * Get an array of categories to export
+	 *
+	 * Получаем массив рубрик для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getCategories(): array
+	{
+		$categories = (new \Bugo\LightPortal\Lists\Category)->getList();
+
+		unset($categories[0]);
+		ksort($categories);
+
+		return $categories;
+	}
+
+	/**
+	 * Get an array of tags to export
+	 *
+	 * Получаем массив тегов для экспорта
+	 *
+	 * @return array
+	 */
+	protected function getTags(): array
+	{
+		$tags = (new \Bugo\LightPortal\Lists\Tag)->getList();
+
+		ksort($tags);
+
+		return $tags;
+	}
+
+	/**
 	 * Get filename with XML data
 	 *
 	 * Получаем имя файла с XML-данными
 	 *
 	 * @return string
 	 */
-	protected static function getXmlFile()
+	protected function getXmlFile(): string
 	{
-		if (empty($items = self::getData()))
+		if (empty($items = $this->getData()))
 			return '';
 
 		$xml = new \DomDocument('1.0', 'utf-8');
@@ -233,27 +258,47 @@ class PageExport extends Export
 
 		$xml->formatOutput = true;
 
+		if (!empty($categories = $this->getCategories())) {
+			$xmlElements = $root->appendChild($xml->createElement('categories'));
+			foreach ($categories as $category) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				foreach ($category as $key => $val) {
+					$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
+					$xmlName->appendChild($xml->createTextNode($val));
+				}
+			}
+		}
+
+		if (!empty($tags = $this->getTags())) {
+			$xmlElements = $root->appendChild($xml->createElement('tags'));
+			foreach ($tags as $key => $val) {
+				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
+				$xmlName->appendChild($xml->createTextNode($key));
+				$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
+				$xmlName->appendChild($xml->createTextNode($val));
+			}
+		}
+
 		$xmlElements = $root->appendChild($xml->createElement('pages'));
 		foreach ($items as $item) {
 			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 			foreach ($item as $key => $val) {
 				$xmlName = $xmlElement->appendChild(
-					in_array($key, ['page_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+					in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
 						? $xml->createAttribute($key)
 						: $xml->createElement($key)
 				);
 
 				if (in_array($key, ['titles', 'params'])) {
-					foreach ($item[$key] as $k => $v) {
+					foreach ($val as $k => $v) {
 						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 						$xmlTitle->appendChild($xml->createTextNode($v));
 					}
 				} elseif (in_array($key, ['description', 'content'])) {
 					$xmlName->appendChild($xml->createCDATASection($val));
-				} elseif ($key == 'keywords' && !empty($val)) {
-					$xmlName->appendChild($xml->createTextNode(implode(', ', array_unique($val))));
 				} elseif ($key == 'comments') {
-					foreach ($item[$key] as $k => $comment) {
+					foreach ($val as $comment) {
 						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
 						foreach ($comment as $label => $text) {
 							$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));

@@ -1,94 +1,71 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TagList;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TagList
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TagList;
 
-class TagList
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TagList extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-tags';
+	public $icon = 'fas fa-tags';
 
 	/**
-	 * The source of tags (lp_tags|keywords)
-	 *
-	 * Источник тегов (lp_tags|keywords)
-	 *
-	 * @var string
-	 */
-	private static $source = 'lp_tags';
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['tag_list']['parameters']['source'] = static::$source;
+		$options['tag_list']['parameters']['source']  = 'lp_tags';
+		$options['tag_list']['parameters']['sorting'] = 'name';
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'tag_list')
 			return;
 
-		$parameters['source'] = FILTER_SANITIZE_STRING;
+		$parameters['source']  = FILTER_SANITIZE_STRING;
+		$parameters['sorting'] = FILTER_SANITIZE_STRING;
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'tag_list')
 			return;
 
-		if (!class_exists('\Bugo\Optimus\Keywords'))
-			$txt['lp_tag_list_addon_source_set'] = array('lp_tags' => $txt['lp_tag_list_addon_source_set']['lp_tags']);
+		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list']['source_set']);
 
-		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list_addon_source'];
+		if (!class_exists('\Bugo\Optimus\Keywords'))
+			unset($sources['keywords']);
+
+		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
 		$context['posting_fields']['source']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'source'
 			),
@@ -96,29 +73,40 @@ class TagList
 			'tab' => 'content'
 		);
 
-		foreach ($txt['lp_tag_list_addon_source_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['source']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			} else {
-				$context['posting_fields']['source']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['source']
-				);
-			}
+		foreach ($sources as $key => $value) {
+			$context['posting_fields']['source']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['source']
+			);
+		}
+
+		$context['posting_fields']['sorting']['label']['text'] = $txt['lp_tag_list']['sorting'];
+		$context['posting_fields']['sorting']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'sorting'
+			),
+			'options' => array()
+		);
+
+		$sortingSet = array_combine(array('name', 'frequency'), $txt['lp_tag_list']['sorting_set']);
+		foreach ($sortingSet as $key => $value) {
+			$context['posting_fields']['sorting']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['sorting']
+			);
 		}
 	}
 
 	/**
 	 * Get all topic keywords
 	 *
-	 * Получаем ключевики всех тем
+	 * Получаем ключевые слова всех тем
 	 *
+	 * @param string $sort
 	 * @return array
 	 */
-	public static function getAllTopicKeywords()
+	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
 		global $smcFunc, $scripturl;
 
@@ -130,8 +118,10 @@ class TagList
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
 			GROUP BY ok.id, ok.name
-			ORDER BY ok.name DESC',
-			array()
+			ORDER BY {raw:sort}',
+			array(
+				'sort' => $sort
+			)
 		);
 
 		$keywords = [];
@@ -150,18 +140,13 @@ class TagList
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
@@ -169,14 +154,14 @@ class TagList
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::cache(
-				'tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAll', '\Bugo\LightPortal\Tag', $cache_time, ...array(0, 0, 'value')
-			);
+			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+				->setLifeTime($cache_time)
+				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', ...array(0, 0, $parameters['sorting'] == 'name' ? 'value' : 'num DESC'));
 		} else {
-			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'], 'getAllTopicKeywords', __CLASS__, $cache_time);
+			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+				->setLifeTime($cache_time)
+				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] == 'name' ? 'ok.name' : 'frequency DESC');
 		}
-
-		ob_start();
 
 		if (!empty($tag_list)) {
 			foreach ($tag_list as $tag) {
@@ -186,7 +171,5 @@ class TagList
 		} else {
 			echo $txt['lp_no_tags'];
 		}
-
-		$content = ob_get_clean();
 	}
 }

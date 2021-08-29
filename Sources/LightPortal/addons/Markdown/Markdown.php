@@ -1,75 +1,96 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Markdown;
-
 /**
  * Markdown
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Markdown;
 
-class Markdown
+use Bugo\LightPortal\Addons\Plugin;
+
+class Markdown extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'parser';
+	public $icon = 'fab fa-markdown';
 
 	/**
-	 * Parse 'md' content
+	 * @var array
+	 */
+	public $type = array('block', 'parser');
+
+	/**
+	 * Adding the new content type
 	 *
-	 * Парсим контент типа 'md'
+	 * Добавляем новый тип контента
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		global $context;
+
+		$context['lp_page_types']['markdown'] = 'Markdown';
+	}
+
+	/**
+	 * @param array $options
+	 * @return void
+	 */
+	public function blockOptions(array &$options)
+	{
+		$options['markdown'] = array(
+			'content' => true
+		);
+	}
+
+	/**
+	 * Parse 'markdown' content
+	 *
+	 * Парсим контент типа 'markdown'
 	 *
 	 * @param string $content
 	 * @param string $type
 	 * @return void
 	 */
-	public static function parseContent(&$content, $type)
+	public function parseContent(string &$content, string $type)
 	{
-		if ($type == 'md')
-			$content = self::getParsedMarkdown($content);
+		if ($type == 'markdown')
+			$content = $this->getParsedContent($content);
 	}
 
 	/**
-	 * Parse Markdown content
+	 * Get Markdown content
 	 *
-	 * Парсим Markdown-контент
+	 * Получаем Markdown-контент
 	 *
 	 * @param string $text
 	 * @return string
 	 */
-	private static function getParsedMarkdown($text)
+	private function getParsedContent(string $text): string
 	{
-		require_once(__DIR__ . '/Michelf/MarkdownInterface.php');
-		require_once(__DIR__ . '/Michelf/Markdown.php');
-		require_once(__DIR__ . '/Michelf/MarkdownExtra.php');
-		require_once(__DIR__ . '/Michelf/MarkdownSMF.php');
+		require_once __DIR__ . '/Michelf/MarkdownInterface.php';
+		require_once __DIR__ . '/Michelf/Markdown.php';
+		require_once __DIR__ . '/Michelf/MarkdownExtra.php';
+		require_once __DIR__ . '/Michelf/MarkdownSMF.php';
 
 		return Michelf\MarkdownSMF::defaultTransform(un_htmlspecialchars($text));
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'PHP Markdown',

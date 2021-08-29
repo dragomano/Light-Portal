@@ -1,90 +1,61 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
-
 /**
  * EasyMarkdownEditor
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
-class EasyMarkdownEditor
+use Bugo\LightPortal\Addons\Plugin;
+
+class EasyMarkdownEditor extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var array
 	 */
-	public static $addon_type = array('block', 'editor');
+	public $type = 'editor';
 
 	/**
-	 * Adding the new content type
+	 * Adding the editor for 'markdown' content
 	 *
-	 * Добавляем новый тип контента
-	 *
-	 * @return void
-	 */
-	public static function init()
-	{
-		global $txt;
-
-		$txt['lp_page_types']['md'] = 'Markdown';
-	}
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
-	 * @param array $options
-	 * @return void
-	 */
-	public static function blockOptions(&$options)
-	{
-		$options['md'] = array(
-			'content' => true
-		);
-	}
-
-	/**
-	 * Adding the editor for 'md' content
-	 *
-	 * Подключаем редактор для контента 'md'
+	 * Подключаем редактор для контента 'markdown'
 	 *
 	 * @param array $object
 	 * @return void
 	 */
-	public static function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $txt, $editortxt;
 
-		if ($object['type'] == 'md') {
-			loadLanguage('Editor');
+		if ($object['type'] !== 'markdown')
+			return;
 
-			loadCssFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
-			addInlineCss('
+		loadLanguage('Editor');
+
+		loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
+		addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . $txt['lp_easy_markdown_editor_addon_lines'] . '"
+			content: "' . $txt['lp_easy_markdown_editor']['lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . $txt['lp_easy_markdown_editor_addon_words'] . '"
+			content: "' . $txt['lp_easy_markdown_editor']['words'] . '"
+		}
+		.CodeMirror pre {
+			max-height: none;
 		}');
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
-			addInlineJavaScript('
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
+		addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autofocus: true,
@@ -175,7 +146,7 @@ class EasyMarkdownEditor
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . $txt['lp_easy_markdown_editor_addon_tasks'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
@@ -194,7 +165,7 @@ class EasyMarkdownEditor
 					name: "side-by-side",
 					action: EasyMDE.toggleSideBySide,
 					className: "fas fa-columns no-disable no-mobile",
-					title: "' . $txt['lp_easy_markdown_editor_addon_toggle'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['toggle'] . '"
 				},
 				{
 					name: "fullscreen",
@@ -207,39 +178,46 @@ class EasyMarkdownEditor
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . $txt['lp_easy_markdown_editor_addon_guide'] . '"
+					title: "' . $txt['lp_easy_markdown_editor']['guide'] . '"
 				}
 			]
 		});
 
 		function toggleStickedPanels() {
 			let stickedPanels = document.getElementsByClassName("sticky_sidebar");
+			let noticeBlocks = document.getElementsByClassName("noticebox");
+			let scrollingButtons = document.getElementById("gtb_pos");
 
-			if (!stickedPanels)
+			if (!stickedPanels && !noticeBlocks && !scrollingButtons)
 				return;
 
 			if (easymde.isFullscreenActive()) {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "initial";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "none";
+				})
+				if (scrollingButtons)
+					scrollingButtons.style.display = "none";
 			} else {
 				stickedPanels.forEach(function (el) {
 					el.style.position = "sticky";
 				})
+				noticeBlocks.forEach(function (el) {
+					el.style.display = "block";
+				})
+				if (scrollingButtons)
+					scrollingButtons.style.display = "block";
 			}
 		}', true);
-		}
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'EasyMDE',

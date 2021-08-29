@@ -9,8 +9,10 @@ jobs:
   apigen:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: ApiGen Docs
-      uses: varunsridharan/action-apigen@1.0
+      uses: varunsridharan/action-apigen@2.1
+      with:
+        cached_apigen: 'yes'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

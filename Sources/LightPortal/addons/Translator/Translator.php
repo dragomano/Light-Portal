@@ -1,96 +1,49 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Translator;
-
 /**
  * Translator
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Translator;
 
-class Translator
+use Bugo\LightPortal\Addons\Plugin;
+
+class Translator extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-language';
+	public $icon = 'fas fa-language';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
-	 * @var bool
-	 */
-	private static $no_content_class = true;
-
-	/**
-	 * Used translation engine (google|yandex)
-	 *
-	 * Используемый движок для перевода (google|yandex)
-	 *
-	 * @var string
-	 */
-	private static $engine = 'google';
-
-	/**
-	 * The widget color theme (light|dark)
-	 *
-	 * Цветовая тема виджета (light|dark)
-	 *
-	 * @var string
-	 */
-	private static $widget_theme = 'light';
-
-	/**
-	 * Automatic translation (true|false)
-	 *
-	 * Автоматический перевод (если выключен, то требуется нажатие на кнопку «Перевести»)
-	 *
-	 * @var bool
-	 */
-	private static $auto_mode = false;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['translator']['no_content_class'] = static::$no_content_class;
+		$options['translator']['no_content_class'] = true;
 
-		$options['translator']['parameters']['engine']       = static::$engine;
-		$options['translator']['parameters']['widget_theme'] = static::$widget_theme;
-		$options['translator']['parameters']['auto_mode']    = static::$auto_mode;
+		$options['translator']['parameters'] = [
+			'engine'       => 'google',
+			'widget_theme' => 'light',
+			'auto_mode'    => false,
+		];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'translator')
 			return;
@@ -101,45 +54,37 @@ class Translator
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'translator')
 			return;
 
-		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator_addon_engine'];
+		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator']['engine'];
 		$context['posting_fields']['engine']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'engine'
-			)
+			),
+			'options' => array()
 		);
 
-		foreach ($txt['lp_translator_addon_engine_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['engine']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
-				);
-			} else {
-				$context['posting_fields']['engine']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['engine']
-				);
-			}
+		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator']['engine_set']);
+
+		foreach ($engines as $key => $value) {
+			$context['posting_fields']['engine']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['engine']
+			);
 		}
 
 		if ($context['lp_block']['options']['parameters']['engine'] == 'google')
 			return;
 
-		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator_addon_widget_theme'];
+		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator']['widget_theme'];
 		$context['posting_fields']['widget_theme']['input'] = array(
 			'type' => 'select',
 			'attributes' => array(
@@ -147,35 +92,18 @@ class Translator
 			)
 		);
 
-		if (RC2_CLEAN) {
-			$context['posting_fields']['widget_theme']['input']['options'] = array(
-				'light' => array(
-					'attributes' => array(
-						'value'    => 'light',
-						'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
-					)
-				),
-				'dark' => array(
-					'attributes' => array(
-						'value'    => 'dark',
-						'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
-					)
-				)
-			);
-		} else {
-			$context['posting_fields']['widget_theme']['input']['options'] = array(
-				'light' => array(
-					'value'    => 'light',
-					'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
-				),
-				'dark' => array(
-					'value'    => 'dark',
-					'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
-				)
-			);
-		}
+		$context['posting_fields']['widget_theme']['input']['options'] = array(
+			'light' => array(
+				'value'    => 'light',
+				'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
+			),
+			'dark' => array(
+				'value'    => 'dark',
+				'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
+			)
+		);
 
-		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator_addon_auto_mode'];
+		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator']['auto_mode'];
 		$context['posting_fields']['auto_mode']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -186,25 +114,18 @@ class Translator
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $language;
 
 		if ($type !== 'translator')
 			return;
-
-		ob_start();
 
 		if ($parameters['engine'] == 'yandex') {
 			echo '
@@ -224,7 +145,5 @@ class Translator
 			</script>
 		</div>';
 		}
-
-		$content = ob_get_clean();
 	}
 }

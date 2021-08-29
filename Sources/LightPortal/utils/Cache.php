@@ -8,10 +8,10 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -19,93 +19,87 @@ if (!defined('SMF'))
 
 class Cache
 {
-	private static $prefix = 'light_portal_';
+	private $prefix = 'lp_';
+	private $key;
+	private $lifeTime = 0;
 
 	/**
-	 * Get data from cache
-	 *
-	 * Получаем данные из кэша
-	 *
-	 * @param string $key
-	 * @param string|null $funcName
-	 * @param string $class
-	 * @param int $time (in seconds)
-	 * @param mixed $vars
+	 * @param string|null $key
+	 */
+	public function __construct(string $key = null)
+	{
+		$this->key = $key;
+	}
+
+	/**
+	 * @param int $lifeTime
+	 * @return $this
+	 */
+	public function setLifeTime(int $lifeTime): Cache
+	{
+		$this->lifeTime = $lifeTime;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $className
+	 * @param string $methodName
+	 * @param ...$params
 	 * @return mixed
 	 */
-	public function __invoke(string $key, ?string $funcName, string $class = 'self', int $time = 3600, ...$vars)
+	public function setFallback(string $className, string $methodName, ...$params)
 	{
-		if (empty($key))
-			return false;
+		if (empty($methodName) || empty($className) || $this->lifeTime === 0)
+			$this->forget($this->key);
 
-		if ($funcName === null || $time === 0)
-			static::forget($key);
+		if ((${$this->key} = $this->get($this->key, $this->lifeTime)) === null) {
+			${$this->key} = null;
 
-		if (($$key = static::get($key, $time)) === null) {
-			$$key = null;
-
-			if (method_exists($class, $funcName)) {
-				$$key = $class == 'self' ? self::$funcName(...$vars) : $class::$funcName(...$vars);
-			} elseif (function_exists($funcName)) {
-				$$key = $funcName(...$vars);
+			if (method_exists($className, $methodName)) {
+				${$this->key} = (new $className)->{$methodName}(...$params);
 			}
 
-			static::put($key, $$key, $time);
+			$this->put($this->key, ${$this->key}, $this->lifeTime);
 		}
 
-		return $$key;
+		return ${$this->key};
 	}
 
 	/**
-	 * Get $key value from the cache
-	 *
-	 * Получаем значение ячейки $key из кэша
-	 *
 	 * @param string $key
-	 * @param int $time
+	 * @param int|null $time
 	 * @return mixed
 	 */
-	public static function get(string $key, $time = 120)
+	public function get(string $key, int $time = null)
 	{
-		return cache_get_data(static::$prefix . $key, $time);
+		return cache_get_data($this->prefix . $key, $time ?? $this->lifeTime);
 	}
 
 	/**
-	 * Put $value into $key in the cache for $time ms
-	 *
-	 * Кладем $value в ячейку $key в кэше, на $time мс
-	 *
 	 * @param string $key
 	 * @param mixed $value
-	 * @param int $time
+	 * @param int|null $time
 	 * @return void
 	 */
-	public static function put(string $key, $value, $time = 120)
+	public function put(string $key, $value, int $time = null)
 	{
-		cache_put_data(static::$prefix . $key, $value, $time);
+		cache_put_data($this->prefix . $key, $value, $time ?? $this->lifeTime);
 	}
 
 	/**
-	 * Clear $key from the cache
-	 *
-	 * Очищаем ячейку $key в кэше
-	 *
 	 * @param string $key
 	 * @return void
 	 */
-	public static function forget(string $key)
+	public function forget(string $key)
 	{
-		self::put($key, null);
+		$this->put($key, null);
 	}
 
 	/**
-	 * Clear cache
-	 *
-	 * Очищаем кэш
-	 *
 	 * @return void
 	 */
-	public static function flush()
+	public function flush()
 	{
 		clean_cache();
 	}

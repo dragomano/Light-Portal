@@ -2,16 +2,18 @@
 
 namespace Bugo\LightPortal;
 
+use Exception;
+
 /**
  * Comment.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -42,6 +44,7 @@ class Comment
 	 * Обрабатываем комментарии
 	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	public function prepare()
 	{
@@ -51,23 +54,27 @@ class Comment
 			return;
 
 		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+		$context['lp_allowed_bbc'] = array_diff($context['lp_allowed_bbc'], array_intersect(explode(',', $modSettings['disabledBBC']), $context['lp_allowed_bbc']));
 
 		if (Helpers::request()->filled('sa')) {
 			switch (Helpers::request('sa')) {
 				case 'new_comment':
 					$this->add();
+					break;
 
 				case 'edit_comment':
 					$this->edit();
+					break;
 
 				case 'del_comment':
 					$this->remove();
+					break;
 			}
 		}
 
 		loadLanguage('Editor');
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments',	'getAll', __CLASS__, LP_CACHE_TIME, $context['lp_page']['id']);
+		$comments = Helpers::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
 		$comments = array_map(
 			function ($comment) {
 				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
@@ -79,15 +86,15 @@ class Comment
 		);
 
 		$total_comments     = sizeof($comments);
-		$txt['lp_comments'] = Helpers::getCorrectDeclension($total_comments, $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helpers::getText($total_comments, $txt['lp_comments_set']);
 
 		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$comment_tree   = $this->getTree($comments);
 		$total_comments = sizeof($comment_tree);
 
 		$page_index_url = $context['canonical_url'];
-		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 1 && !empty($modSettings['lp_frontpage_alias']))
-			$page_index_url = $scripturl . '?action=portal';
+		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
+			$page_index_url = $scripturl . '?action=' . LP_ACTION;
 
 		$temp_start            = Helpers::request('start');
 		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);
@@ -100,18 +107,26 @@ class Comment
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+
+		if ($context['user']['is_logged']) {
+			addInlineJavaScript('
+		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');
+		const toolbar = new Toolbar();');
+		}
 	}
 
 	/**
-	 * Adding a comment
-	 *
-	 * Добавление комментария
-	 *
 	 * @return void
+	 * @throws Exception
 	 */
 	private function add()
 	{
-		global $smcFunc, $user_info, $context, $txt;
+		global $user_info, $smcFunc, $context, $txt;
+
+		$result['error'] = true;
+
+		if (empty($user_info['id']))
+			exit(json_encode($result));
 
 		$args = array(
 			'parent_id'   => FILTER_VALIDATE_INT,
@@ -120,7 +135,7 @@ class Comment
 			'page_id'     => FILTER_VALIDATE_INT,
 			'page_title'  => FILTER_SANITIZE_STRING,
 			'page_url'    => FILTER_SANITIZE_STRING,
-			'message'     => FILTER_SANITIZE_STRING,
+			'message'     => FILTER_DEFAULT,
 			'start'       => FILTER_VALIDATE_INT,
 			'commentator' => FILTER_VALIDATE_INT
 		);
@@ -128,7 +143,7 @@ class Comment
 		$data = filter_input_array(INPUT_POST, $args);
 
 		if (empty($data))
-			return;
+			exit(json_encode($result));
 
 		$parent      = $data['parent_id'];
 		$counter     = $data['counter'];
@@ -136,12 +151,15 @@ class Comment
 		$page_id     = $data['page_id'];
 		$page_title  = $data['page_title'];
 		$page_url    = $data['page_url'];
-		$message     = Helpers::getShortenText($data['message']);
+		$message     = $smcFunc['htmlspecialchars']($data['message']);
 		$start       = $data['start'];
 		$commentator = $data['commentator'];
 
 		if (empty($page_id) || empty($message))
-			return;
+			exit(json_encode($result));
+
+		Helpers::require('Subs-Post');
+		preparsecode($message);
 
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_comments',
@@ -149,7 +167,7 @@ class Comment
 				'parent_id'  => 'int',
 				'page_id'    => 'int',
 				'author_id'  => 'int',
-				'message'    => 'string-' . MAX_MSG_LENGTH,
+				'message'    => 'string-65534',
 				'created_at' => 'int'
 			),
 			array(
@@ -164,8 +182,6 @@ class Comment
 		);
 
 		$smcFunc['lp_num_queries']++;
-
-		$result['error'] = true;
 
 		if (!empty($item)) {
 			$smcFunc['db_query']('', '
@@ -189,11 +205,11 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => $this->getUserAvatar(),
+				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
-				'raw_message' => $message,
+				'raw_message' => un_preparsecode($message),
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
@@ -222,27 +238,25 @@ class Comment
 	}
 
 	/**
-	 * Editing a comment
-	 *
-	 * Редактирование комментария
-	 *
 	 * @return void
 	 */
 	private function edit()
 	{
-		global $smcFunc, $context;
+		global $context, $smcFunc;
 
-		$json = file_get_contents('php://input');
-		$data = json_decode($json, true);
+		$data = Helpers::request()->json();
 
-		if (empty($data))
-			return;
+		if (empty($data) || $context['user']['is_guest'])
+			exit;
 
 		$item    = $data['comment_id'];
-		$message = Helpers::validate(Helpers::getShortenText($data['message']));
+		$message = Helpers::validate($data['message']);
 
 		if (empty($item) || empty($message))
-			return;
+			exit;
+
+		Helpers::require('Subs-Post');
+		preparsecode($message);
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_comments
@@ -250,7 +264,7 @@ class Comment
 			WHERE id = {int:id}
 				AND author_id = {int:user}',
 			array(
-				'message' => $message,
+				'message' => shorten_subject($message, 65531),
 				'id'      => $item,
 				'user'    => $context['user']['id']
 			)
@@ -263,25 +277,6 @@ class Comment
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
-	}
-
-	/**
-	 * Get user avatar image
-	 *
-	 * Получение аватарки пользователя
-	 *
-	 * @return string
-	 */
-	private function getUserAvatar()
-	{
-		global $memberContext, $user_info;
-
-		if (!isset($memberContext[$user_info['id']])) {
-			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id'], true);
-		}
-
-		return $memberContext[$user_info['id']]['avatar']['image'];
 	}
 
 	/**
@@ -310,7 +305,7 @@ class Comment
 			),
 			array(
 				'task_file'  => '$sourcedir/LightPortal/Notify.php',
-				'task_class' => '\Bugo\LightPortal\Notify',
+				'task_class' => Notify::class,
 				'task_data'  => $smcFunc['json_encode']([
 					'time'           => $options['created'],
 					'sender_id'	     => $user_info['id'],
@@ -333,19 +328,13 @@ class Comment
 	}
 
 	/**
-	 * Deleting a comment (and all children)
-	 *
-	 * Удаление комментария (и всех дочерних)
-	 *
 	 * @return void
 	 */
 	private function remove()
 	{
 		global $smcFunc;
 
-		$json  = file_get_contents('php://input');
-		$data  = json_decode($json, true);
-		$items = $data['items'];
+		$items = Helpers::request()->json('items');
 
 		if (empty($items))
 			return;
@@ -360,7 +349,7 @@ class Comment
 
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE WHEN num_comments > 0 THEN num_comments - {int:num_items}
+			SET num_comments = CASE WHEN num_comments - {int:num_items} >= 0 THEN num_comments - {int:num_items}
 				ELSE num_comments END
 			WHERE alias = {string:alias}',
 			array(
@@ -369,7 +358,17 @@ class Comment
 			)
 		);
 
-		$smcFunc['lp_num_queries'] += 2;
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_alerts
+			WHERE content_type = {string:type}
+				AND content_id IN ({array_int:items})',
+			array(
+				'type'  => 'new_comment',
+				'items' => $items
+			)
+		);
+
+		$smcFunc['lp_num_queries'] += 3;
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
@@ -383,13 +382,13 @@ class Comment
 	 *
 	 * @param int $page_id
 	 * @return array
+	 * @throws Exception
 	 */
-	public static function getAll(int $page_id = 0)
+	public function getAll(int $page_id = 0): array
 	{
-		global $smcFunc, $memberContext, $context, $modSettings;
+		global $smcFunc, $context, $modSettings;
 
-		if (empty($page_id))
-			return [];
+		Helpers::require('Subs-Post');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
@@ -405,12 +404,7 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			if (!isset($memberContext[$row['author_id']])) {
-				loadMemberData($row['author_id']);
-				loadMemberContext($row['author_id']);
-			}
-
-			$avatar = $memberContext[$row['author_id']]['avatar']['image'];
+			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
 
 			$comments[$row['id']] = array(
 				'id'          => $row['id'],
@@ -420,9 +414,9 @@ class Comment
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
 				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $context['lp_allowed_bbc']),
-				'raw_message' => $row['message'],
+				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => $row['created_at'],
-				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) ? (time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60) : false
+				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60
 			);
 		}
 
@@ -440,7 +434,7 @@ class Comment
 	 * @param array $data
 	 * @return array
 	 */
-	private function getTree(array $data)
+	private function getTree(array $data): array
 	{
 		$tree = [];
 

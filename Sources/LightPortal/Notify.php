@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 class Notify extends \SMF_BackgroundTask
@@ -23,11 +23,11 @@ class Notify extends \SMF_BackgroundTask
 	 *
 	 * @return bool
 	 */
-	public function execute()
+	public function execute(): bool
 	{
 		global $sourcedir, $user_profile, $smcFunc;
 
-		require_once($sourcedir . '/Subs-Members.php');
+		require_once $sourcedir . '/Subs-Members.php';
 		$members = membersAllowedTo('light_portal_view');
 
 		$this->_details['content_type'] == 'new_comment'
@@ -38,7 +38,7 @@ class Notify extends \SMF_BackgroundTask
 		if (!empty($this->_details['sender_id']))
 			$members = array_diff($members, array($this->_details['sender_id']));
 
-		require_once($sourcedir . '/Subs-Notify.php');
+		require_once $sourcedir . '/Subs-Notify.php';
 		$prefs = getNotifyPrefs($members, $this->_details['content_type'] == 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
 
 		if (!empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
@@ -99,8 +99,6 @@ class Notify extends \SMF_BackgroundTask
 					$insert_rows,
 					array('id_alert')
 				);
-
-				$smcFunc['lp_num_queries']++;
 
 				updateMemberData($notifies['alert'], array('alerts' => '+'));
 			}

@@ -1,4 +1,7 @@
 <?php
 
-$txt['lp_block_types']['user_info']              = 'Профіль користувача';
-$txt['lp_block_types_descriptions']['user_info'] = 'Відображає інформацію про поточного користувача.';
+return [
+	'title' => 'Профіль користувача',
+	'description' => 'Відображає інформацію про поточного користувача.',
+	'use_fa_icons' => 'Використовувати іконки Font Awesome',
+];

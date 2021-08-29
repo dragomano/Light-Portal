@@ -8,10 +8,10 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -20,20 +20,20 @@ if (!defined('SMF'))
 class Credits
 {
 	/**
-	 * The mod credits for action=credits
+	 * Display credits on action=credits area
 	 *
 	 * Отображаем копирайты на странице action=credits
 	 *
 	 * @return void
 	 */
-	public static function show()
+	public function show()
 	{
 		global $context, $txt;
 
-		$context['credits_modifications'][] = self::getCopyrights();
+		$context['credits_modifications'][] = $this->getLink();
 
 		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
-			self::getComponentList();
+			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
 
@@ -46,31 +46,46 @@ class Credits
 	}
 
 	/**
-	 * Return copyright information
-	 *
-	 * Возвращаем информацию об авторских правах
-	 *
 	 * @return string
 	 */
-	public static function getCopyrights()
+	public function getLink(): string
 	{
-		global $scripturl;
+		global $user_info, $scripturl, $txt;
 
-		return '<a href="https://dragomano.ru/mods/light-portal" target="_blank" rel="noopener">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2020</a>, Bugo | Licensed under the <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a> License';
+		$link = $user_info['language'] == 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
+
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | ' . $txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
 	/**
-	 * Collect information about used components
-	 *
-	 * Формируем информацию об используемых компонентах
-	 *
 	 * @return void
 	 */
-	public static function getComponentList()
+	public function prepareComponents()
 	{
 		global $context;
 
 		isAllowedTo('light_portal_view');
+
+		$context['portal_translations'] = array(
+			'Polish'  => array('Adrek'),
+			'Spanish' => array('Rock Lee'),
+			'French'  => array('Papoune57'),
+			'Turkish' => array('gevv')
+		);
+
+		$context['testers'] = array(
+			array(
+				'name' => 'Wylek',
+				'link' => 'https://wylek.ru/'
+			)
+		);
+
+		$context['sponsors'] = array(
+			array(
+				'name' => 'JetBrains',
+				'link' => 'https://www.jetbrains.com/?from=LightPortal'
+			)
+		);
 
 		$links = array(
 			array(
@@ -78,16 +93,26 @@ class Credits
 				'link' => 'https://github.com/evgenyrodionov/flexboxgrid2',
 				'author' => 'Kristofer Joseph',
 				'license' => array(
-					'name' => 'the Apache License',
+					'name' => 'the Apache License 2.0',
 					'link' => 'https://github.com/evgenyrodionov/flexboxgrid2/blob/master/LICENSE'
 				)
 			),
 			array(
 				'title' => 'Font Awesome Free',
 				'link' => 'https://fontawesome.com/cheatsheet/free',
+				'author' => 'Fonticons, Inc.',
 				'license' => array(
 					'name' => 'the Font Awesome Free License',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
+				)
+			),
+			array(
+				'title' => 'Alpine.js',
+				'link' => 'https://github.com/alpinejs/alpine',
+				'author' => 'Caleb Porzio and contributors',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
 				)
 			),
 			array(
@@ -108,18 +133,18 @@ class Credits
 				)
 			),
 			array(
-				'title' => 'Choices',
-				'link' => 'https://github.com/jshjohnson/Choices',
-				'author' => 'Josh Johnson',
+				'title' => 'Slim Select',
+				'link' => 'https://slimselectjs.com',
+				'author' => 'Brian Voelker',
 				'license' => array(
 					'name' => 'the MIT License',
-					'link' => 'https://github.com/jshjohnson/Choices/blob/master/LICENSE'
+					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
 				)
 			)
 		);
 
-		// Adding copyrights of used plugins | Возможность добавить копирайты используемых плагинов
-		Subs::runAddons('credits', array(&$links));
+		// Adding copyrights of used plugins
+		Addons::run('credits', array(&$links));
 
 		$context['lp_components'] = $links;
 	}

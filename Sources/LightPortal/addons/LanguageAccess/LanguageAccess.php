@@ -1,43 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\LanguageAccess;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * LanguageAccess
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\LanguageAccess;
 
-class LanguageAccess
+use Bugo\LightPortal\Addons\Plugin;
+
+class LanguageAccess extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'other';
-
-	/**
-	 * Allowed forum languages for a specific block
-	 *
-	 * Разрешенные языки форума для конкретного блока
-	 *
-	 * @var array
-	 */
-	public static $allowed_languages = [];
+	public $type = 'other';
 
 	/**
 	 * Fill additional block classes
@@ -46,7 +30,7 @@ class LanguageAccess
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $context;
 
@@ -65,29 +49,21 @@ class LanguageAccess
 	}
 
 	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
 		global $context;
 
-		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = static::$allowed_languages;
+		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = [];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters)
+	public function validateBlockData(array &$parameters)
 	{
 		$parameters['allowed_languages'] = array(
 			'name'   => 'allowed_languages',
@@ -97,47 +73,42 @@ class LanguageAccess
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
-		if (isset($context['lp_block']['options']['parameters']['allowed_languages'])) {
-			$context['lp_block']['options']['parameters']['allowed_languages'] = is_array($context['lp_block']['options']['parameters']['allowed_languages']) ? $context['lp_block']['options']['parameters']['allowed_languages'] : explode(',', $context['lp_block']['options']['parameters']['allowed_languages']);
-		} else
-			$context['lp_block']['options']['parameters']['allowed_languages'] = Helpers::post('allowed_languages', []);
+		// Prepare the language list
+		$current_languages = $context['lp_block']['options']['parameters']['allowed_languages'] ?? [];
+		$current_languages = is_array($current_languages) ? $current_languages : explode(',', $current_languages);
 
-		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access_addon_allowed_languages'];
+		$data = [];
+		foreach ($context['languages'] as $lang) {
+			$data[] = "\t\t\t\t" . '{text: "' . $lang['filename'] . '", selected: ' . (in_array($lang['filename'], $current_languages) ? 'true' : 'false') . '}';
+		}
+
+		addInlineJavaScript('
+		new SlimSelect({
+			select: "#allowed_languages",
+			data: [' . "\n" . implode(",\n", $data) . '
+			],
+			hideSelectedOption: true,
+			showSearch: false,
+			placeholder: "' . $txt['lp_language_access']['allowed_languages_subtext'] . '",
+			searchHighlight: true,
+			closeOnSelect: false
+		});', true);
+
+		$context['posting_fields']['allowed_languages']['label']['text'] = $txt['lp_language_access']['allowed_languages'];
 		$context['posting_fields']['allowed_languages']['input'] = array(
 			'type' => 'select',
-			'after' => $txt['lp_language_access_addon_allowed_languages_subtext'],
 			'attributes' => array(
 				'id'       => 'allowed_languages',
 				'name'     => 'allowed_languages[]',
-				'multiple' => true,
-				'style'    => 'height: auto'
+				'multiple' => true
 			),
-			'options' => array(),
-			'tab' => 'access_placement'
+			'options' => array()
 		);
-
-		foreach ($context['languages'] as $lang) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']]['attributes'] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			} else {
-				$context['posting_fields']['allowed_languages']['input']['options'][$lang['filename']] = array(
-					'value'    => $lang['filename'],
-					'selected' => in_array($lang['filename'], $context['lp_block']['options']['parameters']['allowed_languages'])
-				);
-			}
-		}
 	}
 }

@@ -2,8 +2,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Helpers;
-use Bugo\LightPortal\Subs;
+use Bugo\LightPortal\{Addons, Helpers};
 
 /**
  * BoardArticle.php
@@ -11,17 +10,51 @@ use Bugo\LightPortal\Subs;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class BoardArticle extends Article
+class BoardArticle extends AbstractArticle
 {
+	/**
+	 * @var array
+	 */
+	private $selected_boards = [];
+
+	/**
+	 * Initialize class properties
+	 *
+	 * Инициализируем свойства класса
+	 *
+	 * @return void
+	 */
+	public function init()
+	{
+		global $modSettings, $user_info;
+
+		$this->selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
+
+		$this->params = [
+			'blank_string'    => '',
+			'current_member'  => $user_info['id'],
+			'selected_boards' => $this->selected_boards
+		];
+
+		$this->orders = [
+			'b.id_last_msg DESC',
+			'm.poster_time DESC',
+			'm.poster_time',
+			'last_updated DESC'
+		];
+
+		Addons::run('frontBoards', array(&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders));
+	}
+
 	/**
 	 * Get selected boards
 	 *
@@ -31,54 +64,36 @@ class BoardArticle extends Article
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): array
 	{
-		global $modSettings, $user_info, $smcFunc, $context, $scripturl;
+		global $user_info, $smcFunc, $modSettings, $context, $scripturl, $txt;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return [];
 
-		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, LP_CACHE_TIME)) === null) {
-			$custom_columns = [];
-			$custom_tables  = [];
-			$custom_wheres  = [];
-
-			$custom_parameters = [
-				'blank_string'    => '',
-				'current_member'  => $user_info['id'],
-				'selected_boards' => $selected_boards,
-				'start'           => $start,
-				'limit'           => $limit
-			];
-
-			$custom_sorting = [
-				'b.id_last_msg DESC',
-				'm.poster_time DESC',
-				'm.poster_time',
-			];
-
-			Subs::runAddons('frontBoards', array(&$custom_columns, &$custom_tables, &$custom_wheres, &$custom_parameters, &$custom_sorting));
+		if (($boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
+			$this->params += array(
+				'start' => $start,
+				'limit' => $limit
+			);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
 					b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-					GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '
-					(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($custom_columns) ? ',
-					' . implode(', ', $custom_columns) : '') . '
+					m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : '(CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (!empty($modSettings['lp_show_images_in_articles']) ? ', COALESCE(a.id_attach, 0) AS attach_id' : '') . (!empty($this->columns) ? ',
+					' . implode(', ', $this->columns) : '') . '
 				FROM {db_prefix}boards AS b
 					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
 					LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (!empty($modSettings['lp_show_images_in_articles']) ? '
-					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($custom_tables) ? '
-					' . implode("\n\t\t\t\t\t", $custom_tables) : '') . '
+					LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}' . (!empty($custom_wheres) ? '
-					' . implode("\n\t\t\t\t\t", $custom_wheres) : '') . '
-				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'b.num_posts DESC, ' : '') . $custom_sorting[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+					AND {query_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : '') . '
+				ORDER BY ' . (!empty($modSettings['lp_frontpage_order_by_num_replies']) ? 'b.num_posts DESC, ' : '') . $this->orders[$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT {int:start}, {int:limit}',
-				$custom_parameters
+				$this->params
 			);
 
 			$boards = [];
@@ -93,22 +108,27 @@ class BoardArticle extends Article
 					$image = $board_image ? array_pop($value) : (!empty($row['attach_id']) ? $scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image' : null);
 				}
 
-				$description = strip_tags($description);
+				if ($row['is_redirect'] && empty($image))
+					$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
 
 				$boards[$row['id_board']] = array(
 					'id'          => $row['id_board'],
-					'name'        => $board_name,
-					'teaser'      => Helpers::getTeaser($description),
-					'category'    => $cat_name,
-					'link'        => $row['is_redirect'] ? $row['redirect'] : $scripturl . '?board=' . $row['id_board'] . '.0',
-					'is_redirect' => $row['is_redirect'],
-					'is_updated'  => empty($row['is_read']),
-					'num_posts'   => $row['num_posts'],
+					'date'        => $row['poster_time'],
+					'title'       => $board_name,
+					'link'        => $row['is_redirect'] ? ($row['redirect'] . '" rel="nofollow noopener') : ($scripturl . '?board=' . $row['id_board'] . '.0'),
+					'is_new'      => empty($row['is_read']),
+					'replies'     => array('num' => $row['num_posts'], 'title' => $txt['lp_replies']),
 					'image'       => $image,
-					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards')
+					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards'),
+					'edit_link'   => $scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
+					'category'    => $cat_name,
+					'is_redirect' => $row['is_redirect']
 				);
 
-				if (!empty($row['last_updated'])) {
+				if (!empty($modSettings['lp_show_teaser']))
+					$boards[$row['id_board']]['teaser'] = Helpers::getTeaser($description);
+
+				if (!empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == 3 && !empty($row['last_updated'])) {
 					$boards[$row['id_board']]['last_post'] = $scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
 
 					$boards[$row['id_board']]['date'] = $row['last_updated'];
@@ -119,13 +139,13 @@ class BoardArticle extends Article
 				if (empty($boards[$row['id_board']]['is_redirect']))
 					$boards[$row['id_board']]['msg_link'] = $scripturl . '?msg=' . $row['id_msg'];
 
-				Subs::runAddons('frontBoardsOutput', array(&$boards, $row));
+				Addons::run('frontBoardsOutput', array(&$boards, $row));
 			}
 
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $boards);
 		}
 
 		return $boards;
@@ -138,25 +158,23 @@ class BoardArticle extends Article
 	 *
 	 * @return int
 	 */
-	public static function getTotal(): int
+	public function getTotalCount(): int
 	{
-		global $modSettings, $user_info, $smcFunc;
+		global $user_info, $smcFunc;
 
-		$selected_boards = !empty($modSettings['lp_frontpage_boards']) ? explode(',', $modSettings['lp_frontpage_boards']) : [];
-
-		if (empty($selected_boards))
+		if (empty($this->selected_boards))
 			return 0;
 
-		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total', LP_CACHE_TIME)) === null) {
+		if (($num_boards = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(b.id_board)
 				FROM {db_prefix}boards AS b
-					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
+					INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (!empty($this->tables) ? '
+					' . implode("\n\t\t\t\t\t", $this->tables) : '') . '
 				WHERE b.id_board IN ({array_int:selected_boards})
-					AND {query_see_board}',
-				array(
-					'selected_boards' => $selected_boards
-				)
+					AND {query_see_board}' . (!empty($this->wheres) ? '
+					' . implode("\n\t\t\t\t\t", $this->wheres) : ''),
+				$this->params
 			);
 
 			[$num_boards] = $smcFunc['db_fetch_row']($request);
@@ -164,7 +182,7 @@ class BoardArticle extends Article
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', (int) $num_boards, LP_CACHE_TIME);
+			Helpers::cache()->put('articles_u' . $user_info['id'] . '_total', $num_boards);
 		}
 
 		return (int) $num_boards;

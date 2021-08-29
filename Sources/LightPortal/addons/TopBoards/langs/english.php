@@ -1,8 +1,12 @@
 <?php
 
-$txt['lp_block_types']['top_boards']              = 'Top Boards';
-$txt['lp_block_types_descriptions']['top_boards'] = 'Displays a list of popular boards.';
-
-$txt['lp_top_boards_addon_num_boards']        = 'Number of boards to display';
-$txt['lp_top_boards_addon_show_numbers_only'] = 'Only display numbers';
-$txt['lp_top_boards_addon_topics']            = array('topic', 'topics');
+return [
+	'title' => 'Top Boards',
+	'description' => 'Displays a list of popular boards.',
+	'num_boards' => 'Number of boards to display',
+	'entity_type' => 'What to display in bars',
+	'entity_type_set' => array('A number of topics', 'A number of posts'),
+	'show_numbers_only' => 'Only display numbers',
+	'topics' => 'topic, topics',
+	'posts' => 'post, posts'
+];

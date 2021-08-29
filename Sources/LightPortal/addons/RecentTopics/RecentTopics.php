@@ -1,144 +1,86 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RecentTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RecentTopics
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RecentTopics;
 
-class RecentTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RecentTopics extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-book-open';
+	public $icon = 'fas fa-book-open';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
-	 * @var bool
-	 */
-	private static $no_content_class = true;
-
-	/**
-	 * The maximum number of topics to output
-	 *
-	 * Максимальное количество тем для вывода
-	 *
-	 * @var int
-	 */
-	private static $num_topics = 10;
-
-	/**
-	 * If set, does NOT show topics from the specified boards
-	 *
-	 * Идентификаторы разделов, темы из которых НЕ нужно показывать
-	 *
-	 * @var string
-	 */
-	private static $exclude_boards = '';
-
-	/**
-	 * If set, ONLY includes topics from the specified boards
-	 *
-	 * Идентификаторы разделов, для отображения тем ТОЛЬКО из них
-	 *
-	 * @var string
-	 */
-	private static $include_boards = '';
-
-	/**
-	 * Display user avatars (true|false)
-	 *
-	 * Отображать аватарки (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $show_avatars = false;
-
-	/**
-	 * Online list update interval, in seconds
-	 *
-	 * Интервал обновления списка онлайн, в секундах
-	 *
-	 * @var int
-	 */
-	private static $update_interval = 600;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['recent_topics']['no_content_class'] = static::$no_content_class;
+		$options['recent_topics']['no_content_class'] =  true;
 
-		$options['recent_topics']['parameters']['num_topics']      = static::$num_topics;
-		$options['recent_topics']['parameters']['exclude_boards']  = static::$exclude_boards;
-		$options['recent_topics']['parameters']['include_boards']  = static::$include_boards;
-		$options['recent_topics']['parameters']['show_avatars']    = static::$show_avatars;
-		$options['recent_topics']['parameters']['update_interval'] = static::$update_interval;
+		$options['recent_topics']['parameters'] = [
+			'use_simple_style' => false,
+			'num_topics'       => 10,
+			'exclude_boards'   => '',
+			'include_boards'   => '',
+			'show_avatars'     => false,
+			'update_interval'  => 600,
+		];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_topics')
 			return;
 
-		$parameters['num_topics']      = FILTER_VALIDATE_INT;
-		$parameters['exclude_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['include_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval'] = FILTER_VALIDATE_INT;
+		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['num_topics']       = FILTER_VALIDATE_INT;
+		$parameters['exclude_boards']   = FILTER_SANITIZE_STRING;
+		$parameters['include_boards']   = FILTER_SANITIZE_STRING;
+		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'recent_topics')
 			return;
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics_addon_num_topics'];
+		$context['posting_fields']['use_simple_style']['label']['text'] = $txt['lp_recent_topics']['use_simple_style'];
+		$context['posting_fields']['use_simple_style']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'use_simple_style',
+				'checked' => !empty($context['lp_block']['options']['parameters']['use_simple_style'])
+			),
+			'tab' => 'appearance'
+		);
+
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_recent_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -148,10 +90,10 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_topics_addon_exclude_boards'];
+		$context['posting_fields']['exclude_boards']['label']['text'] = $txt['lp_recent_topics']['exclude_boards'];
 		$context['posting_fields']['exclude_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_topics_addon_exclude_boards_subtext'],
+			'after' => $txt['lp_recent_topics']['exclude_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
@@ -159,10 +101,10 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_topics_addon_include_boards'];
+		$context['posting_fields']['include_boards']['label']['text'] = $txt['lp_recent_topics']['include_boards'];
 		$context['posting_fields']['include_boards']['input'] = array(
 			'type' => 'text',
-			'after' => $txt['lp_recent_topics_addon_include_boards_subtext'],
+			'after' => $txt['lp_recent_topics']['include_boards_subtext'],
 			'attributes' => array(
 				'maxlength' => 255,
 				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
@@ -170,16 +112,17 @@ class RecentTopics
 			)
 		);
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
-			)
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
+			),
+			'tab' => 'appearance'
 		);
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics_addon_update_interval'];
+		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics']['update_interval'];
 		$context['posting_fields']['update_interval']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -197,8 +140,9 @@ class RecentTopics
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
-	public static function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
@@ -208,13 +152,13 @@ class RecentTopics
 		if (!empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 		$topics = ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 
 		if (empty($topics))
 			return [];
 
-		if (!empty($parameters['show_avatars'])) {
+		if (!empty($parameters['show_avatars']) && empty($parameters['use_simple_style'])) {
 			$posters = array_map(function ($item) {
 				return $item['poster']['id'];
 			}, $topics);
@@ -241,38 +185,45 @@ class RecentTopics
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $scripturl, $txt;
+		global $user_info, $scripturl, $txt, $context;
 
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::cache(
-			'recent_topics_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$parameters['update_interval'] ?? $cache_time,
-			$parameters
-		);
+		$recent_topics = Helpers::cache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($recent_topics)) {
-			ob_start();
+		if (empty($recent_topics))
+			return;
 
-			echo '
+		echo '
 		<ul class="recent_topics noup">';
 
+		if (!empty($parameters['use_simple_style'])) {
+			foreach ($recent_topics as $topic) {
+				echo '
+			<li class="windowbg">
+				<div class="smalltext">', $topic['time'], '</div>';
+
+				echo $topic['link'];
+
+				echo '
+				<div class="smalltext', $context['right_to_left'] ? ' floatright' : '', '">
+					<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
+					<i class="fas fa-comment"></i> ', $topic['replies'], '
+				</div>
+			</li>';
+			}
+		} else {
 			foreach ($recent_topics as $topic) {
 				echo '
 			<li class="windowbg">';
@@ -282,10 +233,8 @@ class RecentTopics
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
 				if ($topic['is_new'])
-					/* echo '
-				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a>'; */
 					echo '
-				<a class="new_posts" href="', $topic['href'], '">', $txt['new'], '</a>';
+				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
 				echo $topic['icon'], ' ', $topic['link'];
 
@@ -297,11 +246,10 @@ class RecentTopics
 				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
 			}
-
-			echo '
-		</ul>';
-
-			$content = ob_get_clean();
 		}
+
+
+		echo '
+		</ul>';
 	}
 }

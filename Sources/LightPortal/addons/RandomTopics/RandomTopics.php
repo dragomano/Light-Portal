@@ -1,78 +1,46 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\RandomTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * RandomTopics
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\RandomTopics;
 
-class RandomTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class RandomTopics extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-random';
+	public $icon = 'fas fa-random';
 
 	/**
-	 * You cannot select a class for the content of this block
-	 *
-	 * Нельзя выбрать класс для оформления контента этого блока
-	 *
-	 * @var bool
-	 */
-	private static $no_content_class = true;
-
-	/**
-	 * The maximum number of random topics to output
-	 *
-	 * Максимальное количество случайных тем для вывода
-	 *
-	 * @var int
-	 */
-	private static $num_topics = 10;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['random_topics']['no_content_class'] = static::$no_content_class;
+		$options['random_topics']['no_content_class'] = true;
 
-		$options['random_topics']['parameters']['num_topics'] = static::$num_topics;
+		$options['random_topics']['parameters']['num_topics'] = 10;
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'random_topics')
 			return;
@@ -81,20 +49,16 @@ class RandomTopics
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'random_topics')
 			return;
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_random_topics_addon_num_topics'];
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_random_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -106,25 +70,19 @@ class RandomTopics
 	}
 
 	/**
-	 * Get the list of random topics
+	 * Get the list of random forum topics
 	 *
-	 * Получаем список случайных тем
+	 * Получаем список случайных тем форума
 	 *
 	 * @param int $num_topics
 	 * @return array
 	 */
-	public static function getData($num_topics)
+	public function getData(int $num_topics): array
 	{
-		global $modSettings, $user_info, $db_type, $smcFunc, $context, $settings, $scripturl;
+		global $db_type, $smcFunc, $user_info, $context, $modSettings, $settings, $scripturl;
 
 		if (empty($num_topics))
 			return [];
-
-		$ignore_boards = !empty($modSettings['recycle_board']) ? [(int) $modSettings['recycle_board']] : [];
-
-		if (!empty($modSettings['allow_ignore_boards'])) {
-			$ignore_boards = array_unique(array_merge($ignore_boards, $user_info['ignoreboards']));
-		}
 
 		if ($db_type == 'postgresql') {
 			$request = $smcFunc['db_query']('', '
@@ -132,29 +90,29 @@ class RandomTopics
 					WITH b AS (
 						SELECT min(t.id_topic), (
 							SELECT t.id_topic FROM {db_prefix}topics AS t
-							WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
-								AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+							WHERE {query_wanna_see_topic_board}
+								AND t.approved = {int:is_approved}
 							ORDER BY t.id_topic DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
-						WHERE t.approved = {int:is_approved}' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+						WHERE {query_wanna_see_topic_board}
+							AND t.approved = {int:is_approved}
 					)
 					(
 						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
 						FROM {db_prefix}topics AS t, b
-						WHERE t.id_topic >= min + ((max - min) * random())::int' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+						WHERE {query_wanna_see_topic_board}
+							AND t.id_topic >= min + ((max - min) * random())::int
 							AND	t.approved = {int:is_approved}
 						LIMIT 1
 					) UNION ALL (
 						SELECT t.id_topic, min, max, a || t.id_topic, r.n + 1 AS n
 						FROM {db_prefix}topics AS t, r
-						WHERE t.id_topic >= min + ((max - min) * random())::int
+						WHERE {query_wanna_see_topic_board}
+							AND t.id_topic >= min + ((max - min) * random())::int
 							AND t.id_topic <> all(a)
-							AND r.n + 1 < {int:limit}' . (!empty($ignore_boards) ? '
-							AND t.id_board NOT IN ({array_int:ignore_boards})' : '') . '
+							AND r.n + 1 < {int:limit}
 							AND t.approved = {int:is_approved}
 						LIMIT 1
 					)
@@ -163,9 +121,8 @@ class RandomTopics
 				FROM {db_prefix}topics AS t, r
 				WHERE r.id_topic = t.id_topic',
 				array(
-					'is_approved'   => 1,
-					'ignore_boards' => $ignore_boards,
-					'limit'         => $num_topics
+					'is_approved' => 1,
+					'limit'       => $num_topics
 				)
 			);
 
@@ -177,7 +134,7 @@ class RandomTopics
 			$smcFunc['lp_num_queries']++;
 
 			if (empty($topic_ids))
-				return self::getData($num_topics - 1);
+				return $this->getData($num_topics - 1);
 
 			$request = $smcFunc['db_query']('', '
 				SELECT
@@ -190,7 +147,8 @@ class RandomTopics
 					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE t.id_topic IN ({array_int:topic_ids})',
+				WHERE {query_wanna_see_topic_board}
+					AND t.id_topic IN ({array_int:topic_ids})',
 				array(
 					'current_member' => $user_info['id'],
 					'topic_ids'      => $topic_ids
@@ -208,14 +166,13 @@ class RandomTopics
 					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
-				WHERE t.approved = {int:is_approved}
-					AND t.id_board NOT IN ({array_int:ignore_boards})
+				WHERE {query_wanna_see_topic_board}
+					AND t.approved = {int:is_approved}
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				array(
 					'current_member' => $user_info['id'],
 					'is_approved'    => 1,
-					'ignore_boards'  => $ignore_boards,
 					'limit'          => $num_topics
 				)
 			);
@@ -249,42 +206,31 @@ class RandomTopics
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::cache(
-			'random_topics_addon_b' . $block_id . '_u' . $user_info['id'],
-			'getData',
-			__CLASS__,
-			$cache_time,
-			$parameters['num_topics']
-		);
+		$random_topics = Helpers::cache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
 
 		if (!empty($random_topics)) {
-			ob_start();
-
 			echo '
 			<ul class="random_topics noup">';
 
 			foreach ($random_topics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
-					<span class="new_posts">' . $txt['new'] . '</span>' : ''), $topic['icon'], ' ', $topic['link'], '
+					<span class="new_posts">' . $txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
 					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
 					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
 				</li>';
@@ -292,8 +238,6 @@ class RandomTopics
 
 			echo '
 			</ul>';
-
-			$content = ob_get_clean();
 		}
 	}
 }

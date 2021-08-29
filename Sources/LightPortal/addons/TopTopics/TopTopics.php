@@ -1,87 +1,48 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopTopics;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopTopics
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopTopics;
 
-class TopTopics
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopTopics extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-balance-scale-left';
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
-	 * Type of popularity calculation (replies|views)
-	 *
-	 * Тип расчёта популярности (replies|views)
-	 *
-	 * @var string
-	 */
-	private static $type = 'replies';
-
-	/**
-	 * The maximum number of topics to output
-	 *
-	 * Максимальное количество тем для вывода
-	 *
-	 * @var int
-	 */
-	private static $num_topics = 10;
-
-	/**
-	 * Display only numbers (true|false)
-	 *
-	 * Отображать только цифры (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $show_numbers_only = false;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['top_topics']['parameters']['popularity_type']   = static::$type;
-		$options['top_topics']['parameters']['num_topics']        = static::$num_topics;
-		$options['top_topics']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_topics']['parameters'] = [
+			'popularity_type'   => 'replies',
+			'num_topics'        => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_topics')
 			return;
@@ -92,43 +53,34 @@ class TopTopics
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'top_topics')
 			return;
 
-		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics_addon_type'];
+		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics']['type'];
 		$context['posting_fields']['popularity_type']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'popularity_type'
 			),
 			'options' => array()
 		);
 
-		foreach ($txt['lp_top_topics_addon_type_set'] as $key => $value) {
-			if (RC2_CLEAN) {
-				$context['posting_fields']['popularity_type']['input']['options'][$value]['attributes'] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			} else {
-				$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
-					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-				);
-			}
+		$types = array_combine(array('replies', 'views'), $txt['lp_top_topics']['type_set']);
+
+		foreach ($types as $key => $value) {
+			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
+			);
 		}
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics_addon_num_topics'];
+		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics']['num_topics'];
 		$context['posting_fields']['num_topics']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -138,7 +90,7 @@ class TopTopics
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_topics_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_topics']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -156,61 +108,56 @@ class TopTopics
 	 * @param array $parameters
 	 * @return array
 	 */
-	public static function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
+
 		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_topics = Helpers::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_topics)) {
-			ob_start();
+		if (empty($top_topics))
+			return;
 
-			echo '
+		echo '
 		<dl class="stats">';
 
-			$max = $top_topics[0]['num_' . $parameters['popularity_type']];
+		$max = $top_topics[0]['num_' . $parameters['popularity_type']];
 
-			foreach ($top_topics as $topic) {
-				if ($topic['num_' . $parameters['popularity_type']] < 1)
-					continue;
+		foreach ($top_topics as $topic) {
+			if ($topic['num_' . $parameters['popularity_type']] < 1)
+				continue;
 
-				$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
 
-				echo '
+			echo '
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getCorrectDeclension($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helpers::getText($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

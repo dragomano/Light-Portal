@@ -1,100 +1,68 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopBoards;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopBoards
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopBoards;
 
-class TopBoards
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopBoards extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-balance-scale-left';
+	public $icon = 'fas fa-balance-scale-left';
 
 	/**
-	 * The maximum number of boards to output
-	 *
-	 * Максимальное количество разделов для вывода
-	 *
-	 * @var int
-	 */
-	private static $num_boards = 10;
-
-	/**
-	 * Display only numbers (true|false)
-	 *
-	 * Отображать только цифры (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $show_numbers_only = false;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['top_boards']['parameters']['num_boards']        = static::$num_boards;
-		$options['top_boards']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_boards']['parameters'] = [
+			'num_boards'        => 10,
+			'entity_type'       => 'num_topics',
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_boards')
 			return;
 
 		$parameters['num_boards']        = FILTER_VALIDATE_INT;
+		$parameters['entity_type']       = FILTER_SANITIZE_STRING;
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'top_boards')
 			return;
 
-		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards_addon_num_boards'];
+		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards']['num_boards'];
 		$context['posting_fields']['num_boards']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -104,7 +72,25 @@ class TopBoards
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards_addon_show_numbers_only'];
+		$context['posting_fields']['entity_type']['label']['text'] = $txt['lp_top_boards']['entity_type'];
+		$context['posting_fields']['entity_type']['input'] = array(
+			'type' => 'radio_select',
+			'attributes' => array(
+				'id' => 'entity_type'
+			),
+			'options' => array()
+		);
+
+		$entity_types = array_combine(array('num_topics', 'num_posts'), $txt['lp_top_boards']['entity_type_set']);
+
+		foreach ($entity_types as $key => $value) {
+			$context['posting_fields']['entity_type']['input']['options'][$value] = array(
+				'value'    => $key,
+				'selected' => $key == $context['lp_block']['options']['parameters']['entity_type']
+			);
+		}
+
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -122,62 +108,58 @@ class TopBoards
 	 * @param int $num_boards
 	 * @return array
 	 */
-	public static function getData($num_boards)
+	public function getData(int $num_boards): array
 	{
 		global $boarddir;
 
-		require_once($boarddir . '/SSI.php');
+		require_once $boarddir . '/SSI.php';
 
 		return ssi_topBoards($num_boards, 'array');
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters['num_boards']);
+		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters['num_boards']);
 
-		if (!empty($top_boards)) {
-			ob_start();
+		if (empty($top_boards))
+			return;
 
-			echo '
+		echo '
 		<dl class="stats">';
 
-			$max = $top_boards[0]['num_topics'];
+		$type = $parameters['entity_type'] === 'num_posts' ? 'posts' : 'topics';
 
-			foreach ($top_boards as $board) {
-				if ($board['num_topics'] < 1)
-					continue;
+		$max = $top_boards[0]['num_' . $type];
 
-				$width = $board['num_topics'] * 100 / $max;
+		foreach ($top_boards as $board) {
+			if ($board['num_' . $type] < 1)
+				continue;
 
-				echo '
-			<dt>', $board['link'], '</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar', (empty($board['num_topics']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_topics'] : Helpers::getCorrectDeclension($board['num_topics'], $txt['lp_top_boards_addon_topics'])), '</span>
-			</dd>';
-			}
+			$width = $board['num_' . $type] * 100 / $max;
 
 			echo '
-		</dl>';
-
-			$content = ob_get_clean();
+			<dt>', $board['link'], '</dt>
+			<dd class="statsbar generic_bar righttext">
+				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helpers::getText($board['num_' . $type], $txt['lp_top_boards'][$type])), '</span>
+			</dd>';
 		}
+
+		echo '
+		</dl>';
 	}
 }

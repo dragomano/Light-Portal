@@ -1,0 +1,8 @@
+.random_topics {
+	list-style: none;
+	padding-left: 0;
+}
+.random_topics li {
+	margin: 4px 0 0 0;
+	padding: 6px 12px;
+}

@@ -9,7 +9,7 @@
  */
 function template_page_post()
 {
-	global $context, $txt, $settings;
+	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '
@@ -41,31 +41,53 @@ function template_page_post()
 	</div>';
 	}
 
+	$fields = $context['posting_fields'];
+
 	echo '
-	<form id="postpage" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);">
-		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
 				<input id="tab2" type="radio" name="tabs">
 				<label for="tab2" class="bg odd">', $txt['lp_tab_seo'], '</label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_tab_tuning'], '</label>
-				<section id="content-tab1" class="bg even">
-					', template_post_tab();
+				<label for="tab3" class="bg odd">', $txt['lp_tab_menu'], '</label>
+				<input id="tab4" type="radio" name="tabs">
+				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
+				<section id="content-tab1" class="bg even">';
+
+	template_post_tab($fields);
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
+					<div>';
+
+		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+
+		echo '
+					</div>';
 	}
 
 	echo '
 				</section>
-				<section id="content-tab2" class="bg even">
-					', template_post_tab('seo'), '
+				<section id="content-tab2" class="bg even">';
+
+	template_post_tab($fields, 'seo');
+
+    echo '
 				</section>
-				<section id="content-tab3" class="bg even">
-					', template_post_tab('tuning'), '
+				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'menu');
+
+    echo '
+				</section>
+				<section id="content-tab4" class="bg even">';
+
+	template_post_tab($fields, 'tuning');
+
+	echo '
 				</section>
 			</div>
 			<br class="clear">
@@ -79,22 +101,158 @@ function template_page_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save">', $txt['save'], '</button>
+				<button type="submit" class="button" name="preview" @click="page.post($el)">', $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="page.post($el)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="page.post($el)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>
 	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/post_page.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 	<script>
-		const choices = new Choices("#keywords", {
-			removeItemButton: true,
-			duplicateItemsAllowed: false,
-			uniqueItemText: "' . $txt['lp_page_keywords_only_unique'] . '",
-			addItemText: (value) => {
-				return `' . $txt['lp_page_keywords_enter_to_add'] . '`;
-			},
+		const page = new Page();
+
+		let pageType = new SlimSelect({
+			select: "#type",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
 		});
+
+		new SlimSelect({
+			select: "#keywords",
+			limit: 10,
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_page_keywords_placeholder'], '",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "', $txt['search'], '",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});
+
+		let iconSelect = new SlimSelect({
+			select: "#icon",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			limit: 30,
+			ajax: function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '")
+					return
+				}
+
+				fetch("', $context['canonical_url'], ';icons", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search
+					})
+				})
+				.then(response => response.json())
+				.then(function (json) {
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
+					}
+
+					callback(data)
+				})
+				.catch(function (error) {
+					callback(false)
+				})
+			},
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_block_select_icon'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "cheese",
+			searchHighlight: true,
+			closeOnSelect: false,
+			showContent: "down",
+			addable: function (value) {
+				return {
+					text: value.toLowerCase(),
+					value: value.toLowerCase()
+				}
+			}
+		});';
+
+	if (!empty($context['lp_page']['options']['icon'])) {
+		echo '
+		iconSelect.setData([{innerHTML: `<i class="', $context['lp_page']['options']['icon'], '"></i>&nbsp;', $context['lp_page']['options']['icon'], '`, value: "', $context['lp_page']['options']['icon'], '", text: "', $context['lp_page']['options']['icon'], '"}]);
+		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
+	}
+
+	echo '
+		new SlimSelect({
+			select: "#permissions",
+			showSearch: false,
+			hideSelectedOption: true,
+			closeOnSelect: true,
+			showContent: "down"
+		});
+
+		new SlimSelect({
+			select: "#category",
+			hideSelectedOption: true,
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "', $txt['search'], '",
+			searchHighlight: true
+		});';
+
+	if ($context['user']['is_admin']) {
+		echo '
+		new SlimSelect({
+			select: "#page_author",
+			allowDeselect: true,
+			deselectLabel: "<span class=\"red\">✖</span>",
+			ajax: async function (search, callback) {
+				if (search.length < 3) {
+					callback("', sprintf($txt['lp_min_search_length'], 3), '");
+					return
+				}
+
+				let response = await fetch("', $context['canonical_url'], ';members", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json; charset=utf-8"
+					},
+					body: JSON.stringify({
+						search
+					})
+				});
+
+				if (response.ok) {
+					const json = await response.json();
+
+					let data = [];
+					for (let i = 0; i < json.length; i++) {
+						data.push({text: json[i].text, value: json[i].value})
+					}
+
+					callback(data)
+				} else {
+					callback(false)
+				}
+			},
+			hideSelectedOption: true,
+			placeholder: "', $txt['lp_page_author_placeholder'], '",
+			searchingText: "', $txt['search'], '...",
+			searchText: "', $txt['no_matches'], '",
+			searchPlaceholder: "', $txt['search'], '",
+			searchHighlight: true
+		});';
+	}
+
+	echo '
 	</script>';
 }

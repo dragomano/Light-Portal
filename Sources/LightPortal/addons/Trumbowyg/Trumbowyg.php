@@ -1,74 +1,39 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\Trumbowyg;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * Trumbowyg
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\Trumbowyg;
 
-class Trumbowyg
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class Trumbowyg extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'editor';
+	public $type = 'editor';
 
 	/**
-	 * The IDs list of dark themes
-	 *
-	 * Список идентификаторов тёмных тем оформления
-	 *
-	 * @var string
-	 */
-	private static $dark_themes = '';
-
-	/**
-	 * Automatically extend of an editor area (0|1|2)
-	 *
-	 * Автоматическое расширение окна редактора (0|1|2)
-	 *
-	 * @var bool
-	 */
-	private static $auto_grow = 0;
-
-	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
-		global $modSettings, $context, $txt;
+		global $txt;
 
-		if (!isset($modSettings['lp_trumbowyg_addon_dark_themes']))
-			updateSettings(array('lp_trumbowyg_addon_dark_themes' => static::$dark_themes));
-		if (!isset($modSettings['lp_trumbowyg_addon_auto_grow']))
-			updateSettings(array('lp_trumbowyg_addon_auto_grow' => static::$auto_grow));
-
-		$context['lp_trumbowyg_addon_dark_themes_options'] = Helpers::getForumThemes();
-
-		$config_vars[] = array('multicheck', 'lp_trumbowyg_addon_dark_themes');
-		$config_vars[] = array('select', 'lp_trumbowyg_addon_auto_grow', $txt['lp_trumbowyg_addon_auto_grow_set']);
+		$config_vars['trumbowyg'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
+		$config_vars['trumbowyg'][] = array('select', 'auto_grow', $txt['lp_trumbowyg']['auto_grow_set']);
 	}
 
 	/**
@@ -79,7 +44,7 @@ class Trumbowyg
 	 * @param array $object
 	 * @return void
 	 */
-	public static function prepareEditor($object)
+	public function prepareEditor(array $object)
 	{
 		global $modSettings, $txt, $editortxt, $settings;
 
@@ -88,7 +53,7 @@ class Trumbowyg
 
 			loadLanguage('Editor');
 
-			loadCssFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', array('external' => true));
+			loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', array('external' => true));
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js', array('external' => true));
 
 			if ($txt['lang_dictionary'] !== 'en')
@@ -134,8 +99,10 @@ class Trumbowyg
 			autogrow: true' : '') . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
 			autogrowOnEnter: true' : '') . '
 		}).on("tbwopenfullscreen", function() {
+			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
 			$(".sticky_sidebar").css("position", "initial");
 		}).on("tbwclosefullscreen", function() {
+			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
 			$(".sticky_sidebar").css("position", "sticky");
 		});' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
@@ -143,14 +110,10 @@ class Trumbowyg
 	}
 
 	/**
-	 * Adding the addon copyright
-	 *
-	 * Добавляем копирайты плагина
-	 *
 	 * @param array $links
 	 * @return void
 	 */
-	public static function credits(&$links)
+	public function credits(array &$links)
 	{
 		$links[] = array(
 			'title' => 'Trumbowyg',

@@ -2,16 +2,18 @@
 
 namespace Bugo\LightPortal;
 
+use Likes;
+
 /**
  * Integration.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
 if (!defined('SMF'))
@@ -20,73 +22,70 @@ if (!defined('SMF'))
 class Integration
 {
 	/**
-	 * Add used hooks
-	 *
-	 * Подключаем используемые хуки
-	 *
 	 * @return void
 	 */
-	public static function hooks()
+	public function hooks()
 	{
-		add_integration_function('integrate_autoload', __CLASS__ . '::autoload', false, __FILE__);
-		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo', false, __FILE__);
-		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput', false, __FILE__);
-		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme', false, __FILE__);
-		add_integration_function('integrate_redirect', __CLASS__ . '::redirect', false, __FILE__);
-		add_integration_function('integrate_actions', __CLASS__ . '::actions', false, __FILE__);
-		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction', false, __FILE__);
-		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction', false, __FILE__);
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions', false, __FILE__);
-		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions', false, __FILE__);
-		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes', false, __FILE__);
-		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline', false, __FILE__);
-		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show', false, '$sourcedir/LightPortal/Credits.php');
-		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_autoload', __CLASS__ . '::autoload#', false, __FILE__);
+		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
+		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
+		add_integration_function('integrate_redirect', __CLASS__ . '::redirect#', false, __FILE__);
+		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
+		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
+		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
+		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
+		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
+		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
+		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
+		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
+		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
+		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
+		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
+		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
+		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
+		add_integration_function('integrate_packages_sort_id', __CLASS__ . '::packagesSortId#', false, __FILE__);
+		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
+		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
 	}
 
 	/**
-	 * Setup for autoloader of used classes
-	 *
-	 * Настраиваем автоподключение используемых классов
-	 *
 	 * @param array $classMap
 	 * @return void
 	 */
-	public static function autoload(array &$classMap)
+	public function autoload(array &$classMap)
 	{
 		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
 		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
 		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
 		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
+		$classMap['Bugo\\LightPortal\\Lists\\']  = 'LightPortal/lists/';
 		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 
 	/**
-	 * Determine used constants
-	 *
-	 * Определяем необходимые константы
-	 *
 	 * @return void
 	 */
-	public static function userInfo()
+	public function userInfo()
 	{
-		global $context, $smcFunc, $modSettings, $user_info, $sourcedir;
+		global $context, $smcFunc, $modSettings, $sourcedir;
 
 		$context['lp_load_time']   = $context['lp_load_time'] ?? microtime(true);
 		$smcFunc['lp_num_queries'] = $smcFunc['lp_num_queries'] ?? 0;
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.3',
-			'LP_RELEASE_DATE' => '2020-11-11',
-			'LP_DEBUG'        => !empty($modSettings['lp_show_debug_info']) && !empty($user_info['is_admin']),
-			'LP_ADDONS'       => $sourcedir . '/LightPortal/addons',
+			'LP_VERSION'      => '1.9',
+			'LP_RELEASE_DATE' => '2021-08-28',
+			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
-			'RC2_CLEAN'       => !defined('JQUERY_VERSION'),
-			'MAX_MSG_LENGTH'  => 65535
+			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
+			'LP_PAGE_ACTION'  => $modSettings['lp_page_action'] ?? 'page'
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -94,50 +93,42 @@ class Integration
 	}
 
 	/**
-	 * Speed up the loading of third-party resources
-	 *
-	 * Ускоряем загрузку сторонних ресурсов
-	 *
 	 * @return void
 	 */
-	public static function preCssOutput()
+	public function preCssOutput()
 	{
-		echo "\n\t" . '<meta http-equiv="x-dns-prefetch-control" content="on">';
-		echo "\n\t" . '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">';
+		global $context;
+
+		if (SMF === 'BACKGROUND')
+			return;
+
+		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
+
+		if (!empty($context['portal_next_page']))
+			echo "\n\t" . '<link rel="prerender" href="', $context['portal_next_page'], '">';
 	}
 
 	/**
-	 * Load the mod languages, addons, blocks & styles
-	 *
-	 * Подключаем языковой файл, скрипты и стили, используемые модом
-	 *
 	 * @return void
 	 */
-	public static function loadTheme()
+	public function loadTheme()
 	{
-		global $txt, $context, $modSettings;
-
-		if (Subs::isPortalMustNotBeLoaded())
+		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
 		loadLanguage('LightPortal/');
 
-		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
-
-		Subs::loadBlocks();
+		Subs::defineVars();
 		Subs::loadCssFiles();
-		Subs::runAddons();
+
+		Addons::run();
 	}
 
 	/**
-	 * Set up a redirect to the main page of the forum, when requesting an action markasread
-	 *
-	 * Настраиваем редирект на главную страницу форума, при запросе действия action=markasread
-	 *
 	 * @param string $setLocation
 	 * @return void
 	 */
-	public static function redirect(string &$setLocation)
+	public function redirect(string &$setLocation)
 	{
 		global $modSettings, $scripturl;
 
@@ -149,63 +140,60 @@ class Integration
 	}
 
 	/**
-	 * Add "action=portal"
-	 *
-	 * Добавляем action «portal»
-	 *
 	 * @param array $actions
 	 * @return void
 	 */
-	public static function actions(array &$actions)
+	public function actions(array &$actions)
 	{
-		global $context, $modSettings;
+		global $modSettings, $context;
 
-		$actions['portal'] = array('LightPortal/front/Article.php', array(__NAMESPACE__ . '\Front\Article', 'show'));
-		$actions['forum']  = array('BoardIndex.php', 'BoardIndex');
+		if (!empty($modSettings['lp_frontpage_mode']))
+			$actions[LP_ACTION] = array('LightPortal/FrontPage.php', array(new FrontPage, 'show'));
 
-		if (Helpers::request()->is('portal') && $context['current_subaction'] == 'tags')
-			Tag::show();
+		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
+
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'categories')
+			return call_user_func(array(new Lists\Category, 'show'));
+
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'tags')
+			return call_user_func(array(new Lists\Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
-			$disabled_actions = Subs::unsetDisabledActions($actions);
-			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $disabled_actions))
+			Subs::unsetDisabledActions($actions);
+
+			if (!empty($context['current_action']) && array_key_exists($context['current_action'], $context['lp_disabled_actions']))
 				redirectexit();
 		}
 	}
 
 	/**
-	 * Access the portal page or call the default method
-	 *
-	 * Обращаемся к странице портала или вызываем метод по умолчанию
-	 *
-	 * @return mixed
+	 * @return void
 	 */
-	public static function defaultAction()
+	public function defaultAction()
 	{
-		global $modSettings, $sourcedir;
+		global $modSettings;
 
-		if (Helpers::request()->filled('page'))
-			return call_user_func(array(__NAMESPACE__ . '\Page', 'show'));
+		if (Helpers::request()->filled(LP_PAGE_ACTION))
+			return call_user_func(array(new Page, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
-			require_once($sourcedir . '/BoardIndex.php');
+			Helpers::require('BoardIndex');
 
 			return call_user_func('BoardIndex');
 		}
 
-		if (!empty($modSettings['lp_frontpage_mode']))
-			return call_user_func(array(__NAMESPACE__ . '\Front\Article', 'show'));
+		return call_user_func(array(new FrontPage, 'show'));
 	}
 
 	/**
-	 * Add a selection of the "Forum" menu item when viewing boards and topics
+	 * Add a selection for some menu items when navigating to the specified areas
 	 *
-	 * Добавляем выделение кнопки «Форум» при просмотре разделов и тем
+	 * Добавляем выделение для некоторых пунктов меню при переходе в указанные области
 	 *
 	 * @param string $current_action
 	 * @return void
 	 */
-	public static function currentAction(string &$current_action)
+	public function currentAction(string &$current_action)
 	{
 		global $modSettings, $context;
 
@@ -213,13 +201,18 @@ class Integration
 			return;
 
 		if (Helpers::request()->isEmpty('action')) {
-			$current_action = 'portal';
+			$current_action = LP_ACTION;
 
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
-			if (Helpers::request()->filled('page'))
-				$current_action = 'portal';
+			if (Helpers::request()->filled(LP_PAGE_ACTION)) {
+				$current_action = LP_ACTION;
+
+				$page = Helpers::request(LP_PAGE_ACTION);
+				if (isset(Subs::getPagesInMenu()[$page]))
+					$current_action = 'portal_' . $page;
+			}
 		} else {
 			$current_action = empty($modSettings['lp_standalone_mode']) && Helpers::request()->is('forum') ? 'home' : $context['current_action'];
 		}
@@ -228,84 +221,96 @@ class Integration
 		$disabled_actions[] = 'home';
 
 		if (!empty($context['current_board']) || Helpers::request()->is(['keywords']))
-			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : 'portal') : 'home';
+			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION) : 'home';
 	}
 
 	/**
-	 * Manage the display of items in the main menu
-	 *
-	 * Управляем отображением пунктов в главном меню
-	 *
 	 * @param array $buttons
 	 * @return void
 	 */
-	public static function menuButtons(array &$buttons)
+	public function menuButtons(array &$buttons)
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $txt, $scripturl, $settings, $modSettings;
 
-		if (Subs::isPortalMustNotBeLoaded())
+		if (Subs::isPortalShouldNotBeLoaded())
 			return;
 
-		$context['allow_light_portal_view']             = allowedTo('light_portal_view');
-		$context['allow_light_portal_manage_blocks']    = allowedTo('light_portal_manage_blocks');
-		$context['allow_light_portal_manage_own_pages'] = allowedTo('light_portal_manage_own_pages');
+		$context['allow_light_portal_view']              = allowedTo('light_portal_view');
+		$context['allow_light_portal_manage_own_blocks'] = allowedTo('light_portal_manage_own_blocks');
+		$context['allow_light_portal_manage_own_pages']  = allowedTo('light_portal_manage_own_pages');
 
-		Block::show();
+		(new Block)->show();
 
-		// Display "Portal settings" in Main Menu => Admin | Отображение пункта "Настройки портала"
-		if ($context['allow_light_portal_manage_blocks'] || $context['allow_light_portal_manage_own_pages']) {
-			$buttons['admin']['show'] = true;
+		// Display "Portal settings" in Main Menu => Admin
+		if ($context['user']['is_admin']) {
 			$counter = 0;
 			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
 				$counter++;
+
 				if ($area == 'featuresettings')
 					break;
 			}
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				$context['user']['is_admin'] ? array(
+				array(
 					'portal_settings' => array(
 						'title' => $txt['lp_settings'],
 						'href'  => $scripturl . '?action=admin;area=lp_settings',
 						'show'  => true,
 						'sub_buttons' => array(
-							'plugins' => array(
-								'title' => $txt['lp_plugins'],
-								'href'  => $scripturl . '?action=admin;area=lp_settings;sa=plugins',
-								'amt'   => count($context['lp_enabled_plugins']),
-								'show'  => true
-							),
 							'blocks' => array(
 								'title' => $txt['lp_blocks'],
 								'href'  => $scripturl . '?action=admin;area=lp_blocks',
-								'amt'   => count($context['lp_active_blocks']),
+								'amt'   => $context['lp_num_active_blocks'],
 								'show'  => true
 							),
 							'pages' => array(
 								'title'   => $txt['lp_pages'],
 								'href'    => $scripturl . '?action=admin;area=lp_pages',
 								'amt'     => $context['lp_num_active_pages'],
+								'show'    => true
+							),
+							'plugins' => array(
+								'title'   => $txt['lp_plugins'],
+								'href'    => $scripturl . '?action=admin;area=lp_plugins',
+								'amt'     => count($context['lp_enabled_plugins']),
 								'show'    => true,
 								'is_last' => true
 							)
 						)
 					)
-				) : array(
-					'portal_blocks' => array(
-						'title' => $txt['lp_blocks'],
-						'href'  => $scripturl . '?action=admin;area=lp_blocks',
-						'amt'   => count($context['lp_active_blocks']),
-						'show'  => $context['allow_light_portal_manage_blocks']
-					),
-					'portal_pages' => array(
-						'title' => $txt['lp_pages'],
-						'href'  => $scripturl . '?action=admin;area=lp_pages',
-						'amt'   => $context['lp_num_active_pages'],
-						'show'  => $context['allow_light_portal_manage_own_pages']
-					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
+			);
+		}
+
+		// Display chosen pages in the main menu
+		if (!empty($pages_in_menu = Subs::getPagesInMenu())) {
+			$compat_theme = in_array(explode('_', $settings['name'])[0], ['Wide', 'Badem']);
+
+			$pages = [];
+			foreach ($pages_in_menu as $alias => $item) {
+				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
+					'title' => Helpers::getTitle($item),
+					'href'  => $scripturl . '?' . LP_PAGE_ACTION . '=' . $alias,
+					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
+					'show'  => Helpers::canViewItem($item['permissions'])
+				);
+			}
+
+			$counter = -1;
+			foreach ($buttons as $area => $dummy) {
+				$counter++;
+
+				if ($area == 'admin')
+					break;
+			}
+
+			$buttons = array_merge(
+				array_slice($buttons, 0, $counter, true),
+				$pages,
+				array_slice($buttons, $counter, null, true)
 			);
 		}
 
@@ -314,11 +319,10 @@ class Integration
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
-		// Display "Portal" item in Main Menu | Отображение пункта "Портал"
+		// Display "Portal" item in Main Menu
 		$buttons = array_merge(
-			array_slice($buttons, 0, 0, true),
 			array(
-				'portal' => array(
+				LP_ACTION => array(
 					'title'       => $txt['lp_portal'],
 					'href'        => $scripturl,
 					'icon'        => 'home',
@@ -327,7 +331,7 @@ class Integration
 					'is_last'     => $context['right_to_left']
 				)
 			),
-			array_slice($buttons, 0, null, true)
+			$buttons
 		);
 
 		// "Forum"
@@ -336,12 +340,12 @@ class Integration
 		$buttons['home']['icon']    = 'im_on';
 		$buttons['home']['is_last'] = false;
 
-		// Standalone mode | Автономный режим
+		// Standalone mode
 		if (!empty($modSettings['lp_standalone_mode'])) {
-			$buttons['portal']['title']   = $txt['lp_portal'];
-			$buttons['portal']['href']    = $modSettings['lp_standalone_url'] ?: $scripturl;
-			$buttons['portal']['icon']    = 'home';
-			$buttons['portal']['is_last'] = $context['right_to_left'];
+			$buttons[LP_ACTION]['title']   = $txt['lp_portal'];
+			$buttons[LP_ACTION]['href']    = !empty($modSettings['lp_standalone_url']) ? $modSettings['lp_standalone_url'] : $scripturl;
+			$buttons[LP_ACTION]['icon']    = 'home';
+			$buttons[LP_ACTION]['is_last'] = $context['right_to_left'];
 
 			$buttons = array_merge(
 				array_slice($buttons, 0, 2, true),
@@ -366,20 +370,51 @@ class Integration
 	}
 
 	/**
-	 * Guests cannot to manage the portal!
+	 * Remove comments and alerts on deleting members
 	 *
-	 * Гости могут только просматривать портал
+	 * Удаляем комментарии и оповещения при удалении пользователей
 	 *
+	 * @param array $users
 	 * @return void
 	 */
-	public static function loadIllegalGuestPermissions()
+	public function deleteMembers(array $users)
+	{
+		global $smcFunc;
+
+		if (empty($users))
+			return;
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE author_id IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}user_alerts
+			WHERE id_member IN ({array_int:users})
+				OR id_member_started IN ({array_int:users})',
+			array(
+				'users' => $users
+			)
+		);
+
+		Helpers::cache()->flush();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function loadIllegalGuestPermissions()
 	{
 		global $context;
 
 		$context['non_guest_permissions'] = array_merge(
 			$context['non_guest_permissions'],
 			array(
-				'light_portal_manage_blocks',
+				'light_portal_manage_own_blocks',
 				'light_portal_manage_own_pages',
 				'light_portal_approve_pages'
 			)
@@ -387,29 +422,85 @@ class Integration
 	}
 
 	/**
-	 * Determine permissions
-	 *
-	 * Определяем права доступа
-	 *
 	 * @param array $permissionGroups
 	 * @param array $permissionList
 	 * @param array $leftPermissionGroups
 	 * @return void
 	 */
-	public static function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
-		global $context;
+		global $txt, $context;
 
-		$context['permissions_excluded']['light_portal_manage_blocks'][]    = 0;
-		$context['permissions_excluded']['light_portal_manage_own_pages'][] = 0;
-		$context['permissions_excluded']['light_portal_approve_pages'][]    = 0;
+		$txt['permissiongroup_light_portal'] = LP_NAME;
 
-		$permissionList['membergroup']['light_portal_view']             = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage_blocks']    = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_manage_own_pages'] = array(false, 'light_portal');
-		$permissionList['membergroup']['light_portal_approve_pages']    = array(false, 'light_portal');
+		$context['permissions_excluded']['light_portal_manage_own_blocks'][] = 0;
+		$context['permissions_excluded']['light_portal_manage_own_pages'][]  = 0;
+		$context['permissions_excluded']['light_portal_approve_pages'][]     = 0;
+
+		$permissionList['membergroup']['light_portal_view']              = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_own_blocks'] = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_manage_own_pages']  = array(false, 'light_portal');
+		$permissionList['membergroup']['light_portal_approve_pages']     = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
+	}
+
+	/**
+	 * Validating data when like/unlike pages
+	 *
+	 * Валидируем данные при лайке/дизлайке страниц
+	 *
+	 * @param string $type
+	 * @param int $content
+	 * @return bool|array
+	 */
+	public function validLikes(string $type, int $content)
+	{
+		global $smcFunc, $user_info;
+
+		if ($type !== 'lpp')
+			return false;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT alias, author_id
+			FROM {db_prefix}lp_pages
+			WHERE page_id = {int:id}
+			LIMIT 1',
+			array(
+				'id' => $content
+			)
+		);
+
+		[$alias, $author] = $smcFunc['db_fetch_row']($request);
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		if (empty($alias))
+			return false;
+
+		return [
+			'type'        => $type,
+			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
+			'redirect'    => LP_PAGE_ACTION . '=' . $alias,
+			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
+		];
+	}
+
+	/**
+	 * Update cache on like/unlike pages
+	 *
+	 * Обновляем кэш при лайке/дизлайке страниц
+	 *
+	 * @param Likes $obj
+	 * @return void
+	 */
+	public function issueLike(Likes $obj)
+	{
+		if ($obj->get('type') !== 'lpp')
+			return;
+
+		Helpers::cache()->put('likes_page_' . $obj->get('content') . '_count', $obj->get('numLikes'));
 	}
 
 	/**
@@ -420,9 +511,11 @@ class Integration
 	 * @param array $alert_types
 	 * @return void
 	 */
-	public static function alertTypes(array &$alert_types)
+	public function alertTypes(array &$alert_types)
 	{
-		global $modSettings;
+		global $txt, $modSettings;
+
+		$txt['alert_group_light_portal'] = LP_NAME;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
 			$alert_types['light_portal'] = array(
@@ -440,7 +533,7 @@ class Integration
 	 * @param array $formats
 	 * @return void
 	 */
-	public static function fetchAlerts(array &$alerts, array &$formats)
+	public function fetchAlerts(array &$alerts, array &$formats)
 	{
 		global $user_info;
 
@@ -457,9 +550,10 @@ class Integration
 						'link'     => '<a href="%2$s">%1$s</a>',
 						'text'     => '<strong>%1$s</strong>'
 					);
+
 					$formats['page_comment_reply_new_reply'] = array(
 						'required' => array('content_subject', 'content_link'),
-						'link'     => '<a href="%2$s">%1s</a>',
+						'link'     => '<a href="%2$s">%1$s</a>',
 						'text'     => '<strong>%1$s</strong>'
 					);
 				} else {
@@ -470,14 +564,87 @@ class Integration
 	}
 
 	/**
-	 * Display current actions of members (on portal area)
+	 * Add the "My pages" item in the profile popup window
 	 *
-	 * Показываем, кто что делает на портале
+	 * Добавляем пункт «Мои страницы» в попап-окне профиля
 	 *
+	 * @param array $profile_areas
+	 * @return void
+	 */
+	public function preProfileAreas(array &$profile_areas)
+	{
+		global $context, $txt, $scripturl;
+
+		if (!empty($context['user']['is_admin']))
+			return;
+
+		$profile_areas['info']['areas']['lp_my_blocks'] = array(
+			'label' => $txt['lp_my_blocks'],
+			'custom_url' => $scripturl . '?action=admin;area=lp_blocks',
+			'icon' => 'modifications',
+			'enabled' => Helpers::request('area') === 'popup',
+			'permission' => array(
+				'own' => array('light_portal_manage_own_blocks'),
+				'any' => array()
+			)
+		);
+
+		$profile_areas['info']['areas']['lp_my_pages'] = array(
+			'label' => $txt['lp_my_pages'],
+			'custom_url' => $scripturl . '?action=admin;area=lp_pages',
+			'icon' => 'reports',
+			'enabled' => Helpers::request('area') === 'popup',
+			'permission' => array(
+				'own' => array('light_portal_manage_own_pages'),
+				'any' => array()
+			)
+		);
+	}
+
+	/**
+	 * Register the "My pages" item in the profile popup window
+	 *
+	 * Регистрируем пункт «Мои страницы» в попап-окне профиля
+	 *
+	 * @param array $profile_items
+	 * @return void
+	 */
+	public function profilePopup(array &$profile_items)
+	{
+		global $context;
+
+		if (!empty($context['user']['is_admin']))
+			return;
+
+		$counter = 0;
+		foreach ($profile_items as $item) {
+			$counter++;
+
+			if ($item['area'] == 'showdrafts')
+				break;
+		}
+
+		$profile_items = array_merge(
+			array_slice($profile_items, 0, $counter, true),
+			array(
+				allowedTo('light_portal_manage_own_blocks') ? array(
+					'menu' => 'info',
+					'area' => 'lp_my_blocks'
+				) : null,
+				allowedTo('light_portal_manage_own_pages') ? array(
+					'menu' => 'info',
+					'area' => 'lp_my_pages'
+				) : null,
+			),
+			array_slice($profile_items, $counter, null, true)
+		);
+	}
+
+	/**
 	 * @param array $actions
 	 * @return string
 	 */
-	public static function whoisOnline(array $actions)
+	public function whoisOnline(array $actions): string
 	{
 		global $txt, $scripturl, $modSettings, $context;
 
@@ -489,28 +656,28 @@ class Integration
 				$result = sprintf($txt['lp_who_viewing_index'], $modSettings['lp_standalone_url'], $scripturl);
 		}
 
-		if (!empty($actions['action']) && $actions['action'] == 'portal') {
+		if (!empty($actions['action']) && $actions['action'] == LP_ACTION) {
 			if (!empty($actions['sa']) && $actions['sa'] == 'tags') {
 				!empty($actions['key'])
-					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=portal;sa=tags;key=' . $actions['key'], $actions['key'])
-					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=portal;sa=tags');
+					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=' . LP_ACTION . ';sa=tags;key=' . $actions['key'], $actions['key'])
+					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=' . LP_ACTION . ';sa=tags');
 			} else {
-				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=portal');
+				$result = sprintf($txt['lp_who_viewing_frontpage'], $scripturl . '?action=' . LP_ACTION);
 			}
 		}
 
 		if (!empty($actions['action']) && $actions['action'] == 'forum')
 			$result = sprintf($txt['who_index'], $scripturl . '?action=forum', $context['forum_name']);
 
-		if (!empty($actions['page']))
-			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?page=' . $actions['page']);
+		if (!empty($actions[LP_PAGE_ACTION]))
+			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_ACTION . '=' . $actions[LP_PAGE_ACTION]);
 
 		if (!empty($actions['action']) && $actions['action'] == 'lp_settings')
 			$result = sprintf($txt['lp_who_viewing_portal_settings'], $scripturl . '?action=admin;area=lp_settings');
 
 		if (!empty($actions['action']) && $actions['action'] == 'lp_blocks') {
 			if (!empty($actions['area']) && $actions['area'] == 'lp_blocks') {
-				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action==admin;area=lp_blocks');
+				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action=admin;area=lp_blocks');
 
 				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
 					$result = sprintf($txt['lp_who_viewing_editing_block'], $actions['id']);
@@ -533,5 +700,64 @@ class Integration
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 * @param int $ttl
+	 * @return void
+	 */
+	public function cachePutData(&$key, &$value, &$ttl)
+	{
+		global $modSettings, $context, $txt;
+
+		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
+			return;
+
+		$context['lp_detail_cache_info'][] = array(
+			'title'   => sprintf($txt['lp_cache_saving'], $key, $ttl),
+			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+			'level'   => 'notice'
+		);
+	}
+
+	/**
+	 * @param string $key
+	 * @param int $ttl
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function cacheGetData(&$key, &$ttl, &$value)
+	{
+		global $modSettings, $context, $txt;
+
+		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
+			return;
+
+		$context['lp_detail_cache_info'][] = array(
+			'title'   => sprintf($txt['lp_cache_loading'], $key),
+			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+			'level'   => 'info'
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function modificationTypes()
+	{
+		global $context;
+
+		$context['modification_types'][] = 'lp_addon';
+	}
+
+	/**
+	 * @param array $sort_id
+	 * @return void
+	 */
+	public function packagesSortId(array &$sort_id)
+	{
+		$sort_id['lp_addon'] = 1;
 	}
 }

@@ -1,8 +1,12 @@
 <?php
 
-$txt['lp_block_types']['top_boards']              = 'Популярні розділи';
-$txt['lp_block_types_descriptions']['top_boards'] = 'Відображає список популярних розділів форуму.';
-
-$txt['lp_top_boards_addon_num_boards']        = 'Кількість розділів для відображення';
-$txt['lp_top_boards_addon_show_numbers_only'] = 'Відображати тільки цифри';
-$txt['lp_top_boards_addon_topics']            = array('тема', 'теми', 'тем');
+return [
+	'title' => 'Популярні розділи',
+	'description' => 'Відображає список популярних розділів форуму.',
+	'num_boards' => 'Кількість розділів для відображення',
+	'entity_type' => 'Що відображати в смужках',
+	'entity_type_set' => array('Кількість тем', 'Кількість повідомлень'),
+	'show_numbers_only' => 'Відображати тільки цифри',
+	'topics' => 'тема, теми, тем',
+	'posts' => 'повідомлення, повідомлення, повідомлень'
+];

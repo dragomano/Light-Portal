@@ -1,50 +1,27 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\VkComments;
-
 /**
  * VkComments
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\VkComments;
 
-class VkComments
+use Bugo\LightPortal\Addons\Plugin;
+
+class VkComments extends Plugin
 {
 	/**
-	 * Specifying the addon type (if 'block', you do not need to specify it)
-	 *
-	 * Указываем тип аддона (если 'block', то можно не указывать)
-	 *
 	 * @var string
 	 */
-	public static $addon_type = 'comment';
-
-	/**
-	 * Allow attachments in comments (true|false)
-	 *
-	 * Разрешить вложения в комментариях (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $allow_attachments = true;
-
-	/**
-	 * Automatically publish the comment to the user's VK page (true|false)
-	 *
-	 * Автоматическая публикация комментария на странице пользователя (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $auto_publish = false;
+	public $type = 'comment';
 
 	/**
 	 * Adding the new comment type
@@ -53,7 +30,7 @@ class VkComments
 	 *
 	 * @return void
 	 */
-	public static function init()
+	public function init()
 	{
 		global $txt;
 
@@ -61,25 +38,19 @@ class VkComments
 	}
 
 	/**
-	 * Add settings
-	 *
-	 * Добавляем настройки
-	 *
 	 * @param array $config_vars
 	 * @return void
 	 */
-	public static function addSettings(&$config_vars)
+	public function addSettings(&$config_vars)
 	{
 		global $modSettings, $txt;
 
 		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
-			updateSettings(array('lp_vk_comments_addon_allow_attachments' => static::$allow_attachments));
-		if (!isset($modSettings['lp_vk_comments_addon_auto_publish']))
-			updateSettings(array('lp_vk_comments_addon_auto_publish' => static::$auto_publish));
+			updateSettings(array('lp_vk_comments_addon_allow_attachments' => true));
 
-		$config_vars[] = array('text', 'lp_vk_comments_addon_api_id', 'subtext' => $txt['lp_vk_comments_addon_api_id_subtext']);
-		$config_vars[] = array('check', 'lp_vk_comments_addon_allow_attachments');
-		$config_vars[] = array('check', 'lp_vk_comments_addon_auto_publish');
+		$config_vars['vk_comments'][] = array('text', 'api_id', 'subtext' => $txt['lp_vk_comments']['api_id_subtext']);
+		$config_vars['vk_comments'][] = array('check', 'allow_attachments');
+		$config_vars['vk_comments'][] = array('check', 'auto_publish');
 	}
 
 	/**
@@ -89,14 +60,14 @@ class VkComments
 	 *
 	 * @return void
 	 */
-	public static function comments()
+	public function comments()
 	{
 		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
 			$num_comments      = $modSettings['lp_num_comments_per_page'] ?? 10;
-			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? static::$allow_attachments;
-			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? static::$auto_publish;
+			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? true;
+			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? false;
 
 			$context['lp_vk_comment_block'] = '
 				<script src="https://vk.com/js/api/openapi.js?167"></script>

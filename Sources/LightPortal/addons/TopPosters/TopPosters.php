@@ -1,87 +1,48 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\TopPosters;
-
-use Bugo\LightPortal\Helpers;
-
 /**
  * TopPosters
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2020 Bugo
+ * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.3
+ * @version 1.9
  */
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
+namespace Bugo\LightPortal\Addons\TopPosters;
 
-class TopPosters
+use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Helpers;
+
+class TopPosters extends Plugin
 {
 	/**
-	 * Specify an icon (from the FontAwesome Free collection)
-	 *
-	 * Указываем иконку (из коллекции FontAwesome Free)
-	 *
 	 * @var string
 	 */
-	public static $addon_icon = 'fas fa-users';
+	public $icon = 'fas fa-users';
 
 	/**
-	 * Display user avatars (true|false)
-	 *
-	 * Отображать аватарки пользователей (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $show_avatars = true;
-
-	/**
-	 * The maximum number of users to output
-	 *
-	 * Максимальное количество пользователей для вывода
-	 *
-	 * @var int
-	 */
-	private static $num_posters = 10;
-
-	/**
-	 * Display only numbers (true|false)
-	 *
-	 * Отображать только цифры (true|false)
-	 *
-	 * @var bool
-	 */
-	private static $show_numbers_only = false;
-
-	/**
-	 * Adding the block options
-	 *
-	 * Добавляем параметры блока
-	 *
 	 * @param array $options
 	 * @return void
 	 */
-	public static function blockOptions(&$options)
+	public function blockOptions(array &$options)
 	{
-		$options['top_posters']['parameters']['show_avatars']      = static::$show_avatars;
-		$options['top_posters']['parameters']['num_posters']       = static::$num_posters;
-		$options['top_posters']['parameters']['show_numbers_only'] = static::$show_numbers_only;
+		$options['top_posters']['parameters'] = [
+			'show_avatars'      => true,
+			'num_posters'       => 10,
+			'show_numbers_only' => false,
+		];
 	}
 
 	/**
-	 * Validate options
-	 *
-	 * Валидируем параметры
-	 *
 	 * @param array $parameters
 	 * @param string $type
 	 * @return void
 	 */
-	public static function validateBlockData(&$parameters, $type)
+	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -92,20 +53,16 @@ class TopPosters
 	}
 
 	/**
-	 * Adding fields specifically for this block
-	 *
-	 * Добавляем поля конкретно для этого блока
-	 *
 	 * @return void
 	 */
-	public static function prepareBlockFields()
+	public function prepareBlockFields()
 	{
 		global $context, $txt;
 
 		if ($context['lp_block']['type'] !== 'top_posters')
 			return;
 
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters_addon_show_avatars'];
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_top_posters']['show_avatars'];
 		$context['posting_fields']['show_avatars']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -114,7 +71,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters_addon_num_posters'];
+		$context['posting_fields']['num_posters']['label']['text'] = $txt['lp_top_posters']['num_posters'];
 		$context['posting_fields']['num_posters']['input'] = array(
 			'type' => 'number',
 			'attributes' => array(
@@ -124,7 +81,7 @@ class TopPosters
 			)
 		);
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters_addon_show_numbers_only'];
+		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_posters']['show_numbers_only'];
 		$context['posting_fields']['show_numbers_only']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
@@ -141,8 +98,9 @@ class TopPosters
 	 *
 	 * @param array $parameters
 	 * @return array
+	 * @throws \Exception
 	 */
-	public static function getData($parameters)
+	public function getData(array $parameters): array
 	{
 		global $smcFunc, $memberContext, $scripturl;
 
@@ -185,55 +143,49 @@ class TopPosters
 	}
 
 	/**
-	 * Form the block content
-	 *
-	 * Формируем контент блока
-	 *
-	 * @param string $content
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
 	 * @param array $parameters
 	 * @return void
 	 */
-	public static function prepareContent(&$content, $type, $block_id, $cache_time, $parameters)
+	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
 
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'], 'getData', __CLASS__, $cache_time, $parameters);
+		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'])
+			->setLifeTime($cache_time)
+			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_posters)) {
-			ob_start();
+		if (empty($top_posters))
+			return;
 
-			echo '
+		echo '
 		<dl class="top_posters stats">';
 
-			$max = $top_posters[0]['posts'];
+		$max = $top_posters[0]['posts'];
 
-			foreach ($top_posters as $poster) {
-				echo '
+		foreach ($top_posters as $poster) {
+			echo '
 			<dt>';
 
-				if (!empty($poster['avatar']))
-					echo $poster['avatar'];
+			if (!empty($poster['avatar']))
+				echo $poster['avatar'];
 
-				$width = $poster['posts'] * 100 / $max;
+			$width = $poster['posts'] * 100 / $max;
 
-				echo ' ', $poster['link'], '
+			echo ' ', $poster['link'], '
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getCorrectDeclension($poster['posts'], $txt['lp_posts_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getText($poster['posts'], $txt['lp_posts_set'])), '</span>
 			</dd>';
-			}
-
-			echo '
-		</dl>';
-
-			$content = ob_get_clean();
 		}
+
+		echo '
+		</dl>';
 	}
 }

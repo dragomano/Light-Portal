@@ -1,11 +1,11 @@
 <?php
 
-$txt['lp_block_types']['top_pages']              = 'Top Pages';
-$txt['lp_block_types_descriptions']['top_pages'] = 'Displays a list of popular portal pages.';
-
-$txt['lp_top_pages_addon_type']              = 'Calculation of the popularity';
-$txt['lp_top_pages_addon_type_set']          = array('comments' => 'By comments', 'views' => 'By views');
-$txt['lp_top_pages_addon_num_pages']         = 'Number of pages to display';
-$txt['lp_top_pages_addon_show_numbers_only'] = 'Only display numbers';
-
-$txt['lp_top_pages_addon_no_items'] = 'There are no popular pages.';
+return [
+	'title' => 'Top Pages',
+	'description' => 'Displays a list of popular portal pages.',
+	'type' => 'Calculation of the popularity',
+	'type_set' => array('By comments', 'By views'),
+	'num_pages' => 'Number of pages to display',
+	'show_numbers_only' => 'Display numbers only',
+	'no_items' => 'There are no popular pages.',
+];
