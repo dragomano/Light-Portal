@@ -3,6 +3,7 @@
 return [
 	'title' => 'Image slider',
 	'description' => 'Tiny slider for all purposes.',
+	'use_cdn' => 'Download scripts and styles from CDN',
 	'axis' => 'The axis of the slider',
 	'num_items' => 'Number of slides being displayed in the viewport',
 	'num_items_subtext' => 'If slides less or equal than items, the slider won\'t be initialized.',
@@ -14,8 +15,6 @@ return [
 	'nav_as_thumbnails' => 'Display thumbnails instead of dots',
 	'arrow_keys' => 'Use arrow keys to switch slides',
 	'fixed_width' => 'Fixed slide width',
-	'auto_width' => 'Automatic width of each slide',
-	'auto_height' => 'Height of slider container changes according to each slide\'s height',
 	'slide_by' => 'Number of slides going on one "click"',
 	'speed' => 'Speed ​​of transition between slides (in milliseconds)',
 	'autoplay' => 'Slider autoplay',
