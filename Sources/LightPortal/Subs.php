@@ -182,7 +182,7 @@ class Subs
 
 		loadTemplate('LightPortal/ViewDebug');
 
-		$key = array_search('portal', $context['template_layers']);
+		$key = array_search('lp_portal', $context['template_layers']);
 		if (empty($key)) {
 			$context['template_layers'][] = 'debug';
 		} else {

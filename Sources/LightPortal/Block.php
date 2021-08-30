@@ -76,7 +76,7 @@ class Block
 
 		$context['template_layers'] = array_merge(
 			array_slice($context['template_layers'], 0, $counter, true),
-			array('portal'),
+			array('lp_portal'),
 			array_slice($context['template_layers'], $counter, null, true)
 		);
 	}

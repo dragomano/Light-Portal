@@ -7,7 +7,7 @@
  *
  * @return void
  */
-function template_portal_above()
+function template_lp_portal_above()
 {
 	global $modSettings, $context;
 
@@ -77,7 +77,7 @@ function template_portal_above()
  *
  * @return void
  */
-function template_portal_below()
+function template_lp_portal_below()
 {
 	global $context, $modSettings;
 
