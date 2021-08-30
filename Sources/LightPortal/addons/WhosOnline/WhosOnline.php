@@ -90,9 +90,7 @@ class WhosOnline extends Plugin
 	 */
 	public function getData(): array
 	{
-		global $boarddir;
-
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
 
 		return ssi_whosOnline('array');
 	}

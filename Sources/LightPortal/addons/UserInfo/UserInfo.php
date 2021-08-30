@@ -96,7 +96,7 @@ class UserInfo extends Plugin
 	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $context, $txt, $scripturl, $boarddir;
+		global $context, $txt, $scripturl;
 
 		if ($type !== 'user_info')
 			return;
@@ -153,7 +153,8 @@ class UserInfo extends Plugin
 				</li>
 			</ul>';
 		} else {
-			require_once $boarddir . '/SSI.php';
+			$this->loadSsi();
+
 			ssi_welcome();
 		}
 	}

@@ -140,11 +140,9 @@ class Todays extends Plugin
 	 */
 	public function getData(string $type, string $output_method = 'echo')
 	{
-		global $boarddir;
+		$this->loadSsi();
 
 		$funcName = 'ssi_todays' . ucfirst($type);
-
-		require_once $boarddir . '/SSI.php';
 
 		return function_exists($funcName) ? $funcName($output_method) : '';
 	}

@@ -84,4 +84,20 @@ abstract class Plugin
 		if (is_file($path))
 			require_once $path;
 	}
+
+	/**
+	 * @return void
+	 */
+	public function loadSsi()
+	{
+		global $boarddir, $txt;
+
+		$path = $boarddir . DIRECTORY_SEPARATOR . 'SSI.php';
+
+		if (is_file($path)) {
+			require_once $path;
+		} else {
+			fatal_error(sprintf($txt['lp_addon_requires_ssi'], $this->getName()), false);
+		}
+	}
 }

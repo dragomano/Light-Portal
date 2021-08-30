@@ -144,15 +144,14 @@ class RecentTopics extends Plugin
 	 */
 	public function getData(array $parameters): array
 	{
-		global $boarddir;
-
 		if (!empty($parameters['exclude_boards']))
 			$exclude_boards = explode(',', $parameters['exclude_boards']);
 
 		if (!empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
+
 		$topics = ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
 
 		if (empty($topics))
