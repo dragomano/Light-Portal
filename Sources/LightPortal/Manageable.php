@@ -57,8 +57,14 @@ trait Manageable
 		global $context;
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if (!empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
+			if (!empty($data['input']['after'])) {
+				$tag = 'div';
+
+				if (in_array($data['input']['type'], ['checkbox', 'number']))
+					$tag = 'span';
+
+				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			}
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
@@ -109,5 +115,22 @@ trait Manageable
 		}
 
 		exit(json_encode($results));
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareBbcContent(&$entity)
+	{
+		global $smcFunc;
+
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		Helpers::require('Subs-Post');
+
+		preparsecode($entity['content']);
 	}
 }

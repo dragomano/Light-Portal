@@ -193,7 +193,7 @@ class ManageBlocks
 
 		$context['lp_block']         = $this->getData($item);
 		$context['lp_block']['id']   = $this->setData();
-		$context['lp_block']['icon'] = Helpers::getIcon();
+		$context['lp_block']['icon'] = Helpers::getIcon($context['lp_block']['icon']);
 
 		if (!empty($context['lp_block']['id'])) {
 			loadTemplate('LightPortal/ManageBlocks');
@@ -776,7 +776,7 @@ class ManageBlocks
 			: Helpers::prepareContent($context['preview_content'], $context['lp_block']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon());
+		$context['preview_title'] = Helpers::getPreviewTitle(Helpers::getIcon($context['lp_block']['icon']));
 	}
 
 	/**
@@ -822,6 +822,8 @@ class ManageBlocks
 			return 0;
 
 		checkSubmitOnce('check');
+
+		$this->prepareBbcContent($context['lp_block']);
 
 		if (empty($item)) {
 			$item = $this->addData();
@@ -1069,6 +1071,11 @@ class ManageBlocks
 		}
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if ($row['type'] === 'bbc') {
+				Helpers::require('Subs-Post');
+				$row['content'] = un_preparsecode($row['content']);
+			}
+
 			censorText($row['content']);
 
 			if (!isset($data))

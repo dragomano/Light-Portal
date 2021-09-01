@@ -98,9 +98,7 @@ class Polls extends Plugin
 	 */
 	public function getData(int $topic = 0): array
 	{
-		global $boarddir;
-
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
 
 		return ssi_showPoll($topic, 'array');
 	}

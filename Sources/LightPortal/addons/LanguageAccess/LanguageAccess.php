@@ -108,7 +108,8 @@ class LanguageAccess extends Plugin
 				'name'     => 'allowed_languages[]',
 				'multiple' => true
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 	}
 }

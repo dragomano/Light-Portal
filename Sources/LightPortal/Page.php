@@ -613,6 +613,11 @@ class Page
 		$data['can_view'] = Helpers::canViewItem($data['permissions']) || $user_info['is_admin'] || $is_author;
 		$data['can_edit'] = $user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
 
+		if ($data['type'] === 'bbc') {
+			Helpers::require('Subs-Post');
+			$data['content'] = un_preparsecode($data['content']);
+		}
+
 		if (!empty($modSettings['enable_likes'])) {
 			$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
 

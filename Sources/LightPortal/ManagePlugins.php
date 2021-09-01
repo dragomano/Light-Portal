@@ -94,12 +94,13 @@ class ManagePlugins
 			];
 		}, $context['lp_plugins']);
 
+		$this->prepareAddonChart();
+
 		// Sort plugin list
 		$context['current_filter'] = Helpers::post('filter', 'all');
 
 		if (Helpers::post()->has('filter')) {
-			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context)
-			{
+			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context) {
 				$filter = Helpers::post('filter');
 
 				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['types'], $context['lp_plugin_types'][$filter]) !== false) {
@@ -267,5 +268,62 @@ class ManagePlugins
 		}
 
 		return $context['lp_plugin_types'][$data];
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareAddonChart()
+	{
+		global $context, $txt;
+
+		if (Helpers::request()->has('chart') === false)
+			return;
+
+		$typeCount = [];
+		foreach ($context['all_lp_plugins'] as $plugin) {
+			$key = array_search($plugin['types'], $txt['lp_plugins_types']);
+
+			$types = explode(' + ', $plugin['types']);
+			foreach ($types as $type) {
+				$key = array_search($type, $txt['lp_plugins_types']);
+
+				if (!isset($typeCount[$key]))
+					$typeCount[$key] = 0;
+
+				$typeCount[$key]++;
+			}
+		}
+
+		if (empty($typeCount))
+			return;
+
+		$context['lp_addon_chart'] = true;
+
+		ksort($typeCount);
+
+		$context['insert_after_template'] .= '
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@3/dist/chart.min.js"></script>
+		<script>
+			const pageChart = document.querySelector("#addonChart");
+			new Chart(pageChart, {
+				type: "pie",
+				data: {
+					labels: ["' . implode('", "', $context['lp_plugin_types']) . '"],
+					datasets: [{
+						data: [' . implode(', ', $typeCount) . '],
+						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#4b93d1", "#414141"]
+					}]
+				},
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							position: "top",
+						}
+					}
+				}
+			});
+		</script>';
 	}
 }

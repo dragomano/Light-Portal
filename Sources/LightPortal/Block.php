@@ -47,6 +47,8 @@ class Block
 			if (Helpers::canViewItem($data['permissions']) === false)
 				continue;
 
+			$data['can_edit'] = $context['user']['is_admin'] || ($context['allow_light_portal_manage_own_blocks'] && $data['user_id'] == $context['user']['id']);
+
 			empty($data['content'])
 				? Helpers::prepareContent($data['content'], $data['type'], $data['id'], LP_CACHE_TIME)
 				: Helpers::parseContent($data['content'], $data['type']);
@@ -74,7 +76,7 @@ class Block
 
 		$context['template_layers'] = array_merge(
 			array_slice($context['template_layers'], 0, $counter, true),
-			array('portal'),
+			array('lp_portal'),
 			array_slice($context['template_layers'], $counter, null, true)
 		);
 	}
@@ -84,7 +86,7 @@ class Block
 	 */
 	public static function getActive(): array
 	{
-		global $smcFunc, $user_info;
+		global $smcFunc;
 
 		if (($active_blocks = Helpers::cache()->get('active_blocks')) === null) {
 			$request = $smcFunc['db_query']('', '
@@ -120,7 +122,6 @@ class Block
 						'title_style'   => $row['title_style'],
 						'content_class' => $row['content_class'],
 						'content_style' => $row['content_style'],
-						'can_edit'      => $user_info['is_admin'] || (allowedTo('light_portal_manage_own_blocks') && $row['user_id'] == $user_info['id'])
 					);
 
 				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];

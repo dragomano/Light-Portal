@@ -119,10 +119,6 @@ class Helpers
 	 */
 	public static function getIcon(?string $icon = ''): string
 	{
-		global $context;
-
-		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-
 		if (empty($icon))
 			return '';
 
@@ -604,6 +600,10 @@ class Helpers
 			case 'bbc':
 				$content = parse_bbc($content);
 
+				if (strpos($content, '<pre') !== false) {
+					$content = strtr($content, array('<br>' => "\n"));
+				}
+
 				// Integrate with the Paragrapher mod
 				call_integration_hook('integrate_paragrapher_string', array(&$content));
 
@@ -787,7 +787,7 @@ class Helpers
 	/**
 	 * @param $user_id
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public static function getUserAvatar($user_id): array
 	{

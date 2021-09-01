@@ -1,6 +1,9 @@
+/* Used functions */
+/* Portal menu icon for some themes */
 .fa-portal::before {
   content: "\f0ac";
 }
+/* Context menu for blocks and pages */
 .actions .context_menu {
   position: relative;
 }
@@ -22,7 +25,7 @@
 }
 .block_bbc .videocontainer,
 .block_html .videocontainer,
-.block_md .videocontainer {
+.block_markdown .videocontainer {
   margin: 0 auto;
 }
 .preview .button {
@@ -34,9 +37,10 @@
 .descbox .bbc_code {
   overflow: hidden !important;
 }
+/* Page icons in the main menu */
 .portal_menu_icons {
-  font-size: 0.875rem;
   vertical-align: middle;
+  font-size: 0.875rem;
   margin: -3px 8px 0 0;
 }
 #lp_blocks {
@@ -74,6 +78,8 @@
   border: 3px double red;
 }
 .lp_tabs > label {
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
   display: inline-block;
   margin: 0 0 -1px;
   padding: 15px 25px;
@@ -81,11 +87,10 @@
   text-align: center;
   color: #aaa;
   border: 1px solid #ddd;
-  border-radius: 3px 3px 0 0;
 }
 .lp_tabs > label:hover {
-  color: #888;
   cursor: pointer;
+  color: #888;
 }
 .lp_tabs > label:before {
   font-family: "Font Awesome 5 Free";
@@ -160,8 +165,7 @@
 }
 .lp_tabs section #post_header dt,
 .lp_tabs section #post_header dd {
-  margin-block-start: 1px;
-  margin-block-end: 1px;
+  margin-block-end: 5px;
   margin-inline-start: 0;
   padding-top: 5px;
   width: auto !important;
@@ -332,9 +336,9 @@
   margin-top: 1em;
 }
 .comments .avatar {
+  border-radius: 100%;
   max-width: 45px !important;
   max-height: 45px !important;
-  border-radius: 100%;
   box-shadow: 0 0 4px #666;
 }
 .comments .cat_bar {
@@ -357,9 +361,9 @@ section #display_head span {
   margin-bottom: 10px;
 }
 .article_view article {
+  border-radius: 12px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0, 1);
   position: relative;
-  border-radius: 12px;
   overflow: hidden;
   padding: 0;
   display: flex;
@@ -519,7 +523,7 @@ section #display_head span {
   margin: 0 10px 10px;
   min-height: 300px;
   background-size: cover;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.5s ease;
 }
@@ -527,7 +531,8 @@ section #display_head span {
   display: block;
   position: relative;
   overflow: hidden;
-  border-radius: 5px 5px 0 0;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
 }
 .article_alt2_view article .article_image_link div {
   width: auto;
@@ -592,7 +597,7 @@ section #display_head span {
   box-shadow: 0 3px 7px -1px rgba(0, 0, 0, 0.1);
   line-height: 1.4;
   font-family: sans-serif;
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
   z-index: 0;
 }
@@ -850,20 +855,16 @@ section #display_head span {
     display: none;
   }
 }
-.article_simple2_view .card .card-header .card-title h3,
-.article_simple2_view .card .card-header .card-title h4 {
+.article_simple2_view .card .card-header .card-title h3 {
   line-height: 1.25;
   width: 100%;
-}
-.article_simple2_view .card .card-header .card-title h3 {
   color: #ffffff;
   font-weight: 700;
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
-.article_simple2_view .card .card-header .card-title h4 {
+.article_simple2_view .card .card-header .card-title time {
   color: #f3f4f6;
-  font-size: 1.25rem;
 }
 .article_simple2_view .card .card-header svg {
   color: #ffffff;
@@ -920,12 +921,12 @@ section #display_head span {
   }
 }
 .article_simple2_view .card .card-body .card-body-inner h3,
-.article_simple2_view .card .card-body .card-body-inner h4 {
+.article_simple2_view .card .card-body .card-body-inner time {
   display: none;
 }
 @media (min-width: 768px) {
   .article_simple2_view .card .card-body .card-body-inner h3,
-  .article_simple2_view .card .card-body .card-body-inner h4 {
+  .article_simple2_view .card .card-body .card-body-inner time {
     display: block;
   }
 }
@@ -934,8 +935,7 @@ section #display_head span {
   font-size: 1.5rem;
   line-height: 2rem;
 }
-.article_simple2_view .card .card-body .card-body-inner h4 {
-  font-size: 1.25rem;
+.article_simple2_view .card .card-body .card-body-inner time {
   line-height: 1.75rem;
   color: #9ca3af;
 }
@@ -950,10 +950,13 @@ section #display_head span {
 .article_simple2_view .card .card-body .card-body-inner .read_more {
   display: flex;
   margin-top: 0.75rem;
+  text-decoration: none;
+}
+.article_simple2_view .card .card-body .card-body-inner .read_more span:first-child:hover {
+  text-decoration: underline;
 }
 .article_simple2_view .card .card-body .card-body-inner .read_more .arrow {
   font-size: 0.75rem;
-  line-height: 1rem;
   margin-left: 0.25rem;
 }
 .article_simple3_view {
@@ -1176,23 +1179,26 @@ section #display_head span {
 .new_posts.lp_type_block {
   background: #667d99;
 }
-.new_posts.lp_type_other {
-  background: #414141;
-}
-.new_posts.lp_type_impex {
-  background: #4b93d1;
-}
 .new_posts.lp_type_editor {
   background: #48bf83;
-}
-.new_posts.lp_type_article {
-  background: #ef564f;
 }
 .new_posts.lp_type_comment {
   background: #9354ca;
 }
+.new_posts.lp_type_parser {
+  background: #91ae26;
+}
+.new_posts.lp_type_article {
+  background: #ef564f;
+}
 .new_posts.lp_type_frontpage {
   background: #d68b4f;
+}
+.new_posts.lp_type_impex {
+  background: #4b93d1;
+}
+.new_posts.lp_type_other {
+  background: #414141;
 }
 .lp_categories input {
   width: 100%;
@@ -1209,9 +1215,9 @@ section #display_head span {
   font-size: 1.2rem;
 }
 .lp_categories dt span.floatright {
+  cursor: pointer;
   font-size: 1.4rem;
   font-weight: bold;
-  cursor: pointer;
 }
 .lp_categories dd .roundframe {
   margin-top: 0;
@@ -1294,6 +1300,9 @@ section #display_head span {
   #lp_pages td.alias {
     display: none;
   }
+  .descbox.alternative2 {
+    display: block;
+  }
 }
 @media (min-width: 1022px) and (max-width: 1200px) {
   .article_info div {
@@ -1322,7 +1331,7 @@ section #display_head span {
     opacity: 1;
   }
 }
-/* Temp fixes */
+/* Temp fixes for SMF 2.1 RC4 */
 .popup_container {
   z-index: 6 !important;
 }

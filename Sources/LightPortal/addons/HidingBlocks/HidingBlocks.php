@@ -120,7 +120,8 @@ class HidingBlocks extends Plugin
 				'name'     => 'hidden_breakpoints[]',
 				'multiple' => true
 			),
-			'options' => array()
+			'options' => array(),
+			'tab' => 'access_placement'
 		);
 	}
 }

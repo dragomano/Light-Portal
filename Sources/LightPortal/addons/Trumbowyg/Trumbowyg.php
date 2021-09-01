@@ -93,7 +93,6 @@ class Trumbowyg extends Plugin
 			},
 			urlProtocol: true,
 			resetCss: true,
-			urlProtocol: true,
 			removeformatPasted: true,
 			imageWidthModalEdit: true' . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 1 ? ',
 			autogrow: true' : '') . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',

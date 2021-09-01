@@ -2,8 +2,6 @@
 
 namespace Bugo\LightPortal;
 
-use Likes;
-
 /**
  * Integration.php
  *
@@ -80,8 +78,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.9',
-			'LP_RELEASE_DATE' => '2021-08-28',
+			'LP_VERSION'      => '1.9.1',
+			'LP_RELEASE_DATE' => '2021-09-01',
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
@@ -121,6 +119,7 @@ class Integration
 		Subs::defineVars();
 		Subs::loadCssFiles();
 
+		Addons::prepareAssets();
 		Addons::run();
 	}
 
@@ -492,10 +491,10 @@ class Integration
 	 *
 	 * Обновляем кэш при лайке/дизлайке страниц
 	 *
-	 * @param Likes $obj
+	 * @param \Likes $obj
 	 * @return void
 	 */
-	public function issueLike(Likes $obj)
+	public function issueLike(\Likes $obj)
 	{
 		if ($obj->get('type') !== 'lpp')
 			return;

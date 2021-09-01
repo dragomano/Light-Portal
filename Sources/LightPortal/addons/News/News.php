@@ -91,9 +91,9 @@ class News extends Plugin
 	 */
 	public function getData(int $item = 0): string
 	{
-		global $boarddir, $context;
+		global $context;
 
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
 
 		setupThemeContext();
 
