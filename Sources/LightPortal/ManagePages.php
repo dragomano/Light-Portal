@@ -124,7 +124,7 @@ class ManagePages
 				),
 				'num_views' => array(
 					'header' => array(
-						'value' => $txt['views']
+						'value' => '<i class="fas fa-eye" title="' . $txt['lp_views']. '"></i>',//$txt['views']
 					),
 					'data' => array(
 						'db'    => 'num_views',
@@ -133,6 +133,19 @@ class ManagePages
 					'sort' => array(
 						'default' => 'p.num_views DESC',
 						'reverse' => 'p.num_views'
+					)
+				),
+				'num_comments' => array(
+					'header' => array(
+						'value' => '<i class="fas fa-comment" title="' . $txt['lp_comments']. '"></i>',
+					),
+					'data' => array(
+						'db'    => 'num_comments',
+						'class' => 'centertext'
+					),
+					'sort' => array(
+						'default' => 'p.num_comments DESC',
+						'reverse' => 'p.num_comments'
 					)
 				),
 				'alias' => array(
@@ -258,8 +271,7 @@ class ManagePages
 							<div class="col-lg-2">
 								<button type="submit" name="is_search" class="button floatnone" style="width: 100%"><i class="fas fa-search"></i> ' . $txt['search'] . '</button>
 							</div>
-						</div>',
-					'class' => 'righttext'
+						</div>'
 				),
 				array(
 					'position' => 'below_table_data',
@@ -308,7 +320,8 @@ class ManagePages
 		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title
+			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.num_comments,
+				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
@@ -329,16 +342,17 @@ class ManagePages
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['page_id']] = array(
-				'id'          => $row['page_id'],
-				'alias'       => $row['alias'],
-				'type'        => $row['type'],
-				'status'      => $row['status'],
-				'num_views'   => $row['num_views'],
-				'author_id'   => $row['author_id'],
-				'author_name' => $row['author_name'],
-				'created_at'  => Helpers::getFriendlyTime($row['date']),
-				'is_front'    => Helpers::isFrontpage($row['alias']),
-				'title'       => $row['title']
+				'id'           => $row['page_id'],
+				'alias'        => $row['alias'],
+				'type'         => $row['type'],
+				'status'       => $row['status'],
+				'num_views'    => $row['num_views'],
+				'num_comments' => $row['num_comments'],
+				'author_id'    => $row['author_id'],
+				'author_name'  => $row['author_name'],
+				'created_at'   => Helpers::getFriendlyTime($row['date']),
+				'is_front'     => Helpers::isFrontpage($row['alias']),
+				'title'        => $row['title']
 			);
 		}
 

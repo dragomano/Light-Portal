@@ -572,7 +572,7 @@ function template_show_articles_simple2()
 
 		if (!empty($article['datetime'])) {
 			echo '
-						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+						<time datetime="', $article['datetime'], '">', $article['date'], '</time>';
 		}
 
 		echo '
@@ -587,7 +587,7 @@ function template_show_articles_simple2()
 
 		if (!empty($article['datetime'])) {
 			echo '
-						<h4><time datetime="', $article['datetime'], '">', $article['date'], '</time></h4>';
+						<time datetime="', $article['datetime'], '">', $article['date'], '</time>';
 		}
 
 		echo '

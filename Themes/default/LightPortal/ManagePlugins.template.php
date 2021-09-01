@@ -35,6 +35,10 @@ function template_manage_plugins()
 	</div>
 	<div class="information">', $txt['lp_plugins_desc'], '</div>';
 
+	if (!empty($context['lp_addon_chart']))
+		echo '
+	<canvas id="addonChart"></canvas>';
+
 	// This is a magic! Пошла магия!
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '

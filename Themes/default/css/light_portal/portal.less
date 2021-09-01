@@ -10,6 +10,7 @@
 @tabs-label-color: #aaa;
 @tabs-label-hover-color: #888;
 
+/* Used functions */
 .pointer() {
 	cursor: pointer;
 }
@@ -67,12 +68,14 @@
 	.border-radius(bottom-left, @bottom-left-radius);
 }
 
+/* Portal menu icon for some themes */
 .fa-portal {
 	&::before {
 		content: "\f0ac";
 	}
 }
 
+/* Context menu for blocks and pages */
 .actions {
 	.context_menu {
 		position: relative;
@@ -100,7 +103,7 @@
 
 .block_bbc,
 .block_html,
-.block_md {
+.block_markdown {
 	.videocontainer {
 		margin: 0 auto;
 	}
@@ -112,14 +115,16 @@
 
 .descbox {
 	.border-radius;
+
 	.bbc_code {
 		overflow: hidden !important;
 	}
 }
 
+/* Page icons in the main menu */
 .portal_menu_icons {
-	font-size: .875rem;
 	.valign;
+	font-size: .875rem;
 	margin: -3px 8px 0 0;
 }
 
@@ -174,6 +179,7 @@
 	}
 
 	> label {
+		.border-radius(top, 6px);
 		display: inline-block;
 		margin: 0 0 -1px;
 		padding: 15px 25px;
@@ -181,11 +187,10 @@
 		text-align: center;
 		color: @tabs-label-color;
 		border: 1px solid @color-light-gray;
-		border-radius: 3px 3px 0 0;
 
 		&:hover {
-			color: @tabs-label-hover-color;
 			.pointer;
+			color: @tabs-label-hover-color;
 		}
 
 		&:before {
@@ -351,7 +356,7 @@
 				left: 0;
 				width: 50px;
 				height: 26px;
-				border-radius: 13px;
+				.border-radius(13px);
 				background: #cdd1da;
 				box-shadow: inset 0 2px 3px rgba(0, 0, 0, .2);
 			}
@@ -363,7 +368,7 @@
 				left: 2px;
 				width: 22px;
 				height: 22px;
-				border-radius: 10px;
+				.border-radius(10px);
 				background: @color-white;
 				box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
 				transition: all .2s;
@@ -453,7 +458,7 @@
 	margin-top: 1em;
 
 	.cat_bar {
-		border-radius: 6px;
+		.border-radius;
 	}
 
 	.article_list {
@@ -474,9 +479,9 @@
 	margin-top: 1em;
 
 	.avatar {
+		.border-radius(100%);
 		max-width: 45px !important;
 		max-height: 45px !important;
-		.border-radius(100%);
 		box-shadow: 0 0 4px #666;
 	}
 
@@ -509,9 +514,9 @@ section {
 	}
 
 	article {
+		.border-radius(12px);
 		transition: all .4s cubic-bezier(.175, .885, 0, 1);
 		position: relative;
-		border-radius: 12px;
 		overflow: hidden;
 		padding: 0;
 		display: flex;
@@ -708,7 +713,7 @@ section {
 		margin: 0 10px 10px;
 		min-height: 300px;
 		background-size: cover;
-		border-radius: 5px;
+		.border-radius;
 		box-shadow: 0 3px 7px -1px rgba(0, 0, 0, .1);
 		transition: all .5s ease;
 
@@ -716,7 +721,7 @@ section {
 			display: block;
 			position: relative;
 			overflow: hidden;
-			border-radius: 5px 5px 0 0;
+			.border-radius(top, 5px);
 
 			div {
 				width: auto;
@@ -776,7 +781,7 @@ section {
 					margin-right: 5px;
 					width: 25px;
 					height: 25px;
-					border-radius: 100%;
+					.border-radius(100%);
 					object-fit: cover;
 				}
 
@@ -798,7 +803,7 @@ section {
 		box-shadow: 0 3px 7px -1px rgba(0, 0, 0, .1);
 		line-height: 1.4;
 		font-family: sans-serif;
-		border-radius: 5px;
+		.border-radius;
 		overflow: hidden;
 		z-index: 0;
 
@@ -941,7 +946,7 @@ section {
 						background: #5ad67d;
 						width: 35px;
 						top: -.75rem;
-						border-radius: 3px;
+						.border-radius(3px);
 					}
 				}
 			}
@@ -986,7 +991,7 @@ section {
 .article_simple_view {
 	> div {
 		padding: .75rem;
-		border-radius: .25rem;
+		.border-radius(.25rem);
 		display: flex;
 		flex-grow: 1;
 		flex-direction: column;
@@ -1000,7 +1005,7 @@ section {
 			background-position: center;
 			background-size: cover;
 			background-color: rgba(209, 213, 219, 1);
-			border-radius: .25rem;
+			.border-radius(.25rem);
 			height: 8rem;
 		}
 
@@ -1030,20 +1035,20 @@ section {
 
 .article_simple2_view {
 	.card {
-		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),0 10px 10px -5px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1),0 10px 10px -5px rgba(0, 0, 0, .04);
 		flex-direction: column;
 		height: 18rem;
-		border-radius: .5rem;
+		.border-radius(.5rem);
 		align-items: center;
 		display: flex;
 		position: relative;
-		margin-left: 0.5rem;
-		margin-right: 0.5rem;
+		margin-left: .5rem;
+		margin-right: .5rem;
 		margin: .4em;
 
 		@media (min-width: 768px) {
 			flex-direction: row;
-			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 10px 10px -5px rgba(0, 0, 0, .04);
 			height: 18rem;
 		}
 
@@ -1054,10 +1059,10 @@ section {
 			order: 1;
 			height: 20rem;
 			width: 100%;
-			border-radius: 0.5rem;
+			.border-radius(.5rem);
 
 			@media (min-width: 768px) {
-				border-radius: 0;
+				.border-radius(0);
 				border-top-right-radius: .5rem;
 				border-bottom-right-radius: .5rem;
 				width: 40%;
@@ -1100,21 +1105,17 @@ section {
 					display: none;
 				}
 
-				h3, h4 {
+				h3 {
 					line-height: 1.25;
 					width: 100%;
-				}
-
-				h3 {
 					color: rgba(255, 255, 255, 1);
 					font-weight: 700;
 					font-size: 1.5rem;
 					margin-bottom: .5rem;
 				}
 
-				h4 {
+				time {
 					color: rgba(243, 244, 246, 1);
-					font-size: 1.25rem;
 				}
 			}
 
@@ -1151,10 +1152,10 @@ section {
 
 			.card-body-inner {
 				width: 100%;
-				box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+				box-shadow: 0 10px 10px -5px rgba(0, 0, 0, .04);
 				padding: 2rem;
 				background-color: rgba(255, 255, 255, 1);
-				border-radius: .5rem;
+				.border-radius(.5rem);
 				height: 100%;
 				margin-left: .5rem;
 				margin-right: .5rem;
@@ -1164,14 +1165,14 @@ section {
 					padding-left: 3.5rem;
 					padding-top: 3rem;
 					padding-bottom: 3rem;
-					border-radius: 0;
+					.border-radius(0);
 					border-top-left-radius: .5rem;
 					border-bottom-left-radius: .5rem;
 					margin-left: 0;
 					margin-right: 0;
 				}
 
-				h3, h4 {
+				h3, time {
 					display: none;
 
 					@media (min-width: 768px) {
@@ -1185,8 +1186,7 @@ section {
 					line-height: 2rem;
 				}
 
-				h4 {
-					font-size: 1.25rem;
+				time {
 					line-height: 1.75rem;
 					color: rgba(156, 163, 175, 1);
 				}
@@ -1203,10 +1203,18 @@ section {
 				.read_more {
 					display: flex;
 					margin-top: .75rem;
+					text-decoration: none;;
+
+					span {
+						&:first-child {
+							&:hover {
+								text-decoration: underline;
+							}
+						}
+					}
 
 					.arrow {
 						font-size: .75rem;
-						line-height: 1rem;
 						margin-left: .25rem;
 					}
 				}
@@ -1237,9 +1245,9 @@ section {
 	}
 
 	> div {
-		border-radius: 0.25rem;
+		.border-radius(.25rem);
 		overflow: hidden;
-		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -2px rgba(0, 0, 0, .05);
 
 		img {
 			width: 100%;
@@ -1254,7 +1262,7 @@ section {
 			div {
 				font-weight: 700;
 				font-size: 1.25rem;
-				margin-bottom: 0.5rem;
+				margin-bottom: .5rem;
 			}
 		}
 
@@ -1262,19 +1270,19 @@ section {
 			padding-right: 1.5rem;
 			padding-left: 1.5rem;
 			padding-top: 1rem;
-			padding-bottom: 0.5rem;
+			padding-bottom: .5rem;
 
 			a {
 				display: inline-block;
-				border-radius: 9999px;
-				padding-right: 0.75rem;
-				padding-left: 0.75rem;
-				padding-top: 0.25rem;
-				padding-bottom: 0.25rem;
+				.border-radius(9999px);
+				padding-right: .75rem;
+				padding-left: .75rem;
+				padding-top: .25rem;
+				padding-bottom: .25rem;
 				font-size: .875rem;
 				font-weight: 600;
-				margin-right: 0.5rem;
-				margin-bottom: 0.5rem;
+				margin-right: .5rem;
+				margin-bottom: .5rem;
 			}
 		}
 	}
@@ -1478,23 +1486,26 @@ section {
 	&.lp_type_block {
 		background: #667d99;
 	}
-	&.lp_type_other {
-		background: rgb(65, 65, 65);
-	}
-	&.lp_type_impex {
-		background: rgb(75, 147, 209);
-	}
 	&.lp_type_editor {
-		background: rgb(72, 191, 131);
-	}
-	&.lp_type_article {
-		background: rgb(239, 86, 79);
+		background: #48bf83;
 	}
 	&.lp_type_comment {
-		background: rgb(147, 84, 202);
+		background: #9354ca;
+	}
+	&.lp_type_parser {
+		background: #91ae26;
+	}
+	&.lp_type_article {
+		background: #ef564f;
 	}
 	&.lp_type_frontpage {
-		background: rgb(214, 139, 79);
+		background: #d68b4f;
+	}
+	&.lp_type_impex {
+		background: #4b93d1;
+	}
+	&.lp_type_other {
+		background: #414141;
 	}
 }
 
@@ -1515,9 +1526,9 @@ section {
 			font-size: 1.2rem;
 		}
 		span.floatright {
+			.pointer;
 			font-size: 1.4rem;
 			font-weight: bold;
-			cursor: pointer;
 		}
 	}
 	dd {
@@ -1664,7 +1675,7 @@ section {
 	}
 }
 
-/* Temp fixes */
+/* Temp fixes for SMF 2.1 RC4 */
 .popup_container {
 	z-index: 6 !important;
 }
