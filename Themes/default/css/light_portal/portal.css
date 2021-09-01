@@ -1300,6 +1300,9 @@ section #display_head span {
   #lp_pages td.alias {
     display: none;
   }
+  .descbox.alternative2 {
+    display: block;
+  }
 }
 @media (min-width: 1022px) and (max-width: 1200px) {
   .article_info div {

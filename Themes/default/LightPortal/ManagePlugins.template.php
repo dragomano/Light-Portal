@@ -165,7 +165,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'color') {
 			echo '
-					<br><input type="color" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+					<div x-data="{', $value[1], '_color: ', JavaScriptEscape($modSettings[$value[1]] ?? ''), '}"><input x-model="', $value[1], '_color" type="color" name="', $value[1], '" id="', $value[1], '"><input x-model="', $value[1], '_color" type="text" name="', $value[1], '" style="width: 80px"></div>';
 		} elseif ($value[0] == 'int') {
 			$min = ' min="' . ($value['min'] ?? 0) . '"';
 			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
