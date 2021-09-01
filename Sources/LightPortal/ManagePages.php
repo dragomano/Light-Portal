@@ -1122,6 +1122,7 @@ class ManagePages
 
 		$this->prepareDescription();
 		$this->prepareKeywords();
+		$this->prepareBbcContent($context['lp_page']);
 
 		if (empty($item)) {
 			$item = $this->addData();

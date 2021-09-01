@@ -823,6 +823,8 @@ class ManageBlocks
 
 		checkSubmitOnce('check');
 
+		$this->prepareBbcContent($context['lp_block']);
+
 		if (empty($item)) {
 			$item = $this->addData();
 		} else {
@@ -1069,6 +1071,11 @@ class ManageBlocks
 		}
 
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if ($row['type'] === 'bbc') {
+				Helpers::require('Subs-Post');
+				$row['content'] = un_preparsecode($row['content']);
+			}
+
 			censorText($row['content']);
 
 			if (!isset($data))

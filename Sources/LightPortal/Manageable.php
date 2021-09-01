@@ -116,4 +116,21 @@ trait Manageable
 
 		exit(json_encode($results));
 	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareBbcContent(&$entity)
+	{
+		global $smcFunc;
+
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		Helpers::require('Subs-Post');
+
+		preparsecode($entity['content']);
+	}
 }
