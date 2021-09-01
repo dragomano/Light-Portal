@@ -119,10 +119,6 @@ class Helpers
 	 */
 	public static function getIcon(?string $icon = ''): string
 	{
-		global $context;
-
-		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-
 		if (empty($icon))
 			return '';
 
