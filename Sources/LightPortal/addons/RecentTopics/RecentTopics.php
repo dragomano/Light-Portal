@@ -34,10 +34,11 @@ class RecentTopics extends Plugin
 
 		$options['recent_topics']['parameters'] = [
 			'use_simple_style' => false,
+			'show_avatars'     => false,
+			'show_icons'       => false,
 			'num_topics'       => 10,
 			'exclude_boards'   => '',
 			'include_boards'   => '',
-			'show_avatars'     => false,
 			'update_interval'  => 600,
 		];
 	}
@@ -53,10 +54,11 @@ class RecentTopics extends Plugin
 			return;
 
 		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_icons']       = FILTER_VALIDATE_BOOLEAN;
 		$parameters['num_topics']       = FILTER_VALIDATE_INT;
 		$parameters['exclude_boards']   = FILTER_SANITIZE_STRING;
 		$parameters['include_boards']   = FILTER_SANITIZE_STRING;
-		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
@@ -73,9 +75,30 @@ class RecentTopics extends Plugin
 		$context['posting_fields']['use_simple_style']['label']['text'] = $txt['lp_recent_topics']['use_simple_style'];
 		$context['posting_fields']['use_simple_style']['input'] = array(
 			'type' => 'checkbox',
+			'after' => $txt['lp_recent_topics']['use_simple_style_subtext'],
 			'attributes' => array(
 				'id'      => 'use_simple_style',
 				'checked' => !empty($context['lp_block']['options']['parameters']['use_simple_style'])
+			),
+			'tab' => 'appearance'
+		);
+
+		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics']['show_avatars'];
+		$context['posting_fields']['show_avatars']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'show_avatars',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
+			),
+			'tab' => 'appearance'
+		);
+
+		$context['posting_fields']['show_icons']['label']['text'] = $txt['lp_recent_topics']['show_icons'];
+		$context['posting_fields']['show_icons']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'show_icons',
+				'checked' => !empty($context['lp_block']['options']['parameters']['show_icons']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
 			),
 			'tab' => 'appearance'
 		);
@@ -110,16 +133,6 @@ class RecentTopics extends Plugin
 				'value'     => $context['lp_block']['options']['parameters']['include_boards'] ?? '',
 				'style'     => 'width: 100%'
 			)
-		);
-
-		$context['posting_fields']['show_avatars']['label']['text'] = $txt['lp_recent_topics']['show_avatars'];
-		$context['posting_fields']['show_avatars']['input'] = array(
-			'type' => 'checkbox',
-			'attributes' => array(
-				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
-			),
-			'tab' => 'appearance'
 		);
 
 		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_recent_topics']['update_interval'];
@@ -235,7 +248,7 @@ class RecentTopics extends Plugin
 					echo '
 				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
-				echo $topic['icon'], ' ', $topic['link'];
+				echo (!empty($parameters['show_icons']) ? $topic['icon'] . ' ' : ''), $topic['link'];
 
 				if (empty($parameters['show_avatars']))
 					echo '
