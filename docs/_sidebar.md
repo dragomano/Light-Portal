@@ -17,3 +17,6 @@
     * [Manage plugins](plugins/manage.md)
     * [Add plugin](plugins/create_new.md)
     * [Available hooks](plugins/all_hooks.md)
+
+- Layouts
+    * [Create own layout](layouts/create_new.md)

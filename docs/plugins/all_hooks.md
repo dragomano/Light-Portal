@@ -23,7 +23,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ### prepareBlockFields
 > adding custom fields to the block post area
 ### validateBlockData
-> adding your own validating data when block adding/edition
+> adding custom validating data when block adding/edition
 ### findBlockErrors
 > adding custom error handling when block adding/edition
 ### onBlockSaving
@@ -38,7 +38,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ### preparePageFields
 > adding custom fields to the page post area
 ### validatePageData
-> adding your own validating data when page adding/edition
+> adding custom validating data when page adding/edition
 ### findPageErrors
 > adding custom error handling when page adding/edition
 ### onPageSaving
@@ -51,27 +51,27 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ## preparePluginFields
 > adding custom fields to the plugin post area
 ### addSettings
-> adding your own settings of your addon
+> adding custom settings of your addon
 ### onSettingsSaving
 > additional actions after plugin settings saving
 
 ## Portal settings
 
 ### addPanels
-> adding your own settings on the Panels tab
+> adding custom settings on the Panels tab
 ### addMisc
-> adding your own settings on the Misc tab
+> adding custom settings on the Misc tab
 ### addBlockAreas
-> adding your own tabs into Block area settings
+> adding custom tabs into Block area settings
 ### addPageAreas
-> adding your own tabs into Page area settings
+> adding custom tabs into Page area settings
 
 ## Work with articles
 
 ### frontCustomTemplate
-> adding your own templates for the frontpage
+> adding custom templates for the frontpage
 ### frontAssets
-> adding your own scripts and styles on the frontpage
+> adding custom scripts and styles on the frontpage
 ### frontTopics
 > adding custom columns, tables, wheres, params and orders to _init_ function
 ### frontTopicsOutput
@@ -88,4 +88,11 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ## Work with comments
 
 ### comments
-> adding your own comment script to the page view
+> adding custom comment script to the page view
+
+## Miscellaneous
+
+### prepareIconList
+> adding custom list of icons (instead of FontAwesome)
+### prepareIconTemplate
+> Adding custom template for displaying icons

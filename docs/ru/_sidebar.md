@@ -17,3 +17,6 @@
     * [Управление плагинами](ru/plugins/manage.md)
     * [Создание плагина](ru/plugins/create_new.md)
     * [Доступные хуки](ru/plugins/all_hooks.md)
+
+- Шаблоны
+    * [Создание своего шаблона](ru/layouts/create_new.md)
