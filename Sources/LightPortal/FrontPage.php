@@ -27,11 +27,9 @@ class FrontPage
 	 */
 	public function show()
 	{
-		global $context, $modSettings, $scripturl, $txt;
+		global $modSettings, $context, $scripturl, $txt;
 
 		isAllowedTo('light_portal_view');
-
-		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 'chosen_page':
@@ -131,18 +129,6 @@ class FrontPage
 		$context['lp_frontpage_articles'] = $articles;
 
 		Addons::run('frontAssets');
-	}
-
-	/**
-	 * Check whether need to display dates in lowercase for the current language
-	 *
-	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
-	 */
-	public function isLowerCaseForDates(): bool
-	{
-		global $txt;
-
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
 	}
 
 	/**

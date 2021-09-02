@@ -42,6 +42,8 @@ class FlarumStyle extends Plugin
 
 		$context['lp_all_categories'] = $this->getCategories();
 
+		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
+
 		$this->loadTemplate();
 
 		$this->prepareFantomBLock();
@@ -116,5 +118,17 @@ class FlarumStyle extends Plugin
 		);
 
 		return getBoardList($boardListOptions);
+	}
+
+	/**
+	 * Check whether need to display dates in lowercase for the current language
+	 *
+	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
+	 */
+	private function isLowerCaseForDates(): bool
+	{
+		global $txt;
+
+		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
 	}
 }
