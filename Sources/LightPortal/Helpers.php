@@ -600,10 +600,6 @@ class Helpers
 			case 'bbc':
 				$content = parse_bbc($content);
 
-				if (strpos($content, '<pre') !== false) {
-					$content = strtr($content, array('<br>' => "\n"));
-				}
-
 				// Integrate with the Paragrapher mod
 				call_integration_hook('integrate_paragrapher_string', array(&$content));
 

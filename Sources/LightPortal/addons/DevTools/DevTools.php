@@ -105,7 +105,7 @@ class DevTools extends Plugin
 
 		$context['template_layers'][] = 'layout_switcher';
 
-		$context['current_layout'] = Helpers::post('layout', 'articles');
+		$context['current_layout'] = Helpers::post('layout', $modSettings['lp_frontpage_layout'] ?? 'articles');
 
 		$context['sub_template'] = 'show_' . $context['current_layout'];
 	}

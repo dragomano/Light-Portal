@@ -45,6 +45,10 @@ class Page
 			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
+
+			if (Helpers::isFrontpage($alias))
+				redirectexit('action=' . LP_ACTION);
+
 			$context['lp_page'] = $this->getDataByAlias($alias);
 		}
 

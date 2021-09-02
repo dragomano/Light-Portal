@@ -83,7 +83,7 @@ class Integration
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
-			'LP_PAGE_ACTION'  => $modSettings['lp_page_action'] ?? 'page'
+			'LP_PAGE_ACTION'  => $modSettings['lp_page_param'] ?? 'page'
 		];
 
 		foreach ($lp_constants as $key => $value)

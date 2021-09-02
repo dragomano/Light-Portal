@@ -332,6 +332,10 @@ class Category implements PageListInterface
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			if (strpos($row['description'], ']') !== false) {
+				$row['description'] = parse_bbc($row['description']);
+			}
+
 			$items[$row['category_id']] = array(
 				'name'      => $row['name'] ?: $txt['lp_no_category'],
 				'desc'      => $row['description'],
