@@ -169,7 +169,7 @@ class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_ACTION . '=' . $context['lp_page']['alias']])))
+			if (!empty($context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $context['lp_page']['alias']])))
 				return true;
 
 			if (empty($context['current_board']))

@@ -123,7 +123,7 @@ class PageArticle extends AbstractArticle
 							'name' => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name']
 						),
 						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
+						'link'      => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 						'views'     => array(
 							'num'   => $row['num_views'],
 							'title' => $txt['lp_views']

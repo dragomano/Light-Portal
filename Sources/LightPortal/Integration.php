@@ -83,7 +83,7 @@ class Integration
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
-			'LP_PAGE_ACTION'  => $modSettings['lp_page_param'] ?? 'page'
+			'LP_PAGE_PARAM'   => $modSettings['lp_page_param'] ?? 'page'
 		];
 
 		foreach ($lp_constants as $key => $value)
@@ -172,7 +172,7 @@ class Integration
 	{
 		global $modSettings;
 
-		if (Helpers::request()->filled(LP_PAGE_ACTION))
+		if (Helpers::request()->filled(LP_PAGE_PARAM))
 			return call_user_func(array(new Page, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
@@ -205,10 +205,10 @@ class Integration
 			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
-			if (Helpers::request()->filled(LP_PAGE_ACTION)) {
+			if (Helpers::request()->filled(LP_PAGE_PARAM)) {
 				$current_action = LP_ACTION;
 
-				$page = Helpers::request(LP_PAGE_ACTION);
+				$page = Helpers::request(LP_PAGE_PARAM);
 				if (isset(Subs::getPagesInMenu()[$page]))
 					$current_action = 'portal_' . $page;
 			}
@@ -292,7 +292,7 @@ class Integration
 			foreach ($pages_in_menu as $alias => $item) {
 				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
 					'title' => Helpers::getTitle($item),
-					'href'  => $scripturl . '?' . LP_PAGE_ACTION . '=' . $alias,
+					'href'  => $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias,
 					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
 					'show'  => Helpers::canViewItem($item['permissions'])
 				);
@@ -481,7 +481,7 @@ class Integration
 		return [
 			'type'        => $type,
 			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
-			'redirect'    => LP_PAGE_ACTION . '=' . $alias,
+			'redirect'    => LP_PAGE_PARAM . '=' . $alias,
 			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
 		];
 	}
@@ -668,8 +668,8 @@ class Integration
 		if (!empty($actions['action']) && $actions['action'] == 'forum')
 			$result = sprintf($txt['who_index'], $scripturl . '?action=forum', $context['forum_name']);
 
-		if (!empty($actions[LP_PAGE_ACTION]))
-			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_ACTION . '=' . $actions[LP_PAGE_ACTION]);
+		if (!empty($actions[LP_PAGE_PARAM]))
+			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_PARAM . '=' . $actions[LP_PAGE_PARAM]);
 
 		if (!empty($actions['action']) && $actions['action'] == 'lp_settings')
 			$result = sprintf($txt['lp_who_viewing_portal_settings'], $scripturl . '?action=admin;area=lp_settings');

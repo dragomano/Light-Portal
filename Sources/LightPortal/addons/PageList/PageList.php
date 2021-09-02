@@ -228,7 +228,7 @@ class PageList extends Plugin
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?', LP_PAGE_ACTION, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
 
 				if (!empty($page['num_comments']))
 					echo ', ' . Helpers::getText($page['num_comments'], $txt['lp_comments_set']);

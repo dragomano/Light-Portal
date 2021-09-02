@@ -697,7 +697,7 @@ class Settings
 		if (!isset($modSettings['lp_portal_action']))
 			$add_settings['lp_portal_action'] = LP_ACTION;
 		if (!isset($modSettings['lp_page_param']))
-			$add_settings['lp_page_param'] = LP_PAGE_ACTION;
+			$add_settings['lp_page_param'] = LP_PAGE_PARAM;
 		if (!empty($add_settings))
 			updateSettings($add_settings);
 
@@ -708,7 +708,7 @@ class Settings
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
 			array('title', 'lp_compatibility_mode'),
 			array('text', 'lp_portal_action', 'subtext' => $scripturl . '?action=<strong>' . LP_ACTION . '</strong>'),
-			array('text', 'lp_page_param', 'subtext' => $scripturl . '?<strong>' . LP_PAGE_ACTION . '</strong>=somealias'),
+			array('text', 'lp_page_param', 'subtext' => $scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'),
 			array('title', 'admin_maintenance'),
 			array('check', 'lp_weekly_cleaning')
 		);
