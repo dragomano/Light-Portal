@@ -54,11 +54,10 @@ class ManagePlugins
 		// You can add settings for your plugins
 		Addons::run('addSettings', array(&$config_vars), $context['lp_plugins']);
 
-		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, $context, $config_vars) {
-			$custom_type = '';
-			$author = '';
-			$link = '';
+		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
+
+			$snake_name = Helpers::getSnakeName($item);
 
 			try {
 				$className = __NAMESPACE__ . '\Addons\\' . $item . '\\' . $item;
@@ -73,22 +72,27 @@ class ManagePlugins
 				if ($addonClass->hasProperty('requires'))
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
 			} catch (\ReflectionException $e) {
-				if (isset($context['lp_can_donate'][$item]))
-					$custom_type = $txt['lp_can_donate'];
+				if (isset($context['lp_can_donate'][$item])) {
+					$context['lp_' . $snake_name]['type'] = $context['lp_can_donate'][$item]['type'] ?? 'other';
+					$special = $txt['lp_can_donate'];
+				}
 
-				if (isset($context['lp_can_download'][$item]))
-					$custom_type = $txt['lp_can_download'];
+				if (isset($context['lp_can_download'][$item])) {
+					$context['lp_' . $snake_name]['type'] = $context['lp_can_download'][$item]['type'] ?? 'other';
+					$special = $txt['lp_can_download'];
+				}
 			}
 
 			return [
 				'name'        => $item,
-				'snake_name'  => $snake_name = Helpers::getSnakeName($item),
+				'snake_name'  => $snake_name,
 				'label_class' => $this->getLabelClass($snake_name),
 				'desc'        => $txt['lp_' . $snake_name]['description'] ?? '',
-				'author'      => $author ?: '',
-				'link'        => $link ?: '',
+				'author'      => $author ?? '',
+				'link'        => $link ?? '',
 				'status'      => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'       => $custom_type ?: $this->getTypes($snake_name),
+				'type'        => $this->getType($snake_name),
+				'special'     => $special ?? '',
 				'settings'    => $config_vars[$snake_name] ?? [],
 				'requires'    => array_diff($requires, $context['lp_enabled_plugins'])
 			];
@@ -103,7 +107,7 @@ class ManagePlugins
 			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context) {
 				$filter = Helpers::post('filter');
 
-				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['types'], $context['lp_plugin_types'][$filter]) !== false) {
+				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['type'], $context['lp_plugin_types'][$filter]) !== false) {
 					return true;
 				}
 			});
@@ -246,7 +250,7 @@ class ManagePlugins
 	 * @param string $snake_name
 	 * @return string
 	 */
-	private function getTypes(string $snake_name): string
+	private function getType(string $snake_name): string
 	{
 		global $txt, $context;
 
@@ -282,11 +286,12 @@ class ManagePlugins
 
 		$typeCount = [];
 		foreach ($context['all_lp_plugins'] as $plugin) {
-			$key = array_search($plugin['types'], $txt['lp_plugins_types']);
-
-			$types = explode(' + ', $plugin['types']);
+			$types = explode(' + ', $plugin['type']);
 			foreach ($types as $type) {
 				$key = array_search($type, $txt['lp_plugins_types']);
+
+				if ($key === false)
+					$key = 7;
 
 				if (!isset($typeCount[$key]))
 					$typeCount[$key] = 0;
@@ -319,7 +324,7 @@ class ManagePlugins
 					responsive: true,
 					plugins: {
 						legend: {
-							position: "top",
+							position: "top"
 						}
 					}
 				}
