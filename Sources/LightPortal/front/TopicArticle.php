@@ -166,8 +166,16 @@ class TopicArticle extends AbstractArticle
 						'title'     => $row['subject'],
 						'link'      => $scripturl . '?topic=' . $row['id_topic'] . '.0',
 						'is_new'    => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $user_info['id'],
-						'views'     => array('num' => $row['num_views'], 'title' => $txt['lp_views']),
-						'replies'   => array('num' => $row['num_replies'], 'title' => $txt['lp_replies']),
+						'views'     => array(
+							'num'   => $row['num_views'],
+							'title' => $txt['lp_views'],
+							'after' => ''
+						),
+						'replies'   => array(
+							'num'   => $row['num_replies'],
+							'title' => $txt['lp_replies'],
+							'after' => ''
+						),
 						'css_class' => $row['is_sticky'] ? ' sticky' : '',
 						'image'     => $image,
 						'can_edit'  => $user_info['is_admin'] || (!empty($user_info['id']) && $row['id_member'] == $user_info['id']),

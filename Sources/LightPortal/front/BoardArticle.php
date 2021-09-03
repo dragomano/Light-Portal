@@ -117,7 +117,7 @@ class BoardArticle extends AbstractArticle
 					'title'       => $board_name,
 					'link'        => $row['is_redirect'] ? ($row['redirect'] . '" rel="nofollow noopener') : ($scripturl . '?board=' . $row['id_board'] . '.0'),
 					'is_new'      => empty($row['is_read']),
-					'replies'     => array('num' => $row['num_posts'], 'title' => $txt['lp_replies']),
+					'replies'     => array('num' => $row['num_posts'], 'title' => $txt['lp_replies'], 'after' => ''),
 					'image'       => $image,
 					'can_edit'    => $user_info['is_admin'] || allowedTo('manage_boards'),
 					'edit_link'   => $scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],

@@ -126,11 +126,13 @@ class PageArticle extends AbstractArticle
 						'link'      => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 						'views'     => array(
 							'num'   => $row['num_views'],
-							'title' => $txt['lp_views']
+							'title' => $txt['lp_views'],
+							'after' => ''
 						),
 						'replies'   => array(
 							'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
-							'title' => $txt['lp_comments']
+							'title' => $txt['lp_comments'],
+							'after' => ''
 						),
 						'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'image'     => $image,
@@ -138,7 +140,7 @@ class PageArticle extends AbstractArticle
 						'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 					);
 
-                    $pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
+					$pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 					if (!empty($modSettings['lp_show_teaser']))
 						$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
