@@ -48,7 +48,7 @@ class ManagePages
 	 */
 	public function main()
 	{
-		global $context, $txt, $smcFunc, $scripturl;
+		global $context, $txt, $smcFunc, $scripturl, $modSettings;
 
 		loadLanguage('Packages');
 		loadTemplate('LightPortal/ManagePages');
@@ -293,7 +293,9 @@ class ManagePages
 				</a>
 			</span>' . $listOptions['title'];
 
-
+		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'default') {
+			unset($listOptions['columns']['num_comments']);
+		}
 
 		Helpers::require('Subs-List');
 		createList($listOptions);
