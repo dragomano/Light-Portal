@@ -45,10 +45,13 @@ class VkComments extends Plugin
 	{
 		global $modSettings, $txt;
 
+		if (!isset($modSettings['lp_vk_comments_addon_num_comments_per_page']))
+			updateSettings(array('lp_vk_comments_addon_num_comments_per_page' => 10));
 		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
 			updateSettings(array('lp_vk_comments_addon_allow_attachments' => true));
 
 		$config_vars['vk_comments'][] = array('text', 'api_id', 'subtext' => $txt['lp_vk_comments']['api_id_subtext']);
+		$config_vars['vk_comments'][] = array('int', 'num_comments_per_page');
 		$config_vars['vk_comments'][] = array('check', 'allow_attachments');
 		$config_vars['vk_comments'][] = array('check', 'auto_publish');
 	}
@@ -65,7 +68,7 @@ class VkComments extends Plugin
 		global $modSettings, $context;
 
 		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
-			$num_comments      = $modSettings['lp_num_comments_per_page'] ?? 10;
+			$num_comments      = $modSettings['lp_vk_comments_addon_num_comments_per_page'] ?? 10;
 			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? true;
 			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? false;
 

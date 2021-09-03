@@ -46,10 +46,13 @@ class FacebookComments extends Plugin
 	{
 		global $modSettings;
 
+		if (!isset($modSettings['lp_facebook_comments_addon_num_comments_per_page']))
+			updateSettings(array('lp_facebook_comments_addon_num_comments_per_page' => 10));
 		if (!isset($modSettings['lp_facebook_comments_addon_dark_themes']))
 			updateSettings(array('lp_facebook_comments_addon_dark_themes' => ''));
 
-		$config_vars['facebook_comment'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
+		$config_vars['facebook_comments'][] = array('int', 'num_comments_per_page');
+		$config_vars['facebook_comments'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
 	}
 
 	/**
@@ -69,7 +72,7 @@ class FacebookComments extends Plugin
 			$context['lp_facebook_comment_block'] = '
 				<div id="fb-root"></div>
 				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $txt['lang_locale'] . '/sdk.js#xfbml=1&version=v6.0"></script>
-				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? 'dark' : 'light') . '"></div>';
+				<div class="fb-comments" data-href="' . $context['canonical_url'] . '" data-numposts="' . ($modSettings['lp_facebook_comments_addon_num_comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? 'dark' : 'light') . '"></div>';
 		}
 	}
 }

@@ -56,7 +56,9 @@ class TopicRatingBar extends Plugin
 	}
 
 	/**
-	 * Show rating as stars
+	 * Show the rating of each topic
+	 *
+	 * Отображаем рейтинг каждой темы
 	 *
 	 * @return void
 	 */
