@@ -287,6 +287,8 @@ class Settings
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);
 
+		Addons::run('addBasicSettings', array(&$config_vars));
+
 		if ($return_config)
 			return $config_vars;
 
@@ -425,6 +427,9 @@ class Settings
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_categories'];
+
+			Addons::run('addBasicSaveSettings', array(&$save_vars));
+
 			saveDBSettings($save_vars);
 
 			Helpers::cache()->flush();
@@ -457,6 +462,7 @@ class Settings
 		$txt['lp_show_comment_block_set']['default'] = $txt['lp_show_comment_block_set'][1];
 
 		unset($txt['lp_show_comment_block_set'][0], $txt['lp_show_comment_block_set'][1]);
+		asort($txt['lp_show_comment_block_set']);
 
 		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
 
@@ -485,6 +491,8 @@ class Settings
 			array('text', 'lp_page_itemprop_phone', 80)
 		);
 
+		Addons::run('addExtraSettings', array(&$config_vars));
+
 		if ($return_config)
 			return $config_vars;
 
@@ -506,6 +514,10 @@ class Settings
 			if (change_mode && $("#lp_show_comment_block").val() != "default") {
 				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
 				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
+				$("#lp_time_to_change_comments").closest("dd").hide();
+				$("#setting_lp_time_to_change_comments").closest("dt").hide();
+				$("#lp_num_comments_per_page").closest("dd").hide();
+				$("#setting_lp_num_comments_per_page").closest("dt").hide();
 			}
 		};
 
@@ -538,6 +550,9 @@ class Settings
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
+
+			Addons::run('addExtraSaveSettings', array(&$save_vars));
+
 			saveDBSettings($save_vars);
 
 			Helpers::cache()->flush();
@@ -645,7 +660,7 @@ class Settings
 			array('callback', 'panel_direction')
 		);
 
-		Addons::run('addPanels', array(&$config_vars));
+		Addons::run('addPanelsSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -660,6 +675,7 @@ class Settings
 			Helpers::post()->put('lp_panel_direction', json_encode(Helpers::post('lp_panel_direction')));
 
 			$save_vars = $config_vars;
+
 			$save_vars[] = ['int', 'lp_header_panel_width'];
 			$save_vars[] = ['text', 'lp_left_panel_width'];
 			$save_vars[] = ['text', 'lp_right_panel_width'];
@@ -667,6 +683,9 @@ class Settings
 			$save_vars[] = ['check', 'lp_left_panel_sticky'];
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
+
+			Addons::run('addPanelsSaveSettings', array(&$save_vars));
+
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=panels');
@@ -713,7 +732,7 @@ class Settings
 			array('check', 'lp_weekly_cleaning')
 		);
 
-		Addons::run('addMisc', array(&$config_vars));
+		Addons::run('addMiscSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -741,6 +760,9 @@ class Settings
 			}
 
 			$save_vars = $config_vars;
+
+			Addons::run('addMiscSaveSettings', array(&$save_vars));
+
 			saveDBSettings($save_vars);
 
 			redirectexit('action=admin;area=lp_settings;sa=misc');
