@@ -24,6 +24,9 @@
     ...(addons)
         MyAddon\
             langs\
+                 english.php
+                 index.php
+                 russian.php
             index.php
             MyAddon.php
 ```
