@@ -79,7 +79,7 @@ class KarmaPostRating extends Plugin
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['kpr_rating'])) {
-				$context['lp_frontpage_articles'][$id]['replies']['num'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
+				$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}
 		}
 	}

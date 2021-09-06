@@ -31,6 +31,9 @@ class Settings
 	{
 		global $txt, $context;
 
+		loadCSSFile('light_portal/slimselect.min.css');
+		loadJavaScriptFile('light_portal/slimselect.min.js');
+
 		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', array('external' => true, 'defer' => true));
 		loadJavaScriptFile('light_portal/admin.js', array('minimize' => true));
 
@@ -199,7 +202,7 @@ class Settings
 	{
 		global $context, $txt, $scripturl, $modSettings, $boardurl, $settings;
 
-		$this->checkNewVersion();
+		$this->prepareAliasList();
 
 		$context['page_title'] = $context['settings_title'] = $txt['lp_base'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=basic;save';
@@ -209,10 +212,8 @@ class Settings
 		$context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
 		$context['lp_all_categories']       = Helpers::getAllCategories();
-		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
+		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [0];
 		$context['lp_frontpage_layout']     = FrontPage::getLayouts();
-
-		loadTemplate('LightPortal/ManageSettings');
 
 		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
 
@@ -245,7 +246,7 @@ class Settings
 				)
 			),
 			array('text', 'lp_frontpage_title', '80" placeholder="' . $context['forum_name'] . ' - ' . $txt['lp_portal']),
-			array('text', 'lp_frontpage_alias', 80, 'subtext' => $txt['lp_frontpage_alias_subtext']),
+			array('select', 'lp_frontpage_alias', [], 'subtext' => $txt['lp_frontpage_alias_subtext']),
 			array('callback', 'frontpage_categories'),
 			array('boards', 'lp_frontpage_boards'),
 			array('large_text', 'lp_frontpage_pages', 'subtext' => $txt['lp_frontpage_pages_subtext']),
@@ -263,7 +264,7 @@ class Settings
 			array('select', 'lp_frontpage_num_columns', $txt['lp_frontpage_num_columns_set']),
 			array('select', 'lp_show_pagination', $txt['lp_show_pagination_set']),
 			array('check', 'lp_use_simple_pagination'),
-			array('int', 'lp_num_items_per_page'),
+			array('int', 'lp_num_items_per_page', 'min' => 1),
 			array('title', 'lp_standalone_mode_title'),
 			array('check', 'lp_standalone_mode', 'label' => $txt['lp_action_on']),
 			array(
@@ -292,116 +293,11 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
-		// Frontpage mode toggle
-		$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+		$this->checkNewVersion();
 
-		$frontpage_mode_toggle_dt = [];
-		foreach ($frontpage_mode_toggle as $item) {
-			$frontpage_mode_toggle_dt[] = 'setting_' . $item;
-		}
+		loadTemplate('LightPortal/ManageSettings');
 
-		$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
-
-		$frontpage_alias_toggle_dt = [];
-		foreach ($frontpage_alias_toggle as $item) {
-			$frontpage_alias_toggle_dt[] = 'setting_' . $item;
-		}
-
-		$context['settings_post_javascript'] = '
-		function toggleFrontpageMode() {
-			let front_mode = $("#lp_frontpage_mode").val();
-			let change_mode = front_mode > 0;
-			let board_selector = $(".board_selector").parent("dd");
-
-			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
-
-			if (front_mode == 0) {
-				$("#lp_standalone_mode").prop("checked", false);
-			}
-
-			$("#' . implode(', #', $frontpage_mode_toggle) . '").closest("dd").toggle(change_mode);
-			$("#' . implode(', #', $frontpage_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
-			board_selector.toggle(change_mode);
-
-			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
-
-			$("#' . implode(', #', $frontpage_alias_toggle) . '").closest("dd").toggle(allow_change_title);
-			$("#' . implode(', #', $frontpage_alias_toggle_dt) . '").closest("dt").toggle(allow_change_title);
-			board_selector.toggle(allow_change_title);
-
-			let allow_change_alias = front_mode == "chosen_page";
-
-			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
-			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
-
-			let allow_change_chosen_topics = front_mode == "chosen_topics";
-
-			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
-			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
-
-			let allow_change_chosen_pages = front_mode == "chosen_pages";
-
-			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
-			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
-
-			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
-				let boards = $("#setting_lp_frontpage_boards").closest("dt");
-
-				boards.hide();
-				boards.next("dd").hide();
-			}
-
-			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
-				let categories = $("#setting_lp_frontpage_categories").closest("dt");
-
-				categories.hide();
-				categories.next("dd").hide();
-			}
-		};
-
-		toggleFrontpageMode();
-
-		$("#lp_frontpage_mode").on("change", function () {
-			toggleFrontpageMode();
-			toggleTimeFormat();
-		});';
-
-		// Time format toggle
-		$context['settings_post_javascript'] .= '
-		function toggleTimeFormat() {
-			let change_mode = $("#lp_frontpage_time_format").val() == 2;
-
-			$("#lp_frontpage_custom_time_format").closest("dd").toggle(change_mode);
-			$("#setting_lp_frontpage_custom_time_format").closest("dt").toggle(change_mode);
-		};
-
-		toggleTimeFormat();
-
-		$("#lp_frontpage_time_format").on("change", function () {
-			toggleTimeFormat()
-		});';
-
-		// Standalone mode toggle
-		$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
-
-		$standalone_mode_toggle_dt = [];
-		foreach ($standalone_mode_toggle as $item) {
-			$standalone_mode_toggle_dt[] = 'setting_' . $item;
-		}
-
-		$context['settings_post_javascript'] .= '
-		function toggleStandaloneMode() {
-			let change_mode = $("#lp_standalone_mode").prop("checked");
-
-			$("#' . implode(', #', $standalone_mode_toggle) . '").closest("dd").toggle(change_mode);
-			$("#' . implode(', #', $standalone_mode_toggle_dt) . '").closest("dt").toggle(change_mode);
-		};
-
-		toggleStandaloneMode();
-
-		$("#lp_standalone_mode").on("click", function () {
-			toggleStandaloneMode()
-		});';
+		$context['template_layers'][] = 'lp_basic_settings';
 
 		// Save
 		if (Helpers::request()->has('save')) {
@@ -427,6 +323,7 @@ class Settings
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_categories'];
+			$save_vars[] = ['text', 'lp_frontpage_alias'];
 
 			Addons::run('addBasicSaveSettings', array(&$save_vars));
 
@@ -496,36 +393,9 @@ class Settings
 		if ($return_config)
 			return $config_vars;
 
-		// Show comment block toggle
-		$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
+		loadTemplate('LightPortal/ManageSettings');
 
-		$show_comment_block_toggle_dt = [];
-		foreach ($show_comment_block_toggle as $item) {
-			$show_comment_block_toggle_dt[] = 'setting_' . $item;
-		}
-
-		addInlineJavaScript('
-		function toggleShowCommentBlock() {
-			let change_mode = $("#lp_show_comment_block").val() != "none";
-
-			$("#' . implode(', #', $show_comment_block_toggle) . '").closest("dd").toggle(change_mode);
-			$("#' . implode(', #', $show_comment_block_toggle_dt) . '").closest("dt").toggle(change_mode);
-
-			if (change_mode && $("#lp_show_comment_block").val() != "default") {
-				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
-				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
-				$("#lp_time_to_change_comments").closest("dd").hide();
-				$("#setting_lp_time_to_change_comments").closest("dt").hide();
-				$("#lp_num_comments_per_page").closest("dd").hide();
-				$("#setting_lp_num_comments_per_page").closest("dt").hide();
-			}
-		};
-
-		toggleShowCommentBlock();
-
-		$("#lp_show_comment_block").on("click", function () {
-			toggleShowCommentBlock()
-		});', true);
+		$context['template_layers'][] = 'lp_extra_settings';
 
 		// Save
 		if (Helpers::request()->has('save')) {
@@ -605,7 +475,7 @@ class Settings
 			exit;
 		}
 
-		$context['sub_template'] = 'category_settings';
+		$context['sub_template'] = 'lp_category_settings';
 	}
 
 	/**
@@ -940,5 +810,53 @@ class Settings
 		echo $portal_settings;
 
 		exit;
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareAliasList()
+	{
+		global $smcFunc;
+
+		if (Helpers::request()->has('alias_list') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		if (($items = Helpers::cache()->get('page_aliases_' . $search)) === null) {
+			$request = $smcFunc['db_query']('', '
+				SELECT alias
+				FROM {db_prefix}lp_pages
+				WHERE alias LIKE lower({string:search})
+				ORDER BY alias
+				LIMIT 30',
+				array(
+					'search' => '%' . $search . '%'
+				)
+			);
+
+			$items = [];
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
+				$items[] = $row['alias'];
+			}
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+
+			Helpers::cache()->put('page_aliases_' . $search, $items);
+		}
+
+		$results = [];
+		foreach ($items as $item) {
+			$results[] = [
+				'text' => $item
+			];
+		}
+
+		exit(json_encode($results));
 	}
 }

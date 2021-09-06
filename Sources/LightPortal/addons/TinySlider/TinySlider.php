@@ -25,104 +25,30 @@ class TinySlider extends Plugin
 	public $icon = 'far fa-images';
 
 	/**
-	 * @var bool
+	 * @var array
 	 */
-	public $use_cdn = true;
-
-	/**
-	 * @var string
-	 */
-	public $axis = 'horizontal';
-
-	/**
-	 * @var int
-	 */
-	private $num_items = 1;
-
-	/**
-	 * @var int
-	 */
-	private $gutter = 0;
-
-	/**
-	 * @var int
-	 */
-	private $edge_padding = 0;
-
-	/**
-	 * @var bool
-	 */
-	private $controls = true;
-
-	/**
-	 * @var bool
-	 */
-	private $nav = true;
-
-	/**
-	 * @var bool
-	 */
-	private $nav_as_thumbnails = false;
-
-	/**
-	 * @var bool
-	 */
-	private $arrow_keys = false;
-
-	/**
-	 * @var int
-	 */
-	private $fixed_width = 0;
-
-	/**
-	 * @var int
-	 */
-	private $slide_by = 1;
-
-	/**
-	 * @var int
-	 */
-	private $speed = 300;
-
-	/**
-	 * @var bool
-	 */
-	private $autoplay = true;
-
-	/**
-	 * @var int
-	 */
-	private $autoplay_timeout = 5000;
-
-	/**
-	 * @var string
-	 */
-	private $autoplay_direction = 'forward';
-
-	/**
-	 * @var bool
-	 */
-	private $loop = true;
-
-	/**
-	 * @var bool
-	 */
-	private $rewind = false;
-
-	/**
-	 * @var bool
-	 */
-	private $lazyload = false;
-
-	/**
-	 * @var bool
-	 */
-	private $mouse_drag = false;
-
-	/**
-	 * @var string
-	 */
-	private $images = '';
+	private $options = [
+		'use_cdn'            => true,
+		'axis'               => 'horizontal',
+		'num_items'          => 1,
+		'gutter'             => 0,
+		'edge_padding'       => 0,
+		'controls'           => true,
+		'nav'                => true,
+		'nav_as_thumbnails'  => false,
+		'arrow_keys'         => false,
+		'fixed_width'        => 0,
+		'slide_by'           => 1,
+		'speed'              => 300,
+		'autoplay'           => true,
+		'autoplay_timeout'   => 5000,
+		'autoplay_direction' => 'forward',
+		'loop'               => true,
+		'rewind'             => false,
+		'lazyload'           => false,
+		'mouse_drag'         => false,
+		'images'             => ''
+	];
 
 	/**
 	 * @param array $options
@@ -130,28 +56,7 @@ class TinySlider extends Plugin
 	 */
 	public function blockOptions(array &$options)
 	{
-		$options['tiny_slider']['parameters'] = [
-			'use_cdn'            => $this->use_cdn,
-			'axis'               => $this->axis,
-			'num_items'          => $this->num_items,
-			'gutter'             => $this->gutter,
-			'edge_padding'       => $this->edge_padding,
-			'controls'           => $this->controls,
-			'nav'                => $this->nav,
-			'nav_as_thumbnails'  => $this->nav_as_thumbnails,
-			'arrow_keys'         => $this->arrow_keys,
-			'fixed_width'        => $this->fixed_width,
-			'slide_by'           => $this->slide_by,
-			'speed'              => $this->speed,
-			'autoplay'           => $this->autoplay,
-			'autoplay_timeout'   => $this->autoplay_timeout,
-			'autoplay_direction' => $this->autoplay_direction,
-			'loop'               => $this->loop,
-			'rewind'             => $this->rewind,
-			'lazyload'           => $this->lazyload,
-			'mouse_drag'         => $this->mouse_drag,
-			'images'             => $this->images
-		];
+		$options['tiny_slider']['parameters'] = $this->options;
 	}
 
 	/**
@@ -543,18 +448,18 @@ class TinySlider extends Plugin
 			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js', array('external' => true));
 		} else {
 			loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js');
+			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', array('minimize' => true));
 		}
 
 		addInlineJavaScript('
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
-				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->axis) . '",
-				items: ' . (!empty($parameters['num_items']) ? $parameters['num_items'] : $this->num_items) . ',
-				gutter: ' . (!empty($parameters['gutter']) ? $parameters['gutter'] : $this->gutter) . ',
-				edgePadding: ' . (!empty($parameters['edge_padding']) ? $parameters['edge_padding'] : $this->edge_padding) . ',
-				fixedWidth: ' . (!empty($parameters['fixed_width']) ? $parameters['fixed_width'] : $this->fixed_width) . ',
-				slideBy: ' . (!empty($parameters['slide_by']) ? $parameters['slide_by'] : $this->slide_by) . ',
+				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->options['axis']) . '",
+				items: ' . (!empty($parameters['num_items']) ? $parameters['num_items'] : $this->options['num_items']) . ',
+				gutter: ' . (!empty($parameters['gutter']) ? $parameters['gutter'] : $this->options['gutter']) . ',
+				edgePadding: ' . (!empty($parameters['edge_padding']) ? $parameters['edge_padding'] : $this->options['edge_padding']) . ',
+				fixedWidth: ' . (!empty($parameters['fixed_width']) ? $parameters['fixed_width'] : $this->options['fixed_width']) . ',
+				slideBy: ' . (!empty($parameters['slide_by']) ? $parameters['slide_by'] : $this->options['slide_by']) . ',
 				controls: ' . (!empty($parameters['controls']) ? 'true' : 'false') . ',
 				controlsContainer: ".customize-controls",
 				nav: ' . (!empty($parameters['nav']) ? 'true' : 'false') . ',
@@ -562,10 +467,10 @@ class TinySlider extends Plugin
 				navContainer: ".customize-thumbnails",' : '') . '
 				navAsThumbnails: ' . (!empty($parameters['nav_as_thumbnails']) ? 'true' : 'false') . ',
 				arrowKeys: ' . (!empty($parameters['arrow_keys']) ? 'true' : 'false') . ',
-				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : $this->speed) . ',
+				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : $this->options['speed']) . ',
 				autoplay: ' . (!empty($parameters['autoplay']) ? 'true' : 'false') . ',
-				autoplayTimeout: ' . (!empty($parameters['autoplay_timeout']) ? $parameters['autoplay_timeout'] : $this->autoplay_timeout) . ',
-				autoplayDirection: "' . (!empty($parameters['autoplay_direction']) ? $parameters['autoplay_direction'] : $this->autoplay_direction) . '",
+				autoplayTimeout: ' . (!empty($parameters['autoplay_timeout']) ? $parameters['autoplay_timeout'] : $this->options['autoplay_timeout']) . ',
+				autoplayDirection: "' . (!empty($parameters['autoplay_direction']) ? $parameters['autoplay_direction'] : $this->options['autoplay_direction']) . '",
 				autoplayHoverPause: true,
 				autoplayButtonOutput: false,
 				loop: ' . (!empty($parameters['loop']) ? 'true' : 'false') . ',

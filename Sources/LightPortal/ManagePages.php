@@ -172,7 +172,7 @@ class ManagePages
 
 							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
-									? ' new_posts" href="' . $scripturl
+									? ' highlight" href="' . $scripturl
 									: '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
 							) . '">' . $entry['title'] . '</a>';
 						},
@@ -493,9 +493,11 @@ class ManagePages
 		if (empty($items))
 			return;
 
+		$new_status = $smcFunc['db_title'] === POSTGRE_TITLE ? 'CASE WHEN status = 1 THEN 0 ELSE 1 END' : '!status';
+
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET status = !status
+			SET status = ' . $new_status . '
 			WHERE page_id IN ({array_int:items})',
 			array(
 				'items' => $items
@@ -782,7 +784,7 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$this->improveSelectFields();
+		$this->prepareIconList();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 

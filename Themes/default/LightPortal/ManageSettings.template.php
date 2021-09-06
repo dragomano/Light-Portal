@@ -1,5 +1,214 @@
 <?php
 
+function template_lp_basic_settings_above() {}
+
+function template_lp_basic_settings_below()
+{
+	global $txt, $scripturl, $modSettings;
+
+	// Frontpage mode toggle
+	$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+
+	$frontpage_mode_toggle_dt = [];
+	foreach ($frontpage_mode_toggle as $item) {
+		$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+	}
+
+	$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
+
+	$frontpage_alias_toggle_dt = [];
+	foreach ($frontpage_alias_toggle as $item) {
+		$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+	}
+
+	echo '
+	<script>
+		function toggleFrontpageMode() {
+			let front_mode = $("#lp_frontpage_mode").val();
+			let change_mode = front_mode > 0;
+			let board_selector = $(".board_selector").parent("dd");
+
+			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
+
+			if (front_mode == 0) {
+				$("#lp_standalone_mode").prop("checked", false);
+			}
+
+			$("#', implode(', #', $frontpage_mode_toggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $frontpage_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+			board_selector.toggle(change_mode);
+
+			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
+
+			$("#', implode(', #', $frontpage_alias_toggle), '").closest("dd").toggle(allow_change_title);
+			$("#', implode(', #', $frontpage_alias_toggle_dt), '").closest("dt").toggle(allow_change_title);
+			board_selector.toggle(allow_change_title);
+
+			let allow_change_alias = front_mode == "chosen_page";
+
+			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
+			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
+
+			let allow_change_chosen_topics = front_mode == "chosen_topics";
+
+			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
+			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
+
+			let allow_change_chosen_pages = front_mode == "chosen_pages";
+
+			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
+			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
+
+			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
+				let boards = $("#setting_lp_frontpage_boards").closest("dt");
+
+				boards.hide();
+				boards.next("dd").hide();
+			}
+
+			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
+				let categories = $("#setting_lp_frontpage_categories").closest("dt");
+
+				categories.hide();
+				categories.next("dd").hide();
+			}
+		};
+
+		toggleFrontpageMode();
+
+		$("#lp_frontpage_mode").on("change", function () {
+			toggleFrontpageMode();
+			toggleTimeFormat();
+		});';
+
+	// Time format toggle
+	echo '
+		function toggleTimeFormat() {
+			let change_mode = $("#lp_frontpage_time_format").val() == 2;
+
+			$("#lp_frontpage_custom_time_format").closest("dd").toggle(change_mode);
+			$("#setting_lp_frontpage_custom_time_format").closest("dt").toggle(change_mode);
+		};
+
+		toggleTimeFormat();
+
+		$("#lp_frontpage_time_format").on("change", function () {
+			toggleTimeFormat()
+		});';
+
+	// Standalone mode toggle
+	$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
+
+	$standalone_mode_toggle_dt = [];
+	foreach ($standalone_mode_toggle as $item) {
+		$standalone_mode_toggle_dt[] = 'setting_' . $item;
+	}
+
+	echo '
+		function toggleStandaloneMode() {
+			let change_mode = $("#lp_standalone_mode").prop("checked");
+
+			$("#', implode(', #', $standalone_mode_toggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $standalone_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+		};
+
+		toggleStandaloneMode();
+
+		$("#lp_standalone_mode").on("click", function () {
+			toggleStandaloneMode()
+		});';
+
+	// Alias select
+	echo '
+		let frontpageAlias = document.getElementById("lp_frontpage_alias");
+		if (frontpageAlias) {
+			let aliasSelect = new SlimSelect({
+				select: frontpageAlias,
+				ajax: function (search, callback) {
+					if (search.length < 3) {
+						callback("', sprintf($txt['lp_min_search_length'], 3), '")
+						return
+					}
+
+					fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json; charset=utf-8"
+						},
+						body: JSON.stringify({
+							search
+						})
+					})
+					.then(response => response.json())
+					.then(function (json) {
+						let data = [];
+						for (let i = 0; i < json.length; i++) {
+							data.push({text: json[i].text})
+						}
+
+						callback(data)
+					})
+					.catch(function (error) {
+						callback(false)
+					})
+				},
+				hideSelectedOption: true,
+				searchingText: "', $txt['search'], '...",
+				searchText: "', $txt['no_matches'], '",
+				searchPlaceholder: "home",
+				searchHighlight: true,
+				showContent: "down"
+			});';
+
+	if (!empty($modSettings['lp_frontpage_alias'])) {
+		echo '
+			aliasSelect.setData([{value: "', $modSettings['lp_frontpage_alias'], '", text: "', $modSettings['lp_frontpage_alias'], '"}]);
+			aliasSelect.set(', JavaScriptEscape($modSettings['lp_frontpage_alias']), ');';
+	}
+
+	echo '
+		}
+	</script>';
+}
+
+function template_lp_extra_settings_above() {}
+
+function template_lp_extra_settings_below()
+{
+	// Show comment block toggle
+	$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
+
+	$show_comment_block_toggle_dt = [];
+	foreach ($show_comment_block_toggle as $item) {
+		$show_comment_block_toggle_dt[] = 'setting_' . $item;
+	}
+
+	echo '
+	<script>
+		function toggleShowCommentBlock() {
+			let change_mode = $("#lp_show_comment_block").val() != "none";
+
+			$("#', implode(', #', $show_comment_block_toggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $show_comment_block_toggle_dt), '").closest("dt").toggle(change_mode);
+
+			if (change_mode && $("#lp_show_comment_block").val() != "default") {
+				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
+				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
+				$("#lp_time_to_change_comments").closest("dd").hide();
+				$("#setting_lp_time_to_change_comments").closest("dt").hide();
+				$("#lp_num_comments_per_page").closest("dd").hide();
+				$("#setting_lp_num_comments_per_page").closest("dt").hide();
+			}
+		};
+
+		toggleShowCommentBlock();
+
+		$("#lp_show_comment_block").on("click", function () {
+			toggleShowCommentBlock()
+		});
+	</script>';
+}
+
 /**
  * Callback template for selecting categories-sources of articles
  *
@@ -50,7 +259,7 @@ function template_callback_frontpage_categories()
  *
  * @return void
  */
-function template_category_settings()
+function template_lp_category_settings()
 {
 	global $txt, $context;
 

@@ -56,8 +56,10 @@ class Task extends \SMF_BackgroundTask
 			)
 		);
 
+		$select_value = $smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
+
 		$request = $smcFunc['db_query']('', '
-			SELECT GROUP_CONCAT(value) AS value FROM {db_prefix}lp_params WHERE type = {literal:page} AND name = {literal:keywords}',
+			SELECT ' . $select_value . ' AS value FROM {db_prefix}lp_params WHERE type = {literal:page} AND name = {literal:keywords}',
 			array()
 		);
 

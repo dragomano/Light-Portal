@@ -107,7 +107,7 @@ class FrontPage
 			return;
 
 		$start = Helpers::request('start');
-		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = (int) $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$entityClass->init();
 

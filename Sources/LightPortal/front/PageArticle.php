@@ -40,6 +40,9 @@ class PageArticle extends AbstractArticle
 
 		$this->selected_categories = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
 
+		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
+			$this->selected_categories = [0];
+
 		$this->params = [
 			'status'              => Page::STATUS_ACTIVE,
 			'current_time'        => time(),
@@ -68,10 +71,7 @@ class PageArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit): array
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
-
-		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
-			return [];
+		global $user_info, $smcFunc, $modSettings, $scripturl, $txt;
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$titles = Helpers::getAllTitles();
@@ -172,10 +172,7 @@ class PageArticle extends AbstractArticle
 	 */
 	public function getTotalCount(): int
 	{
-		global $modSettings, $user_info, $smcFunc;
-
-		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
-			return 0;
+		global $user_info, $smcFunc;
 
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '
