@@ -461,7 +461,7 @@
 		.border-radius;
 	}
 
-	.article_list {
+	.list {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		grid-gap: 0 10px;
@@ -1678,6 +1678,27 @@ section {
 	}
 	to {
 		opacity: 1;
+	}
+}
+
+/* SlimSelect */
+.ss-main {
+	overflow: hidden !important;
+
+	.ss-single-selected {
+		height: auto !important;
+
+		.placeholder {
+			& > div {
+				margin: 0 !important;
+			}
+		}
+	}
+	.ss-open {
+		position: initial !important;
+	}
+	.ss-disabled {
+		color: inherit !important;
 	}
 }
 

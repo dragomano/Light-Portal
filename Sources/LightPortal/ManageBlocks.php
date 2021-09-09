@@ -223,9 +223,11 @@ class ManageBlocks
 		if (empty($items))
 			return;
 
+		$new_status = $smcFunc['db_title'] === POSTGRE_TITLE ? 'CASE WHEN status = 1 THEN 0 ELSE 1 END' : '!status';
+
 		$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
-			SET status = !status
+			SET status = ' . $new_status . '
 			WHERE block_id IN ({array_int:items})',
 			array(
 				'items' => $items
@@ -547,7 +549,7 @@ class ManageBlocks
 
 		checkSubmitOnce('register');
 
-		$this->improveSelectFields();
+		$this->prepareIconList();
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
@@ -694,7 +696,7 @@ class ManageBlocks
 			'all',
 			'custom_action',
 			'pages',
-			LP_PAGE_ACTION . '=alias',
+			LP_PAGE_PARAM . '=alias',
 			'boards',
 			'board=id',
 			'board=id1-id3',

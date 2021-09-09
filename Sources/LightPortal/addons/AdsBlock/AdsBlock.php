@@ -40,7 +40,7 @@ class AdsBlock extends Plugin
 	 *
 	 * @return void
 	 */
-	public function addPanels()
+	public function addPanelsSettings()
 	{
 		global $context;
 

@@ -321,12 +321,12 @@
 .related_pages .cat_bar {
   border-radius: 6px;
 }
-.related_pages .article_list {
+.related_pages .list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   grid-gap: 0 10px;
 }
-.related_pages .article_list > div {
+.related_pages .list > div {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1330,6 +1330,22 @@ section #display_head span {
   to {
     opacity: 1;
   }
+}
+/* SlimSelect */
+.ss-main {
+  overflow: hidden !important;
+}
+.ss-main .ss-single-selected {
+  height: auto !important;
+}
+.ss-main .ss-single-selected .placeholder > div {
+  margin: 0 !important;
+}
+.ss-main .ss-open {
+  position: initial !important;
+}
+.ss-main .ss-disabled {
+  color: inherit !important;
 }
 /* Temp fixes for SMF 2.1 RC4 */
 .popup_container {

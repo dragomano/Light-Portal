@@ -17,34 +17,6 @@ namespace Bugo\LightPortal;
 trait Manageable
 {
 	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
-	 * @return void
-	 */
-	public function improveSelectFields()
-	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
-		loadJavaScriptFile('light_portal/slimselect.min.js');
-
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
-		}
-		.ss-disabled {
-			color: inherit !important;
-		}
-		.ss-main .ss-single-selected {
-			height: auto;
-		}
-		.placeholder > div {
-			margin: 0 !important;
-		}');
-
-		$this->prepareIconList();
-	}
-
-	/**
 	 * Prepare field array with entity options
 	 *
 	 * Формируем массив полей с настройками сущности
@@ -52,7 +24,7 @@ trait Manageable
 	 * @param string $defaultTab
 	 * @return void
 	 */
-	public function preparePostFields(string $defaultTab = 'tuning')
+	private function preparePostFields(string $defaultTab = 'tuning')
 	{
 		global $context;
 

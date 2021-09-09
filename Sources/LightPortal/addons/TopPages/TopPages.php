@@ -139,7 +139,7 @@ class TopPages extends Plugin
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias']
+				'href'         => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias']
 			);
 		}
 

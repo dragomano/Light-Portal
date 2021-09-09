@@ -141,13 +141,19 @@ function template_show_articles()
 							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
 			}
 
+			if (!empty($article['views']['after']))
+				echo $article['views']['after'];
+
 			if (!empty($article['is_redirect'])) {
 				echo '
 							<i class="fas fa-directions"></i>';
-			} elseif (!empty($article['replies'])) {
+			} elseif (!empty($article['replies']['num'])) {
 				echo '
 							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
+
+			if (!empty($article['replies']['after']))
+				echo $article['replies']['after'];
 
 			echo '
 						</span>';
@@ -211,10 +217,16 @@ function template_show_articles_alt()
 							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
 			}
 
-			if (!empty($article['replies'])) {
+			if (!empty($article['views']['after']))
+				echo $article['views']['after'];
+
+			if (!empty($article['replies']['num'])) {
 				echo '
 							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
+
+			if (!empty($article['replies']['after']))
+				echo $article['replies']['after'];
 
 			echo '
 						</span>';

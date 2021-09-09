@@ -27,11 +27,9 @@ class FrontPage
 	 */
 	public function show()
 	{
-		global $context, $modSettings, $scripturl, $txt;
+		global $modSettings, $context, $scripturl, $txt, $settings;
 
 		isAllowedTo('light_portal_view');
-
-		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
 		switch ($modSettings['lp_frontpage_mode']) {
 			case 'chosen_page':
@@ -79,6 +77,10 @@ class FrontPage
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
+		// Also, theme makers can load their own layouts from the special template file
+		if (is_file($settings['default_theme_dir'] . '/CustomFrontPage.template.php'))
+			loadTemplate('CustomFrontPage');
+
 		obExit();
 	}
 
@@ -105,7 +107,7 @@ class FrontPage
 			return;
 
 		$start = Helpers::request('start');
-		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = (int) $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$entityClass->init();
 
@@ -131,18 +133,6 @@ class FrontPage
 		$context['lp_frontpage_articles'] = $articles;
 
 		Addons::run('frontAssets');
-	}
-
-	/**
-	 * Check whether need to display dates in lowercase for the current language
-	 *
-	 * Проверяем, нужно ли для текущего языка отображать даты в нижнем регистре
-	 */
-	public function isLowerCaseForDates(): bool
-	{
-		global $txt;
-
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
 	}
 
 	/**
@@ -193,6 +183,10 @@ class FrontPage
 		$allFunctions = get_defined_functions()['user'];
 
 		require_once $settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php';
+
+		// Support of custom templates
+		if (is_file($custom_templates = $settings['default_theme_dir'] . '/CustomFrontPage.template.php'))
+			require_once $custom_templates;
 
 		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
 

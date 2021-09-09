@@ -76,4 +76,37 @@ class Disqus extends Plugin
 				</script>';
 		}
 	}
+
+	/**
+	 * Show number of comments for each page
+	 *
+	 * Отображаем количество комментариев для каждой страницы
+	 *
+	 * @return void
+	 */
+	public function frontAssets()
+	{
+		global $context, $modSettings;
+
+		if (empty($context['lp_frontpage_articles']))
+			return;
+
+		if (empty($modSettings['lp_show_comment_block']) || $modSettings['lp_show_comment_block'] != 'disqus' || empty($modSettings['lp_disqus_addon_shortname']))
+			return;
+
+		loadJavaScriptFile(
+			'https://' . $modSettings['lp_disqus_addon_shortname'] . '.disqus.com/count.js',
+			array(
+				'external' => true,
+				'async' => true,
+				'attributes' => array(
+					'id' => 'dsq-count-scr'
+				)
+			)
+		);
+
+		foreach ($context['lp_frontpage_articles'] as $id => $page) {
+			$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
+		}
+	}
 }

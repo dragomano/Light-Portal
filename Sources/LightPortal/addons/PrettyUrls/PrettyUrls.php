@@ -56,7 +56,7 @@ class PrettyUrls extends Plugin
 			),
 			'rewrite' => array(
 				'priority' => 30,
-				'rule' => 'RewriteRule ^page/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_ACTION . '=$1 [L,QSA]',
+				'rule' => 'RewriteRule ^page/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
 			),
 			'title' => '<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">Light Portal</a> pages',
 		);
@@ -76,8 +76,8 @@ class PrettyUrls extends Plugin
 	{
 		global $scripturl, $boardurl;
 
-		$pattern = '`' . $scripturl . '(.*)' . LP_PAGE_ACTION . '=([^;]+)`S';
-		$replacement = $boardurl . '/' . LP_PAGE_ACTION . '/$2/$1';
+		$pattern = '`' . $scripturl . '(.*)' . LP_PAGE_PARAM . '=([^;]+)`S';
+		$replacement = $boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
 
 		foreach ($urls as $url_id => $url) {
 			if (!isset($url['replacement'])) {

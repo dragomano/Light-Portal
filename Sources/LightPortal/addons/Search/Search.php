@@ -184,7 +184,7 @@ class Search extends Plugin
 			Helpers::parseContent($row['content'], $row['type']);
 
 			$results[] = array(
-				'link'    => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
+				'link'    => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 				'title'   => $row['title'],
 				'content' => Helpers::getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
