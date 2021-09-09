@@ -33,6 +33,8 @@ class ManagePlugins
 		loadLanguage('ManageMaintenance');
 		loadTemplate('LightPortal/ManagePlugins');
 
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', array('external' => true));
+
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_plugins_manage'];
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
