@@ -153,7 +153,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		echo '
 				<div>';
 
-		if (!in_array($value[0], array('callback', 'desc', 'check'))) {
+		if (!in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
 			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $label, '</strong></label>';
 		}
@@ -192,6 +192,9 @@ function show_plugin_settings(string $plugin_name, array $settings)
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
 			}
+		} elseif ($value[0] == 'title') {
+			echo '
+					<div class="sub_bar"><h6 class="subbg">', $label, '</h6></div>';
 		} elseif ($value[0] == 'desc') {
 			echo '
 					<div class="roundframe">', $label, '</div>';
