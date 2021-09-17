@@ -501,6 +501,15 @@ class Helpers
 	}
 
 	/**
+	 * @param string $value
+	 * @return string
+	 */
+	public static function getCamelName(string $value): string
+	{
+		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
+	}
+
+	/**
 	 * @param string $text
 	 * @param int $length
 	 * @return string
