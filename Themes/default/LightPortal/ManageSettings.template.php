@@ -210,6 +210,68 @@ function template_lp_extra_settings_below()
 }
 
 /**
+ * Callback template for selecting allowed tags in comments
+ *
+ * Callback-шаблон для выбора допустимых тегов в комментариях
+ *
+ * @return void
+ */
+function template_callback_disabled_bbc_in_comments()
+{
+	global $txt, $scripturl, $context;
+
+	echo '
+	<dt>
+		<a id="setting_lp_disabled_bbc_in_comments"></a>
+		<span>
+			<label for="lp_disabled_bbc_in_comments">', $txt['lp_disabled_bbc_in_comments'], '</label>
+		</span>
+		<div class="smalltext">
+			', sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC'), '
+		</div>
+	</dt>
+	<dd>
+		<fieldset x-data>
+			<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags[]" multiple>';
+
+	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
+		foreach ($bbcColumn as $bbcTag) {
+			echo '
+					<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
+						', $bbcTag, '
+					</option>';
+		}
+	}
+
+	echo '
+			</select>
+			<input type="checkbox" id="bbc_lp_disabled_bbc_in_comments_select_all" @click="selectDeselectAll($event.target, \'lp_disabled_bbc_in_comments\')"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="bbc_lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
+			<script>
+				new SlimSelect({
+					select: "#lp_disabled_bbc_in_comments",
+					hideSelectedOption: true,
+					placeholder: "', $txt['enabled_bbc_select'], '",
+					searchText: "', $txt['no_matches'], '",
+					searchPlaceholder: "', $txt['search'], '",
+					searchHighlight: true,
+					closeOnSelect: false,
+					showContent: "down"
+				});
+				function selectDeselectAll(elem, select) {
+					if (elem.checked) {
+						let test = document.querySelectorAll("#" + select + " option");
+						test = Array.from(test).map(el => el.value);
+						eval(`${select}Select`).set(test);
+					} else {
+						eval(`${select}Select`).set([]);
+					}
+				}
+			</script>
+		</fieldset>
+	</dd>';
+}
+
+/**
  * Callback template for selecting categories-sources of articles
  *
  * Callback-шаблон для выбора рубрик-источников статей
