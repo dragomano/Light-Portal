@@ -75,7 +75,20 @@ class Subs
 	 */
 	public static function loadCssFiles()
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+		global $modSettings;
+
+		if (empty($modSettings['lp_fa_source']) || $modSettings['lp_fa_source'] == 'css_cdn') {
+			loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+		} elseif ($modSettings['lp_fa_source'] == 'js_cdn') {
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true, 'seed' => false));
+		} elseif ($modSettings['lp_fa_source'] == 'css_local') {
+			loadCSSFile('all.min.css');
+		} elseif ($modSettings['lp_fa_source'] == 'js_local') {
+			loadJavaScriptFile('all.min.js', array('defer' => true));
+		} elseif ($modSettings['lp_fa_source'] == 'custom' && !empty($modSettings['lp_fa_custom'])) {
+			loadJavaScriptFile($modSettings['lp_fa_custom'], array('external' => true, 'defer' => true, 'seed' => false, 'attributes' => array('crossorigin' => 'anonymous')));
+		}
+
 		loadCSSFile('light_portal/flexboxgrid.css');
 		loadCSSFile('light_portal/portal.css');
 		loadCSSFile('custom_frontpage.css');

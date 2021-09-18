@@ -363,6 +363,8 @@ class Settings
 
 		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
 
+		$txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
+
 		// Initial settings
 		$add_settings = [];
 		if (!isset($modSettings['lp_num_comments_per_page']))
@@ -385,7 +387,28 @@ class Settings
 			array('title', 'lp_schema_org'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
-			array('text', 'lp_page_itemprop_phone', 80)
+			array('text', 'lp_page_itemprop_phone', 80),
+
+			// FA source
+			array('title', 'lp_fa_source_title'),
+			array(
+				'select',
+				'lp_fa_source',
+				array(
+					'none'      => $txt['no'],
+					'css_cdn'   => $txt['lp_fa_source_css_cdn'],
+					'js_cdn'    => $txt['lp_fa_source_js_cdn'],
+					'css_local' => $txt['lp_fa_source_css_local'],
+					'js_local'  => $txt['lp_fa_source_js_local'],
+					'custom'    => $txt['lp_fa_custom']
+				),
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'
+			),
+			array(
+				'text',
+				'lp_fa_custom',
+				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] != 'custom', 'size' => 75
+			),
 		);
 
 		Addons::run('addExtraSettings', array(&$config_vars));
@@ -400,6 +423,9 @@ class Settings
 		// Save
 		if (Helpers::request()->has('save')) {
 			checkSession();
+
+			if (Helpers::post()->filled('lp_fa_custom'))
+				Helpers::post()->put('lp_fa_custom', Helpers::validate(Helpers::post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
 			$bbcTags = [];
