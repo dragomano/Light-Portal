@@ -132,6 +132,8 @@ class BlockImport extends AbstractImport
 			}
 		}
 
+		$smcFunc['db_transaction']('begin');
+
 		if (!empty($items)) {
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
@@ -209,8 +211,12 @@ class BlockImport extends AbstractImport
 			}
 		}
 
-		if (empty($result))
+		if (empty($result)) {
+			$smcFunc['db_transaction']('rollback');
 			fatal_lang_error('lp_import_failed', false);
+		}
+
+		$smcFunc['db_transaction']('commit');
 
 		// Restore the cache
 		$db_cache = $db_temp_cache;

@@ -1149,6 +1149,8 @@ class ManagePages
 	{
 		global $smcFunc, $db_type, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_pages',
 			array_merge(array(
@@ -1179,8 +1181,10 @@ class ManagePages
 
 		$smcFunc['lp_num_queries']++;
 
-		if (empty($item))
+		if (empty($item)) {
+			$smcFunc['db_transaction']('rollback');
 			return 0;
+		}
 
 		Addons::run('onPageSaving', array($item));
 
@@ -1270,20 +1274,25 @@ class ManagePages
 			$smcFunc['lp_num_queries']++;
 		}
 
+		$smcFunc['db_transaction']('commit');
+
 		return $item;
 	}
 
 	/**
 	 * @param int $item
+	 * @return void
 	 */
 	private function updateData(int $item)
 	{
 		global $smcFunc, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
-				WHERE page_id = {int:page_id}',
+			UPDATE {db_prefix}lp_pages
+			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+			WHERE page_id = {int:page_id}',
 			array(
 				'page_id'     => $item,
 				'category_id' => $context['lp_page']['category'],
@@ -1388,6 +1397,8 @@ class ManagePages
 
 			$smcFunc['lp_num_queries']++;
 		}
+
+		$smcFunc['db_transaction']('commit');
 	}
 
 	/**

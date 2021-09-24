@@ -163,6 +163,8 @@ class PageImport extends AbstractImport
 			}
 		}
 
+		$smcFunc['db_transaction']('begin');
+
 		if (!empty($categories)) {
 			$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_categories',
@@ -299,8 +301,12 @@ class PageImport extends AbstractImport
 			}
 		}
 
-		if (empty($result))
+		if (empty($result)) {
+			$smcFunc['db_transaction']('rollback');
 			fatal_lang_error('lp_import_failed', false);
+		}
+
+		$smcFunc['db_transaction']('commit');
 
 		// Restore the cache
 		$db_cache = $db_temp_cache;

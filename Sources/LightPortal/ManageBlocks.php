@@ -850,6 +850,8 @@ class ManageBlocks
 	{
 		global $smcFunc, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
 			array(
@@ -890,8 +892,10 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries']++;
 
-		if (empty($item))
+		if (empty($item)) {
+			$smcFunc['db_transaction']('rollback');
 			return 0;
+		}
 
 		Addons::run('onBlockSaving', array($item));
 
@@ -949,20 +953,25 @@ class ManageBlocks
 			$smcFunc['lp_num_queries']++;
 		}
 
+		$smcFunc['db_transaction']('commit');
+
 		return $item;
 	}
 
 	/**
 	 * @param int $item
+	 * @return void
 	 */
 	private function updateData(int $item)
 	{
 		global $smcFunc, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
-				WHERE block_id = {int:block_id}',
+			UPDATE {db_prefix}lp_blocks
+			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+			WHERE block_id = {int:block_id}',
 			array(
 				'block_id'      => $item,
 				'icon'          => $context['lp_block']['icon'],
@@ -1036,6 +1045,8 @@ class ManageBlocks
 
 			$smcFunc['lp_num_queries']++;
 		}
+
+		$smcFunc['db_transaction']('commit');
 
 		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
 		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_u' . $context['user']['id']);
