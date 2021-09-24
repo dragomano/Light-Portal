@@ -262,6 +262,7 @@ $txt['lp_blocks_import_description'] = 'Here you can import previously saved por
 $txt['lp_export_run'] = 'Export selection';
 $txt['lp_import_run'] = 'Run import';
 $txt['lp_export_all'] = 'Export all';
+$txt['lp_import_success'] = 'Imported: %1$s';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
@@ -371,6 +372,8 @@ $txt['lp_comments_set'] = 'comment, comments';
 $txt['lp_articles_set'] = 'article, articles';
 
 // Other units
+$txt['lp_pages_set'] = 'page, pages';
+$txt['lp_blocks_set'] = 'block, blocks';
 $txt['lp_users_set'] = 'user, users';
 $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';

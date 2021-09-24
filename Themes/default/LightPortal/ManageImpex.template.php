@@ -101,6 +101,10 @@ function template_manage_import()
 {
 	global $context, $txt;
 
+	if (!empty($context['import_successful']))
+		echo '
+	<div class="infobox">', $context['import_successful'], '</div>';
+
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['page_area_title'], '</h3>
