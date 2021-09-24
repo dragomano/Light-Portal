@@ -19,8 +19,6 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
-	use Manageable;
-
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
@@ -549,7 +547,7 @@ class ManageBlocks
 
 		checkSubmitOnce('register');
 
-		$this->prepareIconList();
+		Helpers::prepareIconList();
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
@@ -676,7 +674,7 @@ class ManageBlocks
 
 		Addons::run('prepareBlockFields');
 
-		$this->preparePostFields();
+		Helpers::preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}
@@ -825,7 +823,7 @@ class ManageBlocks
 
 		checkSubmitOnce('check');
 
-		$this->prepareBbcContent($context['lp_block']);
+		Helpers::prepareBbcContent($context['lp_block']);
 
 		if (empty($item)) {
 			$item = $this->addData();

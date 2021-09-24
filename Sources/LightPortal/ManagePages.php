@@ -19,8 +19,6 @@ if (!defined('SMF'))
 
 class ManagePages
 {
-	use Manageable;
-
 	/**
 	 * Number pages within tables
 	 *
@@ -784,7 +782,7 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$this->prepareIconList();
+		Helpers::prepareIconList();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
@@ -982,7 +980,7 @@ class ManagePages
 
 		Addons::run('preparePageFields');
 
-		$this->preparePostFields();
+		Helpers::preparePostFields();
 	}
 
 	/**
@@ -1126,7 +1124,8 @@ class ManagePages
 
 		$this->prepareDescription();
 		$this->prepareKeywords();
-		$this->prepareBbcContent($context['lp_page']);
+
+		Helpers::prepareBbcContent($context['lp_page']);
 
 		if (empty($item)) {
 			$item = $this->addData();

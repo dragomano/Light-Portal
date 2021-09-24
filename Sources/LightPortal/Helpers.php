@@ -114,6 +114,44 @@ class Helpers
 	}
 
 	/**
+	 * @return void
+	 */
+	public static function prepareIconList()
+	{
+		global $smcFunc;
+
+		if (Helpers::request()->has('icons') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$search = trim($smcFunc['strtolower']($search));
+
+		$all_icons = [];
+		$template = '<i class="%1$s"></i>&nbsp;%1$s';
+
+		Addons::run('prepareIconList', array(&$all_icons, &$template));
+
+		$all_icons = $all_icons ?: Helpers::getFaIcons();
+		$all_icons = array_filter($all_icons, function ($item) use ($search) {
+			return strpos($item, $search) !== false;
+		});
+
+		$results = [];
+		foreach ($all_icons as $icon) {
+			$results[] = [
+				'innerHTML' => sprintf($template, $icon),
+				'text'      => $icon
+			];
+		}
+
+		exit(json_encode($results));
+	}
+
+	/**
 	 * @param null|string $icon
 	 * @return string
 	 */
@@ -595,6 +633,24 @@ class Helpers
 	}
 
 	/**
+	 * @param array $entity
+	 * @return void
+	 */
+	public static function prepareBbcContent(&$entity)
+	{
+		global $smcFunc;
+
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		Helpers::require('Subs-Post');
+
+		preparsecode($entity['content']);
+	}
+
+	/**
 	 * Parse content depending on the type
 	 *
 	 * Парсим контент в зависимости от типа
@@ -771,19 +827,22 @@ class Helpers
 	 * @return array
 	 */
 	public static function getFaIcons(): array
-    {
-		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
+	{
+		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
 			$json = json_decode($content);
-			$icons = [];
 
+			if (empty($json))
+				return [];
+
+			$icons = [];
 			foreach ($json as $icon => $value) {
 				foreach ($value->styles as $style) {
 					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
 				}
 			}
 
-			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 4);
+			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
 		}
 
 		return $icons;
@@ -804,5 +863,81 @@ class Helpers
 		}
 
 		return $memberContext[$user_id]['avatar'];
+	}
+
+	/**
+	 * Prepare field array with entity options
+	 *
+	 * Формируем массив полей с настройками сущности
+	 *
+	 * @param string $defaultTab
+	 * @return void
+	 */
+	public static function preparePostFields(string $defaultTab = 'tuning')
+	{
+		global $context;
+
+		addInlineJavaScript('
+		function changeNumber(elem, refs) {
+			let row = elem.closest(".number");
+			let ref = row.querySelector(".number_text");
+			let step = parseInt(row.dataset.step);
+			let min = parseInt(row.dataset.min);
+			let max = parseInt(row.dataset.max);
+			let val = parseInt(refs[ref.name].value);
+
+			if (elem.classList.contains("number_minus")) {
+				val -= step;
+			} else {
+				val += step;
+			}
+
+			if (isNaN(val)) {
+				val = step;
+			} else if (val < min) {
+				val = min;
+			} else if (max && val > max) {
+				val = max;
+			}
+
+			refs[ref.name].value = val;
+
+			return false;
+		}');
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if (!empty($data['input']['after'])) {
+				$tag = 'div';
+
+				if (in_array($data['input']['type'], ['checkbox', 'number']))
+					$tag = 'span';
+
+				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			}
+
+			// Fancy checkbox
+			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+				$data['input']['attributes']['class'] = 'checkbox';
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
+				$context['posting_fields'][$item] = $data;
+			}
+
+			// Fancy number
+			if (isset($data['input']['type']) && $data['input']['type'] == 'number') {
+				$data['label']['html'] = $data['label']['text'];
+				$data['input']['html'] = '
+					<div class="number" data-step="' . ($data['input']['attributes']['step'] ?? 1) . '" data-min="' . ($data['input']['attributes']['min'] ?? 1) . '"' . (!empty($data['input']['attributes']['max']) ? ' data-max="' . ($data['input']['attributes']['max']) . '"' : '') . '>
+						<input class="number_text" x-ref="' . $data['input']['attributes']['id'] . '" type="text" name="' . $data['input']['attributes']['id'] . '" value="' . $data['input']['attributes']['value'] . '">
+						<span class="number_minus" @click="changeNumber(event.target, $refs)">−</span>
+						<span class="number_plus" @click="changeNumber(event.target, $refs)">+</span>
+					</div>';
+				$context['posting_fields'][$item] = $data;
+			}
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = $defaultTab;
+		}
+
+		loadTemplate('LightPortal/ManageSettings');
 	}
 }
