@@ -233,6 +233,9 @@ class AdsBlock extends Plugin
 	 */
 	public function init()
 	{
+		if (!function_exists('lp_show_blocks'))
+			loadTemplate('LightPortal/ViewBlock');
+
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
 		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
 		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
@@ -274,14 +277,11 @@ class AdsBlock extends Plugin
 
 				if (!empty($block['parameters']) && !empty($block['parameters']['end_date'])) {
 					if ($this->getEndTime($block['parameters']) <= time()) {
-                        ManageBlocks::toggleStatus([$block['id']]);
+						ManageBlocks::toggleStatus([$block['id']]);
 					}
 				}
 			}
 		}
-
-		if (!function_exists('lp_show_blocks'))
-			loadTemplate('LightPortal/ViewBlock');
 	}
 
 	/**
@@ -442,7 +442,7 @@ class AdsBlock extends Plugin
 	 * @return array
 	 */
 	public function getData(): array
-    {
+	{
 		global $context;
 
 		if (empty($context['lp_blocks']['ads']))
@@ -462,7 +462,7 @@ class AdsBlock extends Plugin
 	 * @return array
 	 */
 	private function getByPosition(string $position): array
-    {
+	{
 		global $context;
 
 		if (empty($position))
@@ -497,7 +497,7 @@ class AdsBlock extends Plugin
 	 * @return array
 	 */
 	private function getPlacements(): array
-    {
+	{
 		global $txt;
 
 		return array_combine(

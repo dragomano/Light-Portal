@@ -199,7 +199,7 @@ class Plugin extends PortalEntity {
 	async toggle(target) {
 		const plugin = target.closest('.features').dataset.id;
 
-		let response = await fetch(this.workUrl, {
+		let response = await fetch(this.workUrl + ';toggle', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'

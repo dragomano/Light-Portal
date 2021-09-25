@@ -56,6 +56,67 @@ class ManagePlugins
 		// You can add settings for your plugins
 		Addons::run('addSettings', array(&$config_vars), $context['lp_plugins']);
 
+		// Saving of plugin settings
+		if (Helpers::request()->has('save')) {
+			checkSession();
+
+			$plugin_name = Helpers::post('plugin_name');
+
+			$plugin_options = [];
+			foreach ($config_vars[$plugin_name] as $var) {
+				$var[1] = 'lp_' . $plugin_name . '_addon_' . $var[1];
+
+				if (Helpers::post()->has($var[1])) {
+					if ($var[0] == 'check') {
+						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
+					} elseif ($var[0] == 'int') {
+						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
+					} elseif ($var[0] == 'float') {
+						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'float');
+					} elseif ($var[0] == 'multicheck') {
+						$plugin_options[$var[1]] = [];
+
+						foreach (Helpers::post($var[1]) as $key => $value) {
+							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
+						}
+
+						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
+					} elseif ($var[0] == 'url') {
+						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
+					} elseif ($var[0] == 'select' && !empty($var['multiple'])) {
+						$plugin_options[$var[1]] = json_encode(Helpers::post($var[1]));
+					} else {
+						$plugin_options[$var[1]] = Helpers::post($var[1]);
+					}
+				}
+			}
+
+			// You can do additional actions after settings saving
+			Addons::run('onSettingsSaving', array(&$plugin_options), $context['lp_plugins']);
+
+			if (!empty($plugin_options))
+				updateSettings($plugin_options);
+
+			exit(json_encode('ok'));
+		}
+
+		// Toggle ON/OFF for plugins
+		if (Helpers::request()->has('toggle')) {
+			$data = Helpers::request()->json();
+			$plugin_id = (int) $data['toggle_plugin'];
+
+			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
+				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
+				unset($context['lp_enabled_plugins'][$key]);
+			} else {
+				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
+			}
+
+			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
+
+			exit(json_encode('ok'));
+		}
+
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
 
@@ -116,77 +177,6 @@ class ManagePlugins
 		}
 
 		$context['sub_template'] = 'manage_plugins';
-
-		if (Helpers::request()->has('save')) {
-			checkSession();
-
-			$plugin_options = [];
-			foreach ($config_vars as $plugin_name => $vars) {
-				foreach ($vars as $var) {
-					$var[1] = 'lp_' . $plugin_name . '_addon_' . $var[1];
-
-					if (Helpers::post()->has($var[1])) {
-						if ($var[0] == 'check') {
-							$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
-						} elseif ($var[0] == 'int') {
-							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
-						} elseif ($var[0] == 'float') {
-							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'float');
-						} elseif ($var[0] == 'multicheck') {
-							$plugin_options[$var[1]] = [];
-
-							foreach (Helpers::post($var[1]) as $key => $value) {
-								$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
-							}
-
-							$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
-						} elseif ($var[0] == 'url') {
-							$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
-						} elseif ($var[0] == 'select' && !empty($var['multiple'])) {
-							$plugin_options[$var[1]] = json_encode(Helpers::post($var[1]));
-						} else {
-							$plugin_options[$var[1]] = Helpers::post($var[1]);
-						}
-					}
-				}
-			}
-
-			if (!empty($plugin_options))
-				updateSettings($plugin_options);
-
-			// You can do additional actions after settings saving
-			Addons::run('onSettingsSaving');
-
-			exit(json_encode('ok'));
-		}
-
-		// Toggle plugins
-		$data = Helpers::request()->json();
-
-		if (isset($data['toggle_plugin'])) {
-			$plugin_id = (int) $data['toggle_plugin'];
-
-			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
-				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
-				unset($context['lp_enabled_plugins'][$key]);
-			} else {
-				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
-			}
-
-			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
-
-			exit(json_encode('ok'));
-		}
-
-		$prepared_vars = [];
-		foreach ($config_vars as $plugin => $vars) {
-			foreach ($vars as $var) {
-				$var[1] = 'lp_' . $plugin . '_addon_' . $var[1];
-				$prepared_vars[] = $var;
-			}
-		}
-
-		prepareDBSettingContext($prepared_vars);
 	}
 
 	/**

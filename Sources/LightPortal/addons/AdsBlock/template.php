@@ -62,7 +62,7 @@ function template_ads_block_below()
 	global $scripturl, $context;
 
 	echo '
-	<form name="ads_block_form" action="' . $scripturl . '?action=admin;area=lp_blocks;sa=add" method="post" accept-charset="' . $context['character_set'] . '" style="display: none">
+	<form name="ads_block_form" action="', $scripturl, '?action=admin;area=lp_blocks;sa=add" method="post" accept-charset="', $context['character_set'], '" style="display: none">
 		<input type="hidden" name="add_block" value="ads_block">
 		<input type="hidden" name="placement" value="ads">
 	</form>

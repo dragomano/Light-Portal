@@ -143,8 +143,8 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		</div>
 		<div class="noticebox">
 			<form id="', $plugin_name, '_form_', $context['session_id'], '" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="success = plugin.saveSettings($event.target, $refs)">
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
+				<input type="hidden" name="plugin_name" value="', $plugin_name, '">
+				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">';
 
 	foreach ($settings as $value) {
 		$label = $txt['lp_' . $plugin_name][$value[1]] ?? '';

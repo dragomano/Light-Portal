@@ -16,8 +16,6 @@ $txt['lp_no_items'] = 'Il n\'y a aucun élément à afficher.';
 $txt['lp_example'] = 'Exemple: ';
 $txt['lp_content'] = 'Contenu';
 $txt['lp_my_pages'] = 'Mes pages';
-$txt['lp_views'] = $txt['vues'];
-$txt['lp_replies'] = $txt['réponses'];
 $txt['lp_default'] = 'Page par défaut';
 $txt['lp_min_search_length'] = 'Veuillez saisir au moins %d caractères';
 
