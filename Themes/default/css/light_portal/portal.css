@@ -269,57 +269,6 @@
 .checkbox:checked + .label:after {
   left: 26px;
 }
-/* Fancy number */
-.number {
-  user-select: none;
-  position: relative;
-  text-align: left;
-  padding: 0;
-  width: 240px;
-  border: 1px solid #bbb;
-  display: inline-block;
-  border-radius: 6px;
-}
-.number .number_minus,
-.number .number_plus {
-  position: absolute;
-  top: 0;
-  width: 42px;
-  height: 32px;
-  line-height: 32px;
-  display: block;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  font-family: Arial;
-  background: #e8edf0;
-}
-.number .number_minus:hover,
-.number .number_plus:hover {
-  filter: brightness(95%);
-  cursor: pointer;
-  border: 1px solid #82a2bc;
-}
-.number .number_minus {
-  left: 0;
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-}
-.number .number_plus {
-  right: 0;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-.number .number_text {
-  display: inline-block;
-  font-size: 14px;
-  line-height: 32px;
-  height: 32px;
-  margin: 0 0 0 42px;
-  border: none !important;
-  width: auto !important;
-  text-align: center;
-}
 .errorbox {
   color: initial !important;
 }
@@ -1222,6 +1171,9 @@ section #display_head span {
 }
 .form_settings > div {
   margin: 10px;
+}
+.form_settings label {
+  font-weight: bold;
 }
 .form_settings input[type="text"],
 .form_settings input[type="url"] {

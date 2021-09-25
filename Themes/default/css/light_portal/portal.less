@@ -389,59 +389,6 @@
 	}
 }
 
-/* Fancy number */
-.number {
-	user-select: none;
-	position: relative;
-	text-align: left;
-	padding: 0;
-	width: 240px;
-	border: 1px solid #bbb;
-	display: inline-block;
-	.border-radius;
-
-	.number_minus, .number_plus {
-		position: absolute;
-		top: 0;
-		width: 42px;
-		height: 32px;
-		line-height: 32px;
-		display: block;
-		font-size: 20px;
-		font-weight: 600;
-		text-align: center;
-		font-family: Arial;
-		background: #e8edf0;
-
-		&:hover {
-			filter: brightness(95%);
-			cursor: pointer;
-			border: 1px solid #82a2bc;
-		}
-	}
-
-	.number_minus {
-		left: 0;
-		.border-radius(left, 6px);
-	}
-
-	.number_plus {
-		right: 0;
-		.border-radius(right, 6px);
-	}
-
-	.number_text {
-		display: inline-block;
-		font-size: 14px;
-		line-height: 32px;
-		height: 32px;
-		margin: 0 0 0 42px;
-		border: none !important;
-		width: auto !important;
-		text-align: center;
-	}
-}
-
 .errorbox {
 	color: initial !important;
 }
@@ -1526,6 +1473,9 @@ section {
 .form_settings {
 	> div {
 		margin: 10px;
+	}
+	label {
+		font-weight: bold;
 	}
 	input {
 		&[type="text"],

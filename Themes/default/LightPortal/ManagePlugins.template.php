@@ -155,7 +155,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 
 		if (!in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
 			echo '
-					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $label, '</strong></label>';
+					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '>', $label, '</label>';
 		}
 
 		if ($value[0] == 'text') {
@@ -170,24 +170,17 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		} elseif ($value[0] == 'color') {
 			echo '
 					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $modSettings[$value[1]] ?? '', '">';
-		} elseif ($value[0] == 'int') {
+		} elseif (in_array($value[0], ['float', 'int'])) {
 			$min = ' min="' . ($value['min'] ?? 0) . '"';
 			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
-			$step = ' step="' . ($value['step'] ?? 1) . '"';
-
-			echo '
-					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
-		} elseif ($value[0] == 'float') {
-			$min = ' min="' . ($value['min'] ?? 0) . '"';
-			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
-			$step = ' step="' . ($value['step'] ?? 0.01) . '"';
+			$step = ' step="' . ($value['step'] ?? ($value[0] === 'int' ? 1 : 0.01)) . '"';
 
 			echo '
 					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
-					<label class="label" for="', $value[1], '"><strong>', $label, '</strong></label>';
+					<label class="label" for="', $value[1], '">', $label, '</label>';
 		} elseif ($value[0] == 'callback' && !empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);

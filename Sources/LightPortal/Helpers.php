@@ -877,34 +877,6 @@ class Helpers
 	{
 		global $context;
 
-		addInlineJavaScript('
-		function changeNumber(elem, refs) {
-			let row = elem.closest(".number");
-			let ref = row.querySelector(".number_text");
-			let step = parseInt(row.dataset.step);
-			let min = parseInt(row.dataset.min);
-			let max = parseInt(row.dataset.max);
-			let val = parseInt(refs[ref.name].value);
-
-			if (elem.classList.contains("number_minus")) {
-				val -= step;
-			} else {
-				val += step;
-			}
-
-			if (isNaN(val)) {
-				val = step;
-			} else if (val < min) {
-				val = min;
-			} else if (max && val > max) {
-				val = max;
-			}
-
-			refs[ref.name].value = val;
-
-			return false;
-		}');
-
 		foreach ($context['posting_fields'] as $item => $data) {
 			if (!empty($data['input']['after'])) {
 				$tag = 'div';
@@ -919,18 +891,6 @@ class Helpers
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
 				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
-				$context['posting_fields'][$item] = $data;
-			}
-
-			// Fancy number
-			if (isset($data['input']['type']) && $data['input']['type'] == 'number') {
-				$data['label']['html'] = $data['label']['text'];
-				$data['input']['html'] = '
-					<div class="number" data-step="' . ($data['input']['attributes']['step'] ?? 1) . '" data-min="' . ($data['input']['attributes']['min'] ?? 1) . '"' . (!empty($data['input']['attributes']['max']) ? ' data-max="' . ($data['input']['attributes']['max']) . '"' : '') . '>
-						<input class="number_text" x-ref="' . $data['input']['attributes']['id'] . '" type="text" name="' . $data['input']['attributes']['id'] . '" value="' . $data['input']['attributes']['value'] . '">
-						<span class="number_minus" @click="changeNumber(event.target, $refs)">−</span>
-						<span class="number_plus" @click="changeNumber(event.target, $refs)">+</span>
-					</div>';
 				$context['posting_fields'][$item] = $data;
 			}
 
