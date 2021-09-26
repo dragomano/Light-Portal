@@ -1,3 +1,4 @@
+<?php
 // Spanish translation by Rock Lee https://www.bombercode.net | Rev. 1.0
  
 return [
