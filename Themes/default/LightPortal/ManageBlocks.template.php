@@ -437,7 +437,7 @@ function template_block_post()
 
 	if (!empty($context['lp_block']['icon'])) {
 		echo '
-		iconSelect.setData([{innerHTML: `<i class="', $context['lp_block']['icon'], '"></i>&nbsp;', $context['lp_block']['icon'], '`, value: "', $context['lp_block']['icon'], '", text: "', $context['lp_block']['icon'], '"}]);
+		iconSelect.setData([{innerHTML: `', $context['lp_block']['icon_template'], '`, text: "', $context['lp_block']['icon'], '"}]);
 		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
 	}
 

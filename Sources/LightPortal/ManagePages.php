@@ -723,6 +723,7 @@ class ManagePages
 			$context['lp_page']['options']['main_menu_item'] = [];
 
 		$context['lp_page']['options']['icon'] = $context['lp_page']['options']['icon'] === 'undefined' ? '' : $context['lp_page']['options']['icon'];
+		$context['lp_page']['options']['icon_template'] = Helpers::getIcon($context['lp_page']['options']['icon']) . $context['lp_page']['options']['icon'];
 
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';

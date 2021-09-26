@@ -482,6 +482,8 @@ class ManageBlocks
 			$context['lp_block']['content_class'] = '';
 		}
 
+		$context['lp_block']['icon_template'] = Helpers::getIcon($context['lp_block']['icon']) . $context['lp_block']['icon'];
+
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? $this->getPriority() : $context['lp_block']['priority'];
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
