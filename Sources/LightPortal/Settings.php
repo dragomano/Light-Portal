@@ -69,7 +69,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_own_blocks'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
-								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_blocks_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
@@ -80,7 +80,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
-								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_pages_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
 							)
 						),
 						'lp_plugins' => array(
