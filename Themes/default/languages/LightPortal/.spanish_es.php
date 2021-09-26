@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Spanish translation by Rock Lee https://www.bombercode.net | Rev. 4.6
+ * Spanish translation by Rock Lee https://www.bombercode.net | Rev. 4.7
  *
  * @package Light Portal
  */
@@ -15,16 +15,20 @@ $txt['lp_article'] = 'Artículo';
 $txt['lp_no_items'] = 'No hay elementos que mostrar.';
 $txt['lp_example'] = 'Ejemplo: ';
 $txt['lp_content'] = 'Contenido';
+$txt['lp_my_blocks'] = 'Mis bloques';
 $txt['lp_my_pages'] = 'Mis paginas';
 $txt['lp_views'] = $txt['views'];
 $txt['lp_replies'] = $txt['replies'];
 $txt['lp_default'] = 'Por Defecto';
+$txt['lp_can_donate'] = 'Para patrocinadores';
+$txt['lp_can_download'] = 'Puede descargar';
 $txt['lp_min_search_length'] = 'Ingrese al menos %d caracteres';
 
 // Settings
 $txt['lp_settings'] = 'Configuración del portal';
 $txt['lp_base'] = 'Configuraciones para la portada y los artículos';
 $txt['lp_base_info'] = 'La versión del mod: <strong>%1$s</strong>,Versión PHP: <strong>%2$s</strong>, %3$s versión: <strong>%4$s</strong>.<br>Se pueden discutir errores y características del portal en <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>También puedes <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">comprar una taza de café como agradecimiento</a>.';
+$txt['lp_debug_info'] = 'Información de depuración';
 
 $txt['lp_frontpage_title'] = 'El título de la portada';
 $txt['lp_frontpage_mode'] = 'La primera página del portal';
@@ -57,6 +61,9 @@ $txt['lp_frontpage_article_sorting_help'] = 'Cuando selecciona la primera opció
 $txt['lp_frontpage_layout'] = 'Diseño de plantilla para tarjetas de artículos';
 $txt['lp_frontpage_num_columns'] = 'Número de columnas para mostrar artículos.';
 $txt['lp_frontpage_num_columns_set'] = array('1 columna', '2 columnas', '3 columnas', '4 columnas', '6 columnas');
+$txt['lp_show_pagination'] = 'Mostrar la paginación';
+$txt['lp_show_pagination_set'] = array('Solo abajo', 'Arriba y abajo', 'Sólo arriba');
+$txt['lp_use_simple_pagination'] = 'Usar paginación simple';
 $txt['lp_num_items_per_page'] = 'Número de elementos por página (para paginación)';
 
 $txt['lp_standalone_mode_title'] = 'Modo independiente';
@@ -131,17 +138,27 @@ $txt['lp_misc'] = 'Varios';
 $txt['lp_misc_info'] = 'Hay configuraciones de portal adicionales que serán útiles para los desarrolladores de plantillas y complementos aquí.';
 $txt['lp_debug_and_caching'] = 'Depuración y almacenamiento en caché';
 $txt['lp_show_debug_info'] = 'Muestra el tiempo de carga y el número de consultas del portal.';
-$txt['lp_show_debug_info_help'] = '¡Esta información estará disponible solo para administradores!';
-$txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché';
+$txt['lp_show_debug_info_help'] = '¡Esta información solo estará disponible para administradores!';
+$txt['lp_show_cache_info'] = 'Muestra la información sobre el portal que trabaja con el caché.';
+$txt['lp_cache_update_interval'] = 'El intervalo de actualización del caché ';
+$txt['lp_compatibility_mode'] = 'Modo de compatibilidad';
+$txt['lp_portal_action'] = 'El valor del parámetro <strong>action</strong> del portal';
+$txt['lp_page_param'] = 'El parámetro <strong>page</strong> para las páginas del portal';
+$txt['lp_weekly_cleaning'] = 'Optimización semanal de las tablas del portal';
+$txt['lp_cache_info'] = 'Portal - usando el caché';
+$txt['lp_cache_saving'] = 'Guardando datos en la celda <strong>%1$s</strong> durante %2$d segundos.';
+$txt['lp_cache_loading'] = 'Cargando datos de la celda <strong>%1$s</strong>';
 
 // Actions
 $txt['lp_title'] = 'Título';
 $txt['lp_actions'] = 'Acciones';
 $txt['lp_action_on'] = 'Activar';
 $txt['lp_action_off'] = 'Desactivar';
+$txt['lp_action_toggle'] = 'Cambiar estado';
 $txt['lp_action_clone'] = 'Clonar';
 $txt['lp_action_move'] = 'Mover';
 $txt['lp_read_more'] = 'Leer más...';
+$txt['lp_save_and_exit'] = 'Guardar y Salir';
 
 // Blocks
 $txt['lp_blocks'] = 'Bloques';
@@ -165,7 +182,7 @@ $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values'] = array(
 	'en todas partes',
-	'en el área <em>index.php?action</em>=<strong>custom_action</strong> (por ejemplo: portal, foro, búsqueda)',
+	'en el área <em>index.php?action</em>=<strong>custom_action</strong> (por ejemplo:  portal,forum,search)',
 	'en todas las páginas del portal',
 	'en la página <em>index.php?page</em>=<strong>alias</strong>',
 	'en todos los foros',
@@ -178,6 +195,7 @@ $txt['lp_block_areas_values'] = array(
 	'en temasid3, y id7'
 );
 
+$txt['lp_block_select_icon'] = 'Seleccionar icono';
 $txt['lp_block_title_class'] = 'Clase de título CSS';
 $txt['lp_block_title_style'] = 'Estilo de título CSS';
 $txt['lp_block_content_class'] = 'Clase de contenido CSS';
@@ -242,39 +260,8 @@ $txt['lp_plugins'] = 'Complementos';
 $txt['lp_plugins_manage'] = 'Administrar complementos';
 $txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>. or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Los complementos amplían las capacidades del portal y sus componentes, proporcionando características adicionales que no están disponibles en el núcleo.';
-$txt['lp_plugins_add'] = 'Agregar complemento';
-$txt['lp_plugins_add_title'] = 'Agregar un complemento';
-$txt['lp_plugins_add_description'] = 'El asistente del creador de complementos lo ayudará a preparar el esqueleto del complemento para cambios adicionales. Complete los campos sugeridos con cuidado.';
-$txt['lp_plugins_add_information'] = 'Los archivos del complemento se guardarán en el directorio %1$s<br>Asegúrese de buscar allí y verificar/editar los archivos necesarios.';
-
-$txt['lp_plugins_tab_content'] = 'Información básica';
-$txt['lp_plugins_tab_copyrights'] = 'Derechos de autor';
-$txt['lp_plugins_tab_settings'] = 'Ajustes';
-$txt['lp_plugins_tab_tuning'] = 'Adicional';
-
-$txt['lp_plugin_name'] = 'El nombre del complemento';
-$txt['lp_plugin_name_subtext'] = '¡En letras latinas, sin espacios!';
-$txt['lp_plugin_type'] = 'El tipo de complemento';
-$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'El diseño de la portada', 'Importar y exportar', 'Otro');
-$txt['lp_plugin_site_subtext'] = 'Sitio web donde los usuarios pueden descargar nuevas versiones de este complemento.';
-$txt['lp_plugin_license'] = 'La licencia del complemento';
-$txt['lp_plugin_license_own'] = 'Licencia propia';
-$txt['lp_plugin_license_name'] = 'El nombre de la licencia';
-$txt['lp_plugin_license_link'] = 'El enlace de la licencia';
-$txt['lp_plugin_smf_hooks'] = '¿Está utilizando ganchos de SMF?';
-$txt['lp_plugin_components'] = '¿Utiliza scripts de terceros?';
-$txt['lp_plugin_components_name'] = 'Nombre del componente';
-$txt['lp_plugin_components_link'] = 'Enlace al sitio del componente';
-$txt['lp_plugin_components_author'] = 'Autor del componente';
-
-$txt['lp_plugin_option_name'] = 'Nombre de la opción (latín)';
-$txt['lp_plugin_option_type'] = 'Tipo de opción';
-$txt['lp_plugin_option_type_set'] = array('Campo de texto', 'Dirección web', 'Color de entrada', 'Número de entrada', 'Casilla de verificación', 'Selección múltiple ', 'Seleccione');
-$txt['lp_plugin_option_default_value'] = 'Valor por defecto';
-$txt['lp_plugin_option_variants'] = 'Valores posibles';
-$txt['lp_plugin_option_variants_placeholder'] = 'Varias opciones separadas por comas';
-$txt['lp_plugin_option_translations'] = 'Localización';
-$txt['lp_plugin_new_option'] = 'Agregar opción';
+$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'El diseño de la página principal', 'Importar y exportar', 'Otros');
+$txt['lp_plugins_requires'] = 'Complementos necesarios para trabajar';
 
 // Tags
 $txt['lp_all_page_tags'] = 'Todas las etiquetas de página del portal';
@@ -295,12 +282,12 @@ $txt['lp_sort_by_author'] = 'Nombre del autor (asc)';
 $txt['lp_sort_by_num_views_desc'] = 'Número de vistas (desc) ';
 $txt['lp_sort_by_num_views'] = 'Número de vistas (asc)';
 
+// Related pages
+$txt['lp_related_pages'] = 'Páginas relacionadas';
+
 // Comments
 $txt['lp_comments'] = 'Comentarios';
 $txt['lp_comment_placeholder'] = 'Deja un comentario...';
-
-// Related pages
-$txt['lp_related_pages'] = 'Páginas relacionadas';
 
 // Comment alerts
 $txt['alert_page_comment'] = 'Cuando mi página recibe un comentario';
@@ -314,6 +301,7 @@ $txt['lp_page_not_activated'] = '¡La página solicitada está desactivada!';
 $txt['lp_page_not_editable'] = '¡No tienes permiso para editar esta página!';
 $txt['lp_page_visible_but_disabled'] = '¡La página está visible para usted, pero no está activada! ';
 $txt['lp_block_not_found'] = '¡Bloque no encontrado!';
+$txt['lp_block_not_editable'] = '¡No tienes permiso para editar este bloque!';
 $txt['lp_post_error_no_title'] = 'El campo <strong>título</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_alias'] = 'El campo <strong>alias</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_valid_alias'] = '¡El alias especificado no es correcto!';
@@ -322,15 +310,11 @@ $txt['lp_post_error_no_content'] = '¡El contenido no especificado! Es requerido
 $txt['lp_post_error_no_areas'] = 'El campo <strong>areas</strong> no se completó. Es requerido.';
 $txt['lp_post_error_no_valid_areas'] = '¡El campo de las <strong>zonas</strong> se configuró incorrectamente!';
 $txt['lp_post_error_no_name'] = 'El campo <strong>nombre</strong> no se completó. Es requerido.';
-$txt['lp_post_error_no_valid_name'] = '¡El nombre especificado no coincide con las reglas!';
-$txt['lp_post_error_no_unique_name'] = '¡Ya existe un complemento con este nombre!';
-$txt['lp_post_error_no_description'] = '¡La descripción no especificada! Es requerido.';
-$txt['lp_addon_not_installed'] = 'Complemento %1$s no instalado';
-$txt['lp_addon_add_failed'] = 'The <strong>/Sources/LightPortal/addons</strong> directory must be writable!';
 $txt['lp_wrong_import_file'] = 'Archivo incorrecto para importar...';
 $txt['lp_import_failed'] = 'Error al importar...';
 $txt['lp_wrong_template'] = 'Plantilla incorrecta. Elija una plantilla que coincida con el contenido.';
 $txt['lp_addon_not_installed'] = 'Complemento %1$s no instalado';
+$txt['lp_addon_requires_ssi'] = '¡El complemento %1$s depende de SSI.php, que debe estar en la raíz del foro!';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viendo <a href="%1$s">la página principal del portal</a>.';
@@ -356,12 +340,12 @@ $txt['permissionhelp_light_portal_manage_blocks'] = 'Acceso para gestionar bloqu
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Acceso para gestionar páginas propias.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Posibilidad de publicar páginas del portal sin aprobación.';
 $txt['cannot_light_portal_view'] = 'Lo sentimos, ¡no tienes permiso para ver el portal!';
-$txt['cannot_light_portal_manage_blocks'] = 'Lo sentimos, ¡no tienes permiso para administrar bloques!';
+$txt['cannot_light_portal_manage_own_blocks'] = 'Lo sentimos, ¡no tienes permiso para administrar bloques!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Lo sentimos, ¡no tienes permiso para administrar páginas!';
 $txt['cannot_light_portal_approve_pages'] = 'Lo sentimos, ¡no se le permite publicar páginas sin aprobación!';
 $txt['cannot_light_portal_view_page'] = 'Lo sentimos, ¡no puedes ver esta página!';
 
-// Time units
+// Time units (see https://github.com/dragomano/Light-Portal/wiki/To-translators)
 $txt['lp_days_set'] = 'día, días';
 $txt['lp_hours_set'] = 'una hora, horas';
 $txt['lp_minutes_set'] = 'un minuto, minutos';
@@ -384,6 +368,11 @@ $txt['lp_guests_set'] = 'invitado, invitados';
 $txt['lp_spiders_set'] = 'araña, arañas';
 $txt['lp_hidden_set'] = 'oculto, ocultos';
 $txt['lp_buddies_set'] = 'amigo, amigos';
+
+// Packages
+$txt['lp_addon_package'] = 'Complementos Light Portal';
+$txt['install_lp_addon'] = 'Instalar complemento';
+$txt['uninstall_lp_addon'] = 'Desinstalar complemento';
 
 // Credits
 $txt['lp_contributors'] = 'Contribución al desarrollo del portal';
