@@ -25,7 +25,7 @@ return [
 		'telegram' => 'Enviar',
 		'linkedin' => 'Compartir',
 		'whatsapp' => 'Enviar',
-		'viber' => 'Send',
+		'viber' => 'Enviar',
 		'reddit' => 'Compartir',
 	),
 ];
