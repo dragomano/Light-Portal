@@ -40,6 +40,9 @@ class PageArticle extends AbstractArticle
 
 		$this->selected_categories = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [];
 
+		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
+			$this->selected_categories = [0];
+
 		$this->params = [
 			'status'              => Page::STATUS_ACTIVE,
 			'current_time'        => time(),
@@ -68,10 +71,7 @@ class PageArticle extends AbstractArticle
 	 */
 	public function getData(int $start, int $limit): array
 	{
-		global $modSettings, $user_info, $smcFunc, $scripturl, $txt;
-
-		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
-			return [];
+		global $user_info, $smcFunc, $modSettings, $scripturl, $txt;
 
 		if (($pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit)) === null) {
 			$titles = Helpers::getAllTitles();
@@ -123,14 +123,16 @@ class PageArticle extends AbstractArticle
 							'name' => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name']
 						),
 						'date'      => empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
-						'link'      => $scripturl . '?' . LP_PAGE_ACTION . '=' . $row['alias'],
+						'link'      => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 						'views'     => array(
 							'num'   => $row['num_views'],
-							'title' => $txt['lp_views']
+							'title' => $txt['lp_views'],
+							'after' => ''
 						),
 						'replies'   => array(
 							'num'   => !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
-							'title' => $txt['lp_comments']
+							'title' => $txt['lp_comments'],
+							'after' => ''
 						),
 						'is_new'    => $user_info['last_login'] < $row['date'] && $row['author_id'] != $user_info['id'],
 						'image'     => $image,
@@ -138,7 +140,7 @@ class PageArticle extends AbstractArticle
 						'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 					);
 
-                    $pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
+					$pages[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 					if (!empty($modSettings['lp_show_teaser']))
 						$pages[$row['page_id']]['teaser'] = Helpers::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && !empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
@@ -170,10 +172,7 @@ class PageArticle extends AbstractArticle
 	 */
 	public function getTotalCount(): int
 	{
-		global $modSettings, $user_info, $smcFunc;
-
-		if (empty($this->selected_categories) && $modSettings['lp_frontpage_mode'] == 'all_pages')
-			return 0;
+		global $user_info, $smcFunc;
 
 		if (($num_pages = Helpers::cache()->get('articles_u' . $user_info['id'] . '_total')) === null) {
 			$request = $smcFunc['db_query']('', '

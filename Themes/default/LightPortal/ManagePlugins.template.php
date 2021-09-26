@@ -35,22 +35,28 @@ function template_manage_plugins()
 	</div>
 	<div class="information">', $txt['lp_plugins_desc'], '</div>';
 
+	if (!empty($context['lp_addon_chart']))
+		echo '
+	<canvas id="addonChart"></canvas>';
+
 	// This is a magic! Пошла магия!
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['types'], '</strong></h4>
+				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['type'], '</strong></h4>
 				<div>
 					<p>';
 
-		if ($plugin['types'] === $txt['lp_can_donate']) {
-			$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
-			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
-		} elseif ($plugin['types'] === $txt['lp_can_download']) {
-			$lang = $context['lp_can_download'][$plugin['name']]['languages'];
-			echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+		if (!empty($plugin['special'])) {
+			if ($plugin['special'] === $txt['lp_can_donate']) {
+				$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
+				echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+			} elseif ($plugin['special'] === $txt['lp_can_download']) {
+				$lang = $context['lp_can_download'][$plugin['name']]['languages'];
+				echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+			}
 		} else {
 			echo $plugin['desc'];
 		}
@@ -86,12 +92,14 @@ function template_manage_plugins()
 				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if ($plugin['types'] === $txt['lp_can_donate']) {
-			echo '
-				<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
-		} elseif ($plugin['types'] === $txt['lp_can_download']) {
-			echo '
-				<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
+		if (!empty($plugin['special'])) {
+			if ($plugin['special'] === $txt['lp_can_donate']) {
+				echo '
+					<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+			} elseif ($plugin['special'] === $txt['lp_can_download']) {
+				echo '
+					<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
+			}
 		} else {
 			echo '
 				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
@@ -161,7 +169,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'color') {
 			echo '
-					<br><input type="color" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif ($value[0] == 'int') {
 			$min = ' min="' . ($value['min'] ?? 0) . '"';
 			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';

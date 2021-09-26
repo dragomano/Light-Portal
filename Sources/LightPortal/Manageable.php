@@ -17,34 +17,6 @@ namespace Bugo\LightPortal;
 trait Manageable
 {
 	/**
-	 * @see https://github.com/brianvoe/slim-select
-	 *
-	 * @return void
-	 */
-	public function improveSelectFields()
-	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.css', array('external' => true));
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/slim-select@1/dist/slimselect.min.js', array('external' => true));
-		loadJavaScriptFile('light_portal/slimselect.min.js');
-
-		addInlineCss('
-		.ss-content.ss-open {
-			position: initial;
-		}
-		.ss-disabled {
-			color: inherit !important;
-		}
-		.ss-main .ss-single-selected {
-			height: auto;
-		}
-		.placeholder > div {
-			margin: 0 !important;
-		}');
-
-		$this->prepareIconList();
-	}
-
-	/**
 	 * Prepare field array with entity options
 	 *
 	 * Формируем массив полей с настройками сущности
@@ -52,13 +24,19 @@ trait Manageable
 	 * @param string $defaultTab
 	 * @return void
 	 */
-	public function preparePostFields(string $defaultTab = 'tuning')
+	private function preparePostFields(string $defaultTab = 'tuning')
 	{
 		global $context;
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if (!empty($data['input']['after']))
-				$context['posting_fields'][$item]['input']['after'] = '<div class="descbox alternative2 smalltext">' . $data['input']['after'] . '</div>';
+			if (!empty($data['input']['after'])) {
+				$tag = 'div';
+
+				if (in_array($data['input']['type'], ['checkbox', 'number']))
+					$tag = 'span';
+
+				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			}
 
 			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
@@ -109,5 +87,22 @@ trait Manageable
 		}
 
 		exit(json_encode($results));
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareBbcContent(&$entity)
+	{
+		global $smcFunc;
+
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		Helpers::require('Subs-Post');
+
+		preparsecode($entity['content']);
 	}
 }

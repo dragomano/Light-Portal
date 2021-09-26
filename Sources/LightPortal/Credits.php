@@ -140,7 +140,16 @@ class Credits
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
 				)
-			)
+			),
+			array(
+				'title' => 'jscolor Color Picker',
+				'link' => 'https://jscolor.com',
+				'author' => 'Jan Odvárko – East Desire',
+				'license' => array(
+					'name' => 'GNU GPL v3',
+					'link' => 'http://www.gnu.org/licenses/gpl-3.0.txt'
+				)
+			),
 		);
 
 		// Adding copyrights of used plugins

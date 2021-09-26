@@ -24,6 +24,8 @@ Create a separate folder for your addon files, inside `/Sources/LightPortal/addo
     ...(addons)
         MyAddon\
             langs\
+                 english.php
+                 index.php
             index.php
             MyAddon.php
 ```

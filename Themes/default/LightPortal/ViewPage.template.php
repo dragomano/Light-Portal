@@ -430,22 +430,22 @@ function show_related_pages()
 			<div class="cat_bar">
 				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
 			</div>
-			<div class="article_list">';
+			<div class="list">';
 
 	foreach ($context['lp_page']['related_pages'] as $page) {
 		echo '
-				<div class="windowbg">
-					<a href="', $page['link'], '">';
+				<div class="windowbg">';
 
 		if (!empty($page['image'])) {
 			echo '
+					<a href="', $page['link'], '">
 						<div class="article_image">
 							<img alt="" src="', $page['image'], '">
-						</div>';
+						</div>
+					</a>';
 		}
 
 		echo '
-					</a>
 					<a href="', $page['link'], '">', $page['title'], '</a>
 				</div>';
 	}

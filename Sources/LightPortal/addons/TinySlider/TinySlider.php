@@ -25,109 +25,30 @@ class TinySlider extends Plugin
 	public $icon = 'far fa-images';
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	public $axis = 'horizontal';
-
-	/**
-	 * @var int
-	 */
-	private $num_items = 1;
-
-	/**
-	 * @var int
-	 */
-	private $gutter = 0;
-
-	/**
-	 * @var int
-	 */
-	private $edge_padding = 0;
-
-	/**
-	 * @var bool
-	 */
-	private $controls = true;
-
-	/**
-	 * @var bool
-	 */
-	private $nav = true;
-
-	/**
-	 * @var bool
-	 */
-	private $nav_as_thumbnails = false;
-
-	/**
-	 * @var bool
-	 */
-	private $arrow_keys = false;
-
-	/**
-	 * @var int
-	 */
-	private $fixed_width = 0;
-
-	/**
-	 * @var bool
-	 */
-	private $auto_width = false;
-
-	/**
-	 * @var bool
-	 */
-	private $auto_height = false;
-
-	/**
-	 * @var int
-	 */
-	private $slide_by = 1;
-
-	/**
-	 * @var int
-	 */
-	private $speed = 300;
-
-	/**
-	 * @var bool
-	 */
-	private $autoplay = true;
-
-	/**
-	 * @var int
-	 */
-	private $autoplay_timeout = 5000;
-
-	/**
-	 * @var string
-	 */
-	private $autoplay_direction = 'forward';
-
-	/**
-	 * @var bool
-	 */
-	private $loop = true;
-
-	/**
-	 * @var bool
-	 */
-	private $rewind = false;
-
-	/**
-	 * @var bool
-	 */
-	private $lazyload = false;
-
-	/**
-	 * @var bool
-	 */
-	private $mouse_drag = false;
-
-	/**
-	 * @var string
-	 */
-	private $images = '';
+	private $options = [
+		'use_cdn'            => true,
+		'axis'               => 'horizontal',
+		'num_items'          => 1,
+		'gutter'             => 0,
+		'edge_padding'       => 0,
+		'controls'           => true,
+		'nav'                => true,
+		'nav_as_thumbnails'  => false,
+		'arrow_keys'         => false,
+		'fixed_width'        => 0,
+		'slide_by'           => 1,
+		'speed'              => 300,
+		'autoplay'           => true,
+		'autoplay_timeout'   => 5000,
+		'autoplay_direction' => 'forward',
+		'loop'               => true,
+		'rewind'             => false,
+		'lazyload'           => false,
+		'mouse_drag'         => false,
+		'images'             => ''
+	];
 
 	/**
 	 * @param array $options
@@ -135,27 +56,7 @@ class TinySlider extends Plugin
 	 */
 	public function blockOptions(array &$options)
 	{
-		$options['tiny_slider']['parameters']['axis']               = $this->axis;
-		$options['tiny_slider']['parameters']['num_items']          = $this->num_items;
-		$options['tiny_slider']['parameters']['gutter']             = $this->gutter;
-		$options['tiny_slider']['parameters']['edge_padding']       = $this->edge_padding;
-		$options['tiny_slider']['parameters']['controls']           = $this->controls;
-		$options['tiny_slider']['parameters']['nav']                = $this->nav;
-		$options['tiny_slider']['parameters']['nav_as_thumbnails']  = $this->nav_as_thumbnails;
-		$options['tiny_slider']['parameters']['arrow_keys']         = $this->arrow_keys;
-		$options['tiny_slider']['parameters']['fixed_width']        = $this->fixed_width;
-		$options['tiny_slider']['parameters']['auto_width']         = $this->auto_width;
-		$options['tiny_slider']['parameters']['auto_height']        = $this->auto_height;
-		$options['tiny_slider']['parameters']['slide_by']           = $this->slide_by;
-		$options['tiny_slider']['parameters']['speed']              = $this->speed;
-		$options['tiny_slider']['parameters']['autoplay']           = $this->autoplay;
-		$options['tiny_slider']['parameters']['autoplay_timeout']   = $this->autoplay_timeout;
-		$options['tiny_slider']['parameters']['autoplay_direction'] = $this->autoplay_direction;
-		$options['tiny_slider']['parameters']['loop']               = $this->loop;
-		$options['tiny_slider']['parameters']['rewind']             = $this->rewind;
-		$options['tiny_slider']['parameters']['lazyload']           = $this->lazyload;
-		$options['tiny_slider']['parameters']['mouse_drag']         = $this->mouse_drag;
-		$options['tiny_slider']['parameters']['images']             = $this->images;
+		$options['tiny_slider']['parameters'] = $this->options;
 	}
 
 	/**
@@ -185,6 +86,7 @@ class TinySlider extends Plugin
 			Helpers::post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
+		$parameters['use_cdn']            = FILTER_VALIDATE_BOOLEAN;
 		$parameters['axis']               = FILTER_SANITIZE_STRING;
 		$parameters['num_items']          = FILTER_VALIDATE_INT;
 		$parameters['gutter']             = FILTER_VALIDATE_INT;
@@ -194,8 +96,6 @@ class TinySlider extends Plugin
 		$parameters['nav_as_thumbnails']  = FILTER_VALIDATE_BOOLEAN;
 		$parameters['arrow_keys']         = FILTER_VALIDATE_BOOLEAN;
 		$parameters['fixed_width']        = FILTER_VALIDATE_INT;
-		$parameters['auto_width']         = FILTER_VALIDATE_BOOLEAN;
-		$parameters['auto_height']        = FILTER_VALIDATE_BOOLEAN;
 		$parameters['slide_by']           = FILTER_VALIDATE_INT;
 		$parameters['speed']              = FILTER_VALIDATE_INT;
 		$parameters['autoplay']           = FILTER_VALIDATE_BOOLEAN;
@@ -218,9 +118,19 @@ class TinySlider extends Plugin
 		if ($context['lp_block']['type'] !== 'tiny_slider')
 			return;
 
+		$context['posting_fields']['use_cdn']['label']['text'] = $txt['lp_tiny_slider']['use_cdn'];
+		$context['posting_fields']['use_cdn']['label']['after'] = ' <img src="https://data.jsdelivr.com/v1/package/npm/tiny-slider/badge?style=rounded" alt="">';
+		$context['posting_fields']['use_cdn']['input'] = array(
+			'type' => 'checkbox',
+			'attributes' => array(
+				'id'      => 'use_cdn',
+				'checked' => !empty($context['lp_block']['options']['parameters']['use_cdn'])
+			)
+		);
+
 		$context['posting_fields']['axis']['label']['text'] = $txt['lp_tiny_slider']['axis'];
 		$context['posting_fields']['axis']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'axis'
 			),
@@ -314,24 +224,6 @@ class TinySlider extends Plugin
 			)
 		);
 
-		$context['posting_fields']['auto_width']['label']['text'] = $txt['lp_tiny_slider']['auto_width'];
-		$context['posting_fields']['auto_width']['input'] = array(
-			'type' => 'checkbox',
-			'attributes' => array(
-				'id'      => 'auto_width',
-				'checked' => !empty($context['lp_block']['options']['parameters']['auto_width'])
-			)
-		);
-
-		$context['posting_fields']['auto_height']['label']['text'] = $txt['lp_tiny_slider']['auto_height'];
-		$context['posting_fields']['auto_height']['input'] = array(
-			'type' => 'checkbox',
-			'attributes' => array(
-				'id'      => 'auto_height',
-				'checked' => !empty($context['lp_block']['options']['parameters']['auto_height'])
-			)
-		);
-
 		$context['posting_fields']['slide_by']['label']['text'] = $txt['lp_tiny_slider']['slide_by'];
 		$context['posting_fields']['slide_by']['input'] = array(
 			'type' => 'number',
@@ -373,7 +265,7 @@ class TinySlider extends Plugin
 
 		$context['posting_fields']['autoplay_direction']['label']['text'] = $txt['lp_tiny_slider']['autoplay_direction'];
 		$context['posting_fields']['autoplay_direction']['input'] = array(
-			'type' => 'select',
+			'type' => 'radio_select',
 			'attributes' => array(
 				'id' => 'autoplay_direction'
 			),
@@ -521,6 +413,16 @@ class TinySlider extends Plugin
 	}
 
 	/**
+	 * @param array $assets
+	 * @return void
+	 */
+	public function prepareAssets(&$assets)
+	{
+		$assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js';
+	}
+
+	/**
 	 * @param string $type
 	 * @param int $block_id
 	 * @param int $cache_time
@@ -541,19 +443,23 @@ class TinySlider extends Plugin
 		if (empty($tiny_slider_html))
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js', array('external' => true));
+		if (!empty($parameters['use_cdn'])) {
+			loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', array('external' => true));
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js', array('external' => true));
+		} else {
+			loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
+			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', array('minimize' => true));
+		}
+
 		addInlineJavaScript('
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
-				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->axis) . '",
-				items: ' . (!empty($parameters['num_items']) ? $parameters['num_items'] : $this->num_items) . ',
-				gutter: ' . (!empty($parameters['gutter']) ? $parameters['gutter'] : $this->gutter) . ',
-				edgePadding: ' . (!empty($parameters['edge_padding']) ? $parameters['edge_padding'] : $this->edge_padding) . ',
-				fixedWidth: ' . (!empty($parameters['fixed_width']) ? $parameters['fixed_width'] : $this->fixed_width) . ',
-				autoWidth: ' . (!empty($parameters['auto_width']) ? 'true' : 'false') . ',
-				autoHeight: ' . (!empty($parameters['auto_height']) ? 'true': 'false') . ',
-				slideBy: ' . (!empty($parameters['slide_by']) ? $parameters['slide_by'] : $this->slide_by) . ',
+				axis: "' . (!empty($parameters['axis']) ? $parameters['axis'] : $this->options['axis']) . '",
+				items: ' . (!empty($parameters['num_items']) ? $parameters['num_items'] : $this->options['num_items']) . ',
+				gutter: ' . (!empty($parameters['gutter']) ? $parameters['gutter'] : $this->options['gutter']) . ',
+				edgePadding: ' . (!empty($parameters['edge_padding']) ? $parameters['edge_padding'] : $this->options['edge_padding']) . ',
+				fixedWidth: ' . (!empty($parameters['fixed_width']) ? $parameters['fixed_width'] : $this->options['fixed_width']) . ',
+				slideBy: ' . (!empty($parameters['slide_by']) ? $parameters['slide_by'] : $this->options['slide_by']) . ',
 				controls: ' . (!empty($parameters['controls']) ? 'true' : 'false') . ',
 				controlsContainer: ".customize-controls",
 				nav: ' . (!empty($parameters['nav']) ? 'true' : 'false') . ',
@@ -561,10 +467,10 @@ class TinySlider extends Plugin
 				navContainer: ".customize-thumbnails",' : '') . '
 				navAsThumbnails: ' . (!empty($parameters['nav_as_thumbnails']) ? 'true' : 'false') . ',
 				arrowKeys: ' . (!empty($parameters['arrow_keys']) ? 'true' : 'false') . ',
-				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : $this->speed) . ',
+				speed: ' . (!empty($parameters['speed']) ? $parameters['speed'] : $this->options['speed']) . ',
 				autoplay: ' . (!empty($parameters['autoplay']) ? 'true' : 'false') . ',
-				autoplayTimeout: ' . (!empty($parameters['autoplay_timeout']) ? $parameters['autoplay_timeout'] : $this->autoplay_timeout) . ',
-				autoplayDirection: "' . (!empty($parameters['autoplay_direction']) ? $parameters['autoplay_direction'] : $this->autoplay_direction) . '",
+				autoplayTimeout: ' . (!empty($parameters['autoplay_timeout']) ? $parameters['autoplay_timeout'] : $this->options['autoplay_timeout']) . ',
+				autoplayDirection: "' . (!empty($parameters['autoplay_direction']) ? $parameters['autoplay_direction'] : $this->options['autoplay_direction']) . '",
 				autoplayHoverPause: true,
 				autoplayButtonOutput: false,
 				loop: ' . (!empty($parameters['loop']) ? 'true' : 'false') . ',

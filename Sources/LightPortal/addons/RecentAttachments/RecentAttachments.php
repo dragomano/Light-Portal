@@ -113,11 +113,9 @@ class RecentAttachments extends Plugin
 	 */
 	public function getData(array $parameters): array
 	{
-		global $boarddir;
+		$this->loadSsi();
 
 		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
-
-		require_once $boarddir . '/SSI.php';
 
 		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}

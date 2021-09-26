@@ -7,8 +7,6 @@ Depending on the type of block, various settings will be available, spread acros
 * placement
 * permissions
 * areas
-* icon
-* icon type
-* some design options
+* appearance options
 
 Block-specific tuners are usually available on the **Tuning** tab.

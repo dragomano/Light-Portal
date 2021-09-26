@@ -25,7 +25,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* Template layout for article cards — to add your own templates, place the function `template_show_articles_somename` (replace `somename` with your desired name) into the file `/Themes/default/LightPortal/ViewFrontPage.template.php`.
+* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/ru/layouts/create_new)_.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
 
@@ -84,4 +84,8 @@ In this section, you can change various auxiliary settings of the portal, which 
 ### Debugging and caching
 
 * Show the loading time and number of the portal queries — useful information for administrators and plugin creators.
-* The cache update interval — after a specified amount of time (in seconds), the cache of each portal item will be cleared.
+* Show the information about the portal working with the cache — enable this to see a block with the data taken from the portal from the cache, or saved by it in the cache, at the bottom of the page.
+* The cache update interval - after a specified amount of time (in seconds), the cache of each portal item will be cleared.
+* The value of the **action** parameter of the portal - you can change this setting to use the Light Portal in conjunction with other similar modifications. Then the home page will open at the specified address.
+* The **page** parameter for portal pages - see above. Similarly, for portal pages - change the parameter and they will open with different URls.
+* Weekly optimization of portal tables - enable this option so that once a week the rows with empty values in the portal tables in the database will be deleted and the tables will be optimized.

@@ -96,7 +96,7 @@ class PageExport extends AbstractExport
 							return '<a class="bbc_link' . (
 								$entry['is_front']
 									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?' . LP_PAGE_ACTION . '=' . $entry['alias']
+									: '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
 								) . '">' . $entry['title'] . '</a>';
 						},
 						'class' => 'word_break'

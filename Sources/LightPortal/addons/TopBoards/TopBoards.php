@@ -110,9 +110,7 @@ class TopBoards extends Plugin
 	 */
 	public function getData(int $num_boards): array
 	{
-		global $boarddir;
-
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
 
 		return ssi_topBoards($num_boards, 'array');
 	}

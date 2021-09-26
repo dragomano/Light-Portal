@@ -78,6 +78,7 @@ class Subs
 		loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
 		loadCSSFile('light_portal/flexboxgrid.css');
 		loadCSSFile('light_portal/portal.css');
+		loadCSSFile('custom_frontpage.css');
 	}
 
 	/**
@@ -182,7 +183,7 @@ class Subs
 
 		loadTemplate('LightPortal/ViewDebug');
 
-		$key = array_search('portal', $context['template_layers']);
+		$key = array_search('lp_portal', $context['template_layers']);
 		if (empty($key)) {
 			$context['template_layers'][] = 'debug';
 		} else {

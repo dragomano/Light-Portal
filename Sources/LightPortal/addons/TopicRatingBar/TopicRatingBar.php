@@ -56,7 +56,9 @@ class TopicRatingBar extends Plugin
 	}
 
 	/**
-	 * Show rating as stars
+	 * Show the rating of each topic
+	 *
+	 * Отображаем рейтинг каждой темы
 	 *
 	 * @return void
 	 */
@@ -69,7 +71,7 @@ class TopicRatingBar extends Plugin
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
 			if (!empty($topic['rating'])) {
-				$context['lp_frontpage_articles'][$id]['replies']['num'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
+				$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}
 	}

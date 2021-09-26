@@ -110,9 +110,7 @@ class TopTopics extends Plugin
 	 */
 	public function getData(array $parameters): array
 	{
-		global $boarddir;
-
-		require_once $boarddir . '/SSI.php';
+		$this->loadSsi();
 
 		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}

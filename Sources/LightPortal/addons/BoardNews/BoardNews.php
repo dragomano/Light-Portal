@@ -122,10 +122,8 @@ class BoardNews extends Plugin
 	 * @return array
 	 */
 	public function getData(array $parameters): array
-    {
-		global $boarddir;
-
-		require_once $boarddir . '/SSI.php';
+	{
+		$this->loadSsi();
 
 		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
 	}

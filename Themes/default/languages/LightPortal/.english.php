@@ -142,8 +142,8 @@ $txt['lp_show_debug_info_help'] = 'This information will be available to adminis
 $txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
-$txt['lp_portal_action'] = 'The portal action';
-$txt['lp_page_action'] = 'The portal page action';
+$txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter of the portal';
+$txt['lp_page_param'] = 'The <strong>page</strong> parameter for portal pages';
 $txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
 $txt['lp_cache_info'] = 'Portal — using the cache';
 $txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
@@ -314,6 +314,7 @@ $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
+$txt['lp_addon_requires_ssi'] = 'Plugin %1$s depends on SSI.php, which must be in the root of the forum!';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';

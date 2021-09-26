@@ -119,10 +119,6 @@ class Helpers
 	 */
 	public static function getIcon(?string $icon = ''): string
 	{
-		global $context;
-
-		$icon = $icon ?: ($context['lp_block']['icon'] ?? $context['lp_page']['options']['icon'] ?? '');
-
 		if (empty($icon))
 			return '';
 
@@ -787,7 +783,7 @@ class Helpers
 	/**
 	 * @param $user_id
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public static function getUserAvatar($user_id): array
 	{

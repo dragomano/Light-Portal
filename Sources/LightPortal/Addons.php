@@ -46,12 +46,12 @@ class Addons
 		if (isset($txt['lp_' . $snake_name]))
 			return;
 
-		$addon_dir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . '/langs/';
+		$addon_dir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . DIRECTORY_SEPARATOR . 'langs';
 		$languages = array_unique(['english', $user_info['language']]);
 
 		$addon_languages = [];
 		foreach ($languages as $lang) {
-			$lang_file = $addon_dir . $lang . '.php';
+			$lang_file = $addon_dir . DIRECTORY_SEPARATOR . $lang . '.php';
 
 			$addon_languages[$lang] = is_file($lang_file) ? require_once $lang_file : [];
 		}
@@ -71,19 +71,54 @@ class Addons
 
 		$style = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . '/style.css';
 
-		if (!is_file($style))
+		if (! is_file($style))
 			return;
 
 		$addon_css = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $snake_name . '.css';
 
 		$css_exists = true;
-		if (!is_file($addon_css) || filemtime($style) > filemtime($addon_css))
+		if (! is_file($addon_css) || filemtime($style) > filemtime($addon_css))
 			$css_exists = @copy($style, $addon_css);
 
-		if (!@is_writable($settings['default_theme_dir'] . '/css/light_portal') || !$css_exists)
+		if (! @is_writable($settings['default_theme_dir'] . '/css/light_portal') || ! $css_exists)
 			return;
 
 		loadCSSFile('light_portal/addon_' . $snake_name . '.css');
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function prepareAssets()
+	{
+		global $settings;
+
+		$assets = [];
+
+		Addons::run('prepareAssets', array(&$assets));
+
+		if (empty($assets))
+			return;
+
+		foreach (['css', 'scripts'] as $type) {
+			if (! isset($assets[$type]))
+				continue;
+
+			foreach ($assets[$type] as $plugin => $links) {
+				$addonAssetDir = $settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+
+				if (! is_dir($addonAssetDir)) {
+					@mkdir($addonAssetDir);
+				}
+
+				foreach ($links as $link) {
+					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename($link)))
+						continue;
+
+					file_put_contents($filename, fetch_web_data($link), LOCK_EX);
+				}
+			}
+		}
 	}
 
 	/**
@@ -103,7 +138,7 @@ class Addons
 		$context['lp_html']['icon'] = 'fab fa-html5';
 		$context['lp_php']['icon']  = 'fab fa-php';
 
-		$addons = !empty($plugins) ? $plugins : $context['lp_enabled_plugins'];
+		$addons = $plugins ?: $context['lp_enabled_plugins'];
 
 		if (empty($addons))
 			return;
@@ -111,12 +146,12 @@ class Addons
 		foreach ($addons as $id => $addon) {
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
-			if (!class_exists($className))
+			if (! class_exists($className))
 				continue;
 
 			$class = new $className;
 
-			if (!isset($snake_name[$id])) {
+			if (! isset($snake_name[$id])) {
 				$snake_name[$id] = Helpers::getSnakeName($addon);
 
 				self::loadLanguage($addon, $snake_name[$id]);
