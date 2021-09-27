@@ -440,9 +440,10 @@ function template_callback_panel_layout()
 	global $txt, $modSettings, $context;
 
 	echo '
-	<dt style="width: 0"></dt>
-	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
+		</dl>
+	</div>
+	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
+	<div class="generic_list_wrapper">
 		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row column-reverse' : '', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
@@ -635,7 +636,8 @@ function template_callback_panel_layout()
 				</div>
 			</div>
 		</div>
-	</dd>';
+	</div>
+	<br>';
 }
 
 /**
@@ -650,15 +652,12 @@ function template_callback_panel_direction()
 	global $txt, $context;
 
 	echo '
-	<dt style="width: 0"></dt>
-	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_direction_note'], '</div>
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_panel_direction'], '</h3>
+	</div>
+	<div class="information">', $txt['lp_panel_direction_note'], '</div>
+	<div class="generic_list_wrapper">
 		<table class="table_grid centertext">
-			<thead>
-				<tr class="title_bar">
-					<th colspan="2">', $txt['lp_panel_direction'], '</th>
-				</tr>
-			</thead>
 			<tbody>';
 
 	foreach ($context['lp_block_placements'] as $key => $label) {
@@ -684,7 +683,7 @@ function template_callback_panel_direction()
 	echo '
 			</tbody>
 		</table>
-	</dd>';
+	<dl class="settings">';
 }
 
 /**
