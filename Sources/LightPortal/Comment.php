@@ -85,28 +85,28 @@ class Comment
 			$comments
 		);
 
-		$total_comments     = sizeof($comments);
-		$txt['lp_comments'] = Helpers::getText($total_comments, $txt['lp_comments_set']);
+		$totalComments      = sizeof($comments);
+		$txt['lp_comments'] = Helpers::getText($totalComments, $txt['lp_comments_set']);
 
-		$limit          = $modSettings['lp_num_comments_per_page'] ?? 10;
-		$comment_tree   = $this->getTree($comments);
-		$total_comments = sizeof($comment_tree);
+		$limit = $modSettings['lp_num_comments_per_page'] ?? 10;
+		$commentTree = $this->getTree($comments);
+		$totalParentComments = sizeof($commentTree);
 
-		$page_index_url = $context['canonical_url'];
+		$pageIndexUrl = $context['canonical_url'];
 		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
-			$page_index_url = $scripturl . '?action=' . LP_ACTION;
+			$pageIndexUrl = $scripturl . '?action=' . LP_ACTION;
 
-		$temp_start            = Helpers::request('start');
-		$context['page_index'] = constructPageIndex($page_index_url, Helpers::request()->get('start'), $total_comments, $limit);
-		$start                 = Helpers::request('start');
+		$tempStart = Helpers::request('start');
+		$context['page_index'] = constructPageIndex($pageIndexUrl, Helpers::request()->get('start'), $totalParentComments, $limit);
+		$start = Helpers::request('start');
 
-		$context['page_info']['num_pages'] = floor($total_comments / $limit) + 1;
+		$context['page_info']['num_pages'] = floor($totalParentComments / $limit) + 1;
 		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
 
-		if ($temp_start > $total_comments)
+		if ($tempStart > $totalParentComments)
 			send_http_status(404);
 
-		$context['lp_page']['comments'] = array_slice($comment_tree, $start, $limit);
+		$context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
 
 		if ($context['user']['is_logged']) {
 			addInlineJavaScript('
