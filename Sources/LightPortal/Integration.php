@@ -615,26 +615,37 @@ class Integration
 		if (!empty($context['user']['is_admin']))
 			return;
 
+		if (!allowedTo('light_portal_manage_own_blocks') && !allowedTo('light_portal_manage_own_blocks'))
+			return;
+
 		$counter = 0;
 		foreach ($profile_items as $item) {
 			$counter++;
 
-			if ($item['area'] == 'showdrafts')
+			if ($item['area'] === 'showdrafts')
 				break;
 		}
 
+		$portal_items = [];
+
+		if (allowedTo('light_portal_manage_own_blocks'))
+			$portal_items[] = array(
+				'menu' => 'info',
+				'area' => 'lp_my_blocks'
+			);
+
+		if (allowedTo('light_portal_manage_own_pages'))
+			$portal_items[] = array(
+				'menu' => 'info',
+				'area' => 'lp_my_pages'
+			);
+
+		if (empty($portal_items))
+			return;
+
 		$profile_items = array_merge(
 			array_slice($profile_items, 0, $counter, true),
-			array(
-				allowedTo('light_portal_manage_own_blocks') ? array(
-					'menu' => 'info',
-					'area' => 'lp_my_blocks'
-				) : null,
-				allowedTo('light_portal_manage_own_pages') ? array(
-					'menu' => 'info',
-					'area' => 'lp_my_pages'
-				) : null,
-			),
+			$portal_items,
 			array_slice($profile_items, $counter, null, true)
 		);
 	}
