@@ -22,7 +22,7 @@ $txt['lp_min_search_length'] = 'Veuillez saisir au moins %d caractères';
 // Settings
 $txt['lp_settings'] = 'Paramètres du portail';
 $txt['lp_base'] = 'Paramètres de la page d\'accueil et des articles';
-$txt['lp_base_info'] = 'La version mod: <strong>%1$s</strong>, version PHP: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>On peut discuter des bogues et des fonctionnalités du portail à <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>Vous pouvez également <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">acheter une tasse de café en guise de remerciement</a>.';
+$txt['lp_base_info'] = 'La version mod: <strong>%1$s</strong>, version PHP: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>On peut discuter des bogues et des fonctionnalités du portail à <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>Vous pouvez également <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">acheter une tasse de café en guise de remerciement</a>.';
 
 $txt['lp_frontpage_title'] = 'Le titre de la page d\'accueil';
 $txt['lp_frontpage_mode'] = 'La page d\'accueil du portail';

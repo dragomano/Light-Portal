@@ -24,7 +24,7 @@ $txt['lp_min_search_length'] = 'Lütfen en az %d karakter girin';
 // Ayarlar
 $txt['lp_settings'] = 'Portal ayarları';
 $txt['lp_base'] = 'Ön sayfa ve makaleler için ayarlar';
-$txt['lp_base_info'] = 'Mod sürümü: <strong>%1$s</strong>, PHP sürümü: <strong>%2$s</strong>, %3$s sürümü: <strong>%4$s</strong>.<br>Portalın hataları ve özellikleri <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
+$txt['lp_base_info'] = 'Mod sürümü: <strong>%1$s</strong>, PHP sürümü: <strong>%2$s</strong>, %3$s sürümü: <strong>%4$s</strong>.<br>Portalın hataları ve özellikleri <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 
 $txt['lp_frontpage_title'] = 'Ön sayfa başlığı';
 $txt['lp_frontpage_mode'] = 'Portal ön sayfası';
