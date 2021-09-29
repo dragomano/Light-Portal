@@ -8,6 +8,6 @@ return [
 	'entity_type' => 'Qué mostrar en las barras',
 	'entity_type_set' => array('Varios temas', 'Varias publicaciones'),
 	'show_numbers_only' => 'Solo mostrar números',
-	'topics' => 'tema, temas'
-	'posts' => 'publicacion, publicaciones'
+	'topics' => 'tema, temas',
+	'posts' => 'publicacion, publicaciones',
 ];
