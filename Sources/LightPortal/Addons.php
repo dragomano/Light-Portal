@@ -151,14 +151,14 @@ class Addons
 
 			$class = new $className;
 
-			if (! isset($snake_name[$id])) {
-				$snake_name[$id] = Helpers::getSnakeName($addon);
+			if (! isset($snakeNames[$id])) {
+				$snakeNames[$id] = Helpers::getSnakeName($addon);
 
-				self::loadLanguage($addon, $snake_name[$id]);
-				self::loadCss($addon, $snake_name[$id]);
+				self::loadLanguage($addon, $snakeNames[$id]);
+				self::loadCss($addon, $snakeNames[$id]);
 
-				$context['lp_' . $snake_name[$id]]['type'] = property_exists($class, 'type') ? $class->type : 'block';
-				$context['lp_' . $snake_name[$id]]['icon'] = property_exists($class, 'icon') ? $class->icon : 'fas fa-puzzle-piece';
+				$context['lp_' . $snakeNames[$id]]['type'] = property_exists($class, 'type') ? $class->type : 'block';
+				$context['lp_' . $snakeNames[$id]]['icon'] = property_exists($class, 'icon') ? $class->icon : 'fas fa-puzzle-piece';
 			}
 
 			// Hook init should run only once

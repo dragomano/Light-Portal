@@ -27,7 +27,7 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.com</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -103,6 +103,14 @@ $txt['lp_page_og_image'] = 'Use an image from the page content';
 $txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
 $txt['lp_page_itemprop_address'] = 'Address of your organization';
 $txt['lp_page_itemprop_phone'] = 'Phone of your organization';
+
+$txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
+$txt['lp_fa_source'] = 'Source for the FontAwesome library';
+$txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
+$txt['lp_fa_source_js_cdn'] = 'Connecting JS from jsDelivr CDN (SVG icons)';
+$txt['lp_fa_source_css_local'] = 'Locally (all.min.css from the theme css folder)';
+$txt['lp_fa_source_js_local'] = 'Locally (all.min.js from the theme scripts folder)';
+$txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
 
 $txt['lp_permissions'] = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
 
@@ -254,6 +262,7 @@ $txt['lp_blocks_import_description'] = 'Here you can import previously saved por
 $txt['lp_export_run'] = 'Export selection';
 $txt['lp_import_run'] = 'Run import';
 $txt['lp_export_all'] = 'Export all';
+$txt['lp_import_success'] = 'Imported: %1$s';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
@@ -363,6 +372,8 @@ $txt['lp_comments_set'] = 'comment, comments';
 $txt['lp_articles_set'] = 'article, articles';
 
 // Other units
+$txt['lp_pages_set'] = 'page, pages';
+$txt['lp_blocks_set'] = 'block, blocks';
 $txt['lp_users_set'] = 'user, users';
 $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';

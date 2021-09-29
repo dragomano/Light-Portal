@@ -69,7 +69,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_own_blocks'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_blocks_manage']),
-								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_blocks_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_blocks_add'])
 							)
 						),
 						'lp_pages' => array(
@@ -80,7 +80,7 @@ class Settings
 							'permission' => array('admin_forum', 'light_portal_manage_own_pages'),
 							'subsections' => array(
 								'main' => array('<i class="fas fa-tasks"></i> ' . $txt['lp_pages_manage']),
-								'add'  => array('<i class="fas fa-plus fa-spin"></i> ' . $txt['lp_pages_add'])
+								'add'  => array('<i class="fas fa-plus"></i> ' . $txt['lp_pages_add'])
 							)
 						),
 						'lp_plugins' => array(
@@ -328,7 +328,7 @@ class Settings
 			Addons::run('addBasicSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-
+			$_SESSION['adm-save'] = true;
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=basic');
@@ -352,16 +352,13 @@ class Settings
 		$context['page_title'] = $context['settings_title'] = $txt['lp_extra'];
 		$context['post_url']   = $scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
-		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
-		$modSettings['bbc_disabled_lp_disabled_bbc_in_comments'] = array_merge($modSettings['bbc_disabled_lp_disabled_bbc_in_comments'], explode(',', $modSettings['disabledBBC']));
-
 		$txt['lp_show_comment_block_set']['none']    = $txt['lp_show_comment_block_set'][0];
 		$txt['lp_show_comment_block_set']['default'] = $txt['lp_show_comment_block_set'][1];
 
 		unset($txt['lp_show_comment_block_set'][0], $txt['lp_show_comment_block_set'][1]);
 		asort($txt['lp_show_comment_block_set']);
 
-		$txt['lp_disabled_bbc_in_comments_subtext'] = sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC');
+		$txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
 
 		// Initial settings
 		$add_settings = [];
@@ -376,7 +373,7 @@ class Settings
 			array('check', 'lp_show_items_as_articles'),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
-			array('bbc', 'lp_disabled_bbc_in_comments', 'subtext' => $txt['lp_disabled_bbc_in_comments_subtext']),
+			array('callback', 'disabled_bbc_in_comments'),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
 			array('select', 'lp_page_editor_type_default', $context['lp_page_types']),
@@ -385,7 +382,29 @@ class Settings
 			array('title', 'lp_schema_org'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('text', 'lp_page_itemprop_address', 80),
-			array('text', 'lp_page_itemprop_phone', 80)
+			array('text', 'lp_page_itemprop_phone', 80),
+
+			// FA source
+			array('title', 'lp_fa_source_title'),
+			array(
+				'select',
+				'lp_fa_source',
+				array(
+					'none'      => $txt['no'],
+					'css_cdn'   => $txt['lp_fa_source_css_cdn'],
+					'js_cdn'    => $txt['lp_fa_source_js_cdn'],
+					'css_local' => $txt['lp_fa_source_css_local'],
+					'js_local'  => $txt['lp_fa_source_js_local'],
+					'custom'    => $txt['lp_fa_custom']
+				),
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'
+			),
+			array(
+				'text',
+				'lp_fa_custom',
+				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] != 'custom',
+				'size' => 75
+			),
 		);
 
 		Addons::run('addExtraSettings', array(&$config_vars));
@@ -397,9 +416,14 @@ class Settings
 
 		$context['template_layers'][] = 'lp_extra_settings';
 
+		$this->prepareTagsInComments();
+
 		// Save
 		if (Helpers::request()->has('save')) {
 			checkSession();
+
+			if (Helpers::post()->filled('lp_fa_custom'))
+				Helpers::post()->put('lp_fa_custom', Helpers::validate(Helpers::post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
 			$bbcTags = [];
@@ -420,11 +444,12 @@ class Settings
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
+			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
 
 			Addons::run('addExtraSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-
+			$_SESSION['adm-save'] = true;
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');
@@ -557,7 +582,7 @@ class Settings
 			Addons::run('addPanelsSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-
+			$_SESSION['adm-save'] = true;
 			redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
@@ -634,7 +659,7 @@ class Settings
 			Addons::run('addMiscSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-
+			$_SESSION['adm-save'] = true;
 			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
@@ -858,5 +883,39 @@ class Settings
 		}
 
 		exit(json_encode($results));
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareTagsInComments()
+	{
+		global $modSettings, $context, $txt;
+
+		$disabledBbc = empty($modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_disabled_bbc_in_comments']);
+		$disabledBbc = array_merge($disabledBbc, explode(',', $modSettings['disabledBBC']));
+
+		$temp = parse_bbc(false);
+		$bbcTags = [];
+		foreach ($temp as $tag)
+			if (!isset($tag['require_parents']))
+				$bbcTags[] = $tag['tag'];
+
+		$bbcTags = array_unique($bbcTags);
+
+		$context['bbc_sections'] = array(
+			'title'        => $txt['enabled_bbc_select'],
+			'disabled'     => $disabledBbc ?: [],
+			'all_selected' => empty($disabledBbc),
+			'columns'      => []
+		);
+
+		$sectionTags = array_diff($bbcTags, $context['legacy_bbc']);
+
+		foreach ($sectionTags as $tag) {
+			$context['bbc_sections']['columns'][] = array(
+				'tag' => $tag
+			);
+		}
 	}
 }

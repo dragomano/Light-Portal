@@ -143,8 +143,8 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		</div>
 		<div class="noticebox">
 			<form id="', $plugin_name, '_form_', $context['session_id'], '" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="success = plugin.saveSettings($event.target, $refs)">
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="', $context['admin-dbsc_token_var'], '" value="', $context['admin-dbsc_token'], '">';
+				<input type="hidden" name="plugin_name" value="', $plugin_name, '">
+				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">';
 
 	foreach ($settings as $value) {
 		$label = $txt['lp_' . $plugin_name][$value[1]] ?? '';
@@ -153,9 +153,9 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		echo '
 				<div>';
 
-		if (!in_array($value[0], array('callback', 'desc', 'check'))) {
+		if (!in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
 			echo '
-					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '><strong>', $label, '</strong></label>';
+					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '>', $label, '</label>';
 		}
 
 		if ($value[0] == 'text') {
@@ -170,28 +170,24 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		} elseif ($value[0] == 'color') {
 			echo '
 					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $modSettings[$value[1]] ?? '', '">';
-		} elseif ($value[0] == 'int') {
+		} elseif (in_array($value[0], ['float', 'int'])) {
 			$min = ' min="' . ($value['min'] ?? 0) . '"';
 			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
-			$step = ' step="' . ($value['step'] ?? 1) . '"';
-
-			echo '
-					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
-		} elseif ($value[0] == 'float') {
-			$min = ' min="' . ($value['min'] ?? 0) . '"';
-			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
-			$step = ' step="' . ($value['step'] ?? 0.01) . '"';
+			$step = ' step="' . ($value['step'] ?? ($value[0] === 'int' ? 1 : 0.01)) . '"';
 
 			echo '
 					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
 		} elseif ($value[0] == 'check') {
 			echo '
 					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
-					<label class="label" for="', $value[1], '"><strong>', $label, '</strong></label>';
+					<label class="label" for="', $value[1], '">', $label, '</label>';
 		} elseif ($value[0] == 'callback' && !empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
 			}
+		} elseif ($value[0] == 'title') {
+			echo '
+					<div class="sub_bar"><h6 class="subbg">', $label, '</h6></div>';
 		} elseif ($value[0] == 'desc') {
 			echo '
 					<div class="roundframe">', $label, '</div>';

@@ -188,7 +188,7 @@ function template_page_post()
 
 	if (!empty($context['lp_page']['options']['icon'])) {
 		echo '
-		iconSelect.setData([{innerHTML: `<i class="', $context['lp_page']['options']['icon'], '"></i>&nbsp;', $context['lp_page']['options']['icon'], '`, value: "', $context['lp_page']['options']['icon'], '", text: "', $context['lp_page']['options']['icon'], '"}]);
+		iconSelect.setData([{innerHTML: `', $context['lp_page']['options']['icon_template'], '`, text: "', $context['lp_page']['options']['icon'], '"}]);
 		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
 	}
 

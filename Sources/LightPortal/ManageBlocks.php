@@ -19,8 +19,6 @@ if (!defined('SMF'))
 
 class ManageBlocks
 {
-	use Manageable;
-
 	/**
 	 * Areas for block output must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and some characters
 	 *
@@ -484,6 +482,8 @@ class ManageBlocks
 			$context['lp_block']['content_class'] = '';
 		}
 
+		$context['lp_block']['icon_template'] = Helpers::getIcon($context['lp_block']['icon']) . $context['lp_block']['icon'];
+
 		$context['lp_block']['priority'] = empty($context['lp_block']['id']) ? $this->getPriority() : $context['lp_block']['priority'];
 
 		if (!empty($context['lp_block']['options']['parameters'])) {
@@ -549,7 +549,7 @@ class ManageBlocks
 
 		checkSubmitOnce('register');
 
-		$this->prepareIconList();
+		Helpers::prepareIconList();
 
 		foreach ($context['languages'] as $lang) {
 			$context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $txt['lp_title'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
@@ -676,7 +676,7 @@ class ManageBlocks
 
 		Addons::run('prepareBlockFields');
 
-		$this->preparePostFields();
+		Helpers::preparePostFields();
 
 		$context['lp_block_tab_tuning'] = $this->hasParameters($context['posting_fields']);
 	}
@@ -825,7 +825,7 @@ class ManageBlocks
 
 		checkSubmitOnce('check');
 
-		$this->prepareBbcContent($context['lp_block']);
+		Helpers::prepareBbcContent($context['lp_block']);
 
 		if (empty($item)) {
 			$item = $this->addData();
@@ -851,6 +851,8 @@ class ManageBlocks
 	private function addData(): int
 	{
 		global $smcFunc, $context;
+
+		$smcFunc['db_transaction']('begin');
 
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
@@ -892,8 +894,10 @@ class ManageBlocks
 
 		$smcFunc['lp_num_queries']++;
 
-		if (empty($item))
+		if (empty($item)) {
+			$smcFunc['db_transaction']('rollback');
 			return 0;
+		}
 
 		Addons::run('onBlockSaving', array($item));
 
@@ -951,20 +955,25 @@ class ManageBlocks
 			$smcFunc['lp_num_queries']++;
 		}
 
+		$smcFunc['db_transaction']('commit');
+
 		return $item;
 	}
 
 	/**
 	 * @param int $item
+	 * @return void
 	 */
 	private function updateData(int $item)
 	{
 		global $smcFunc, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_blocks
-				SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
-				WHERE block_id = {int:block_id}',
+			UPDATE {db_prefix}lp_blocks
+			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+			WHERE block_id = {int:block_id}',
 			array(
 				'block_id'      => $item,
 				'icon'          => $context['lp_block']['icon'],
@@ -1038,6 +1047,8 @@ class ManageBlocks
 
 			$smcFunc['lp_num_queries']++;
 		}
+
+		$smcFunc['db_transaction']('commit');
 
 		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_b' . $item);
 		Helpers::cache()->forget($context['lp_block']['type'] . '_addon_u' . $context['user']['id']);

@@ -210,6 +210,68 @@ function template_lp_extra_settings_below()
 }
 
 /**
+ * Callback template for selecting allowed tags in comments
+ *
+ * Callback-шаблон для выбора допустимых тегов в комментариях
+ *
+ * @return void
+ */
+function template_callback_disabled_bbc_in_comments()
+{
+	global $txt, $scripturl, $context;
+
+	echo '
+	<dt>
+		<a id="setting_lp_disabled_bbc_in_comments"></a>
+		<span>
+			<label for="lp_disabled_bbc_in_comments">', $txt['lp_disabled_bbc_in_comments'], '</label>
+		</span>
+		<div class="smalltext">
+			', sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC'), '
+		</div>
+	</dt>
+	<dd>
+		<fieldset x-data>
+			<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags[]" multiple>';
+
+	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
+		foreach ($bbcColumn as $bbcTag) {
+			echo '
+					<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
+						', $bbcTag, '
+					</option>';
+		}
+	}
+
+	echo '
+			</select>
+			<input type="checkbox" id="bbc_lp_disabled_bbc_in_comments_select_all" @click="selectDeselectAll($event.target, \'lp_disabled_bbc_in_comments\')"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="bbc_lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
+			<script>
+				new SlimSelect({
+					select: "#lp_disabled_bbc_in_comments",
+					hideSelectedOption: true,
+					placeholder: "', $txt['enabled_bbc_select'], '",
+					searchText: "', $txt['no_matches'], '",
+					searchPlaceholder: "', $txt['search'], '",
+					searchHighlight: true,
+					closeOnSelect: false,
+					showContent: "down"
+				});
+				function selectDeselectAll(elem, select) {
+					if (elem.checked) {
+						let test = document.querySelectorAll("#" + select + " option");
+						test = Array.from(test).map(el => el.value);
+						eval(`${select}Select`).set(test);
+					} else {
+						eval(`${select}Select`).set([]);
+					}
+				}
+			</script>
+		</fieldset>
+	</dd>';
+}
+
+/**
  * Callback template for selecting categories-sources of articles
  *
  * Callback-шаблон для выбора рубрик-источников статей
@@ -378,10 +440,11 @@ function template_callback_panel_layout()
 	global $txt, $modSettings, $context;
 
 	echo '
-	<dt style="width: 0"></dt>
-	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_layout_preview'], '</div>
-		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' row column-reverse' : '', '">
+		</dl>
+	</div>
+	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
+	<div class="generic_list_wrapper">
+		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' column-reverse' : '', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
@@ -461,7 +524,7 @@ function template_callback_panel_layout()
 					</div>
 				</div>
 				<div class="col-xs">
-					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' row column-reverse' : '', '">
+					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' column-reverse' : '', '">
 						<strong>col-xs (auto)</strong>
 						<div class="row">
 							<div class="col-xs">
@@ -573,7 +636,8 @@ function template_callback_panel_layout()
 				</div>
 			</div>
 		</div>
-	</dd>';
+	</div>
+	<br>';
 }
 
 /**
@@ -588,15 +652,12 @@ function template_callback_panel_direction()
 	global $txt, $context;
 
 	echo '
-	<dt style="width: 0"></dt>
-	<dd style="width: 100%">
-		<div class="infobox">', $txt['lp_panel_direction_note'], '</div>
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_panel_direction'], '</h3>
+	</div>
+	<div class="information">', $txt['lp_panel_direction_note'], '</div>
+	<div class="generic_list_wrapper">
 		<table class="table_grid centertext">
-			<thead>
-				<tr class="title_bar">
-					<th colspan="2">', $txt['lp_panel_direction'], '</th>
-				</tr>
-			</thead>
 			<tbody>';
 
 	foreach ($context['lp_block_placements'] as $key => $label) {
@@ -622,7 +683,7 @@ function template_callback_panel_direction()
 	echo '
 			</tbody>
 		</table>
-	</dd>';
+	<dl class="settings">';
 }
 
 /**

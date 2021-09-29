@@ -114,6 +114,44 @@ class Helpers
 	}
 
 	/**
+	 * @return void
+	 */
+	public static function prepareIconList()
+	{
+		global $smcFunc;
+
+		if (Helpers::request()->has('icons') === false)
+			return;
+
+		$data = Helpers::request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$search = trim($smcFunc['strtolower']($search));
+
+		$all_icons = [];
+		$template = '<i class="%1$s"></i>&nbsp;%1$s';
+
+		Addons::run('prepareIconList', array(&$all_icons, &$template));
+
+		$all_icons = $all_icons ?: Helpers::getFaIcons();
+		$all_icons = array_filter($all_icons, function ($item) use ($search) {
+			return strpos($item, $search) !== false;
+		});
+
+		$results = [];
+		foreach ($all_icons as $icon) {
+			$results[] = [
+				'innerHTML' => sprintf($template, $icon),
+				'text'      => $icon
+			];
+		}
+
+		exit(json_encode($results));
+	}
+
+	/**
 	 * @param null|string $icon
 	 * @return string
 	 */
@@ -501,6 +539,15 @@ class Helpers
 	}
 
 	/**
+	 * @param string $value
+	 * @return string
+	 */
+	public static function getCamelName(string $value): string
+	{
+		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
+	}
+
+	/**
 	 * @param string $text
 	 * @param int $length
 	 * @return string
@@ -583,6 +630,24 @@ class Helpers
 		Addons::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
 
 		$content = ob_get_clean();
+	}
+
+	/**
+	 * @param array $entity
+	 * @return void
+	 */
+	public static function prepareBbcContent(&$entity)
+	{
+		global $smcFunc;
+
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		Helpers::require('Subs-Post');
+
+		preparsecode($entity['content']);
 	}
 
 	/**
@@ -762,19 +827,22 @@ class Helpers
 	 * @return array
 	 */
 	public static function getFaIcons(): array
-    {
-		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 4)) === null) {
+	{
+		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
 			$json = json_decode($content);
-			$icons = [];
 
+			if (empty($json))
+				return [];
+
+			$icons = [];
 			foreach ($json as $icon => $value) {
 				foreach ($value->styles as $style) {
 					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
 				}
 			}
 
-			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 4);
+			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
 		}
 
 		return $icons;
@@ -795,5 +863,41 @@ class Helpers
 		}
 
 		return $memberContext[$user_id]['avatar'];
+	}
+
+	/**
+	 * Prepare field array with entity options
+	 *
+	 * Формируем массив полей с настройками сущности
+	 *
+	 * @param string $defaultTab
+	 * @return void
+	 */
+	public static function preparePostFields(string $defaultTab = 'tuning')
+	{
+		global $context;
+
+		foreach ($context['posting_fields'] as $item => $data) {
+			if (!empty($data['input']['after'])) {
+				$tag = 'div';
+
+				if (in_array($data['input']['type'], ['checkbox', 'number']))
+					$tag = 'span';
+
+				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			}
+
+			// Fancy checkbox
+			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+				$data['input']['attributes']['class'] = 'checkbox';
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
+				$context['posting_fields'][$item] = $data;
+			}
+
+			if (empty($data['input']['tab']))
+				$context['posting_fields'][$item]['input']['tab'] = $defaultTab;
+		}
+
+		loadTemplate('LightPortal/ManageSettings');
 	}
 }

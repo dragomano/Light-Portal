@@ -1172,6 +1172,9 @@ section #display_head span {
 .form_settings > div {
   margin: 10px;
 }
+.form_settings label {
+  font-weight: bold;
+}
 .form_settings input[type="text"],
 .form_settings input[type="url"] {
   width: 100%;
@@ -1340,6 +1343,10 @@ section #display_head span {
 }
 .ss-main .ss-single-selected .placeholder > div {
   margin: 0 !important;
+}
+.ss-main .ss-single-selected .placeholder i,
+.ss-main .ss-single-selected .placeholder span {
+  margin-right: 0.4em;
 }
 .ss-main .ss-open {
   position: initial !important;

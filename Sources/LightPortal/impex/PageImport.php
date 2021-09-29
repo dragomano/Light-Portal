@@ -57,7 +57,7 @@ class PageImport extends AbstractImport
 	 */
 	protected function run()
 	{
-		global $db_temp_cache, $db_cache, $smcFunc;
+		global $db_temp_cache, $db_cache, $smcFunc, $context, $txt;
 
 		if (empty($_FILES['import_file']))
 			return;
@@ -163,6 +163,8 @@ class PageImport extends AbstractImport
 			}
 		}
 
+		$smcFunc['db_transaction']('begin');
+
 		if (!empty($categories)) {
 			$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_categories',
@@ -201,6 +203,7 @@ class PageImport extends AbstractImport
 		}
 
 		if (!empty($items)) {
+			$context['import_successful'] = count($items);
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
@@ -299,8 +302,14 @@ class PageImport extends AbstractImport
 			}
 		}
 
-		if (empty($result))
+		if (empty($result)) {
+			$smcFunc['db_transaction']('rollback');
 			fatal_lang_error('lp_import_failed', false);
+		}
+
+		$smcFunc['db_transaction']('commit');
+
+		$context['import_successful'] = sprintf($txt['lp_import_success'], Helpers::getText($context['import_successful'], $txt['lp_pages_set']));
 
 		// Restore the cache
 		$db_cache = $db_temp_cache;

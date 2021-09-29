@@ -19,8 +19,6 @@ if (!defined('SMF'))
 
 class ManagePages
 {
-	use Manageable;
-
 	/**
 	 * Number pages within tables
 	 *
@@ -217,7 +215,9 @@ class ManagePages
 						{
 							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
 							<div class="context_menu" @click.away="showContextMenu = false">
-								<button class="button floatnone" @click.prevent="showContextMenu = true"><i class="fas fa-ellipsis-h"></i></button>
+								<button class="button floatnone" @click.prevent="showContextMenu = true">
+									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
+								</button>
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
 										<li>
@@ -725,6 +725,7 @@ class ManagePages
 			$context['lp_page']['options']['main_menu_item'] = [];
 
 		$context['lp_page']['options']['icon'] = $context['lp_page']['options']['icon'] === 'undefined' ? '' : $context['lp_page']['options']['icon'];
+		$context['lp_page']['options']['icon_template'] = Helpers::getIcon($context['lp_page']['options']['icon']) . $context['lp_page']['options']['icon'];
 
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
@@ -784,7 +785,7 @@ class ManagePages
 
 		checkSubmitOnce('register');
 
-		$this->prepareIconList();
+		Helpers::prepareIconList();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
@@ -982,7 +983,7 @@ class ManagePages
 
 		Addons::run('preparePageFields');
 
-		$this->preparePostFields();
+		Helpers::preparePostFields();
 	}
 
 	/**
@@ -1126,7 +1127,8 @@ class ManagePages
 
 		$this->prepareDescription();
 		$this->prepareKeywords();
-		$this->prepareBbcContent($context['lp_page']);
+
+		Helpers::prepareBbcContent($context['lp_page']);
 
 		if (empty($item)) {
 			$item = $this->addData();
@@ -1149,6 +1151,8 @@ class ManagePages
 	private function addData(): int
 	{
 		global $smcFunc, $db_type, $context;
+
+		$smcFunc['db_transaction']('begin');
 
 		$item = $smcFunc['db_insert']('',
 			'{db_prefix}lp_pages',
@@ -1180,8 +1184,10 @@ class ManagePages
 
 		$smcFunc['lp_num_queries']++;
 
-		if (empty($item))
+		if (empty($item)) {
+			$smcFunc['db_transaction']('rollback');
 			return 0;
+		}
 
 		Addons::run('onPageSaving', array($item));
 
@@ -1271,20 +1277,25 @@ class ManagePages
 			$smcFunc['lp_num_queries']++;
 		}
 
+		$smcFunc['db_transaction']('commit');
+
 		return $item;
 	}
 
 	/**
 	 * @param int $item
+	 * @return void
 	 */
 	private function updateData(int $item)
 	{
 		global $smcFunc, $context;
 
+		$smcFunc['db_transaction']('begin');
+
 		$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
-				WHERE page_id = {int:page_id}',
+			UPDATE {db_prefix}lp_pages
+			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, created_at = {int:created_at}, updated_at = {int:updated_at}
+			WHERE page_id = {int:page_id}',
 			array(
 				'page_id'     => $item,
 				'category_id' => $context['lp_page']['category'],
@@ -1389,6 +1400,8 @@ class ManagePages
 
 			$smcFunc['lp_num_queries']++;
 		}
+
+		$smcFunc['db_transaction']('commit');
 	}
 
 	/**
