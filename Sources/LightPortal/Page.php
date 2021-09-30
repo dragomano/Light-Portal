@@ -151,8 +151,8 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
+		$keywords = [];
 		if (!empty($context['lp_page']['keywords'])) {
-			$keywords = [];
 			foreach ($context['lp_page']['keywords'] as $id => $key) {
 				$keywords[] = $key['name'];
 			}
@@ -165,11 +165,10 @@ class Page
 		$context['optimus_og_type']['article'] = array(
 			'published_time' => date('Y-m-d\TH:i:s', $context['lp_page']['created_at']),
 			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']) : null,
-			'author'         => $context['lp_page']['author']
+			'author'         => $context['lp_page']['author'],
+			'section'        => $context['lp_page']['category'] ?? null,
+			//'tag'            => $keywords
 		);
-
-		if (!empty($context['lp_page']['category']))
-			$context['optimus_og_type']['article']['section'] = $context['lp_page']['category'];
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
 			$settings['og_image'] = $context['lp_page']['image'];
