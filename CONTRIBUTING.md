@@ -12,6 +12,7 @@
 * Use bug report or feature request templates.
 
 ## How to submit a pull request
+* Check if the develop branch exists. If it exist use it to pull your request into.
 * If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. "Fix page permissions").
 * If you want to send a new feature or a new translation, use `Add` word in the title of your PR (i.e `Add a new frontpage template`, `Add Chinese translation`).
 In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update Polish`, etc.)
@@ -67,7 +68,7 @@ $test = isset($variable) ? $variable : 'default_value';
 * Use [HTML5](https://www.w3schools.com/html/html5_syntax.asp)
 
 ### CSS Styleguide
-* You can use CSS or LESS
+* Use LESS (portal.less) to modify desired rules.
 
 ```less
 #comment_form {
