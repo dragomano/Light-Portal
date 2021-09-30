@@ -156,12 +156,18 @@ class UserInfo extends Plugin
 			echo '
 			<ul class="centertext">
 				<li>', $txt['hello_member'], ' ', $txt['guest'], '</li>
-				<li><img src="', $modSettings['avatar_url'], '/default.png', '" alt="', $txt['avatar'], '"></li>
-				<li>
+				<li><img src="', $modSettings['avatar_url'], '/default.png', '" alt="*"></li>
+				<li>';
+
+			if ($context['can_register']) {
+				echo '
 					<span class="floatleft">
 						', $fa ? '<i class="fas fa-user-plus"></i>' : '<span class="main_icons signup"></span>', ' <a href="', $scripturl, '?action=signup">', $txt['register'], '</a>
-					</span>
-					<span class="floatright">
+					</span>';
+			}
+
+			echo '
+					<span', $context['can_register'] ? ' class="floatright"' : '', '>
 						', $fa ? '<i class="fas fa-sign-in-alt"></i>' : '<span class="main_icons login"></span>', ' <a href="', $scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape($txt['login']), ');">', $txt['login'], '</a>
 					</span>
 				</li>
