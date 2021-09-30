@@ -219,13 +219,11 @@ class Helpers
 		$str = array_map('trim', $str);
 
 		// Plural rule #0 (Chinese, Japanese, Persian, Turkish, Thai, Indonesian, Malay)
-		$rule_zero = array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms');
-		if (in_array($txt['lang_dictionary'], $rule_zero))
+		if (in_array($txt['lang_dictionary'], array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms')))
 			return $num . ' ' . $str[0];
 
 		// Plural rule #2 (French, Portuguese_brazilian)
-		$rule_two = array('fr', 'pt');
-		if (in_array($txt['lang_dictionary'], $rule_two))
+		if (in_array($txt['lang_dictionary'], array('fr', 'pt')))
 			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
 
 		// Just in case
@@ -247,15 +245,13 @@ class Helpers
 		}
 
 		// Plural rule #7 (Bosnian, Croatian, Serbian, Russian, Ukrainian)
-		$rule_seven = array('bs', 'hr', 'sr', 'ru', 'uk');
-		if (in_array($txt['lang_dictionary'], $rule_seven)) {
+		if (in_array($txt['lang_dictionary'], array('bs', 'hr', 'sr', 'ru', 'uk'))) {
 			$cases = array(2, 0, 1, 1, 1, 2);
 			return $num . ' ' . $str[($num % 100 > 4 && $num % 100 < 20) ? 2 : $cases[min($num % 10, 5)]];
 		}
 
 		// Plural rule #8 (Czech, Slovak)
-		$rule_eight = array('cs', 'sk');
-		if (in_array($txt['lang_dictionary'], $rule_eight))
+		if (in_array($txt['lang_dictionary'], array('cs', 'sk')))
 			return $num . ' ' . $str[$num == 1 ? 0 : (in_array($num, array(2, 3, 4)) ? 1 : 2)];
 
 		// Plural rule #9 (Polish)
