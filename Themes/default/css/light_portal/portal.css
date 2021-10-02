@@ -1203,6 +1203,12 @@ section #display_head span {
 .new_posts.lp_type_other {
   background: #414141;
 }
+.new_posts.lp_type_block_options {
+  background: #8597ad;
+}
+.new_posts.lp_type_page_options {
+  background: #52647a;
+}
 .lp_categories input {
   width: 100%;
 }

@@ -1486,8 +1486,9 @@ section {
 }
 
 .new_posts {
+	@block_color: #667d99;
 	&.lp_type_block {
-		background: #667d99;
+		background: @block_color;
 	}
 	&.lp_type_editor {
 		background: #48bf83;
@@ -1509,6 +1510,12 @@ section {
 	}
 	&.lp_type_other {
 		background: #414141;
+	}
+	&.lp_type_block_options {
+		background: lighten(@block_color, 10%);
+	}
+	&.lp_type_page_options {
+		background: darken(@block_color, 10%);
 	}
 }
 
