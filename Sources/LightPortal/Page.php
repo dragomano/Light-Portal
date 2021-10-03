@@ -151,24 +151,38 @@ class Page
 		if (empty($context['lp_page']))
 			return;
 
+		$context['meta_description'] = $context['lp_page']['description'];
+
 		$keywords = [];
 		if (!empty($context['lp_page']['keywords'])) {
-			foreach ($context['lp_page']['keywords'] as $id => $key) {
-				$keywords[] = $key['name'];
-			}
+			$keywords = array_column($context['lp_page']['keywords'], 'name');
 
 			$modSettings['meta_keywords'] = implode(', ', $keywords);
 		}
 
-		$context['meta_description']  = $context['lp_page']['description'];
-
-		$context['optimus_og_type']['article'] = array(
-			'published_time' => date('Y-m-d\TH:i:s', $context['lp_page']['created_at']),
-			'modified_time'  => !empty($context['lp_page']['updated_at']) ? date('Y-m-d\TH:i:s', $context['lp_page']['updated_at']) : null,
-			'author'         => $context['lp_page']['author'],
-			'section'        => $context['lp_page']['category'] ?? null,
-			//'tag'            => $keywords
+		$context['meta_tags'][] = array('prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'og:type', 'content' => 'article');
+		$context['meta_tags'][] = array('prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:author', 'content' => $context['lp_page']['author']);
+		$context['meta_tags'][] = array(
+			'prefix'   => 'article: http://ogp.me/ns/article#',
+			'property' => 'article:published_time',
+			'content'  => date('Y-m-d\TH:i:s', $context['lp_page']['created_at'])
 		);
+
+		if (!empty($context['lp_page']['updated_at']))
+			$context['meta_tags'][] = array(
+				'prefix'   => 'article: http://ogp.me/ns/article#',
+				'property' => 'article:modified_time',
+				'content'  => date('Y-m-d\TH:i:s', $context['lp_page']['updated_at'])
+			);
+
+		if (!empty($context['lp_page']['category']))
+			$context['meta_tags'][] = array('prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:section', 'content' => $context['lp_page']['category']);
+
+		if (!empty($keywords)) {
+			foreach ($keywords as $value) {
+				$context['meta_tags'][] = array('prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value);
+			}
+		}
 
 		if (!empty($modSettings['lp_page_og_image']) && !empty($context['lp_page']['image']))
 			$settings['og_image'] = $context['lp_page']['image'];
