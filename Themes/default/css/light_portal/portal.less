@@ -193,38 +193,16 @@
 			color: @tabs-label-hover-color;
 		}
 
-		&:before {
-			font-family: "Font Awesome 5 Free";
-			margin-right: 10px;
-		}
-
-		&[for*="1"] {
-			&:before {
-				content: "\f15c";
-			}
-		}
-		&[for*="2"] {
-			&:before {
-				content: "\f084";
-			}
-		}
-		&[for*="3"] {
-			&:before {
-				content: "\f53f";
-			}
-		}
-		&[for*="4"] {
-			&:before {
-				content: "\f509";
-			}
+		i, svg {
+			font-size: 1.2em !important;
 		}
 
 		@media screen and (max-width: 680px) {
-			font-size: 0;
-
-			&:before {
-				margin: 0;
-				font-size: 1.125rem;
+			i, svg {
+				font-size: 1.6em !important;
+			}
+			span {
+				font-size: 0;
 			}
 		}
 

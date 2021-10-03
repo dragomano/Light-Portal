@@ -92,29 +92,17 @@
   cursor: pointer;
   color: #888;
 }
-.lp_tabs > label:before {
-  font-family: "Font Awesome 5 Free";
-  margin-right: 10px;
-}
-.lp_tabs > label[for*="1"]:before {
-  content: "\f15c";
-}
-.lp_tabs > label[for*="2"]:before {
-  content: "\f084";
-}
-.lp_tabs > label[for*="3"]:before {
-  content: "\f53f";
-}
-.lp_tabs > label[for*="4"]:before {
-  content: "\f509";
+.lp_tabs > label i,
+.lp_tabs > label svg {
+  font-size: 1.2em !important;
 }
 @media screen and (max-width: 680px) {
-  .lp_tabs > label {
-    font-size: 0;
+  .lp_tabs > label i,
+  .lp_tabs > label svg {
+    font-size: 1.6em !important;
   }
-  .lp_tabs > label:before {
-    margin: 0;
-    font-size: 1.125rem;
+  .lp_tabs > label span {
+    font-size: 0;
   }
 }
 @media screen and (max-width: 400px) {

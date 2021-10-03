@@ -290,16 +290,16 @@ function template_block_post()
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
+				<label for="tab1" class="bg odd"><i class="far fa-newspaper"></i> <span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $txt['lp_tab_access_placement'], '</label>
+				<label for="tab2" class="bg odd"><i class="fas fa-key"></i> <span>', $txt['lp_tab_access_placement'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_tab_appearance'], '</label>';
+				<label for="tab3" class="bg odd"><i class="fas fa-object-group"></i> <span>', $txt['lp_tab_appearance'], '</span></label>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
 				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>';
+				<label for="tab4" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>';
 	}
 
 	echo '
@@ -309,12 +309,7 @@ function template_block_post()
 
 	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
 		echo '
-					<div>';
-
-		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
-
-		echo '
-                    </div>';
+					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
 	}
 
 	echo '

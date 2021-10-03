@@ -48,25 +48,20 @@ function template_page_post()
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">', $txt['lp_tab_content'], '</label>
+				<label for="tab1" class="bg odd"><i class="far fa-newspaper"></i> <span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $txt['lp_tab_seo'], '</label>
+				<label for="tab2" class="bg odd"><i class="fas fa-spider"></i> <span>', $txt['lp_tab_seo'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $txt['lp_tab_menu'], '</label>
+				<label for="tab3" class="bg odd"><i class="fas fa-bars"></i> <span>', $txt['lp_tab_menu'], '</span></label>
 				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">', $txt['lp_tab_tuning'], '</label>
+				<label for="tab4" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>
 				<section id="content-tab1" class="bg even">';
 
 	template_post_tab($fields);
 
 	if ($context['lp_page']['type'] == 'bbc') {
 		echo '
-					<div>';
-
-		template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
-
-		echo '
-					</div>';
+					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
 	}
 
 	echo '
