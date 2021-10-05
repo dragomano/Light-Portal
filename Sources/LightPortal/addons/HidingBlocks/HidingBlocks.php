@@ -21,7 +21,7 @@ class HidingBlocks extends Plugin
 	/**
 	 * @var string
 	 */
-	public $type = 'other';
+	public $type = 'block_options';
 
 	/**
 	 * @var array

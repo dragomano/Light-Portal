@@ -21,7 +21,7 @@ class LanguageAccess extends Plugin
 	/**
 	 * @var string
 	 */
-	public $type = 'other';
+	public $type = 'block_options';
 
 	/**
 	 * Fill additional block classes
