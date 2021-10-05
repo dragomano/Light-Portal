@@ -193,38 +193,16 @@
 			color: @tabs-label-hover-color;
 		}
 
-		&:before {
-			font-family: "Font Awesome 5 Free";
-			margin-right: 10px;
-		}
-
-		&[for*="1"] {
-			&:before {
-				content: "\f15c";
-			}
-		}
-		&[for*="2"] {
-			&:before {
-				content: "\f084";
-			}
-		}
-		&[for*="3"] {
-			&:before {
-				content: "\f53f";
-			}
-		}
-		&[for*="4"] {
-			&:before {
-				content: "\f509";
-			}
+		i, svg {
+			font-size: 1.2em !important;
 		}
 
 		@media screen and (max-width: 680px) {
-			font-size: 0;
-
-			&:before {
-				margin: 0;
-				font-size: 1.125rem;
+			i, svg {
+				font-size: 1.6em !important;
+			}
+			span {
+				font-size: 0;
 			}
 		}
 
@@ -1486,8 +1464,9 @@ section {
 }
 
 .new_posts {
+	@block_color: #667d99;
 	&.lp_type_block {
-		background: #667d99;
+		background: @block_color;
 	}
 	&.lp_type_editor {
 		background: #48bf83;
@@ -1509,6 +1488,12 @@ section {
 	}
 	&.lp_type_other {
 		background: #414141;
+	}
+	&.lp_type_block_options {
+		background: lighten(@block_color, 10%);
+	}
+	&.lp_type_page_options {
+		background: darken(@block_color, 10%);
 	}
 }
 

@@ -258,9 +258,9 @@ $txt['lp_export_all'] = 'Exportar todo';
 // Plugins
 $txt['lp_plugins'] = 'Complementos';
 $txt['lp_plugins_manage'] = 'Administrar complementos';
-$txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a>. or the "+" button below.';
+$txt['lp_plugins_manage_description'] = 'Los plugins instalados portal se enumeran aquí. Siempre puedes crear uno nuevo usando <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">las instrucciones</a> or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Los complementos amplían las capacidades del portal y sus componentes, proporcionando características adicionales que no están disponibles en el núcleo.';
-$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'El diseño de la página principal', 'Importar y exportar', 'Otros');
+$txt['lp_plugins_types'] = array('Bloque', 'Editor', 'Widget de comentarios', 'Analizador de contenido', 'Procesamiento de artículos', 'El diseño de la página principal', 'Importar y exportar', 'Otros', 'Opciones de bloque', 'Opciones de página');
 $txt['lp_plugins_requires'] = 'Complementos necesarios para trabajar';
 
 // Tags

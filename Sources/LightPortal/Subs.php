@@ -78,15 +78,27 @@ class Subs
 		global $modSettings;
 
 		if (empty($modSettings['lp_fa_source']) || $modSettings['lp_fa_source'] == 'css_cdn') {
-			loadCSSFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css', array('external' => true, 'seed' => false));
+			loadCSSFile(
+				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css',
+				array('external' => true, 'seed' => false),
+				'portal_fontawesome'
+			);
 		} elseif ($modSettings['lp_fa_source'] == 'js_cdn') {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js', array('external' => true, 'defer' => true, 'seed' => false));
+			loadJavaScriptFile(
+				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js',
+				array('external' => true, 'defer' => true, 'seed' => false),
+				'portal_fontawesome'
+			);
 		} elseif ($modSettings['lp_fa_source'] == 'css_local') {
-			loadCSSFile('all.min.css');
+			loadCSSFile('all.min.css', [], 'portal_fontawesome');
 		} elseif ($modSettings['lp_fa_source'] == 'js_local') {
-			loadJavaScriptFile('all.min.js', array('defer' => true));
+			loadJavaScriptFile('all.min.js', array('defer' => true), 'portal_fontawesome');
 		} elseif ($modSettings['lp_fa_source'] == 'custom' && !empty($modSettings['lp_fa_custom'])) {
-			loadJavaScriptFile($modSettings['lp_fa_custom'], array('external' => true, 'defer' => true, 'seed' => false, 'attributes' => array('crossorigin' => 'anonymous')));
+			loadJavaScriptFile(
+				$modSettings['lp_fa_custom'],
+				array('external' => true, 'defer' => true, 'seed' => false, 'attributes' => array('crossorigin' => 'anonymous')),
+				'portal_fontawesome'
+			);
 		}
 
 		loadCSSFile('light_portal/flexboxgrid.css');
@@ -311,7 +323,7 @@ class Subs
 	{
 		global $txt;
 
-		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other'), $txt['lp_plugins_types']);
+		return array_combine(array('block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other', 'block_options', 'page_options'), $txt['lp_plugins_types']);
 	}
 
 	/**

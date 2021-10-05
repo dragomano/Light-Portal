@@ -96,10 +96,12 @@ class UserInfo extends Plugin
 	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $context, $txt, $scripturl;
+		global $context, $txt, $scripturl, $modSettings;
 
 		if ($type !== 'user_info')
 			return;
+
+		$fa = !empty($parameters['use_fa_icons']);
 
 		if ($context['user']['is_logged']) {
 			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'])
@@ -114,8 +116,6 @@ class UserInfo extends Plugin
 				echo '
 				<li>', $userData['avatar']['image'], '</li>';
 			}
-
-			$fa = !empty($parameters['use_fa_icons']);
 
 			echo '
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
@@ -148,14 +148,30 @@ class UserInfo extends Plugin
 						', $fa ? '<i class="fas fa-user"></i>' : '<span class="main_icons members"></span>', ' <a href="', $userData['href'], '">', $txt['profile'], '</a>
 					</span>
 					<span class="floatright">
-					', $fa ? '<i class="fas fa-sign-out-alt"></i>' : '<span class="main_icons logout"></span>', ' <a href="', $scripturl, '?action=logout;', $context['session_var'], '=', $context['session_id'], '">', $txt['logout'], '</a>
+						', $fa ? '<i class="fas fa-sign-out-alt"></i>' : '<span class="main_icons logout"></span>', ' <a href="', $scripturl, '?action=logout;', $context['session_var'], '=', $context['session_id'], '">', $txt['logout'], '</a>
 					</span>
 				</li>
 			</ul>';
 		} else {
-			$this->loadSsi();
+			echo '
+			<ul class="centertext">
+				<li>', $txt['hello_member'], ' ', $txt['guest'], '</li>
+				<li><img src="', $modSettings['avatar_url'], '/default.png', '" alt="*"></li>
+				<li>';
 
-			ssi_welcome();
+			if ($context['can_register']) {
+				echo '
+					<span class="floatleft">
+						', $fa ? '<i class="fas fa-user-plus"></i>' : '<span class="main_icons signup"></span>', ' <a href="', $scripturl, '?action=signup">', $txt['register'], '</a>
+					</span>';
+			}
+
+			echo '
+					<span', $context['can_register'] ? ' class="floatright"' : '', '>
+						', $fa ? '<i class="fas fa-sign-in-alt"></i>' : '<span class="main_icons login"></span>', ' <a href="', $scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape($txt['login']), ');">', $txt['login'], '</a>
+					</span>
+				</li>
+			</ul>';
 		}
 	}
 }

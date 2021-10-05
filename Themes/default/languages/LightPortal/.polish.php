@@ -242,7 +242,9 @@ $txt['lp_plugins'] = 'Wtyczki';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'Tutaj znajdują się zainstalowane wtyczki portalu. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a> or the "+" button below.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_types'] = array('Blok', 'Edytor', 'Widget komentarzy', 'Parser zawartości', 'Przetwarzanie artykułów', 'The layout of the frontpage', 'Import and export', 'Inne');
+$txt['lp_plugins_types'] = array(
+	'Blok', 'Edytor', 'Widget komentarzy', 'Parser zawartości', 'Przetwarzanie artykułów', 'The layout of the frontpage', 'Import and export', 'Inne', 'Block options', 'Page options'
+);
 
 // Tags
 $txt['lp_all_page_tags'] = 'Wszystkie tagi stron portalu';

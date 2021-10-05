@@ -225,7 +225,7 @@ $txt['lp_pages_manage_own_pages'] = 'Here you can view all your own portal pages
 $txt['lp_pages_manage_description'] = 'Use the corresponding button to add a new page.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
-$txt['lp_pages_add_description'] = 'Fill the page title. After that, you can change its type, use preview and save.';
+$txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
 $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
@@ -269,7 +269,9 @@ $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
-$txt['lp_plugins_types'] = array('Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other');
+$txt['lp_plugins_types'] = array(
+	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other', 'Block options', 'Page options'
+);
 $txt['lp_plugins_requires'] = 'Required plugins for work';
 
 // Tags

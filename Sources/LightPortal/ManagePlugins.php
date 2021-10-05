@@ -309,7 +309,7 @@ class ManagePlugins
 					labels: ["' . implode('", "', $context['lp_plugin_types']) . '"],
 					datasets: [{
 						data: [' . implode(', ', $typeCount) . '],
-						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#4b93d1", "#414141"]
+						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#4b93d1", "#414141", "#8597ad", "#52647a"]
 					}]
 				},
 				options: {

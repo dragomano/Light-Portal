@@ -242,7 +242,9 @@ $txt['lp_plugins'] = 'Eklentiler';
 $txt['lp_plugins_manage'] = 'Eklentileri yönet';
 $txt['lp_plugins_manage_description'] = 'Yüklü portal eklentileri burada listelenmiştir. <a class="bbc_link" href="%1$s" target="_blank" rel="noopener"> Talimatları </a> veya aşağıdaki "+" düğmesini kullanarak yeni bir tane oluşturabilirsiniz.';
 $txt['lp_plugins_desc'] = 'Eklentiler, portalın ve bileşenlerinin yeteneklerini artırarak çekirdekte bulunmayan ek özellikler sağlar.';
-$txt['lp_plugins_types'] = array('Blok', 'Düzenleyici', 'Yorum widget\'i', 'İçerik ayrıştırıcı', 'Makaleler işleniyor', 'Ön sayfanın düzeni', 'İçe ve dışa aktar', 'Diğer');
+$txt['lp_plugins_types'] = array(
+	'Blok', 'Düzenleyici', 'Yorum widget\'i', 'İçerik ayrıştırıcı', 'Makaleler işleniyor', 'Ön sayfanın düzeni', 'İçe ve dışa aktar', 'Diğer', 'Block options', 'Page options'
+);
 
 // Etiketler
 $txt['lp_all_page_tags'] = 'Tüm portal sayfası etiketleri';

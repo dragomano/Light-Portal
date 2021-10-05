@@ -16,6 +16,7 @@ Currently, the following types of addons are available:
 * 'frontpage' — addons for changing the main page of the portal
 * 'impex' — addons for importing and exporting various portal elements
 * 'other' — addons that are not related to any of the categories above
+* 'block_options' and 'page_options' — addons that add additional parameters for the corresponding entity (block or page)
 
 ## Creating an addon directory
 Create a separate folder for your addon files, inside `/Sources/LightPortal/addons`. For example, if your addon is called `MyAddon`, the folder structure should look like this:
@@ -30,7 +31,7 @@ Create a separate folder for your addon files, inside `/Sources/LightPortal/addo
             MyAddon.php
 ```
 
-The `langs` directory is optional and is intended for language files if they are used in your addon. File `index.php` can be copied from folders of other addons. The file `MyAddon.php` contains addon logic:
+File `index.php` can be copied from folders of other addons. The file `MyAddon.php` contains addon logic:
 
 ```php
 <?php
