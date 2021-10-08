@@ -77,7 +77,7 @@ class Subs
 	{
 		global $modSettings;
 
-		if (empty($modSettings['lp_fa_source']) || $modSettings['lp_fa_source'] == 'css_cdn') {
+		if (!isset($modSettings['lp_fa_source']) || $modSettings['lp_fa_source'] == 'css_cdn') {
 			loadCSSFile(
 				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css',
 				array('external' => true, 'seed' => false),

@@ -459,8 +459,15 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
+$add_settings = [];
 if (!isset($modSettings['lp_enabled_plugins']))
-	updateSettings(array('lp_enabled_plugins' => 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher'));
+	$add_settings['lp_enabled_plugins'] = 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher';
+if (!isset($modSettings['lp_show_comment_block']))
+	$add_settings['lp_show_comment_block'] = 'default';
+if (!isset($modSettings['lp_fa_source']))
+	$add_settings['lp_fa_source'] = 'css_cdn';
+if (!empty($add_settings))
+	updateSettings($add_settings);
 
 if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
 	smf_chmod($css_dir, 0755);
