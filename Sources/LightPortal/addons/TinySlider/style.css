@@ -1,4 +1,5 @@
 .block_tiny_slider .item {
+	margin: 0 !important;
 	text-align: center;
 }
 .block_tiny_slider .tns-nav {

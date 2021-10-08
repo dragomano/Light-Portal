@@ -294,7 +294,7 @@ class Integration
 					'title' => Helpers::getTitle($item),
 					'href'  => $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias,
 					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
-					'show'  => Helpers::canViewItem($item['permissions'])
+					'show'  => Helpers::canViewItem($item['permissions']),
 				);
 			}
 
