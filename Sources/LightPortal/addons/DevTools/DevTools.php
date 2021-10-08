@@ -86,7 +86,7 @@ class DevTools extends Plugin
 					'edit_link' => '',
 					'teaser'    => Helpers::getTeaser(Lorem::ipsum(4)),
 					'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
-					'keywords'  => [1 => 'Tag1', 'Tag2', 'Tag3'],
+					'tags'      => [1 => 'Tag1', 'Tag2', 'Tag3'],
 					'datetime'  => date('Y-m-d', $date)
 				);
 			}

@@ -69,7 +69,7 @@ class Optimus extends Plugin
 			return;
 
 		if (!empty($modSettings['lp_optimus_addon_show_topic_keywords']))
-			$topics[$row['id_topic']]['keywords'] = Helpers::cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', $row['id_topic']);
+			$topics[$row['id_topic']]['tags'] = Helpers::cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', $row['id_topic']);
 
 		if (!empty($modSettings['lp_optimus_addon_use_topic_descriptions']) && !empty($row['optimus_description']) && !empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
@@ -85,7 +85,7 @@ class Optimus extends Plugin
 	 */
 	public function getKeywords(int $topic): array
 	{
-		global $smcFunc;
+		global $smcFunc, $scripturl;
 
 		if (empty($topic))
 			return [];
@@ -100,7 +100,10 @@ class Optimus extends Plugin
 
 		$keywords = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$keywords[$row['topic_id']][$row['id']] = $row['name'];
+			$keywords[$row['topic_id']][] = array(
+				'name' => $row['name'],
+				'href' => $scripturl . '?action=keywords;id=' . $row['id']
+			);
 		}
 
 		$smcFunc['db_free_result']($request);

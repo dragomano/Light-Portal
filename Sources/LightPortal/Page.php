@@ -356,8 +356,7 @@ class Page
 					'time'        => date('H:i', $row['created_at']),
 					'created_at'  => $row['created_at'],
 					'updated_at'  => $row['updated_at'],
-					'image'       => $og_image,
-					'keywords'    => []
+					'image'       => $og_image
 				);
 
 			if (!empty($row['lang']))
@@ -370,20 +369,45 @@ class Page
 		if (!empty($data['category_id']))
 			$data['category'] = Helpers::getAllCategories()[$data['category_id']]['name'];
 
-		if (!empty($data['options']['keywords'])) {
-			$keywords = explode(',', $data['options']['keywords']);
-			foreach ($keywords as $key) {
-				$data['keywords'][$key] = array(
-					'name' => Helpers::getAllTags()[$key],
-					'link' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $key
-				);
-			}
-		}
+		if (!empty($data['options']['keywords']))
+			$data['tags'] = $this->getTags($data['options']['keywords']);
 
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
+	}
+
+	/**
+	 * @param string $tags
+	 * @return array
+	 */
+	private function getTags(string $tags): array
+	{
+		global $smcFunc, $scripturl;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT tag_id, value
+			FROM {db_prefix}lp_tags
+			WHERE FIND_IN_SET(tag_id, {string:tags})
+			ORDER BY value',
+			array(
+				'tags' => $tags
+			)
+		);
+
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$items[] = array(
+				'name' => $row['value'],
+				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		return $items;
 	}
 
 	/**
@@ -602,7 +626,7 @@ class Page
 
 		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
 
-        $items[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
+		$items[$row['page_id']]['author']['avatar'] = Helpers::getUserAvatar($author_id)['href'];
 
 		if (!empty($modSettings['lp_show_teaser']))
 			$items[$row['page_id']]['teaser'] = Helpers::getTeaser($row['description'] ?: $row['content']);
