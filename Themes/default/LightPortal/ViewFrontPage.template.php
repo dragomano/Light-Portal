@@ -575,7 +575,7 @@ function template_show_articles_simple2()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="col-xs-12 col-sm-6 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
 			<div class="card">
 				<div class="card-header">
 					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>

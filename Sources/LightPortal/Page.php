@@ -236,7 +236,7 @@ class Page
 			LIMIT 4',
 			array(
 				'current_lang' => $context['user']['language'],
-				'status'       => 1,
+				'status'       => self::STATUS_ACTIVE,
 				'current_time' => time(),
 				'permissions'  => Helpers::getPermissions(),
 				'current_page' => $item['id']
