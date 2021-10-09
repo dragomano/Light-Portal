@@ -78,7 +78,7 @@ class FrontPage
 		loadTemplate('LightPortal/ViewFrontPage');
 
 		// Also, theme makers can load their own layouts from the special template file
-		if (is_file($settings['default_theme_dir'] . '/CustomFrontPage.template.php'))
+		if (is_file($settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			loadTemplate('CustomFrontPage');
 
 		obExit();
@@ -182,10 +182,10 @@ class FrontPage
 
 		$allFunctions = get_defined_functions()['user'];
 
-		require_once $settings['default_theme_dir'] . '/LightPortal/ViewFrontPage.template.php';
+		loadTemplate('LightPortal/ViewFrontPage');
 
 		// Support of custom templates
-		if (is_file($custom_templates = $settings['default_theme_dir'] . '/CustomFrontPage.template.php'))
+		if (is_file($custom_templates = $settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			require_once $custom_templates;
 
 		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
