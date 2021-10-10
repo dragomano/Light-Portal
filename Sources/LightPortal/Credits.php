@@ -84,7 +84,11 @@ class Credits
 			array(
 				'name' => 'JetBrains',
 				'link' => 'https://www.jetbrains.com/?from=LightPortal'
-			)
+			),
+			array(
+				'name' => 'vbgamer45',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
+			),
 		);
 
 		$links = array(
