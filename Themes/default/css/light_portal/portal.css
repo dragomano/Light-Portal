@@ -1158,7 +1158,7 @@ section #display_head span {
   vertical-align: baseline !important;
 }
 .form_settings > div {
-  margin: 10px;
+  margin: 1.2em;
 }
 .form_settings label {
   font-weight: bold;
@@ -1166,6 +1166,9 @@ section #display_head span {
 .form_settings input[type="text"],
 .form_settings input[type="url"] {
   width: 100%;
+}
+.form_settings input[type="number"] {
+  width: auto;
 }
 .new_posts.lp_type_block {
   background: #667d99;
