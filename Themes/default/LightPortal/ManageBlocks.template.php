@@ -307,11 +307,6 @@ function template_block_post()
 
 	template_post_tab($fields);
 
-	if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc') {
-		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
-	}
-
 	echo '
 				</section>
 				<section id="content-tab2" class="bg even">';

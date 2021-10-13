@@ -122,7 +122,7 @@ class ManagePages
 				),
 				'num_views' => array(
 					'header' => array(
-						'value' => '<i class="fas fa-eye" title="' . $txt['lp_views']. '"></i>',//$txt['views']
+						'value' => '<i class="fas fa-eye" title="' . $txt['lp_views'] . '"></i>',
 					),
 					'data' => array(
 						'db'    => 'num_views',
@@ -620,7 +620,7 @@ class ManagePages
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
 			'main_menu_item'       => '',
-			'icon'                 => ''
+			'icon'                 => '',
 		];
 
 		Addons::run('pageOptions', array(&$options));
@@ -668,7 +668,7 @@ class ManagePages
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
 					'main_menu_item'       => FILTER_SANITIZE_STRING,
-					'icon'                 => FILTER_SANITIZE_STRING
+					'icon'                 => FILTER_SANITIZE_STRING,
 				),
 				$parameters
 			);
@@ -823,8 +823,8 @@ class ManagePages
 			);
 		}
 
+		$context['posting_fields']['content']['label']['html'] = ' ';
 		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
@@ -834,6 +834,14 @@ class ManagePages
 				),
 				'tab' => 'content'
 			);
+		} else {
+			Helpers::createBbcEditor($context['lp_page']['content']);
+
+			ob_start();
+			template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+			$context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean()  . '</div>';
+
+			$context['posting_fields']['content']['input']['tab'] = 'content';
 		}
 
 		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
@@ -922,7 +930,7 @@ class ManagePages
 
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
-			'type'     => 'select',
+			'type' => 'select',
 			'attributes' => array(
 				'disabled' => count($allCategories) < 2
 			)
@@ -1038,9 +1046,6 @@ class ManagePages
 	private function prepareEditor()
 	{
 		global $context;
-
-		if ($context['lp_page']['type'] === 'bbc')
-			Helpers::createBbcEditor($context['lp_page']['content']);
 
 		Addons::run('prepareEditor', array($context['lp_page']));
 	}

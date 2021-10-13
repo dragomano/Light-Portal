@@ -877,7 +877,7 @@ class Helpers
 			if (!empty($data['input']['after'])) {
 				$tag = 'div';
 
-				if (in_array($data['input']['type'], ['checkbox', 'number']))
+				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
 					$tag = 'span';
 
 				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";

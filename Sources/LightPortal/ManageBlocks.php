@@ -663,15 +663,27 @@ class ManageBlocks
 			);
 		}
 
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = '';
-			$context['posting_fields']['content']['input'] = array(
-				'type' => 'textarea',
-				'attributes' => array(
-					'value' => $context['lp_block']['content']
-				),
-				'tab' => 'content'
-			);
+		if (!empty($context['lp_block']['options']['content'])) {
+			$context['posting_fields']['content']['label']['html'] = ' ';
+
+			if ($context['lp_block']['type'] !== 'bbc') {
+
+				$context['posting_fields']['content']['input'] = array(
+					'type' => 'textarea',
+					'attributes' => array(
+						'value' => $context['lp_block']['content']
+					),
+					'tab' => 'content'
+				);
+			} else {
+				Helpers::createBbcEditor($context['lp_block']['content']);
+
+				ob_start();
+				template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+				$context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean()  . '</div>';
+
+				$context['posting_fields']['content']['input']['tab'] = 'content';
+			}
 		}
 
 		Addons::run('prepareBlockFields');
@@ -747,9 +759,6 @@ class ManageBlocks
 	private function prepareEditor()
 	{
 		global $context;
-
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc')
-			Helpers::createBbcEditor($context['lp_block']['content']);
 
 		Addons::run('prepareEditor', array($context['lp_block']));
 	}

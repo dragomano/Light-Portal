@@ -59,24 +59,19 @@ function template_page_post()
 
 	template_post_tab($fields);
 
-	if ($context['lp_page']['type'] == 'bbc') {
-		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
-	}
-
 	echo '
 				</section>
 				<section id="content-tab2" class="bg even">';
 
 	template_post_tab($fields, 'seo');
 
-    echo '
+	echo '
 				</section>
 				<section id="content-tab3" class="bg even">';
 
 	template_post_tab($fields, 'menu');
 
-    echo '
+	echo '
 				</section>
 				<section id="content-tab4" class="bg even">';
 
