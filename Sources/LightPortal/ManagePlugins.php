@@ -108,7 +108,7 @@ class ManagePlugins
 			}
 
 			// You can do additional actions after settings saving
-			Addons::run('onSettingsSaving', array(&$plugin_options), $context['lp_plugins']);
+			Addons::run('saveSettings', array(&$plugin_options), $context['lp_plugins']);
 
 			if (!empty($plugin_options))
 				updateSettings($plugin_options);

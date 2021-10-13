@@ -66,7 +66,8 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ### addSettings
 (`&$config_vars`)
 > adding custom settings of your addon
-### onSettingsSaving
+### saveSettings
+(`&$plugin_options`)
 > additional actions after plugin settings saving
 
 ## Portal settings
