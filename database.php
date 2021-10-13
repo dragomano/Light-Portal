@@ -459,6 +459,12 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
+$smcFunc['db_remove_index']('{db_prefix}settings', 'primary');
+$smcFunc['db_add_index']('{db_prefix}settings', array(
+	'columns' => array('variable(60)'),
+	'type' => 'primary'
+));
+
 $add_settings = [];
 if (!isset($modSettings['lp_enabled_plugins']))
 	$add_settings['lp_enabled_plugins'] = 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher';
