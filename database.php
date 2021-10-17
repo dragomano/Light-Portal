@@ -467,7 +467,7 @@ $smcFunc['db_add_index']('{db_prefix}settings', array(
 
 $add_settings = [];
 if (!isset($modSettings['lp_enabled_plugins']))
-	$add_settings['lp_enabled_plugins'] = 'EasyMarkdownEditor,Markdown,Trumbowyg,UserInfo,ThemeSwitcher';
+	$add_settings['lp_enabled_plugins'] = 'Trumbowyg,UserInfo,ThemeSwitcher';
 if (!isset($modSettings['lp_show_comment_block']))
 	$add_settings['lp_show_comment_block'] = 'default';
 if (!isset($modSettings['lp_fa_source']))
