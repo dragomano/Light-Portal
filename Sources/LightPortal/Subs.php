@@ -54,7 +54,7 @@ class Subs
 		$context['lp_block_placements']    = self::getBlockPlacements();
 		$context['lp_page_options']        = self::getPageOptions();
 		$context['lp_plugin_types']        = self::getPluginTypes();
-		$context['lp_page_types']          = self::getPageTypes();
+		$context['lp_content_types']       = self::getContentTypes();
 
 		$context['lp_enabled_plugins']   = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
@@ -329,7 +329,7 @@ class Subs
 	/**
 	 * @return array
 	 */
-	public static function getPageTypes(): array
+	public static function getContentTypes(): array
 	{
 		global $txt, $user_info, $modSettings;
 
