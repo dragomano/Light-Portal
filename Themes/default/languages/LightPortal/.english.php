@@ -272,7 +272,8 @@ $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its
 $txt['lp_plugins_types'] = array(
 	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other', 'Block options', 'Page options'
 );
-$txt['lp_plugins_requires'] = 'Required plugins for work';
+$txt['lp_plugins_requires'] = 'Required plugins';
+$txt['lp_plugins_disables'] = 'Conflict plugins';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';

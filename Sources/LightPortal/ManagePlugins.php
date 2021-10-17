@@ -118,6 +118,7 @@ class ManagePlugins
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
+			$disabled = [];
 
 			$snake_name = Helpers::getSnakeName($item);
 
@@ -133,6 +134,9 @@ class ManagePlugins
 
 				if ($addonClass->hasProperty('requires'))
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
+
+				if ($addonClass->hasProperty('disables'))
+					$disables = $addonClass->getProperty('disables')->getValue(new $className);
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item])) {
 					$context['lp_' . $snake_name]['type'] = $context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -156,7 +160,8 @@ class ManagePlugins
 				'type'        => $this->getType($snake_name),
 				'special'     => $special ?? '',
 				'settings'    => $config_vars[$snake_name] ?? [],
-				'requires'    => array_diff($requires, $context['lp_enabled_plugins'])
+				'requires'    => array_diff($requires, $context['lp_enabled_plugins']),
+				'disables'    => array_intersect($disables, $context['lp_enabled_plugins'])
 			];
 		}, $context['lp_plugins']);
 

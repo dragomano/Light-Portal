@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Addons;
 
 use ReflectionClass;
-use Bugo\LightPortal\Helpers;
 
 if (!defined('SMF'))
 	die('Hacking attempt...');
@@ -58,19 +57,18 @@ abstract class Plugin
 	public $requires = [];
 
 	/**
+	 * Addon list those will be disabled on enabling
+	 *
+	 * @var array
+	 */
+	public $disables = [];
+
+	/**
 	 * @return string
 	 */
 	public function getName(): string
 	{
 		return (new ReflectionClass(get_called_class()))->getShortName();
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getSnakeName(): string
-	{
-		return Helpers::getSnakeName($this->getName());
 	}
 
 	/**

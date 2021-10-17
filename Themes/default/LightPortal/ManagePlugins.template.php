@@ -77,6 +77,19 @@ function template_manage_plugins()
 					</p>';
 		}
 
+		if (!empty($plugin['disables'])) {
+			echo '
+					<p class="roundframe">
+						<span class="errorbox">
+							<strong>', $txt['lp_plugins_disables'], '</strong>: ';
+
+			echo implode(', ', $plugin['disables']);
+
+			echo '
+						</span>
+					</p>';
+		}
+
 		if (!empty($plugin['author'])) {
 			echo '
 					<p>', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '</p>';
