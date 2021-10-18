@@ -284,7 +284,7 @@ class FrontPage
 			$article['msg_link'] = $article['msg_link'] ?? $article['link'];
 
 			if (isset($article['title']) && in_array($entity, ['PageArticle', 'ChosenPageArticle']))
-				$article['title'] = Helpers::getTitle($article);
+				$article['title'] = Helpers::getTranslatedTitle($article['title']);
 
 			if (empty($article['image']) && !empty($modSettings['lp_image_placeholder']))
 				$article['image'] = $modSettings['lp_image_placeholder'];

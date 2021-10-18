@@ -58,7 +58,7 @@ class Block
 
 			$context['lp_blocks'][$data['placement']][$item] = $data;
 
-			$title = Helpers::getTitle($data);
+			$title = Helpers::getTranslatedTitle($data['title']);
 			$icon  = Helpers::getIcon($context['lp_blocks'][$data['placement']][$item]['icon']);
 
 			$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;

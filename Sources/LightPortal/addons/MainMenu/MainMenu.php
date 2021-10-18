@@ -52,10 +52,8 @@ class MainMenu extends Plugin
 		foreach ($context['lp_main_menu_addon_items'] as $item) {
 			$alias = strtr(parse_url($item['url'], PHP_URL_QUERY), ['=' => '_']);
 
-			$item['title'] = $item['langs'];
-
 			$pages['portal_' . $alias] = array(
-				'title' => Helpers::getTitle($item),
+				'title' => Helpers::getTranslatedTitle($item['langs']),
 				'href'  => $item['url'],
 				'icon'  => empty($item['unicode']) ? null : ('" style="display: none"></span><span class="portal_menu_icons fas fa-portal_' . $alias),
 				'show'  => Helpers::canViewItem($item['access'])

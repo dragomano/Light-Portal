@@ -292,7 +292,7 @@ class ArticleList extends Plugin
 				}
 			} else {
 				foreach ($article_list as $page) {
-					if (empty($title = Helpers::getTitle($page)))
+					if (empty($title = Helpers::getTranslatedTitle($page['title'])))
 						continue;
 
 					$content = '';

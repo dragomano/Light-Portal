@@ -77,14 +77,14 @@ class Page
 		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
-			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_portal'];
+			$context['page_title']          = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_portal'];
 			$context['canonical_url']       = $scripturl;
 			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
 			$context['linktree'][] = array(
 				'name' => $txt['lp_portal']
 			);
 		} else {
-			$context['page_title']          = Helpers::getTitle($context['lp_page']) ?: $txt['lp_post_error_no_title'];
+			$context['page_title']          = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_post_error_no_title'];
 			$context['canonical_url']       = $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
 			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
 
@@ -211,7 +211,7 @@ class Page
 		if (empty($item = $context['lp_page']))
 			return [];
 
-		$title_words = explode(' ', Helpers::getTitle($item));
+		$title_words = explode(' ', Helpers::getTranslatedTitle($item['title']));
 		$alias_words = explode('_', $item['alias']);
 
 		$search_formula = '';
