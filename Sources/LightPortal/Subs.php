@@ -83,20 +83,12 @@ class Subs
 				array('external' => true, 'seed' => false),
 				'portal_fontawesome'
 			);
-		} elseif ($modSettings['lp_fa_source'] == 'js_cdn') {
-			loadJavaScriptFile(
-				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/js/all.min.js',
-				array('external' => true, 'defer' => true, 'seed' => false),
-				'portal_fontawesome'
-			);
 		} elseif ($modSettings['lp_fa_source'] == 'css_local') {
 			loadCSSFile('all.min.css', [], 'portal_fontawesome');
-		} elseif ($modSettings['lp_fa_source'] == 'js_local') {
-			loadJavaScriptFile('all.min.js', array('defer' => true), 'portal_fontawesome');
 		} elseif ($modSettings['lp_fa_source'] == 'custom' && !empty($modSettings['lp_fa_custom'])) {
-			loadJavaScriptFile(
+			loadCSSFile(
 				$modSettings['lp_fa_custom'],
-				array('external' => true, 'defer' => true, 'seed' => false, 'attributes' => array('crossorigin' => 'anonymous')),
+				array('external' => true, 'seed' => false),
 				'portal_fontawesome'
 			);
 		}

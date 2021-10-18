@@ -107,9 +107,7 @@ $txt['lp_page_itemprop_phone'] = 'Телефон вашей организаци
 $txt['lp_fa_source_title'] = 'Использование иконок FontAwesome';
 $txt['lp_fa_source'] = 'Источник для библиотеки FontAwesome';
 $txt['lp_fa_source_css_cdn'] = 'Подключение CSS с jsDelivr CDN';
-$txt['lp_fa_source_js_cdn'] = 'Подключение JS с jsDelivr CDN (SVG-иконки)';
 $txt['lp_fa_source_css_local'] = 'Локально (all.min.css из папки css темы)';
-$txt['lp_fa_source_js_local'] = 'Локально (all.min.js из папки scripts темы)';
 $txt['lp_fa_custom'] = 'Свой путь к библиотеке FontAwesome (URL-адрес)';
 
 $txt['lp_permissions'] = array('Показывать админам', 'Показывать гостям', 'Показывать пользователям', 'Показывать всем');

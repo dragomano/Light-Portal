@@ -392,9 +392,7 @@ class Settings
 				array(
 					'none'      => $txt['no'],
 					'css_cdn'   => $txt['lp_fa_source_css_cdn'],
-					'js_cdn'    => $txt['lp_fa_source_js_cdn'],
 					'css_local' => $txt['lp_fa_source_css_local'],
-					'js_local'  => $txt['lp_fa_source_js_local'],
 					'custom'    => $txt['lp_fa_custom']
 				),
 				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'

@@ -107,9 +107,7 @@ $txt['lp_page_itemprop_phone'] = 'Phone of your organization';
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
 $txt['lp_fa_source'] = 'Source for the FontAwesome library';
 $txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
-$txt['lp_fa_source_js_cdn'] = 'Connecting JS from jsDelivr CDN (SVG icons)';
 $txt['lp_fa_source_css_local'] = 'Locally (all.min.css from the theme css folder)';
-$txt['lp_fa_source_js_local'] = 'Locally (all.min.js from the theme scripts folder)';
 $txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
 
 $txt['lp_permissions'] = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
