@@ -214,14 +214,13 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Data i czas publikacji';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Wyświetlaj datę oraz nazwę autora', 'Show related pages', 'Włącz komentarze', 'Item in main menu');
+$txt['lp_page_options'] = array('Wyświetlaj datę oraz nazwę autora', 'Show related pages', 'Włącz komentarze');
 
 // Tabs
 $txt['lp_tab_content'] = 'Zawartość';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Dostęp i rozmieszczenie';
 $txt['lp_tab_appearance'] = 'Wygląd';
-$txt['lp_tab_menu'] = 'Menu';
 $txt['lp_tab_tuning'] = 'Tuning';
 
 // Import and Export

@@ -240,14 +240,13 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments', 'Item in main menu');
+$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments');
 
 // Tabs
 $txt['lp_tab_content'] = 'Content';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Access and placement';
 $txt['lp_tab_appearance'] = 'Appearance';
-$txt['lp_tab_menu'] = 'Menu';
 $txt['lp_tab_tuning'] = 'Tuning';
 
 // Import and Export
@@ -380,7 +379,7 @@ $txt['lp_blocks_set'] = 'block, blocks';
 $txt['lp_users_set'] = 'user, users';
 $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';
-$txt['lp_hidden_set'] = 'hidden, hidden';
+$txt['lp_hidden_set'] = 'hidden';
 $txt['lp_buddies_set'] = 'buddy, buddies';
 
 // Packages

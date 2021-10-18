@@ -258,47 +258,6 @@ class Subs
 	/**
 	 * @return array
 	 */
-	public static function getPagesInMenu(): array
-	{
-		global $smcFunc;
-
-		if (($pages = Helpers::cache()->get('pages_in_menu', LP_CACHE_TIME * 4)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT ps.value, p.alias, p.permissions, ps2.value AS icon
-				FROM {db_prefix}lp_params AS ps
-					LEFT JOIN {db_prefix}lp_params AS ps2 ON (ps.item_id = ps2.item_id AND ps2.name = {literal:icon} AND ps2.type = {literal:page})
-					INNER JOIN {db_prefix}lp_pages AS p ON (ps.item_id = p.page_id)
-				WHERE ps.name = {literal:main_menu_item}
-					AND ps.value != {string:blank_string}
-					AND ps.type = {literal:page}
-					AND p.status = {int:status}',
-				array(
-					'blank_string' => '',
-					'status'       => Page::STATUS_ACTIVE
-				)
-			);
-
-			$pages = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				$pages[$row['alias']] = array(
-					'title'       => json_decode($row['value'], true),
-					'permissions' => $row['permissions'],
-					'icon'        => $row['icon']
-				);
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('pages_in_menu', $pages, LP_CACHE_TIME * 4);
-		}
-
-		return $pages;
-	}
-
-	/**
-	 * @return array
-	 */
 	public static function getBlockPlacements(): array
 	{
 		global $txt;
@@ -313,7 +272,7 @@ class Subs
 	{
 		global $txt;
 
-		return array_combine(array('show_author_and_date', 'show_related_pages', 'allow_comments', 'main_menu_item'), $txt['lp_page_options']);
+		return array_combine(array('show_author_and_date', 'show_related_pages', 'allow_comments'), $txt['lp_page_options']);
 	}
 
 	/**

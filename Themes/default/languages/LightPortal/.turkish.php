@@ -214,14 +214,13 @@ $txt['lp_page_keywords_placeholder'] = 'Etiketleri seçin veya yeni ekleyin';
 $txt['lp_page_publish_datetime'] = 'Yayın tarihi ve saati';
 $txt['lp_page_author'] = 'Yazarlık devri';
 $txt['lp_page_author_placeholder'] = 'Sayfaya hakları aktarmak için bir kullanıcı adı belirtin';
-$txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver', 'Ana menüdeki öğe');
+$txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver');
 
 // Sekmeler
 $txt['lp_tab_content'] = 'İçerik';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Erişim ve yerleştirme';
 $txt['lp_tab_appearance'] = 'Görünüm';
-$txt['lp_tab_menu'] = 'Menü';
 $txt['lp_tab_tuning'] = 'Ayar';
 
 // İçe ve Dışa Aktarma

@@ -212,14 +212,13 @@ $txt['lp_page_keywords_placeholder'] = 'Sélectionnez des balises ou ajoutez-en 
 $txt['lp_page_publish_datetime'] = 'Date et heure de publication';
 $txt['lp_page_author'] = 'Modifier l\auteur';
 $txt['lp_page_author_placeholder'] = 'Spécifiez un nom d\'utilisateur pour transférer les droits sur la page';
-$txt['lp_page_options'] = array('Afficher l\'auteur et la date de création', 'Afficher les pages associées', 'Autoriser les commentaires', 'Élément dans le menu principal');
+$txt['lp_page_options'] = array('Afficher l\'auteur et la date de création', 'Afficher les pages associées', 'Autoriser les commentaires');
 
 // Tabs
 $txt['lp_tab_content'] = 'Contenue';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Accès et placement';
 $txt['lp_tab_appearance'] = 'Apparence';
-$txt['lp_tab_menu'] = 'Menu';
 $txt['lp_tab_tuning'] = 'Réglage';
 
 // Import and Export
