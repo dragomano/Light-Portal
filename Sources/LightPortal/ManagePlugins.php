@@ -118,7 +118,7 @@ class ManagePlugins
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
-			$disabled = [];
+			$disables = [];
 
 			$snake_name = Helpers::getSnakeName($item);
 
