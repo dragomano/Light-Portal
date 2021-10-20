@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>1.9.4</version>
+	<version>1.9.5</version>
 	<type>modification</type>
 
 	<install for="2.1.*">
@@ -17,7 +17,7 @@
 		<require-dir name="Themes" destination="$boarddir" />
 		<require-file name="portal.php" destination="$boarddir" />
 		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks#" file="$sourcedir/LightPortal/Integration.php" />
-		<redirect url="?action=admin;area=lp_settings" timeout="1000" />
+		<redirect url="?action=admin;area=lp_settings" timeout="3000" />
 	</install>
 
 	<uninstall for="2.1.*">
@@ -28,7 +28,7 @@
 		<remove-dir name="$themedir/scripts/light_portal" />
 		<remove-dir name="$sourcedir/LightPortal" />
 		<remove-dir name="$languagedir/LightPortal" />
-		<redirect url="?action=admin;area=packages;sa=browse" timeout="1000" />
+		<redirect url="?action=admin;area=packages;sa=browse" timeout="3000" />
 	</uninstall>
 
 </package-info>

@@ -34,10 +34,10 @@ class PrettyUrls extends Plugin
 	{
 		global $sourcedir, $context, $modSettings;
 
-		if (!is_file($sourcedir . '/Subs-PrettyUrls.php'))
+		if (! is_file($sourcedir . '/Subs-PrettyUrls.php'))
 			return;
 
-		if (!empty($context['pretty']['action_array']) && !in_array(LP_ACTION, array_values($context['pretty']['action_array'])))
+		if (! empty($context['pretty']['action_array']) && ! in_array(LP_ACTION, array_values($context['pretty']['action_array'])))
 			$context['pretty']['action_array'][] = LP_ACTION;
 
 		$prettyFilters = unserialize($modSettings['pretty_filters']);
@@ -80,7 +80,7 @@ class PrettyUrls extends Plugin
 		$replacement = $boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
 
 		foreach ($urls as $url_id => $url) {
-			if (!isset($url['replacement'])) {
+			if (! isset($url['replacement'])) {
 				if (preg_match($pattern, $url['url']))
 					$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, $url['url']);
 			}
