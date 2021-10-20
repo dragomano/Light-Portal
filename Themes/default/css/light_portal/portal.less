@@ -121,13 +121,6 @@
 	}
 }
 
-/* Page icons in the main menu */
-.portal_menu_icons {
-	.valign;
-	font-size: .875rem;
-	margin: -3px 8px 0 0;
-}
-
 #lp_blocks {
 	.item {
 		.pointer;
@@ -151,6 +144,14 @@
 	p {
 		&.errorbox {
 			margin: 0;
+		}
+	}
+}
+
+.action_admin {
+	&.sceditor-maximize {
+		#main_menu, #genericmenu {
+			display: none;
 		}
 	}
 }
@@ -1694,18 +1695,4 @@ section {
 	.ss-disabled {
 		color: inherit !important;
 	}
-}
-
-/* Temp fixes for SMF 2.1 RC4 */
-.popup_container {
-	z-index: 6 !important;
-}
-#genericmenu > .popup_container {
-	z-index: 5 !important;
-}
-div.sceditor-container {
-	z-index: 6;
-}
-div.sceditor-container:not(.sceditor-maximize) {
-	z-index: 4 !important;
 }

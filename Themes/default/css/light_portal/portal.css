@@ -37,12 +37,6 @@
 .descbox .bbc_code {
   overflow: hidden !important;
 }
-/* Page icons in the main menu */
-.portal_menu_icons {
-  vertical-align: middle;
-  font-size: 0.875rem;
-  margin: -3px 8px 0 0;
-}
 #lp_blocks {
   margin-bottom: 1em;
 }
@@ -58,6 +52,10 @@
 }
 #admin_form_wrapper p.errorbox {
   margin: 0;
+}
+.action_admin.sceditor-maximize #main_menu,
+.action_admin.sceditor-maximize #genericmenu {
+  display: none;
 }
 /* Tabs for settings */
 .lp_tabs {
@@ -1350,17 +1348,4 @@ section #display_head span {
 }
 .ss-main .ss-disabled {
   color: inherit !important;
-}
-/* Temp fixes for SMF 2.1 RC4 */
-.popup_container {
-  z-index: 6 !important;
-}
-#genericmenu > .popup_container {
-  z-index: 5 !important;
-}
-div.sceditor-container {
-  z-index: 6;
-}
-div.sceditor-container:not(.sceditor-maximize) {
-  z-index: 4 !important;
 }
