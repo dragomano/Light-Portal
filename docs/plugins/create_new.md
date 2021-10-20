@@ -59,3 +59,8 @@ class MyAddon extends Plugin
 }
 
 ```
+
+## Using Composer
+Your plugin can use third-party scripts installed through Composer.
+Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. The `src` directory may contain key files of the scripts you use.
+Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).

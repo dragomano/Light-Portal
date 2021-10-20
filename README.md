@@ -8,7 +8,7 @@
 * **Compatible with:** SMF 2.1 RC4+ / PHP 7.3+
 * **Tested on:** PHP 7.4.23 / MariaDB 10.5.10 / PostgreSQL 9.6.22
 * **Hooks only:** Yes
-* **Languages:** English, Russian, Ukrainian, Polish, Spanish, French, Turkish
+* **Languages:** English, Russian, Polish, Spanish, French, Turkish
 * **Demo:** [Demo Forum](http://toster12.qlihost.ru/)
 
 ## Description
@@ -17,7 +17,7 @@ This modification will transform your forum into a portal that includes:
 * separate pages with keywords,
 * blocks within 12-column flexbox grid.
 
-The portal supports BBC, HTML, PHP, and Markdown content within pages and custom blocks.
+The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) content within pages and custom blocks.
 
 ### Features:
 * Blocks and pages with multilingual titles.
@@ -41,7 +41,7 @@ The portal supports BBC, HTML, PHP, and Markdown content within pages and custo
 * отдельные страницы с ключевыми словами,
 * блоки внутри 12-колоночной flexbox-сетки.
 
-Поддержка контента с форумными тегами, HTML, PHP и Markdown в страницах и пользовательских блоках.
+Поддержка контента с форумными тегами, HTML, PHP, Markdown (через плагин), и Pug (через плагин) в страницах и пользовательских блоках.
 
 ### Особенности:
 * Блоки и страницы с многоязычными заголовками.

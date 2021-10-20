@@ -107,9 +107,7 @@ $txt['lp_page_itemprop_phone'] = 'Phone of your organization';
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
 $txt['lp_fa_source'] = 'Source for the FontAwesome library';
 $txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
-$txt['lp_fa_source_js_cdn'] = 'Connecting JS from jsDelivr CDN (SVG icons)';
 $txt['lp_fa_source_css_local'] = 'Locally (all.min.css from the theme css folder)';
-$txt['lp_fa_source_js_local'] = 'Locally (all.min.js from the theme scripts folder)';
 $txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
 
 $txt['lp_permissions'] = array('Show to admins', 'Show to guests', 'Show to members', 'Show to everybody');
@@ -240,14 +238,13 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments', 'Item in main menu');
+$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments');
 
 // Tabs
 $txt['lp_tab_content'] = 'Content';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Access and placement';
 $txt['lp_tab_appearance'] = 'Appearance';
-$txt['lp_tab_menu'] = 'Menu';
 $txt['lp_tab_tuning'] = 'Tuning';
 
 // Import and Export
@@ -272,7 +269,8 @@ $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its
 $txt['lp_plugins_types'] = array(
 	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other', 'Block options', 'Page options'
 );
-$txt['lp_plugins_requires'] = 'Required plugins for work';
+$txt['lp_plugins_requires'] = 'Required plugins';
+$txt['lp_plugins_disables'] = 'Conflict plugins';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';
@@ -379,7 +377,7 @@ $txt['lp_blocks_set'] = 'block, blocks';
 $txt['lp_users_set'] = 'user, users';
 $txt['lp_guests_set'] = 'guest, guests';
 $txt['lp_spiders_set'] = 'spider, spiders';
-$txt['lp_hidden_set'] = 'hidden, hidden';
+$txt['lp_hidden_set'] = 'hidden';
 $txt['lp_buddies_set'] = 'buddy, buddies';
 
 // Packages

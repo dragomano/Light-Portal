@@ -232,14 +232,13 @@ $txt['lp_page_keywords_placeholder'] = 'Seleccionar etiquetas o añadir nueva';
 $txt['lp_page_publish_datetime'] = 'Fecha y hora de publicación';
 $txt['lp_page_author'] = 'Transferencia de autoría';
 $txt['lp_page_author_placeholder'] = 'Especifique un nombre de usuario para transferir derechos a la página';
-$txt['lp_page_options'] = array('Mostrar el autor y la fecha de creación', 'Mostrar páginas relacionadas', 'Permitir comentarios', 'Elemento en el menú principal');
+$txt['lp_page_options'] = array('Mostrar el autor y la fecha de creación', 'Mostrar páginas relacionadas', 'Permitir comentarios');
 
 // Tabs
 $txt['lp_tab_content'] = 'Contenido';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'El acceso y la colocación';
 $txt['lp_tab_appearance'] = 'Apariencia';
-$txt['lp_tab_menu'] = 'Menu';
 $txt['lp_tab_tuning'] = 'Extras';
 
 // Import and Export

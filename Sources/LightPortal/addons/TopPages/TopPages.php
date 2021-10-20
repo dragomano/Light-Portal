@@ -177,7 +177,7 @@ class TopPages extends Plugin
 		<dl class="stats">';
 
 				foreach ($top_pages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getTitle($page)))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getTranslatedTitle($page['title'])))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

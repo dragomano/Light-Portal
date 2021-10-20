@@ -77,13 +77,13 @@ function template_show_page()
 		<article class="roundframe" itemprop="articleBody">
 			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 
-	if (!empty($context['lp_page']['keywords']) && !empty($modSettings['lp_show_tags_on_page'])) {
+	if (!empty($context['lp_page']['tags']) && !empty($modSettings['lp_show_tags_on_page'])) {
 		echo '
 			<div class="smalltext">';
 
-		foreach ($context['lp_page']['keywords'] as $id => $key) {
+		foreach ($context['lp_page']['tags'] as $tag) {
 			echo '
-				<a class="button" href="', $key['link'], '">', $key['name'], '</a>';
+				<a class="button" href="', $tag['href'], '">', $tag['name'], '</a>';
 		}
 
 		echo '

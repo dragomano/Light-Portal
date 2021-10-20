@@ -447,15 +447,15 @@ function template_show_articles_alt3()
 					<li class="date"><i class="fas fa-calendar"></i><time datetime="', $article['datetime'], '">', $article['date'], '</time></li>';
 		}
 
-		if (!empty($article['keywords'])) {
+		if (!empty($article['tags'])) {
 			echo '
 					<li class="tags">
 						<i class="fas fa-tag"></i>
 						<ul style="display: inline">';
 
-			foreach ($article['keywords'] as $id => $name) {
+			foreach ($article['tags'] as $key) {
 				echo '
-							<li><a href="', $scripturl, '?action=keywords;id=', $id, '">', $name, '</a></li>';
+							<li><a href="', $key['href'], '">', $key['name'], '</a></li>';
 			}
 
 			echo '
@@ -575,7 +575,7 @@ function template_show_articles_simple2()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="col-xs-12 col-sm-6 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
 			<div class="card">
 				<div class="card-header">
 					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>
@@ -673,28 +673,13 @@ function template_show_articles_simple3()
 		echo '
 				</div>';
 
-		// Topic keywords
-		if (!empty($article['keywords'])) {
-			echo '
-				<div class="tags">';
-
-			foreach ($article['keywords'] as $id => $name) {
-				echo '
-					<a class="new_posts" href="', $scripturl, '?action=keywords;id=', $id, '">#', $name, '</a>';
-			}
-
-			echo '
-				</div>';
-		}
-
-		// Portal tags
 		if (!empty($article['tags'])) {
 			echo '
 				<div class="tags">';
 
-			foreach ($article['tags'] as $id => $key) {
+			foreach ($article['tags'] as $key) {
 				echo '
-					<a class="new_posts" href="', $key['link'], '">#', $key['name'], '</a>';
+					<a class="new_posts" href="', $key['href'], '">#', $key['name'], '</a>';
 			}
 
 			echo '

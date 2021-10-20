@@ -164,18 +164,18 @@ $txt['lp_block_areas_subtext'] = 'Bloğu görüntülemek için bir veya daha faz
 $txt['lp_block_areas_area_th'] = 'Alan';
 $txt['lp_block_areas_display_th'] = 'Göster';
 $txt['lp_block_areas_values'] = array(
- 'her yerde',
- '<em>index.php?action</em>=<strong>custom_action</strong> (örneğin: portal, forum, arama)',
- 'tüm portal sayfalarında',
- 'sayfada <em>index.php?page</em> = <strong>takma ad</strong>',
- 'tüm bölümlerde',
- 'yalnızca <strong>id</strong> sahip bölümün içinde (bölüm içindeki tüm konular dahil)',
- 'id1, id2, id3 bölümlerde ',
- 'id3 ve id7 bölümlerinde ',
- 'tüm konularda',
- 'yalnızca <strong>id</strong> sahip konu içinde',
- 'id1, id2, id3 konularında',
- 'id3 ve id7 konularında'
+	'her yerde',
+	'<em>index.php?action</em>=<strong>custom_action</strong> (örneğin: portal,forum,search)',
+	'tüm portal sayfalarında',
+	'sayfada <em>index.php?page</em>=<strong>takma_ad</strong>',
+	'tüm bölümlerde',
+	'yalnızca <strong>id</strong> sahip bölümün içinde (bölüm içindeki tüm konular dahil)',
+	'id1, id2, id3 bölümlerde ',
+	'id3 ve id7 bölümlerinde ',
+	'tüm konularda',
+	'yalnızca <strong>id</strong> sahip konu içinde',
+	'id1, id2, id3 konularında',
+	'id3 ve id7 konularında'
 );
 
 $txt['lp_block_title_class'] = 'CSS başlık sınıfı';
@@ -214,14 +214,13 @@ $txt['lp_page_keywords_placeholder'] = 'Etiketleri seçin veya yeni ekleyin';
 $txt['lp_page_publish_datetime'] = 'Yayın tarihi ve saati';
 $txt['lp_page_author'] = 'Yazarlık devri';
 $txt['lp_page_author_placeholder'] = 'Sayfaya hakları aktarmak için bir kullanıcı adı belirtin';
-$txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver', 'Ana menüdeki öğe');
+$txt['lp_page_options'] = array('Yazarı ve oluşturma tarihini göster', 'İlgili sayfaları göster', 'Yorumlara izin ver');
 
 // Sekmeler
 $txt['lp_tab_content'] = 'İçerik';
 $txt['lp_tab_seo'] = 'SEO';
 $txt['lp_tab_access_placement'] = 'Erişim ve yerleştirme';
 $txt['lp_tab_appearance'] = 'Görünüm';
-$txt['lp_tab_menu'] = 'Menü';
 $txt['lp_tab_tuning'] = 'Ayar';
 
 // İçe ve Dışa Aktarma

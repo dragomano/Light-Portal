@@ -51,6 +51,22 @@ class ManagePlugins
 		$context['lp_plugins_extra'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
 		$context['post_url']         = $scripturl . '?action=admin;area=lp_plugins;save';
 
+		// Toggle ON/OFF for plugins
+		if (Helpers::request()->has('toggle')) {
+			$data = Helpers::request()->json();
+			$plugin_id = (int) $data['toggle_plugin'];
+
+			if ($key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
+				unset($context['lp_enabled_plugins'][$key]);
+			} else {
+				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
+			}
+
+			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
+
+			exit;
+		}
+
 		$config_vars = [];
 
 		// You can add settings for your plugins
@@ -92,33 +108,17 @@ class ManagePlugins
 			}
 
 			// You can do additional actions after settings saving
-			Addons::run('onSettingsSaving', array(&$plugin_options), $context['lp_plugins']);
+			Addons::run('saveSettings', array(&$plugin_options), $context['lp_plugins']);
 
 			if (!empty($plugin_options))
 				updateSettings($plugin_options);
 
-			exit(json_encode('ok'));
-		}
-
-		// Toggle ON/OFF for plugins
-		if (Helpers::request()->has('toggle')) {
-			$data = Helpers::request()->json();
-			$plugin_id = (int) $data['toggle_plugin'];
-
-			if (in_array($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
-				$key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins']);
-				unset($context['lp_enabled_plugins'][$key]);
-			} else {
-				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
-			}
-
-			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
-
-			exit(json_encode('ok'));
+			exit;
 		}
 
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
+			$disables = [];
 
 			$snake_name = Helpers::getSnakeName($item);
 
@@ -134,6 +134,9 @@ class ManagePlugins
 
 				if ($addonClass->hasProperty('requires'))
 					$requires = $addonClass->getProperty('requires')->getValue(new $className);
+
+				if ($addonClass->hasProperty('disables'))
+					$disables = $addonClass->getProperty('disables')->getValue(new $className);
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item])) {
 					$context['lp_' . $snake_name]['type'] = $context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -157,7 +160,8 @@ class ManagePlugins
 				'type'        => $this->getType($snake_name),
 				'special'     => $special ?? '',
 				'settings'    => $config_vars[$snake_name] ?? [],
-				'requires'    => array_diff($requires, $context['lp_enabled_plugins'])
+				'requires'    => array_diff($requires, $context['lp_enabled_plugins']),
+				'disables'    => array_intersect($disables, $context['lp_enabled_plugins'])
 			];
 		}, $context['lp_plugins']);
 

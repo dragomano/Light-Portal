@@ -223,7 +223,7 @@ class PageList extends Plugin
 		<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if (empty($title = Helpers::getTitle($page)))
+				if (empty($title = Helpers::getTranslatedTitle($page['title'])))
 					continue;
 
 				echo '

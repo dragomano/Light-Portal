@@ -78,8 +78,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.9.4',
-			'LP_RELEASE_DATE' => '2021-10-05',
+			'LP_VERSION'      => '1.9.5',
+			'LP_RELEASE_DATE' => '2021-10-20',
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
@@ -207,10 +207,6 @@ class Integration
 
 			if (Helpers::request()->filled(LP_PAGE_PARAM)) {
 				$current_action = LP_ACTION;
-
-				$page = Helpers::request(LP_PAGE_PARAM);
-				if (isset(Subs::getPagesInMenu()[$page]))
-					$current_action = 'portal_' . $page;
 			}
 		} else {
 			$current_action = empty($modSettings['lp_standalone_mode']) && Helpers::request()->is('forum') ? 'home' : $context['current_action'];
@@ -229,7 +225,7 @@ class Integration
 	 */
 	public function menuButtons(array &$buttons)
 	{
-		global $context, $txt, $scripturl, $settings, $modSettings;
+		global $context, $txt, $scripturl, $modSettings;
 
 		if (Subs::isPortalShouldNotBeLoaded())
 			return;
@@ -281,35 +277,6 @@ class Integration
 					)
 				),
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
-			);
-		}
-
-		// Display chosen pages in the main menu
-		if (!empty($pages_in_menu = Subs::getPagesInMenu())) {
-			$compat_theme = in_array(explode('_', $settings['name'])[0], ['Wide', 'Badem']);
-
-			$pages = [];
-			foreach ($pages_in_menu as $alias => $item) {
-				$pages[$compat_theme ? $item['icon'] : ('portal_' . $alias)] = array(
-					'title' => Helpers::getTitle($item),
-					'href'  => $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias,
-					'icon'  => empty($item['icon']) ? null : ('" style="display: none"></span><span class="portal_menu_icons ' . $item['icon']),
-					'show'  => Helpers::canViewItem($item['permissions'])
-				);
-			}
-
-			$counter = -1;
-			foreach ($buttons as $area => $dummy) {
-				$counter++;
-
-				if ($area == 'admin')
-					break;
-			}
-
-			$buttons = array_merge(
-				array_slice($buttons, 0, $counter, true),
-				$pages,
-				array_slice($buttons, $counter, null, true)
 			);
 		}
 

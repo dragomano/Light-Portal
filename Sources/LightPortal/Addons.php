@@ -143,7 +143,7 @@ class Addons
 		if (empty($addons))
 			return;
 
-		foreach ($addons as $id => $addon) {
+		foreach ($addons as $addon) {
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
 			if (! class_exists($className))
@@ -151,24 +151,25 @@ class Addons
 
 			$class = new $className;
 
-			if (! isset($snakeNames[$id])) {
-				$snakeNames[$id] = Helpers::getSnakeName($addon);
+			if (empty($results[$addon]['snake'])) {
+				$results[$addon]['snake'] = Helpers::getSnakeName($addon);
 
-				self::loadLanguage($addon, $snakeNames[$id]);
-				self::loadCss($addon, $snakeNames[$id]);
+				self::loadLanguage($addon, $results[$addon]['snake']);
+				self::loadCss($addon, $results[$addon]['snake']);
 
-				$context['lp_' . $snakeNames[$id]]['type'] = property_exists($class, 'type') ? $class->type : 'block';
-				$context['lp_' . $snakeNames[$id]]['icon'] = property_exists($class, 'icon') ? $class->icon : 'fas fa-puzzle-piece';
+				$context['lp_' . $results[$addon]['snake']]['type'] = $class->type;
+				$context['lp_' . $results[$addon]['snake']]['icon'] = $class->icon;
 			}
 
 			// Hook init should run only once
-			if (empty($results[$id]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
+			if (empty($results[$addon]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
 				$class->init();
-				$results[$id]['init'] = $addon;
+				$results[$addon]['init'] = true;
 			}
 
-			if (method_exists($class, $hook))
+			if (method_exists($class, $hook)) {
 				$class->$hook(...$vars);
+			}
 		}
 	}
 }

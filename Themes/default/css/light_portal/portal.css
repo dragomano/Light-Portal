@@ -37,12 +37,6 @@
 .descbox .bbc_code {
   overflow: hidden !important;
 }
-/* Page icons in the main menu */
-.portal_menu_icons {
-  vertical-align: middle;
-  font-size: 0.875rem;
-  margin: -3px 8px 0 0;
-}
 #lp_blocks {
   margin-bottom: 1em;
 }
@@ -58,6 +52,10 @@
 }
 #admin_form_wrapper p.errorbox {
   margin: 0;
+}
+.action_admin.sceditor-maximize #main_menu,
+.action_admin.sceditor-maximize #genericmenu {
+  display: none;
 }
 /* Tabs for settings */
 .lp_tabs {
@@ -1158,7 +1156,7 @@ section #display_head span {
   vertical-align: baseline !important;
 }
 .form_settings > div {
-  margin: 10px;
+  margin: 1.2em;
 }
 .form_settings label {
   font-weight: bold;
@@ -1166,6 +1164,9 @@ section #display_head span {
 .form_settings input[type="text"],
 .form_settings input[type="url"] {
   width: 100%;
+}
+.form_settings input[type="number"] {
+  width: auto;
 }
 .new_posts.lp_type_block {
   background: #667d99;
@@ -1347,17 +1348,4 @@ section #display_head span {
 }
 .ss-main .ss-disabled {
   color: inherit !important;
-}
-/* Temp fixes for SMF 2.1 RC4 */
-.popup_container {
-  z-index: 6 !important;
-}
-#genericmenu > .popup_container {
-  z-index: 5 !important;
-}
-div.sceditor-container {
-  z-index: 6;
-}
-div.sceditor-container:not(.sceditor-maximize) {
-  z-index: 4 !important;
 }

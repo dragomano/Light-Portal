@@ -25,6 +25,11 @@ class Trumbowyg extends Plugin
 	public $type = 'editor';
 
 	/**
+	 * @var array
+	 */
+	public $disables = ['Jodit'];
+
+	/**
 	 * @param array $config_vars
 	 * @return void
 	 */

@@ -304,26 +304,7 @@ class ManageBlocks
 
 		$context['current_block']['placement'] = Helpers::request('placement', '');
 
-		$plugins = array_merge($context['lp_enabled_plugins'], array_keys($context['lp_page_types']));
-
-		$context['lp_all_blocks'] = [];
-		foreach ($plugins as $addon) {
-			$addon = Helpers::getSnakeName($addon);
-
-			// We need blocks only
-			if (!isset($txt['lp_' . $addon]['title']) || isset($context['lp_all_blocks'][$addon]))
-				continue;
-
-			$context['lp_all_blocks'][$addon] = [
-				'type'  => $addon,
-				'icon'  => $context['lp_' . $addon]['icon'],
-				'title' => $txt['lp_' . $addon]['title'],
-				'desc'  => $txt['lp_' . $addon]['block_desc'] ?? $txt['lp_' . $addon]['description']
-			];
-		}
-
-		$titles = array_column($context['lp_all_blocks'], 'title');
-		array_multisort($titles, SORT_ASC, $context['lp_all_blocks']);
+		$this->prepareBlockList();
 
 		$context['sub_template'] = 'block_add';
 
@@ -663,15 +644,27 @@ class ManageBlocks
 			);
 		}
 
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = '';
-			$context['posting_fields']['content']['input'] = array(
-				'type' => 'textarea',
-				'attributes' => array(
-					'value' => $context['lp_block']['content']
-				),
-				'tab' => 'content'
-			);
+		if (!empty($context['lp_block']['options']['content'])) {
+			$context['posting_fields']['content']['label']['html'] = ' ';
+
+			if ($context['lp_block']['type'] !== 'bbc') {
+
+				$context['posting_fields']['content']['input'] = array(
+					'type' => 'textarea',
+					'attributes' => array(
+						'value' => $context['lp_block']['content']
+					),
+					'tab' => 'content'
+				);
+			} else {
+				Helpers::createBbcEditor($context['lp_block']['content']);
+
+				ob_start();
+				template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+				$context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean()  . '</div>';
+
+				$context['posting_fields']['content']['input']['tab'] = 'content';
+			}
 		}
 
 		Addons::run('prepareBlockFields');
@@ -747,9 +740,6 @@ class ManageBlocks
 	private function prepareEditor()
 	{
 		global $context;
-
-		if (!empty($context['lp_block']['options']['content']) && $context['lp_block']['type'] === 'bbc')
-			Helpers::createBbcEditor($context['lp_block']['content']);
 
 		Addons::run('prepareEditor', array($context['lp_block']));
 	}
@@ -1154,6 +1144,35 @@ class ManageBlocks
 		global $txt, $context;
 
 		if (!isset($txt['lp_' . $type]['title']))
-			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], str_replace('_', '', ucwords($type, '_'))) . '</span>';
+			$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($txt['lp_addon_not_installed'], Helpers::getCamelName($type)) . '</span>';
+	}
+
+	/**
+	 * @return void
+	 */
+	private function prepareBlockList()
+	{
+		global $context, $txt;
+
+		$plugins = array_merge($context['lp_enabled_plugins'], array_keys(Subs::getContentTypes()));
+
+		$context['lp_all_blocks'] = [];
+		foreach ($plugins as $addon) {
+			$addon = Helpers::getSnakeName($addon);
+
+			// We need blocks only
+			if (!isset($txt['lp_' . $addon]['title']) || isset($context['lp_all_blocks'][$addon]))
+				continue;
+
+			$context['lp_all_blocks'][$addon] = [
+				'type'  => $addon,
+				'icon'  => $context['lp_' . $addon]['icon'],
+				'title' => $txt['lp_' . $addon]['title'],
+				'desc'  => $txt['lp_' . $addon]['block_desc'] ?? $txt['lp_' . $addon]['description']
+			];
+		}
+
+		$titles = array_column($context['lp_all_blocks'], 'title');
+		array_multisort($titles, SORT_ASC, $context['lp_all_blocks']);
 	}
 }

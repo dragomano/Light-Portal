@@ -52,10 +52,10 @@ function template_manage_plugins()
 		if (!empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
 				$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
-				echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+				echo $lang[$context['user']['language']] ?? $lang['english'] ?? '';
 			} elseif ($plugin['special'] === $txt['lp_can_download']) {
 				$lang = $context['lp_can_download'][$plugin['name']]['languages'];
-				echo $lang[$context['user']['language']] ?: $lang['english'] ?: '';
+				echo $lang[$context['user']['language']] ?? $lang['english'] ?? '';
 			}
 		} else {
 			echo $plugin['desc'];
@@ -71,6 +71,19 @@ function template_manage_plugins()
 							<strong>', $txt['lp_plugins_requires'], '</strong>: ';
 
 			echo implode(', ', $plugin['requires']);
+
+			echo '
+						</span>
+					</p>';
+		}
+
+		if (!empty($plugin['disables'])) {
+			echo '
+					<p class="roundframe">
+						<span class="errorbox">
+							<strong>', $txt['lp_plugins_disables'], '</strong>: ';
+
+			echo implode(', ', $plugin['disables']);
 
 			echo '
 						</span>

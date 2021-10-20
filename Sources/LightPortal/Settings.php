@@ -376,7 +376,7 @@ class Settings
 			array('callback', 'disabled_bbc_in_comments'),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
-			array('select', 'lp_page_editor_type_default', $context['lp_page_types']),
+			array('select', 'lp_page_editor_type_default', $context['lp_content_types']),
 			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
 			array('title', 'lp_schema_org'),
@@ -392,9 +392,7 @@ class Settings
 				array(
 					'none'      => $txt['no'],
 					'css_cdn'   => $txt['lp_fa_source_css_cdn'],
-					'js_cdn'    => $txt['lp_fa_source_js_cdn'],
 					'css_local' => $txt['lp_fa_source_css_local'],
-					'js_local'  => $txt['lp_fa_source_js_local'],
 					'custom'    => $txt['lp_fa_custom']
 				),
 				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'

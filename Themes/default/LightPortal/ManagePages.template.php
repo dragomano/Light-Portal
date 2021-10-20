@@ -52,17 +52,10 @@ function template_page_post()
 				<input id="tab2" type="radio" name="tabs">
 				<label for="tab2" class="bg odd"><i class="fas fa-spider"></i> <span>', $txt['lp_tab_seo'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd"><i class="fas fa-bars"></i> <span>', $txt['lp_tab_menu'], '</span></label>
-				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>
+				<label for="tab3" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>
 				<section id="content-tab1" class="bg even">';
 
 	template_post_tab($fields);
-
-	if ($context['lp_page']['type'] == 'bbc') {
-		echo '
-					<div>', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '</div>';
-	}
 
 	echo '
 				</section>
@@ -70,15 +63,9 @@ function template_page_post()
 
 	template_post_tab($fields, 'seo');
 
-    echo '
+	echo '
 				</section>
 				<section id="content-tab3" class="bg even">';
-
-	template_post_tab($fields, 'menu');
-
-    echo '
-				</section>
-				<section id="content-tab4" class="bg even">';
 
 	template_post_tab($fields, 'tuning');
 
@@ -132,62 +119,6 @@ function template_page_post()
 			}
 		});
 
-		let iconSelect = new SlimSelect({
-			select: "#icon",
-			allowDeselect: true,
-			deselectLabel: "<span class=\"red\">✖</span>",
-			limit: 30,
-			ajax: function (search, callback) {
-				if (search.length < 3) {
-					callback("', sprintf($txt['lp_min_search_length'], 3), '")
-					return
-				}
-
-				fetch("', $context['canonical_url'], ';icons", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json; charset=utf-8"
-					},
-					body: JSON.stringify({
-						search
-					})
-				})
-				.then(response => response.json())
-				.then(function (json) {
-					let data = [];
-					for (let i = 0; i < json.length; i++) {
-						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
-					}
-
-					callback(data)
-				})
-				.catch(function (error) {
-					callback(false)
-				})
-			},
-			hideSelectedOption: true,
-			placeholder: "', $txt['lp_block_select_icon'], '",
-			searchingText: "', $txt['search'], '...",
-			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "cheese",
-			searchHighlight: true,
-			closeOnSelect: false,
-			showContent: "down",
-			addable: function (value) {
-				return {
-					text: value.toLowerCase(),
-					value: value.toLowerCase()
-				}
-			}
-		});';
-
-	if (!empty($context['lp_page']['options']['icon'])) {
-		echo '
-		iconSelect.setData([{innerHTML: `', $context['lp_page']['options']['icon_template'], '`, text: "', $context['lp_page']['options']['icon'], '"}]);
-		iconSelect.set(', JavaScriptEscape($context['lp_page']['options']['icon']), ');';
-	}
-
-	echo '
 		new SlimSelect({
 			select: "#permissions",
 			showSearch: false,

@@ -122,7 +122,7 @@ class ManagePages
 				),
 				'num_views' => array(
 					'header' => array(
-						'value' => '<i class="fas fa-eye" title="' . $txt['lp_views']. '"></i>',//$txt['views']
+						'value' => '<i class="fas fa-eye" title="' . $txt['lp_views'] . '"></i>',
 					),
 					'data' => array(
 						'db'    => 'num_views',
@@ -166,7 +166,7 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($txt, $context, $scripturl)
 						{
-							$type_hint = $context['lp_page_types'][$entry['type']] ?? strtoupper($entry['type']);
+							$type_hint = $context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type']);
 
 							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
@@ -619,8 +619,6 @@ class ManagePages
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
-			'main_menu_item'       => '',
-			'icon'                 => ''
 		];
 
 		Addons::run('pageOptions', array(&$options));
@@ -655,7 +653,6 @@ class ManagePages
 
 			foreach ($context['languages'] as $lang) {
 				$args['title_' . $lang['filename']]          = FILTER_SANITIZE_STRING;
-				$args['main_menu_item_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
 			$parameters = [];
@@ -667,8 +664,6 @@ class ManagePages
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
-					'main_menu_item'       => FILTER_SANITIZE_STRING,
-					'icon'                 => FILTER_SANITIZE_STRING
 				),
 				$parameters
 			);
@@ -719,20 +714,9 @@ class ManagePages
 			$context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
-		if (!empty($context['lp_page']['options']['main_menu_item']))
-			$context['lp_page']['options']['main_menu_item'] = json_decode($context['lp_page']['options']['main_menu_item'], true);
-		else
-			$context['lp_page']['options']['main_menu_item'] = [];
-
-		$context['lp_page']['options']['icon'] = $context['lp_page']['options']['icon'] === 'undefined' ? '' : $context['lp_page']['options']['icon'];
-		$context['lp_page']['options']['icon_template'] = Helpers::getIcon($context['lp_page']['options']['icon']) . $context['lp_page']['options']['icon'];
-
 		foreach ($context['languages'] as $lang) {
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
-			$context['lp_page']['options']['main_menu_item'][$lang['filename']] = $post_data['main_menu_item_' . $lang['filename']] ?? $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '';
 		}
-
-		$context['lp_page']['options']['main_menu_item'] = array_filter($context['lp_page']['options']['main_menu_item']);
 
 		Helpers::cleanBbcode($context['lp_page']['title']);
 	}
@@ -816,15 +800,15 @@ class ManagePages
 			'tab' => 'content'
 		);
 
-		foreach ($context['lp_page_types'] as $value => $text) {
+		foreach ($context['lp_content_types'] as $value => $text) {
 			$context['posting_fields']['type']['input']['options'][$text] = array(
 				'value'    => $value,
 				'selected' => $value == $context['lp_page']['type']
 			);
 		}
 
+		$context['posting_fields']['content']['label']['html'] = ' ';
 		if ($context['lp_page']['type'] !== 'bbc') {
-			$context['posting_fields']['content']['label']['text'] = '';
 			$context['posting_fields']['content']['input'] = array(
 				'type' => 'textarea',
 				'attributes' => array(
@@ -834,6 +818,14 @@ class ManagePages
 				),
 				'tab' => 'content'
 			);
+		} else {
+			Helpers::createBbcEditor($context['lp_page']['content']);
+
+			ob_start();
+			template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+			$context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean()  . '</div>';
+
+			$context['posting_fields']['content']['input']['tab'] = 'content';
 		}
 
 		$context['posting_fields']['alias']['label']['text'] = $txt['lp_page_alias'];
@@ -881,28 +873,6 @@ class ManagePages
 			);
 		}
 
-		if ($context['user']['is_admin']) {
-			foreach ($context['languages'] as $lang) {
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['label']['text'] = $context['lp_page_options']['main_menu_item'] . (count($context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-				$context['posting_fields']['main_menu_item_' . $lang['filename']]['input'] = array(
-					'type' => 'text',
-					'attributes' => array(
-						'maxlength' => 255,
-						'value'     => $context['lp_page']['options']['main_menu_item'][$lang['filename']] ?? '',
-						'style'     => 'width: 100%'
-					),
-					'tab' => 'menu'
-				);
-			}
-		}
-
-		$context['posting_fields']['icon']['label']['text'] = $txt['current_icon'];
-		$context['posting_fields']['icon']['input'] = array(
-			'type'    => 'select',
-			'options' => [],
-			'tab'     => 'menu'
-		);
-
 		$context['posting_fields']['permissions']['label']['text'] = $txt['edit_permissions'];
 		$context['posting_fields']['permissions']['input'] = array(
 			'type' => 'select'
@@ -922,7 +892,7 @@ class ManagePages
 
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
-			'type'     => 'select',
+			'type' => 'select',
 			'attributes' => array(
 				'disabled' => count($allCategories) < 2
 			)
@@ -1038,9 +1008,6 @@ class ManagePages
 	private function prepareEditor()
 	{
 		global $context;
-
-		if ($context['lp_page']['type'] === 'bbc')
-			Helpers::createBbcEditor($context['lp_page']['content']);
 
 		Addons::run('prepareEditor', array($context['lp_page']));
 	}
@@ -1248,10 +1215,6 @@ class ManagePages
 		if (!empty($context['lp_page']['options'])) {
 			$params = [];
 			foreach ($context['lp_page']['options'] as $param_name => $value) {
-				if ($param_name == 'main_menu_item') {
-					$value = empty($value) ? '' : json_encode($value);
-				}
-
 				$value = is_array($value) ? implode(',', $value) : $value;
 
 				$params[] = array(
@@ -1372,10 +1335,6 @@ class ManagePages
 		if (!empty($context['lp_page']['options'])) {
 			$params = [];
 			foreach ($context['lp_page']['options'] as $param_name => $value) {
-				if ($param_name == 'main_menu_item') {
-					$value = empty($value) ? '' : json_encode($value);
-				}
-
 				$value = is_array($value) ? implode(',', $value) : $value;
 
 				$params[] = array(

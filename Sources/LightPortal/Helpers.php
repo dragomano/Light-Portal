@@ -503,24 +503,24 @@ class Helpers
 	 *
 	 * Получаем заголовок объекта, в соответствии с языком пользователя или форума, или на английском
 	 *
-	 * @param array $object
+	 * @param array $titleArray
 	 * @return string
 	 */
-	public static function getTitle(array $object): string
+	public static function getTranslatedTitle(array $titleArray): string
 	{
 		global $user_info, $language;
 
-		if (empty($object) || !isset($object['title']))
+		if (empty($titleArray))
 			return '';
 
-		if (!empty($object['title'][$user_info['language']]))
-			return $object['title'][$user_info['language']];
+		if (!empty($titleArray[$user_info['language']]))
+			return $titleArray[$user_info['language']];
 
-		if (!empty($object['title'][$language]))
-			return $object['title'][$language];
+		if (!empty($titleArray[$language]))
+			return $titleArray[$language];
 
-		if (!empty($object['title']['english']))
-			return $object['title']['english'];
+		if (!empty($titleArray['english']))
+			return $titleArray['english'];
 
 		return '';
 	}
@@ -877,7 +877,7 @@ class Helpers
 			if (!empty($data['input']['after'])) {
 				$tag = 'div';
 
-				if (in_array($data['input']['type'], ['checkbox', 'number']))
+				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
 					$tag = 'span';
 
 				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";

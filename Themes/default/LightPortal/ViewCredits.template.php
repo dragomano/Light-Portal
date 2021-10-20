@@ -19,24 +19,34 @@ function template_portal_credits()
 		<div class="title_bar">
 			<h4 class="titlebg">', $txt['lp_translators'], '</h4>
 		</div>
-		<ul>';
+		<div>';
 
-	foreach ($context['portal_translations'] as $lang => $translators) {
+		foreach ($context['portal_translations'] as $lang => $translators) {
+			echo '
+			<fieldset class="windowbg">
+				<legend class="amt">', $lang, '</legend>', implode(', ', $translators), '
+			</fieldset>';
+		}
+
 		echo '
-			<li class="windowbg"><span class="new_posts">', $lang, '</span> ', implode(', ', $translators), '</li>';
-	}
-
-	echo '
-		</ul>
+		</div>
 		<br>
 		<div class="title_bar">
 			<h4 class="titlebg">', $txt['lp_testers'], '</h4>
 		</div>
 		<ul>';
 
-	foreach ($context['testers'] as $tester) {
+	if (!empty($context['testers'])) {
 		echo '
-			<li class="windowbg"><a class="bbc_link" href="', $tester['link'], '" target="_blank" rel="nofollow noopener">', $tester['name'], '</a></li>';
+				<li class="windowbg">';
+
+		foreach ($context['testers'] as $tester) {
+			echo '
+				<a class="button" href="', $tester['link'], '" target="_blank" rel="nofollow noopener">', $tester['name'], '</a>';
+		}
+
+		echo '
+				</li>';
 	}
 
 	echo '
@@ -47,9 +57,17 @@ function template_portal_credits()
 		</div>
 		<ul>';
 
-	foreach ($context['sponsors'] as $sponsor) {
+	if (!empty($context['sponsors'])) {
 		echo '
-			<li class="windowbg"><a class="bbc_link" href="', $sponsor['link'], '" target="_blank" rel="nofollow noopener">', $sponsor['name'], '</a></li>';
+				<li class="windowbg">';
+
+		foreach ($context['sponsors'] as $sponsor) {
+			echo '
+				<a class="button" href="', $sponsor['link'], '" target="_blank" rel="nofollow noopener">', $sponsor['name'], '</a>';
+		}
+
+		echo '
+				</li>';
 	}
 
 	echo '

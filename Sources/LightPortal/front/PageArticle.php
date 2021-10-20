@@ -157,6 +157,8 @@ class PageArticle extends AbstractArticle
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
+			$this->prepareTags($pages);
+
 			Helpers::cache()->put('articles_u' . $user_info['id'] . '_' . $start . '_' . $limit, $pages);
 		}
 
@@ -196,5 +198,39 @@ class PageArticle extends AbstractArticle
 		}
 
 		return (int) $num_pages;
+	}
+
+	/**
+	 * @param array $pages
+	 * @return void
+	 */
+	private function prepareTags(array &$pages)
+	{
+		global $smcFunc, $scripturl;
+
+		if (empty($pages))
+			return;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT t.tag_id, t.value, p.item_id
+			FROM {db_prefix}lp_tags AS t
+				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
+			WHERE p.item_id IN ({array_int:pages})
+				AND FIND_IN_SET(t.tag_id, p.value)
+			ORDER BY t.value',
+			array(
+				'pages' => array_keys($pages)
+			)
+		);
+
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$pages[$row['item_id']]['tags'][] = array(
+				'name' => $row['value'],
+				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
 	}
 }
