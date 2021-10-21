@@ -98,7 +98,9 @@ function template_show_page()
 	echo '
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
 
-	show_likes_block();
+	// Extend with addons
+	if (!empty($context['lp_page']['addons']))
+		echo $context['lp_page']['addons'];
 
 	echo '
 		</article>';
@@ -109,61 +111,6 @@ function template_show_page()
 
 	echo '
 	</section>';
-}
-
-/**
- * Likes block template
- *
- * Шаблон блока лайков
- *
- * @return void
- */
-function show_likes_block()
-{
-	global $modSettings, $context, $scripturl, $txt;
-
-	if (empty($modSettings['enable_likes']) || $context['user']['is_guest'])
-		return;
-
-	if (empty($context['lp_page']['likes']['can_like']) && empty($context['lp_page']['likes']['count']))
-		return;
-
-	echo '
-		<hr>
-		<ul class="likes_area floatleft" x-data>';
-
-	if (!empty($context['lp_page']['likes']['can_like'])) {
-		echo '
-			<li>
-				<a
-					class="like_page"
-					href="', $scripturl, '?action=likes;sa=like;ltype=lpp;like=', $context['lp_page']['id'], ';', $context['session_var'], '=', $context['session_id'], '"
-					@click.prevent="page.like($el, $event.target)"
-				>
-					<span class="main_icons ', $context['lp_page']['likes']['you'] ? 'unlike' : 'like', '"></span> ', $context['lp_page']['likes']['you'] ? $txt['unlike'] : $txt['like'], '
-				</a>
-			</li>';
-	}
-
-	if (!empty($context['lp_page']['likes']['count'])) {
-		$count = $context['lp_page']['likes']['count'];
-		$base  = 'likes_';
-
-		if ($context['lp_page']['likes']['you']) {
-			$base = 'you_' . $base;
-			$count--;
-		}
-
-		$base .= (isset($txt[$base . $count])) ? $count : 'n';
-
-		echo '
-			<li class="num_likes smalltext">
-				', sprintf($txt[$base], $scripturl . '?action=likes;sa=view;ltype=lpp;like=' . $context['lp_page']['id'] . ';' . $context['session_var'] . '=' . $context['session_id'] . '" @click.prevent="page.showLikers($el, $event.target)', comma_format($count)), '
-			</li>';
-	}
-
-	echo '
-		</ul>';
 }
 
 /**
@@ -291,7 +238,6 @@ function show_comment_block()
 	if ($context['user']['is_logged'])
 		echo '
 		<script>
-			const page = new Page();
 			new Toggler({
 				isCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
 				toggleAltExpandedTitle: ', JavaScriptEscape($txt['hide']), ',

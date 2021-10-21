@@ -80,7 +80,7 @@ abstract class AbstractArray
 	 * @return array
 	 */
 	public static function only(array $keys): array
-    {
+	{
 		$result = [];
 
 		foreach ($keys as $key) {
@@ -114,10 +114,10 @@ abstract class AbstractArray
 	 * @return bool
 	 */
 	public static function has($key): bool
-    {
+	{
 		if (is_array($key)) {
 			foreach ($key as $k) {
-				if (!isset(static::$obj[$k]))
+				if (! isset(static::$obj[$k]))
 					return false;
 			}
 
@@ -134,9 +134,9 @@ abstract class AbstractArray
 	 *
 	 * @param string|array $key
 	 * @return bool
-	 */
+	*/
 	public static function exists($key): bool
-    {
+	{
 		return static::has($key);
 	}
 
@@ -149,8 +149,8 @@ abstract class AbstractArray
 	 * @return bool
 	 */
 	public static function filled(string $key): bool
-    {
-		return !static::isEmpty($key);
+	{
+		return ! static::isEmpty($key);
 	}
 
 	/**
@@ -162,7 +162,7 @@ abstract class AbstractArray
 	 * @return bool
 	 */
 	public static function isEmpty(string $key): bool
-    {
+	{
 		return empty(static::$obj[$key]);
 	}
 }

@@ -25,7 +25,7 @@ function template_debug_below()
 
 		foreach ($context['lp_detail_cache_info'] as $info) {
 			echo '
-		<div class="', $info['level'], 'box">', $info['title'], '<details><figure><pre style="white-space: pre-line">', $info['details'], '</pre></figure></details></div>';
+		<div class="', $info['level'], 'box">', $info['title'], '<details>', parse_bbc('[code=php]' . $info['details'] . '[/code]'), '</details></div>';
 		}
 
 		echo '

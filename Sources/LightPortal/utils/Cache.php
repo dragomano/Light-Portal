@@ -19,8 +19,19 @@ if (!defined('SMF'))
 
 class Cache
 {
+	/**
+	 * @var string
+	 */
 	private $prefix = 'lp_';
+
+	/**
+	 * @var string
+	 */
 	private $key;
+
+	/**
+	 * @var int
+	 */
 	private $lifeTime = 0;
 
 	/**

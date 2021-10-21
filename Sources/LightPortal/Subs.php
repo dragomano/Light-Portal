@@ -183,36 +183,6 @@ class Subs
 	}
 
 	/**
-	 * Show script execution time and num queries
-	 *
-	 * Отображаем время выполнения скрипта и количество запросов к базе
-	 *
-	 * @return void
-	 */
-	public static function showDebugInfo()
-	{
-		global $modSettings, $context, $txt, $smcFunc;
-
-		if (empty($modSettings['lp_show_debug_info']) || empty($context['user']['is_admin']) || empty($context['template_layers']))
-			return;
-
-		$context['lp_load_page_stats'] = sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']);
-
-		loadTemplate('LightPortal/ViewDebug');
-
-		$key = array_search('lp_portal', $context['template_layers']);
-		if (empty($key)) {
-			$context['template_layers'][] = 'debug';
-		} else {
-			$context['template_layers'] = array_merge(
-				array_slice($context['template_layers'], 0, $key, true),
-				array('debug'),
-				array_slice($context['template_layers'], $key, null, true)
-			);
-		}
-	}
-
-	/**
 	 * Fix canonical url for forum action
 	 *
 	 * Исправляем канонический адрес для области forum

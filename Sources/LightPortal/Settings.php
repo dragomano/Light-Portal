@@ -141,7 +141,7 @@ class Settings
 	 */
 	public function settingAreas()
 	{
-		global $context, $txt, $smcFunc, $scripturl, $modSettings;
+		global $context, $txt, $smcFunc;
 
 		isAllowedTo('admin_forum');
 

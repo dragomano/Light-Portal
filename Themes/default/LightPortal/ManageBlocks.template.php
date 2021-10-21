@@ -9,7 +9,7 @@
  */
 function template_manage_blocks()
 {
-	global $context, $txt, $scripturl, $modSettings;
+	global $context, $txt, $scripturl;
 
 	if (empty($context['lp_current_blocks'])) {
 		echo '
@@ -121,7 +121,7 @@ function template_manage_blocks()
  */
 function show_block_entry(int $id, array $data)
 {
-	global $modSettings, $context, $language, $txt, $scripturl;
+	global $context, $language, $txt, $scripturl;
 
 	if (empty($id) || empty($data))
 		return;

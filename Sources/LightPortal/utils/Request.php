@@ -36,14 +36,12 @@ class Request extends AbstractArray
 		if (static::has('action') === false)
 			return false;
 
-		if (is_array($patterns[0])) {
+		if (is_array($patterns[0]))
 			$patterns = $patterns[0];
-		}
 
 		foreach ($patterns as $pattern) {
-			if (static::get('action') === $pattern) {
+			if (static::get('action') === $pattern)
 				return true;
-			}
 		}
 
 		return false;
@@ -62,9 +60,8 @@ class Request extends AbstractArray
 	{
 		$data = json_decode(file_get_contents('php://input'), true);
 
-		if (isset($data[$key])) {
+		if (isset($data[$key]))
 			return $data[$key] ?: $default;
-		}
 
 		return $data;
 	}

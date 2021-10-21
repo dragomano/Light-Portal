@@ -301,7 +301,7 @@ class Page
 	 */
 	public function getData(array $params): array
 	{
-		global $smcFunc, $txt, $modSettings, $scripturl;
+		global $smcFunc, $txt, $modSettings;
 
 		if (empty($params))
 			return [];
@@ -366,48 +366,10 @@ class Page
 				$data['options'][$row['name']] = $row['value'];
 		}
 
-		if (!empty($data['category_id']))
-			$data['category'] = Helpers::getAllCategories()[$data['category_id']]['name'];
-
-		if (!empty($data['options']['keywords']))
-			$data['tags'] = $this->getTags($data['options']['keywords']);
-
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
-	}
-
-	/**
-	 * @param string $tags
-	 * @return array
-	 */
-	private function getTags(string $tags): array
-	{
-		global $smcFunc, $scripturl;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			WHERE FIND_IN_SET(tag_id, {string:tags})
-			ORDER BY value',
-			array(
-				'tags' => $tags
-			)
-		);
-
-		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[] = array(
-				'name' => $row['value'],
-				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
-			);
-		}
-
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
-
-		return $items;
 	}
 
 	/**
@@ -659,99 +621,47 @@ class Page
 			$data['content'] = un_preparsecode($data['content']);
 		}
 
-		if (!empty($modSettings['enable_likes'])) {
-			$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
+		if (!empty($data['category_id']))
+			$data['category'] = Helpers::getAllCategories()[$data['category_id']]['name'];
 
-			$data['likes'] = array(
-				'count'    => $this->getLikesCount($data['id']),
-				'you'      => in_array($data['id'], $user_likes),
-				'can_like' => !$user_info['is_guest'] && !$is_author && allowedTo('likes_like')
-			);
-		}
+		if (!empty($data['options']['keywords']))
+			$data['tags'] = $this->getTags($data['options']['keywords']);
+
+		$data['addons'] = '';
+
+		Addons::run('preparePageData', array(&$data, $is_author));
 	}
 
 	/**
-	 * Get an array of "likes" info for the $page and the current user
-	 *
-	 * Получаем массив лайков для страницы $page и текущего пользователя
-	 *
-	 * @param int $page
+	 * @param string $tags
 	 * @return array
 	 */
-	private function prepareLikesContext(int $page): array
+	private function getTags(string $tags): array
 	{
-		global $user_info, $smcFunc;
+		global $smcFunc, $scripturl;
 
-		if (empty($page))
-			return [];
+		$request = $smcFunc['db_query']('', '
+			SELECT tag_id, value
+			FROM {db_prefix}lp_tags
+			WHERE FIND_IN_SET(tag_id, {string:tags})
+			ORDER BY value',
+			array(
+				'tags' => $tags
+			)
+		);
 
-		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
-
-		if (($liked_pages = Helpers::cache()->get($cache_key)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT content_id
-				FROM {db_prefix}user_likes AS l
-					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
-				WHERE l.id_member = {int:current_user}
-					AND l.content_type = {literal:lpp}
-					AND p.page_id = {int:page}',
-				array(
-					'current_user' => $user_info['id'],
-					'page'         => $page
-				)
+		$items = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			$items[] = array(
+				'name' => $row['value'],
+				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
 			);
-
-			$liked_pages = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request))
-				$liked_pages[] = (int) $row['content_id'];
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put($cache_key, $liked_pages);
 		}
 
-		return $liked_pages;
-	}
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
 
-	/**
-	 * Get number of likes for the $page
-	 *
-	 * Получаем количество лайков для страницы $page
-	 *
-	 * @param int $page
-	 * @return int
-	 */
-	private function getLikesCount(int $page): int
-	{
-		global $smcFunc;
-
-		if (empty($page))
-			return 0;
-
-		$cache_key = 'likes_page_' . $page . '_count';
-
-		if (($num_likes = Helpers::cache()->get($cache_key)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT COUNT(content_id)
-				FROM {db_prefix}user_likes AS l
-					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
-				WHERE l.content_type = {literal:lpp}
-					AND p.page_id = {int:page}',
-				array(
-					'page' => $page
-				)
-			);
-
-			[$num_likes] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put($cache_key, $num_likes);
-		}
-
-		return (int) $num_likes;
+		return $items;
 	}
 
 	/**

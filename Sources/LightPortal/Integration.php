@@ -36,20 +36,19 @@ class Integration
 		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
-		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
-		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
 		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
 		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
-		add_integration_function('cache_put_data', __CLASS__ . '::cachePutData#', false, __FILE__);
-		add_integration_function('cache_get_data', __CLASS__ . '::cacheGetData#', false, __FILE__);
 		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
 		add_integration_function('integrate_packages_sort_id', __CLASS__ . '::packagesSortId#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
+		add_integration_function('integrate_menu_buttons', __NAMESPACE__ . '\Debug::showInfo#', false, __FILE__);
+		add_integration_function('cache_put_data', __NAMESPACE__ . '\Debug::cachePutData#', false, __FILE__);
+		add_integration_function('cache_get_data', __NAMESPACE__ . '\Debug::cacheGetData#', false, __FILE__);
 	}
 
 	/**
@@ -151,10 +150,10 @@ class Integration
 
 		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
 
-		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'categories')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] === 'categories')
 			return call_user_func(array(new Lists\Category, 'show'));
 
-		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'tags')
+		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] === 'tags')
 			return call_user_func(array(new Lists\Tag, 'show'));
 
 		if (!empty($modSettings['lp_standalone_mode'])) {
@@ -202,7 +201,7 @@ class Integration
 		if (Helpers::request()->isEmpty('action')) {
 			$current_action = LP_ACTION;
 
-			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] != Helpers::server('REQUEST_URL'))
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] !== Helpers::server('REQUEST_URL'))
 				$current_action = 'forum';
 
 			if (Helpers::request()->filled(LP_PAGE_PARAM)) {
@@ -215,7 +214,7 @@ class Integration
 		$disabled_actions = !empty($modSettings['lp_standalone_mode_disabled_actions']) ? explode(',', $modSettings['lp_standalone_mode_disabled_actions']) : [];
 		$disabled_actions[] = 'home';
 
-		if (!empty($context['current_board']) || Helpers::request()->is(['keywords']))
+		if (!empty($context['current_board']) || Helpers::request()->is('keywords'))
 			$current_action = !empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION) : 'home';
 	}
 
@@ -239,10 +238,10 @@ class Integration
 		// Display "Portal settings" in Main Menu => Admin
 		if ($context['user']['is_admin']) {
 			$counter = 0;
-			foreach ($buttons['admin']['sub_buttons'] as $area => $dummy) {
+			foreach (array_keys($buttons['admin']['sub_buttons']) as $area) {
 				$counter++;
 
-				if ($area == 'featuresettings')
+				if ($area === 'featuresettings')
 					break;
 			}
 
@@ -280,31 +279,23 @@ class Integration
 			);
 		}
 
-		Subs::showDebugInfo();
-
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
 
 		// Display "Portal" item in Main Menu
-		$buttons = array_merge(
-			array(
-				LP_ACTION => array(
-					'title'       => $txt['lp_portal'],
-					'href'        => $scripturl,
-					'icon'        => 'home',
-					'show'        => true,
-					'action_hook' => true,
-					'is_last'     => $context['right_to_left']
-				)
-			),
-			$buttons
-		);
+		$buttons = array_merge(array(LP_ACTION => array(
+			'title'       => $txt['lp_portal'],
+			'href'        => $scripturl,
+			'icon'        => 'home',
+			'show'        => true,
+			'action_hook' => true,
+			'is_last'     => $context['right_to_left']
+		)), $buttons);
 
 		// "Forum"
-		$buttons['home']['title']   = $txt['lp_forum'];
-		$buttons['home']['href']    = $scripturl . '?action=forum';
-		$buttons['home']['icon']    = 'im_on';
-		$buttons['home']['is_last'] = false;
+		$buttons['home']['title'] = $txt['lp_forum'];
+		$buttons['home']['href']  = $scripturl . '?action=forum';
+		$buttons['home']['icon']  = 'im_on';
 
 		// Standalone mode
 		if (!empty($modSettings['lp_standalone_mode'])) {
@@ -409,64 +400,6 @@ class Integration
 		$permissionList['membergroup']['light_portal_approve_pages']     = array(false, 'light_portal');
 
 		$leftPermissionGroups[] = 'light_portal';
-	}
-
-	/**
-	 * Validating data when like/unlike pages
-	 *
-	 * Валидируем данные при лайке/дизлайке страниц
-	 *
-	 * @param string $type
-	 * @param int $content
-	 * @return bool|array
-	 */
-	public function validLikes(string $type, int $content)
-	{
-		global $smcFunc, $user_info;
-
-		if ($type !== 'lpp')
-			return false;
-
-		$request = $smcFunc['db_query']('', '
-			SELECT alias, author_id
-			FROM {db_prefix}lp_pages
-			WHERE page_id = {int:id}
-			LIMIT 1',
-			array(
-				'id' => $content
-			)
-		);
-
-		[$alias, $author] = $smcFunc['db_fetch_row']($request);
-
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
-
-		if (empty($alias))
-			return false;
-
-		return [
-			'type'        => $type,
-			'flush_cache' => 'light_portal_likes_page_' . $content . '_' . $user_info['id'],
-			'redirect'    => LP_PAGE_PARAM . '=' . $alias,
-			'can_like'    => $user_info['id'] == $author ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
-		];
-	}
-
-	/**
-	 * Update cache on like/unlike pages
-	 *
-	 * Обновляем кэш при лайке/дизлайке страниц
-	 *
-	 * @param \Likes $obj
-	 * @return void
-	 */
-	public function issueLike(\Likes $obj)
-	{
-		if ($obj->get('type') !== 'lpp')
-			return;
-
-		Helpers::cache()->put('likes_page_' . $obj->get('content') . '_count', $obj->get('numLikes'));
 	}
 
 	/**
@@ -633,8 +566,14 @@ class Integration
 				$result = sprintf($txt['lp_who_viewing_index'], $modSettings['lp_standalone_url'], $scripturl);
 		}
 
-		if (!empty($actions['action']) && $actions['action'] == LP_ACTION) {
-			if (!empty($actions['sa']) && $actions['sa'] == 'tags') {
+		if (!empty($actions[LP_PAGE_PARAM]))
+			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_PARAM . '=' . $actions[LP_PAGE_PARAM]);
+
+		if (empty($actions['action']))
+			return $result;
+
+		if ($actions['action'] === LP_ACTION) {
+			if (!empty($actions['sa']) && $actions['sa'] === 'tags') {
 				!empty($actions['key'])
 					? $result = sprintf($txt['lp_who_viewing_the_tag'], $scripturl . '?action=' . LP_ACTION . ';sa=tags;key=' . $actions['key'], $actions['key'])
 					: $result = sprintf($txt['lp_who_viewing_tags'], $scripturl . '?action=' . LP_ACTION . ';sa=tags');
@@ -643,80 +582,37 @@ class Integration
 			}
 		}
 
-		if (!empty($actions['action']) && $actions['action'] == 'forum')
+		if ($actions['action'] === 'forum')
 			$result = sprintf($txt['who_index'], $scripturl . '?action=forum', $context['forum_name']);
 
-		if (!empty($actions[LP_PAGE_PARAM]))
-			$result = sprintf($txt['lp_who_viewing_page'], $scripturl . '?' . LP_PAGE_PARAM . '=' . $actions[LP_PAGE_PARAM]);
-
-		if (!empty($actions['action']) && $actions['action'] == 'lp_settings')
+		if ($actions['action'] === 'lp_settings')
 			$result = sprintf($txt['lp_who_viewing_portal_settings'], $scripturl . '?action=admin;area=lp_settings');
 
-		if (!empty($actions['action']) && $actions['action'] == 'lp_blocks') {
-			if (!empty($actions['area']) && $actions['area'] == 'lp_blocks') {
+		if ($actions['action'] === 'lp_blocks') {
+			if (!empty($actions['area']) && $actions['area'] === 'lp_blocks') {
 				$result = sprintf($txt['lp_who_viewing_portal_blocks'], $scripturl . '?action=admin;area=lp_blocks');
 
-				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
+				if (!empty($actions['sa']) && $actions['sa'] === 'edit' && !empty($actions['id']))
 					$result = sprintf($txt['lp_who_viewing_editing_block'], $actions['id']);
 
-				if (!empty($actions['sa']) && $actions['sa'] == 'add')
+				if (!empty($actions['sa']) && $actions['sa'] === 'add')
 					$result = $txt['lp_who_viewing_adding_block'];
 			}
 		}
 
-		if (!empty($actions['action']) && $actions['action'] == 'lp_pages') {
-			if (!empty($actions['area']) && $actions['area'] == 'lp_pages') {
+		if ($actions['action'] === 'lp_pages') {
+			if (!empty($actions['area']) && $actions['area'] === 'lp_pages') {
 				$result = sprintf($txt['lp_who_viewing_portal_pages'], $scripturl . '?action==admin;area=lp_pages');
 
-				if (!empty($actions['sa']) && $actions['sa'] == 'edit' && !empty($actions['id']))
+				if (!empty($actions['sa']) && $actions['sa'] === 'edit' && !empty($actions['id']))
 					$result = sprintf($txt['lp_who_viewing_editing_page'], $actions['id']);
 
-				if (!empty($actions['sa']) && $actions['sa'] == 'add')
+				if (!empty($actions['sa']) && $actions['sa'] === 'add')
 					$result = $txt['lp_who_viewing_adding_page'];
 			}
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @param string $key
-	 * @param mixed $value
-	 * @param int $ttl
-	 * @return void
-	 */
-	public function cachePutData(&$key, &$value, &$ttl)
-	{
-		global $modSettings, $context, $txt;
-
-		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
-			return;
-
-		$context['lp_detail_cache_info'][] = array(
-			'title'   => sprintf($txt['lp_cache_saving'], $key, $ttl),
-			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-			'level'   => 'notice'
-		);
-	}
-
-	/**
-	 * @param string $key
-	 * @param int $ttl
-	 * @param mixed $value
-	 * @return void
-	 */
-	public function cacheGetData(&$key, &$ttl, &$value)
-	{
-		global $modSettings, $context, $txt;
-
-		if (empty($modSettings['lp_show_cache_info']) || empty($modSettings['cache_enable']) || strpos($key, 'lp_') !== 0)
-			return;
-
-		$context['lp_detail_cache_info'][] = array(
-			'title'   => sprintf($txt['lp_cache_loading'], $key),
-			'details' => json_encode(json_decode($value, true), JSON_HEX_TAG | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-			'level'   => 'info'
-		);
 	}
 
 	/**
