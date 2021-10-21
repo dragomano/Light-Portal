@@ -31,12 +31,6 @@
 .preview .button {
   float: none !important;
 }
-.descbox {
-  border-radius: 6px;
-}
-.descbox .bbc_code {
-  overflow: hidden !important;
-}
 #lp_blocks {
   margin-bottom: 1em;
 }
@@ -52,6 +46,9 @@
 }
 #admin_form_wrapper p.errorbox {
   margin: 0;
+}
+.descbox details code {
+  white-space: break-spaces !important;
 }
 .action_admin.sceditor-maximize #main_menu,
 .action_admin.sceditor-maximize #genericmenu {
@@ -159,25 +156,17 @@
   flex: 2 50%;
 }
 .lp_tabs section #post_header dt:first-child,
-.lp_tabs section #post_header dd:first-child,
-.lp_tabs section #post_header dt:first-child,
 .lp_tabs section #post_header dd:first-child {
   margin-block-start: 0;
 }
-.lp_tabs section #post_header dt:last-child,
-.lp_tabs section #post_header dd:last-child,
 .lp_tabs section #post_header dt:last-child,
 .lp_tabs section #post_header dd:last-child {
   margin-block-end: 0;
 }
 .lp_tabs section #post_header dt > *:first-child,
-.lp_tabs section #post_header dd > *:first-child,
-.lp_tabs section #post_header dt > *:first-child,
 .lp_tabs section #post_header dd > *:first-child {
   margin-block-start: 0;
 }
-.lp_tabs section #post_header dt > *:last-child,
-.lp_tabs section #post_header dd > *:last-child,
 .lp_tabs section #post_header dt > *:last-child,
 .lp_tabs section #post_header dd > *:last-child {
   margin-block-end: 0;
@@ -297,9 +286,6 @@
 #lp_layout aside[id^="block"]:not(:first-child) {
   clear: both;
   margin-top: 4px;
-}
-.likes_area {
-  list-style: none;
 }
 .related_pages {
   margin-top: 1em;
@@ -979,10 +965,7 @@ section #display_head span {
   width: 100%;
 }
 .article_simple3_view > div .title {
-  padding-right: 1.5rem;
-  padding-left: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 1.5rem;
 }
 .article_simple3_view > div .title div {
   font-weight: 700;
@@ -990,18 +973,12 @@ section #display_head span {
   margin-bottom: 0.5rem;
 }
 .article_simple3_view > div .tags {
-  padding-right: 1.5rem;
-  padding-left: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 0.5rem;
+  padding: 1rem 1.5rem 0.5rem;
 }
 .article_simple3_view > div .tags a {
   display: inline-block;
   border-radius: 9999px;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
   margin-right: 0.5rem;
