@@ -41,7 +41,7 @@ class Page
 
 		$alias = Helpers::request(LP_PAGE_PARAM);
 
-		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias'])) {
+		if (empty($alias) && !empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] === 'chosen_page' && !empty($modSettings['lp_frontpage_alias'])) {
 			$context['lp_page'] = $this->getDataByAlias($modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
@@ -101,6 +101,7 @@ class Page
 		}
 
 		loadTemplate('LightPortal/ViewPage');
+
 		$context['sub_template'] = 'show_page';
 
 		$this->setMeta();

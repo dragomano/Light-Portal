@@ -32,7 +32,7 @@ class Credits
 
 		$context['credits_modifications'][] = $this->getLink();
 
-		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
+		if (!empty($context['current_subaction']) && $context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');

@@ -376,17 +376,15 @@ class ManageBlocks
 	 */
 	private function getOptions(): array
 	{
-		$options = [
-			'bbc' => [
+		global $context;
+
+		$options = [];
+
+		foreach (array_keys($context['lp_content_types']) as $type) {
+			$options[$type] = [
 				'content' => true
-			],
-			'html' => [
-				'content' => true
-			],
-			'php' => [
-				'content' => true
-			]
-		];
+			];
+		}
 
 		Addons::run('blockOptions', array(&$options));
 

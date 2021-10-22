@@ -45,7 +45,15 @@ function template_manage_plugins()
 	<div class="windowbg">
 		<div class="features" data-id="', $id, '" x-data>
 			<div class="floatleft">
-				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['type'], '</strong></h4>
+				<h4>', $plugin['name'];
+
+		foreach ($plugin['types'] as $type => $label_class) {
+			echo '
+					<strong class="new_posts', $label_class, '">', $type, '</strong>';
+		}
+
+		echo '
+				</h4>
 				<div>
 					<p>';
 

@@ -150,18 +150,17 @@ class ManagePlugins
 			}
 
 			return [
-				'name'        => $item,
-				'snake_name'  => $snake_name,
-				'label_class' => $this->getLabelClass($snake_name),
-				'desc'        => $txt['lp_' . $snake_name]['description'] ?? '',
-				'author'      => $author ?? '',
-				'link'        => $link ?? '',
-				'status'      => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
-				'type'        => $this->getType($snake_name),
-				'special'     => $special ?? '',
-				'settings'    => $config_vars[$snake_name] ?? [],
-				'requires'    => array_diff($requires, $context['lp_enabled_plugins']),
-				'disables'    => array_intersect($disables, $context['lp_enabled_plugins'])
+				'name'       => $item,
+				'snake_name' => $snake_name,
+				'desc'       => $txt['lp_' . $snake_name]['description'] ?? '',
+				'author'     => $author ?? '',
+				'link'       => $link ?? '',
+				'status'     => in_array($item, $context['lp_enabled_plugins']) ? 'on' : 'off',
+				'types'      => $this->getTypes($snake_name),
+				'special'    => $special ?? '',
+				'settings'   => $config_vars[$snake_name] ?? [],
+				'requires'   => array_diff($requires, $context['lp_enabled_plugins']),
+				'disables'   => array_intersect($disables, $context['lp_enabled_plugins'])
 			];
 		}, $context['lp_plugins']);
 
@@ -174,7 +173,7 @@ class ManagePlugins
 			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context) {
 				$filter = Helpers::post('filter');
 
-				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || strpos($item['type'], $context['lp_plugin_types'][$filter]) !== false) {
+				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || in_array($context['lp_plugin_types'][$filter], array_keys($item['types']))) {
 					return true;
 				}
 			});
@@ -188,13 +187,13 @@ class ManagePlugins
 	 */
 	private function extendPluginList()
 	{
-		global $context, $boardurl;
+		global $context, $user_info, $boardurl;
 
 		$context['lp_can_donate']   = [];
 		$context['lp_can_download'] = [];
 
 		if (($xml = Helpers::cache()->get('custom_addon_list', 259200)) === null) {
-			$link = Helpers::server('SERVER_ADDR') === '127.0.0.1' ? $boardurl . '/addons.json' : 'https://dragomano.ru/addons.json';
+			$link = $user_info['ip'] === '127.0.0.1' ? $boardurl . '/addons.json' : 'https://dragomano.ru/addons.json';
 
 			$addon_list = fetch_web_data($link);
 
@@ -227,47 +226,35 @@ class ManagePlugins
 	}
 
 	/**
-	 * @param string $snake_name
+	 * @param string $type
 	 * @return string
 	 */
-	private function getLabelClass(string $snake_name): string
+	private function getTypeClass(string $type): string
 	{
-		global $context;
-
-		if (empty($context['lp_' . $snake_name]) || empty($type = $context['lp_' . $snake_name]['type']))
-			return '';
-
-		$type = is_array($type) ? implode('_', $type) : $type;
-
 		return ' lp_type_' . $type;
 	}
 
 	/**
 	 * @param string $snake_name
-	 * @return string
+	 * @return array
 	 */
-	private function getType(string $snake_name): string
+	private function getTypes(string $snake_name): array
 	{
-		global $txt, $context;
+		global $context, $txt;
 
-		if (empty($snake_name))
-			return $txt['not_applicable'];
+		if (empty($snake_name) || empty($type = $context['lp_' . $snake_name]['type'] ?? ''))
+			return [$txt['not_applicable'] => ''];
 
-		$data = $context['lp_' . $snake_name]['type'] ?? '';
-
-		if (empty($data))
-			return $txt['not_applicable'];
-
-		if (is_array($data)) {
+		if (is_array($type)) {
 			$all_types = [];
-			foreach ($data as $type) {
-				$all_types[] = $context['lp_plugin_types'][$type];
+			foreach ($type as $t) {
+				$all_types[$context['lp_plugin_types'][$t]] = $this->getTypeClass($t);
 			}
 
-			return implode(' + ', $all_types);
+			return $all_types;
 		}
 
-		return $context['lp_plugin_types'][$data];
+		return [$context['lp_plugin_types'][$type] => $this->getTypeClass($type)];
 	}
 
 	/**
@@ -282,7 +269,7 @@ class ManagePlugins
 
 		$typeCount = [];
 		foreach ($context['all_lp_plugins'] as $plugin) {
-			$types = explode(' + ', $plugin['type']);
+			$types = array_merge(array_keys($plugin['types']));
 			foreach ($types as $type) {
 				$key = array_search($type, $txt['lp_plugins_types']);
 
