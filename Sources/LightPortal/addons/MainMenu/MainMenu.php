@@ -66,10 +66,10 @@ class MainMenu extends Plugin
 		}
 
 		$counter = -1;
-		foreach ($buttons as $area => $dummy) {
+		foreach (array_keys($buttons) as $area) {
 			$counter++;
 
-			if ($area == 'admin')
+			if ($area === 'admin')
 				break;
 		}
 
@@ -92,12 +92,10 @@ class MainMenu extends Plugin
 			return;
 
 		if (Helpers::server('REQUEST_URL') === $context['canonical_url'] && in_array($context['canonical_url'], array_column($context['lp_main_menu_addon_items'], 'url'))) {
-			if (Helpers::request()->isEmpty('action')) {
-				if (Helpers::request()->filled(LP_PAGE_PARAM)) {
-					$current_action = 'portal_page_' . Helpers::request(LP_PAGE_PARAM);
-				}
-			} else {
-				$current_action = 'portal_action_' . $current_action;
+			$current_action = 'portal_action_' . $current_action;
+
+			if (Helpers::request()->isEmpty('action') && Helpers::request()->filled(LP_PAGE_PARAM)) {
+				$current_action = 'portal_page_' . Helpers::request(LP_PAGE_PARAM);
 			}
 		}
 	}
