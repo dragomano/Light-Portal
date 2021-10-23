@@ -58,7 +58,7 @@ class Comment
 
 		if (Helpers::request()->notEmpty('sa')) {
 			switch (Helpers::request('sa')) {
-				case 'new_comment':
+				case 'add_comment':
 					$this->add();
 					break;
 
@@ -96,14 +96,14 @@ class Comment
 		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
 			$pageIndexUrl = $scripturl . '?action=' . LP_ACTION;
 
-		$tempStart = Helpers::request('start');
+		$context['current_start'] = Helpers::request('start');
 		$context['page_index'] = constructPageIndex($pageIndexUrl, Helpers::request()->get('start'), $totalParentComments, $limit);
 		$start = Helpers::request('start');
 
 		$context['page_info']['num_pages'] = floor($totalParentComments / $limit) + 1;
 		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
 
-		if ($tempStart > $totalParentComments)
+		if ($context['current_start'] > $totalParentComments)
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
@@ -199,6 +199,8 @@ class Comment
 
 			ob_start();
 
+			$context['current_start'] = Helpers::request('start');
+
 			show_single_comment([
 				'id'          => $item,
 				'alias'       => $this->alias,
@@ -206,7 +208,7 @@ class Comment
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
-				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
+				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
 				'raw_message' => un_preparsecode($message),
@@ -272,7 +274,7 @@ class Comment
 
 		$smcFunc['lp_num_queries']++;
 
-		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']);
+		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']);
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
@@ -413,7 +415,7 @@ class Comment
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'avatar'      => $avatar,
-				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $context['lp_allowed_bbc']),
+				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $context['lp_allowed_bbc']),
 				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => $row['created_at'],
 				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60

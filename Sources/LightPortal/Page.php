@@ -417,7 +417,7 @@ class Page
 	{
 		global $modSettings, $context;
 
-		$start = Helpers::request('start', 0);
+		$start = Helpers::request('start');
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$total_items = $entity->getTotalCountPages();

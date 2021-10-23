@@ -189,7 +189,7 @@ function show_comment_block()
 				</div>';
 
 	if ($context['user']['is_logged']) {
-        echo '
+		echo '
 				<form
 					id="comment_form"
 					class="roundframe descbox"
@@ -198,9 +198,9 @@ function show_comment_block()
 					@submit.prevent="comment.add($event.target, $refs)"
 				>';
 
-        show_toolbar();
+		show_toolbar();
 
-        echo '
+		echo '
 					<textarea
 						id="message"
 						name="message"
@@ -229,7 +229,7 @@ function show_comment_block()
 						disabled
 					>', $txt['post'], '</button>
 				</form>';
-    }
+	}
 
 	echo '
 			</div>
@@ -270,7 +270,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		data-id="', $comment['id'], '"
 		data-counter="', $i, '"
 		data-level="', $level, '"
-		data-start="', (int) $_REQUEST['start'], '"
+		data-start="', $context['current_start'], '"
 		data-commentator="', $comment['author_id'], '"
 		itemprop="comment"
 		itemscope="itemscope"

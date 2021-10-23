@@ -1,5 +1,5 @@
 class Comment {
-	constructor(url, start) {
+	constructor(url, start = 0) {
 		this.pageUrl = url
 		this.pageStart = start
 		this.currentComment = null
@@ -45,7 +45,7 @@ class Comment {
 	}
 
 	async add(target, refs) {
-		let response = await fetch(this.pageUrl + 'sa=new_comment', {
+		let response = await fetch(this.pageUrl + 'sa=add_comment', {
 			method: 'POST',
 			body: new FormData(target)
 		})
@@ -79,7 +79,7 @@ class Comment {
 				allComments.insertAdjacentHTML('beforeend', comment)
 				allComments.style.transition = 'height 3s'
 			} else {
-				refs.page_comments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>')
+				refs.page_comments.insertAdjacentHTML('afterBegin', '<ul class="comment_list row"></ul>')
 				refs.page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
 				refs.page_comments.querySelector('ul.comment_list').style.transition = 'height 3s'
 			}
@@ -94,6 +94,10 @@ class Comment {
 
 		refs.comment.style.display = 'none'
 		refs.comment_form.parent_id.value = 0
+
+		if (refs.comment_form.start.value < this.pageStart) {
+			this.pageStart = refs.comment_form.start.value
+		}
 
 		if (! window.location.search) {
 			if (window.location.pathname.match(/start./i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0, 10) === parseInt(refs.comment_form.start.value, 10)) {
