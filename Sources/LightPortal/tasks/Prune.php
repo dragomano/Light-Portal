@@ -1,9 +1,9 @@
 <?php
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Tasks;
 
 /**
- * Task.php
+ * Prune.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,7 +14,7 @@ namespace Bugo\LightPortal;
  * @version 1.9
  */
 
-class Task extends \SMF_BackgroundTask
+class Prune extends \SMF_BackgroundTask
 {
 	/**
 	 * @return bool
@@ -34,7 +34,7 @@ class Task extends \SMF_BackgroundTask
 		$smcFunc['db_insert']('insert',
 			'{db_prefix}background_tasks',
 			array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string', 'claimed_time' => 'int'),
-			array('$sourcedir/LightPortal/Task.php', '\Bugo\LightPortal\Task', '', $next_time),
+			array('$sourcedir/LightPortal/tasks/Prune.php', '\Bugo\LightPortal\Tasks\Prune', '', $next_time),
 			array('id_task')
 		);
 

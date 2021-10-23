@@ -62,6 +62,7 @@ class Integration
 		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
 		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
 		$classMap['Bugo\\LightPortal\\Lists\\']  = 'LightPortal/lists/';
+		$classMap['Bugo\\LightPortal\\Tasks\\']  = 'LightPortal/tasks/';
 		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
 	}
 

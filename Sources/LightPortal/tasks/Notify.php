@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Tasks;
 
 /**
  * Notify.php

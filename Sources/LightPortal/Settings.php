@@ -647,7 +647,7 @@ class Settings
 				$smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
-					array('$sourcedir/LightPortal/Task.php', '\Bugo\LightPortal\Task', ''),
+					array('$sourcedir/LightPortal/tasks/Prune.php', '\Bugo\LightPortal\Tasks\Prune', ''),
 					array('id_task')
 				);
 			}
