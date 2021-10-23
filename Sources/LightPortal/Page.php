@@ -417,7 +417,7 @@ class Page
 	{
 		global $modSettings, $context;
 
-		$start = Helpers::request('start');
+		$start = Helpers::request('start', 0);
 		$limit = $modSettings['lp_num_items_per_page'] ?? 12;
 
 		$total_items = $entity->getTotalCountPages();
@@ -675,7 +675,7 @@ class Page
 		if (empty($context['lp_page']['id']) || $user_info['possibly_robot'])
 			return;
 
-		if (Helpers::session()->isEmpty('light_portal_last_page_viewed') || Helpers::session('light_portal_last_page_viewed') != $context['lp_page']['id']) {
+		if (Helpers::session()->isEmpty('light_portal_last_page_viewed') || Helpers::session()->get('light_portal_last_page_viewed') != $context['lp_page']['id']) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1

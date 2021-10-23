@@ -171,7 +171,7 @@ class Integration
 	{
 		global $modSettings;
 
-		if (Helpers::request()->filled(LP_PAGE_PARAM))
+		if (Helpers::request()->notEmpty(LP_PAGE_PARAM))
 			return call_user_func(array(new Page, 'show'));
 
 		if (empty($modSettings['lp_frontpage_mode']) || (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']))) {
@@ -201,10 +201,11 @@ class Integration
 		if (Helpers::request()->isEmpty('action')) {
 			$current_action = LP_ACTION;
 
-			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] !== Helpers::server('REQUEST_URL'))
+			if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url']) && $modSettings['lp_standalone_url'] !== Helpers::request()->url()) {
 				$current_action = 'forum';
+			}
 
-			if (Helpers::request()->filled(LP_PAGE_PARAM)) {
+			if (Helpers::request()->notEmpty(LP_PAGE_PARAM)) {
 				$current_action = LP_ACTION;
 			}
 		} else {

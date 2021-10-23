@@ -91,10 +91,10 @@ class MainMenu extends Plugin
 		if (empty($context['canonical_url']) || empty($context['lp_main_menu_addon_items']))
 			return;
 
-		if (Helpers::server('REQUEST_URL') === $context['canonical_url'] && in_array($context['canonical_url'], array_column($context['lp_main_menu_addon_items'], 'url'))) {
+		if (Helpers::request()->url() === $context['canonical_url'] && in_array($context['canonical_url'], array_column($context['lp_main_menu_addon_items'], 'url'))) {
 			$current_action = 'portal_action_' . $current_action;
 
-			if (Helpers::request()->isEmpty('action') && Helpers::request()->filled(LP_PAGE_PARAM)) {
+			if (Helpers::request()->isEmpty('action') && Helpers::request()->notEmpty(LP_PAGE_PARAM)) {
 				$current_action = 'portal_page_' . Helpers::request(LP_PAGE_PARAM);
 			}
 		}

@@ -126,7 +126,7 @@ class Search extends Plugin
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->filled('search') === false)
+		if (Helpers::request()->notEmpty('search') === false)
 			return [];
 
 		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars'](Helpers::request('search')));

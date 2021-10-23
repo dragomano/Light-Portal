@@ -56,7 +56,7 @@ class Comment
 		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
 		$context['lp_allowed_bbc'] = array_diff($context['lp_allowed_bbc'], array_intersect(explode(',', $modSettings['disabledBBC']), $context['lp_allowed_bbc']));
 
-		if (Helpers::request()->filled('sa')) {
+		if (Helpers::request()->notEmpty('sa')) {
 			switch (Helpers::request('sa')) {
 				case 'new_comment':
 					$this->add();

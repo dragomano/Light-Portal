@@ -821,7 +821,7 @@ class ManageBlocks
 			$this->updateData($item);
 		}
 
-		if (Helpers::post()->filled('clone'))
+		if (Helpers::post()->notEmpty('clone'))
 			return $item;
 
 		Helpers::cache()->flush();

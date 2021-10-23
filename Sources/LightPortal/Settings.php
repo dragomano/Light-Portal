@@ -306,14 +306,14 @@ class Settings
 			if (Helpers::post()->isEmpty('lp_frontpage_mode'))
 				Helpers::post()->put('lp_standalone_url', 0);
 
-			if (Helpers::post()->filled('lp_image_placeholder'))
+			if (Helpers::post()->notEmpty('lp_image_placeholder'))
 				Helpers::post()->put('lp_image_placeholder', Helpers::validate(Helpers::post('lp_image_placeholder'), 'url'));
 
-			if (Helpers::post()->filled('lp_standalone_url'))
+			if (Helpers::post()->notEmpty('lp_standalone_url'))
 				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
 			$frontpage_categories = [];
-			if (Helpers::post()->filled('lp_frontpage_categories')) {
+			if (Helpers::post()->notEmpty('lp_frontpage_categories')) {
 				foreach (Helpers::post('lp_frontpage_categories') as $id => $dummy)
 					if (isset($context['lp_all_categories'][$id]))
 						$frontpage_categories[] = $id;
@@ -420,7 +420,7 @@ class Settings
 		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			if (Helpers::post()->filled('lp_fa_custom'))
+			if (Helpers::post()->notEmpty('lp_fa_custom'))
 				Helpers::post()->put('lp_fa_custom', Helpers::validate(Helpers::post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags

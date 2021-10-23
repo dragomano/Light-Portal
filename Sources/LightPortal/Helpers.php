@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
+use Bugo\LightPortal\Utils\{Cache, Post, Request, Session};
 
 /**
  * Helpers.php
@@ -45,7 +45,7 @@ class Helpers
 	 */
 	public static function post($key = null, $default = null)
 	{
-		return $key ? (new Post)($key, $default) : new Post;
+		return $key ? ((new Post)->get($key) ?? $default) : new Post;
 	}
 
 	/**
@@ -59,21 +59,7 @@ class Helpers
 	 */
 	public static function request($key = null, $default = null)
 	{
-		return $key ? (new Request)($key, $default) : new Request;
-	}
-
-	/**
-	 * Get $_SERVER object
-	 *
-	 * Получаем объект $_SERVER
-	 *
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
-	 */
-	public static function server($key = null, $default = null)
-	{
-		return $key ? (new Server)($key, $default) : new Server;
+		return $key ? ((new Request)->get($key) ?? $default) : new Request;
 	}
 
 	/**
@@ -81,13 +67,11 @@ class Helpers
 	 *
 	 * Получаем объект $_SESSION
 	 *
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
+	 * @return Session
 	 */
-	public static function session($key = null, $default = null)
+	public static function session()
 	{
-		return $key ? (new Session)($key, $default) : new Session;
+		return new Session;
 	}
 
 	/**
