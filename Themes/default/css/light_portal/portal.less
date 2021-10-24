@@ -1417,6 +1417,16 @@ section {
 	}
 }
 
+.addon_list {
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-column-gap: 10px;
+
+	@media screen and (max-width: 468px) {
+		grid-template-columns: auto;
+	}
+}
+
 .features {
 	.floatleft {
 		width: 80%;

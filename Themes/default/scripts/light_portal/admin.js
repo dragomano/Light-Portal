@@ -255,6 +255,24 @@ class Plugin extends PortalEntity {
 				opacity -= opacity * 0.1
 			}, 400)
 	}
+
+	toggleToListView(el) {
+		document.getElementById('addon_list').classList.toggle('addon_list')
+		localStorage.setItem('lpAddonListView', 'list')
+		el.style.opacity = 1
+		el.nextElementSibling.style.opacity = .5
+	}
+
+	toggleToCardView(el) {
+		document.getElementById('addon_list').classList.toggle('addon_list')
+		localStorage.setItem('lpAddonListView', 'card')
+		el.style.opacity = 1
+		el.previousElementSibling.style.opacity = .5
+	}
+
+	isCardView() {
+		return localStorage.getItem('lpAddonListView') === 'card'
+	}
 }
 
 class Category extends PortalEntity {

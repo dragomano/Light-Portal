@@ -1114,6 +1114,16 @@ section #display_head span {
 .lp_additional_blocks th.actions {
   width: 8%;
 }
+.addon_list {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 10px;
+}
+@media screen and (max-width: 468px) {
+  .addon_list {
+    grid-template-columns: auto;
+  }
+}
 .features .floatleft {
   width: 80%;
 }
