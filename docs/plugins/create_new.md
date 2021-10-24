@@ -11,7 +11,7 @@ Currently, the following types of addons are available:
 * 'block' — addons that add a new type of blocks for the portal
 * 'editor' — addons that add a third-party editor for different types of content
 * 'comment' — addons that add a third-party comment widget instead of the built-in
-* 'parser' — addons that implement the parser for the content of pages or blocks
+* 'parser' — addons that implement the parser for the content of pages and blocks
 * 'article' — addons for processing the content of article cards on the main page
 * 'frontpage' — addons for changing the main page of the portal
 * 'impex' — addons for importing and exporting various portal elements
@@ -19,25 +19,25 @@ Currently, the following types of addons are available:
 * 'block_options' and 'page_options' — addons that add additional parameters for the corresponding entity (block or page)
 
 ## Creating an addon directory
-Create a separate folder for your addon files, inside `/Sources/LightPortal/addons`. For example, if your addon is called `MyAddon`, the folder structure should look like this:
+Create a separate folder for your addon files, inside `/Sources/LightPortal/addons`. For example, if your addon is called `HelloWorld`, the folder structure should look like this:
 
 ```php
     ...(addons)
-        MyAddon\
+        HelloWorld\
             langs\
                  english.php
                  index.php
             index.php
-            MyAddon.php
+            HelloWorld.php
 ```
 
-File `index.php` can be copied from folders of other addons. The file `MyAddon.php` contains addon logic:
+File `index.php` can be copied from folders of other addons. The file `HelloWorld.php` contains addon logic:
 
 ```php
 <?php
 
 /**
- * MyAddon
+ * HelloWorld
  *
  * @package Light Portal (the portal name, do not change)
  * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your addon, if it is not included with the portal)
@@ -48,14 +48,16 @@ File `index.php` can be copied from folders of other addons. The file `MyAddon.p
  * @version 1.9 (version of the portal where your addon was developed and tested)
  */
 
-namespace Bugo\LightPortal\Addons\MyAddon;
+namespace Bugo\LightPortal\Addons\HelloWorld;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
 
-class MyAddon extends Plugin
+class HelloWorld extends Plugin
 {
     // Used properties and methods
+
+    // Calling of language variables: $txt['lp_hello_world']['variable_name']
 }
 
 ```

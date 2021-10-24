@@ -60,6 +60,11 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ### onPageRemoving
 (`$items`)
 > custom actions on removing pages
+### preparePageData
+(`&$data`, `$is_author`)
+> additional preparing the portal current page data
+### comments
+> adding custom comment script to the portal current page view
 
 ## Work with plugins
 
@@ -115,11 +120,6 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 ### frontBoardsOutput
 (`&$boards, $row`)
 > various manipulations with query results to _getData_ function
-
-## Work with comments
-
-### comments
-> adding custom comment script to the page view
 
 ## Miscellaneous
 
