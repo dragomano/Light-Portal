@@ -9,26 +9,17 @@
  */
 function template_manage_blocks()
 {
-	global $context, $txt, $scripturl;
+	global $context, $scripturl, $txt;
 
-	if (empty($context['lp_current_blocks'])) {
+	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+		$block_group_type = in_array($placement, array('header', 'top', 'left', 'right', 'bottom', 'footer')) ? 'default' : 'additional';
+
 		echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_blocks'], '</h3>
-	</div>
-	<div class="information">', $txt['lp_no_items'], '</div>';
-	} else {
-		foreach ($context['lp_current_blocks'] as $placement => $blocks) {
-			$block_group_type = 'default';
-			if (!in_array($placement, array_keys($context['lp_block_placements'])))
-				$block_group_type = 'additional';
-
-			echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '"></i>
+					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="', $txt['lp_blocks_add'], '"></i>
 				</a>
 			</span>
 			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -36,8 +27,8 @@ function template_manage_blocks()
 	</div>
 	<table class="lp_', $block_group_type, '_blocks table_grid centertext">';
 
-			if (is_array($blocks)) {
-				echo '
+		if (is_array($blocks)) {
+			echo '
 		<thead>
 			<tr class="title_bar">
 				<th scope="col" class="icon">
@@ -65,22 +56,22 @@ function template_manage_blocks()
 		</thead>
 		<tbody data-placement="', $placement, '">';
 
-				foreach ($blocks as $id => $data)
-					show_block_entry($id, $data);
-			} else {
-				echo '
+			foreach ($blocks as $id => $data)
+				show_block_entry($id, $data);
+		} else {
+			echo '
 		<tbody data-placement="', $placement, '">
-			<tr class="windowbg centertext">
+			<tr class="windowbg centertext" x-data>
 				<td>', $txt['lp_no_items'], '</td>
 			</tr>';
-			}
-
-			echo '
-		</tbody>
-	</table>';
 		}
 
 		echo '
+		</tbody>
+	</table>';
+	}
+
+	echo '
 	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 	<script>
 		const block = new Block(),
@@ -107,7 +98,6 @@ function template_manage_blocks()
 			});
 		});
 	</script>';
-	}
 }
 
 /**
@@ -127,7 +117,12 @@ function show_block_entry(int $id, array $data)
 		return;
 
 	echo '
-	<tr id="lp_block_', $id, '" class="windowbg">
+	<tr
+		class="windowbg"
+		data-id="', $id, '"
+		x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false}"
+		x-init="$watch(\'status\', value => block.toggleStatus($el))"
+	>
 		<td class="icon">
 			', $data['icon'], '
 		</td>
@@ -146,21 +141,12 @@ function show_block_entry(int $id, array $data)
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" data-key="', $id, '" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" title="', $txt['lp_action_move'], '"></span>
 		</td>
-		<td
-			class="status"
-			data-id="', $id, '"
-			x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . '}"
-			x-init="$watch(\'status\', value => block.toggleStatus($el))"
-		>
+		<td class="status">
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
-		<td
-			class="actions"
-			data-id="', $id, '"
-			x-data="{showContextMenu: false}"
-		>
+		<td class="actions">
 			<div class="context_menu" @click.away="showContextMenu = false">
 				<button class="button floatnone" @click.prevent="showContextMenu = true">
 					<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>

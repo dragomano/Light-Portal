@@ -84,7 +84,12 @@ class Block extends PortalEntity {
 			if (response.ok) {
 				const json = await response.json()
 
-				if (json.success) target.parentNode.insertAdjacentHTML('afterend', json.block)
+				if (json.success) {
+					const div = target.cloneNode(true)
+
+					div.dataset.id = json.id
+					target.after(div)
+				}
 
 				return
 			}
@@ -108,9 +113,9 @@ class Block extends PortalEntity {
 			placement = ''
 
 		for (let i = 0; i < items2.length; i++) {
-			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').getAttribute('data-key'), 10) : null,
-				place = items[i] && items[i].parentNode ? items[i].parentNode.getAttribute('data-placement') : null,
-				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.getAttribute('data-placement') : null
+			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').parentNode.parentNode.dataset.id, 10) : null,
+				place = items[i] && items[i].parentNode ? items[i].parentNode.dataset.placement : null,
+				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.dataset.placement : null
 
 			if (place !== place2) placement = place2
 
@@ -264,7 +269,7 @@ class Category extends PortalEntity {
 		let priority = []
 
 		for (let i = 0; i < items.length; i++) {
-			const id = items[i].querySelector('.handle') ? parseInt(items[i].querySelector('.handle').closest('tr').getAttribute('data-id'), 10) : null
+			const id = items[i].querySelector('.handle') ? parseInt(items[i].querySelector('.handle').closest('tr').dataset.id, 10) : null
 
 			if (id !== null) priority.push(id)
 		}
@@ -300,12 +305,18 @@ class Category extends PortalEntity {
 			const json = await response.json()
 
 			if (json.success) {
-				refs.category_list.insertAdjacentHTML('beforeend', json.section)
+				const newCategory = document.createElement('tr')
 
+				newCategory.class = 'windowbg'
+				newCategory.dataset.id = json.item
+				newCategory.setAttribute('x-data', '')
+				newCategory.innerHTML = json.section
+
+				refs.category_list.append(newCategory)
 				refs.cat_name.value = ''
 				refs.cat_desc.value = ''
 
-				document.getElementById('category_name' + json.item).focus()
+				document.getElementById('category_desc' + json.item).focus()
 			}
 
 			return

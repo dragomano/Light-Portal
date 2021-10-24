@@ -402,16 +402,14 @@ function show_single_category(int $id, array $cat)
 	global $txt;
 
 	echo '
-	<tr class="windowbg" x-data data-id="', $id, '">
+	<tr class="windowbg" data-id="', $id, '" x-data>
 		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
 		<td>
 			<span class="floatright">
 				<span @click="category.remove($el)" title="', $txt['remove'], '" class="error">&times;</span>
 			</span>
-			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], '</label>
+			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], ' #', $id, '</label>
 			<input
-				id="category_name', $id, '"
-				name="category_name[', $id, ']"
 				type="text"
 				value="', $cat['name'], '"
 				maxlength="255"
@@ -419,6 +417,7 @@ function show_single_category(int $id, array $cat)
 			>
 			<br>
 			<textarea
+				id="category_desc', $id, '"
 				rows="2"
 				placeholder="', $txt['lp_page_description'], '"
 				maxlength="255"

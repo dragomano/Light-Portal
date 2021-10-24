@@ -65,22 +65,30 @@ class Comment {
 				commentWrap = liElem.querySelector('.comment_wrapper')
 
 			if (commentList) {
-				commentList.insertAdjacentHTML('beforeend', comment)
+				commentList.insertAdjacentHTML('beforeEnd', comment)
 				commentList.style.transition = 'height 3s'
 			} else {
-				commentWrap.insertAdjacentHTML('beforeend', '<ul class="comment_list row"></ul>')
-				commentWrap.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
-				commentWrap.querySelector('ul.comment_list').style.transition = 'height 3s'
+				const newCommentUl = document.createElement('ul')
+
+				newCommentUl.classList.add('comment_list')
+				newCommentUl.classList.add('row')
+				newCommentUl.style.transition = 'height 3s'
+				newCommentUl.innerHTML = comment
+
+				commentWrap.append(newCommentUl)
+				//commentWrap.insertAdjacentHTML('beforeEnd', '<ul class="comment_list row"></ul>')
+				//commentWrap.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
+				//commentWrap.querySelector('ul.comment_list').style.transition = 'height 3s'
 			}
 		} else {
 			const allComments = refs.page_comments.querySelector('ul.comment_list')
 
 			if (allComments) {
-				allComments.insertAdjacentHTML('beforeend', comment)
+				allComments.insertAdjacentHTML('beforeEnd', comment)
 				allComments.style.transition = 'height 3s'
 			} else {
 				refs.page_comments.insertAdjacentHTML('afterBegin', '<ul class="comment_list row"></ul>')
-				refs.page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
+				refs.page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeEnd', comment)
 				refs.page_comments.querySelector('ul.comment_list').style.transition = 'height 3s'
 			}
 		}
