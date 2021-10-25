@@ -323,14 +323,8 @@ class Category extends PortalEntity {
 			const json = await response.json()
 
 			if (json.success) {
-				const newCategory = document.createElement('tr')
+				refs.category_list.insertAdjacentHTML('beforeend', json.section);
 
-				newCategory.class = 'windowbg'
-				newCategory.dataset.id = json.item
-				newCategory.setAttribute('x-data', '')
-				newCategory.innerHTML = json.section
-
-				refs.category_list.append(newCategory)
 				refs.cat_name.value = ''
 				refs.cat_desc.value = ''
 
