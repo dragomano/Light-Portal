@@ -59,7 +59,7 @@ class PageImport extends AbstractImport
 	{
 		global $db_temp_cache, $db_cache, $smcFunc, $context, $txt;
 
-		if (empty($_FILES['import_file']))
+		if (empty($file = Helpers::file('import_file')->get()))
 			return;
 
 		// Might take some time.
@@ -68,8 +68,6 @@ class PageImport extends AbstractImport
 		// Don't allow the cache to get too full
 		$db_temp_cache = $db_cache;
 		$db_cache = [];
-
-		$file = $_FILES['import_file'];
 
 		if ($file['type'] !== 'text/xml')
 			return;

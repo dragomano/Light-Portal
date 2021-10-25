@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, Post, Request, Session};
+use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
 
 /**
  * Helpers.php
@@ -22,9 +22,9 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the Cache class object
+	 * Work with cache
 	 *
-	 * Получаем объект класса Cache
+	 * Работаем с кэшем
 	 *
 	 * @param string|null $key
 	 * @return mixed
@@ -35,9 +35,22 @@ class Helpers
 	}
 
 	/**
-	 * Get $_POST object
+	 * Work with $_FILES array
 	 *
-	 * Получаем объект $_POST
+	 * Работаем с массивом $_FILES
+	 *
+	 * @param string|null $key
+	 * @return mixed
+	 */
+	public static function file($key = null)
+	{
+		return new File($key);
+	}
+
+	/**
+	 * Work with $_POST array
+	 *
+	 * Работаем с массивом $_POST
 	 *
 	 * @param string|null $key
 	 * @param mixed $default
@@ -49,9 +62,9 @@ class Helpers
 	}
 
 	/**
-	 * Get $_REQUEST object
+	 * Work with $_REQUEST array
 	 *
-	 * Получаем объект $_REQUEST
+	 * Работаем с массивом $_REQUEST
 	 *
 	 * @param string|null $key
 	 * @param mixed $default
@@ -63,9 +76,9 @@ class Helpers
 	}
 
 	/**
-	 * Get $_SESSION object
+	 * Work with $_SESSION array
 	 *
-	 * Получаем объект $_SESSION
+	 * Работаем с массивом $_SESSION
 	 *
 	 * @return Session
 	 */

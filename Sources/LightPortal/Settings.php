@@ -328,7 +328,8 @@ class Settings
 			Addons::run('addBasicSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=basic');
@@ -447,7 +448,8 @@ class Settings
 			Addons::run('addExtraSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');
@@ -580,7 +582,9 @@ class Settings
 			Addons::run('addPanelsSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
+
 			redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
@@ -657,7 +661,9 @@ class Settings
 			Addons::run('addMiscSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
+
 			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 

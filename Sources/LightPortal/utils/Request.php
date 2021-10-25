@@ -109,7 +109,7 @@ class Request
 	 */
 	public function notEmpty(string $key): bool
 	{
-		return ! $this->isEmpty($key);
+		return empty($this->isEmpty($key));
 	}
 
 	/**
@@ -133,6 +133,15 @@ class Request
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param string|array ...$patterns
+	 * @return bool
+	 */
+	public function isNot(...$patterns): bool
+	{
+		return empty($this->is($patterns));
 	}
 
 	/**

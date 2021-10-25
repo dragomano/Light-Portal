@@ -16,11 +16,14 @@ namespace Bugo\LightPortal\Utils;
 
 final class Session
 {
+	/**
+	 * @var array
+	 */
+	private $storage = [];
+
 	public function __construct()
 	{
-		if (! isset($_SESSION)) {
-			session_start();
-		}
+		$this->storage = &$_SESSION;
 	}
 
 	/**
@@ -29,8 +32,8 @@ final class Session
 	 */
 	public function get($key)
 	{
-		if (isset($_SESSION[$key])) {
-			return $_SESSION[$key];
+		if (isset($this->storage[$key])) {
+			return $this->storage[$key];
 		}
 	}
 
@@ -41,7 +44,7 @@ final class Session
 	 */
 	public function put($key, $value)
 	{
-		$_SESSION[$key] = $value;
+		$this->storage[$key] = $value;
 	}
 
 	/**
