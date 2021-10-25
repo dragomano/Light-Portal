@@ -120,6 +120,15 @@ class Credits
 				)
 			),
 			array(
+				'title' => '@shat/stylenames',
+				'link' => 'https://github.com/shatstack/stylenames',
+				'author' => 'Kevin Mathmann',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/shatstack/stylenames/blob/master/LICENSE'
+				)
+			),
+			array(
 				'title' => 'Sortable.js',
 				'link' => 'https://github.com/SortableJS/Sortable',
 				'author' => 'All contributors to Sortable',

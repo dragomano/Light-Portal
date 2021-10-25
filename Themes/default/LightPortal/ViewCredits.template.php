@@ -99,7 +99,7 @@ function template_portal_credits()
 		echo ' ', (isset($item['author']) ? ' | &copy; ' . $item['author'] : '');
 
 		if (!empty($item['license'])) {
-			echo ' | ', strpos($item['license']['name'], 'the ') !== false ? 'Licensed under ' : '', '<a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
+			echo ' | <a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
 		}
 
 		echo '
