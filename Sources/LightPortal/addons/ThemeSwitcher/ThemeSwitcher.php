@@ -25,6 +25,27 @@ class ThemeSwitcher extends Plugin
 	public $icon = 'fas fa-desktop';
 
 	/**
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_manage_themes', __CLASS__ . '::manageThemes#', false, __FILE__);
+	}
+
+	/**
+	 * Clean cache on install/uninistall/enabling/disabling themes
+	 *
+	 * Очищаем кэш при установке/удалении/включении/отключении тем
+	 *
+	 * @return void
+	 */
+	public function manageThemes()
+	{
+		if (Helpers::request()->only(['done', 'do']))
+			Helpers::cache()->flush();
+	}
+
+	/**
 	 * Get the list of active themes
 	 *
 	 * Получаем список активных шаблонов форума
@@ -35,10 +56,7 @@ class ThemeSwitcher extends Plugin
 	{
 		global $modSettings;
 
-		if (empty($modSettings['knownThemes']))
-			return [];
-
-		return array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
+		return empty($modSettings['knownThemes']) ? [] : array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
 	}
 
 	/**

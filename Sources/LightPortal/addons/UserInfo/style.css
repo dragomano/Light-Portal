@@ -2,9 +2,11 @@
 	list-style: none;
 	padding-left: 0;
 }
+
 .block_user_info ul .avatar {
 	margin: 1em;
 }
+
 @media (min-width: 769px) and (max-width: 1241px) {
 	.block_user_info span.floatleft,
 	.block_user_info span.floatright {

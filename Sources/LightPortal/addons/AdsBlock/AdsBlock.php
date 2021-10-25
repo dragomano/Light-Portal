@@ -255,7 +255,7 @@ class AdsBlock extends Plugin
 
 		$context['lp_block_placements']['ads'] = $txt['lp_ads_block']['ads_type'];
 
-		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
+		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') === 'lp_blocks') {
 			$this->loadTemplate();
 
 			$context['template_layers'][] = 'ads_block';
@@ -450,7 +450,7 @@ class AdsBlock extends Plugin
 
 		$ads_blocks = [];
 		$placement_set = $this->getPlacements();
-		foreach ($placement_set as $position => $dump) {
+		foreach (array_keys($placement_set) as $position) {
 			$ads_blocks[$position] = $this->getByPosition($position);
 		}
 
