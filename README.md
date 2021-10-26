@@ -2,11 +2,12 @@
 ![SMF 2.1](https://img.shields.io/badge/SMF-2.1-ed6033.svg?style=flat)
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![PHP](https://img.shields.io/badge/PHP-^7.3-blue.svg?style=flat)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC4+ / PHP 7.3+
-* **Tested on:** PHP 7.4.23 / MariaDB 10.5.10 / PostgreSQL 9.6.22
+* **Tested on:** PHP 7.4.25 / MariaDB 10.5.10 / PostgreSQL 9.6.22
 * **Hooks only:** Yes
 * **Languages:** English, Russian, Polish, Spanish, French, Turkish
 * **Demo:** [Demo Forum](http://toster12.qlihost.ru/)
@@ -59,14 +60,22 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 * Поддержка автономного режима.
 * Кэширование элементов портала.
 
-### Sponsors
+## Roadmap
+* Rating of comments
+* Migrate to AlpineJS 3
+* Migrate to PHP 7.4
+* Tests
+* Ajax pagination
+* New UI icons
+
+## Sponsors
 
 [![](sponsors/jetbrains.svg)](https://www.jetbrains.com/?from=LightPortal)
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 
-It was made for your convenient, and if you like the project, support the developer.
+It was made for your convenient, and if you like the project, support the developer. Or give a star ⭐️ to this project.
 
-### About plugins
+## About plugins
 Some custom addons may have their own licenses.
