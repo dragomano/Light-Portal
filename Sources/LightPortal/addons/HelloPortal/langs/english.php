@@ -40,7 +40,7 @@ return [
 	],
 	'blocks_tour' => [
 		'This is the control room of all the portal blocks. If you create more than 100 blocks, be sure to share a screenshot!',
-		'This is the name of the panel.',
+		'This is the name of the panel. The number of blocks placed on this panel is shown in brackets.',
 		'Each row in this table represents a corresponding block.',
 		'The block can be enabled or disabled at the touch of a button.',
 		'You can also clone (make a copy of), edit or delete a block.',

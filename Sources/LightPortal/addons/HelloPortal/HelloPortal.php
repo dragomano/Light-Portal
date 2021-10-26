@@ -52,7 +52,7 @@ class HelloPortal extends Plugin
 
 		loadLanguage('Post');
 
-		if (!empty($context[$context['admin_menu_name']]) && !empty($context[$context['admin_menu_name']]['tab_data']['title']))
+		if (!empty($context['admin_menu_name']) && !empty($context[$context['admin_menu_name']]) && !empty($context[$context['admin_menu_name']]['tab_data']['title']))
 			$context[$context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . $txt['lp_hello_portal']['tour_button'] . '</button>';
 
 		loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', array('external' => true));
