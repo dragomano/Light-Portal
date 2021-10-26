@@ -37,15 +37,16 @@ File `index.php` can be copied from folders of other addons. The file `HelloWorl
 <?php
 
 /**
- * HelloWorld
+ * HelloWorld.php (Name of the current file)
  *
- * @package Light Portal (the portal name, do not change)
+ * @package HelloWorld (Light Portal) (name of the addon and name of the portal)
  * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your addon, if it is not included with the portal)
  * @author Your nickname and email address
  * @copyright Year of creation of the addon and your nickname (again)
  * @license Link to the license under which your addon is distributed and the name of the license
  *
- * @version 1.9 (version of the portal where your addon was developed and tested)
+ * @category addon
+ * @version 26.10.21 (date when the source code of the addon was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
