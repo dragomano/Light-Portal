@@ -24,21 +24,21 @@ final class File
 	/**
 	 * @param string|null $key
 	 */
-	public function __construct(string $key = null)
+	public function __construct(?string $key)
 	{
 		$this->storage = &$_FILES;
 
 		if ($key) {
-			$this->storage = &$_FILES[$key];
+			$this->storage = &$this->storage[$key] ?? [];
 		}
 	}
 
 	/**
-	 * @return array|null
+	 * @return array
 	 */
-	public function get(): ?array
+	public function get(): array
 	{
-		return $this->storage ? (is_array($this->storage['name']) ? $this->reArrayFiles($this->storage) : $this->storage) : null;
+		return $this->storage ? (is_array($this->storage['name']) ? $this->reArrayFiles($this->storage) : $this->storage) : [];
 	}
 
 	/**
