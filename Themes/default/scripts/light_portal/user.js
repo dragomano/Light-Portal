@@ -15,27 +15,22 @@ class Comment {
 	}
 
 	reply(target, refs) {
-		const parentLiItem = refs['comment' + target.dataset.id],
-			counter = parentLiItem.dataset.counter,
-			level = parentLiItem.dataset.level,
-			start = parentLiItem.dataset.start,
-			commentator = parentLiItem.dataset.commentator
+		const parentLiItem = refs['comment' + target.dataset.id]
 
 		refs.comment_form.parent_id.value = target.dataset.id
-		refs.comment_form.counter.value = counter
-		refs.comment_form.level.value = level
-		refs.comment_form.start.value = start
-		refs.comment_form.commentator.value = commentator
+		refs.comment_form.counter.value = parentLiItem.dataset.counter
+		refs.comment_form.level.value = parentLiItem.dataset.level
+		refs.comment_form.start.value = parentLiItem.dataset.start
+		refs.comment_form.commentator.value = parentLiItem.dataset.commentator
 
 		refs.message.focus()
 	}
 
 	pasteNick(target, refs) {
 		const commentTextarea = refs.message.value,
-			position = refs.message.selectionStart,
-			nickname = target.innerText + ', '
+			position = refs.message.selectionStart
 
-			refs.message.value = commentTextarea.substring(0, position) + nickname + commentTextarea.substring(position)
+			refs.message.value = commentTextarea.substring(0, position) + target.innerText + ', ' + commentTextarea.substring(position)
 
 		if (target.parentNode.parentNode.children[3]) {
 			target.parentNode.parentNode.children[3].children[0].click()
@@ -50,39 +45,15 @@ class Comment {
 			body: new FormData(target)
 		})
 
-		if (! response.ok) {
-			console.error(response)
+		if (! response.ok) return console.error(response)
 
-			return
-		}
-
-		let data = await response.json(),
-			comment = data.comment
+		let data = await response.json();
+		let comment = data.comment;
 
 		if (data.parent) {
-			const liElem = document.querySelector('li[data-id="' + data.parent + '"]'),
-				commentList = liElem.querySelector('ul.comment_list'),
-				commentWrap = liElem.querySelector('.comment_wrapper')
-
-			if (commentList) {
-				commentList.insertAdjacentHTML('beforeend', comment)
-				commentList.style.transition = 'height 3s'
-			} else {
-				commentWrap.insertAdjacentHTML('beforeend', '<ul class="comment_list row"></ul>')
-				commentWrap.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
-				commentWrap.querySelector('ul.comment_list').style.transition = 'height 3s'
-			}
+			this.addChildNode(data, comment)
 		} else {
-			const allComments = refs.page_comments.querySelector('ul.comment_list')
-
-			if (allComments) {
-				allComments.insertAdjacentHTML('beforeend', comment)
-				allComments.style.transition = 'height 3s'
-			} else {
-				refs.page_comments.insertAdjacentHTML('afterbegin', '<ul class="comment_list row"></ul>')
-				refs.page_comments.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
-				refs.page_comments.querySelector('ul.comment_list').style.transition = 'height 3s'
-			}
+			this.addParentNode(refs, comment)
 		}
 
 		refs.message.style.height = '30px'
@@ -99,31 +70,63 @@ class Comment {
 			this.pageStart = refs.comment_form.start.value
 		}
 
-		if (! window.location.search) {
-			if (window.location.pathname.match(/start./i) && parseInt(window.location.pathname.split('start.')[1].match(/\d+/) ?? 0, 10) === parseInt(refs.comment_form.start.value, 10)) {
-				window.location.hash = '#comment' + data.item
-			} else {
-				window.location = window.origin + window.location.pathname.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item
-			}
-		} else {
-			let hasStartParam = window.location.search.match(/start./i)
+		this.updateLocationHash(refs, data)
 
-			if (! hasStartParam) {
-				if (! refs.comment_form.start.value) {
-					window.location.hash = '#comment' + data.item
-				} else {
-					window.location.hash = ''
-					window.location = window.location.origin + window.location.pathname + window.location.search + ';start=' + this.pageStart + '#comment' + data.item
-				}
-			} else if (hasStartParam && parseInt(window.location.search.split('start=')[1].match(/\d+/) ?? 0, 10) === parseInt(refs.comment_form.start.value, 10)) {
+		refs.comment_form.start.value = this.pageStart
+	}
+
+	addChildNode(data, comment) {
+		const liElem = document.querySelector('li[data-id="' + data.parent + '"]'),
+			commentList = liElem.querySelector('ul.comment_list')
+
+		if (commentList) return this.addNode(commentList, comment)
+
+		this.addNewList(liElem.querySelector('.comment_wrapper'), comment)
+	}
+
+	addParentNode(refs, comment) {
+		const allComments = refs.page_comments.querySelector('ul.comment_list')
+
+		if (allComments) return this.addNode(allComments, comment)
+
+		this.addNewList(refs.page_comments, comment, 'afterbegin')
+	}
+
+	addNode(commentList, comment) {
+		commentList.insertAdjacentHTML('beforeend', comment)
+		commentList.style.transition = 'height 3s'
+	}
+
+	addNewList(el, comment, position = 'beforeend') {
+		el.insertAdjacentHTML(position, '<ul class="comment_list row"></ul>')
+		el.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
+		el.querySelector('ul.comment_list').style.transition = 'height 3s'
+	}
+
+	updateLocationHash(refs, data) {
+		if (! window.location.search) {
+			return window.location.pathname.match(/start./i) && this.isLocationStartEqualFormStart(window.location.pathname.split('start.'), refs) ? window.location.hash = '#comment' + data.item : window.location = window.origin + window.location.pathname.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item;
+		}
+
+		let hasStartParam = window.location.search.match(/start./i)
+
+		if (! hasStartParam) {
+			if (! refs.comment_form.start.value) {
 				window.location.hash = '#comment' + data.item
 			} else {
 				window.location.hash = ''
-				window.location = window.location.origin + window.location.pathname + window.location.search.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item
+				window.location = window.location.origin + window.location.pathname + window.location.search + ';start=' + this.pageStart + '#comment' + data.item
 			}
+		} else if (hasStartParam && this.isLocationStartEqualFormStart(window.location.search.split('start='), refs)) {
+			window.location.hash = '#comment' + data.item
+		} else {
+			window.location.hash = ''
+			window.location = window.location.origin + window.location.pathname + window.location.search.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item
 		}
+	}
 
-		refs.comment_form.start.value = this.pageStart
+	isLocationStartEqualFormStart(locationStart, refs) {
+		return parseInt(locationStart[1].match(/\d+/) ?? 0, 10) === parseInt(refs.comment_form.start.value, 10)
 	}
 
 	modify(target) {
@@ -139,15 +142,26 @@ class Comment {
 		cancel_button.style.display = 'inline-block'
 
 		this.currentComment = comment_content.innerHTML
-		comment_content.innerText = ! this.currentCommentText ? comment_raw_content.innerText : this.currentCommentText
+		this.focusEditor(comment_content, comment_raw_content)
+		this.selectContent(comment_content)
+	}
 
+	focusEditor(comment_content, comment_raw_content) {
+		comment_content.innerText = ! this.currentCommentText ? comment_raw_content.innerText : this.currentCommentText
 		comment_content.setAttribute('contenteditable', true)
 		comment_content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)'
 		comment_content.style.borderRadius = '4px'
 		comment_content.style.padding = '1em'
 		comment_content.focus()
+	}
 
-		if (document.queryCommandSupported('selectAll')) document.execCommand('selectAll', false, null)
+	selectContent(comment_content) {
+		let selection = window.getSelection()
+		let range = document.createRange()
+
+		range.selectNodeContents(comment_content)
+		selection.removeAllRanges()
+		selection.addRange(range)
 	}
 
 	async update(target) {
@@ -248,34 +262,19 @@ class Toolbar {
 
 		this.message = message
 
-		switch (button) {
-			case 'fa-bold':
-				return this.insertTags('[b]', '[/b]')
-
-			case 'fa-italic':
-				return this.insertTags('[i]', '[/i]')
-
-			case 'fa-list-ul':
-				return this.insertTags(`[list]\n[li]`, `[/li]\n[li][/li]\n[/list]`)
-
-			case 'fa-list-ol':
-				return this.insertTags(`[list type=decimal]\n[li]`, `[/li]\n[li][/li]\n[/list]`)
-
-			case 'fa-youtube':
-				return this.insertTags('[youtube]', '[/youtube]')
-
-			case 'fa-image':
-				return this.insertTags('[img]', '[/img]')
-
-			case 'fa-link':
-				return this.insertTags('[url]', '[/url]')
-
-			case 'fa-code':
-				return this.insertTags('[code]', '[/code]')
-
-			case 'fa-quote-right':
-				return this.insertTags('[quote]', '[/quote]')
+		const tags = {
+			'fa-bold'       : ['[b]', '[/b]'],
+			'fa-italic'     : ['[i]', '[/i]'],
+			'fa-list-ul'    : [`[list]\n[li]`, `[/li]\n[li][/li]\n[/list]`],
+			'fa-list-ol'    : [`[list type=decimal]\n[li]`, `[/li]\n[li][/li]\n[/list]`],
+			'fa-youtube'    : ['[youtube]', '[/youtube]'],
+			'fa-image'      : ['[img]', '[/img]'],
+			'fa-link'       : ['[url]', '[/url]'],
+			'fa-code'       : ['[code]', '[/code]'],
+			'fa-quote-right': ['[quote]', '[/quote]']
 		}
+
+		return this.insertTags(...tags[button])
 	}
 }
 
