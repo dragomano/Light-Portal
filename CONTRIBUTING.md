@@ -20,7 +20,7 @@ In any case, the title of each of your commits should continue such a phrase —
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use PHP 7.3+
+* Use [PHP 7.3+](https://smknstd.github.io/modern-php-cheatsheet/)
 * Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
 
 ```php
