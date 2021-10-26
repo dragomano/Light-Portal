@@ -56,7 +56,10 @@ function template_show_page()
 	if (!empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
 			<p>
-				<span class="floatleft"><i class="fas fa-user" aria-hidden="true"></i> <span itemprop="author">', $context['lp_page']['author'], '</span></span>
+				<span class="floatleft" itemprop="author" itemscope itemtype="https://schema.org/Person">
+					<i class="fas fa-user" aria-hidden="true"></i> <span itemprop="name">', $context['lp_page']['author'], '</span>
+					<meta itemprop="url" content="', $scripturl, '?action=profile;u=', $context['lp_page']['author_id'], '">
+				</span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
 					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' / ' . $context['lp_page']['updated'] . ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
 				</time>
@@ -65,14 +68,6 @@ function template_show_page()
 
 	echo '
 			<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '" content="', $context['canonical_url'], '">
-			<span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-				<span itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
-					<img alt="" itemprop="url image" src="', $context['header_logo_url_html_safe'] ?: ($settings['images_url'] . '/thumbnail.png'), '" style="display:none">
-				</span>
-				<meta itemprop="name" content="', $context['forum_name_html_safe'], '">
-				<meta itemprop="address" content="', !empty($modSettings['lp_page_itemprop_address']) ? $modSettings['lp_page_itemprop_address'] : $boardurl, '">
-				<meta itemprop="telephone" content="', !empty($modSettings['lp_page_itemprop_phone']) ? $modSettings['lp_page_itemprop_phone'] : '', '">
-			</span>
 		</div>
 		<article class="roundframe" itemprop="articleBody">
 			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';

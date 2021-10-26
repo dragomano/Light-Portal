@@ -371,21 +371,17 @@ class Settings
 		$config_vars = array(
 			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
-			array('check', 'lp_show_items_as_articles'),
+			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('callback', 'disabled_bbc_in_comments'),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
+			'',
+			array('check', 'lp_show_items_as_articles'),
 			array('select', 'lp_page_editor_type_default', $context['lp_content_types']),
 			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
-			array('title', 'lp_schema_org'),
-			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
-			array('text', 'lp_page_itemprop_address', 80),
-			array('text', 'lp_page_itemprop_phone', 80),
-
-			// FA source
 			array('title', 'lp_fa_source_title'),
 			array(
 				'select',
@@ -396,12 +392,12 @@ class Settings
 					'css_local' => $txt['lp_fa_source_css_local'],
 					'custom'    => $txt['lp_fa_custom']
 				),
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';'
 			),
 			array(
 				'text',
 				'lp_fa_custom',
-				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] != 'custom',
+				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] !== 'custom',
 				'size' => 75
 			),
 		);

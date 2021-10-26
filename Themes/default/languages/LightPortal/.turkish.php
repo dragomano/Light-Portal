@@ -79,7 +79,8 @@ $txt['lp_extra_info'] = 'Burada sayfalar ve bloklar için genel ayarları bulabi
 $txt['lp_show_page_permissions'] = 'Sayfa izinleri ile ilgili bilgileri göster';
 $txt['lp_show_page_permissions_subtext'] = 'Sadece sayfayı düzenleme iznine sahip olanlar görebilir.';
 $txt['lp_show_tags_on_page'] = 'Anahtar kelimeleri sayfanın en üstünde göster';
-$txt['lp_show_items_as_articles'] = 'Etiket/kategori sayfalarındaki öğeleri kart olarak göster';
+$txt['lp_page_og_image'] = 'Sayfa içeriğinden bir resim kullanın';
+$txt['lp_page_og_image_set'] = array('Hiçbiri', 'İlk bulunan', 'Son bulunan');
 $txt['lp_show_related_pages'] = 'İlgili sayfalar bloğunu göster';
 $txt['lp_show_comment_block'] = 'Yorum bloğunu göster';
 $txt['lp_disabled_bbc_in_comments'] = 'Yorumlarda BBC\'ye izin ver';
@@ -87,15 +88,10 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'Forumda <a class="bbc_link" href=
 $txt['lp_show_comment_block_set'] = array('Yok', 'Entegre');
 $txt['lp_time_to_change_comments'] = 'Yorum yazdıktan sonra düzenleme için maksimum süre';
 $txt['lp_num_comments_per_page'] = 'Sayfa başına üst yorum sayısı';
+$txt['lp_show_items_as_articles'] = 'Etiket/kategori sayfalarındaki öğeleri kart olarak göster';
 $txt['lp_page_editor_type_default'] = 'Varsayılan olarak sayfa düzenleyicinin türü';
 $txt['lp_permissions_default'] = 'Varsayılan olarak sayfalar ve bloklar için izinler';
 $txt['lp_hide_blocks_in_admin_section'] = 'Yönetici alanında aktif blokları gizle';
-
-$txt['lp_schema_org'] = 'Kişiler için şema mikro veri işaretlemesi';
-$txt['lp_page_og_image'] = 'Sayfa içeriğinden bir resim kullanın';
-$txt['lp_page_og_image_set'] = array('Hiçbiri', 'İlk bulunan', 'Son bulunan');
-$txt['lp_page_itemprop_address'] = 'Kuruluşunuzun adresi';
-$txt['lp_page_itemprop_phone'] = 'Kuruluşunuzun telefonu';
 
 $txt['lp_permissions'] = array('Yöneticilere göster', 'Ziyaretcilere göster', 'Üyelere göster', 'Herkese göster');
 

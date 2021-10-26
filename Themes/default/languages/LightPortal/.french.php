@@ -77,7 +77,8 @@ $txt['lp_extra_info'] = 'Vous trouverez ici les paramètres généraux des pages
 $txt['lp_show_page_permissions'] = 'Afficher des informations sur les autorisations de la page';
 $txt['lp_show_page_permissions_subtext'] = 'Seuls ceux qui ont l\'autorisation de modifier la page peuvent la voir.';
 $txt['lp_show_tags_on_page'] = 'Afficher les mots-clés en haut de la page';
-$txt['lp_show_items_as_articles'] = 'Afficher les éléments sur les pages de balises / catégories sous forme de cartes';
+$txt['lp_page_og_image'] = 'Utiliser une image du contenu de la page';
+$txt['lp_page_og_image_set'] = array('Aucun', 'Premier trouvé', 'Dernier trouvé');
 $txt['lp_show_related_pages'] = 'Afficher le bloc de pages associées';
 $txt['lp_show_comment_block'] = 'Afficher le bloc de commentaires';
 $txt['lp_disabled_bbc_in_comments'] = 'Autorisé BBC dans les commentaires';
@@ -85,15 +86,10 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'Vous pouvez utiliser n\'importe q
 $txt['lp_show_comment_block_set'] = array('Rien', 'Intégré');
 $txt['lp_time_to_change_comments'] = 'Temps maximum après le commentaire pour autoriser la modification';
 $txt['lp_num_comments_per_page'] = 'Nombre de commentaires par page';
+$txt['lp_show_items_as_articles'] = 'Afficher les éléments sur les pages de balises / catégories sous forme de cartes';
 $txt['lp_page_editor_type_default'] = 'Le type d\'éditeur de page par défaut';
 $txt['lp_permissions_default'] = 'Autorisations pour les pages et les blocs par défaut';
 $txt['lp_hide_blocks_in_admin_section'] = 'Masquer les blocs actifs dans la zone d\'administration';
-
-$txt['lp_schema_org'] = 'Balisage des microdonnées de schéma pour les contacts';
-$txt['lp_page_og_image'] = 'Utiliser une image du contenu de la page';
-$txt['lp_page_og_image_set'] = array('Aucun', 'Premier trouvé', 'Dernier trouvé');
-$txt['lp_page_itemprop_address'] = 'Adresse de votre organisation';
-$txt['lp_page_itemprop_phone'] = 'Téléphone de votre organisation';
 
 $txt['lp_permissions'] = array('Montrer aux administrateurs', 'Montrer aux invités', 'Montrer aux membres', 'Montrer à tout le monde');
 

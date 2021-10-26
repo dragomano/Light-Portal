@@ -86,7 +86,8 @@ $txt['lp_extra_info'] = 'Здесь находятся общие настрой
 $txt['lp_show_page_permissions'] = 'Отображать информацию о правах доступа к странице';
 $txt['lp_show_page_permissions_subtext'] = 'Видят только те, у кого есть право редактирования страницы.';
 $txt['lp_show_tags_on_page'] = 'Отображать ключевые слова в верхней части страницы';
-$txt['lp_show_items_as_articles'] = 'Отображать элементы на страницах тегов и рубрик в виде карточек';
+$txt['lp_page_og_image'] = 'Использовать изображение из текста статьи';
+$txt['lp_page_og_image_set'] = array('Нет', 'Первое найденное', 'Последнее найденное');
 $txt['lp_show_related_pages'] = 'Отображать похожие страницы';
 $txt['lp_show_comment_block'] = 'Отображать комментарии';
 $txt['lp_disabled_bbc_in_comments'] = 'Разрешённые форумные теги в комментариях';
@@ -94,16 +95,10 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'Можно задействова
 $txt['lp_show_comment_block_set'] = array('Нет', 'Встроенный');
 $txt['lp_time_to_change_comments'] = 'Время, в течение которого можно изменить свой комментарий';
 $txt['lp_num_comments_per_page'] = 'Количество родительских комментариев на странице';
+$txt['lp_show_items_as_articles'] = 'Отображать элементы на страницах тегов и рубрик в виде карточек';
 $txt['lp_page_editor_type_default'] = 'Тип редактора страниц по умолчанию';
 $txt['lp_permissions_default'] = 'Права доступа для страниц и блоков по умолчанию';
 $txt['lp_hide_blocks_in_admin_section'] = 'Скрывать активные блоки в админке';
-
-$txt['lp_schema_org'] = 'Микроразметка Schema для контактов';
-$txt['lp_page_og_image'] = 'Использовать изображение из текста статьи';
-$txt['lp_page_og_image_set'] = array('Нет', 'Первое найденное', 'Последнее найденное');
-$txt['lp_page_itemprop_address'] = 'Адрес вашей организации';
-$txt['lp_page_itemprop_phone'] = 'Телефон вашей организации';
-
 $txt['lp_fa_source_title'] = 'Использование иконок FontAwesome';
 $txt['lp_fa_source'] = 'Источник для библиотеки FontAwesome';
 $txt['lp_fa_source_css_cdn'] = 'Подключение CSS с jsDelivr CDN';

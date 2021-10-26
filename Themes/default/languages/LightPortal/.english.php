@@ -86,24 +86,19 @@ $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks
 $txt['lp_show_page_permissions'] = 'Show information about the page permissions';
 $txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
-$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
+$txt['lp_page_og_image'] = 'Use an image from the page content';
+$txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
 $txt['lp_show_related_pages'] = 'Show related pages';
 $txt['lp_show_comment_block'] = 'Show page comments';
-$txt['lp_disabled_bbc_in_comments'] = 'Allowed BBC in comments';
+$txt['lp_disabled_bbc_in_comments'] = 'Allowed BBCode in comments';
 $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">that allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = array('None', 'Integrated');
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
+$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The type of page editor by default';
 $txt['lp_permissions_default'] = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
-
-$txt['lp_schema_org'] = 'Schema microdata markup for contacts';
-$txt['lp_page_og_image'] = 'Use an image from the page content';
-$txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
-$txt['lp_page_itemprop_address'] = 'Address of your organization';
-$txt['lp_page_itemprop_phone'] = 'Phone of your organization';
-
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
 $txt['lp_fa_source'] = 'Source for the FontAwesome library';
 $txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
@@ -208,10 +203,10 @@ $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_content_style'] = 'CSS content style';
 
 // Internal blocks
-$txt['lp_bbc']['title'] = 'Custom BBC';
+$txt['lp_bbc']['title'] = 'Custom BBCode';
 $txt['lp_html']['title'] = 'Custom HTML';
 $txt['lp_php']['title'] = 'Custom PHP';
-$txt['lp_bbc']['description'] = 'In this block, any BBC tags of the forum can be used as content.';
+$txt['lp_bbc']['description'] = 'In this block, any BBCode tags of the forum can be used as content.';
 $txt['lp_html']['description'] = 'In this block, you can use any HTML tags as content.';
 $txt['lp_php']['description'] = 'In this block, you can use any PHP code as content.';
 
@@ -231,7 +226,7 @@ $txt['lp_pages_search'] = 'Alias or title';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type'] = 'Page type';
-$txt['lp_page_types'] = array('BBC', 'HTML', 'PHP');
+$txt['lp_page_types'] = array('BBCode', 'HTML', 'PHP');
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Keywords';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';

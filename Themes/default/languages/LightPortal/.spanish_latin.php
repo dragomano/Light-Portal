@@ -86,7 +86,8 @@ $txt['lp_extra_info'] = 'Aquí puede encontrar configuraciones generales de pág
 $txt['lp_show_page_permissions'] = 'Mostrar información sobre los permisos de la página';
 $txt['lp_show_page_permissions_subtext'] = 'Solo aquellos que tienen permiso para editar la página pueden verla.';
 $txt['lp_show_tags_on_page'] = 'Mostrar palabras clave en la parte superior de la página';
-$txt['lp_show_items_as_articles'] = 'Mostrar elementos en páginas de etiquetas/categorías como tarjetas';
+$txt['lp_page_og_image'] = 'Usa una imagen del contenido de la página';
+$txt['lp_page_og_image_set'] = array('ninguno', 'Primero encontrado', 'Último encontrado');
 $txt['lp_show_related_pages'] = 'Mostrar bloque de páginas relacionadas';
 $txt['lp_show_comment_block'] = 'Mostrar bloque de comentarios';
 $txt['lp_disabled_bbc_in_comments'] = 'BBC permitidos en los comentarios';
@@ -94,15 +95,10 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'Puede utilizar cualquier etiqueta
 $txt['lp_show_comment_block_set'] = array('Ninguno', 'Integrado');
 $txt['lp_time_to_change_comments'] = 'Tiempo máximo después de comentar para permitir la edición';
 $txt['lp_num_comments_per_page'] = 'Número de comentarios de los foros por página';
+$txt['lp_show_items_as_articles'] = 'Mostrar elementos en páginas de etiquetas/categorías como tarjetas';
 $txt['lp_page_editor_type_default'] = 'El tipo de editor de página por defecto';
 $txt['lp_permissions_default'] = 'Permisos para páginas y bloques por defecto';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ocultar bloques activos en el área de administración';
-
-$txt['lp_schema_org'] = 'Marcado de microdatos de esquema para contactos';
-$txt['lp_page_og_image'] = 'Usa una imagen del contenido de la página';
-$txt['lp_page_og_image_set'] = array('ninguno', 'Primero encontrado', 'Último encontrado');
-$txt['lp_page_itemprop_address'] = 'Dirección de su organización';
-$txt['lp_page_itemprop_phone'] = 'Teléfono de su organización';
 
 $txt['lp_permissions'] = array('Mostrar a los administradores', 'Mostrar a los invitados', 'Mostrar a los usuarios', 'Mostrar a todos');
 

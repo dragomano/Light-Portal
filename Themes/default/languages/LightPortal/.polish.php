@@ -79,7 +79,8 @@ $txt['lp_extra_info'] = 'Tutaj znajdują się ogólne ustawienia stron i bloków
 $txt['lp_show_page_permissions'] = 'Show information about the page permissions';
 $txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Wyświetlaj słowa kluczowe na górze strony';
-$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
+$txt['lp_page_og_image'] = 'Użyj obrazu z treści';
+$txt['lp_page_og_image_set'] = array('Brak', 'Pierwszy', 'Ostatni');
 $txt['lp_show_related_pages'] = 'Show related pages block';
 $txt['lp_show_comment_block'] = 'Wyświetlaj blok komentarzy';
 $txt['lp_disabled_bbc_in_comments'] = 'Dozwolone tagi BBC';
@@ -87,15 +88,10 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bb
 $txt['lp_show_comment_block_set'] = array('Brak', 'Zintegrowany');
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Ilość komentarzy na stronę';
+$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'Rodzaj domyślnego edytora ';
 $txt['lp_permissions_default'] = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Ukryj aktywne bloki w centrum administracji';
-
-$txt['lp_schema_org'] = 'Schema microdata markup for contacts';
-$txt['lp_page_og_image'] = 'Użyj obrazu z treści';
-$txt['lp_page_og_image_set'] = array('Brak', 'Pierwszy', 'Ostatni');
-$txt['lp_page_itemprop_address'] = 'Adres Twojej organizacji';
-$txt['lp_page_itemprop_phone'] = 'Numer telefonu';
 
 $txt['lp_permissions'] = array('Pokaż administratorom', 'Pokaż gościom', 'Pokaż użytkownikom', 'Pokaż wszystkim');
 
