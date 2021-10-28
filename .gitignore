@@ -2,3 +2,9 @@
 **/.vscode/
 **/vendor/
 **/addons/**/*.less
+**/addons/**/russian.php
+**/addons/**/polish.php
+**/addons/**/spanish*.php
+**/addons/**/turkish.php
+**/addons/**/french.php
+**/addons/**/ukrainian.php
