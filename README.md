@@ -3,6 +3,7 @@
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![PHP](https://img.shields.io/badge/PHP-^7.3-blue.svg?style=flat)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
+[![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
@@ -68,9 +69,12 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 * Ajax pagination
 * New UI icons
 
-## Sponsors
+## Supported by
 
-[![](sponsors/jetbrains.svg)](https://www.jetbrains.com/?from=LightPortal)
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo." width="250">](https://www.jetbrains.com/?from=LightPortal)
+[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://ru.crowdin.com/project/light-portal)
+
+<span style="font-size: x-small">Copyright © 2021 JetBrains s.r.o. JetBrains PHPStorm and the PHPStorm logo are registered trademarks of JetBrains s.r.o.</span>
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
