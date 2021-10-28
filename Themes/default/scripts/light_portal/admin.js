@@ -106,16 +106,16 @@ class Block extends PortalEntity {
 	}
 
 	async sort(e) {
-		const items = e.from.children,
-			items2 = e.to.children
+		const items = e.from.children
+		const items2 = e.to.children
 
-		let priority = [],
-			placement = ''
+		let priority = []
+		let placement = ''
 
 		for (let i = 0; i < items2.length; i++) {
-			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').parentNode.parentNode.dataset.id, 10) : null,
-				place = items[i] && items[i].parentNode ? items[i].parentNode.dataset.placement : null,
-				place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.dataset.placement : null
+			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').parentNode.parentNode.dataset.id, 10) : null
+			const place = items[i] && items[i].parentNode ? items[i].parentNode.dataset.placement : null
+			const place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.dataset.placement : null
 
 			if (place !== place2) placement = place2
 
@@ -134,8 +134,8 @@ class Block extends PortalEntity {
 		})
 
 		if (response.ok) {
-			const nextElem = e.item.nextElementSibling,
-				prevElem = e.item.previousElementSibling
+			const nextElem = e.item.nextElementSibling
+			const prevElem = e.item.previousElementSibling
 
 			if (nextElem && nextElem.className === 'windowbg centertext') {
 				nextElem.remove()
@@ -244,16 +244,16 @@ class Plugin extends PortalEntity {
 	}
 
 	fadeOut(el) {
-		let opacity = 1,
-			timer = setInterval(function () {
-				if (opacity <= 0.1) {
-					clearInterval(timer)
-					el.style.display = 'none'
-				}
+		let opacity = 1
+		let	timer = setInterval(function () {
+			if (opacity <= 0.1) {
+				clearInterval(timer)
+				el.style.display = 'none'
+			}
 
-				el.style.opacity = opacity
-				opacity -= opacity * 0.1
-			}, 400)
+			el.style.opacity = opacity
+			opacity -= opacity * 0.1
+		}, 400)
 	}
 
 	toggleToListView(el) {

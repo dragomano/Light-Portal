@@ -990,6 +990,8 @@ section #display_head span {
 .comment_list li {
   clear: both;
   width: 100%;
+  opacity: 1;
+  transition: opacity 1s;
 }
 .comment_list li .comment_avatar {
   position: absolute;

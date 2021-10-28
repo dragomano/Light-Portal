@@ -100,8 +100,10 @@ class Comment
 		$context['page_index'] = constructPageIndex($pageIndexUrl, Helpers::request()->get('start'), $totalParentComments, $limit);
 		$start = Helpers::request('start');
 
-		$context['page_info']['num_pages'] = floor($totalParentComments / $limit) + 1;
-		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
+		$context['page_info'] = [
+			'num_pages' => $num_pages = floor($totalParentComments / $limit) + 1,
+			'start'     => $num_pages * $limit - $limit
+		];
 
 		if ($context['current_start'] > $totalParentComments)
 			send_http_status(404);
@@ -110,7 +112,13 @@ class Comment
 
 		if ($context['user']['is_logged']) {
 			addInlineJavaScript('
-		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');
+		const comment = new Comment({
+			pageUrl: "' . $context['lp_current_page_url'] . '",
+			start: ' . $start . ',
+			lastStart: ' . $context['page_info']['start'] . ',
+			totalParentComments: ' . count($context['lp_page']['comments']) . ',
+			commentsPerPage: ' . $limit . '
+		});
 		const toolbar = new Toolbar();');
 		}
 	}

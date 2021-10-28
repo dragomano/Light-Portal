@@ -114,7 +114,7 @@ class Subs
 		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 
-		foreach ($data as $action => $dump) {
+		foreach (array_keys($data) as $action) {
 			if (array_key_exists($action, $disabled_actions))
 				unset($data[$action]);
 		}

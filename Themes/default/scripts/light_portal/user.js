@@ -1,7 +1,10 @@
 class Comment {
-	constructor(url, start = 0) {
-		this.pageUrl = url
-		this.pageStart = start
+	constructor(data) {
+		this.pageUrl = data.pageUrl
+		this.start = data.start
+		this.lastStart = data.lastStart
+		this.totalParentComments = data.totalParentComments
+		this.commentsPerPage = data.commentsPerPage
 		this.currentComment = null
 		this.currentCommentText = null
 	}
@@ -20,15 +23,15 @@ class Comment {
 		refs.comment_form.parent_id.value = target.dataset.id
 		refs.comment_form.counter.value = parentLiItem.dataset.counter
 		refs.comment_form.level.value = parentLiItem.dataset.level
-		refs.comment_form.start.value = parentLiItem.dataset.start
+		refs.comment_form.start.value = parentLiItem.dataset.start;
 		refs.comment_form.commentator.value = parentLiItem.dataset.commentator
 
 		refs.message.focus()
 	}
 
 	pasteNick(target, refs) {
-		const commentTextarea = refs.message.value,
-			position = refs.message.selectionStart
+		const commentTextarea = refs.message.value
+		const position = refs.message.selectionStart
 
 			refs.message.value = commentTextarea.substring(0, position) + target.innerText + ', ' + commentTextarea.substring(position)
 
@@ -51,32 +54,30 @@ class Comment {
 		let comment = data.comment;
 
 		if (data.parent) {
-			this.addChildNode(data, comment)
+			this.addChildNode(data.parent, comment)
 		} else {
-			this.addParentNode(refs, comment)
+			this.addParentNode(refs.page_comments, comment)
 		}
 
 		refs.message.style.height = '30px'
 		refs.comment_form.reset()
 
-		if (refs.comment_form.querySelector('.toolbar')) {
-			refs.comment_form.querySelector('.toolbar').style.display = 'none'
+		let toolbar = refs.comment_form.querySelector('.toolbar')
+
+		if (toolbar) {
+			toolbar.style.display = 'none'
 		}
 
 		refs.comment.style.display = 'none'
 		refs.comment_form.parent_id.value = 0
 
-		if (refs.comment_form.start.value < this.pageStart) {
-			this.pageStart = refs.comment_form.start.value
-		}
+		this.goToComment(data)
 
-		this.updateLocationHash(refs, data)
-
-		refs.comment_form.start.value = this.pageStart
+		refs.comment_form.start.value = this.lastStart
 	}
 
-	addChildNode(data, comment) {
-		const liElem = document.querySelector('li[data-id="' + data.parent + '"]'),
+	addChildNode(parentId, comment) {
+		const liElem = document.querySelector('li[data-id="' + parentId + '"]'),
 			commentList = liElem.querySelector('ul.comment_list')
 
 		if (commentList) return this.addNode(commentList, comment)
@@ -84,17 +85,17 @@ class Comment {
 		this.addNewList(liElem.querySelector('.comment_wrapper'), comment)
 	}
 
-	addParentNode(refs, comment) {
-		const allComments = refs.page_comments.querySelector('ul.comment_list')
+	addParentNode(el, comment) {
+		const commentList = el.querySelector('ul.comment_list')
 
-		if (allComments) return this.addNode(allComments, comment)
+		if (commentList) return this.addNode(commentList, comment)
 
-		this.addNewList(refs.page_comments, comment, 'afterbegin')
+		this.addNewList(el, comment, 'afterbegin')
 	}
 
-	addNode(commentList, comment) {
-		commentList.insertAdjacentHTML('beforeend', comment)
-		commentList.style.transition = 'height 3s'
+	addNode(list, comment) {
+		list.insertAdjacentHTML('beforeend', comment)
+		list.style.transition = 'height 3s'
 	}
 
 	addNewList(el, comment, position = 'beforeend') {
@@ -103,39 +104,28 @@ class Comment {
 		el.querySelector('ul.comment_list').style.transition = 'height 3s'
 	}
 
-	updateLocationHash(refs, data) {
-		if (! window.location.search) {
-			return window.location.pathname.match(/start./i) && this.isLocationStartEqualFormStart(window.location.pathname.split('start.'), refs) ? window.location.hash = '#comment' + data.item : window.location = window.origin + window.location.pathname.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item;
+	goToComment(data) {
+		const firstSeparator = window.location.search ? '=' : '.'
+		const lastSeparator = window.location.search ? '' : '/'
+
+		if (data.parent === 0 && this.totalParentComments >= this.commentsPerPage) {
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.lastStart + lastSeparator + '#comment' + data.item)
 		}
 
-		let hasStartParam = window.location.search.match(/start./i)
-
-		if (! hasStartParam) {
-			if (! refs.comment_form.start.value) {
-				window.location.hash = '#comment' + data.item
-			} else {
-				window.location.hash = ''
-				window.location = window.location.origin + window.location.pathname + window.location.search + ';start=' + this.pageStart + '#comment' + data.item
-			}
-		} else if (hasStartParam && this.isLocationStartEqualFormStart(window.location.search.split('start='), refs)) {
-			window.location.hash = '#comment' + data.item
-		} else {
-			window.location.hash = ''
-			window.location = window.location.origin + window.location.pathname + window.location.search.replace(/(start.)\d+/i, '$1' + this.pageStart) + '#comment' + data.item
+		if (this.start) {
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.start + lastSeparator + '#comment' + data.item)
 		}
-	}
 
-	isLocationStartEqualFormStart(locationStart, refs) {
-		return parseInt(locationStart[1].match(/\d+/) ?? 0, 10) === parseInt(refs.comment_form.start.value, 10)
+		window.location.replace((window.location.search ? (smf_scripturl + window.location.search) : this.pageUrl) + '#comment' + data.item)
 	}
 
 	modify(target) {
-		const item = target.dataset.id,
-			comment_content = document.querySelector('#comment' + item + ' .content'),
-			comment_raw_content = document.querySelector('#comment' + item + ' .raw_content'),
-			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
-			update_button = document.querySelector('#comment' + item + ' .update_button'),
-			cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
+		const item = target.dataset.id
+		const comment_content = document.querySelector('#comment' + item + ' .content')
+		const comment_raw_content = document.querySelector('#comment' + item + ' .raw_content')
+		const modify_button = document.querySelector('#comment' + item + ' .modify_button')
+		const update_button = document.querySelector('#comment' + item + ' .update_button')
+		const cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
 
 		modify_button.style.display = 'none'
 		update_button.style.display = 'inline-block'
@@ -165,8 +155,8 @@ class Comment {
 	}
 
 	async update(target) {
-		const item = target.dataset.id,
-			message = document.querySelector('#comment' + item + ' .content')
+		const item = target.dataset.id
+		const message = document.querySelector('#comment' + item + ' .content')
 
 		if (! item) return
 
@@ -193,11 +183,11 @@ class Comment {
 	}
 
 	cancel(target, source = this.currentComment) {
-		const item = target.dataset.id,
-			comment_content = document.querySelector('#comment' + item + ' .content'),
-			modify_button = document.querySelector('#comment' + item + ' .modify_button'),
-			update_button = document.querySelector('#comment' + item + ' .update_button'),
-			cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
+		const item = target.dataset.id
+		const comment_content = document.querySelector('#comment' + item + ' .content')
+		const modify_button = document.querySelector('#comment' + item + ' .modify_button')
+		const update_button = document.querySelector('#comment' + item + ' .update_button')
+		const cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
 
 		comment_content.innerHTML = source
 		comment_content.setAttribute('contenteditable', false)
@@ -234,16 +224,23 @@ class Comment {
 				})
 			})
 
-			response.ok ? removedItem.remove() : console.error(response)
+			if (response.ok) {
+				setTimeout(() => {
+					removedItem.style.opacity = 0;
+					setTimeout(() => removedItem.remove(), 300);
+				}, 400);
+			} else {
+				console.error(response)
+			}
 		}
 	}
 }
 
 class Toolbar {
 	insertTags(open, close) {
-		let start = this.message.selectionStart,
-			end = this.message.selectionEnd,
-			text = this.message.value
+		let start = this.message.selectionStart
+		let	end = this.message.selectionEnd
+		let	text = this.message.value
 
 		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end)
 		this.message.focus()
