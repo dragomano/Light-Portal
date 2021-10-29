@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 29.10.21
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -56,7 +56,7 @@ class BootstrapIcons extends Plugin
 
 		if (!empty($icons)) {
 			foreach ($icons as $icon => $id) {
-				$all_icons[] = $icon;
+				$all_icons[$id] = $icon;
 			}
 		}
 
