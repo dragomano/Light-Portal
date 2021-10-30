@@ -5,8 +5,8 @@ class Comment {
 		this.lastStart = data.lastStart
 		this.totalParentComments = data.totalParentComments
 		this.commentsPerPage = data.commentsPerPage
-		this.currentComment = null
-		this.currentCommentText = null
+		this.currentComment = []
+		this.currentCommentText = []
 	}
 
 	focus(target, refs) {
@@ -100,15 +100,15 @@ class Comment {
 
 	addNewList(el, comment, position = 'beforeend') {
 		el.insertAdjacentHTML(position, '<ul class="comment_list row"></ul>')
-		el.querySelector('ul.comment_list').insertAdjacentHTML('beforeend', comment)
-		el.querySelector('ul.comment_list').style.transition = 'height 3s'
+
+		this.addNode(el.querySelector('ul.comment_list'), comment)
 	}
 
 	goToComment(data) {
 		const firstSeparator = window.location.search ? '=' : '.'
 		const lastSeparator = window.location.search ? '' : '/'
 
-		if (data.parent === 0 && this.totalParentComments >= this.commentsPerPage) {
+		if (data.parent === 0 && this.totalParentComments > this.commentsPerPage) {
 			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.lastStart + lastSeparator + '#comment' + data.item)
 		}
 
@@ -131,18 +131,18 @@ class Comment {
 		update_button.style.display = 'inline-block'
 		cancel_button.style.display = 'inline-block'
 
-		this.currentComment = comment_content.innerHTML
-		this.focusEditor(comment_content, comment_raw_content)
+		this.currentComment[item] = comment_content.innerHTML
+		this.focusEditor(item, comment_content, comment_raw_content)
 		this.selectContent(comment_content)
 	}
 
-	focusEditor(comment_content, comment_raw_content) {
-		comment_content.innerText = ! this.currentCommentText ? comment_raw_content.innerText : this.currentCommentText
-		comment_content.setAttribute('contenteditable', true)
-		comment_content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)'
-		comment_content.style.borderRadius = '4px'
-		comment_content.style.padding = '1em'
-		comment_content.focus()
+	focusEditor(item, content, raw_content) {
+		content.innerText = this.currentCommentText[item] ?? raw_content.innerText
+		content.setAttribute('contenteditable', true)
+		content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)'
+		content.style.borderRadius = '4px'
+		content.style.padding = '1em'
+		content.focus()
 	}
 
 	selectContent(comment_content) {
@@ -160,7 +160,7 @@ class Comment {
 
 		if (! item) return
 
-		this.currentCommentText = message.innerText
+		this.currentCommentText[item] = message.innerText
 
 		let response = await fetch(this.pageUrl + 'sa=edit_comment', {
 			method: 'POST',
@@ -182,14 +182,14 @@ class Comment {
 		}
 	}
 
-	cancel(target, source = this.currentComment) {
+	cancel(target, source = null) {
 		const item = target.dataset.id
 		const comment_content = document.querySelector('#comment' + item + ' .content')
 		const modify_button = document.querySelector('#comment' + item + ' .modify_button')
 		const update_button = document.querySelector('#comment' + item + ' .update_button')
 		const cancel_button = document.querySelector('#comment' + item + ' .cancel_button')
 
-		comment_content.innerHTML = source
+		comment_content.innerHTML = source ?? this.currentComment[item]
 		comment_content.setAttribute('contenteditable', false)
 		comment_content.style.boxShadow = 'none'
 		comment_content.style.borderRadius = 0
