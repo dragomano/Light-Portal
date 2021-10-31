@@ -134,8 +134,6 @@ class HelloPortal extends Plugin
 	 */
 	private function getStepData(): string
 	{
-		global $context;
-
 		$steps = require_once __DIR__ . DIRECTORY_SEPARATOR . 'steps.php';
 
 		if ($this->isCurrentArea('lp_settings', 'basic'))
