@@ -7,6 +7,7 @@ class Comment {
 		this.commentsPerPage = data.commentsPerPage
 		this.currentComment = []
 		this.currentCommentText = []
+		this.cacheNode = null
 	}
 
 	focus(target, refs) {
@@ -17,72 +18,101 @@ class Comment {
 		refs.comment.style.display = 'block'
 	}
 
-	reply(target, refs) {
-		const parentLiItem = refs['comment' + target.dataset.id]
-
-		refs.comment_form.parent_id.value = target.dataset.id
-		refs.comment_form.counter.value = parentLiItem.dataset.counter
-		refs.comment_form.level.value = parentLiItem.dataset.level
-		refs.comment_form.start.value = parentLiItem.dataset.start;
-		refs.comment_form.commentator.value = parentLiItem.dataset.commentator
-
-		refs.message.focus()
-	}
-
 	pasteNick(target, refs) {
-		const commentTextarea = refs.message.value
-		const position = refs.message.selectionStart
+		const textarea = refs.reply_message.value
+		const position = refs.reply_message.selectionStart
 
-			refs.message.value = commentTextarea.substring(0, position) + target.innerText + ', ' + commentTextarea.substring(position)
+		document.querySelector('.reply_button[data-id="' + target.dataset.id + '"]').click()
 
-		if (target.parentNode.parentNode.children[3]) {
-			target.parentNode.parentNode.children[3].children[0].click()
-		} else {
-			refs.page_comments.querySelector('span[data-id="' + target.dataset.parent + '"]').click()
-		}
+		refs.reply_message.value = textarea.substring(0, position) + target.innerText + ', ' + textarea.substring(position)
+		refs.reply_message.focus()
 	}
 
 	async add(target, refs) {
-		let response = await fetch(this.pageUrl + 'sa=add_comment', {
+		const response = await fetch(this.pageUrl + 'sa=add_comment', {
 			method: 'POST',
-			body: new FormData(target)
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				parent_id: 0,
+				counter: this.totalParentComments - 1,
+				level: 0,
+				start: this.lastStart,
+				commentator: 0,
+				message: refs.message.value,
+				page_id: target.dataset.page,
+				page_url: this.pageUrl
+			})
 		})
 
 		if (! response.ok) return console.error(response)
 
-		let data = await response.json();
-		let comment = data.comment;
+		const data = await response.json();
+		const comment = data.comment;
 
-		if (data.parent) {
-			this.addChildNode(data.parent, comment)
-		} else {
-			this.addParentNode(refs.page_comments, comment)
-		}
+		this.addParentNode(refs.page_comments, comment)
 
+		refs.comment.style.display = 'none'
 		refs.message.style.height = '30px'
-		refs.comment_form.reset()
+		refs.message.value = ''
 
-		let toolbar = refs.comment_form.querySelector('.toolbar')
+		const toolbar = refs.comment_form.querySelector('.toolbar')
 
 		if (toolbar) {
 			toolbar.style.display = 'none'
 		}
 
-		refs.comment.style.display = 'none'
-		refs.comment_form.parent_id.value = 0
+		this.totalParentComments++
 
 		this.goToComment(data)
-
-		refs.comment_form.start.value = this.lastStart
 	}
 
-	addChildNode(parentId, comment) {
-		const liElem = document.querySelector('li[data-id="' + parentId + '"]'),
-			commentList = liElem.querySelector('ul.comment_list')
+	async addReply(target, refs) {
+		const parent = document.getElementById('comment' + target.dataset.id)
+
+		if (this.cacheNode && this.cacheNode.isEqualNode(parent)) return
+
+		this.cacheNode = parent
+
+		const response = await fetch(this.pageUrl + 'sa=add_comment', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				parent_id: parent.dataset.id,
+				counter: parent.dataset.counter,
+				level: parent.dataset.level,
+				start: parent.dataset.start,
+				commentator: parent.dataset.commentator,
+				message: refs.reply_message.value,
+				page_id: target.dataset.page,
+				page_url: this.pageUrl
+			})
+		})
+
+		if (! response.ok) return console.error(response)
+
+		const data = await response.json();
+		const comment = data.comment;
+
+		this.addChildNode(parent, comment)
+
+		refs.reply_message.value = ''
+		target.previousElementSibling.click()
+
+		this.cacheNode = null
+
+		this.goToComment(data)
+	}
+
+	addChildNode(parent, comment) {
+		const commentList = parent.querySelector('ul.comment_list')
 
 		if (commentList) return this.addNode(commentList, comment)
 
-		this.addNewList(liElem.querySelector('.comment_wrapper'), comment)
+		this.addNewList(parent.querySelector('.comment_wrapper'), comment)
 	}
 
 	addParentNode(el, comment) {
@@ -106,10 +136,10 @@ class Comment {
 
 	goToComment(data) {
 		const firstSeparator = window.location.search ? '=' : '.'
-		const lastSeparator = window.location.search ? '' : '/'
+		const lastSeparator  = window.location.search ? '' : '/'
 
 		if (data.parent === 0 && this.totalParentComments > this.commentsPerPage) {
-			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.lastStart + lastSeparator + '#comment' + data.item)
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + data.item)
 		}
 
 		if (this.start) {
@@ -136,13 +166,13 @@ class Comment {
 		this.selectContent(comment_content)
 	}
 
-	focusEditor(item, content, raw_content) {
-		content.innerText = this.currentCommentText[item] ?? raw_content.innerText
-		content.setAttribute('contenteditable', true)
-		content.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)'
-		content.style.borderRadius = '4px'
-		content.style.padding = '1em'
-		content.focus()
+	focusEditor(item, comment, raw_content) {
+		comment.innerText = this.currentCommentText[item] ?? raw_content.innerText
+		comment.setAttribute('contenteditable', true)
+		comment.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)'
+		comment.style.borderRadius = '4px'
+		comment.style.padding = '1em'
+		comment.focus()
 	}
 
 	selectContent(comment_content) {
@@ -201,9 +231,11 @@ class Comment {
 	}
 
 	async remove(target) {
-		if (! confirm(smf_you_sure)) return false
-
 		const item = target.dataset.id
+
+		if (target.dataset.level === '1') {
+			this.totalParentComments--
+		}
 
 		if (item) {
 			const items = [item],
@@ -237,10 +269,30 @@ class Comment {
 }
 
 class Toolbar {
+	pressButton(target) {
+		if (target.tagName !== 'I') return
+
+		let button = target.classList[1]
+
+		this.message = target.parentNode.nextElementSibling
+
+		const tags = {
+			'fa-bold'       : ['[b]', '[/b]'],
+			'fa-italic'     : ['[i]', '[/i]'],
+			'fa-youtube'    : ['[youtube]', '[/youtube]'],
+			'fa-image'      : ['[img]', '[/img]'],
+			'fa-link'       : ['[url]', '[/url]'],
+			'fa-code'       : ['[code]', '[/code]'],
+			'fa-quote-right': ['[quote]', '[/quote]']
+		}
+
+		return this.insertTags(...tags[button])
+	}
+
 	insertTags(open, close) {
 		let start = this.message.selectionStart
-		let	end = this.message.selectionEnd
-		let	text = this.message.value
+		let	end   = this.message.selectionEnd
+		let	text  = this.message.value
 
 		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end)
 		this.message.focus()
@@ -250,28 +302,6 @@ class Toolbar {
 		this.message.setSelectionRange(sel, sel)
 
 		return false
-	}
-
-	pressButton(target, message) {
-		let button = target.children[0] ? target.children[0].classList[1] : target.classList[1]
-
-		if (! button) return
-
-		this.message = message
-
-		const tags = {
-			'fa-bold'       : ['[b]', '[/b]'],
-			'fa-italic'     : ['[i]', '[/i]'],
-			'fa-list-ul'    : [`[list]\n[li]`, `[/li]\n[li][/li]\n[/list]`],
-			'fa-list-ol'    : [`[list type=decimal]\n[li]`, `[/li]\n[li][/li]\n[/list]`],
-			'fa-youtube'    : ['[youtube]', '[/youtube]'],
-			'fa-image'      : ['[img]', '[/img]'],
-			'fa-link'       : ['[url]', '[/url]'],
-			'fa-code'       : ['[code]', '[/code]'],
-			'fa-quote-right': ['[quote]', '[/quote]']
-		}
-
-		return this.insertTags(...tags[button])
 	}
 }
 

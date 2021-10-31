@@ -77,16 +77,12 @@ class Page
 		Helpers::parseContent($context['lp_page']['content'], $context['lp_page']['type']);
 
 		if (empty($alias)) {
-			$context['page_title']          = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_portal'];
-			$context['canonical_url']       = $scripturl;
-			$context['lp_current_page_url'] = $context['canonical_url'] . '?';
-			$context['linktree'][] = array(
-				'name' => $txt['lp_portal']
-			);
+			$context['page_title']    = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_portal'];
+			$context['canonical_url'] = $scripturl;
+			$context['linktree'][]    = array('name' => $txt['lp_portal']);
 		} else {
-			$context['page_title']          = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_post_error_no_title'];
-			$context['canonical_url']       = $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
-			$context['lp_current_page_url'] = $context['canonical_url'] . ';';
+			$context['page_title']    = Helpers::getTranslatedTitle($context['lp_page']['title']) ?: $txt['lp_post_error_no_title'];
+			$context['canonical_url'] = $scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
 
 			if (!empty($context['lp_page']['category'])) {
 				$context['linktree'][] = array(
@@ -283,6 +279,8 @@ class Page
 
 		if ($modSettings['lp_show_comment_block'] == 'none')
 			return;
+
+		loadLanguage('Editor');
 
 		Addons::run('comments');
 

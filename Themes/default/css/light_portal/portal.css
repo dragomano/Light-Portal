@@ -269,6 +269,11 @@
   position: -webkit-sticky;
   top: 5px;
 }
+#lp_layout aside {
+  /* 		div + div {
+			margin: 1px;
+		} */
+}
 #lp_layout aside > div {
   margin: 0;
 }
@@ -276,9 +281,6 @@
 #lp_layout aside > div > h4 {
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-#lp_layout aside div + div {
-  margin: 1px;
 }
 #lp_layout aside .progress_bar {
   max-width: initial;
@@ -315,6 +317,41 @@
 }
 .comments .cat_bar {
   border-radius: 6px;
+}
+.comments .comment_reply .toolbar.descbox {
+  border-radius: 6px;
+}
+.comments .comment_reply .toolbar i {
+  line-height: inherit;
+}
+.comments .comment_reply textarea {
+  width: 100%;
+}
+.comments .comment_reply button {
+  margin-top: 10px;
+}
+.comments .comment_reply button[name="comment"] {
+  float: right;
+}
+.comments .comment_add .toolbar {
+  display: none;
+}
+.comments .comment_add .toolbar.descbox {
+  border-radius: 6px;
+}
+.comments .comment_add .toolbar i {
+  line-height: inherit;
+}
+.comments .comment_add textarea {
+  width: 100%;
+  height: 30px;
+}
+.comments .comment_add button {
+  margin-top: 10px;
+}
+.comments .comment_add button[name="comment"] {
+  float: right;
+  display: none;
 }
 section #display_head {
   margin-top: 0.1em;
@@ -1082,18 +1119,6 @@ section #display_head span {
   padding-top: 6px;
   border-top: 1px dashed #bfbfbf;
 }
-#comment_form .toolbar {
-  display: none;
-}
-#comment_form textarea {
-  width: 100%;
-  height: 30px;
-}
-#comment_form button[name="comment"] {
-  margin-top: 10px;
-  float: right;
-  display: none;
-}
 .sceditor-container {
   position: relative;
   min-height: 300px !important;
@@ -1255,8 +1280,8 @@ section #display_head span {
   .comment_wrapper {
     padding: 0 !important;
   }
-  .comment_wrapper .title .bg {
-    padding: 4px !important;
+  .comment_wrapper .entry .smalltext i {
+    display: none;
   }
   .comment_list .col-xs-12 {
     flex-basis: 95%;

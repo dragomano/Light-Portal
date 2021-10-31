@@ -421,9 +421,9 @@
 			margin: 0;
 		}
 
-		div + div {
+/* 		div + div {
 			margin: 1px;
-		}
+		} */
 
 		.progress_bar {
 			max-width: initial;
@@ -469,6 +469,58 @@
 
 	.cat_bar {
 		.bradius;
+	}
+
+	.comment_reply {
+		.toolbar {
+			&.descbox {
+				.bradius;
+			}
+
+			i {
+				line-height: inherit;
+			}
+		}
+
+		textarea {
+			width: 100%;
+		}
+
+		button {
+			margin-top: 10px;
+
+			&[name="comment"] {
+				float: right;
+			}
+		}
+	}
+
+	.comment_add {
+		.toolbar {
+			display: none;
+
+			&.descbox {
+				.bradius;
+			}
+
+			i {
+				line-height: inherit;
+			}
+		}
+
+		textarea {
+			width: 100%;
+			height: 30px;
+		}
+
+		button {
+			margin-top: 10px;
+
+			&[name="comment"] {
+				float: right;
+				display: none;
+			}
+		}
 	}
 }
 
@@ -1366,25 +1418,6 @@ section {
 	}
 }
 
-#comment_form {
-	.toolbar {
-		display: none;
-	}
-
-	textarea {
-		width: 100%;
-		height: 30px;
-	}
-
-	button {
-		&[name="comment"] {
-			margin-top: 10px;
-			float: right;
-			display: none;
-		}
-	}
-}
-
 .sceditor-container {
 	position: relative;
 	min-height: 300px !important;
@@ -1590,9 +1623,11 @@ section {
 	.comment_wrapper {
 		padding: 0 !important;
 
-		.title {
-			.bg {
-				padding: 4px !important;
+		.entry {
+			.smalltext {
+				i {
+					display: none;
+				}
 			}
 		}
 	}
