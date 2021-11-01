@@ -2,6 +2,7 @@
 	opacity: 0.5 !important;
 	filter: grayscale(100%);
 }
+
 .likely__widget:hover {
 	opacity: 1 !important;
 	filter: grayscale(0%);
