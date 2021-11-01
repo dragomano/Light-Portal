@@ -2,7 +2,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, Post, Request, Server, Session};
+use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
 
 /**
  * Helpers.php
@@ -22,9 +22,9 @@ if (!defined('SMF'))
 class Helpers
 {
 	/**
-	 * Get the Cache class object
+	 * Work with cache
 	 *
-	 * Получаем объект класса Cache
+	 * Работаем с кэшем
 	 *
 	 * @param string|null $key
 	 * @return mixed
@@ -35,9 +35,22 @@ class Helpers
 	}
 
 	/**
-	 * Get $_POST object
+	 * Work with $_FILES array
 	 *
-	 * Получаем объект $_POST
+	 * Работаем с массивом $_FILES
+	 *
+	 * @param string|null $key
+	 * @return mixed
+	 */
+	public static function file($key = null)
+	{
+		return new File($key);
+	}
+
+	/**
+	 * Work with $_POST array
+	 *
+	 * Работаем с массивом $_POST
 	 *
 	 * @param string|null $key
 	 * @param mixed $default
@@ -45,13 +58,13 @@ class Helpers
 	 */
 	public static function post($key = null, $default = null)
 	{
-		return $key ? (new Post)($key, $default) : new Post;
+		return $key ? ((new Post)->get($key) ?? $default) : new Post;
 	}
 
 	/**
-	 * Get $_REQUEST object
+	 * Work with $_REQUEST array
 	 *
-	 * Получаем объект $_REQUEST
+	 * Работаем с массивом $_REQUEST
 	 *
 	 * @param string|null $key
 	 * @param mixed $default
@@ -59,35 +72,19 @@ class Helpers
 	 */
 	public static function request($key = null, $default = null)
 	{
-		return $key ? (new Request)($key, $default) : new Request;
+		return $key ? ((new Request)->get($key) ?? $default) : new Request;
 	}
 
 	/**
-	 * Get $_SERVER object
+	 * Work with $_SESSION array
 	 *
-	 * Получаем объект $_SERVER
+	 * Работаем с массивом $_SESSION
 	 *
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
+	 * @return Session
 	 */
-	public static function server($key = null, $default = null)
+	public static function session()
 	{
-		return $key ? (new Server)($key, $default) : new Server;
-	}
-
-	/**
-	 * Get $_SESSION object
-	 *
-	 * Получаем объект $_SESSION
-	 *
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
-	 */
-	public static function session($key = null, $default = null)
-	{
-		return $key ? (new Session)($key, $default) : new Session;
+		return new Session;
 	}
 
 	/**
@@ -657,42 +654,38 @@ class Helpers
 	 */
 	public static function parseContent(string &$content, string $type = 'bbc')
 	{
-		switch ($type) {
-			case 'bbc':
-				$content = parse_bbc($content);
+		if ($type === 'bbc') {
+			$content = parse_bbc($content);
 
-				// Integrate with the Paragrapher mod
-				call_integration_hook('integrate_paragrapher_string', array(&$content));
+			// Integrate with the Paragrapher mod
+			call_integration_hook('integrate_paragrapher_string', array(&$content));
 
-				break;
+			return;
+		} elseif ($type === 'html') {
+			$content = un_htmlspecialchars($content);
 
-			case 'html':
-				$content = un_htmlspecialchars($content);
+			return;
+		} elseif ($type === 'php') {
+			$content = trim(un_htmlspecialchars($content));
+			$content = trim($content, '<?php');
+			$content = trim($content, '?>');
 
-				break;
+			ob_start();
 
-			case 'php':
-				$content = trim(un_htmlspecialchars($content));
-				$content = trim($content, '<?php');
-				$content = trim($content, '?>');
+			try {
+				$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
 
-				ob_start();
+				eval($content);
+			} catch (\ParseError $p) {
+				echo $p->getMessage();
+			}
 
-				try {
-					$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
+			$content = ob_get_clean();
 
-					eval($content);
-				} catch (\ParseError $p) {
-					echo $p->getMessage();
-				}
-
-				$content = ob_get_clean();
-
-				break;
-
-			default:
-				Addons::run('parseContent', array(&$content, $type));
+			return;
 		}
+
+		Addons::run('parseContent', array(&$content, $type));
 	}
 
 	/**

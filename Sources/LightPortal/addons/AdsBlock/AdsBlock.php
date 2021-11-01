@@ -1,15 +1,16 @@
 <?php
 
 /**
- * AdsBlock
+ * AdsBlock.php
  *
- * @package Light Portal
- * @link https://dragomano.ru/mods/light-portal
+ * @package AdsBlock (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @category addon
+ * @version 26.10.21
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -255,7 +256,7 @@ class AdsBlock extends Plugin
 
 		$context['lp_block_placements']['ads'] = $txt['lp_ads_block']['ads_type'];
 
-		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') == 'lp_blocks') {
+		if (Helpers::request()->is('admin') && Helpers::request()->has('area') && Helpers::request('area') === 'lp_blocks') {
 			$this->loadTemplate();
 
 			$context['template_layers'][] = 'ads_block';
@@ -450,7 +451,7 @@ class AdsBlock extends Plugin
 
 		$ads_blocks = [];
 		$placement_set = $this->getPlacements();
-		foreach ($placement_set as $position => $dump) {
+		foreach (array_keys($placement_set) as $position) {
 			$ads_blocks[$position] = $this->getByPosition($position);
 		}
 

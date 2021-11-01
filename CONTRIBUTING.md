@@ -13,14 +13,14 @@
 
 ## How to submit a pull request
 * Check if the develop branch exists. If it exist use it to pull your request into.
-* If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. "Fix page permissions").
-* If you want to send a new feature or a new translation, use `Add` word in the title of your PR (i.e `Add a new frontpage template`, `Add Chinese translation`).
-In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update Polish`, etc.)
+* If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. `Fix page permissions`).
+* If you want to send a new feature, use `Add` word in the title of your PR (i.e `Add a new frontpage template`).
+In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update HelloPortal addon`, etc.)
 
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use PHP 7.3+
+* Use [PHP 7.3+](https://smknstd.github.io/modern-php-cheatsheet/)
 * Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
 
 ```php
@@ -93,30 +93,30 @@ $test = isset($variable) ? $variable : 'default_value';
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
 ```js
-"use strict";
+'use strict'
 
 Array.prototype.bubbleSort = function() {
-    let swapped;
+    let swapped
 
     do {
-        swapped = false;
+        swapped = false
 
         this.forEach((item, index) => {
             if (item > this[index + 1]) {
-                let temp = item;
+                let temp = item
 
-                this[index] = this[index + 1];
-                this[index + 1] = temp;
-                swapped = true;
+                this[index] = this[index + 1]
+                this[index + 1] = temp
+                swapped = true
             }
         })
-    } while (swapped);
+    } while (swapped)
 
-    return this;
+    return this
 }
 
-const arr = [5, 3, 2, 6, 1, 4, 7];
-console.log('Source array: ', arr);
+const arr = [5, 3, 2, 6, 1, 4, 7]
+console.log('Source array: ', arr)
 // Source array:  (7) [5, 3, 2, 6, 1, 4, 7]
 
 console.log('Sorted array: ', arr.bubbleSort())

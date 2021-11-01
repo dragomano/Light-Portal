@@ -1,15 +1,16 @@
 <?php
 
 /**
- * MainMenu
+ * MainMenu.php
  *
- * @package Light Portal
- * @link https://dragomano.ru/mods/light-portal
+ * @package MainMenu (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9.4
+ * @category addon
+ * @version 26.10.21
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -66,10 +67,10 @@ class MainMenu extends Plugin
 		}
 
 		$counter = -1;
-		foreach ($buttons as $area => $dummy) {
+		foreach (array_keys($buttons) as $area) {
 			$counter++;
 
-			if ($area == 'admin')
+			if ($area === 'admin')
 				break;
 		}
 
@@ -91,13 +92,11 @@ class MainMenu extends Plugin
 		if (empty($context['canonical_url']) || empty($context['lp_main_menu_addon_items']))
 			return;
 
-		if (Helpers::server('REQUEST_URL') === $context['canonical_url'] && in_array($context['canonical_url'], array_column($context['lp_main_menu_addon_items'], 'url'))) {
-			if (Helpers::request()->isEmpty('action')) {
-				if (Helpers::request()->filled(LP_PAGE_PARAM)) {
-					$current_action = 'portal_page_' . Helpers::request(LP_PAGE_PARAM);
-				}
-			} else {
-				$current_action = 'portal_action_' . $current_action;
+		if (Helpers::request()->url() === $context['canonical_url'] && in_array($context['canonical_url'], array_column($context['lp_main_menu_addon_items'], 'url'))) {
+			$current_action = 'portal_action_' . $current_action;
+
+			if (Helpers::request()->isEmpty('action') && Helpers::request()->notEmpty(LP_PAGE_PARAM)) {
+				$current_action = 'portal_page_' . Helpers::request(LP_PAGE_PARAM);
 			}
 		}
 	}

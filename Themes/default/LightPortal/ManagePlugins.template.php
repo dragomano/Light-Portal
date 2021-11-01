@@ -33,21 +33,37 @@ function template_manage_plugins()
 			</span>
 		</h3>
 	</div>
-	<div class="information">', $txt['lp_plugins_desc'], '</div>';
+	<script src="https://cdn.jsdelivr.net/npm/@shat/stylenames@v1/lib/index.umd.js"></script>
+	<div class="information" x-data>
+		', $txt['lp_plugins_desc'], '
+		<div class="hidden-xs floatright" style="cursor: pointer">
+			<i class="fas fa-bars fa-2x" @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })"></i> <i class="fas fa-border-all fa-2x" @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })"></i>
+		</div>
+	</div>';
 
 	if (!empty($context['lp_addon_chart']))
 		echo '
 	<canvas id="addonChart"></canvas>';
 
-	// This is a magic! Пошла магия!
+	echo '
+	<div id="addon_list" x-data :class="{ \'addon_list\': plugin.isCardView() }">';
+
 	foreach ($context['all_lp_plugins'] as $id => $plugin) {
 		echo '
-	<div class="windowbg">
-		<div class="features" data-id="', $id, '" x-data>
-			<div class="floatleft">
-				<h4>', $plugin['name'], ' <strong class="new_posts', $plugin['label_class'], '">', $plugin['type'], '</strong></h4>
-				<div>
-					<p>';
+		<div class="windowbg">
+			<div class="features" data-id="', $id, '" x-data>
+				<div class="floatleft">
+					<h4>', $plugin['name'];
+
+		foreach ($plugin['types'] as $type => $label_class) {
+			echo '
+						<strong class="new_posts', $label_class, '">', $type, '</strong>';
+		}
+
+		echo '
+					</h4>
+					<div>
+						<p>';
 
 		if (!empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
@@ -62,74 +78,77 @@ function template_manage_plugins()
 		}
 
 		echo '
-					</p>';
+						</p>';
 
 		if (!empty($plugin['requires'])) {
 			echo '
-					<p class="roundframe">
-						<span class="infobox">
-							<strong>', $txt['lp_plugins_requires'], '</strong>: ';
+						<p class="roundframe">
+							<span class="infobox">
+								<strong>', $txt['lp_plugins_requires'], '</strong>: ';
 
 			echo implode(', ', $plugin['requires']);
 
 			echo '
-						</span>
-					</p>';
+							</span>
+						</p>';
 		}
 
 		if (!empty($plugin['disables'])) {
 			echo '
-					<p class="roundframe">
-						<span class="errorbox">
-							<strong>', $txt['lp_plugins_disables'], '</strong>: ';
+						<p class="roundframe">
+							<span class="errorbox">
+								<strong>', $txt['lp_plugins_disables'], '</strong>: ';
 
 			echo implode(', ', $plugin['disables']);
 
 			echo '
-						</span>
-					</p>';
+							</span>
+						</p>';
 		}
 
 		if (!empty($plugin['author'])) {
 			echo '
-					<p>', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '</p>';
+						<p>
+							', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '
+						</p>';
 		}
 
 		echo '
+					</div>
 				</div>
-			</div>
-			<div class="floatright">';
+				<div class="floatright">';
 
 		if (!empty($plugin['settings'])) {
 			echo '
-				<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+					<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
 		if (!empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
 				echo '
-					<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+						<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
 			} elseif ($plugin['special'] === $txt['lp_can_download']) {
 				echo '
-					<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
+						<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
 			}
 		} else {
 			echo '
-				<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
+					<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
 		}
 
 		echo '
-			</div>';
+				</div>';
 
 		if (!empty($plugin['settings']))
 			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
-		</div>
-	</div>';
+			</div>
+		</div>';
 	}
 
 	echo '
+	</div>
 	<script>
 		const plugin = new Plugin();
 	</script>';
@@ -150,7 +169,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 
 	echo '
 	<br class="clear">
-	<div class="roundframe" id="', $plugin_name, '_', $context['session_id'], '_settings" style="display: none" x-data="{success: false}">
+	<div class="roundframe" id="', $plugin_name, '_', $context['session_id'], '_settings" style="display: none" x-data="{ success: false }">
 		<div class="title_bar">
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>

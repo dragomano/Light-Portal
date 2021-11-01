@@ -56,9 +56,9 @@ class Comment
 		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
 		$context['lp_allowed_bbc'] = array_diff($context['lp_allowed_bbc'], array_intersect(explode(',', $modSettings['disabledBBC']), $context['lp_allowed_bbc']));
 
-		if (Helpers::request()->filled('sa')) {
+		if (Helpers::request()->notEmpty('sa')) {
 			switch (Helpers::request('sa')) {
-				case 'new_comment':
+				case 'add_comment':
 					$this->add();
 					break;
 
@@ -72,50 +72,103 @@ class Comment
 			}
 		}
 
-		loadLanguage('Editor');
-
 		$comments = Helpers::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
-		$comments = array_map(
-			function ($comment) {
-				$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
-				$comment['created_at'] = date('Y-m-d', $comment['created_at']);
+		$comments = array_map(function ($comment) {
+			$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
+			$comment['created_at'] = date('Y-m-d', $comment['created_at']);
 
-				return $comment;
-			},
-			$comments
-		);
+			return $comment;
+		}, $comments);
 
-		$totalComments      = sizeof($comments);
-		$txt['lp_comments'] = Helpers::getText($totalComments, $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helpers::getText(sizeof($comments), $txt['lp_comments_set']);
 
 		$limit = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 
 		$pageIndexUrl = $context['canonical_url'];
-		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] == 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
+		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] === 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
 			$pageIndexUrl = $scripturl . '?action=' . LP_ACTION;
 
-		$tempStart = Helpers::request('start');
+		$context['current_start'] = Helpers::request('start');
 		$context['page_index'] = constructPageIndex($pageIndexUrl, Helpers::request()->get('start'), $totalParentComments, $limit);
 		$start = Helpers::request('start');
 
-		$context['page_info']['num_pages'] = floor($totalParentComments / $limit) + 1;
-		$context['page_info']['start']     = $context['page_info']['num_pages'] * $limit - $limit;
+		$context['page_info'] = [
+			'num_pages' => $num_pages = floor($totalParentComments / $limit) + 1,
+			'start'     => $num_pages * $limit - $limit
+		];
 
-		if ($tempStart > $totalParentComments)
+		if ($context['current_start'] > $totalParentComments)
 			send_http_status(404);
 
 		$context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
 
 		if ($context['user']['is_logged']) {
 			addInlineJavaScript('
-		const comment = new Comment("' . $context['lp_current_page_url'] . '", ' . $context['page_info']['start'] . ');
+		const comment = new Comment({
+			pageUrl: "' . $context['canonical_url'] . (Helpers::request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
+			start: ' . $start . ',
+			lastStart: ' . $context['page_info']['start'] . ',
+			totalParentComments: ' . count($context['lp_page']['comments']) . ',
+			commentsPerPage: ' . $limit . '
+		});
 		const toolbar = new Toolbar();');
 		}
 	}
 
 	/**
+	 * Get all comments (or for the current page only)
+	 *
+	 * Получаем все комментарии (или только для конкретной страницы)
+	 *
+	 * @param int $page_id
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getAll(int $page_id = 0): array
+	{
+		global $smcFunc, $context, $modSettings;
+
+		Helpers::require('Subs-Post');
+
+		$request = $smcFunc['db_query']('', '
+			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
+			FROM {db_prefix}lp_comments AS com
+				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (!empty($page_id) ? '
+			WHERE com.page_id = {int:id}' : ''),
+			array(
+				'id' => $page_id
+			)
+		);
+
+		$comments = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+			censorText($row['message']);
+
+			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
+
+			$comments[$row['id']] = array(
+				'id'          => $row['id'],
+				'page_id'     => $row['page_id'],
+				'parent_id'   => $row['parent_id'],
+				'author_id'   => $row['author_id'],
+				'author_name' => $row['author_name'],
+				'avatar'      => $avatar,
+				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $context['lp_allowed_bbc']),
+				'raw_message' => un_preparsecode($row['message']),
+				'created_at'  => $row['created_at'],
+				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60
+			);
+		}
+
+		$smcFunc['db_free_result']($request);
+		$smcFunc['lp_num_queries']++;
+
+		return $comments;
+	}
+
+		/**
 	 * @return void
 	 * @throws Exception
 	 */
@@ -128,37 +181,25 @@ class Comment
 		if (empty($user_info['id']))
 			exit(json_encode($result));
 
-		$args = array(
-			'parent_id'   => FILTER_VALIDATE_INT,
-			'counter'     => FILTER_VALIDATE_INT,
-			'level'       => FILTER_VALIDATE_INT,
-			'page_id'     => FILTER_VALIDATE_INT,
-			'page_title'  => FILTER_SANITIZE_STRING,
-			'page_url'    => FILTER_SANITIZE_STRING,
-			'message'     => FILTER_DEFAULT,
-			'start'       => FILTER_VALIDATE_INT,
-			'commentator' => FILTER_VALIDATE_INT
-		);
+		$data = Helpers::request()->json();
 
-		$data = filter_input_array(INPUT_POST, $args);
-
-		if (empty($data))
+		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parent      = $data['parent_id'];
-		$counter     = $data['counter'];
-		$level       = $data['level'];
-		$page_id     = $data['page_id'];
-		$page_title  = $data['page_title'];
-		$page_url    = $data['page_url'];
-		$message     = $smcFunc['htmlspecialchars']($data['message']);
-		$start       = $data['start'];
-		$commentator = $data['commentator'];
+		$parent      = filter_var($data['parent_id'], FILTER_VALIDATE_INT);
+		$counter     = filter_var($data['counter'], FILTER_VALIDATE_INT);
+		$level       = filter_var($data['level'], FILTER_VALIDATE_INT);
+		$page_id     = filter_var($data['page_id'], FILTER_VALIDATE_INT);
+		$page_url    = filter_var($data['page_url'], FILTER_SANITIZE_STRING);
+		$message     = $smcFunc['htmlspecialchars']($data['message'], ENT_QUOTES);
+		$start       = filter_var($data['start'], FILTER_VALIDATE_INT);
+		$commentator = filter_var($data['commentator'], FILTER_VALIDATE_INT);
 
 		if (empty($page_id) || empty($message))
 			exit(json_encode($result));
 
 		Helpers::require('Subs-Post');
+
 		preparsecode($message);
 
 		$item = $smcFunc['db_insert']('',
@@ -195,18 +236,16 @@ class Comment
 
 			$smcFunc['lp_num_queries']++;
 
-			loadTemplate('LightPortal/ViewPage');
-
 			ob_start();
 
 			show_single_comment([
 				'id'          => $item,
-				'alias'       => $this->alias,
+				'start'       => $start,
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
 				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
-				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']),
+				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => Helpers::getFriendlyTime($time),
 				'raw_message' => un_preparsecode($message),
@@ -220,7 +259,7 @@ class Comment
 				'parent'      => $parent,
 				'comment'     => $comment,
 				'created'     => $time,
-				'title'       => $txt['response_prefix'] . $page_title,
+				'title'       => $txt['response_prefix'] . $context['page_title'],
 				'alias'       => $this->alias,
 				'page_url'    => $page_url,
 				'start'       => $start,
@@ -272,59 +311,11 @@ class Comment
 
 		$smcFunc['lp_num_queries']++;
 
-		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'light_portal_comments_' . $item, $context['lp_allowed_bbc']);
+		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']);
 
 		Helpers::cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
-	}
-
-	/**
-	 * Creating a background task to notify subscribers of new comments
-	 *
-	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
-	 *
-	 * @param string $type
-	 * @param string $action
-	 * @param array $options
-	 * @return void
-	 */
-	private function makeNotify(string $type, string $action, array $options = [])
-	{
-		global $smcFunc, $user_info, $context;
-
-		if (empty($options))
-			return;
-
-		$smcFunc['db_insert']('',
-			'{db_prefix}background_tasks',
-			array(
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			),
-			array(
-				'task_file'  => '$sourcedir/LightPortal/Notify.php',
-				'task_class' => Notify::class,
-				'task_data'  => $smcFunc['json_encode']([
-					'time'           => $options['created'],
-					'sender_id'	     => $user_info['id'],
-					'sender_name'    => $user_info['name'],
-					'author_id'      => $context['lp_page']['author_id'],
-					'commentator_id' => $options['commentator'],
-					'content_type'   => $type,
-					'content_id'     => $options['item'],
-					'content_action' => $action,
-					'extra'          => $smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
-					])
-				]),
-			),
-			array('id_task')
-		);
-
-		$smcFunc['lp_num_queries']++;
 	}
 
 	/**
@@ -376,54 +367,51 @@ class Comment
 	}
 
 	/**
-	 * Get all comments (or for the current page only)
+	 * Creating a background task to notify subscribers of new comments
 	 *
-	 * Получаем все комментарии (или только для конкретной страницы)
+	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
 	 *
-	 * @param int $page_id
-	 * @return array
-	 * @throws Exception
+	 * @param string $type
+	 * @param string $action
+	 * @param array $options
+	 * @return void
 	 */
-	public function getAll(int $page_id = 0): array
+	private function makeNotify(string $type, string $action, array $options = [])
 	{
-		global $smcFunc, $context, $modSettings;
+		global $smcFunc, $user_info, $context;
 
-		Helpers::require('Subs-Post');
+		if (empty($options))
+			return;
 
-		$request = $smcFunc['db_query']('', '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
-			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (!empty($page_id) ? '
-			WHERE com.page_id = {int:id}' : ''),
+		$smcFunc['db_insert']('',
+			'{db_prefix}background_tasks',
 			array(
-				'id' => $page_id
-			)
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
+			),
+			array(
+				'task_file'  => '$sourcedir/LightPortal/tasks/Notify.php',
+				'task_class' => '\Bugo\LightPortal\Tasks\Notify',
+				'task_data'  => $smcFunc['json_encode']([
+					'time'           => $options['created'],
+					'sender_id'	     => $user_info['id'],
+					'sender_name'    => $user_info['name'],
+					'author_id'      => $context['lp_page']['author_id'],
+					'commentator_id' => $options['commentator'],
+					'content_type'   => $type,
+					'content_id'     => $options['item'],
+					'content_action' => $action,
+					'extra'          => $smcFunc['json_encode']([
+						'content_subject' => $options['title'],
+						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
+					])
+				]),
+			),
+			array('id_task')
 		);
 
-		$comments = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			censorText($row['message']);
-
-			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
-
-			$comments[$row['id']] = array(
-				'id'          => $row['id'],
-				'page_id'     => $row['page_id'],
-				'parent_id'   => $row['parent_id'],
-				'author_id'   => $row['author_id'],
-				'author_name' => $row['author_name'],
-				'avatar'      => $avatar,
-				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'light_portal_comments_' . $page_id, $context['lp_allowed_bbc']),
-				'raw_message' => un_preparsecode($row['message']),
-				'created_at'  => $row['created_at'],
-				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60
-			);
-		}
-
-		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
-
-		return $comments;
 	}
 
 	/**

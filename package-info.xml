@@ -3,15 +3,10 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>1.9.5</version>
+	<version>1.9.6</version>
 	<type>modification</type>
 
 	<install for="2.1.*">
-		<readme parsebbc="true" type="file">readme/english.txt</readme>
-		<readme parsebbc="true" lang="russian" type="file">readme/russian.txt</readme>
-		<readme parsebbc="true" lang="ukrainian" type="file">readme/ukrainian.txt</readme>
-		<readme parsebbc="true" lang="spanish_es" type="file">readme/spanish.txt</readme>
-		<readme parsebbc="true" lang="spanish_latin" type="file">readme/spanish.txt</readme>
 		<database>database.php</database>
 		<require-dir name="Sources" destination="$boarddir" />
 		<require-dir name="Themes" destination="$boarddir" />

@@ -14,12 +14,10 @@ namespace Bugo\LightPortal\Utils;
  * @version 1.9
  */
 
-class Post extends AbstractArray
+final class Post extends Request
 {
-	public static $obj;
-
 	public function __construct()
 	{
-		static::$obj = &$_POST;
+		$this->storage = &$_POST;
 	}
 }

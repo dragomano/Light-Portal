@@ -4,7 +4,7 @@
  * Plugin.php
  *
  * @package Light Portal
- * @link https://dragomano.ru/mods/light-portal
+ * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later

@@ -114,7 +114,7 @@ class Subs
 		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 
-		foreach ($data as $action => $dump) {
+		foreach (array_keys($data) as $action) {
 			if (array_key_exists($action, $disabled_actions))
 				unset($data[$action]);
 		}
@@ -180,36 +180,6 @@ class Subs
 			'generic_list_wrapper' => '<div class="generic_list_wrapper"%2$s>%1$s</div>',
 			''                     => '<div%2$s>%1$s</div>',
 		];
-	}
-
-	/**
-	 * Show script execution time and num queries
-	 *
-	 * Отображаем время выполнения скрипта и количество запросов к базе
-	 *
-	 * @return void
-	 */
-	public static function showDebugInfo()
-	{
-		global $modSettings, $context, $txt, $smcFunc;
-
-		if (empty($modSettings['lp_show_debug_info']) || empty($context['user']['is_admin']) || empty($context['template_layers']))
-			return;
-
-		$context['lp_load_page_stats'] = sprintf($txt['lp_load_page_stats'], round(microtime(true) - $context['lp_load_time'], 3), $smcFunc['lp_num_queries']);
-
-		loadTemplate('LightPortal/ViewDebug');
-
-		$key = array_search('lp_portal', $context['template_layers']);
-		if (empty($key)) {
-			$context['template_layers'][] = 'debug';
-		} else {
-			$context['template_layers'] = array_merge(
-				array_slice($context['template_layers'], 0, $key, true),
-				array('debug'),
-				array_slice($context['template_layers'], $key, null, true)
-			);
-		}
 	}
 
 	/**

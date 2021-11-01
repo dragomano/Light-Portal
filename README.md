@@ -1,15 +1,17 @@
 # Light Portal
-![SMF 2.1](https://img.shields.io/badge/SMF-2.1-ed6033.svg?style=flat)
+[![SMF 2.1](https://img.shields.io/badge/SMF-2.1-ed6033.svg?style=flat)](https://github.com/SimpleMachines/SMF2.1)
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![PHP](https://img.shields.io/badge/PHP-^7.3-blue.svg?style=flat)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
+[![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC4+ / PHP 7.3+
-* **Tested on:** PHP 7.4.23 / MariaDB 10.5.10 / PostgreSQL 9.6.22
+* **Tested on:** PHP 7.4.25 / MariaDB 10.5.10 / PostgreSQL 9.6.22
 * **Hooks only:** Yes
-* **Languages:** English, Russian, Polish, Spanish, French, Turkish
-* **Demo:** [Demo Forum](http://toster12.qlihost.ru/)
+* **Languages:** [English, Russian, Polish, Spanish, French, Turkish, Ukrainian](https://crowdin.com/project/light-portal)
+* **Demo:** [Link](http://toster12.qlihost.ru/)
 
 ## Description
 This modification will transform your forum into a portal that includes:
@@ -59,14 +61,23 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 * Поддержка автономного режима.
 * Кэширование элементов портала.
 
-### Sponsors
+## Roadmap
+* Rating of comments
+* Migrate to AlpineJS 3
+* Migrate to PHP 7.4
+* Tests
+* Ajax pagination
+* New UI icons
 
-[![](sponsors/jetbrains.svg)](https://www.jetbrains.com/?from=LightPortal)
+## Supported by
+
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo." width="250">](https://www.jetbrains.com/?from=LightPortal)
+[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://ru.crowdin.com/project/light-portal)
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 
-It was made for your convenient, and if you like the project, support the developer.
+It was made for your convenient, and if you like the project, support the developer. Or give a star ⭐️ to this project.
 
-### About plugins
+## About plugins
 Some custom addons may have their own licenses.

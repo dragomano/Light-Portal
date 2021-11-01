@@ -2,22 +2,28 @@
 	list-style: none;
 	padding-left: 0;
 }
+
 .block_flarum_style nav ul .roundframe {
 	margin-top: 0;
 }
+
 .block_flarum_style nav ul .roundframe i {
 	padding-right: 4px;
 }
+
 .flarum_template .title_bar {
 	margin-bottom: 2px;
 }
+
 .flarum_template .header_area {
 	margin-left: 20px;
 	width: 70%;
 }
+
 .flarum_template .header_area .smalltext {
 	opacity: .5;
 }
+
 .flarum_template .header_area p {
 	margin-bottom: 5px;
 	overflow: hidden;

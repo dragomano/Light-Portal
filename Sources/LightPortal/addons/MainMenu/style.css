@@ -4,7 +4,9 @@
 	margin: -3px 8px 0 0;
 }
 
-.main_menu_list, .main_menu_list table, .main_menu_list table button {
+.main_menu_list,
+.main_menu_list table,
+.main_menu_list table button {
 	width: 100%;
 }
 
@@ -12,6 +14,7 @@
 	.main_menu_list .plugin_options td:first-child {
 		display: none;
 	}
+
 	.main_menu_list .plugin_options td:last-child {
 		width: auto !important;
 	}

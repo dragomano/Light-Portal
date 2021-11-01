@@ -31,12 +31,6 @@
 .preview .button {
   float: none !important;
 }
-.descbox {
-  border-radius: 6px;
-}
-.descbox .bbc_code {
-  overflow: hidden !important;
-}
 #lp_blocks {
   margin-bottom: 1em;
 }
@@ -52,6 +46,9 @@
 }
 #admin_form_wrapper p.errorbox {
   margin: 0;
+}
+.descbox details code {
+  white-space: break-spaces !important;
 }
 .action_admin.sceditor-maximize #main_menu,
 .action_admin.sceditor-maximize #genericmenu {
@@ -159,25 +156,17 @@
   flex: 2 50%;
 }
 .lp_tabs section #post_header dt:first-child,
-.lp_tabs section #post_header dd:first-child,
-.lp_tabs section #post_header dt:first-child,
 .lp_tabs section #post_header dd:first-child {
   margin-block-start: 0;
 }
-.lp_tabs section #post_header dt:last-child,
-.lp_tabs section #post_header dd:last-child,
 .lp_tabs section #post_header dt:last-child,
 .lp_tabs section #post_header dd:last-child {
   margin-block-end: 0;
 }
 .lp_tabs section #post_header dt > *:first-child,
-.lp_tabs section #post_header dd > *:first-child,
-.lp_tabs section #post_header dt > *:first-child,
 .lp_tabs section #post_header dd > *:first-child {
   margin-block-start: 0;
 }
-.lp_tabs section #post_header dt > *:last-child,
-.lp_tabs section #post_header dd > *:last-child,
 .lp_tabs section #post_header dt > *:last-child,
 .lp_tabs section #post_header dd > *:last-child {
   margin-block-end: 0;
@@ -226,7 +215,7 @@
   position: relative;
   padding: 0 0 0 60px;
 }
-.checkbox:not(checked) + .label:before {
+.checkbox:not(checked) + .label::before {
   content: '';
   position: absolute;
   top: -4px;
@@ -237,7 +226,7 @@
   background: #cdd1da;
   box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.2);
 }
-.checkbox:not(checked) + .label:after {
+.checkbox:not(checked) + .label::after {
   content: '';
   position: absolute;
   top: -2px;
@@ -249,10 +238,10 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transition: all 0.2s;
 }
-.checkbox:checked + .label:before {
+.checkbox:checked + .label::before {
   background: #00cc33;
 }
-.checkbox:checked + .label:after {
+.checkbox:checked + .label::after {
   left: 26px;
 }
 .errorbox {
@@ -280,6 +269,11 @@
   position: -webkit-sticky;
   top: 5px;
 }
+#lp_layout aside {
+  /* 		div + div {
+			margin: 1px;
+		} */
+}
 #lp_layout aside > div {
   margin: 0;
 }
@@ -288,18 +282,12 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#lp_layout aside div + div {
-  margin: 1px;
-}
 #lp_layout aside .progress_bar {
   max-width: initial;
 }
 #lp_layout aside[id^="block"]:not(:first-child) {
   clear: both;
   margin-top: 4px;
-}
-.likes_area {
-  list-style: none;
 }
 .related_pages {
   margin-top: 1em;
@@ -329,6 +317,41 @@
 }
 .comments .cat_bar {
   border-radius: 6px;
+}
+.comments .comment_reply .toolbar.descbox {
+  border-radius: 6px;
+}
+.comments .comment_reply .toolbar i {
+  line-height: inherit;
+}
+.comments .comment_reply textarea {
+  width: 100%;
+}
+.comments .comment_reply button {
+  margin-top: 10px;
+}
+.comments .comment_reply button[name="comment"] {
+  float: right;
+}
+.comments .comment_add .toolbar {
+  display: none;
+}
+.comments .comment_add .toolbar.descbox {
+  border-radius: 6px;
+}
+.comments .comment_add .toolbar i {
+  line-height: inherit;
+}
+.comments .comment_add textarea {
+  width: 100%;
+  height: 30px;
+}
+.comments .comment_add button {
+  margin-top: 10px;
+}
+.comments .comment_add button[name="comment"] {
+  float: right;
+  display: none;
 }
 section #display_head {
   margin-top: 0.1em;
@@ -693,7 +716,7 @@ section #display_head span {
 .article_alt3_view .card .description p:first-of-type {
   margin-top: 1.25rem;
 }
-.article_alt3_view .card .description p:first-of-type:before {
+.article_alt3_view .card .description p:first-of-type::before {
   content: "";
   position: absolute;
   height: 5px;
@@ -720,7 +743,7 @@ section #display_head span {
   .article_alt3_view .card .description {
     flex-basis: 60%;
   }
-  .article_alt3_view .card .description:before {
+  .article_alt3_view .card .description::before {
     transform: skewX(-3deg);
     content: "";
     background: #fff;
@@ -979,10 +1002,7 @@ section #display_head span {
   width: 100%;
 }
 .article_simple3_view > div .title {
-  padding-right: 1.5rem;
-  padding-left: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 1.5rem;
 }
 .article_simple3_view > div .title div {
   font-weight: 700;
@@ -990,18 +1010,12 @@ section #display_head span {
   margin-bottom: 0.5rem;
 }
 .article_simple3_view > div .tags {
-  padding-right: 1.5rem;
-  padding-left: 1.5rem;
-  padding-top: 1rem;
-  padding-bottom: 0.5rem;
+  padding: 1rem 1.5rem 0.5rem;
 }
 .article_simple3_view > div .tags a {
   display: inline-block;
   border-radius: 9999px;
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
   margin-right: 0.5rem;
@@ -1013,6 +1027,8 @@ section #display_head span {
 .comment_list li {
   clear: both;
   width: 100%;
+  opacity: 1;
+  transition: opacity 1s;
 }
 .comment_list li .comment_avatar {
   position: absolute;
@@ -1103,18 +1119,6 @@ section #display_head span {
   padding-top: 6px;
   border-top: 1px dashed #bfbfbf;
 }
-#comment_form .toolbar {
-  display: none;
-}
-#comment_form textarea {
-  width: 100%;
-  height: 30px;
-}
-#comment_form button[name="comment"] {
-  margin-top: 10px;
-  float: right;
-  display: none;
-}
 .sceditor-container {
   position: relative;
   min-height: 300px !important;
@@ -1136,6 +1140,16 @@ section #display_head span {
 .lp_default_blocks th.actions,
 .lp_additional_blocks th.actions {
   width: 8%;
+}
+.addon_list {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 10px;
+}
+@media screen and (max-width: 468px) {
+  .addon_list {
+    grid-template-columns: auto;
+  }
 }
 .features .floatleft {
   width: 80%;
@@ -1266,8 +1280,8 @@ section #display_head span {
   .comment_wrapper {
     padding: 0 !important;
   }
-  .comment_wrapper .title .bg {
-    padding: 4px !important;
+  .comment_wrapper .entry .smalltext i {
+    display: none;
   }
   .comment_list .col-xs-12 {
     flex-basis: 95%;

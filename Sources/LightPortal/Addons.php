@@ -35,58 +35,6 @@ class Addons
 	}
 
 	/**
-	 * @param string $addon_name
-	 * @param string $snake_name
-	 * @return void
-	 */
-	public static function loadLanguage(string $addon_name, string $snake_name)
-	{
-		global $txt, $user_info;
-
-		if (isset($txt['lp_' . $snake_name]))
-			return;
-
-		$addon_dir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . DIRECTORY_SEPARATOR . 'langs';
-		$languages = array_unique(['english', $user_info['language']]);
-
-		$addon_languages = [];
-		foreach ($languages as $lang) {
-			$lang_file = $addon_dir . DIRECTORY_SEPARATOR . $lang . '.php';
-
-			$addon_languages[$lang] = is_file($lang_file) ? require_once $lang_file : [];
-		}
-
-		if (is_array($addon_languages['english']))
-			$txt['lp_' . $snake_name] = array_merge($addon_languages['english'], $addon_languages[$user_info['language']]);
-	}
-
-	/**
-	 * @param string $addon_name
-	 * @param string $snake_name
-	 * @return void
-	 */
-	public static function loadCss(string $addon_name, string $snake_name)
-	{
-		global $settings;
-
-		$style = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . '/style.css';
-
-		if (! is_file($style))
-			return;
-
-		$addon_css = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $snake_name . '.css';
-
-		$css_exists = true;
-		if (! is_file($addon_css) || filemtime($style) > filemtime($addon_css))
-			$css_exists = @copy($style, $addon_css);
-
-		if (! @is_writable($settings['default_theme_dir'] . '/css/light_portal') || ! $css_exists)
-			return;
-
-		loadCSSFile('light_portal/addon_' . $snake_name . '.css');
-	}
-
-	/**
 	 * @return void
 	 */
 	public static function prepareAssets()
@@ -155,7 +103,7 @@ class Addons
 				$results[$addon]['snake'] = Helpers::getSnakeName($addon);
 
 				self::loadLanguage($addon, $results[$addon]['snake']);
-				self::loadCss($addon, $results[$addon]['snake']);
+				self::loadAssets($addon, $results[$addon]['snake']);
 
 				$context['lp_' . $results[$addon]['snake']]['type'] = $class->type;
 				$context['lp_' . $results[$addon]['snake']]['icon'] = $class->icon;
@@ -171,5 +119,57 @@ class Addons
 				$class->$hook(...$vars);
 			}
 		}
+	}
+
+	/**
+	 * @param string $addon_name
+	 * @param string $snake_name
+	 * @return void
+	 */
+	private static function loadLanguage(string $addon_name, string $snake_name)
+	{
+		global $txt, $user_info;
+
+		if (isset($txt['lp_' . $snake_name]))
+			return;
+
+		$addon_dir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . DIRECTORY_SEPARATOR . 'langs';
+		$languages = array_unique(['english', $user_info['language']]);
+
+		$addon_languages = [];
+		foreach ($languages as $lang) {
+			$lang_file = $addon_dir . DIRECTORY_SEPARATOR . $lang . '.php';
+
+			$addon_languages[$lang] = is_file($lang_file) ? require_once $lang_file : [];
+		}
+
+		if (is_array($addon_languages['english']))
+			$txt['lp_' . $snake_name] = array_merge($addon_languages['english'], $addon_languages[$user_info['language']]);
+	}
+
+	/**
+	 * @param string $addon_name
+	 * @param string $snake_name
+	 * @return void
+	 */
+	private static function loadAssets(string $addon_name, string $snake_name)
+	{
+		global $context, $settings;
+
+		$style = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . '/style.css';
+
+		if (! is_file($style))
+			return;
+
+		$addon_css = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $snake_name . '.css';
+
+		$file_exists = true;
+		if (! is_file($addon_css) || filemtime($style) > filemtime($addon_css))
+			$file_exists = @copy($style, $addon_css);
+
+		if (! @is_writable($settings['default_theme_dir'] . '/css/light_portal') || ! $file_exists)
+			return;
+
+		loadCSSFile('light_portal/addon_' . $snake_name . '.css');
 	}
 }

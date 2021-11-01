@@ -141,7 +141,7 @@ class Settings
 	 */
 	public function settingAreas()
 	{
-		global $context, $txt, $smcFunc, $scripturl, $modSettings;
+		global $context, $txt, $smcFunc;
 
 		isAllowedTo('admin_forum');
 
@@ -178,6 +178,8 @@ class Settings
 		);
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
+
+		$this->checkTimeForThanks();
 
 		if (Helpers::request()->has('getDebugInfo'))
 			$this->generateDumpFile();
@@ -306,14 +308,14 @@ class Settings
 			if (Helpers::post()->isEmpty('lp_frontpage_mode'))
 				Helpers::post()->put('lp_standalone_url', 0);
 
-			if (Helpers::post()->filled('lp_image_placeholder'))
+			if (Helpers::post()->notEmpty('lp_image_placeholder'))
 				Helpers::post()->put('lp_image_placeholder', Helpers::validate(Helpers::post('lp_image_placeholder'), 'url'));
 
-			if (Helpers::post()->filled('lp_standalone_url'))
+			if (Helpers::post()->notEmpty('lp_standalone_url'))
 				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
 
 			$frontpage_categories = [];
-			if (Helpers::post()->filled('lp_frontpage_categories')) {
+			if (Helpers::post()->notEmpty('lp_frontpage_categories')) {
 				foreach (Helpers::post('lp_frontpage_categories') as $id => $dummy)
 					if (isset($context['lp_all_categories'][$id]))
 						$frontpage_categories[] = $id;
@@ -328,7 +330,8 @@ class Settings
 			Addons::run('addBasicSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=basic');
@@ -370,21 +373,17 @@ class Settings
 		$config_vars = array(
 			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
-			array('check', 'lp_show_items_as_articles'),
+			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('check', 'lp_show_related_pages'),
 			array('select', 'lp_show_comment_block', $txt['lp_show_comment_block_set']),
 			array('callback', 'disabled_bbc_in_comments'),
 			array('int', 'lp_time_to_change_comments', 'postinput' => $txt['manageposts_minutes']),
 			array('int', 'lp_num_comments_per_page'),
+			'',
+			array('check', 'lp_show_items_as_articles'),
 			array('select', 'lp_page_editor_type_default', $context['lp_content_types']),
 			array('select', 'lp_permissions_default', $txt['lp_permissions']),
 			array('check', 'lp_hide_blocks_in_admin_section'),
-			array('title', 'lp_schema_org'),
-			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
-			array('text', 'lp_page_itemprop_address', 80),
-			array('text', 'lp_page_itemprop_phone', 80),
-
-			// FA source
 			array('title', 'lp_fa_source_title'),
 			array(
 				'select',
@@ -395,12 +394,12 @@ class Settings
 					'css_local' => $txt['lp_fa_source_css_local'],
 					'custom'    => $txt['lp_fa_custom']
 				),
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value != \'custom\';'
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';'
 			),
 			array(
 				'text',
 				'lp_fa_custom',
-				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] != 'custom',
+				'disabled' => isset($modSettings['lp_fa_source']) && $modSettings['lp_fa_source'] !== 'custom',
 				'size' => 75
 			),
 		);
@@ -420,7 +419,7 @@ class Settings
 		if (Helpers::request()->has('save')) {
 			checkSession();
 
-			if (Helpers::post()->filled('lp_fa_custom'))
+			if (Helpers::post()->notEmpty('lp_fa_custom'))
 				Helpers::post()->put('lp_fa_custom', Helpers::validate(Helpers::post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
@@ -447,7 +446,8 @@ class Settings
 			Addons::run('addExtraSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
 			Helpers::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');
@@ -580,7 +580,9 @@ class Settings
 			Addons::run('addPanelsSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
+
 			redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
@@ -647,7 +649,7 @@ class Settings
 				$smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
-					array('$sourcedir/LightPortal/Task.php', '\Bugo\LightPortal\Task', ''),
+					array('$sourcedir/LightPortal/tasks/Prune.php', '\Bugo\LightPortal\Tasks\Prune', ''),
 					array('id_task')
 				);
 			}
@@ -657,7 +659,9 @@ class Settings
 			Addons::run('addMiscSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
-			$_SESSION['adm-save'] = true;
+
+			Helpers::session()->put('adm-save', true);
+
 			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
@@ -808,6 +812,42 @@ class Settings
 		$context['sub_action'] = $subAction;
 
 		call_helper($subActions[$subAction]);
+	}
+
+	/**
+	 * @return void
+	 */
+	private function checkTimeForThanks()
+	{
+		global $modSettings, $smcFunc, $txt;
+
+		if (empty($modSettings['lp_time_to_be_thankful'])) {
+			$request = $smcFunc['db_query']('', '
+				SELECT time_installed
+				FROM {db_prefix}log_packages
+				WHERE package_id = {string:id}
+					AND install_state = {int:state}
+				LIMIT 1',
+				array(
+					'id'    => 'Bugo:LightPortal',
+					'state' => 1
+				)
+			);
+
+			[$time_installed] = $smcFunc['db_fetch_row']($request);
+
+			$smcFunc['db_free_result']($request);
+			$smcFunc['lp_num_queries']++;
+		}
+
+		$time_installed = $time_installed ?? $modSettings['lp_time_to_be_thankful'];
+		$months = ceil((time() - $time_installed) / 60 / 60 / 24 / 30);
+
+		if ($months > 6) {
+			updateSettings(['lp_time_to_be_thankful' => time()]);
+
+			fatal_error(sprintf($txt['lp_support_info'], Helpers::getText($months, $txt['lp_months_set'])));
+		}
 	}
 
 	/**

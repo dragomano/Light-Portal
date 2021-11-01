@@ -32,7 +32,7 @@ class Credits
 
 		$context['credits_modifications'][] = $this->getLink();
 
-		if (Helpers::request()->filled('sa') && Helpers::request('sa') == 'light_portal') {
+		if (!empty($context['current_subaction']) && $context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
@@ -117,6 +117,15 @@ class Credits
 				'license' => array(
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
+				)
+			),
+			array(
+				'title' => '@shat/stylenames',
+				'link' => 'https://github.com/shatstack/stylenames',
+				'author' => 'Kevin Mathmann',
+				'license' => array(
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/shatstack/stylenames/blob/master/LICENSE'
 				)
 			),
 			array(

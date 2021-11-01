@@ -1,15 +1,16 @@
 <?php
 
 /**
- * ThemeSwitcher
+ * ThemeSwitcher.php
  *
- * @package Light Portal
- * @link https://dragomano.ru/mods/light-portal
+ * @package ThemeSwitcher (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @category addon
+ * @version 26.10.21
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
@@ -25,6 +26,27 @@ class ThemeSwitcher extends Plugin
 	public $icon = 'fas fa-desktop';
 
 	/**
+	 * @return void
+	 */
+	public function init()
+	{
+		add_integration_function('integrate_manage_themes', __CLASS__ . '::manageThemes#', false, __FILE__);
+	}
+
+	/**
+	 * Clean cache on install/uninistall/enabling/disabling themes
+	 *
+	 * Очищаем кэш при установке/удалении/включении/отключении тем
+	 *
+	 * @return void
+	 */
+	public function manageThemes()
+	{
+		if (Helpers::request()->only(['done', 'do']))
+			Helpers::cache()->flush();
+	}
+
+	/**
 	 * Get the list of active themes
 	 *
 	 * Получаем список активных шаблонов форума
@@ -35,10 +57,7 @@ class ThemeSwitcher extends Plugin
 	{
 		global $modSettings;
 
-		if (empty($modSettings['knownThemes']))
-			return [];
-
-		return array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
+		return empty($modSettings['knownThemes']) ? [] : array_intersect_key(Helpers::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
 	}
 
 	/**

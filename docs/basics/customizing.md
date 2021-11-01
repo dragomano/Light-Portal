@@ -48,22 +48,16 @@ In this section, you can change the general settings of pages and blocks used bo
 
 * Show information about the page permissions — if you need a reminder about who can see the page you are viewing.
 * Show keywords at the top of the page — if keywords are specified for a page, they will appear at the top of the page
-* Show items on tag/category pages as cards — you can display items as a table, or as cards.
+* Use an image from the page content — select an image for a sharing in social networks
 * Show related pages block — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
 * Show comments block — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
-* Allowed BBC in comments — you can specify tags that are allowed to be used when commenting pages.
+* Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
+* Show items on tag/category pages as cards — you can display items as a table, or as cards.
 * The type of page editor by default — if you constantly create pages of the same type, you can set this type as default.
 * Permissions for pages and blocks by default — if you constantly create pages and blocks with the same permissions, you can set these permissions as default.
 * Hide active blocks in the admin area — if blocks bother you in the admin panel, you can hide them.
-
-### Schema microdata markup for contacts
-These settings can be useful if your forum is owned by a company or organization. In other cases, you can limit yourself to using an image from the text of the article, ignoring other points.
-
-* Use an image from the page content
-* Address of your organization
-* Phone of your organization
 
 ## Categories
 In this section, you can manage categories for categorizing portal pages. If you need it, of course.

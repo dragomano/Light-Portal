@@ -1,15 +1,16 @@
 <?php
 
 /**
- * BootstrapIcons
+ * BootstrapIcons.php
  *
- * @package Light Portal
- * @link https://github.com/dragomano/Light-Portal
+ * @package BootstrapIcons (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @category addon
+ * @version 29.10.21
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -55,7 +56,7 @@ class BootstrapIcons extends Plugin
 
 		if (!empty($icons)) {
 			foreach ($icons as $icon => $id) {
-				$all_icons[] = $icon;
+				$all_icons[$id] = $icon;
 			}
 		}
 

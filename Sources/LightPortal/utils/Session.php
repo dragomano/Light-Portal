@@ -14,12 +14,45 @@ namespace Bugo\LightPortal\Utils;
  * @version 1.9
  */
 
-class Session extends AbstractArray
+final class Session
 {
-	public static $obj;
+	/**
+	 * @var array
+	 */
+	private $storage = [];
 
 	public function __construct()
 	{
-		static::$obj = &$_SESSION;
+		$this->storage = &$_SESSION;
+	}
+
+	/**
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function get($key)
+	{
+		if (isset($this->storage[$key])) {
+			return $this->storage[$key];
+		}
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function put($key, $value)
+	{
+		$this->storage[$key] = $value;
+	}
+
+	/**
+	 * @param string $key
+	 * @return bool
+	 */
+	public function isEmpty(string $key): bool
+	{
+		return empty($this->get($key));
 	}
 }

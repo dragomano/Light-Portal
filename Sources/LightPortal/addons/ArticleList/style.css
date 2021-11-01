@@ -3,6 +3,7 @@
 	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 	grid-gap: 0 10px;
 }
+
 .article_list > div {
 	display: flex;
 	flex-direction: column;

@@ -17,10 +17,21 @@ namespace Bugo\LightPortal\Utils;
 if (!defined('SMF'))
 	die('Hacking attempt...');
 
-class Cache
+final class Cache
 {
+	/**
+	 * @var string
+	 */
 	private $prefix = 'lp_';
+
+	/**
+	 * @var string
+	 */
 	private $key;
+
+	/**
+	 * @var int
+	 */
 	private $lifeTime = 0;
 
 	/**

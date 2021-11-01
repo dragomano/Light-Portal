@@ -149,7 +149,7 @@ class Block
 		$area = $context['current_action'] ?: (!empty($modSettings['lp_frontpage_mode']) ? LP_ACTION : 'forum');
 
 		if (!empty($modSettings['lp_standalone_mode']) && !empty($modSettings['lp_standalone_url'])) {
-			if (Helpers::server()->filled('REQUEST_URL') && $modSettings['lp_standalone_url'] == Helpers::server('REQUEST_URL')) {
+			if ($modSettings['lp_standalone_url'] === Helpers::request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty($context['current_action'])) {
 				$area = 'forum';

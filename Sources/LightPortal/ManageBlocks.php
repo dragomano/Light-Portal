@@ -189,19 +189,13 @@ class ManageBlocks
 		Helpers::post()->put('clone', true);
 		$result['success'] = false;
 
-		$context['lp_block']         = $this->getData($item);
-		$context['lp_block']['id']   = $this->setData();
-		$context['lp_block']['icon'] = Helpers::getIcon($context['lp_block']['icon']);
+		$context['lp_block']       = $this->getData($item);
+		$context['lp_block']['id'] = $this->setData();
 
 		if (!empty($context['lp_block']['id'])) {
-			loadTemplate('LightPortal/ManageBlocks');
-
-			ob_start();
-			show_block_entry($context['lp_block']['id'], $context['lp_block']);
-
 			$result = [
-				'success' => true,
-				'block'   => ob_get_clean()
+				'id'      => $context['lp_block']['id'],
+				'success' => true
 			];
 		}
 
@@ -376,17 +370,15 @@ class ManageBlocks
 	 */
 	private function getOptions(): array
 	{
-		$options = [
-			'bbc' => [
+		global $context;
+
+		$options = [];
+
+		foreach (array_keys($context['lp_content_types']) as $type) {
+			$options[$type] = [
 				'content' => true
-			],
-			'html' => [
-				'content' => true
-			],
-			'php' => [
-				'content' => true
-			]
-		];
+			];
+		}
 
 		Addons::run('blockOptions', array(&$options));
 
@@ -823,7 +815,7 @@ class ManageBlocks
 			$this->updateData($item);
 		}
 
-		if (Helpers::post()->filled('clone'))
+		if (Helpers::post()->notEmpty('clone'))
 			return $item;
 
 		Helpers::cache()->flush();
