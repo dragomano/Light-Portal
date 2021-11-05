@@ -641,7 +641,7 @@ class Settings
 				DELETE FROM {db_prefix}background_tasks
 				WHERE task_class = {string:task_class}',
 				array(
-					'task_class' => '\Bugo\LightPortal\Task'
+					'task_class' => '\Bugo\LightPortal\Tasks\Prune'
 				)
 			);
 
