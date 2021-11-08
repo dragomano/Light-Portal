@@ -46,9 +46,6 @@ class Integration
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_menu_buttons', __NAMESPACE__ . '\Debug::showInfo#', false, __FILE__);
-		add_integration_function('cache_put_data', __NAMESPACE__ . '\Debug::cachePutData#', false, __FILE__);
-		add_integration_function('cache_get_data', __NAMESPACE__ . '\Debug::cacheGetData#', false, __FILE__);
 	}
 
 	/**
@@ -280,6 +277,8 @@ class Integration
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
 			);
 		}
+
+		Subs::showDebugInfo();
 
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;

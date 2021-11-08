@@ -139,15 +139,11 @@ $txt['lp_misc_info'] = 'There are additional portal settings that will be useful
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
 $txt['lp_show_debug_info'] = 'Show the loading time and number of the portal queries';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
-$txt['lp_show_cache_info'] = 'Show the information about the portal working with the cache';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
 $txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter of the portal';
 $txt['lp_page_param'] = 'The <strong>page</strong> parameter for portal pages';
 $txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
-$txt['lp_cache_info'] = 'Portal — using the cache';
-$txt['lp_cache_saving'] = 'Saving data in the cell <strong>%1$s</strong> for %2$d seconds.';
-$txt['lp_cache_loading'] = 'Loading data from cell <strong>%1$s</strong>';
 
 // Actions
 $txt['lp_title'] = 'Title';
@@ -348,7 +344,7 @@ $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to ma
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
-// Time units (see https://github.com/dragomano/Light-Portal/wiki/To-translators)
+// Time units
 $txt['lp_months_set'] = 'month, months';
 $txt['lp_days_set'] = 'day, days';
 $txt['lp_hours_set'] = 'an hour, hours';
