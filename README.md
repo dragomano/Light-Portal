@@ -72,7 +72,7 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 ## Supported by
 
 [<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo." width="250">](https://www.jetbrains.com/?from=LightPortal)
-[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://ru.crowdin.com/project/light-portal)
+[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://crowdin.com/project/light-portal)
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
