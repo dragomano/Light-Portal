@@ -89,6 +89,10 @@ class Credits
 				'name' => 'vbgamer45',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
 			),
+			array(
+				'name' => 'Crowdin',
+				'link' => 'https://crowdin.com/project/light-portal'
+			),
 		);
 
 		$links = array(
