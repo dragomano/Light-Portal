@@ -179,8 +179,6 @@ class Settings
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
 
-		$this->checkTimeForThanks();
-
 		if (Helpers::request()->has('getDebugInfo'))
 			$this->generateDumpFile();
 
@@ -811,42 +809,6 @@ class Settings
 		$context['sub_action'] = $subAction;
 
 		call_helper($subActions[$subAction]);
-	}
-
-	/**
-	 * @return void
-	 */
-	private function checkTimeForThanks()
-	{
-		global $modSettings, $smcFunc, $txt;
-
-		if (empty($modSettings['lp_time_to_be_thankful'])) {
-			$request = $smcFunc['db_query']('', '
-				SELECT time_installed
-				FROM {db_prefix}log_packages
-				WHERE package_id = {string:id}
-					AND install_state = {int:state}
-				LIMIT 1',
-				array(
-					'id'    => 'Bugo:LightPortal',
-					'state' => 1
-				)
-			);
-
-			[$time_installed] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-		}
-
-		$time_installed = $time_installed ?? $modSettings['lp_time_to_be_thankful'];
-		$months = ceil((time() - $time_installed) / 60 / 60 / 24 / 30);
-
-		if ($months > 6) {
-			updateSettings(['lp_time_to_be_thankful' => time()]);
-
-			fatal_error(sprintf($txt['lp_support_info'], Helpers::getText($months, $txt['lp_months_set'])));
-		}
 	}
 
 	/**

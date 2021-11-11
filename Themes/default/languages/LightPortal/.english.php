@@ -26,7 +26,6 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.<br>The portal always needs new testers, translators and frontpage template makers.';
-$txt['lp_support_info'] = 'What is up? You have been using the portal for over %d months. So you really liked it. Shall we thank the developer? You can buy a cup of coffee, give a star on Githab, or just write "thanks for the portal" in the support thread. And you can also make or improve the translation of the portal, come up with a template for frontpage article cards or create your own plugin and share it with the community.';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
