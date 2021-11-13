@@ -16,9 +16,6 @@ namespace Bugo\LightPortal\Addons;
 
 use ReflectionClass;
 
-if (!defined('SMF'))
-	die('Hacking attempt...');
-
 abstract class Plugin
 {
 	/**
@@ -64,11 +61,19 @@ abstract class Plugin
 	public $disables = [];
 
 	/**
+	 * @return ReflectionClass
+	 */
+	public function getCalledClass()
+	{
+		return new ReflectionClass(get_called_class());
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getName(): string
 	{
-		return (new ReflectionClass(get_called_class()))->getShortName();
+		return $this->getCalledClass()->getShortName();
 	}
 
 	/**
@@ -77,7 +82,7 @@ abstract class Plugin
 	 */
 	public function loadTemplate(string $template = 'template')
 	{
-		$path = dirname((new ReflectionClass(get_called_class()))->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
+		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
 
 		if (is_file($path))
 			require_once $path;
@@ -88,14 +93,9 @@ abstract class Plugin
 	 */
 	public function loadSsi()
 	{
-		global $boarddir, $txt;
+		$path = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'SSI.php';
 
-		$path = $boarddir . DIRECTORY_SEPARATOR . 'SSI.php';
-
-		if (is_file($path)) {
+		if (is_file($path))
 			require_once $path;
-		} else {
-			fatal_error(sprintf($txt['lp_addon_requires_ssi'], $this->getName()), false);
-		}
 	}
 }

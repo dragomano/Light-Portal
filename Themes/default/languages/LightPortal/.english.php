@@ -312,7 +312,6 @@ $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
-$txt['lp_addon_requires_ssi'] = 'Plugin %1$s depends on SSI.php, which must be in the root of the forum!';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
