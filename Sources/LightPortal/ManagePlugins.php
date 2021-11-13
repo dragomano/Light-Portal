@@ -160,7 +160,8 @@ class ManagePlugins
 				'special'    => $special ?? '',
 				'settings'   => $config_vars[$snake_name] ?? [],
 				'requires'   => array_diff($requires, $context['lp_enabled_plugins']),
-				'disables'   => array_intersect($disables, $context['lp_enabled_plugins'])
+				'disables'   => array_intersect($disables, $context['lp_enabled_plugins']),
+				'composer'   => $this->hasComposerJson($addonClass),
 			];
 		}, $context['lp_plugins']);
 
@@ -313,5 +314,13 @@ class ManagePlugins
 				}
 			});
 		</script>';
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function hasComposerJson(\ReflectionClass $class): bool
+	{
+		return is_file(dirname($class->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 	}
 }
