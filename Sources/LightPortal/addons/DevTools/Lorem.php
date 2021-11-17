@@ -1,7 +1,5 @@
 <?php
 
-namespace Bugo\LightPortal\Addons\DevTools;
-
 /**
  * Lorem.php
  *
@@ -12,8 +10,10 @@ namespace Bugo\LightPortal\Addons\DevTools;
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.11.21
  */
+
+namespace Bugo\LightPortal\Addons\DevTools;
 
 /**
  * https://stackoverflow.com/a/39986034/14091866
@@ -59,7 +59,7 @@ abstract class Lorem
 			$paragraphs[] = implode(' ', $sentences);
 		}
 
-		return implode("\n\n", $paragraphs);
+		return implode(PHP_EOL . PHP_EOL, $paragraphs);
 	}
 
 	/**
