@@ -920,7 +920,6 @@ section #display_head span {
   .article_simple2_view .card .card-body .card-body-inner {
     box-shadow: none;
     padding-left: 3.5rem;
-    padding-top: 3rem;
     padding-bottom: 3rem;
     border-radius: 0;
     border-top-left-radius: 0.5rem;
@@ -941,8 +940,8 @@ section #display_head span {
 }
 .article_simple2_view .card .card-body .card-body-inner h3 {
   font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-size: 1.2rem;
+  line-height: 1.2rem;
 }
 .article_simple2_view .card .card-body .card-body-inner time {
   line-height: 1.75rem;
@@ -973,19 +972,14 @@ section #display_head span {
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 1.25rem;
 }
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .article_simple3_view {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
-@media (min-width: 768px) {
-  .article_simple3_view {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
 @media (min-width: 1024px) {
   .article_simple3_view {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (min-width: 1280px) {

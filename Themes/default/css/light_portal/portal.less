@@ -1197,7 +1197,6 @@ section {
 				@media (min-width: 768px) {
 					box-shadow: none;
 					padding-left: 3.5rem;
-					padding-top: 3rem;
 					padding-bottom: 3rem;
 					.bradius(0);
 					border-top-left-radius: .5rem;
@@ -1217,8 +1216,8 @@ section {
 
 				h3 {
 					font-weight: 700;
-					font-size: 1.5rem;
-					line-height: 2rem;
+					font-size: 1.2rem;
+					line-height: 1.2rem;
 				}
 
 				time {
@@ -1263,16 +1262,12 @@ section {
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 	gap: 1.25rem;
 
-	@media (min-width: 640px) {
+	@media (min-width: 768px) {
 		grid-template-columns: repeat(1, minmax(0, 1fr));
 	}
 
-	@media (min-width: 768px) {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
 	@media (min-width: 1024px) {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	@media (min-width: 1280px) {

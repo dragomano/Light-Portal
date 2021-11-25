@@ -52,7 +52,7 @@ function template_show_articles()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">
 			<article class="roundframe', $article['css_class'] ?? '', '">';
 
 		if (!empty($article['image'])) {
@@ -198,7 +198,7 @@ function template_show_articles_alt()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">
 			<article class="roundframe">
 				<header>
 					<div class="title_bar">
@@ -414,7 +414,7 @@ function template_show_articles_alt3()
 		$i++;
 
 		echo '
-		<div class="card', $i % 2 === 0 ? ' alt': '', ' col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="card', $i % 2 === 0 ? ' alt': '', ' col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">
 			<div class="meta">';
 
 		if (!empty($article['image'])) {
@@ -519,7 +519,7 @@ function template_show_articles_simple()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
+		<div class="col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">';
 
 		if (!empty($article['image'])) {
 			echo '
@@ -575,7 +575,7 @@ function template_show_articles_simple2()
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
-		<div class="col-xs-12 col-sm-6 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">
+		<div class="col-xs-12">
 			<div class="card">
 				<div class="card-header">
 					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>
