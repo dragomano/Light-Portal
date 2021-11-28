@@ -328,7 +328,7 @@ class Subs
 	 *
 	 * @return void
 	 */
-	public function showDebugInfo()
+	public static function showDebugInfo()
 	{
 		global $modSettings, $context, $txt, $smcFunc;
 
