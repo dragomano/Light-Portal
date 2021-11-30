@@ -24,7 +24,7 @@ function template_portal_credits()
 		foreach ($context['portal_translations'] as $lang => $translators) {
 			echo '
 			<fieldset class="windowbg">
-				<legend class="amt">', $lang, '</legend>', implode(', ', $translators), '
+				<legend class="amt">', $lang, '</legend>', sentence_list($translators), '
 			</fieldset>';
 		}
 
