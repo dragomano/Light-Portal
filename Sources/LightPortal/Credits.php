@@ -68,16 +68,16 @@ class Credits
 
 		$context['portal_translations'] = array(
 			'Polish'  => array('Adrek'),
-			'Spanish' => array('Rock Lee'),
+			'Spanish' => array('Rock Lee', 'Diego Andrés'),
 			'French'  => array('Papoune57'),
-			'Turkish' => array('gevv')
+			'Turkish' => array('gevv'),
 		);
 
 		$context['testers'] = array(
 			array(
 				'name' => 'Wylek',
 				'link' => 'https://wylek.ru/'
-			)
+			),
 		);
 
 		$context['sponsors'] = array(
