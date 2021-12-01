@@ -851,35 +851,11 @@ class Settings
 		if (empty($search = $data['search']))
 			return;
 
-		if (($items = Helpers::cache()->get('page_aliases_' . $search)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT alias
-				FROM {db_prefix}lp_pages
-				WHERE alias LIKE lower({string:search})
-				ORDER BY alias
-				LIMIT 30',
-				array(
-					'search' => '%' . $search . '%'
-				)
-			);
-
-			$items = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				$items[] = $row['alias'];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('page_aliases_' . $search, $items);
-		}
-
-		$results = [];
-		foreach ($items as $item) {
-			$results[] = [
-				'text' => $item
-			];
-		}
+		$results = ManagePages::getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $smcFunc['strtolower']($search)]);
+		$results = array_column($results, 'alias');
+		array_walk($results, function (&$item) {
+			$item = ['value' => $item];
+		});
 
 		exit(json_encode($results));
 	}
@@ -896,9 +872,10 @@ class Settings
 
 		$temp = parse_bbc(false);
 		$bbcTags = [];
-		foreach ($temp as $tag)
+		foreach ($temp as $tag) {
 			if (!isset($tag['require_parents']))
 				$bbcTags[] = $tag['tag'];
+		}
 
 		$bbcTags = array_unique($bbcTags);
 

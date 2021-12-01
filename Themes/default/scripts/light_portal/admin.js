@@ -157,11 +157,9 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		if (! refs.title_0.value) {
-			pageType.disable()
-		} else {
-			pageType.enable()
-		}
+		pageType.disable()
+
+		if (refs.title_0.value) pageType.enable()
 
 		// Create a page alias on page type changing
 		if (refs.alias.value === '' && typeof (slugify) === 'function') {

@@ -143,7 +143,7 @@ function template_lp_basic_settings_below()
 					.then(function (json) {
 						let data = [];
 						for (let i = 0; i < json.length; i++) {
-							data.push({text: json[i].text})
+							data.push({text: json[i].value})
 						}
 
 						callback(data)
@@ -237,9 +237,9 @@ function template_callback_disabled_bbc_in_comments()
 	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
 		foreach ($bbcColumn as $bbcTag) {
 			echo '
-					<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
-						', $bbcTag, '
-					</option>';
+				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
+					', $bbcTag, '
+				</option>';
 		}
 	}
 
@@ -259,9 +259,9 @@ function template_callback_disabled_bbc_in_comments()
 				});
 				function selectDeselectAll(elem, select) {
 					if (elem.checked) {
-						let test = document.querySelectorAll("#" + select + " option");
-						test = Array.from(test).map(el => el.value);
-						eval(`${select}Select`).set(test);
+						let allTags = document.querySelectorAll("#" + select + " option");
+						allTags = Array.from(test).map(el => el.value);
+						eval(`${select}Select`).set(allTags);
 					} else {
 						eval(`${select}Select`).set([]);
 					}
