@@ -652,7 +652,7 @@ class ManagePages
 			);
 
 			foreach ($context['languages'] as $lang) {
-				$args['title_' . $lang['filename']]          = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
 			$parameters = [];
@@ -671,6 +671,10 @@ class ManagePages
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 			$post_data['id'] = Helpers::request('id', 0);
 
+			if (is_null($post_data['keywords'])) {
+				$post_data['keywords'] = [];
+			}
+
 			$this->findErrors($post_data);
 		}
 
@@ -684,7 +688,7 @@ class ManagePages
 			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author_id'] ?? $user_info['id'],
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
+			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'      => $context['lp_current_page']['status'] ?? (int) allowedTo('light_portal_approve_pages'),

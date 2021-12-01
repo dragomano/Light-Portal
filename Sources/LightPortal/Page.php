@@ -651,7 +651,7 @@ class Page
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[] = array(
+			$items[$row['tag_id']] = array(
 				'name' => $row['value'],
 				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
 			);
