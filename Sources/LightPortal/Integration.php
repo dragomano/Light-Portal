@@ -278,7 +278,7 @@ class Integration
 			);
 		}
 
-		Subs::showDebugInfo();
+		(new DebugInfo)();
 
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;
