@@ -245,9 +245,9 @@ function template_callback_disabled_bbc_in_comments()
 
 	echo '
 			</select>
-			<input type="checkbox" id="bbc_lp_disabled_bbc_in_comments_select_all" @click="selectDeselectAll($event.target, \'lp_disabled_bbc_in_comments\')"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="bbc_lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
+			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="selectAllBbc($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
 			<script>
-				new SlimSelect({
+				const lpDisabledBbc = new SlimSelect({
 					select: "#lp_disabled_bbc_in_comments",
 					hideSelectedOption: true,
 					placeholder: "', $txt['enabled_bbc_select'], '",
@@ -257,14 +257,16 @@ function template_callback_disabled_bbc_in_comments()
 					closeOnSelect: false,
 					showContent: "down"
 				});
-				function selectDeselectAll(elem, select) {
+
+				function selectAllBbc(elem) {
 					if (elem.checked) {
-						let allTags = document.querySelectorAll("#" + select + " option");
-						allTags = Array.from(test).map(el => el.value);
-						eval(`${select}Select`).set(allTags);
-					} else {
-						eval(`${select}Select`).set([]);
+						let allTags = document.querySelectorAll("#lp_disabled_bbc_in_comments option");
+						lpDisabledBbc.set(Array.from(allTags).map(el => el.value));
+
+						return;
 					}
+
+					lpDisabledBbc.set([]);
 				}
 			</script>
 		</fieldset>
