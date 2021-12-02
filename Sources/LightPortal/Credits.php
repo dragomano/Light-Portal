@@ -67,7 +67,7 @@ class Credits
 		isAllowedTo('light_portal_view');
 
 		$context['portal_translations'] = array(
-			'Polish'  => array('Adrek'),
+			'Polish'  => array('Adrek', 'jsqx'),
 			'Spanish' => array('Rock Lee', 'Diego Andrés'),
 			'French'  => array('Papoune57'),
 			'Turkish' => array('gevv'),
