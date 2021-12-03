@@ -673,9 +673,7 @@ class Helpers
 			ob_start();
 
 			try {
-				$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
-
-				eval($content);
+				eval(html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
 			} catch (\ParseError $p) {
 				echo $p->getMessage();
 			}

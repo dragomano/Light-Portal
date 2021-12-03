@@ -9,7 +9,7 @@
  */
 function template_show_page()
 {
-	global $context, $modSettings, $txt, $scripturl, $settings, $boardurl;
+	global $context, $modSettings, $txt, $scripturl, $settings;
 
 	if (!empty($context['lp_page']['errors'])) {
 		echo '

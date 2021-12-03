@@ -603,7 +603,7 @@ class Page
 	 */
 	private function prepareData(?array &$data)
 	{
-		global $user_info, $modSettings;
+		global $user_info;
 
 		if (empty($data))
 			return;
