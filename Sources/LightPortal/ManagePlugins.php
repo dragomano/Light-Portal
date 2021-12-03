@@ -36,6 +36,7 @@ class ManagePlugins
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', array('external' => true));
 
 		$context['page_title'] = $txt['lp_portal'] . ' - ' . $txt['lp_plugins_manage'];
+		$context['post_url']   = $scripturl . '?action=admin;area=lp_plugins;save';
 
 		$context[$context['admin_menu_name']]['tab_data'] = array(
 			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
@@ -49,20 +50,21 @@ class ManagePlugins
 		asort($context['lp_plugins']);
 
 		$context['lp_plugins_extra'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
-		$context['post_url']         = $scripturl . '?action=admin;area=lp_plugins;save';
 
 		// Toggle ON/OFF for plugins
 		if (Helpers::request()->has('toggle')) {
 			$data = Helpers::request()->json();
-			$plugin_id = (int) $data['toggle_plugin'];
+			$plugin_id = (int) $data['plugin'];
 
-			if ($key = array_search($context['lp_plugins'][$plugin_id], $context['lp_enabled_plugins'])) {
-				unset($context['lp_enabled_plugins'][$key]);
+			if ($data['status'] === 'on') {
+				$context['lp_enabled_plugins'] = array_filter($context['lp_enabled_plugins'], function ($item) use ($context, $plugin_id) {
+					return $item !== $context['lp_plugins'][$plugin_id];
+				});
 			} else {
 				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
 			}
 
-			updateSettings(array('lp_enabled_plugins' => implode(',', array_intersect($context['lp_enabled_plugins'], $context['lp_plugins']))));
+			updateSettings(array('lp_enabled_plugins' => implode(',', array_unique(array_intersect($context['lp_enabled_plugins'], $context['lp_plugins'])))));
 
 			exit;
 		}
