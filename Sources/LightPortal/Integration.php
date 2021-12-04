@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -75,8 +75,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.9.6',
-			'LP_RELEASE_DATE' => '2021-11-01',
+			'LP_VERSION'      => '1.10',
+			'LP_RELEASE_DATE' => '2021-12-04',
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
