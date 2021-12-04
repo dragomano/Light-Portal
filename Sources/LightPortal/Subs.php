@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -56,7 +56,7 @@ class Subs
 		$context['lp_plugin_types']        = self::getPluginTypes();
 		$context['lp_content_types']       = self::getContentTypes();
 
-		$context['lp_enabled_plugins']   = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
+		$context['lp_enabled_plugins'] = empty($modSettings['lp_enabled_plugins']) ? [] : explode(',', $modSettings['lp_enabled_plugins']);
 
 		// Width of some panels | Ширина некоторых панелей
 		$context['lp_header_panel_width'] = !empty($modSettings['lp_header_panel_width']) ? (int) $modSettings['lp_header_panel_width'] : 12;

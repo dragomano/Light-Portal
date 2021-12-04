@@ -14,7 +14,7 @@ use Bugo\LightPortal\Lists\PageListInterface;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -603,7 +603,7 @@ class Page
 	 */
 	private function prepareData(?array &$data)
 	{
-		global $user_info, $modSettings;
+		global $user_info;
 
 		if (empty($data))
 			return;
@@ -651,7 +651,7 @@ class Page
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[] = array(
+			$items[$row['tag_id']] = array(
 				'name' => $row['value'],
 				'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
 			);

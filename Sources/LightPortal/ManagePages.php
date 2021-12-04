@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -652,7 +652,7 @@ class ManagePages
 			);
 
 			foreach ($context['languages'] as $lang) {
-				$args['title_' . $lang['filename']]          = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
 			}
 
 			$parameters = [];
@@ -671,6 +671,10 @@ class ManagePages
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 			$post_data['id'] = Helpers::request('id', 0);
 
+			if (is_null($post_data['keywords'])) {
+				$post_data['keywords'] = [];
+			}
+
 			$this->findErrors($post_data);
 		}
 
@@ -684,7 +688,7 @@ class ManagePages
 			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author_id'] ?? $user_info['id'],
 			'alias'       => $post_data['alias'] ?? $context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $context['lp_current_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['keywords'] ?? [],
+			'keywords'    => $post_data['keywords'] ?? $context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $context['lp_current_page']['type'] ?? $modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $context['lp_current_page']['permissions'] ?? $modSettings['lp_permissions_default'] ?? 2,
 			'status'      => $context['lp_current_page']['status'] ?? (int) allowedTo('light_portal_approve_pages'),
@@ -1158,87 +1162,11 @@ class ManagePages
 
 		Addons::run('onPageSaving', array($item));
 
-		if (!empty($context['lp_page']['title'])) {
-			$titles = [];
-			foreach ($context['lp_page']['title'] as $lang => $title) {
-				$titles[] = array(
-					'item_id' => $item,
-					'type'    => 'page',
-					'lang'    => $lang,
-					'title'   => $title
-				);
-			}
+		$this->saveTitles($item);
 
-			$smcFunc['db_insert']('',
-				'{db_prefix}lp_titles',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'title'   => 'string'
-				),
-				$titles,
-				array('item_id', 'type', 'lang')
-			);
+		$this->saveTags();
 
-			$smcFunc['lp_num_queries']++;
-		}
-
-		if (!empty($context['lp_page']['keywords'])) {
-			$tags = $keywords = [];
-
-			$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-			$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-			foreach ($new_tags as $value) {
-				$tags[] = array(
-					'value' => $value
-				);
-			}
-
-			if (!empty($tags)) {
-				$keywords = $smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'value' => 'string'
-					),
-					$tags,
-					array('tag_id'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
-		}
-
-		if (!empty($context['lp_page']['options'])) {
-			$params = [];
-			foreach ($context['lp_page']['options'] as $param_name => $value) {
-				$value = is_array($value) ? implode(',', $value) : $value;
-
-				$params[] = array(
-					'item_id' => $item,
-					'type'    => 'page',
-					'name'    => $param_name,
-					'value'   => $value
-				);
-			}
-
-			$smcFunc['db_insert']('',
-				'{db_prefix}lp_params',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string'
-				),
-				$params,
-				array('item_id', 'type', 'name')
-			);
-
-			$smcFunc['lp_num_queries']++;
-		}
+		$this->saveOptions($item);
 
 		$smcFunc['db_transaction']('commit');
 
@@ -1278,89 +1206,120 @@ class ManagePages
 
 		Addons::run('onPageSaving', array($item));
 
-		if (!empty($context['lp_page']['title'])) {
-			$titles = [];
-			foreach ($context['lp_page']['title'] as $lang => $title) {
-				$titles[] = array(
-					'item_id' => $item,
-					'type'    => 'page',
-					'lang'    => $lang,
-					'title'   => $title
-				);
-			}
+		$this->saveTitles($item, 'replace');
 
-			$smcFunc['db_insert']('replace',
-				'{db_prefix}lp_titles',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'title'   => 'string'
-				),
-				$titles,
-				array('item_id', 'type', 'lang')
-			);
+		$this->saveTags();
 
-			$smcFunc['lp_num_queries']++;
-		}
-
-		if (!empty($context['lp_page']['keywords'])) {
-			$tags = $keywords = [];
-
-			$new_tags = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-			$old_tags = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
-			foreach ($new_tags as $value) {
-				$tags[] = array(
-					'value' => $value
-				);
-			}
-
-			if (!empty($tags)) {
-				$keywords = $smcFunc['db_insert']('',
-					'{db_prefix}lp_tags',
-					array(
-						'value' => 'string'
-					),
-					$tags,
-					array('tag_id'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-
-			$context['lp_page']['options']['keywords'] = array_merge($old_tags, $keywords);
-		}
-
-		if (!empty($context['lp_page']['options'])) {
-			$params = [];
-			foreach ($context['lp_page']['options'] as $param_name => $value) {
-				$value = is_array($value) ? implode(',', $value) : $value;
-
-				$params[] = array(
-					'item_id' => $item,
-					'type'    => 'page',
-					'name'    => $param_name,
-					'value'   => $value
-				);
-			}
-
-			$smcFunc['db_insert']('replace',
-				'{db_prefix}lp_params',
-				array(
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string'
-				),
-				$params,
-				array('item_id', 'type', 'name')
-			);
-
-			$smcFunc['lp_num_queries']++;
-		}
+		$this->saveOptions($item, 'replace');
 
 		$smcFunc['db_transaction']('commit');
+	}
+
+	/**
+	 * @param int $item
+	 * @param string $method
+	 * @return void
+	 */
+	private function saveTitles(int $item, string $method = '')
+	{
+		global $context, $smcFunc;
+
+		$titles = [];
+		foreach ($context['lp_page']['title'] as $lang => $title) {
+			$titles[] = array(
+				'item_id' => $item,
+				'type'    => 'page',
+				'lang'    => $lang,
+				'title'   => $title
+			);
+		}
+
+		if (empty($titles))
+			return;
+
+		$smcFunc['db_insert']($method,
+			'{db_prefix}lp_titles',
+			array(
+				'item_id' => 'int',
+				'type'    => 'string',
+				'lang'    => 'string',
+				'title'   => 'string'
+			),
+			$titles,
+			array('item_id', 'type', 'lang')
+		);
+
+		$smcFunc['lp_num_queries']++;
+	}
+
+	/**
+	 * @return void
+	 */
+	private function saveTags()
+	{
+		global $context, $smcFunc;
+
+		$newTagIds = array_diff($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+		$oldTagIds = array_intersect($context['lp_page']['keywords'], array_keys($context['lp_tags']));
+
+		array_walk($newTagIds, function (&$item) {
+			$item = ['value' => $item];
+		});
+
+		if (!empty($newTagIds)) {
+			$newTagIds = $smcFunc['db_insert']('',
+				'{db_prefix}lp_tags',
+				array(
+					'value' => 'string'
+				),
+				$newTagIds,
+				array('tag_id'),
+				2
+			);
+
+			$smcFunc['lp_num_queries']++;
+		}
+
+		$context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
+	}
+
+	/**
+	 * @param int $item
+	 * @param string $method
+	 * @return void
+	 */
+	private function saveOptions(int $item, string $method = '')
+	{
+		global $context, $smcFunc;
+
+		$params = [];
+		foreach ($context['lp_page']['options'] as $param_name => $value) {
+			$value = is_array($value) ? implode(',', $value) : $value;
+
+			$params[] = array(
+				'item_id' => $item,
+				'type'    => 'page',
+				'name'    => $param_name,
+				'value'   => $value
+			);
+		}
+
+		if (empty($params))
+			return;
+
+		$smcFunc['db_insert']($method,
+			'{db_prefix}lp_params',
+			array(
+				'item_id' => 'int',
+				'type'    => 'string',
+				'name'    => 'string',
+				'value'   => 'string'
+			),
+			$params,
+			array('item_id', 'type', 'name')
+		);
+
+		$smcFunc['lp_num_queries']++;
 	}
 
 	/**

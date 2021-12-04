@@ -8,9 +8,9 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1 RC4+ / PHP 7.3+
-* **Tested on:** PHP 7.4.25 / MariaDB 10.5.10 / PostgreSQL 9.6.22
+* **Tested on:** PHP 7.4.26-8.1.0 / MariaDB 10.6.5 / PostgreSQL 9.6.22
 * **Hooks only:** Yes
-* **Languages:** [English, Russian, Polish, Spanish, French, Turkish, Ukrainian](https://crowdin.com/project/light-portal)
+* **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian
 * **Demo:** [Link](http://toster12.qlihost.ru/)
 
 ## Description
@@ -72,7 +72,7 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 ## Supported by
 
 [<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo." width="250">](https://www.jetbrains.com/?from=LightPortal)
-[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://ru.crowdin.com/project/light-portal)
+[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://crowdin.com/project/light-portal)
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.

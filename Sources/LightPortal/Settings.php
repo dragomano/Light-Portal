@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -160,7 +160,7 @@ class Settings
 			'title' => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
 			'tabs' => array(
 				'basic' => array(
-					'description' => sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
+					'description' => '<img class="floatright" src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png" alt="Light Portal logo">' . sprintf($txt['lp_base_info'], LP_VERSION, phpversion(), $smcFunc['db_title'], $smcFunc['db_get_version']())
 				),
 				'extra' => array(
 					'description' => $txt['lp_extra_info']
@@ -178,8 +178,6 @@ class Settings
 		);
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
-
-		$this->checkTimeForThanks();
 
 		if (Helpers::request()->has('getDebugInfo'))
 			$this->generateDumpFile();
@@ -618,7 +616,6 @@ class Settings
 		$config_vars = array(
 			array('title', 'lp_debug_and_caching'),
 			array('check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'),
-			array('check', 'lp_show_cache_info', 'disabled' => empty($modSettings['lp_show_debug_info'])),
 			array('int', 'lp_cache_update_interval', 'postinput' => $txt['seconds']),
 			array('title', 'lp_compatibility_mode'),
 			array('text', 'lp_portal_action', 'subtext' => $scripturl . '?action=<strong>' . LP_ACTION . '</strong>'),
@@ -641,7 +638,7 @@ class Settings
 				DELETE FROM {db_prefix}background_tasks
 				WHERE task_class = {string:task_class}',
 				array(
-					'task_class' => '\Bugo\LightPortal\Task'
+					'task_class' => '\Bugo\LightPortal\Tasks\Prune'
 				)
 			);
 
@@ -817,42 +814,6 @@ class Settings
 	/**
 	 * @return void
 	 */
-	private function checkTimeForThanks()
-	{
-		global $modSettings, $smcFunc, $txt;
-
-		if (empty($modSettings['lp_time_to_be_thankful'])) {
-			$request = $smcFunc['db_query']('', '
-				SELECT time_installed
-				FROM {db_prefix}log_packages
-				WHERE package_id = {string:id}
-					AND install_state = {int:state}
-				LIMIT 1',
-				array(
-					'id'    => 'Bugo:LightPortal',
-					'state' => 1
-				)
-			);
-
-			[$time_installed] = $smcFunc['db_fetch_row']($request);
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-		}
-
-		$time_installed = $time_installed ?? $modSettings['lp_time_to_be_thankful'];
-		$months = ceil((time() - $time_installed) / 60 / 60 / 24 / 30);
-
-		if ($months > 6) {
-			updateSettings(['lp_time_to_be_thankful' => time()]);
-
-			fatal_error(sprintf($txt['lp_support_info'], Helpers::getText($months, $txt['lp_months_set'])));
-		}
-	}
-
-	/**
-	 * @return void
-	 */
 	private function generateDumpFile()
 	{
 		global $context, $modSettings, $txt;
@@ -890,35 +851,11 @@ class Settings
 		if (empty($search = $data['search']))
 			return;
 
-		if (($items = Helpers::cache()->get('page_aliases_' . $search)) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT alias
-				FROM {db_prefix}lp_pages
-				WHERE alias LIKE lower({string:search})
-				ORDER BY alias
-				LIMIT 30',
-				array(
-					'search' => '%' . $search . '%'
-				)
-			);
-
-			$items = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				$items[] = $row['alias'];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			Helpers::cache()->put('page_aliases_' . $search, $items);
-		}
-
-		$results = [];
-		foreach ($items as $item) {
-			$results[] = [
-				'text' => $item
-			];
-		}
+		$results = ManagePages::getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $smcFunc['strtolower']($search)]);
+		$results = array_column($results, 'alias');
+		array_walk($results, function (&$item) {
+			$item = ['value' => $item];
+		});
 
 		exit(json_encode($results));
 	}
@@ -935,9 +872,10 @@ class Settings
 
 		$temp = parse_bbc(false);
 		$bbcTags = [];
-		foreach ($temp as $tag)
+		foreach ($temp as $tag) {
 			if (!isset($tag['require_parents']))
 				$bbcTags[] = $tag['tag'];
+		}
 
 		$bbcTags = array_unique($bbcTags);
 

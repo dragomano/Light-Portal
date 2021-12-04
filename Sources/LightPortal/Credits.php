@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -67,17 +67,17 @@ class Credits
 		isAllowedTo('light_portal_view');
 
 		$context['portal_translations'] = array(
-			'Polish'  => array('Adrek'),
-			'Spanish' => array('Rock Lee'),
+			'Polish'  => array('Adrek', 'jsqx'),
+			'Spanish' => array('Rock Lee', 'Diego Andrés'),
 			'French'  => array('Papoune57'),
-			'Turkish' => array('gevv')
+			'Turkish' => array('gevv'),
 		);
 
 		$context['testers'] = array(
 			array(
 				'name' => 'Wylek',
 				'link' => 'https://wylek.ru/'
-			)
+			),
 		);
 
 		$context['sponsors'] = array(
@@ -88,6 +88,10 @@ class Credits
 			array(
 				'name' => 'vbgamer45',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
+			),
+			array(
+				'name' => 'Crowdin',
+				'link' => 'https://crowdin.com/project/light-portal'
 			),
 		);
 

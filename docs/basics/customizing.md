@@ -78,7 +78,6 @@ In this section, you can change various auxiliary settings of the portal, which 
 ### Debugging and caching
 
 * Show the loading time and number of the portal queries — useful information for administrators and plugin creators.
-* Show the information about the portal working with the cache — enable this to see a block with the data taken from the portal from the cache, or saved by it in the cache, at the bottom of the page.
 * The cache update interval - after a specified amount of time (in seconds), the cache of each portal item will be cleared.
 * The value of the **action** parameter of the portal - you can change this setting to use the Light Portal in conjunction with other similar modifications. Then the home page will open at the specified address.
 * The **page** parameter for portal pages - see above. Similarly, for portal pages - change the parameter and they will open with different URls.

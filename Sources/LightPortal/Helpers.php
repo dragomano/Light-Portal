@@ -13,7 +13,7 @@ use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -673,9 +673,7 @@ class Helpers
 			ob_start();
 
 			try {
-				$content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
-
-				eval($content);
+				eval(html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
 			} catch (\ParseError $p) {
 				echo $p->getMessage();
 			}

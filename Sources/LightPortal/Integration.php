@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -46,9 +46,6 @@ class Integration
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Credits::show#', false, '$sourcedir/LightPortal/Credits.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Settings::adminAreas#', false, '$sourcedir/LightPortal/Settings.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Settings::adminSearch#', false, '$sourcedir/LightPortal/Settings.php');
-		add_integration_function('integrate_menu_buttons', __NAMESPACE__ . '\Debug::showInfo#', false, __FILE__);
-		add_integration_function('cache_put_data', __NAMESPACE__ . '\Debug::cachePutData#', false, __FILE__);
-		add_integration_function('cache_get_data', __NAMESPACE__ . '\Debug::cacheGetData#', false, __FILE__);
 	}
 
 	/**
@@ -78,8 +75,8 @@ class Integration
 
 		$lp_constants = [
 			'LP_NAME'         => 'Light Portal',
-			'LP_VERSION'      => '1.9.6',
-			'LP_RELEASE_DATE' => '2021-11-01',
+			'LP_VERSION'      => '1.10',
+			'LP_RELEASE_DATE' => '2021-12-04',
 			'LP_ADDON_DIR'    => $sourcedir . '/LightPortal/addons',
 			'LP_CACHE_TIME'   => $modSettings['lp_cache_update_interval'] ?? 3600,
 			'LP_ACTION'       => $modSettings['lp_portal_action'] ?? 'portal',
@@ -280,6 +277,8 @@ class Integration
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
 			);
 		}
+
+		(new DebugInfo)();
 
 		if (empty($modSettings['lp_frontpage_mode']))
 			return;

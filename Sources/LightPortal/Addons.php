@@ -11,7 +11,7 @@ namespace Bugo\LightPortal;
  * @copyright 2019-2021 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.9
+ * @version 1.10
  */
 
 if (!defined('SMF'))
@@ -154,7 +154,7 @@ class Addons
 	 */
 	private static function loadAssets(string $addon_name, string $snake_name)
 	{
-		global $context, $settings;
+		global $settings;
 
 		$style = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon_name . '/style.css';
 

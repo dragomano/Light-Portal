@@ -157,11 +157,9 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		if (! refs.title_0.value) {
-			pageType.disable()
-		} else {
-			pageType.enable()
-		}
+		pageType.disable()
+
+		if (refs.title_0.value) pageType.enable()
 
 		// Create a page alias on page type changing
 		if (refs.alias.value === '' && typeof (slugify) === 'function') {
@@ -191,6 +189,7 @@ class Plugin extends PortalEntity {
 
 	async toggle(target) {
 		const plugin = target.closest('.features').dataset.id
+		const status = target.dataset.toggle
 
 		let response = await fetch(this.workUrl + ';toggle', {
 			method: 'POST',
@@ -198,7 +197,8 @@ class Plugin extends PortalEntity {
 				'Content-Type': 'application/json; charset=utf-8'
 			},
 			body: JSON.stringify({
-				toggle_plugin: plugin
+				plugin,
+				status
 			})
 		})
 

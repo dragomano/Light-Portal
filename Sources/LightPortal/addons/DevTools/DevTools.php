@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.11.21
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -87,7 +87,11 @@ class DevTools extends Plugin
 					'edit_link' => '',
 					'teaser'    => Helpers::getTeaser(Lorem::ipsum(4)),
 					'msg_link'  => $num_replies ? $scripturl . '?msg=' . $msg_id : $link,
-					'tags'      => [1 => 'Tag1', 'Tag2', 'Tag3'],
+					'tags'      => array(
+						['name' => 'Tag1', 'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . random_int(1, 99)],
+						['name' => 'Tag2', 'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . random_int(1, 99)],
+						['name' => 'Tag3', 'href' => $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . random_int(1, 99)]
+					),
 					'datetime'  => date('Y-m-d', $date)
 				);
 			}
