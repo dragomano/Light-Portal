@@ -151,8 +151,8 @@ class Page
 		$context['meta_description'] = $context['lp_page']['description'];
 
 		$keywords = [];
-		if (!empty($context['lp_page']['keywords'])) {
-			$keywords = array_column($context['lp_page']['keywords'], 'name');
+		if (!empty($context['lp_page']['tags'])) {
+			$keywords = array_column($context['lp_page']['tags'], 'name');
 
 			$modSettings['meta_keywords'] = implode(', ', $keywords);
 		}
