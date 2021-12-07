@@ -287,26 +287,27 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 
 	if ($context['user']['is_logged']) {
 		echo '
-				<div class="smalltext">';
+				<div class="smalltext">
+					&nbsp;';
 
 		if ($level < 5) {
 			echo '
 					<span class="reply_button" data-id="', $comment['id'], '" @click.self="replyForm = true; $nextTick(() => $refs.reply_message.focus())"><i class="fas fa-reply"></i> ', $txt['reply'], '</span>';
+		}
 
-			// Only comment author can edit comments
-			if ($comment['can_edit'] && empty($comment['children']) && $comment['author_id'] == $context['user']['id'])
-				echo '
-					<span class="modify_button" data-id="', $comment['id'], '" @click.self="comment.modify($event.target)"><i class="fas fa-edit"></i> ', $txt['modify'], '</span>
-					<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)"><i class="fas fa-save"></i> ', $txt['save'], '</span>
-					<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)"><i class="fas fa-undo"></i> ', $txt['modify_cancel'], '</span>';
-		} else {
-			echo '&nbsp;';
+		// Only comment author can edit comments
+		if ($comment['can_edit'] && empty($comment['children']) && $comment['author_id'] == $context['user']['id']) {
+			echo '
+				<span class="modify_button" data-id="', $comment['id'], '" @click.self="comment.modify($event.target)"><i class="fas fa-edit"></i> ', $txt['modify'], '</span>
+				<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)"><i class="fas fa-save"></i> ', $txt['save'], '</span>
+				<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)"><i class="fas fa-undo"></i> ', $txt['modify_cancel'], '</span>';
 		}
 
 		// Only comment author or admin can remove comments
-		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin'])
+		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin']) {
 			echo '
 					<span class="remove_button floatright" data-id="', $comment['id'], '" data-level="', $level, '" @click.once="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')"><i class="fas fa-minus-circle"></i> ', $txt['remove'], '</span>';
+		}
 
 		echo '
 				</div>';
