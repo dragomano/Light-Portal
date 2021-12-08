@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 8.12.21
  */
 
 namespace Bugo\LightPortal\Addons\FaBoardIcons;
@@ -19,48 +19,33 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class FaBoardIcons extends Plugin
 {
-	/**
-	 * @var string
-	 */
 	public $type = 'article';
 
-	/**
-	 * Select columns with icon and color
-	 *
-	 * Выбираем столбцы с иконкой и цветом
-	 *
-	 * @param array $custom_columns
-	 * @return void
-	 */
 	public function frontBoards(array &$custom_columns)
 	{
-		global $sourcedir;
-
-		if (!is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php'))
+		if (! $this->isBaseModInstalled())
 			return;
 
 		$custom_columns[] = 'b.fabi_icon, b.fabi_color';
 	}
 
-	/**
-	 * Change some result data
-	 *
-	 * Меняем некоторые результаты выборки
-	 *
-	 * @param array $boards
-	 * @param array $row
-	 * @return void
-	 */
 	public function frontBoardsOutput(array &$boards, array $row)
 	{
-		global $sourcedir, $modSettings;
+		global $modSettings;
 
-		if (!is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php'))
+		if (! $this->isBaseModInstalled())
 			return;
 
 		$icon = !empty($row['fabi_icon']) && empty($modSettings['fabi_force_default_icon']) ? $row['fabi_icon'] : (!empty($modSettings['fabi_default_icon']) ? $modSettings['fabi_default_icon'] : 'fas fa-comments');
 		$color = !empty($row['fabi_color']) && empty($modSettings['fabi_force_default_color']) ? $row['fabi_color'] : (!empty($modSettings['fabi_default_color']) ? $modSettings['fabi_default_color'] : '');
 
-		$boards[$row['id_board']]['name'] = '<i class="' . $icon . ' fa"' . (!empty($color) ? ' style="color: ' . $color . '"' : '') . '></i> ' . $boards[$row['id_board']]['name'];
+		$boards[$row['id_board']]['title'] = '<i class="' . $icon . ' fa"' . (!empty($color) ? ' style="color: ' . $color . '"' : '') . '></i> ' . $boards[$row['id_board']]['title'];
+	}
+
+	private function isBaseModInstalled(): bool
+	{
+		global $sourcedir;
+
+		return is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php');
 	}
 }
