@@ -121,6 +121,7 @@ class ManagePlugins
 		$context['all_lp_plugins'] = array_map(function ($item) use ($txt, &$context, $config_vars) {
 			$requires = [];
 			$disables = [];
+			$composer = false;
 
 			$snake_name = Helpers::getSnakeName($item);
 
@@ -139,6 +140,8 @@ class ManagePlugins
 
 				if ($addonClass->hasProperty('disables'))
 					$disables = $addonClass->getProperty('disables')->getValue(new $className);
+
+				$composer = $this->hasComposerJson($addonClass);
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item])) {
 					$context['lp_' . $snake_name]['type'] = $context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -163,7 +166,7 @@ class ManagePlugins
 				'settings'   => $config_vars[$snake_name] ?? [],
 				'requires'   => array_diff($requires, $context['lp_enabled_plugins']),
 				'disables'   => array_intersect($disables, $context['lp_enabled_plugins']),
-				'composer'   => $this->hasComposerJson($addonClass),
+				'composer'   => $composer,
 			];
 		}, $context['lp_plugins']);
 
