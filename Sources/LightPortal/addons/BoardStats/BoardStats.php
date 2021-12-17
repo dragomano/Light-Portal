@@ -6,29 +6,22 @@
  * @package BoardStats (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class BoardStats extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-chart-pie';
+	public string $icon = 'fas fa-chart-pie';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['board_stats']['parameters'] = [
@@ -40,11 +33,6 @@ class BoardStats extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_stats')
@@ -57,9 +45,6 @@ class BoardStats extends Plugin
 		$parameters['update_interval']    = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -72,7 +57,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_latest_member',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_latest_member'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_latest_member'])
 			),
 			'tab' => 'content'
 		);
@@ -82,7 +67,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_basic_info',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_basic_info'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_basic_info'])
 			),
 			'tab' => 'content'
 		);
@@ -92,7 +77,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_whos_online',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_whos_online'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_whos_online'])
 			),
 			'tab' => 'content'
 		);
@@ -102,7 +87,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'use_fa_icons',
-				'checked' => !empty($context['lp_block']['options']['parameters']['use_fa_icons'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['use_fa_icons'])
 			),
 			'tab' => 'appearance'
 		);
@@ -118,14 +103,6 @@ class BoardStats extends Plugin
 		);
 	}
 
-	/**
-	 * Get the board stats data
-	 *
-	 * Получаем данные статистики форума
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getData(array $parameters): array
 	{
 		global $modSettings;
@@ -135,7 +112,7 @@ class BoardStats extends Plugin
 
 		$this->loadSsi();
 
-		if (!empty($parameters['show_basic_info'])) {
+		if (! empty($parameters['show_basic_info'])) {
 			$basic_info = ssi_boardStats('array');
 			$basic_info['max_online_today'] = comma_format($modSettings['mostOnlineToday']);
 			$basic_info['max_online']       = comma_format($modSettings['mostOnline']);
@@ -144,17 +121,10 @@ class BoardStats extends Plugin
 		return [
 			'latest_member' => $modSettings['latestRealName'] ?? '',
 			'basic_info'    => $basic_info ?? [],
-			'whos_online'   => !empty($parameters['show_whos_online']) ? ssi_whosOnline('array') : []
+			'whos_online'   => empty($parameters['show_whos_online']) ? [] : ssi_whosOnline('array')
 		];
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt, $scripturl;
@@ -162,19 +132,19 @@ class BoardStats extends Plugin
 		if ($type !== 'board_stats')
 			return;
 
-		$board_stats = Helpers::cache('board_stats_addon_b' . $block_id . '_u' . $user_info['id'])
+		$board_stats = Helper::cache('board_stats_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
 		if (empty($board_stats))
 			return;
 
-		$fa = !empty($parameters['use_fa_icons']);
+		$fa = ! empty($parameters['use_fa_icons']);
 
 		echo '
 			<div class="board_stats_areas">';
 
-		if (!empty($parameters['show_latest_member']) && !empty($board_stats['latest_member'])) {
+		if (! empty($parameters['show_latest_member']) && ! empty($board_stats['latest_member'])) {
 			echo '
 				<div>
 					<h4>
@@ -186,7 +156,7 @@ class BoardStats extends Plugin
 				</div>';
 		}
 
-		if (!empty($parameters['show_basic_info']) && !empty($board_stats['basic_info'])) {
+		if (! empty($parameters['show_basic_info']) && ! empty($board_stats['basic_info'])) {
 			$stats_title = allowedTo('view_stats') ? '<a href="' . $scripturl . '?action=stats">' . $txt['forum_stats'] . '</a>' : $txt['forum_stats'];
 
 			echo '
@@ -212,7 +182,7 @@ class BoardStats extends Plugin
 				</div>';
 		}
 
-		if (!empty($parameters['show_whos_online']) && !empty($board_stats['whos_online'])) {
+		if (! empty($parameters['show_whos_online']) && ! empty($board_stats['whos_online'])) {
 			$online_title = allowedTo('who_view') ? '<a href="' . $scripturl . '?action=who">' . $txt['online_users'] . '</a>' : $txt['online_users'];
 
 			echo '

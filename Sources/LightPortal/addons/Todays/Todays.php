@@ -6,52 +6,34 @@
  * @package Todays (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class Todays extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-calendar-day';
+	public string $icon = 'fas fa-calendar-day';
 
-	/**
-	 * @return void
-	 */
 	public function init()
 	{
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
 	}
 
-	/**
-	 * Hide Calendar in the main menu
-	 *
-	 * Убираем Календарь из главного меню
-	 *
-	 * @param array $buttons
-	 * @return void
-	 */
 	public function menuButtons(array &$buttons)
 	{
 		global $context, $modSettings;
 
-		$buttons['calendar']['show'] = !empty($context['allow_calendar']) && empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = ! empty($context['allow_calendar']) && empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
 	}
 
-	/**
-	 * @param array $config_vars
-	 * @return void
-	 */
 	public function addSettings(array &$config_vars)
 	{
 		global $txt, $scripturl;
@@ -63,10 +45,6 @@ class Todays extends Plugin
 		);
 	}
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['todays']['parameters'] = [
@@ -75,11 +53,6 @@ class Todays extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'todays')
@@ -89,9 +62,6 @@ class Todays extends Plugin
 		$parameters['max_items']   = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -130,15 +100,6 @@ class Todays extends Plugin
 		);
 	}
 
-	/**
-	 * Get the list of the content we need
-	 *
-	 * Получаем список нужного нам контента
-	 *
-	 * @param string $type
-	 * @param string $output_method
-	 * @return string|array
-	 */
 	public function getData(string $type, string $output_method = 'echo')
 	{
 		$this->loadSsi();
@@ -148,13 +109,6 @@ class Todays extends Plugin
 		return function_exists($funcName) ? $funcName($output_method) : '';
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt, $scripturl;
@@ -165,11 +119,11 @@ class Todays extends Plugin
 		$result = $this->getData($parameters['widget_type'], 'array');
 
 		if ($parameters['widget_type'] == 'calendar') {
-			if (!empty($result['calendar_holidays']) || !empty($result['calendar_birthdays']) || !empty($result['calendar_events']))
+			if (! empty($result['calendar_holidays']) || ! empty($result['calendar_birthdays']) || ! empty($result['calendar_events']))
 				$this->getData($parameters['widget_type']);
 			else
 				echo $txt['lp_todays']['empty_list'];
-		} elseif (!empty($result)) {
+		} elseif (! empty($result)) {
 			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);
 			} else {
@@ -181,7 +135,7 @@ class Todays extends Plugin
 					echo '
 		<a href="', $scripturl, '?action=profile;u=', $member['id'], '">
 			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
-		</a>' . (!$member['is_last'] ? ', ' : '');
+		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
 				$hiddenContent = '';
@@ -189,15 +143,15 @@ class Todays extends Plugin
 					$hiddenContent .= '
 		<a href="' . $scripturl . '?action=profile;u=' . $member['id'] . '">
 			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
-		</a>' . (!$member['is_last'] ? ', ' : '');
+		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
 				// HTML5 spoiler
-				if (!empty($hiddenContent))
+				if (! empty($hiddenContent))
 					echo $txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', Helpers::getText(count($result) - $parameters['max_items'], $txt['lp_todays']['birthdays_set']), '</span>
+				<span>', Helper::getPluralText(count($result) - $parameters['max_items'], $txt['lp_todays']['birthdays_set']), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

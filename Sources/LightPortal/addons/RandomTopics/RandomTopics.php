@@ -6,41 +6,28 @@
  * @package RandomTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class RandomTopics extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-random';
+	public string $icon = 'fas fa-random';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['random_topics']['no_content_class'] = true;
-
 		$options['random_topics']['parameters']['num_topics'] = 10;
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'random_topics')
@@ -49,9 +36,6 @@ class RandomTopics extends Plugin
 		$parameters['num_topics'] = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -70,14 +54,6 @@ class RandomTopics extends Plugin
 		);
 	}
 
-	/**
-	 * Get the list of random forum topics
-	 *
-	 * Получаем список случайных тем форума
-	 *
-	 * @param int $num_topics
-	 * @return array
-	 */
 	public function getData(int $num_topics): array
 	{
 		global $db_type, $smcFunc, $user_info, $context, $modSettings, $settings, $scripturl;
@@ -85,7 +61,7 @@ class RandomTopics extends Plugin
 		if (empty($num_topics))
 			return [];
 
-		if ($db_type == 'postgresql') {
+		if ($db_type === 'postgresql') {
 			$request = $smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
@@ -185,9 +161,9 @@ class RandomTopics extends Plugin
 
 		$topics = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!empty($modSettings['messageIconChecks_enable']) && !isset($icon_sources[$row['icon']])) {
+			if (! empty($modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = file_exists($settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
-			} elseif (!isset($icon_sources[$row['icon']])) {
+			} elseif (! isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = 'images_url';
 			}
 
@@ -206,13 +182,6 @@ class RandomTopics extends Plugin
 		return $topics;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
@@ -220,20 +189,20 @@ class RandomTopics extends Plugin
 		if ($type !== 'random_topics')
 			return;
 
-		$random_topics = Helpers::cache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+		$randomTopics = Helper::cache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
 
-		if (!empty($random_topics)) {
+		if (! empty($randomTopics)) {
 			echo '
 			<ul class="random_topics noup">';
 
-			foreach ($random_topics as $topic) {
+			foreach ($randomTopics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
 					<span class="new_posts">' . $txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
 					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', Helpers::getFriendlyTime($topic['time']), '</span>
+					<br><span class="smalltext">', Helper::getFriendlyTime($topic['time']), '</span>
 				</li>';
 			}
 

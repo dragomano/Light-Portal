@@ -1,38 +1,33 @@
 <?php
 
-namespace Bugo\LightPortal;
+declare(strict_types = 1);
 
 /**
- * Credits.php
+ * CreditArea.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Credits
+final class CreditArea
 {
-	/**
-	 * Display credits on action=credits area
-	 *
-	 * Отображаем копирайты на странице action=credits
-	 *
-	 * @return void
-	 */
 	public function show()
 	{
 		global $context, $txt;
 
 		$context['credits_modifications'][] = $this->getLink();
 
-		if (!empty($context['current_subaction']) && $context['current_subaction'] === 'light_portal') {
+		if (! empty($context['current_subaction']) && $context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
@@ -45,21 +40,15 @@ class Credits
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getLink(): string
 	{
 		global $user_info, $scripturl, $txt;
 
-		$link = $user_info['language'] == 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
+		$link = $user_info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2021</a>, Bugo | ' . $txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $scripturl . '?action=credits;sa=light_portal">2019&ndash;2022</a>, Bugo | ' . $txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareComponents()
 	{
 		global $context;
@@ -164,13 +153,13 @@ class Credits
 				'author' => 'Jan Odvárko – East Desire',
 				'license' => array(
 					'name' => 'GNU GPL v3',
-					'link' => 'http://www.gnu.org/licenses/gpl-3.0.txt'
+					'link' => 'https://jscolor.com/download/#open-source-license'
 				)
 			),
 		);
 
 		// Adding copyrights of used plugins
-		Addons::run('credits', array(&$links));
+		Addon::run('credits', array(&$links));
 
 		$context['lp_components'] = $links;
 	}

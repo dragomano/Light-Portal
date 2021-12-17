@@ -1,13 +1,10 @@
 <?php
 
-/**
- * @return void
- */
 function template_layout_switcher_above()
 {
 	global $context, $txt;
 
-	if (!empty($context['lp_frontpage_articles']) && !empty($context['frontpage_layouts'])) {
+	if (! empty($context['lp_frontpage_articles']) && ! empty($context['frontpage_layouts'])) {
 		echo '
 	<div class="windowbg" style="margin: 1px 0 5px 0">';
 
@@ -35,9 +32,6 @@ function template_layout_switcher_above()
 	}
 }
 
-/**
- * @return void
- */
 function template_layout_switcher_below()
 {
 }

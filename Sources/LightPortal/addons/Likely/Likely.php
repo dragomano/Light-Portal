@@ -6,11 +6,11 @@
  * @package Likely (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -19,20 +19,10 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class Likely extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-share-square';
+	public string $icon = 'far fa-share-square';
 
-	/**
-	 * @var array
-	 */
-	private $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
+	private array $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['likely']['parameters']['size']    = 'small';
@@ -40,11 +30,6 @@ class Likely extends Plugin
 		$options['likely']['parameters']['buttons'] = $this->buttons;
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'likely')
@@ -59,9 +44,6 @@ class Likely extends Plugin
 		);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -101,7 +83,7 @@ class Likely extends Plugin
 			);
 		}
 
-		if (!is_array($context['lp_block']['options']['parameters']['buttons'])) {
+		if (! is_array($context['lp_block']['options']['parameters']['buttons'])) {
 			$context['lp_block']['options']['parameters']['buttons'] = explode(',', $context['lp_block']['options']['parameters']['buttons']);
 		}
 
@@ -136,13 +118,6 @@ class Likely extends Plugin
 		);
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt, $modSettings, $settings;
@@ -163,9 +138,9 @@ class Likely extends Plugin
 		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
 
 		foreach ($buttons as $service) {
-			if (!empty($txt['lp_likely']['buttons_set'][$service])) {
+			if (! empty($txt['lp_likely']['buttons_set'][$service])) {
 				echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely']['buttons_set'][$service], '"', (!empty($modSettings['optimus_tw_cards']) && $service == 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (!empty($settings['og_image']) && $service == 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely']['buttons_set'][$service], '</div>';
+					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely']['buttons_set'][$service], '"', (! empty($modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (! empty($settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely']['buttons_set'][$service], '</div>';
 			}
 		}
 
@@ -174,10 +149,6 @@ class Likely extends Plugin
 			</div>';
 	}
 
-	/**
-	 * @param array $links
-	 * @return void
-	 */
 	public function credits(array &$links)
 	{
 		$links[] = array(

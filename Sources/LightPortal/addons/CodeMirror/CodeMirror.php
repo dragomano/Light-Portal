@@ -6,11 +6,11 @@
  * @package CodeMirror (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -19,52 +19,36 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class CodeMirror extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'editor';
+	public string $type = 'editor';
+	private array $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'];
 
-	private $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'];
-
-	/**
-	 * @param array $config_vars
-	 * @return void
-	 */
 	public function addSettings(array &$config_vars)
 	{
 		$config_vars['code_mirror'][] = array('multicheck', 'modes', $this->modes);
 		$config_vars['code_mirror'][] = array('desc', 'small_hint');
 	}
 
-	/**
-	 * Adding syntax highlighting for 'php/html' content
-	 *
-	 * Добавляем подсветку синтаксиса для 'php/html'-контента
-	 *
-	 * @param array $object
-	 * @return void
-	 */
 	public function prepareEditor(array $object)
 	{
 		global $modSettings, $context, $txt;
 
-		if ($object['type'] === 'bbc' || (!empty($object['options']['content']) && $object['options']['content'] === 'bbc'))
+		if ($object['type'] === 'bbc' || (! empty($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		$modes = !empty($modSettings['lp_code_mirror_addon_modes']) ? json_decode($modSettings['lp_code_mirror_addon_modes'], true) : [];
+		$modes = empty($modSettings['lp_code_mirror_addon_modes']) ? [] : json_decode($modSettings['lp_code_mirror_addon_modes'], true);
 
 		if (empty($modes))
 			return;
 
-		if (($object['type'] === 'html' || (!empty($object['options']['content']) && $object['options']['content'] === 'html')) && !empty($modes['html'])) {
+		if (($object['type'] === 'html' || (! empty($object['options']['content']) && $object['options']['content'] === 'html')) && ! empty($modes['html'])) {
 			$current_mode = 'html';
-		} elseif (($object['type'] === 'php' || (!empty($object['options']['content']) && $object['options']['content'] === 'php')) && !empty($modes['php'])) {
+		} elseif (($object['type'] === 'php' || (! empty($object['options']['content']) && $object['options']['content'] === 'php')) && ! empty($modes['php'])) {
 			$current_mode = 'php';
-		} elseif (($object['type'] === 'markdown' || (!empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && !empty($modes['markdown'])) {
+		} elseif (($object['type'] === 'markdown' || (! empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && ! empty($modes['markdown'])) {
 			$current_mode = 'markdown';
-		} elseif (($object['type'] === 'pug' || (!empty($object['options']['content']) && $object['options']['content'] === 'pug')) && !empty($modes['pug'])) {
+		} elseif (($object['type'] === 'pug' || (! empty($object['options']['content']) && $object['options']['content'] === 'pug')) && ! empty($modes['pug'])) {
 			$current_mode = 'pug';
-		} elseif (($object['type'] === 'twig' || (!empty($object['options']['content']) && $object['options']['content'] === 'twig')) && !empty($modes['twig'])) {
+		} elseif (($object['type'] === 'twig' || (! empty($object['options']['content']) && $object['options']['content'] === 'twig')) && ! empty($modes['twig'])) {
 			$current_mode = 'twig';
 		}
 
@@ -150,10 +134,6 @@ class CodeMirror extends Plugin
 		});', true);
 	}
 
-	/**
-	 * @param array $links
-	 * @return void
-	 */
 	public function credits(array &$links)
 	{
 		$links[] = array(

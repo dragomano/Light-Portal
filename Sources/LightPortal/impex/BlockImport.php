@@ -1,8 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Impex;
-
-use Bugo\LightPortal\Helpers;
+declare(strict_types = 1);
 
 /**
  * BlockImport.php
@@ -10,24 +8,21 @@ use Bugo\LightPortal\Helpers;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Impex;
+
+use Bugo\LightPortal\Helper;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class BlockImport extends AbstractImport
+final class BlockImport extends AbstractImport
 {
-	/**
-	 * The page of import blocks
-	 *
-	 * Страница импорта блоков
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
@@ -48,18 +43,11 @@ class BlockImport extends AbstractImport
 		$this->run();
 	}
 
-	/**
-	 * Import from an XML file
-	 *
-	 * Импорт из XML-файла
-	 *
-	 * @return void
-	 */
 	protected function run()
 	{
 		global $db_temp_cache, $db_cache, $smcFunc, $context, $txt;
 
-		if (empty($file = Helpers::file('import_file')->get()))
+		if (empty($file = Helper::file('import_file')->get()))
 			return;
 
 		// Might take some time.
@@ -77,7 +65,7 @@ class BlockImport extends AbstractImport
 		if ($xml === false)
 			return;
 
-		if (!isset($xml->blocks->item[0]['block_id']))
+		if (! isset($xml->blocks->item[0]['block_id']))
 			fatal_lang_error('lp_wrong_import_file', false);
 
 		$items = $titles = $params = [];
@@ -96,13 +84,13 @@ class BlockImport extends AbstractImport
 					'permissions'   => intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
-					'title_class'   => strpos($item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,
+					'title_class'   => strpos((string) $item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,
 					'title_style'   => $item->title_style,
-					'content_class' => strpos($item->content_class, 'div.') !== false ? 'roundframe' : $item->content_class,
+					'content_class' => strpos((string) $item->content_class, 'div.') !== false ? 'roundframe' : $item->content_class,
 					'content_style' => $item->content_style
 				];
 
-				if (!empty($item->titles)) {
+				if (! empty($item->titles)) {
 					foreach ($item->titles as $title) {
 						foreach ($title as $k => $v) {
 							$titles[] = [
@@ -115,7 +103,7 @@ class BlockImport extends AbstractImport
 					}
 				}
 
-				if (!empty($item->params)) {
+				if (! empty($item->params)) {
 					foreach ($item->params as $param) {
 						foreach ($param as $k => $v) {
 							$params[] = [
@@ -132,13 +120,13 @@ class BlockImport extends AbstractImport
 
 		$smcFunc['db_transaction']('begin');
 
-		if (!empty($items)) {
+		if (! empty($items)) {
 			$context['import_successful'] = count($items);
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$results = $smcFunc['db_insert']('replace',
 					'{db_prefix}lp_blocks',
 					array(
 						'block_id'      => 'int',
@@ -166,12 +154,12 @@ class BlockImport extends AbstractImport
 			}
 		}
 
-		if (!empty($titles) && !empty($result)) {
+		if (! empty($titles) && ! empty($results)) {
 			$titles = array_chunk($titles, 100);
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$results = $smcFunc['db_insert']('replace',
 					'{db_prefix}lp_titles',
 					array(
 						'item_id' => 'int',
@@ -188,12 +176,12 @@ class BlockImport extends AbstractImport
 			}
 		}
 
-		if (!empty($params) && !empty($result)) {
+		if (! empty($params) && ! empty($results)) {
 			$params = array_chunk($params, 100);
 			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
+				$results = $smcFunc['db_insert']('replace',
 					'{db_prefix}lp_params',
 					array(
 						'item_id' => 'int',
@@ -210,18 +198,18 @@ class BlockImport extends AbstractImport
 			}
 		}
 
-		if (empty($result)) {
+		if (empty($results)) {
 			$smcFunc['db_transaction']('rollback');
 			fatal_lang_error('lp_import_failed', false);
 		}
 
 		$smcFunc['db_transaction']('commit');
 
-		$context['import_successful'] = sprintf($txt['lp_import_success'], Helpers::getText($context['import_successful'], $txt['lp_blocks_set']));
+		$context['import_successful'] = sprintf($txt['lp_import_success'], Helper::getPluralText($context['import_successful'], $txt['lp_blocks_set']));
 
 		// Restore the cache
 		$db_cache = $db_temp_cache;
 
-		Helpers::cache()->flush();
+		Helper::cache()->flush();
 	}
 }

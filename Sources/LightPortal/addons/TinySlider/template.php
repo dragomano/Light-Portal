@@ -1,6 +1,6 @@
 <?php
 
-function tiny_slider_images()
+function tiny_slider_images(): string
 {
 	global $txt;
 
@@ -14,7 +14,7 @@ function tiny_slider_images()
 							<table class="plugin_options table_grid">
 								<tbody>
 									<tr class="windowbg">
-										<td style="width: 90px"><img :src="image.link"></td>
+										<td style="width: 90px"><img alt="*" :src="image.link"></td>
 										<td>
 											<input type="url" x-model="image.link" name="image_link[]" required placeholder="' . $txt['lp_tiny_slider']['link_placeholder'] . '">
 										</td>

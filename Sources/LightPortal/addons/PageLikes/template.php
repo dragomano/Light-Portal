@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Likes block template
- *
- * Шаблон блока лайков
- *
- * @param array $page
- * @return void
- */
-function show_likes_block($page)
+function show_likes_block(array $page)
 {
 	global $modSettings, $scripturl, $context, $txt;
 
@@ -19,15 +11,15 @@ function show_likes_block($page)
 		<hr>
 		<ul class="floatleft" style="list-style: none">';
 
-	if (!empty($page['likes']['can_like'])) {
+	if (! empty($page['likes']['can_like'])) {
 		echo '
 			<li>
 				<a href="', $scripturl, '?action=likes;ltype=lpp;sa=like;like=', $page['id'], ';', $context['session_var'], '=', $context['session_id'], '" class="msg_like"><span class="main_icons ', $page['likes']['you'] ? 'unlike' : 'like', '"></span> ', $page['likes']['you'] ? $txt['unlike'] : $txt['like'], '</a>
 			</li>';
 	}
 
-	if (!empty($page['likes']['count'])) {
-		$count = $page['likes']['count'];
+	if (! empty($page['likes']['count'])) {
+		$count = (int) $page['likes']['count'];
 		$base  = 'likes_';
 
 		if ($page['likes']['you']) {

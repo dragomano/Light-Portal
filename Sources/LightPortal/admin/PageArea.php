@@ -1,49 +1,31 @@
 <?php
 
-namespace Bugo\LightPortal;
+declare(strict_types = 1);
 
 /**
- * ManagePages.php
+ * PageArea.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Admin;
+
+use \Bugo\LightPortal\{Addon, Helper, Page};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class ManagePages
+final class PageArea
 {
-	/**
-	 * Number pages within tables
-	 *
-	 * Количество страниц в таблицах
-	 *
-	 * @var int
-	 */
 	public const NUM_PAGES = 20;
-
-	/**
-	 * The page name must begin with a Latin letter and may consist of lowercase Latin letters, numbers, and underscore
-	 *
-	 * Имя страницы должно начинаться с латинской буквы и может состоять из строчных латинских букв, цифр и знака подчеркивания
-	 *
-	 * @var string
-	 */
 	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 
-	/**
-	 * Manage pages
-	 *
-	 * Управление страницами
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $smcFunc, $scripturl, $modSettings;
@@ -61,7 +43,7 @@ class ManagePages
 		$this->doActions();
 		$this->massActions();
 
-		$search_params_string = trim(Helpers::request('search', ''));
+		$search_params_string = trim(Helper::request('search', ''));
 		$search_params = array(
 			'string' => $smcFunc['htmlspecialchars']($search_params_string)
 		);
@@ -76,19 +58,19 @@ class ManagePages
 			'items_per_page' => self::NUM_PAGES,
 			'title' => $txt['lp_pages_extra'],
 			'no_items_label' => $txt['lp_no_items'],
-			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (!empty($context['search_params']) ? ';params=' . $context['search_params'] : ''),
+			'base_href' => $scripturl . '?action=admin;area=lp_pages' . (empty($context['search_params']) ? '' : ';params=' . $context['search_params']),
 			'default_sort_col' => 'date',
 			'get_items' => array(
 				'function' => array($this, 'getAll'),
 				'params' => array(
-					(!empty($search_params['string']) ? ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)' : ''),
+					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
 				)
 			),
 			'get_count' => array(
 				'function' => array($this, 'getTotalCount'),
 				'params' => array(
-					(!empty($search_params['string']) ? ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)' : ''),
+					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
 					array('quick_search_string' => $smcFunc['strtolower']($search_params['string']))
 				)
 			),
@@ -213,7 +195,8 @@ class ManagePages
 					'data' => array(
 						'function' => function ($entry) use ($scripturl, $txt)
 						{
-							$actions = '<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
+							return '
+						<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
 							<div class="context_menu" @click.away="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
 									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
@@ -230,8 +213,6 @@ class ManagePages
 								</div>
 							</div>
 						</div>';
-
-							return $actions;
 						},
 						'class' => 'centertext'
 					)
@@ -241,10 +222,7 @@ class ManagePages
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">';
-						},
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
 						'class' => 'centertext'
 					)
 				)
@@ -293,11 +271,11 @@ class ManagePages
 				</a>
 			</span>' . $listOptions['title'];
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'default') {
+		if (! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'default') {
 			unset($listOptions['columns']['num_comments']);
 		}
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['lp_pages']['title'] .= ' (' . $context['lp_pages']['total_num_items'] . ')';
@@ -305,18 +283,6 @@ class ManagePages
 		$context['default_list'] = 'lp_pages';
 	}
 
-	/**
-	 * Get the list of pages
-	 *
-	 * Получаем список страниц
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @param string $query_string
-	 * @param array $query_params
-	 * @return array
-	 */
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		global $smcFunc, $user_info;
@@ -328,7 +294,7 @@ class ManagePages
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
-			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
+			WHERE p.author_id = {int:user_id}') . (! empty($query_string) ? '
 				AND ' . $query_string : '') . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
@@ -352,8 +318,8 @@ class ManagePages
 				'num_comments' => $row['num_comments'],
 				'author_id'    => $row['author_id'],
 				'author_name'  => $row['author_name'],
-				'created_at'   => Helpers::getFriendlyTime($row['date']),
-				'is_front'     => Helpers::isFrontpage($row['alias']),
+				'created_at'   => Helper::getFriendlyTime((int) $row['date']),
+				'is_front'     => Helper::isFrontpage($row['alias']),
 				'title'        => $row['title']
 			);
 		}
@@ -364,15 +330,6 @@ class ManagePages
 		return $items;
 	}
 
-	/**
-	 * Get the total number of pages
-	 *
-	 * Подсчитываем общее количество страниц
-	 *
-	 * @param string $query_string
-	 * @param array $query_params
-	 * @return int
-	 */
 	public function getTotalCount(string $query_string = '', array $query_params = []): int
 	{
 		global $smcFunc, $user_info;
@@ -382,8 +339,8 @@ class ManagePages
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($user_info['is_admin'] ? '
 			WHERE 1=1' : '
-			WHERE p.author_id = {int:user_id}') . (!empty($query_string) ? '
-				AND ' . $query_string : ''),
+			WHERE p.author_id = {int:user_id}') . (empty($query_string) ? '' : '
+				AND ' . $query_string),
 			array_merge($query_params, array(
 				'lang'    => $user_info['language'],
 				'user_id' => $user_info['id']
@@ -402,31 +359,25 @@ class ManagePages
 	 * Possible actions with pages
 	 *
 	 * Возможные действия со страницами
-	 *
-	 * @return void
 	 */
 	private function doActions()
 	{
-		if (Helpers::request()->has('actions') === false)
+		if (Helper::request()->has('actions') === false)
 			return;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
-		if (!empty($data['del_item']))
+		if (! empty($data['del_item']))
 			$this->remove([(int) $data['del_item']]);
 
-		if (!empty($data['toggle_item']))
+		if (! empty($data['toggle_item']))
 			self::toggleStatus([(int) $data['toggle_item']]);
 
-		Helpers::cache()->flush();
+		Helper::cache()->flush();
 
 		exit;
 	}
 
-	/**
-	 * @param array $items
-	 * @return void
-	 */
 	private function remove(array $items)
 	{
 		global $smcFunc;
@@ -479,13 +430,9 @@ class ManagePages
 
 		$smcFunc['lp_num_queries'] += 5;
 
-		Addons::run('onPageRemoving', array($items));
+		Addon::run('onPageRemoving', array($items));
 	}
 
-	/**
-	 * @param array $items
-	 * @return void
-	 */
 	public static function toggleStatus(array $items = [])
 	{
 		global $smcFunc;
@@ -507,17 +454,14 @@ class ManagePages
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function massActions()
 	{
-		if (Helpers::post()->has('mass_actions') === false || Helpers::post()->isEmpty('items'))
+		if (Helper::post()->has('mass_actions') === false || Helper::post()->isEmpty('items'))
 			return;
 
 		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, array('options' => array('default' => 'action=admin;area=lp_pages')));
 
-		$items = Helpers::post('items');
+		$items = Helper::post('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				$this->remove($items);
@@ -531,9 +475,6 @@ class ManagePages
 		redirectexit($redirect);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function add()
 	{
 		global $context, $txt, $scripturl;
@@ -549,7 +490,7 @@ class ManagePages
 			'description' => $txt['lp_pages_add_description']
 		);
 
-		Helpers::prepareForumLanguages();
+		Helper::prepareForumLanguages();
 
 		$this->validateData();
 		$this->prepareFormFields();
@@ -560,17 +501,15 @@ class ManagePages
 		$context['sub_template'] = 'page_post';
 	}
 
-	/**
-	 * @return void
-	 */
 	public function edit()
 	{
 		global $context, $txt, $scripturl;
 
-		$item = Helpers::request('id');
+		$item = (int) Helper::request('id');
 
-		if (empty($item))
+		if (empty($item)) {
 			fatal_lang_error('lp_page_not_found', false, null, 404);
+		}
 
 		loadTemplate('LightPortal/ManagePages');
 
@@ -589,9 +528,9 @@ class ManagePages
 		if ($context['lp_current_page']['can_edit'] === false)
 			fatal_lang_error('lp_page_not_editable', false);
 
-		Helpers::prepareForumLanguages();
+		Helper::prepareForumLanguages();
 
-		if (Helpers::post()->has('remove')) {
+		if (Helper::post()->has('remove')) {
 			$this->remove([$item]);
 			redirectexit('action=admin;area=lp_pages;sa=main');
 		}
@@ -599,7 +538,7 @@ class ManagePages
 		$this->validateData();
 
 		$page_title = $context['lp_page']['title'][$context['user']['language']] ?? '';
-		$context['page_area_title'] = $txt['lp_pages_edit_title'] . (!empty($page_title) ? ' - ' . $page_title : '');
+		$context['page_area_title'] = $txt['lp_pages_edit_title'] . (! empty($page_title) ? ' - ' . $page_title : '');
 		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $context['lp_page']['id'];
 
 		$this->prepareFormFields();
@@ -610,9 +549,6 @@ class ManagePages
 		$context['sub_template'] = 'page_post';
 	}
 
-	/**
-	 * @return array
-	 */
 	private function getOptions(): array
 	{
 		$options = [
@@ -621,19 +557,16 @@ class ManagePages
 			'allow_comments'       => false,
 		];
 
-		Addons::run('pageOptions', array(&$options));
+		Addon::run('pageOptions', array(&$options));
 
 		return $options;
 	}
 
-	/**
-	 * @return void
-	 */
 	private function validateData()
 	{
 		global $context, $user_info, $modSettings;
 
-		if (Helpers::post()->only(['save', 'save_exit', 'preview'])) {
+		if (Helper::post()->only(['save', 'save_exit', 'preview'])) {
 			$args = array(
 				'category'    => FILTER_VALIDATE_INT,
 				'page_author' => FILTER_VALIDATE_INT,
@@ -657,7 +590,7 @@ class ManagePages
 
 			$parameters = [];
 
-			Addons::run('validatePageData', array(&$parameters));
+			Addon::run('validatePageData', array(&$parameters));
 
 			$parameters = array_merge(
 				array(
@@ -669,7 +602,7 @@ class ManagePages
 			);
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
-			$post_data['id'] = Helpers::request('id', 0);
+			$post_data['id'] = Helper::request('id', 0);
 
 			if (is_null($post_data['keywords'])) {
 				$post_data['keywords'] = [];
@@ -682,7 +615,7 @@ class ManagePages
 		$page_options = $context['lp_current_page']['options'] ?? $options;
 
 		$context['lp_page'] = array(
-			'id'          => $post_data['id'] ?? $context['lp_current_page']['id'] ?? 0,
+			'id'          => (int) ($post_data['id'] ?? $context['lp_current_page']['id'] ?? 0),
 			'title'       => $context['lp_current_page']['title'] ?? [],
 			'category'    => $post_data['category'] ?? $context['lp_current_page']['category_id'] ?? 0,
 			'page_author' => $post_data['page_author'] ?? $context['lp_current_page']['author_id'] ?? $user_info['id'],
@@ -699,12 +632,12 @@ class ManagePages
 			'options'     => $options
 		);
 
-		if (!empty($modSettings['lp_prohibit_php']) && !$user_info['is_admin'] && $context['lp_page']['type'] == 'php') {
+		if (! empty($modSettings['lp_prohibit_php']) && ! $user_info['is_admin'] && $context['lp_page']['type'] == 'php') {
 			$context['lp_page']['type'] = 'bbc';
 		}
 
 		foreach ($context['lp_page']['options'] as $option => $value) {
-			if (!empty($parameters[$option]) && !empty($post_data) && !isset($post_data[$option])) {
+			if (! empty($parameters[$option]) && ! empty($post_data) && ! isset($post_data[$option])) {
 				if ($parameters[$option] == FILTER_SANITIZE_STRING)
 					$post_data[$option] = '';
 
@@ -722,41 +655,36 @@ class ManagePages
 			$context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $context['lp_page']['title'][$lang['filename']] ?? '';
 		}
 
-		Helpers::cleanBbcode($context['lp_page']['title']);
+		Helper::cleanBbcode($context['lp_page']['title']);
 	}
 
-	/**
-	 * @param array $data
-	 * @return void
-	 */
 	private function findErrors(array $data)
 	{
 		global $modSettings, $language, $context, $txt;
 
 		$post_errors = [];
 
-		if ((!empty($modSettings['userLanguage']) && empty($data['title_' . $language])) || empty($data['title_' . $context['user']['language']]))
+		if ((! empty($modSettings['userLanguage']) && empty($data['title_' . $language])) || empty($data['title_' .
+			$context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
 			$post_errors[] = 'no_alias';
 
-		$alias_format = array(
-			'options' => array("regexp" => '/' . self::ALIAS_PATTERN . '/')
-		);
-		if (!empty($data['alias']) && empty(Helpers::validate($data['alias'], $alias_format)))
+		$alias_format['options'] = array('regexp' => '/' . self::ALIAS_PATTERN . '/');
+		if (! empty($data['alias']) && empty(Helper::validate($data['alias'], $alias_format)))
 			$post_errors[] = 'no_valid_alias';
 
-		if (!empty($data['alias']) && !$this->isUnique($data))
+		if (! empty($data['alias']) && ! $this->isUnique($data))
 			$post_errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
 
-		Addons::run('findPageErrors', array($data, &$post_errors));
+		Addon::run('findPageErrors', array($data, &$post_errors));
 
-		if (!empty($post_errors)) {
-			Helpers::post()->put('preview', true);
+		if (! empty($post_errors)) {
+			Helper::post()->put('preview', true);
 			$context['post_errors'] = [];
 
 			foreach ($post_errors as $error)
@@ -764,16 +692,13 @@ class ManagePages
 		}
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareFormFields()
 	{
 		global $modSettings, $language, $context, $txt;
 
 		checkSubmitOnce('register');
 
-		Helpers::prepareIconList();
+		Helper::prepareIconList();
 
 		$languages = empty($modSettings['userLanguage']) ? [$language] : [$context['user']['language'], $language];
 
@@ -823,7 +748,7 @@ class ManagePages
 				'tab' => 'content'
 			);
 		} else {
-			Helpers::createBbcEditor($context['lp_page']['content']);
+			Helper::createBbcEditor($context['lp_page']['content']);
 
 			ob_start();
 			template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
@@ -868,7 +793,7 @@ class ManagePages
 			'tab' => 'seo'
 		);
 
-		$context['lp_tags'] = Helpers::getAllTags();
+		$context['lp_tags'] = Helper::getAllTags();
 
 		foreach ($context['lp_tags'] as $value => $text) {
 			$context['posting_fields']['keywords']['input']['options'][$text] = array(
@@ -892,7 +817,7 @@ class ManagePages
 			);
 		}
 
-		$allCategories = Helpers::getAllCategories();
+		$allCategories = Helper::getAllCategories();
 
 		$context['posting_fields']['category']['label']['text'] = $txt['lp_category'];
 		$context['posting_fields']['category']['input'] = array(
@@ -931,46 +856,43 @@ class ManagePages
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_author_and_date',
-				'checked' => !empty($context['lp_page']['options']['show_author_and_date'])
+				'checked' => ! empty($context['lp_page']['options']['show_author_and_date'])
 			)
 		);
 
-		if (!empty($modSettings['lp_show_related_pages'])) {
+		if (! empty($modSettings['lp_show_related_pages'])) {
 			$context['posting_fields']['show_related_pages']['label']['text'] = $context['lp_page_options']['show_related_pages'];
 			$context['posting_fields']['show_related_pages']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
-					'checked' => !empty($context['lp_page']['options']['show_related_pages'])
+					'checked' => ! empty($context['lp_page']['options']['show_related_pages'])
 				)
 			);
 		}
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
+		if (! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] != 'none') {
 			$context['posting_fields']['allow_comments']['label']['text'] = $context['lp_page_options']['allow_comments'];
 			$context['posting_fields']['allow_comments']['input'] = array(
 				'type' => 'checkbox',
 				'attributes' => array(
-					'checked' => !empty($context['lp_page']['options']['allow_comments'])
+					'checked' => ! empty($context['lp_page']['options']['allow_comments'])
 				)
 			);
 		}
 
-		Addons::run('preparePageFields');
+		Addon::run('preparePageFields');
 
-		Helpers::preparePostFields();
+		Helper::preparePostFields();
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareMemberList()
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->has('members') === false)
+		if (Helper::request()->has('members') === false)
 			return;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($search = $data['search']))
 			return;
@@ -1006,24 +928,18 @@ class ManagePages
 		exit(json_encode($members));
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareEditor()
 	{
 		global $context;
 
-		Addons::run('prepareEditor', array($context['lp_page']));
+		Addon::run('prepareEditor', array($context['lp_page']));
 	}
 
-	/**
-	 * @return void
-	 */
 	private function preparePreview()
 	{
 		global $context, $smcFunc, $txt;
 
-		if (Helpers::post()->has('preview') === false)
+		if (Helper::post()->has('preview') === false)
 			return;
 
 		checkSubmitOnce('free');
@@ -1031,32 +947,26 @@ class ManagePages
 		$context['preview_title']   = $context['lp_page']['title'][$context['user']['language']];
 		$context['preview_content'] = $smcFunc['htmlspecialchars']($context['lp_page']['content'], ENT_QUOTES);
 
-		Helpers::cleanBbcode($context['preview_title']);
+		Helper::cleanBbcode($context['preview_title']);
 		censorText($context['preview_title']);
 		censorText($context['preview_content']);
 
-		if (!empty($context['preview_content']))
-			Helpers::parseContent($context['preview_content'], $context['lp_page']['type']);
+		if (! empty($context['preview_content']))
+			Helper::parseContent($context['preview_content'], $context['lp_page']['type']);
 
 		$context['page_title']    = $txt['preview'] . ($context['preview_title'] ? ' - ' . $context['preview_title'] : '');
-		$context['preview_title'] = Helpers::getPreviewTitle();
+		$context['preview_title'] = Helper::getPreviewTitle();
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareDescription()
 	{
 		global $context;
 
-		Helpers::cleanBbcode($context['lp_page']['description']);
+		Helper::cleanBbcode($context['lp_page']['description']);
 
 		$context['lp_page']['description'] = strip_tags($context['lp_page']['description']);
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareKeywords()
 	{
 		global $context;
@@ -1065,33 +975,26 @@ class ManagePages
 		$context['lp_page']['keywords'] = preg_replace("#[[:punct:]]#", "", $context['lp_page']['keywords']);
 	}
 
-	/**
-	 * @return int
-	 */
 	private function getPublishTime(): int
 	{
 		global $context;
 
 		$publish_time = time();
 
-		if (!empty($context['lp_page']['date']))
+		if (! empty($context['lp_page']['date']))
 			$publish_time = strtotime($context['lp_page']['date']);
 
-		if (!empty($context['lp_page']['time']))
+		if (! empty($context['lp_page']['time']))
 			$publish_time = strtotime(date('Y-m-d', $publish_time) . ' ' . $context['lp_page']['time']);
 
 		return $publish_time;
 	}
 
-	/**
-	 * @param int $item
-	 * @return void
-	 */
 	private function setData(int $item = 0)
 	{
 		global $context;
 
-		if (!empty($context['post_errors']) || (Helpers::post()->has('save') === false && Helpers::post()->has('save_exit') === false))
+		if (! empty($context['post_errors']) || (Helper::post()->has('save') === false && Helper::post()->has('save_exit') === false))
 			return;
 
 		checkSubmitOnce('check');
@@ -1099,7 +1002,7 @@ class ManagePages
 		$this->prepareDescription();
 		$this->prepareKeywords();
 
-		Helpers::prepareBbcContent($context['lp_page']);
+		Helper::prepareBbcContent($context['lp_page']);
 
 		if (empty($item)) {
 			$item = $this->addData();
@@ -1107,18 +1010,15 @@ class ManagePages
 			$this->updateData($item);
 		}
 
-		Helpers::cache()->flush();
+		Helper::cache()->flush();
 
-		if (Helpers::post()->has('save_exit'))
+		if (Helper::post()->has('save_exit'))
 			redirectexit('action=admin;area=lp_pages;sa=main');
 
-		if (Helpers::post()->has('save'))
+		if (Helper::post()->has('save'))
 			redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
-	/**
-	 * @return int
-	 */
 	private function addData(): int
 	{
 		global $smcFunc, $db_type, $context;
@@ -1160,7 +1060,7 @@ class ManagePages
 			return 0;
 		}
 
-		Addons::run('onPageSaving', array($item));
+		Addon::run('onPageSaving', array($item));
 
 		$this->saveTitles($item);
 
@@ -1173,10 +1073,6 @@ class ManagePages
 		return $item;
 	}
 
-	/**
-	 * @param int $item
-	 * @return void
-	 */
 	private function updateData(int $item)
 	{
 		global $smcFunc, $context;
@@ -1197,14 +1093,14 @@ class ManagePages
 				'type'        => $context['lp_page']['type'],
 				'permissions' => $context['lp_page']['permissions'],
 				'status'      => $context['lp_page']['status'],
-				'created_at'  => !empty($context['lp_page']['date']) && !empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
+				'created_at'  => ! empty($context['lp_page']['date']) && ! empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
 				'updated_at'  => time()
 			)
 		);
 
 		$smcFunc['lp_num_queries']++;
 
-		Addons::run('onPageSaving', array($item));
+		Addon::run('onPageSaving', array($item));
 
 		$this->saveTitles($item, 'replace');
 
@@ -1215,11 +1111,6 @@ class ManagePages
 		$smcFunc['db_transaction']('commit');
 	}
 
-	/**
-	 * @param int $item
-	 * @param string $method
-	 * @return void
-	 */
 	private function saveTitles(int $item, string $method = '')
 	{
 		global $context, $smcFunc;
@@ -1252,9 +1143,6 @@ class ManagePages
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * @return void
-	 */
 	private function saveTags()
 	{
 		global $context, $smcFunc;
@@ -1266,7 +1154,7 @@ class ManagePages
 			$item = ['value' => $item];
 		});
 
-		if (!empty($newTagIds)) {
+		if (! empty($newTagIds)) {
 			$newTagIds = $smcFunc['db_insert']('',
 				'{db_prefix}lp_tags',
 				array(
@@ -1283,11 +1171,6 @@ class ManagePages
 		$context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
 	}
 
-	/**
-	 * @param int $item
-	 * @param string $method
-	 * @return void
-	 */
 	private function saveOptions(int $item, string $method = '')
 	{
 		global $context, $smcFunc;
@@ -1322,18 +1205,11 @@ class ManagePages
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * Get the correct autoincrement value from lp_pages table
-	 *
-	 * Получаем правильное значение столбца page_id для создания новой записи
-	 *
-	 * @return int
-	 */
 	private function getAutoIncrementValue(): int
 	{
 		global $smcFunc;
 
-		$request = $smcFunc['db_query']('', 'SELECT setval(\'{db_prefix}lp_pages_seq\', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))');
+		$request = $smcFunc['db_query']('', "SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))");
 		[$value] = $smcFunc['db_fetch_row']($request);
 
 		$smcFunc['db_free_result']($request);
@@ -1342,14 +1218,6 @@ class ManagePages
 		return (int) $value + 1;
 	}
 
-	/**
-	 * Check the uniqueness of the alias
-	 *
-	 * Проверяем уникальность алиаса
-	 *
-	 * @param array $data
-	 * @return bool
-	 */
 	private function isUnique(array $data): bool
 	{
 		global $smcFunc;

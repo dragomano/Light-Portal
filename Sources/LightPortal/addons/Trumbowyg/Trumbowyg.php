@@ -6,50 +6,31 @@
  * @package Trumbowyg (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 1.12.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class Trumbowyg extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'editor';
+	public string $type = 'editor';
+	public array $disables = ['Jodit'];
 
-	/**
-	 * @var array
-	 */
-	public $disables = ['Jodit'];
-
-	/**
-	 * @param array $config_vars
-	 * @return void
-	 */
 	public function addSettings(array &$config_vars)
 	{
 		global $txt;
 
-		$config_vars['trumbowyg'][] = array('multicheck', 'dark_themes', Helpers::getForumThemes());
+		$config_vars['trumbowyg'][] = array('multicheck', 'dark_themes', Helper::getForumThemes());
 		$config_vars['trumbowyg'][] = array('select', 'auto_grow', $txt['lp_trumbowyg']['auto_grow_set']);
 	}
 
-	/**
-	 * Adding your own editor for 'html' content
-	 *
-	 * Добавляем свой редактор для контента 'html'
-	 *
-	 * @param array $object
-	 * @return void
-	 */
 	public function prepareEditor(array $object)
 	{
 		global $modSettings, $txt, $editortxt, $settings;
@@ -57,7 +38,7 @@ class Trumbowyg extends Plugin
 		if ($object['type'] !== 'html' && (empty($object['options']['content']) || $object['options']['content'] !== 'html'))
 			return;
 
-		$dark_themes = !empty($modSettings['lp_trumbowyg_addon_dark_themes']) ? json_decode($modSettings['lp_trumbowyg_addon_dark_themes'], true) : [];
+		$dark_themes = empty($modSettings['lp_trumbowyg_addon_dark_themes']) ? [] : json_decode($modSettings['lp_trumbowyg_addon_dark_themes'], true);
 
 		loadLanguage('Editor');
 
@@ -102,8 +83,8 @@ class Trumbowyg extends Plugin
 			urlProtocol: true,
 			resetCss: true,
 			removeformatPasted: true,
-			imageWidthModalEdit: true' . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 1 ? ',
-			autogrow: true' : '') . (!empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
+			imageWidthModalEdit: true' . (! empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 1 ? ',
+			autogrow: true' : '') . (! empty($modSettings['lp_trumbowyg_addon_auto_grow']) && $modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
 			autogrowOnEnter: true' : '') . '
 		}).on("tbwopenfullscreen", function() {
 			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
@@ -111,14 +92,10 @@ class Trumbowyg extends Plugin
 		}).on("tbwclosefullscreen", function() {
 			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
 			$(".sticky_sidebar").css("position", "sticky");
-		});' . (!empty($dark_themes) && !empty($dark_themes[$settings['theme_id']]) ? '
+		});' . (! empty($dark_themes) && ! empty($dark_themes[$settings['theme_id']]) ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 	}
 
-	/**
-	 * @param array $links
-	 * @return void
-	 */
 	public function credits(array &$links)
 	{
 		$links[] = array(

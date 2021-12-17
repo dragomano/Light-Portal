@@ -6,17 +6,17 @@
  * @package PageLikes (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 use Likes;
 
 /**
@@ -24,27 +24,14 @@ use Likes;
  */
 class PageLikes extends Plugin
 {
-	/** @var string */
-	public $type = 'other';
+	public string $type = 'other';
 
-	/**
-	 * @return void
-	 */
 	public function init()
 	{
 		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
 		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
 	}
 
-	/**
-	 * Validating data when like/unlike pages
-	 *
-	 * Валидируем данные при лайке/дизлайке страниц
-	 *
-	 * @param string $type
-	 * @param int $content
-	 * @return bool|array
-	 */
 	public function validLikes(string $type, int $content)
 	{
 		global $smcFunc, $user_info;
@@ -78,27 +65,14 @@ class PageLikes extends Plugin
 		];
 	}
 
-	/**
-	 * Update cache on like/unlike pages
-	 *
-	 * Обновляем кэш при лайке/дизлайке страниц
-	 *
-	 * @param Likes $obj
-	 * @return void
-	 */
 	public function issueLike(Likes $obj)
 	{
 		if ($obj->get('type') !== 'lpp')
 			return;
 
-		Helpers::cache()->put('likes_page_' . $obj->get('content') . '_count', $obj->get('numLikes'));
+		Helper::cache()->put('likes_page_' . $obj->get('content') . '_count', ['num_likes' => $obj->get('numLikes')]);
 	}
 
-	/**
-	 * @param array $data
-	 * @param bool $is_author
-	 * @return void
-	 */
 	public function preparePageData(array &$data, bool $is_author)
 	{
 		global $modSettings, $user_info;
@@ -125,14 +99,6 @@ class PageLikes extends Plugin
 		$data['addons'] .= ob_get_clean();
 	}
 
-	/**
-	 * Get an array of "likes" info for the $page and the current user
-	 *
-	 * Получаем массив лайков для страницы $page и текущего пользователя
-	 *
-	 * @param int $page
-	 * @return array
-	 */
 	private function prepareLikesContext(int $page): array
 	{
 		global $user_info, $smcFunc;
@@ -142,7 +108,7 @@ class PageLikes extends Plugin
 
 		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
 
-		if (($liked_pages = Helpers::cache()->get($cache_key)) === null) {
+		if (($liked_pages = Helper::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT content_id
 				FROM {db_prefix}user_likes AS l
@@ -163,20 +129,12 @@ class PageLikes extends Plugin
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $liked_pages);
+			Helper::cache()->put($cache_key, $liked_pages);
 		}
 
 		return $liked_pages;
 	}
 
-	/**
-	 * Get number of likes for the $page
-	 *
-	 * Получаем количество лайков для страницы $page
-	 *
-	 * @param int $page
-	 * @return int
-	 */
 	private function getLikesCount(int $page): int
 	{
 		global $smcFunc;
@@ -186,7 +144,7 @@ class PageLikes extends Plugin
 
 		$cache_key = 'likes_page_' . $page . '_count';
 
-		if (($num_likes = Helpers::cache()->get($cache_key)) === null) {
+		if (($num_likes = Helper::cache()->get($cache_key)) === null) {
 			$request = $smcFunc['db_query']('', '
 				SELECT COUNT(content_id)
 				FROM {db_prefix}user_likes AS l
@@ -203,9 +161,9 @@ class PageLikes extends Plugin
 			$smcFunc['db_free_result']($request);
 			$smcFunc['lp_num_queries']++;
 
-			Helpers::cache()->put($cache_key, $num_likes);
+			Helper::cache()->put($cache_key, ['num_likes' => $num_likes]);
 		}
 
-		return (int) $num_likes;
+		return is_array($num_likes) ? $num_likes['num_likes'] : (int) $num_likes;
 	}
 }

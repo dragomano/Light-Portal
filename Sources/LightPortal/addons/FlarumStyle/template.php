@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Display the flarum-like sidebar
- *
- * Отображаем flarum-подобную боковую панель
- *
- * @return void
- */
 function show_ffs_sidebar()
 {
 	global $scripturl, $txt, $context;
@@ -27,7 +20,7 @@ function show_ffs_sidebar()
 				</div>
 			</li>';
 
-	if (!empty($context['lp_all_categories'])) {
+	if (! empty($context['lp_all_categories'])) {
 		foreach ($context['lp_all_categories'] as $category) {
 			echo '
 			<li>
@@ -70,9 +63,6 @@ function show_ffs_sidebar()
 	</nav>';
 }
 
-/**
- * @return void
- */
 function template_show_articles_as_flarum_style()
 {
 	global $context, $txt;
@@ -88,20 +78,20 @@ function template_show_articles_as_flarum_style()
 				<h2 class="titlebg">', $context['page_title'], '</h2>
 			</div>';
 
-	if (!empty($context['lp_frontpage_articles'])) {
+	if (! empty($context['lp_frontpage_articles'])) {
 		foreach ($context['lp_frontpage_articles'] as $article) {
 			echo '
 			<div class="windowbg', $article['css_class'] ?? '', '">';
 
-			if (!empty($article['image'])) {
-				echo '
-				<div class="floatleft">
-					<img class="avatar" src="', $article['image'], '" alt="', $article['title'], '" loading="lazy">
-				</div>';
-			} else {
+			if (empty($article['image'])) {
 				echo '
 				<div class="floatleft" style="width: 64px">
 					<i class="far fa-image fa-5x"></i>
+				</div>';
+			} else {
+				echo '
+				<div class="floatleft">
+					<img class="avatar" src="' . $article['image'] . '" alt="' . $article['title'] . '" loading="lazy">
 				</div>';
 			}
 
@@ -113,12 +103,12 @@ function template_show_articles_as_flarum_style()
 					</h3>
 					<div class="smalltext">';
 
-			if (!empty($article['replies']['num'])) {
+			if (! empty($article['replies']['num'])) {
 				echo '
 						<i class="fas fa-reply"></i>';
 			}
 
-			if (!empty($article['author']['id'])) {
+			if (! empty($article['author']['id'])) {
 				echo '
 						<a href="', $article['author']['link'], '" title="', isset($txt['profile_of']) ? ($txt['profile_of'] . ' ' . $article['author']['name']) : (sprintf($txt['view_profile_of_username'], $article['author']['name'])), '">', $article['author']['name'], '</a>, ';
 			} else {
@@ -130,7 +120,7 @@ function template_show_articles_as_flarum_style()
 						<span', $context['lp_need_lower_case'] ? ' style="text-transform: lowercase"' : '', '>', $article['date'], '</span>
 					</div>';
 
-			if (!empty($article['teaser'])) {
+			if (! empty($article['teaser'])) {
 				echo '
 					<p>
 						', $article['teaser'], '
@@ -141,7 +131,7 @@ function template_show_articles_as_flarum_style()
 				</div>
 				<div class="floatright smalltext">';
 
-			if (!empty($article['section']['name'])) {
+			if (! empty($article['section']['name'])) {
 				echo '
 					<a class="new_posts" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
 			}
@@ -150,15 +140,15 @@ function template_show_articles_as_flarum_style()
 					<div class="righttext">
 						<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
 
-			if (!empty($article['views']['after']))
+			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
-			if (!empty($article['replies']['num'])) {
+			if (! empty($article['replies']['num'])) {
 				echo '
 						<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
 
-			if (!empty($article['replies']['after']))
+			if (! empty($article['replies']['after']))
 				echo $article['replies']['after'];
 
 			echo '

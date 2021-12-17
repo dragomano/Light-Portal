@@ -6,29 +6,22 @@
  * @package TopBoards (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class TopBoards extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-balance-scale-left';
+	public string $icon = 'fas fa-balance-scale-left';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['top_boards']['parameters'] = [
@@ -38,11 +31,6 @@ class TopBoards extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_boards')
@@ -53,9 +41,6 @@ class TopBoards extends Plugin
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -96,19 +81,11 @@ class TopBoards extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_numbers_only',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
 	}
 
-	/**
-	 * Get the list of popular boards
-	 *
-	 * Получаем список популярных разделов
-	 *
-	 * @param int $num_boards
-	 * @return array
-	 */
 	public function getData(int $num_boards): array
 	{
 		$this->loadSsi();
@@ -116,13 +93,6 @@ class TopBoards extends Plugin
 		return ssi_topBoards($num_boards, 'array');
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
@@ -130,7 +100,7 @@ class TopBoards extends Plugin
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helpers::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'])
+		$top_boards = Helper::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['num_boards']);
 
@@ -154,7 +124,7 @@ class TopBoards extends Plugin
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helpers::getText($board['num_' . $type], $txt['lp_top_boards'][$type])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helper::getPluralText($board['num_' . $type], $txt['lp_top_boards'][$type])), '</span>
 			</dd>';
 		}
 

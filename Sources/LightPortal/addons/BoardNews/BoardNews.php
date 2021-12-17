@@ -6,29 +6,22 @@
  * @package BoardNews (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class BoardNews extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-newspaper';
+	public string $icon = 'fas fa-newspaper';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['board_news']['parameters'] = [
@@ -37,11 +30,6 @@ class BoardNews extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_news')
@@ -51,29 +39,23 @@ class BoardNews extends Plugin
 		$parameters['num_posts'] = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return array
-	 */
 	private function getBoardList(): array
     {
 		global $modSettings, $context;
 
-		Helpers::require('Subs-MessageIndex');
+		Helper::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
 			'ignore_boards'   => false,
 			'use_permissions' => true,
 			'not_redirection' => true,
-			'excluded_boards' => !empty($modSettings['recycle_board']) ? array((int) $modSettings['recycle_board']) : null,
-			'selected_board'  => !empty($context['lp_block']['options']['parameters']['board_id']) ? $context['lp_block']['options']['parameters']['board_id'] : false
+			'excluded_boards' => empty($modSettings['recycle_board']) ? null : array((int) $modSettings['recycle_board']),
+			'selected_board'  => empty($context['lp_block']['options']['parameters']['board_id']) ? false : $context['lp_block']['options']['parameters']['board_id']
 		);
 
 		return getBoardList($boardListOptions);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -114,14 +96,6 @@ class BoardNews extends Plugin
 		);
 	}
 
-	/**
-	 * Get the news list of boards
-	 *
-	 * Получаем список новостей раздела
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getData(array $parameters): array
 	{
 		$this->loadSsi();
@@ -129,13 +103,6 @@ class BoardNews extends Plugin
 		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt, $modSettings, $scripturl, $context;
@@ -143,7 +110,7 @@ class BoardNews extends Plugin
 		if ($type !== 'board_news')
 			return;
 
-		$board_news = Helpers::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'])
+		$board_news = Helper::cache('board_news_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -151,7 +118,7 @@ class BoardNews extends Plugin
 			return;
 
 		foreach ($board_news as $news) {
-			$news['link'] = '<a href="' . $news['href'] . '">' . Helpers::getText($news['replies'], $txt['lp_comments_set']) . '</a>';
+			$news['link'] = '<a href="' . $news['href'] . '">' . Helper::getPluralText($news['replies'], $txt['lp_comments_set']) . '</a>';
 
 			echo '
 			<div class="news_item">
@@ -163,16 +130,16 @@ class BoardNews extends Plugin
 				<div class="news_body" style="padding: 2ex 0">', $news['body'], '</div>
 				', $news['link'], ($news['locked'] ? '' : ' | ' . $news['comment_link']), '';
 
-			if (!empty($modSettings['enable_likes'])) {
+			if (! empty($modSettings['enable_likes'])) {
 				echo '
 					<ul>';
 
-				if (!empty($news['likes']['can_like'])) {
+				if (! empty($news['likes']['can_like'])) {
 					echo '
 						<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $context['session_var'], '=', $context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $txt['unlike'] : $txt['like']), '</a></li>';
 				}
 
-				if (!empty($news['likes']['count'])) {
+				if (! empty($news['likes']['count'])) {
 					$context['some_likes'] = true;
 					$count = $news['likes']['count'];
 					$base = 'likes_';
@@ -193,7 +160,7 @@ class BoardNews extends Plugin
 			echo '
 			</div>';
 
-			if (!$news['is_last'])
+			if (! $news['is_last'])
 				echo '
 			<hr>';
 		}

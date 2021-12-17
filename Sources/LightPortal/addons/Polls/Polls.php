@@ -6,11 +6,11 @@
  * @package Polls (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
@@ -19,25 +19,13 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class Polls extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-poll';
+	public string $icon = 'fas fa-poll';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['polls']['parameters']['selected_item'] = 0;
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'polls')
@@ -46,9 +34,6 @@ class Polls extends Plugin
 		$parameters['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -89,14 +74,6 @@ class Polls extends Plugin
 		}
 	}
 
-	/**
-	 * Get the poll by topic id
-	 *
-	 * Получаем опрос по идентификатору темы
-	 *
-	 * @param int $topic
-	 * @return array
-	 */
 	public function getData(int $topic = 0): array
 	{
 		$this->loadSsi();
@@ -104,13 +81,6 @@ class Polls extends Plugin
 		return ssi_showPoll($topic, 'array');
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $boardurl, $context, $txt, $scripturl;
@@ -120,12 +90,12 @@ class Polls extends Plugin
 
 		$poll = $this->getData($parameters['selected_item']);
 
-		if (!empty($poll)) {
+		if (! empty($poll)) {
 			if ($poll['allow_vote']) {
 				echo '
 		<form action="', $boardurl, '/SSI.php?ssi_function=pollVote" method="post" accept-charset="', $context['character_set'], '">
 			<strong>', $poll['question'], '</strong><br>
-			', !empty($poll['allowed_warning']) ? $poll['allowed_warning'] . '<br>' : '';
+			', empty($poll['allowed_warning']) ? '' : ($poll['allowed_warning'] . '<br>');
 
 				foreach ($poll['options'] as $option) {
 					echo '
@@ -170,13 +140,6 @@ class Polls extends Plugin
 		}
 	}
 
-	/**
-	 * Get all active polls
-	 *
-	 * Получаем все текущие опросы
-	 *
-	 * @return array
-	 */
 	private function getAll(): array
 	{
 		global $smcFunc;

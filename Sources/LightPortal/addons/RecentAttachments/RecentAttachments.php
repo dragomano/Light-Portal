@@ -6,29 +6,22 @@
  * @package RecentAttachments (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class RecentAttachments extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-paperclip';
+	public string $icon = 'fas fa-paperclip';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['recent_attachments']['parameters'] = [
@@ -38,11 +31,6 @@ class RecentAttachments extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_attachments')
@@ -53,9 +41,6 @@ class RecentAttachments extends Plugin
 		$parameters['direction']       = FILTER_SANITIZE_STRING;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -104,30 +89,15 @@ class RecentAttachments extends Plugin
 		}
 	}
 
-	/**
-	 * Get the list of recent attachments
-	 *
-	 * Получаем список последних вложений
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getData(array $parameters): array
 	{
 		$this->loadSsi();
 
-		$extensions = !empty($parameters['extensions']) ? explode(',', $parameters['extensions']) : [];
+		$extensions = empty($parameters['extensions']) ? [] : explode(',', $parameters['extensions']);
 
 		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $settings;
@@ -135,7 +105,7 @@ class RecentAttachments extends Plugin
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helpers::cache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'])
+		$attachment_list = Helper::cache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -148,7 +118,7 @@ class RecentAttachments extends Plugin
 		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
 
 		foreach ($attachment_list as $attach) {
-			if (!empty($attach['file']['image'])) {
+			if (! empty($attach['file']['image'])) {
 				echo '
 			<div class="item">
 				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>

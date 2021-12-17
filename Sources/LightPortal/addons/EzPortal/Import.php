@@ -6,27 +6,20 @@
  * @package EzPortal (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 17.12.21
  */
 
 namespace Bugo\LightPortal\Addons\EzPortal;
 
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Impex\AbstractOtherPageImport;
+use Bugo\LightPortal\Helper;
 
-class Import extends AbstractImport
+class Import extends AbstractOtherPageImport
 {
-	/**
-	 * EzPortal pages import
-	 *
-	 * Импорт страниц EzPortal
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
@@ -97,10 +90,7 @@ class Import extends AbstractImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>';
-						},
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					)
 				)
@@ -119,23 +109,13 @@ class Import extends AbstractImport
 			)
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
 		$context['default_list'] = 'lp_pages';
 	}
 
-	/**
-	 * Get the list of pages
-	 *
-	 * Получаем список страниц
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
 		global $smcFunc, $db_prefix, $user_info;
@@ -166,7 +146,7 @@ class Import extends AbstractImport
 				'status'     => 1,
 				'num_views'  => $row['views'],
 				'author_id'  => $user_info['id'],
-				'created_at' => Helpers::getFriendlyTime($row['date']),
+				'created_at' => Helper::getFriendlyTime($row['date']),
 				'title'      => $row['title']
 			);
 		}
@@ -177,13 +157,6 @@ class Import extends AbstractImport
 		return $items;
 	}
 
-	/**
-	 * Get the total number of pages
-	 *
-	 * Подсчитываем общее количество страниц
-	 *
-	 * @return int
-	 */
 	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
@@ -207,124 +180,14 @@ class Import extends AbstractImport
 		return (int) $num_pages;
 	}
 
-	/**
-	 * Start importing data
-	 *
-	 * Запускаем импорт
-	 *
-	 * @return void
-	 */
-	protected function run()
-	{
-		global $db_temp_cache, $db_cache, $language, $modSettings, $smcFunc;
-
-		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('import_all') === false)
-			return;
-
-		// Might take some time.
-		@set_time_limit(600);
-
-		// Don't allow the cache to get too full
-		$db_temp_cache = $db_cache;
-		$db_cache = [];
-
-		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('import_all') === false ? Helpers::post('pages') : null;
-
-		$items = $this->getItems($pages);
-
-		$titles = [];
-		foreach ($items as $page_id => $item) {
-			$titles[] = [
-				'item_id' => $page_id,
-				'type'    => 'page',
-				'lang'    => $language,
-				'title'   => $item['subject']
-			];
-
-			if ($language != 'english' && !empty($modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $page_id,
-					'type'    => 'page',
-					'lang'    => 'english',
-					'title'   => $item['subject']
-				];
-			}
-
-			unset($items[$page_id]['subject']);
-		}
-
-		if (!empty($items)) {
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
-					'{db_prefix}lp_pages',
-					array(
-						'page_id'      => 'int',
-						'author_id'    => 'int',
-						'alias'        => 'string-255',
-						'content'      => 'string',
-						'type'         => 'string',
-						'permissions'  => 'int',
-						'status'       => 'int',
-						'num_views'    => 'int',
-						'num_comments' => 'int',
-						'created_at'   => 'int',
-						'updated_at'   => 'int'
-					),
-					$items[$i],
-					array('page_id'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-		}
-
-		if (!empty($titles) && !empty($result)) {
-			$titles = array_chunk($titles, 100);
-			$count  = sizeof($titles);
-
-			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('replace',
-					'{db_prefix}lp_titles',
-					array(
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					),
-					$titles[$i],
-					array('item_id', 'type', 'lang'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-		}
-
-		if (empty($result))
-			fatal_lang_error('lp_import_failed', false);
-
-		// Restore the cache
-		$db_cache = $db_temp_cache;
-
-		Helpers::cache()->flush();
-	}
-
-	/**
-	 * @param array|null $pages
-	 * @return array
-	 */
-	private function getItems(?array $pages): array
+	protected function getItems(array $pages): array
 	{
 		global $smcFunc, $user_info;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id_page, date, title, content, views, permissions
-			FROM {db_prefix}ezp_page' . (!empty($pages) ? '
-			WHERE id_page IN ({array_int:pages})' : ''),
+			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
+			WHERE id_page IN ({array_int:pages})'),
 			array(
 				'pages' => $pages
 			)
@@ -348,7 +211,8 @@ class Import extends AbstractImport
 			$items[$row['id_page']] = array(
 				'page_id'      => $row['id_page'],
 				'author_id'    => $user_info['id'],
-				'alias'        => $smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
+				'alias'        => 'page_' . $row['id_page'],
+				'description'  => '',
 				'content'      => $row['content'],
 				'type'         => 'html',
 				'permissions'  => $perm,

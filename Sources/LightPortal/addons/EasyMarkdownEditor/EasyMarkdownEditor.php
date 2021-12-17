@@ -6,11 +6,11 @@
  * @package EasyMarkdownEditor (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -19,19 +19,8 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class EasyMarkdownEditor extends Plugin
 {
-	/**
-	 * @var array
-	 */
-	public $type = 'editor';
+	public string $type = 'editor';
 
-	/**
-	 * Adding the editor for 'markdown' content
-	 *
-	 * Подключаем редактор для контента 'markdown'
-	 *
-	 * @param array $object
-	 * @return void
-	 */
 	public function prepareEditor(array $object)
 	{
 		global $txt, $editortxt;
@@ -214,10 +203,6 @@ class EasyMarkdownEditor extends Plugin
 		}', true);
 	}
 
-	/**
-	 * @param array $links
-	 * @return void
-	 */
 	public function credits(array &$links)
 	{
 		$links[] = array(

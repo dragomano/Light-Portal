@@ -6,11 +6,11 @@
  * @package VkComments (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\VkComments;
@@ -19,18 +19,8 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class VkComments extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'comment';
+	public string $type = 'comment';
 
-	/**
-	 * Adding the new comment type
-	 *
-	 * Добавляем новый тип комментариев
-	 *
-	 * @return void
-	 */
 	public function init()
 	{
 		global $txt;
@@ -38,17 +28,13 @@ class VkComments extends Plugin
 		$txt['lp_show_comment_block_set']['vk'] = 'VKontakte';
 	}
 
-	/**
-	 * @param array $config_vars
-	 * @return void
-	 */
-	public function addSettings(&$config_vars)
+	public function addSettings(array &$config_vars)
 	{
 		global $modSettings, $txt;
 
-		if (!isset($modSettings['lp_vk_comments_addon_num_comments_per_page']))
+		if (! isset($modSettings['lp_vk_comments_addon_num_comments_per_page']))
 			updateSettings(array('lp_vk_comments_addon_num_comments_per_page' => 10));
-		if (!isset($modSettings['lp_vk_comments_addon_allow_attachments']))
+		if (! isset($modSettings['lp_vk_comments_addon_allow_attachments']))
 			updateSettings(array('lp_vk_comments_addon_allow_attachments' => true));
 
 		$config_vars['vk_comments'][] = array('text', 'api_id', 'subtext' => $txt['lp_vk_comments']['api_id_subtext']);
@@ -57,18 +43,11 @@ class VkComments extends Plugin
 		$config_vars['vk_comments'][] = array('check', 'auto_publish');
 	}
 
-	/**
-	 * Adding comment block
-	 *
-	 * Добавляем блок комментариев
-	 *
-	 * @return void
-	 */
 	public function comments()
 	{
 		global $modSettings, $context;
 
-		if (!empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'vk' && !empty($modSettings['lp_vk_comments_addon_api_id'])) {
+		if (! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === 'vk' && ! empty($modSettings['lp_vk_comments_addon_api_id'])) {
 			$num_comments      = $modSettings['lp_vk_comments_addon_num_comments_per_page'] ?? 10;
 			$allow_attachments = $modSettings['lp_vk_comments_addon_allow_attachments'] ?? true;
 			$auto_publish      = $modSettings['lp_vk_comments_addon_auto_publish'] ?? false;
@@ -85,8 +64,8 @@ class VkComments extends Plugin
 				<script>
 					VK.Widgets.Comments("vk_comments", {
 						limit: ' . $num_comments . ',
-						attach: ' . (!empty($allow_attachments) ? '"*"' : 'false') . ',
-						autoPublish: '. (!empty($auto_publish) ? 1 : 0) . ',
+						attach: ' . (empty($allow_attachments) ? 'false' : '"*"') . ',
+						autoPublish: '. (empty($auto_publish) ? 0 : 1) . ',
 						pageUrl: "' . $context['canonical_url'] . '"
 					}, ' . $context['lp_page']['id'] . ');
 				</script>';

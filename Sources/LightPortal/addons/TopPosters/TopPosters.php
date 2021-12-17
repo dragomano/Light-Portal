@@ -6,29 +6,22 @@
  * @package TopPosters (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class TopPosters extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-users';
+	public string $icon = 'fas fa-users';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['top_posters']['parameters'] = [
@@ -38,11 +31,6 @@ class TopPosters extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_posters')
@@ -53,9 +41,6 @@ class TopPosters extends Plugin
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -68,7 +53,7 @@ class TopPosters extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_avatars'])
 			)
 		);
 
@@ -87,20 +72,11 @@ class TopPosters extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_numbers_only',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
 	}
 
-	/**
-	 * Get the list of top members
-	 *
-	 * Получаем список лучших пользователей
-	 *
-	 * @param array $parameters
-	 * @return array
-	 * @throws \Exception
-	 */
 	public function getData(array $parameters): array
 	{
 		global $smcFunc, $memberContext, $scripturl;
@@ -126,8 +102,12 @@ class TopPosters extends Plugin
 
 		$posters = [];
 		foreach ($result as $row) {
-			if (!isset($memberContext[$row['id_member']]))
-				loadMemberContext($row['id_member']);
+			if (! isset($memberContext[$row['id_member']]))
+				try {
+					loadMemberContext($row['id_member']);
+				} catch (\Exception $e) {
+					log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
+				}
 
 			$posters[] = array(
 				'name'   => $row['real_name'],
@@ -143,13 +123,6 @@ class TopPosters extends Plugin
 		return $posters;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
@@ -157,7 +130,7 @@ class TopPosters extends Plugin
 		if ($type !== 'top_posters')
 			return;
 
-		$top_posters = Helpers::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'])
+		$top_posters = Helper::cache('top_posters_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -173,7 +146,7 @@ class TopPosters extends Plugin
 			echo '
 			<dt>';
 
-			if (!empty($poster['avatar']))
+			if (! empty($poster['avatar']))
 				echo $poster['avatar'];
 
 			$width = $poster['posts'] * 100 / $max;
@@ -182,7 +155,7 @@ class TopPosters extends Plugin
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helpers::getText($poster['posts'], $txt['lp_posts_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helper::getPluralText($poster['posts'], $txt['lp_posts_set'])), '</span>
 			</dd>';
 		}
 

@@ -12,7 +12,7 @@ return [
 		{
 			element: document.getElementById("lp_frontpage_mode"),
 			intro: "' . $txt['lp_hello_portal']['basic_settings_tour'][1] . '"
-		},' . (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] !== 'chosen_page' ? ('
+		},' . (! empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] !== 'chosen_page' ? ('
 		{
 			element: document.getElementById("lp_frontpage_order_by_num_replies"),
 			intro: "' . $txt['lp_hello_portal']['basic_settings_tour'][2] . '"

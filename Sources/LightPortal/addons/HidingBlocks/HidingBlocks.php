@@ -6,11 +6,11 @@
  * @package HidingBlocks (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -19,23 +19,10 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class HidingBlocks extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'block_options';
+	public string $type = 'block_options';
 
-	/**
-	 * @var array
-	 */
-	public $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
+	private array $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
-	/**
-	 * Fill additional block classes
-	 *
-	 * Заполняем дополнительные классы блока
-	 *
-	 * @return void
-	 */
 	public function init()
 	{
 		global $context;
@@ -59,10 +46,6 @@ class HidingBlocks extends Plugin
 		}
 	}
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		global $context;
@@ -70,10 +53,6 @@ class HidingBlocks extends Plugin
 		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters)
 	{
 		$parameters['hidden_breakpoints'] = array(
@@ -83,9 +62,6 @@ class HidingBlocks extends Plugin
 		);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;

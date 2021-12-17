@@ -1,67 +1,52 @@
 <?php
 
 /**
- * RssFeed.php
+ * SimpleRssFeeder.php
  *
- * @package RssFeed (Light Portal)
+ * @package SimpleRssFeeder (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
-namespace Bugo\LightPortal\Addons\RssFeed;
+namespace Bugo\LightPortal\Addons\SimpleRssFeeder;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
-class RssFeed extends Plugin
+class SimpleRssFeeder extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-rss';
+	public string $icon = 'fas fa-rss';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
-		$options['rss_feed']['parameters'] = [
+		$options['simple_rss_feeder']['parameters'] = [
 			'url'       => '',
 			'show_text' => false,
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
-		if ($type !== 'rss_feed')
+		if ($type !== 'simple_rss_feeder')
 			return;
 
 		$parameters['url']       = FILTER_VALIDATE_URL;
 		$parameters['show_text'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt, $scripturl;
 
-		if ($context['lp_block']['type'] !== 'rss_feed')
+		if ($context['lp_block']['type'] !== 'simple_rss_feeder')
 			return;
 
-		$context['posting_fields']['url']['label']['text'] = $txt['lp_rss_feed']['url'];
+		$context['posting_fields']['url']['label']['text'] = $txt['lp_simple_rss_feeder']['url'];
 		$context['posting_fields']['url']['input'] = array(
 			'type' => 'url',
 			'attributes' => array(
@@ -74,70 +59,56 @@ class RssFeed extends Plugin
 			'tab' => 'content'
 		);
 
-		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_rss_feed']['show_text'];
+		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_simple_rss_feeder']['show_text'];
 		$context['posting_fields']['show_text']['input'] = array(
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_text',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_text'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_text'])
 			),
 			'tab' => 'content'
 		);
 	}
 
-	/**
-	 * Get the SimpleXML object
-	 *
-	 * Получаем объект SimpleXML
-	 *
-	 * @param string $url
-	 * @return \SimpleXMLElement|string|null
-	 */
-	public function getData(string $url)
+	public function getData(string $url): array
 	{
 		if (empty($url))
-			return '';
+			return [];
 
 		$file = file_get_contents($url);
 		$rss  = simplexml_load_string($file);
 
-		return $rss ? $rss->channel->item : null;
+		return $rss ? ['data' => $rss->channel->item] : [];
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		if ($type !== 'rss_feed')
+		if ($type !== 'simple_rss_feeder')
 			return;
 
-		$rss_feed = Helpers::cache('rss_feed_addon_b' . $block_id)
+		$feed = Helper::cache('simple_rss_feeder_addon_b' . $block_id)
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['url']);
 
-		if (empty($rss_feed))
+		if (empty($feed))
 			return;
 
-		foreach ($rss_feed as $item) {
+		if (isset($feed['data']))
+			$feed = $feed['data'];
+
+		foreach ($feed as $item) {
 			echo '
 		<div class="windowbg">
 			<div class="block">
 				<span class="floatleft half_content">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-					<em>', Helpers::getFriendlyTime(strtotime($item->pubDate)), '</em>
+					<em>', Helper::getFriendlyTime(strtotime($item->pubDate)), '</em>
 				</span>
 			</div>';
 
 			if ($parameters['show_text']) {
 				echo '
-			<div class="list_posts double_height">
-				' . $item->description . '
-			</div>';
+			<div class="list_posts double_height">', $item->description, '</div>';
 			}
 
 			echo '

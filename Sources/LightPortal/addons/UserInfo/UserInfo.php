@@ -6,39 +6,27 @@
  * @package UserInfo (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class UserInfo extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-user';
+	public string $icon = 'fas fa-user';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['user_info']['parameters']['use_fa_icons'] = true;
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'user_info')
@@ -47,9 +35,6 @@ class UserInfo extends Plugin
 		$parameters['use_fa_icons'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -62,39 +47,28 @@ class UserInfo extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'use_fa_icons',
-				'checked' => !empty($context['lp_block']['options']['parameters']['use_fa_icons'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['use_fa_icons'])
 			),
 			'tab' => 'appearance'
 		);
 	}
 
-	/**
-	 * Get the current user info
-	 *
-	 * Получаем информацию о пользователе
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
 	public function getData(): array
 	{
 		global $memberContext, $user_info;
 
-		if (!isset($memberContext[$user_info['id']])) {
-			loadMemberData($user_info['id']);
-			loadMemberContext($user_info['id']);
+		try {
+			if (! isset($memberContext[$user_info['id']])) {
+				loadMemberData($user_info['id']);
+				loadMemberContext($user_info['id']);
+			}
+		} catch (\Exception $e) {
+			log_error('[LP] UserInfo addon: ' . $e->getMessage(), 'user');
 		}
 
 		return $memberContext[$user_info['id']];
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $context, $txt, $scripturl, $modSettings;
@@ -102,10 +76,10 @@ class UserInfo extends Plugin
 		if ($type !== 'user_info')
 			return;
 
-		$fa = !empty($parameters['use_fa_icons']);
+		$fa = ! empty($parameters['use_fa_icons']);
 
 		if ($context['user']['is_logged']) {
-			$userData = Helpers::cache('user_info_addon_u' . $context['user']['id'])
+			$userData = Helper::cache('user_info_addon_u' . $context['user']['id'])
 				->setLifeTime($cache_time)
 				->setFallback(__CLASS__, 'getData');
 
@@ -113,7 +87,7 @@ class UserInfo extends Plugin
 			<ul class="centertext">
 				<li>', $txt['hello_member'], ' <strong>', $userData['name_color'], '</strong></li>';
 
-			if (!empty($userData['avatar'])) {
+			if (! empty($userData['avatar'])) {
 				echo '
 				<li>', $userData['avatar']['image'], '</li>';
 			}
@@ -122,7 +96,7 @@ class UserInfo extends Plugin
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>';
 
-			if (!empty($context['allow_light_portal_manage_own_blocks'])) {
+			if (! empty($context['allow_light_portal_manage_own_blocks'])) {
 				echo '
 				<li>
 					<hr>
@@ -132,7 +106,7 @@ class UserInfo extends Plugin
 				</li>';
 			}
 
-			if (!empty($context['allow_light_portal_manage_own_pages'])) {
+			if (! empty($context['allow_light_portal_manage_own_pages'])) {
 				echo '
 				<li>
 					<hr>
@@ -157,7 +131,7 @@ class UserInfo extends Plugin
 			echo '
 			<ul class="centertext">
 				<li>', $txt['hello_member'], ' ', $txt['guest'], '</li>
-				<li><img src="', $modSettings['avatar_url'], '/default.png', '" alt="*"></li>
+				<li><img alt="*" src="', $modSettings['avatar_url'], '/default.png', '"></li>
 				<li>';
 
 			if ($context['can_register']) {

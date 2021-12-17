@@ -1,104 +1,70 @@
 <?php
 
-namespace Bugo\LightPortal;
-
-use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
+declare(strict_types = 1);
 
 /**
- * Helpers.php
+ * Helper.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal;
+
+use Bugo\LightPortal\Utils\{Cache, File, Request, Session};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Helpers
+final class Helper
 {
-	/**
-	 * Work with cache
-	 *
-	 * Работаем с кэшем
-	 *
-	 * @param string|null $key
-	 * @return mixed
-	 */
-	public static function cache($key = null)
+	public static function cache(?string $key = null): Cache
 	{
 		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
-	/**
-	 * Work with $_FILES array
-	 *
-	 * Работаем с массивом $_FILES
-	 *
-	 * @param string|null $key
-	 * @return mixed
-	 */
-	public static function file($key = null)
+	public static function file(?string $key = null): File
 	{
 		return new File($key);
 	}
 
 	/**
-	 * Work with $_POST array
-	 *
-	 * Работаем с массивом $_POST
-	 *
 	 * @param string|null $key
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function post($key = null, $default = null)
+	public static function post(?string $key = null, $default = null)
 	{
-		return $key ? ((new Post)->get($key) ?? $default) : new Post;
+		return $key ? ((new Request(true))->get($key) ?? $default) : new Request(true);
 	}
 
 	/**
-	 * Work with $_REQUEST array
-	 *
-	 * Работаем с массивом $_REQUEST
-	 *
 	 * @param string|null $key
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function request($key = null, $default = null)
+	public static function request(?string $key = null, $default = null)
 	{
 		return $key ? ((new Request)->get($key) ?? $default) : new Request;
 	}
 
-	/**
-	 * Work with $_SESSION array
-	 *
-	 * Работаем с массивом $_SESSION
-	 *
-	 * @return Session
-	 */
-	public static function session()
+	public static function session(): Session
 	{
 		return new Session;
 	}
 
-	/**
-	 * @param string $filename
-	 * @return void
-	 */
 	public static function require(string $filename)
 	{
-		global $sourcedir;
-
 		if (empty($filename))
 			return;
 
-		require_once $sourcedir . DIRECTORY_SEPARATOR . $filename . '.php';
+		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
+			require_once $path;
 	}
 
 	/**
@@ -110,17 +76,14 @@ class Helpers
 		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
 
-	/**
-	 * @return void
-	 */
 	public static function prepareIconList()
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->has('icons') === false)
+		if (Helper::request()->has('icons') === false)
 			return;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($search = $data['search']))
 			return;
@@ -130,9 +93,9 @@ class Helpers
 		$all_icons = [];
 		$template = '<i class="%1$s"></i>&nbsp;%1$s';
 
-		Addons::run('prepareIconList', array(&$all_icons, &$template));
+		Addon::run('prepareIconList', array(&$all_icons, &$template));
 
-		$all_icons = $all_icons ?: Helpers::getFaIcons();
+		$all_icons = $all_icons ?: Helper::getFaIcons();
 		$all_icons = array_filter($all_icons, function ($item) use ($search) {
 			return strpos($item, $search) !== false;
 		});
@@ -148,10 +111,6 @@ class Helpers
 		exit(json_encode($results));
 	}
 
-	/**
-	 * @param null|string $icon
-	 * @return string
-	 */
 	public static function getIcon(?string $icon = ''): string
 	{
 		if (empty($icon))
@@ -159,21 +118,17 @@ class Helpers
 
 		$template = '<i class="' . $icon . '"></i> ';
 
-		Addons::run('prepareIconTemplate', array(&$template, $icon));
+		Addon::run('prepareIconTemplate', array(&$template, $icon));
 
 		return $template;
 	}
 
-	/**
-	 * @param string $prefix
-	 * @return string
-	 */
 	public static function getPreviewTitle(string $prefix = ''): string
 	{
 		global $context, $txt;
 
 		return self::getFloatSpan(
-			(!empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'],
+			(! empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'],
 			$context['right_to_left'] ? 'right' : 'left'
 		) . self::getFloatSpan(
 			$txt['preview'],
@@ -181,15 +136,6 @@ class Helpers
 		) . '<br>';
 	}
 
-	/**
-	 * Get text within span that is floating by defined direction
-	 *
-	 * Получаем текст внутри тега span, с float = $direction (left|right)
-	 *
-	 * @param string $text
-	 * @param string $direction
-	 * @return string
-	 */
 	private static function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
@@ -200,15 +146,15 @@ class Helpers
 	 *
 	 * Получаем слово с правильным окончанием, в зависимости от числа $num и массива|строки $str с возможными формами
 	 *
-	 * @see https://github.com/dragomano/Light-Portal/wiki/To-translators
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
 	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
 	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
 	 *
 	 * @param int $num
-	 * @param array|string $str массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
+	 * @param array|string $str Массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
 	 * @return string
 	 */
-	public static function getText(int $num, $str): string
+	public static function getPluralText(int $num, $str): string
 	{
 		global $txt;
 
@@ -224,19 +170,17 @@ class Helpers
 			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
 
 		// Just in case
-		if (!isset($str[1]))
-			$str[1] = $str[0];
-		if (!isset($str[2]))
-			$str[2] = $str[1];
+		$str[1] ??= $str[0];
+		$str[2] ??= $str[1];
 
 		// Plural rule #5 (Romanian)
-		if ($txt['lang_dictionary'] == 'ro') {
+		if ($txt['lang_dictionary'] === 'ro') {
 			$cases = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19');
 			return $num . ' ' . $str[$num == 1 ? 0 : ((empty($num) || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
 		}
 
 		// Plural rule #6 (Lithuanian)
-		if ($txt['lang_dictionary'] == 'lt') {
+		if ($txt['lang_dictionary'] === 'lt') {
 			$cases = array('11', '12', '13', '14', '15', '16', '17', '18', '19');
 			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : (($num % 10 === 0 || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
 		}
@@ -252,21 +196,21 @@ class Helpers
 			return $num . ' ' . $str[$num == 1 ? 0 : (in_array($num, array(2, 3, 4)) ? 1 : 2)];
 
 		// Plural rule #9 (Polish)
-		if ($txt['lang_dictionary'] == 'pl') {
+		if ($txt['lang_dictionary'] === 'pl') {
 			$cases = array('12', '13', '14');
 			return $num . ' ' . $str[$num == 1 ? 0 : ((in_array(substr((string) $num, -1, 1), array(2, 3, 4)) || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
 		}
 
 		// Plural rule #15 (Macedonian)
-		if ($txt['lang_dictionary'] == 'mk')
+		if ($txt['lang_dictionary'] === 'mk')
 			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : 1];
 
 		// Urdu
-		if ($txt['lang_dictionary'] == 'ur')
+		if ($txt['lang_dictionary'] === 'ur')
 			return $str[$num == 1 ? 0 : 1] . ' ' . $num;
 
 		// Arabic
-		if ($txt['lang_dictionary'] == 'ar')
+		if ($txt['lang_dictionary'] === 'ar')
 			return $str[in_array($num, array(0, 1, 2)) ? $num : ($num % 100 >= 3 && $num % 100 <= 10 ? 3 : ($num % 100 >= 11 ? 4 : 5))] . ' ' . $num;
 
 		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Estonian, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
@@ -277,10 +221,6 @@ class Helpers
 	 * Get the time in the format "Yesterday", "Today", "X minutes ago", etc.
 	 *
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
-	 *
-	 * @param int $timestamp — Unix time
-	 * @param bool $use_user_offset
-	 * @return string
 	 */
 	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false): string
 	{
@@ -314,7 +254,7 @@ class Helpers
 			// like "In n days"
 			if ($days > 1) {
 				if ($days < 7)
-					return sprintf($txt['lp_time_label_in'], self::getText($days, $txt['lp_days_set']));
+					return sprintf($txt['lp_time_label_in'], self::getPluralText($days, $txt['lp_days_set']));
 
 				// Future date in current month
 				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
@@ -334,7 +274,7 @@ class Helpers
 
 			// like "In n hours"
 			if ($hours > 1)
-				return sprintf($txt['lp_time_label_in'], self::getText($hours, $txt['lp_hours_set']));
+				return sprintf($txt['lp_time_label_in'], self::getPluralText($hours, $txt['lp_hours_set']));
 
 			$minutes = ($timestamp - $current_time) / 60;
 			// like "In a minute"
@@ -343,10 +283,10 @@ class Helpers
 
 			// like "In n minutes"
 			if ($minutes > 1)
-				return sprintf($txt['lp_time_label_in'], self::getText(ceil($minutes), $txt['lp_minutes_set']));
+				return sprintf($txt['lp_time_label_in'], self::getPluralText(ceil($minutes), $txt['lp_minutes_set']));
 
 			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getText(abs($time_difference), $txt['lp_seconds_set']));
+			return sprintf($txt['lp_time_label_in'], self::getPluralText(abs($time_difference), $txt['lp_seconds_set']));
 		}
 
 		// Less than an hour
@@ -354,13 +294,13 @@ class Helpers
 
 		// like "n seconds ago"
 		if ($time_difference < 60)
-			return self::getText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+			return self::getPluralText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
-			return self::getText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+			return self::getPluralText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $current_time))
 			return $txt['today'] . $tm;
@@ -382,13 +322,8 @@ class Helpers
 	 * Get a string with the day and month in European or American format
 	 *
 	 * Получаем запись дня и месяца в европейском или американском формате
-	 *
-	 * @param int $day
-	 * @param string $month
-	 * @param string $postfix
-	 * @return string
 	 */
-	public static function getDateFormat(int $day, string $month, string $postfix): string
+	public static function getDateFormat(string $day, string $month, string $postfix): string
 	{
 		global $txt;
 
@@ -400,10 +335,6 @@ class Helpers
 		return $day . ' ' . $month . $comma . $postfix;
 	}
 
-	/**
-	 * @param string $content
-	 * @return void
-	 */
 	public static function createBbcEditor(string $content = '')
 	{
 		global $context;
@@ -417,7 +348,7 @@ class Helpers
 			'required'     => true
 		);
 
-		Helpers::require('Subs-Editor');
+		Helper::require('Subs-Editor');
 		create_control_richedit($editorOptions);
 
 		$context['post_box_name'] = $editorOptions['id'];
@@ -430,9 +361,6 @@ class Helpers
 	 * Check whether the current user can view the portal item according to their access rights
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
-	 *
-	 * @param int $permissions
-	 * @return bool
 	 */
 	public static function canViewItem(int $permissions): bool
 	{
@@ -446,7 +374,7 @@ class Helpers
 				return $user_info['is_guest'] == 1;
 
 			case 2:
-				return !empty($user_info['id']);
+				return ! empty($user_info['id']);
 
 			default:
 				return true;
@@ -457,8 +385,6 @@ class Helpers
 	 * Returns a valid set of access rights for the current user
 	 *
 	 * Возвращает допустимый набор прав доступа текущего пользователя
-	 *
-	 * @return array
 	 */
 	public static function getPermissions(): array
 	{
@@ -468,20 +394,12 @@ class Helpers
 			return [0, 1, 2, 3];
 		elseif ($user_info['is_guest'] == 1)
 			return [1, 3];
-		elseif (!empty($user_info['id']))
+		elseif (! empty($user_info['id']))
 			return [2, 3];
 
 		return [3];
 	}
 
-	/**
-	 * Check if the page with alias = $alias set as the portal frontpage
-	 *
-	 * Проверяет, установлена ли страница с alias = $alias как главная
-	 *
-	 * @param string $alias
-	 * @return bool
-	 */
 	public static function isFrontpage(string $alias): bool
 	{
 		global $modSettings;
@@ -489,20 +407,12 @@ class Helpers
 		if (empty($alias))
 			return false;
 
-		return !empty($modSettings['lp_frontpage_mode'])
-			&& $modSettings['lp_frontpage_mode'] == 'chosen_page'
-			&& !empty($modSettings['lp_frontpage_alias'])
-			&& $modSettings['lp_frontpage_alias'] == $alias;
+		return ! empty($modSettings['lp_frontpage_mode'])
+			&& $modSettings['lp_frontpage_mode'] === 'chosen_page'
+			&& ! empty($modSettings['lp_frontpage_alias'])
+			&& $modSettings['lp_frontpage_alias'] === $alias;
 	}
 
-	/**
-	 * Get an object title, according to the user's language, or the forum's language, or in English
-	 *
-	 * Получаем заголовок объекта, в соответствии с языком пользователя или форума, или на английском
-	 *
-	 * @param array $titleArray
-	 * @return string
-	 */
 	public static function getTranslatedTitle(array $titleArray): string
 	{
 		global $user_info, $language;
@@ -510,51 +420,33 @@ class Helpers
 		if (empty($titleArray))
 			return '';
 
-		if (!empty($titleArray[$user_info['language']]))
+		if (! empty($titleArray[$user_info['language']]))
 			return $titleArray[$user_info['language']];
 
-		if (!empty($titleArray[$language]))
+		if (! empty($titleArray[$language]))
 			return $titleArray[$language];
 
-		if (!empty($titleArray['english']))
+		if (! empty($titleArray['english']))
 			return $titleArray['english'];
 
 		return '';
 	}
 
-	/**
-	 * @param string $value
-	 * @return string
-	 */
 	public static function getSnakeName(string $value): string
 	{
 		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
-	/**
-	 * @param string $value
-	 * @return string
-	 */
 	public static function getCamelName(string $value): string
 	{
 		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
 	}
 
-	/**
-	 * @param string $text
-	 * @param int $length
-	 * @return string
-	 */
 	public static function getTeaser(string $text, int $length = 150): string
 	{
-		$text = strip_tags($text);
-
-		return shorten_subject($text, $length) ?: '...';
+		return shorten_subject(strip_tags($text), $length) ?: '...';
 	}
 
-	/**
-	 * @return array
-	 */
 	public static function getForumThemes(): array
 	{
 		global $smcFunc;
@@ -562,25 +454,20 @@ class Helpers
 		$result = $smcFunc['db_query']('', '
 			SELECT id_theme, value
 			FROM {db_prefix}themes
-			WHERE variable = {string:name}',
-			array(
-				'name' => 'name'
-			)
+			WHERE variable = {literal:name}',
+			array()
 		);
 
-		$current_themes = [];
+		$themes = [];
 		while ($row = $smcFunc['db_fetch_assoc']($result))
-			$current_themes[$row['id_theme']] = $row['value'];
+			$themes[$row['id_theme']] = $row['value'];
 
 		$smcFunc['db_free_result']($result);
 		$smcFunc['lp_num_queries']++;
 
-		return $current_themes;
+		return $themes;
 	}
 
-	/**
-	 * @return void
-	 */
 	public static function prepareForumLanguages()
 	{
 		global $modSettings, $context, $language;
@@ -599,37 +486,22 @@ class Helpers
 		array_unshift($context['languages'], $default_lang);
 	}
 
-	/**
-	 * Prepare content to display
-	 *
-	 * Готовим контент к отображению в браузере
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @return void
-	 */
 	public static function prepareContent(string &$content, string $type = 'bbc', int $block_id = 0, int $cache_time = 0)
 	{
 		global $context;
 
-		!empty($block_id) && !empty($context['lp_active_blocks'][$block_id])
+		! empty($block_id) && ! empty($context['lp_active_blocks'][$block_id])
 			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
 			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
 
 		ob_start();
 
-		Addons::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
+		Addon::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
 
 		$content = ob_get_clean();
 	}
 
-	/**
-	 * @param array $entity
-	 * @return void
-	 */
-	public static function prepareBbcContent(&$entity)
+	public static function prepareBbcContent(array &$entity)
 	{
 		global $smcFunc;
 
@@ -638,20 +510,11 @@ class Helpers
 
 		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
 
-		Helpers::require('Subs-Post');
+		Helper::require('Subs-Post');
 
 		preparsecode($entity['content']);
 	}
 
-	/**
-	 * Parse content depending on the type
-	 *
-	 * Парсим контент в зависимости от типа
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @return void
-	 */
 	public static function parseContent(string &$content, string $type = 'bbc')
 	{
 		if ($type === 'bbc') {
@@ -683,7 +546,7 @@ class Helpers
 			return;
 		}
 
-		Addons::run('parseContent', array(&$content, $type));
+		Addon::run('parseContent', array(&$content, $type));
 	}
 
 	/**
@@ -756,14 +619,6 @@ class Helpers
 		return $value;
 	}
 
-	/**
-	 * Get array of titles for page/block object type
-	 *
-	 * Получаем массив всех заголовков для объекта типа page/block
-	 *
-	 * @param string $type
-	 * @return array
-	 */
 	public static function getAllTitles(string $type = 'page'): array
 	{
 		global $smcFunc;
@@ -781,7 +636,7 @@ class Helpers
 
 			$titles = [];
 			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				if (!empty($row['lang']))
+				if (! empty($row['lang']))
 					$titles[$row['item_id']][$row['lang']] = $row['title'];
 			}
 
@@ -795,7 +650,7 @@ class Helpers
 	}
 
 	/**
-	 * @return array
+	 * @return mixed
 	 */
 	public static function getAllCategories()
 	{
@@ -803,16 +658,13 @@ class Helpers
 	}
 
 	/**
-	 * @return array
+	 * @return mixed
 	 */
 	public static function getAllTags()
 	{
 		return self::cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
 	}
 
-	/**
-	 * @return array
-	 */
 	public static function getFaIcons(): array
 	{
 		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
@@ -835,37 +687,31 @@ class Helpers
 		return $icons;
 	}
 
-	/**
-	 * @param $user_id
-	 * @return array
-	 * @throws \Exception
-	 */
-	public static function getUserAvatar($user_id): array
+	public static function getUserAvatar(int $user_id): array
 	{
 		global $memberContext;
 
-		if (!isset($memberContext[$user_id])) {
-			loadMemberData($user_id);
-			loadMemberContext($user_id, true);
+		if (empty($user_id))
+			return [];
+
+		try {
+			if (! isset($memberContext[$user_id])) {
+				loadMemberData($user_id);
+				loadMemberContext($user_id, true);
+			}
+		} catch (\Exception $e) {
+			log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
 		}
 
-		return $memberContext[$user_id]['avatar'];
+		return $memberContext[$user_id]['avatar'] ?? [];
 	}
 
-	/**
-	 * Prepare field array with entity options
-	 *
-	 * Формируем массив полей с настройками сущности
-	 *
-	 * @param string $defaultTab
-	 * @return void
-	 */
 	public static function preparePostFields(string $defaultTab = 'tuning')
 	{
 		global $context;
 
 		foreach ($context['posting_fields'] as $item => $data) {
-			if (!empty($data['input']['after'])) {
+			if (! empty($data['input']['after'])) {
 				$tag = 'div';
 
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
@@ -886,5 +732,12 @@ class Helpers
 		}
 
 		loadTemplate('LightPortal/ManageSettings');
+	}
+
+	public static function getImageFromText(string $text): string
+	{
+		$image = preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
+
+		return $value['src'] ??= '';
 	}
 }
