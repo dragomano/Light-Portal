@@ -6,29 +6,22 @@
  * @package TopPages (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class TopPages extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-balance-scale-left';
+	public string $icon = 'fas fa-balance-scale-left';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['top_pages']['parameters'] = [
@@ -38,11 +31,6 @@ class TopPages extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'top_pages')
@@ -53,9 +41,6 @@ class TopPages extends Plugin
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -96,24 +81,16 @@ class TopPages extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_numbers_only',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_numbers_only'])
 			)
 		);
 	}
 
-	/**
-	 * Get the list of popular pages
-	 *
-	 * Получаем список популярных страниц
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getData(array $parameters): array
 	{
 		global $smcFunc, $scripturl;
 
-		$titles = Helpers::getAllTitles();
+		$titles = Helper::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments
@@ -126,14 +103,14 @@ class TopPages extends Plugin
 			array(
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'limit'        => $parameters['num_pages']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['alias']))
+			if (Helper::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(
@@ -150,13 +127,6 @@ class TopPages extends Plugin
 		return $pages;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
@@ -164,11 +134,11 @@ class TopPages extends Plugin
 		if ($type !== 'top_pages')
 			return;
 
-		$top_pages = Helpers::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'])
+		$top_pages = Helper::cache('top_pages_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($top_pages)) {
+		if (! empty($top_pages)) {
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
@@ -178,7 +148,7 @@ class TopPages extends Plugin
 		<dl class="stats">';
 
 				foreach ($top_pages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helpers::getTranslatedTitle($page['title'])))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Helper::getTranslatedTitle($page['title'])))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
@@ -189,7 +159,7 @@ class TopPages extends Plugin
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helpers::getText($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helper::getPluralText($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
 			</dd>';
 				}
 

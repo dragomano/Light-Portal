@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
 namespace Bugo\LightPortal\Addons;
@@ -18,68 +18,34 @@ use ReflectionClass;
 
 abstract class Plugin
 {
-	/**
-	 * Addon type
-	 *
-	 * @var string
-	 */
-	public $type = 'block';
+	/** Addon type */
+	public string $type = 'block';
 
-	/**
-	 * Block icon
-	 *
-	 * @var string
-	 */
-	public $icon = 'fas fa-puzzle-piece';
+	/** Block icon */
+	public string $icon = 'fas fa-puzzle-piece';
 
-	/**
-	 * Addon author
-	 *
-	 * @var string
-	 */
-	public $author = '';
+	/** Addon author */
+	public string $author = '';
 
-	/**
-	 * Addon site link
-	 *
-	 * @var string
-	 */
-	public $link = '';
+	/** Addon site link */
+	public string $link = '';
 
-	/**
-	 * List of required addons separated by comma
-	 *
-	 * @var array
-	 */
-	public $requires = [];
+	/** List of required addons separated by comma */
+	public array $requires = [];
 
-	/**
-	 * Addon list those will be disabled on enabling
-	 *
-	 * @var array
-	 */
-	public $disables = [];
+	/** Addon list those will be disabled on enabling */
+	public array $disables = [];
 
-	/**
-	 * @return ReflectionClass
-	 */
-	public function getCalledClass()
+	public function getCalledClass(): ReflectionClass
 	{
 		return new ReflectionClass(get_called_class());
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string
 	{
 		return $this->getCalledClass()->getShortName();
 	}
 
-	/**
-	 * @param string $template
-	 * @return void
-	 */
 	public function loadTemplate(string $template = 'template')
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
@@ -88,12 +54,9 @@ abstract class Plugin
 			require_once $path;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function loadSsi()
 	{
-		$path = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'SSI.php';
+		$path = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
 		if (is_file($path))
 			require_once $path;

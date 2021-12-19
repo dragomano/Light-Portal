@@ -6,11 +6,11 @@
  * @package PrettyUrls (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 17.12.21
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
@@ -19,23 +19,13 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class PrettyUrls extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'other';
+	public string $type = 'other';
 
-	/**
-	 * Give a hint to PrettyUrls mod about "action=portal"
-	 *
-	 * Подсказываем PrettyUrls про "action=portal"
-	 *
-	 * @return void
-	 */
 	public function init()
 	{
 		global $sourcedir, $context, $modSettings;
 
-		if (! is_file($sourcedir . '/Subs-PrettyUrls.php'))
+		if (! is_file($file = $sourcedir . '/Subs-PrettyUrls.php'))
 			return;
 
 		if (! empty($context['pretty']['action_array']) && ! in_array(LP_ACTION, array_values($context['pretty']['action_array'])))
@@ -46,7 +36,7 @@ class PrettyUrls extends Plugin
 		if (isset($prettyFilters['lp-pages']))
 			return;
 
-		require_once $sourcedir . '/Subs-PrettyUrls.php';
+		require_once $file;
 
 		$prettyFilters['lp-pages'] = array(
 			'description' => 'Rewrite Light Portal pages URLs',
@@ -64,15 +54,10 @@ class PrettyUrls extends Plugin
 
 		updateSettings(array('pretty_filters' => serialize($prettyFilters)));
 
-		pretty_update_filters();
+		if (function_exists('pretty_update_filters'))
+			pretty_update_filters();
 	}
 
-	/**
-	 * Pretty Urls Light Portal pages Filter
-	 *
-	 * @param array $urls
-	 * @return array
-	 */
 	public static function filter(array $urls): array
 	{
 		global $scripturl, $boardurl;
@@ -81,9 +66,8 @@ class PrettyUrls extends Plugin
 		$replacement = $boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
 
 		foreach ($urls as $url_id => $url) {
-			if (! isset($url['replacement'])) {
-				if (preg_match($pattern, $url['url']))
-					$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, $url['url']);
+			if (! isset($url['replacement']) && preg_match($pattern, $url['url'])) {
+				$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, $url['url']);
 			}
 		}
 

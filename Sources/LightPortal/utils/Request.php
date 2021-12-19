@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Utils;
+declare(strict_types = 1);
 
 /**
  * Request.php
@@ -8,25 +8,28 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Utils;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
 class Request
 {
-	/**
-	 * @var array
-	 */
-	protected $storage = [];
+	protected array $storage = [];
 
-	public function __construct()
+	public function __construct($is_only_post = false)
 	{
 		$this->storage = &$_REQUEST;
+
+		if ($is_only_post) {
+			$this->storage = &$_POST;
+		}
 	}
 
 	/**
@@ -48,18 +51,11 @@ class Request
 		$this->storage[$key] = &$value;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function all(): array
 	{
 		return $this->storage;
 	}
 
-	/**
-	 * @param array $keys
-	 * @return array
-	 */
 	public function only(array $keys): array
 	{
 		$result = [];
@@ -76,7 +72,7 @@ class Request
 	}
 
 	/**
-	 * @param string|array $key
+	 * @param string|array $keys
 	 * @return bool
 	 */
 	public function has($keys): bool
@@ -94,19 +90,11 @@ class Request
 		return isset($this->storage[$keys]);
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
 	public function isEmpty(string $key): bool
 	{
 		return empty($this->storage[$key]);
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
 	public function notEmpty(string $key): bool
 	{
 		return empty($this->isEmpty($key));
@@ -149,7 +137,7 @@ class Request
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function json(string $key = null, $default = null)
+	public function json(?string $key = null, $default = null)
 	{
 		$data = json_decode(file_get_contents('php://input'), true);
 
@@ -160,9 +148,6 @@ class Request
 		return $data;
 	}
 
-	/**
-	 * @return string
-	 */
 	public static function url(): string
 	{
 		return $_SERVER['REQUEST_URL'];

@@ -1,32 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal;
+declare(strict_types = 1);
 
 /**
- * Settings.php
+ * ConfigArea.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Admin;
+
+use Bugo\LightPortal\{Addon, FrontPage, Helper};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Settings
+final class ConfigArea
 {
-	/**
-	 * Make a section with the mod settings in the admin panel
-	 *
-	 * Формируем раздел с настройками мода в админке
-	 *
-	 * @param array $admin_areas
-	 * @return void
-	 */
 	public function adminAreas(array &$admin_areas)
 	{
 		global $txt, $context;
@@ -111,18 +107,13 @@ class Settings
 			);
 		}
 
-		Addons::run('addAdminAreas', array(&$admin_areas));
+		Addon::run('addAdminAreas', array(&$admin_areas));
 	}
 
 	/**
 	 * Easy access to the mod settings via a quick search in the admin panel
 	 *
 	 * Легкий доступ к настройкам мода через быстрый поиск в админке
-	 *
-	 * @param array $language_files
-	 * @param array $include_files
-	 * @param array $settings_search
-	 * @return void
 	 */
 	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
@@ -136,8 +127,6 @@ class Settings
 	 * List of tabs with settings
 	 *
 	 * Список вкладок с настройками
-	 *
-	 * @return void
 	 */
 	public function settingAreas()
 	{
@@ -179,10 +168,10 @@ class Settings
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
 
-		if (Helpers::request()->has('getDebugInfo'))
+		if (Helper::request()->has('getDebugInfo'))
 			$this->generateDumpFile();
 
-		if (!isset($context['settings_title']))
+		if (! isset($context['settings_title']))
 			return;
 
 		$context['settings_title'] .= '<span class="floatright" x-data>
@@ -195,7 +184,6 @@ class Settings
 	 *
 	 * Выводим общие настройки
 	 *
-	 * @param bool $return_config
 	 * @return array|void
 	 */
 	public function basic(bool $return_config = false)
@@ -211,29 +199,29 @@ class Settings
 		$context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
 		$context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
-		$context['lp_all_categories']       = Helpers::getAllCategories();
-		$context['lp_frontpage_categories'] = !empty($modSettings['lp_frontpage_categories']) ? explode(',', $modSettings['lp_frontpage_categories']) : [0];
+		$context['lp_all_categories']       = Helper::getAllCategories();
+		$context['lp_frontpage_categories'] = empty($modSettings['lp_frontpage_categories']) ? [0] : explode(',', $modSettings['lp_frontpage_categories']);
 		$context['lp_frontpage_layout']     = FrontPage::getLayouts();
 
 		$txt['select_boards_from_list'] = $txt['lp_select_boards_from_list'];
 
 		// Initial settings
 		$add_settings = [];
-		if (!isset($modSettings['lp_frontpage_title']))
+		if (! isset($modSettings['lp_frontpage_title']))
 			$add_settings['lp_frontpage_title'] = $context['forum_name'];
-		if (!isset($modSettings['lp_frontpage_alias']))
+		if (! isset($modSettings['lp_frontpage_alias']))
 			$add_settings['lp_frontpage_alias'] = 'home';
-		if (!isset($modSettings['lp_show_num_views_and_comments']))
+		if (! isset($modSettings['lp_show_num_views_and_comments']))
 			$add_settings['lp_show_num_views_and_comments'] = 1;
-		if (!isset($modSettings['lp_frontpage_article_sorting']))
+		if (! isset($modSettings['lp_frontpage_article_sorting']))
 			$add_settings['lp_frontpage_article_sorting'] = 1;
-		if (!isset($modSettings['lp_num_items_per_page']))
+		if (! isset($modSettings['lp_num_items_per_page']))
 			$add_settings['lp_num_items_per_page'] = 10;
-		if (!isset($modSettings['lp_standalone_url']))
+		if (! isset($modSettings['lp_standalone_url']))
 			$add_settings['lp_standalone_url'] = $boardurl . '/portal.php';
-		if (!isset($modSettings['lp_prohibit_php']))
+		if (! isset($modSettings['lp_prohibit_php']))
 			$add_settings['lp_prohibit_php'] = 1;
-		if (!empty($add_settings))
+		if (! empty($add_settings))
 			updateSettings($add_settings);
 
 		$config_vars = array(
@@ -288,7 +276,7 @@ class Settings
 			array('permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages')
 		);
 
-		Addons::run('addBasicSettings', array(&$config_vars));
+		Addon::run('addBasicSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -300,37 +288,37 @@ class Settings
 		$context['template_layers'][] = 'lp_basic_settings';
 
 		// Save
-		if (Helpers::request()->has('save')) {
+		if (Helper::request()->has('save')) {
 			checkSession();
 
-			if (Helpers::post()->isEmpty('lp_frontpage_mode'))
-				Helpers::post()->put('lp_standalone_url', 0);
+			if (Helper::post()->isEmpty('lp_frontpage_mode'))
+				Helper::post()->put('lp_standalone_url', 0);
 
-			if (Helpers::post()->notEmpty('lp_image_placeholder'))
-				Helpers::post()->put('lp_image_placeholder', Helpers::validate(Helpers::post('lp_image_placeholder'), 'url'));
+			if (Helper::post()->notEmpty('lp_image_placeholder'))
+				Helper::post()->put('lp_image_placeholder', Helper::validate(Helper::post('lp_image_placeholder'), 'url'));
 
-			if (Helpers::post()->notEmpty('lp_standalone_url'))
-				Helpers::post()->put('lp_standalone_url', Helpers::validate(Helpers::post('lp_standalone_url'), 'url'));
+			if (Helper::post()->notEmpty('lp_standalone_url'))
+				Helper::post()->put('lp_standalone_url', Helper::validate(Helper::post('lp_standalone_url'), 'url'));
 
 			$frontpage_categories = [];
-			if (Helpers::post()->notEmpty('lp_frontpage_categories')) {
-				foreach (Helpers::post('lp_frontpage_categories') as $id => $dummy)
+			if (Helper::post()->notEmpty('lp_frontpage_categories')) {
+				foreach (Helper::post('lp_frontpage_categories') as $id => $dummy)
 					if (isset($context['lp_all_categories'][$id]))
 						$frontpage_categories[] = $id;
 			}
 
-			Helpers::post()->put('lp_frontpage_categories', !empty($frontpage_categories) ? implode(',', $frontpage_categories) : '');
+			Helper::post()->put('lp_frontpage_categories', ! empty($frontpage_categories) ? implode(',', $frontpage_categories) : '');
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_categories'];
 			$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			Addons::run('addBasicSaveSettings', array(&$save_vars));
+			Addon::run('addBasicSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
 
-			Helpers::session()->put('adm-save', true);
-			Helpers::cache()->flush();
+			Helper::session()->put('adm-save', true);
+			Helper::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
@@ -343,7 +331,6 @@ class Settings
 	 *
 	 * Выводим настройки страниц и блоков
 	 *
-	 * @param bool $return_config
 	 * @return array|void
 	 */
 	public function extra(bool $return_config = false)
@@ -363,9 +350,9 @@ class Settings
 
 		// Initial settings
 		$add_settings = [];
-		if (!isset($modSettings['lp_num_comments_per_page']))
+		if (! isset($modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
-		if (!empty($add_settings))
+		if (! empty($add_settings))
 			updateSettings($add_settings);
 
 		$config_vars = array(
@@ -402,7 +389,7 @@ class Settings
 			),
 		);
 
-		Addons::run('addExtraSettings', array(&$config_vars));
+		Addon::run('addExtraSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
@@ -414,11 +401,11 @@ class Settings
 		$this->prepareTagsInComments();
 
 		// Save
-		if (Helpers::request()->has('save')) {
+		if (Helper::request()->has('save')) {
 			checkSession();
 
-			if (Helpers::post()->notEmpty('lp_fa_custom'))
-				Helpers::post()->put('lp_fa_custom', Helpers::validate(Helpers::post('lp_fa_custom'), 'url'));
+			if (Helper::post()->notEmpty('lp_fa_custom'))
+				Helper::post()->put('lp_fa_custom', Helper::validate(Helper::post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
 			$bbcTags = [];
@@ -428,25 +415,25 @@ class Settings
 				$bbcTags[] = $tag['tag'];
 			}
 
-			if (Helpers::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
-				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
-			} elseif (!is_array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))) {
-				Helpers::post()->put('lp_disabled_bbc_in_comments_enabledTags', array(Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
+			if (Helper::post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
+				Helper::post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
+			} elseif (! is_array(Helper::post('lp_disabled_bbc_in_comments_enabledTags'))) {
+				Helper::post()->put('lp_disabled_bbc_in_comments_enabledTags', array(Helper::post('lp_disabled_bbc_in_comments_enabledTags')));
 			}
 
-			Helpers::post()->put('lp_enabled_bbc_in_comments', implode(',', Helpers::post('lp_disabled_bbc_in_comments_enabledTags')));
-			Helpers::post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, Helpers::post('lp_disabled_bbc_in_comments_enabledTags'))));
+			Helper::post()->put('lp_enabled_bbc_in_comments', implode(',', Helper::post('lp_disabled_bbc_in_comments_enabledTags')));
+			Helper::post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, Helper::post('lp_disabled_bbc_in_comments_enabledTags'))));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
 
-			Addons::run('addExtraSaveSettings', array(&$save_vars));
+			Addon::run('addExtraSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
 
-			Helpers::session()->put('adm-save', true);
-			Helpers::cache()->flush();
+			Helper::session()->put('adm-save', true);
+			Helper::cache()->flush();
 
 			redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
@@ -458,8 +445,6 @@ class Settings
 	 * Output category settings
 	 *
 	 * Выводим настройки рубрик
-	 *
-	 * @return void
 	 */
 	public function categories()
 	{
@@ -469,28 +454,28 @@ class Settings
 
 		$context['page_title'] = $txt['lp_categories'];
 
-		$category = new Lists\Category;
+		$category = new \Bugo\LightPortal\Lists\Category;
 
 		$context['lp_categories'] = $category->getList();
 
 		unset($context['lp_categories'][0]);
 
-		if (Helpers::request()->has('actions')) {
-			$data = Helpers::request()->json();
+		if (Helper::request()->has('actions')) {
+			$data = Helper::request()->json();
 
-			if (!empty($data['update_priority']))
+			if (! empty($data['update_priority']))
 				$category->updatePriority($data['update_priority']);
 
-			if (!empty($data['new_name']))
+			if (! empty($data['new_name']))
 				$category->add($data['new_name'], $data['new_desc'] ?? '');
 
-			if (!empty($data['name']))
+			if (! empty($data['name']))
 				$category->updateName((int) $data['item'], $data['name']);
 
-			if (!empty($data['desc']))
+			if (! empty($data['desc']))
 				$category->updateDescription((int) $data['item'], $data['desc']);
 
-			if (!empty($data['del_item']))
+			if (! empty($data['del_item']))
 				$category->remove([(int) $data['del_item']]);
 
 			exit;
@@ -504,7 +489,6 @@ class Settings
 	 *
 	 * Выводим настройки панелей
 	 *
-	 * @param bool $return_config
 	 * @return array|void
 	 */
 	public function panels(bool $return_config = false)
@@ -523,21 +507,21 @@ class Settings
 
 		// Initial settings | Первоначальные настройки
 		$add_settings = [];
-		if (!isset($modSettings['lp_swap_left_right']))
-			$add_settings['lp_swap_left_right'] = !empty($txt['lang_rtl']);
-		if (!isset($modSettings['lp_header_panel_width']))
+		if (! isset($modSettings['lp_swap_left_right']))
+			$add_settings['lp_swap_left_right'] = ! empty($txt['lang_rtl']);
+		if (! isset($modSettings['lp_header_panel_width']))
 			$add_settings['lp_header_panel_width'] = 12;
-		if (!isset($modSettings['lp_left_panel_width']))
+		if (! isset($modSettings['lp_left_panel_width']))
 			$add_settings['lp_left_panel_width'] = json_encode($context['lp_left_panel_width']);
-		if (!isset($modSettings['lp_right_panel_width']))
+		if (! isset($modSettings['lp_right_panel_width']))
 			$add_settings['lp_right_panel_width'] = json_encode($context['lp_right_panel_width']);
-		if (!isset($modSettings['lp_footer_panel_width']))
+		if (! isset($modSettings['lp_footer_panel_width']))
 			$add_settings['lp_footer_panel_width'] = 12;
-		if (!isset($modSettings['lp_left_panel_sticky']))
+		if (! isset($modSettings['lp_left_panel_sticky']))
 			$add_settings['lp_left_panel_sticky'] = 1;
-		if (!isset($modSettings['lp_right_panel_sticky']))
+		if (! isset($modSettings['lp_right_panel_sticky']))
 			$add_settings['lp_right_panel_sticky'] = 1;
-		if (!empty($add_settings))
+		if (! empty($add_settings))
 			updateSettings($add_settings);
 
 		$context['lp_left_right_width_values']    = [2, 3, 4];
@@ -551,19 +535,19 @@ class Settings
 			array('callback', 'panel_direction')
 		);
 
-		Addons::run('addPanelsSettings', array(&$config_vars));
+		Addon::run('addPanelsSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
 
 		$context['sub_template'] = 'show_settings';
 
-		if (Helpers::request()->has('save')) {
+		if (Helper::request()->has('save')) {
 			checkSession();
 
-			Helpers::post()->put('lp_left_panel_width', json_encode(Helpers::post('lp_left_panel_width')));
-			Helpers::post()->put('lp_right_panel_width', json_encode(Helpers::post('lp_right_panel_width')));
-			Helpers::post()->put('lp_panel_direction', json_encode(Helpers::post('lp_panel_direction')));
+			Helper::post()->put('lp_left_panel_width', json_encode(Helper::post('lp_left_panel_width')));
+			Helper::post()->put('lp_right_panel_width', json_encode(Helper::post('lp_right_panel_width')));
+			Helper::post()->put('lp_panel_direction', json_encode(Helper::post('lp_panel_direction')));
 
 			$save_vars = $config_vars;
 
@@ -575,11 +559,11 @@ class Settings
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
 
-			Addons::run('addPanelsSaveSettings', array(&$save_vars));
+			Addon::run('addPanelsSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
 
-			Helpers::session()->put('adm-save', true);
+			Helper::session()->put('adm-save', true);
 
 			redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
@@ -592,7 +576,6 @@ class Settings
 	 *
 	 * Выводим дополнительные настройки
 	 *
-	 * @param bool $return_config
 	 * @return array|void
 	 */
 	public function misc(bool $return_config = false)
@@ -604,13 +587,13 @@ class Settings
 
 		// Initial settings
 		$add_settings = [];
-		if (!isset($modSettings['lp_cache_update_interval']))
+		if (! isset($modSettings['lp_cache_update_interval']))
 			$add_settings['lp_cache_update_interval'] = LP_CACHE_TIME;
-		if (!isset($modSettings['lp_portal_action']))
+		if (! isset($modSettings['lp_portal_action']))
 			$add_settings['lp_portal_action'] = LP_ACTION;
-		if (!isset($modSettings['lp_page_param']))
+		if (! isset($modSettings['lp_page_param']))
 			$add_settings['lp_page_param'] = LP_PAGE_PARAM;
-		if (!empty($add_settings))
+		if (! empty($add_settings))
 			updateSettings($add_settings);
 
 		$config_vars = array(
@@ -624,14 +607,14 @@ class Settings
 			array('check', 'lp_weekly_cleaning')
 		);
 
-		Addons::run('addMiscSettings', array(&$config_vars));
+		Addon::run('addMiscSettings', array(&$config_vars));
 
 		if ($return_config)
 			return $config_vars;
 
 		$context['sub_template'] = 'show_settings';
 
-		if (Helpers::request()->has('save')) {
+		if (Helper::request()->has('save')) {
 			checkSession();
 
 			$smcFunc['db_query']('', '
@@ -642,7 +625,7 @@ class Settings
 				)
 			);
 
-			if (Helpers::post()->has('lp_weekly_cleaning')) {
+			if (Helper::post()->has('lp_weekly_cleaning')) {
 				$smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
@@ -653,11 +636,11 @@ class Settings
 
 			$save_vars = $config_vars;
 
-			Addons::run('addMiscSaveSettings', array(&$save_vars));
+			Addon::run('addMiscSaveSettings', array(&$save_vars));
 
 			saveDBSettings($save_vars);
 
-			Helpers::session()->put('adm-save', true);
+			Helper::session()->put('adm-save', true);
 
 			redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
@@ -665,13 +648,6 @@ class Settings
 		prepareDBSettingContext($config_vars);
 	}
 
-	/**
-	 * The list of available areas to control the blocks
-	 *
-	 * Список доступных областей для управления блоками
-	 *
-	 * @return void
-	 */
 	public function blockAreas()
 	{
 		global $user_info;
@@ -679,28 +655,21 @@ class Settings
 		isAllowedTo('light_portal_manage_own_blocks');
 
 		$subActions = array(
-			'main' => array(new ManageBlocks, 'main'),
-			'add'  => array(new ManageBlocks, 'add'),
-			'edit' => array(new ManageBlocks, 'edit')
+			'main' => array(new BlockArea, 'main'),
+			'add'  => array(new BlockArea, 'add'),
+			'edit' => array(new BlockArea, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = array(new Impex\BlockExport, 'main');
-			$subActions['import'] = array(new Impex\BlockImport, 'main');
+			$subActions['export'] = array(new \Bugo\LightPortal\Impex\BlockExport, 'main');
+			$subActions['import'] = array(new \Bugo\LightPortal\Impex\BlockImport, 'main');
 		}
 
-		Addons::run('addBlockAreas', array(&$subActions));
+		Addon::run('addBlockAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
-	/**
-	 * The list of available fields to control the pages
-	 *
-	 * Список доступных областей для управления страницами
-	 *
-	 * @return void
-	 */
 	public function pageAreas()
 	{
 		global $user_info;
@@ -708,49 +677,35 @@ class Settings
 		isAllowedTo('light_portal_manage_own_pages');
 
 		$subActions = array(
-			'main' => array(new ManagePages, 'main'),
-			'add'  => array(new ManagePages, 'add'),
-			'edit' => array(new ManagePages, 'edit')
+			'main' => array(new PageArea, 'main'),
+			'add'  => array(new PageArea, 'add'),
+			'edit' => array(new PageArea, 'edit')
 		);
 
 		if ($user_info['is_admin']) {
-			$subActions['export'] = array(new Impex\PageExport, 'main');
-			$subActions['import'] = array(new Impex\PageImport, 'main');
+			$subActions['export'] = array(new \Bugo\LightPortal\Impex\PageExport, 'main');
+			$subActions['import'] = array(new \Bugo\LightPortal\Impex\PageImport, 'main');
 		}
 
-		Addons::run('addPageAreas', array(&$subActions));
+		Addon::run('addPageAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
-	/**
-	 * The list of available fields to control the plugins
-	 *
-	 * Список доступных областей для управления плагинами
-	 *
-	 * @return void
-	 */
 	public function pluginAreas()
 	{
 		isAllowedTo('admin_forum');
 
 		$subActions = array(
-			'main' => array(new ManagePlugins, 'main')
+			'main' => array(new PluginArea, 'main')
 		);
 
-		Addons::run('addPluginAreas', array(&$subActions));
+		Addon::run('addPluginAreas', array(&$subActions));
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
-	/**
-	 * Get the number of the last version
-	 *
-	 * Получаем номер последней версии LP
-	 *
-	 * @return string
-	 */
-	public function getLastVersion(): string
+	private function getLastVersion(): string
 	{
 		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
 
@@ -765,19 +720,11 @@ class Settings
 		return LP_VERSION;
 	}
 
-	/**
-	 * Check new version status
-	 *
-	 * Проверяем наличие новой версии
-	 *
-	 * @return void
-	 */
 	private function checkNewVersion()
 	{
 		global $context, $txt;
 
-		// Check once a week | Проверяем раз в неделю
-		if (version_compare(LP_VERSION, $new_version = Helpers::cache('last_version')->setLifeTime(604800)->setFallback(__CLASS__, 'getLastVersion'), '<')) {
+		if (version_compare(LP_VERSION, $new_version = $this->getLastVersion(), '<')) {
 			$context['settings_insert_above'] = '
 			<div class="noticebox">
 				' . $txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
@@ -789,38 +736,31 @@ class Settings
 	 * Calls the requested subaction if it does exist; otherwise, calls the default action
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
-	 *
-	 * @param array $subActions
-	 * @param string|null $defaultAction
-	 * @return void
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = null)
+	private function loadGeneralSettingParameters(array $subActions = [], ?string $defaultAction = null)
 	{
 		global $context;
 
-		Helpers::require('ManageServer');
+		Helper::require('ManageServer');
 
 		$context['sub_template'] = 'show_settings';
 
 		$defaultAction = $defaultAction ?: key($subActions);
 
-		$subAction = Helpers::request()->has('sa') && isset($subActions[Helpers::request('sa')]) ? Helpers::request('sa') : $defaultAction;
+		$subAction = Helper::request()->has('sa') && isset($subActions[Helper::request('sa')]) ? Helper::request('sa') : $defaultAction;
 
 		$context['sub_action'] = $subAction;
 
 		call_helper($subActions[$subAction]);
 	}
 
-	/**
-	 * @return void
-	 */
 	private function generateDumpFile()
 	{
 		global $context, $modSettings, $txt;
 
 		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $context['lp_enabled_plugins']) . "'" . PHP_EOL;
 		foreach ($modSettings as $key => $value) {
-			if (strpos($key, 'lp_') === 0 && isset($txt[$key]) && !empty($modSettings[$key])) {
+			if (strpos((string) $key, 'lp_') === 0 && isset($txt[$key]) && ! empty($value)) {
 				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
 			}
 		}
@@ -836,22 +776,19 @@ class Settings
 		exit;
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareAliasList()
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->has('alias_list') === false)
+		if (Helper::request()->has('alias_list') === false)
 			return;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($search = $data['search']))
 			return;
 
-		$results = ManagePages::getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $smcFunc['strtolower']($search)]);
+		$results = (new PageArea)->getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $smcFunc['strtolower']($search)]);
 		$results = array_column($results, 'alias');
 		array_walk($results, function (&$item) {
 			$item = ['value' => $item];
@@ -860,9 +797,6 @@ class Settings
 		exit(json_encode($results));
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareTagsInComments()
 	{
 		global $modSettings, $context, $txt;
@@ -873,7 +807,7 @@ class Settings
 		$temp = parse_bbc(false);
 		$bbcTags = [];
 		foreach ($temp as $tag) {
-			if (!isset($tag['require_parents']))
+			if (! isset($tag['require_parents']))
 				$bbcTags[] = $tag['tag'];
 		}
 

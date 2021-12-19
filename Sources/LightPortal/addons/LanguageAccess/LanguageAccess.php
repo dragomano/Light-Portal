@@ -6,11 +6,11 @@
  * @package LanguageAccess (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -19,18 +19,8 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class LanguageAccess extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $type = 'block_options';
+	public string $type = 'block_options';
 
-	/**
-	 * Fill additional block classes
-	 *
-	 * Заполняем дополнительные классы блока
-	 *
-	 * @return void
-	 */
 	public function init()
 	{
 		global $context;
@@ -43,16 +33,12 @@ class LanguageAccess extends Plugin
 				continue;
 
 			$allowed_languages = array_flip(explode(',', $block['parameters']['allowed_languages']));
-			if (!array_key_exists($context['user']['language'], $allowed_languages)) {
+			if (! array_key_exists($context['user']['language'], $allowed_languages)) {
 				unset($context['lp_active_blocks'][$id]);
 			}
 		}
 	}
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		global $context;
@@ -60,10 +46,6 @@ class LanguageAccess extends Plugin
 		$options[$context['current_block']['type']]['parameters']['allowed_languages'] = [];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters)
 	{
 		$parameters['allowed_languages'] = array(
@@ -73,9 +55,6 @@ class LanguageAccess extends Plugin
 		);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;

@@ -6,11 +6,11 @@
  * @package Translator (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -19,15 +19,8 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class Translator extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-language';
+	public string $icon = 'fas fa-language';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['translator']['no_content_class'] = true;
@@ -39,11 +32,6 @@ class Translator extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'translator')
@@ -54,9 +42,6 @@ class Translator extends Plugin
 		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -109,18 +94,11 @@ class Translator extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'auto_mode',
-				'checked' => !empty($context['lp_block']['options']['parameters']['auto_mode'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['auto_mode'])
 			)
 		);
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $language;

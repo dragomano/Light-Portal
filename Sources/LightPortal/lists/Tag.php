@@ -1,9 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Lists;
-
-use Exception;
-use Bugo\LightPortal\{Helpers, Page};
+declare(strict_types = 1);
 
 /**
  * Tag.php
@@ -11,40 +8,36 @@ use Bugo\LightPortal\{Helpers, Page};
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Lists;
+
+use Bugo\LightPortal\{Helper, Page};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Tag implements PageListInterface
+final class Tag implements PageListInterface
 {
-	/**
-	 * Display all portal pages by specified tag
-	 *
-	 * Отображение всех страниц портала с указанным тегом
-	 *
-	 * @return void
-	 * @throws Exception
-	 */
 	public function show()
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		$context['lp_tag'] = Helpers::request('id', 0);
+		$context['lp_tag'] = Helper::request('id', 0);
 
 		if (empty($context['lp_tag']))
 			$this->showAll();
 
-		if (array_key_exists($context['lp_tag'], Helpers::getAllTags()) === false) {
+		if (array_key_exists($context['lp_tag'], Helper::getAllTags()) === false) {
 			$this->changeBackButton();
 			fatal_lang_error('lp_tag_not_found', false, null, 404);
 		}
 
-		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], Helpers::getAllTags()[$context['lp_tag']]);
+		$context['page_title']     = sprintf($txt['lp_all_tags_by_key'], Helper::getAllTags()[$context['lp_tag']]);
 		$context['canonical_url']  = $scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $context['lp_tag'];
 		$context['robot_no_index'] = true;
 
@@ -57,7 +50,7 @@ class Tag implements PageListInterface
 			'name' => $context['page_title']
 		);
 
-		if (!empty($modSettings['lp_show_items_as_articles']))
+		if (! empty($modSettings['lp_show_items_as_articles']))
 			(new Page)->showAsCards($this);
 
 		$listOptions = (new Page)->getList();
@@ -69,7 +62,7 @@ class Tag implements PageListInterface
 			'function' => array($this, 'getTotalCountPages')
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -78,17 +71,6 @@ class Tag implements PageListInterface
 		obExit();
 	}
 
-	/**
-	 * Get the list of pages with selected tag
-	 *
-	 * Получаем список страниц с указанным тегом
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 * @throws Exception
-	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context, $scripturl;
@@ -111,9 +93,9 @@ class Tag implements PageListInterface
 				'guest'        => $txt['guest_title'],
 				'lang'         => $user_info['language'],
 				'id'           => $context['lp_tag'],
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
 				'limit'        => $items_per_page
@@ -125,9 +107,9 @@ class Tag implements PageListInterface
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$page->fetchQueryResults($items, $row);
 
-			if (!empty($row['category_id'])) {
+			if (! empty($row['category_id'])) {
 				$items[$row['page_id']]['section'] = array(
-					'name' => Helpers::getAllCategories()[$row['category_id']]['name'],
+					'name' => Helper::getAllCategories()[$row['category_id']]['name'],
 					'link' => $scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id']
 				);
 			}
@@ -139,13 +121,6 @@ class Tag implements PageListInterface
 		return $items;
 	}
 
-	/**
-	 * Get the total number of pages with selected tag
-	 *
-	 * Подсчитываем общее количество страниц с указанным тегом
-	 *
-	 * @return int
-	 */
 	public function getTotalCountPages(): int
 	{
 		global $smcFunc, $context;
@@ -160,9 +135,9 @@ class Tag implements PageListInterface
 				AND p.permissions IN ({array_int:permissions})',
 			array(
 				'id'           => $context['lp_tag'],
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
+				'permissions'  => Helper::getPermissions()
 			)
 		);
 
@@ -171,16 +146,9 @@ class Tag implements PageListInterface
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return $num_items;
+		return (int) $num_items;
 	}
 
-	/**
-	 * Display all tags at once
-	 *
-	 * Отображение всех тегов сразу
-	 *
-	 * @return void
-	 */
 	public function showAll()
 	{
 		global $context, $txt, $scripturl, $modSettings;
@@ -214,10 +182,7 @@ class Tag implements PageListInterface
 						'value' => $txt['lp_keyword_column']
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>';
-						},
+						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
 						'class' => 'centertext'
 					),
 					'sort' => array(
@@ -244,7 +209,7 @@ class Tag implements PageListInterface
 			)
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -253,13 +218,6 @@ class Tag implements PageListInterface
 		obExit();
 	}
 
-	/**
-	 * Get the list of all tags
-	 *
-	 * Получаем список всех тегов
-	 *
-	 * @return array
-	 */
 	public function getList(): array
 	{
 		global $smcFunc;
@@ -282,19 +240,9 @@ class Tag implements PageListInterface
 		return $items;
 	}
 
-	/**
-	 * Get the list of all tags
-	 *
-	 * Получаем список всех тегов
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
-		global $smcFunc, $scripturl, $context;
+		global $smcFunc, $scripturl;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
@@ -308,9 +256,9 @@ class Tag implements PageListInterface
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
 				'limit'        => $items_per_page
@@ -336,8 +284,6 @@ class Tag implements PageListInterface
 	 * Change back button text and back button href
 	 *
 	 * Меняем текст и href кнопки «Назад»
-	 *
-	 * @return void
 	 */
 	private function changeBackButton()
 	{
@@ -345,7 +291,7 @@ class Tag implements PageListInterface
 
 		addInlineJavaScript('
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		if (!document.referrer) {
+		if (! document.referrer) {
 			backButton.text = "' . $txt['lp_all_page_tags'] . '";
 			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=tags");
 		}', true);

@@ -6,40 +6,28 @@
  * @package TagList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class TagList extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-tags';
+	public string $icon = 'fas fa-tags';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['tag_list']['parameters']['source']  = 'lp_tags';
 		$options['tag_list']['parameters']['sorting'] = 'name';
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'tag_list')
@@ -49,9 +37,6 @@ class TagList extends Plugin
 		$parameters['sorting'] = FILTER_SANITIZE_STRING;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -61,7 +46,7 @@ class TagList extends Plugin
 
 		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list']['source_set']);
 
-		if (!class_exists('\Bugo\Optimus\Keywords'))
+		if (! class_exists('\Bugo\Optimus\Keywords'))
 			unset($sources['keywords']);
 
 		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
@@ -99,14 +84,6 @@ class TagList extends Plugin
 		}
 	}
 
-	/**
-	 * Get all topic keywords
-	 *
-	 * Получаем ключевые слова всех тем
-	 *
-	 * @param string $sort
-	 * @return array
-	 */
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
 		global $smcFunc, $scripturl;
@@ -140,13 +117,6 @@ class TagList extends Plugin
 		return $keywords;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $txt;
@@ -155,16 +125,16 @@ class TagList extends Plugin
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			$tag_list = Helper::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', ...array(0, 0, $parameters['sorting'] == 'name' ? 'value' : 'num DESC'));
+				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
 		} else {
-			$tag_list = Helpers::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			$tag_list = Helper::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] == 'name' ? 'ok.name' : 'frequency DESC');
+				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
-		if (!empty($tag_list)) {
+		if (! empty($tag_list)) {
 			foreach ($tag_list as $tag) {
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';

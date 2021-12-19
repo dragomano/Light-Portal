@@ -1,12 +1,5 @@
 <?php
 
-/**
- * The page creation/editing template
- *
- * Шаблон создания/редактирования страницы
- *
- * @return void
- */
 function template_page_post()
 {
 	global $context, $txt;
@@ -26,7 +19,7 @@ function template_page_post()
 	</div>';
 	}
 
-	if (!empty($context['post_errors'])) {
+	if (! empty($context['post_errors'])) {
 		echo '
 	<div class="errorbox">
 		<ul>';
@@ -77,7 +70,7 @@ function template_page_post()
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
 
-	if (!empty($context['lp_page']['id'])) {
+	if (! empty($context['lp_page']['id'])) {
 		echo '
 				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
 	}

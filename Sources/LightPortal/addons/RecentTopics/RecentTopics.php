@@ -6,29 +6,22 @@
  * @package RecentTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class RecentTopics extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-book-open';
+	public string $icon = 'fas fa-book-open';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['recent_topics']['no_content_class'] =  true;
@@ -44,11 +37,6 @@ class RecentTopics extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_topics')
@@ -63,9 +51,6 @@ class RecentTopics extends Plugin
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -79,7 +64,7 @@ class RecentTopics extends Plugin
 			'after' => $txt['lp_recent_topics']['use_simple_style_subtext'],
 			'attributes' => array(
 				'id'      => 'use_simple_style',
-				'checked' => !empty($context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['use_simple_style'])
 			),
 			'tab' => 'appearance'
 		);
@@ -89,7 +74,7 @@ class RecentTopics extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_avatars']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
 			),
 			'tab' => 'appearance'
 		);
@@ -99,7 +84,7 @@ class RecentTopics extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_icons',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_icons']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_icons']) && empty($context['lp_block']['options']['parameters']['use_simple_style'])
 			),
 			'tab' => 'appearance'
 		);
@@ -147,21 +132,12 @@ class RecentTopics extends Plugin
 		);
 	}
 
-	/**
-	 * Get the recent topics of the forum
-	 *
-	 * Получаем последние темы форума
-	 *
-	 * @param array $parameters
-	 * @return array
-	 * @throws \Exception
-	 */
 	public function getData(array $parameters): array
 	{
-		if (!empty($parameters['exclude_boards']))
+		if (! empty($parameters['exclude_boards']))
 			$exclude_boards = explode(',', $parameters['exclude_boards']);
 
-		if (!empty($parameters['include_boards']))
+		if (! empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
 		$this->loadSsi();
@@ -171,19 +147,21 @@ class RecentTopics extends Plugin
 		if (empty($topics))
 			return [];
 
-		if (!empty($parameters['show_avatars']) && empty($parameters['use_simple_style'])) {
-			$posters = array_map(function ($item) {
-				return $item['poster']['id'];
-			}, $topics);
+		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style'])) {
+			$posters = array_map(fn($item) => $item['poster']['id'], $topics);
 
 			loadMemberData(array_unique($posters));
 
 			$topics = array_map(function ($item) {
 				global $memberContext, $modSettings;
 
-				if (!empty($item['poster']['id'])) {
-					if (!isset($memberContext[$item['poster']['id']]))
-						loadMemberContext($item['poster']['id']);
+				if (! empty($item['poster']['id'])) {
+					if (! isset($memberContext[$item['poster']['id']]))
+						try {
+							loadMemberContext($item['poster']['id']);
+						} catch (\Exception $e) {
+							log_error('[LP] RecentTopics addon (user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
+						}
 
 					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
 				} else {
@@ -197,13 +175,6 @@ class RecentTopics extends Plugin
 		return $topics;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt, $context;
@@ -211,7 +182,7 @@ class RecentTopics extends Plugin
 		if ($type !== 'recent_topics')
 			return;
 
-		$recent_topics = Helpers::cache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+		$recent_topics = Helper::cache('recent_topics_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -221,7 +192,7 @@ class RecentTopics extends Plugin
 		echo '
 		<ul class="recent_topics noup">';
 
-		if (!empty($parameters['use_simple_style'])) {
+		if (! empty($parameters['use_simple_style'])) {
 			foreach ($recent_topics as $topic) {
 				echo '
 			<li class="windowbg">
@@ -241,7 +212,7 @@ class RecentTopics extends Plugin
 				echo '
 			<li class="windowbg">';
 
-				if (!empty($parameters['show_avatars']))
+				if (! empty($parameters['show_avatars']))
 					echo '
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
@@ -249,14 +220,14 @@ class RecentTopics extends Plugin
 					echo '
 				<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
-				echo (!empty($parameters['show_icons']) ? $topic['icon'] . ' ' : ''), $topic['link'];
+				echo (empty($parameters['show_icons']) ? '' : ($topic['icon'] . ' ')), $topic['link'];
 
 				if (empty($parameters['show_avatars']))
 					echo '
 				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
 
 				echo '
-				<br><span class="smalltext">', Helpers::getFriendlyTime($topic['timestamp'], true), '</span>
+				<br><span class="smalltext">', Helper::getFriendlyTime($topic['timestamp'], true), '</span>
 			</li>';
 			}
 		}

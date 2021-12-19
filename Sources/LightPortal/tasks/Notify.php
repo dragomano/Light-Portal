@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Tasks;
+declare(strict_types = 1);
 
 /**
  * Notify.php
@@ -8,20 +8,20 @@ namespace Bugo\LightPortal\Tasks;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-class Notify extends \SMF_BackgroundTask
+namespace Bugo\LightPortal\Tasks;
+
+final class Notify extends \SMF_BackgroundTask
 {
 	/**
 	 * Performing the task of notifying subscribers about new comments to portal pages
 	 *
 	 * Выполнение задачи оповещений подписчиков о новых комментариях к страницам портала
-	 *
-	 * @return bool
 	 */
 	public function execute(): bool
 	{
@@ -35,16 +35,16 @@ class Notify extends \SMF_BackgroundTask
 			: $members = array_intersect($members, [$this->_details['commentator_id']]);
 
 		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
-		if (!empty($this->_details['sender_id']))
+		if (! empty($this->_details['sender_id']))
 			$members = array_diff($members, array($this->_details['sender_id']));
 
 		require_once $sourcedir . '/Subs-Notify.php';
 		$prefs = getNotifyPrefs($members, $this->_details['content_type'] == 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
 
-		if (!empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
+		if (! empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
 			loadMemberData($this->_details['sender_id'], false, 'minimal');
 
-			!empty($user_profile[$this->_details['sender_id']])
+			! empty($user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name']
 				: $this->_details['sender_id'] = 0;
 		}
@@ -66,7 +66,7 @@ class Notify extends \SMF_BackgroundTask
 			}
 		}
 
-		if (!empty($notifies['alert'])) {
+		if (! empty($notifies['alert'])) {
 			$insert_rows = [];
 			foreach ($notifies['alert'] as $member) {
 				$insert_rows[] = array(
@@ -82,7 +82,7 @@ class Notify extends \SMF_BackgroundTask
 				);
 			}
 
-			if (!empty($insert_rows)) {
+			if (! empty($insert_rows)) {
 				$smcFunc['db_insert']('',
 					'{db_prefix}user_alerts',
 					array(

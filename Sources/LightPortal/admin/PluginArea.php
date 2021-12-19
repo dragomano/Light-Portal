@@ -1,31 +1,28 @@
 <?php
 
-namespace Bugo\LightPortal;
+declare(strict_types = 1);
 
 /**
- * ManagePlugins.php
+ * PluginArea.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Admin;
+
+use \Bugo\LightPortal\{Addon, Helper};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class ManagePlugins
+final class PluginArea
 {
-	/**
-	 * Manage plugins
-	 *
-	 * Управление плагинами
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
@@ -43,7 +40,7 @@ class ManagePlugins
 			'description' => sprintf($txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon')
 		);
 
-		$context['lp_plugins'] = Addons::getAll();
+		$context['lp_plugins'] = Addon::getAll();
 
 		$this->extendPluginList();
 
@@ -52,8 +49,8 @@ class ManagePlugins
 		$context['lp_plugins_extra'] = $txt['lp_plugins'] . ' (' . count($context['lp_plugins']) . ')';
 
 		// Toggle ON/OFF for plugins
-		if (Helpers::request()->has('toggle')) {
-			$data = Helpers::request()->json();
+		if (Helper::request()->has('toggle')) {
+			$data = Helper::request()->json();
 			$plugin_id = (int) $data['plugin'];
 
 			if ($data['status'] === 'on') {
@@ -64,6 +61,8 @@ class ManagePlugins
 				$context['lp_enabled_plugins'][] = $context['lp_plugins'][$plugin_id];
 			}
 
+			sort($context['lp_enabled_plugins']);
+
 			updateSettings(array('lp_enabled_plugins' => implode(',', array_unique(array_intersect($context['lp_enabled_plugins'], $context['lp_plugins'])))));
 
 			exit;
@@ -72,47 +71,47 @@ class ManagePlugins
 		$config_vars = [];
 
 		// You can add settings for your plugins
-		Addons::run('addSettings', array(&$config_vars), $context['lp_plugins']);
+		Addon::run('addSettings', array(&$config_vars), $context['lp_plugins']);
 
 		// Saving of plugin settings
-		if (Helpers::request()->has('save')) {
+		if (Helper::request()->has('save')) {
 			checkSession();
 
-			$plugin_name = Helpers::post('plugin_name');
+			$plugin_name = Helper::post('plugin_name');
 
 			$plugin_options = [];
 			foreach ($config_vars[$plugin_name] as $var) {
 				$var[1] = 'lp_' . $plugin_name . '_addon_' . $var[1];
 
-				if (Helpers::post()->has($var[1])) {
-					if ($var[0] == 'check') {
-						$plugin_options[$var[1]] = (int) Helpers::validate(Helpers::post($var[1]), 'bool');
-					} elseif ($var[0] == 'int') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'int');
-					} elseif ($var[0] == 'float') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'float');
-					} elseif ($var[0] == 'multicheck') {
+				if (Helper::post()->has($var[1])) {
+					if ($var[0] === 'check') {
+						$plugin_options[$var[1]] = (int) Helper::validate(Helper::post($var[1]), 'bool');
+					} elseif ($var[0] === 'int') {
+						$plugin_options[$var[1]] = Helper::validate(Helper::post($var[1]), 'int');
+					} elseif ($var[0] === 'float') {
+						$plugin_options[$var[1]] = Helper::validate(Helper::post($var[1]), 'float');
+					} elseif ($var[0] === 'multicheck') {
 						$plugin_options[$var[1]] = [];
 
-						foreach (Helpers::post($var[1]) as $key => $value) {
-							$plugin_options[$var[1]][$key] = (int) Helpers::validate($value, 'bool');
+						foreach (Helper::post($var[1]) as $key => $value) {
+							$plugin_options[$var[1]][$key] = (int) Helper::validate($value, 'bool');
 						}
 
 						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
-					} elseif ($var[0] == 'url') {
-						$plugin_options[$var[1]] = Helpers::validate(Helpers::post($var[1]), 'url');
-					} elseif ($var[0] == 'select' && !empty($var['multiple'])) {
-						$plugin_options[$var[1]] = json_encode(Helpers::post($var[1]));
+					} elseif ($var[0] === 'url') {
+						$plugin_options[$var[1]] = Helper::validate(Helper::post($var[1]), 'url');
+					} elseif ($var[0] === 'select' && ! empty($var['multiple'])) {
+						$plugin_options[$var[1]] = json_encode(Helper::post($var[1]));
 					} else {
-						$plugin_options[$var[1]] = Helpers::post($var[1]);
+						$plugin_options[$var[1]] = Helper::post($var[1]);
 					}
 				}
 			}
 
 			// You can do additional actions after settings saving
-			Addons::run('saveSettings', array(&$plugin_options), $context['lp_plugins']);
+			Addon::run('saveSettings', array(&$plugin_options), $context['lp_plugins']);
 
-			if (!empty($plugin_options))
+			if (! empty($plugin_options))
 				updateSettings($plugin_options);
 
 			exit;
@@ -123,10 +122,10 @@ class ManagePlugins
 			$disables = [];
 			$composer = false;
 
-			$snake_name = Helpers::getSnakeName($item);
+			$snake_name = Helper::getSnakeName($item);
 
 			try {
-				$className = __NAMESPACE__ . '\Addons\\' . $item . '\\' . $item;
+				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;
 				$addonClass = new \ReflectionClass($className);
 
 				if ($addonClass->hasProperty('author'))
@@ -141,7 +140,7 @@ class ManagePlugins
 				if ($addonClass->hasProperty('disables'))
 					$disables = $addonClass->getProperty('disables')->getValue(new $className);
 
-				$composer = $this->hasComposerJson($addonClass);
+				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (\ReflectionException $e) {
 				if (isset($context['lp_can_donate'][$item])) {
 					$context['lp_' . $snake_name]['type'] = $context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -173,13 +172,13 @@ class ManagePlugins
 		$this->prepareAddonChart();
 
 		// Sort plugin list
-		$context['current_filter'] = Helpers::post('filter', 'all');
+		$context['current_filter'] = Helper::post('filter', 'all');
 
-		if (Helpers::post()->has('filter')) {
+		if (Helper::post()->has('filter')) {
 			$context['all_lp_plugins'] = array_filter($context['all_lp_plugins'], function ($item) use ($context) {
-				$filter = Helpers::post('filter');
+				$filter = Helper::post('filter');
 
-				if (!in_array($filter, array_keys($context['lp_plugin_types'])) || in_array($context['lp_plugin_types'][$filter], array_keys($item['types']))) {
+				if (! in_array($filter, array_keys($context['lp_plugin_types'])) || in_array($context['lp_plugin_types'][$filter], array_keys($item['types']))) {
 					return true;
 				}
 			});
@@ -188,9 +187,6 @@ class ManagePlugins
 		$context['sub_template'] = 'manage_plugins';
 	}
 
-	/**
-	 * @return void
-	 */
 	private function extendPluginList()
 	{
 		global $context, $user_info, $boardurl;
@@ -198,7 +194,7 @@ class ManagePlugins
 		$context['lp_can_donate']   = [];
 		$context['lp_can_download'] = [];
 
-		if (($xml = Helpers::cache()->get('custom_addon_list', 259200)) === null) {
+		if (($xml = Helper::cache()->get('custom_addon_list', 259200)) === null) {
 			$link = $user_info['ip'] === '127.0.0.1' ? $boardurl . '/addons.json' : 'https://dragomano.ru/addons.json';
 
 			$addon_list = fetch_web_data($link);
@@ -208,20 +204,20 @@ class ManagePlugins
 
 			$xml = json_decode($addon_list, true);
 
-			Helpers::cache()->put('custom_addon_list', $xml, 259200);
+			Helper::cache()->put('custom_addon_list', $xml, 259200);
 		}
 
-		if (empty($xml) || !is_array($xml))
+		if (empty($xml) || ! is_array($xml))
 			return;
 
-		if (!empty($xml['donate'])) {
+		if (! empty($xml['donate'])) {
 			foreach ($xml['donate'] as $addon) {
 				$context['lp_plugins'][] = $addon['name'];
 				$context['lp_can_donate'][$addon['name']] = $addon;
 			}
 		}
 
-		if (!empty($xml['download'])) {
+		if (! empty($xml['download'])) {
 			foreach ($xml['download'] as $addon) {
 				$context['lp_plugins'][] = $addon['name'];
 				$context['lp_can_download'][$addon['name']] = $addon;
@@ -231,19 +227,11 @@ class ManagePlugins
 		$context['lp_plugins'] = array_unique($context['lp_plugins']);
 	}
 
-	/**
-	 * @param string $type
-	 * @return string
-	 */
 	private function getTypeClass(string $type): string
 	{
 		return ' lp_type_' . $type;
 	}
 
-	/**
-	 * @param string $snake_name
-	 * @return array
-	 */
 	private function getTypes(string $snake_name): array
 	{
 		global $context, $txt;
@@ -263,14 +251,11 @@ class ManagePlugins
 		return [$context['lp_plugin_types'][$type] => $this->getTypeClass($type)];
 	}
 
-	/**
-	 * @return void
-	 */
 	private function prepareAddonChart()
 	{
 		global $context, $txt;
 
-		if (Helpers::request()->has('chart') === false)
+		if (Helper::request()->has('chart') === false)
 			return;
 
 		$typeCount = [];
@@ -282,9 +267,7 @@ class ManagePlugins
 				if ($key === false)
 					$key = 7;
 
-				if (!isset($typeCount[$key]))
-					$typeCount[$key] = 0;
-
+				$typeCount[$key] ??= 0;
 				$typeCount[$key]++;
 			}
 		}
@@ -319,13 +302,5 @@ class ManagePlugins
 				}
 			});
 		</script>';
-	}
-
-	/**
-	 * @return bool
-	 */
-	private function hasComposerJson(\ReflectionClass $class): bool
-	{
-		return is_file(dirname($class->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 	}
 }

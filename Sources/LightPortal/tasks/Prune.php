@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Tasks;
+declare(strict_types = 1);
 
 /**
  * Prune.php
@@ -8,17 +8,16 @@ namespace Bugo\LightPortal\Tasks;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-class Prune extends \SMF_BackgroundTask
+namespace Bugo\LightPortal\Tasks;
+
+final class Prune extends \SMF_BackgroundTask
 {
-	/**
-	 * @return bool
-	 */
 	public function execute(): bool
 	{
 		global $smcFunc;
@@ -28,22 +27,26 @@ class Prune extends \SMF_BackgroundTask
 		$this->removeRedundantValues();
 		$this->optimizeTables();
 
-		$next_time = time() + (7 * 24 * 60 * 60);
-
-		// Add a background task for next update | Добавляем фоновую задачу для следующего обновления
 		$smcFunc['db_insert']('insert',
 			'{db_prefix}background_tasks',
-			array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string', 'claimed_time' => 'int'),
-			array('$sourcedir/LightPortal/tasks/Prune.php', '\Bugo\LightPortal\Tasks\Prune', '', $next_time),
+			array(
+				'task_file'    => 'string-255',
+				'task_class'   => 'string-255',
+				'task_data'    => 'string',
+				'claimed_time' => 'int'
+			),
+			array(
+				'$sourcedir/LightPortal/tasks/Prune.php',
+				__CLASS__,
+				'',
+				time() + (7 * 24 * 60 * 60)
+			),
 			array('id_task')
 		);
 
 		return true;
 	}
 
-	/**
-	 * @return void
-	 */
 	private function removeRedundantValues()
 	{
 		global $smcFunc;
@@ -59,14 +62,17 @@ class Prune extends \SMF_BackgroundTask
 		$select_value = $smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
 
 		$request = $smcFunc['db_query']('', '
-			SELECT ' . $select_value . ' AS value FROM {db_prefix}lp_params WHERE type = {literal:page} AND name = {literal:keywords}',
+			SELECT ' . $select_value . ' AS value
+			FROM {db_prefix}lp_params
+			WHERE type = {literal:page}
+				AND name = {literal:keywords}',
 			array()
 		);
 
 		[$usedTags] = $smcFunc['db_fetch_row']($request);
 		$smcFunc['db_free_result']($request);
 
-		if (!empty($usedTags)) {
+		if (! empty($usedTags)) {
 			$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_tags
 				WHERE tag_id NOT IN ({array_int:tags})',
@@ -83,11 +89,15 @@ class Prune extends \SMF_BackgroundTask
 				'empty_value' => ''
 			)
 		);
+
+		$smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE parent_id <> 0
+				AND parent_id NOT IN (SELECT id FROM {db_prefix}lp_comments)',
+			array()
+		);
 	}
 
-	/**
-	 * @return void
-	 */
 	private function optimizeTables()
 	{
 		global $smcFunc;

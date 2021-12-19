@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal;
+declare(strict_types = 1);
 
 /**
  * DebugInfo.php
@@ -8,23 +8,23 @@ namespace Bugo\LightPortal;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class DebugInfo
+final class DebugInfo
 {
 	/**
 	 * Show the script execution time and the number of the portal queries
 	 *
 	 * Отображаем время выполнения скрипта и количество запросов к базе
-	 *
-	 * @return void
 	 */
 	public function __invoke()
 	{

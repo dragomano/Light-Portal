@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Utils;
+declare(strict_types = 1);
 
 /**
  * Session.php
@@ -8,18 +8,17 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
+
+namespace Bugo\LightPortal\Utils;
 
 final class Session
 {
-	/**
-	 * @var array
-	 */
-	private $storage = [];
+	private array $storage = [];
 
 	public function __construct()
 	{
@@ -28,29 +27,27 @@ final class Session
 
 	/**
 	 * @param string $key
-	 * @return mixed
+	 * @return bool|int|string
 	 */
-	public function get($key)
+	public function get(string $key)
 	{
 		if (isset($this->storage[$key])) {
 			return $this->storage[$key];
 		}
+
+		return false;
 	}
 
 	/**
 	 * @param string $key
-	 * @param mixed $value
+	 * @param bool|int|string $value
 	 * @return void
 	 */
-	public function put($key, $value)
+	public function put(string $key, $value)
 	{
 		$this->storage[$key] = $value;
 	}
 
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
 	public function isEmpty(string $key): bool
 	{
 		return empty($this->get($key));

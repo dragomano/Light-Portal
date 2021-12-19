@@ -1,17 +1,10 @@
 <?php
 
-/**
- * The portal page template
- *
- * Шаблон страницы портала
- *
- * @return void
- */
 function template_show_page()
 {
 	global $context, $modSettings, $txt, $scripturl, $settings;
 
-	if (!empty($context['lp_page']['errors'])) {
+	if (! empty($context['lp_page']['errors'])) {
 		echo '
 	<aside class="errorbox">
 		<ul>';
@@ -27,7 +20,7 @@ function template_show_page()
 	</aside>';
 	}
 
-	if (!empty($modSettings['lp_show_page_permissions'])) {
+	if (! empty($modSettings['lp_show_page_permissions'])) {
 		if ($context['lp_page']['can_edit']) {
 			echo '
 	<aside class="infobox">
@@ -37,7 +30,7 @@ function template_show_page()
 	}
 
 	echo '
-	<section itemscope itemtype="http://schema.org/Article">
+	<section itemscope itemtype="https://schema.org/Article">
 		<div id="display_head" class="windowbg">
 			<h2 class="display_title" itemprop="headline">
 				<span id="top_subject">', $context['page_title'];
@@ -53,7 +46,7 @@ function template_show_page()
 				</span>
 			</h2>';
 
-	if (!empty($context['lp_page']['options']['show_author_and_date'])) {
+	if (! empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
 			<p>
 				<span class="floatleft" itemprop="author" itemscope itemtype="https://schema.org/Person">
@@ -61,7 +54,7 @@ function template_show_page()
 					<meta itemprop="url" content="', $scripturl, '?action=profile;u=', $context['lp_page']['author_id'], '">
 				</span>
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
-					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], !empty($context['lp_page']['updated_at']) ? ' / ' . $context['lp_page']['updated'] . ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">' : '', '
+					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], empty($context['lp_page']['updated_at']) ? '' : (' / ' . $context['lp_page']['updated'] . ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">'), '
 				</time>
 			</p>';
 	}
@@ -72,7 +65,7 @@ function template_show_page()
 		<article class="roundframe" itemprop="articleBody">
 			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 
-	if (!empty($context['lp_page']['tags']) && !empty($modSettings['lp_show_tags_on_page'])) {
+	if (! empty($context['lp_page']['tags']) && ! empty($modSettings['lp_show_tags_on_page'])) {
 		echo '
 			<div class="smalltext">';
 
@@ -86,15 +79,16 @@ function template_show_page()
 			<hr>';
 	}
 
-	if (!empty($settings['og_image']))
+	if (! empty($settings['og_image'])) {
 		echo '
 			<meta itemprop="image" content="', $settings['og_image'], '">';
+	}
 
 	echo '
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
 
 	// Extend with addons
-	if (!empty($context['lp_page']['addons']))
+	if (! empty($context['lp_page']['addons']))
 		echo $context['lp_page']['addons'];
 
 	echo '
@@ -108,13 +102,6 @@ function template_show_page()
 	</section>';
 }
 
-/**
- * Comment block template
- *
- * Шаблон блока комментариев
- *
- * @return void
- */
 function show_comment_block()
 {
 	global $modSettings, $context, $options, $txt;
@@ -125,7 +112,7 @@ function show_comment_block()
 	if ($modSettings['lp_show_comment_block'] == 'none')
 		return;
 
-	if (!empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
+	if (! empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
 		echo $context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'];
 		return;
 	}
@@ -164,7 +151,7 @@ function show_comment_block()
 				</div>';
 
 	$i = 0;
-	if (!empty($context['lp_page']['comments'])) {
+	if (! empty($context['lp_page']['comments'])) {
 		echo '
 				<ul class="comment_list row">';
 
@@ -226,19 +213,12 @@ function show_comment_block()
 		</script>';
 }
 
-/**
- * Single comment template
- *
- * Шаблон одиночного комментария
- *
- * @param array $comment
- * @param int $i
- * @param int $level
- * @return void
- */
 function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
 	global $context, $txt;
+
+	if (empty($comment['author_id']))
+		return;
 
 	echo '
 	<li
@@ -251,14 +231,14 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		data-commentator="', $comment['author_id'], '"
 		itemprop="comment"
 		itemscope="itemscope"
-		itemtype="http://schema.org/Comment"', empty($context['user']['is_guest']) ? '
+		itemtype="https://schema.org/Comment"', empty($context['user']['is_guest']) ? '
 		x-ref="comment' . $comment['id'] . '"
 		x-data="{ replyForm: false }"' : '', '
 	>
 		<div class="comment_avatar"', $context['right_to_left'] ? ' style="padding: 0 0 0 10px"' : '', '>
 			', $comment['avatar'];
 
-	if (!empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['author_id'])
+	if (! empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['author_id'])
 		echo '
 			<span class="new_posts">', $txt['author'], '</span>';
 
@@ -346,7 +326,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 			</div>';
 	}
 
-	if (!empty($comment['children'])) {
+	if (! empty($comment['children'])) {
 		echo '
 			<ul class="comment_list row">';
 
@@ -362,13 +342,6 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	</li>';
 }
 
-/**
- * Related pages template
- *
- * Шаблон похожих страниц
- *
- * @return void
- */
 function show_related_pages()
 {
 	global $context, $txt;
@@ -387,7 +360,7 @@ function show_related_pages()
 		echo '
 				<div class="windowbg">';
 
-		if (!empty($page['image'])) {
+		if (! empty($page['image'])) {
 			echo '
 					<a href="', $page['link'], '">
 						<div class="article_image">
@@ -406,13 +379,6 @@ function show_related_pages()
 		</div>';
 }
 
-/**
- * BBCode toolbar
- *
- * Панель вставки ББ-кода
- *
- * @return void
- */
 function show_toolbar()
 {
 	global $context, $editortxt;

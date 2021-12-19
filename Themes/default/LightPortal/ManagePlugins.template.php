@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Template for the plugin management page
- *
- * Шаблон страницы управления плагинами
- *
- * @return void
- */
 function template_manage_plugins()
 {
 	global $context, $scripturl, $txt, $settings;
@@ -41,9 +34,10 @@ function template_manage_plugins()
 		</div>
 	</div>';
 
-	if (!empty($context['lp_addon_chart']))
+	if (! empty($context['lp_addon_chart'])) {
 		echo '
 	<canvas id="addonChart"></canvas>';
+	}
 
 	echo '
 	<div id="addon_list" x-data :class="{ \'addon_list\': plugin.isCardView() }">';
@@ -65,7 +59,7 @@ function template_manage_plugins()
 					<div>
 						<p>';
 
-		if (!empty($plugin['special'])) {
+		if (! empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
 				$lang = $context['lp_can_donate'][$plugin['name']]['languages'];
 				echo $lang[$context['user']['language']] ?? $lang['english'] ?? '';
@@ -80,7 +74,7 @@ function template_manage_plugins()
 		echo '
 						</p>';
 
-		if (!empty($plugin['requires'])) {
+		if (! empty($plugin['requires'])) {
 			echo '
 						<p class="roundframe">
 							<span class="infobox">
@@ -93,7 +87,7 @@ function template_manage_plugins()
 						</p>';
 		}
 
-		if (!empty($plugin['disables'])) {
+		if (! empty($plugin['disables'])) {
 			echo '
 						<p class="roundframe">
 							<span class="errorbox">
@@ -106,10 +100,10 @@ function template_manage_plugins()
 						</p>';
 		}
 
-		if (!empty($plugin['author'])) {
+		if (! empty($plugin['author'])) {
 			echo '
 						<p>
-							', $plugin['author'], (!empty($plugin['link']) ? (' | <a class="bbc_link"href="' . $plugin['link']) . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>' : ''), '
+							', $plugin['author'], (empty($plugin['link']) ? '' : (' | <a class="bbc_link" href="' . $plugin['link'] . '" target="_blank" rel="noopener">' . $plugin['link'] . '</a>')), '
 						</p>';
 		}
 
@@ -118,12 +112,12 @@ function template_manage_plugins()
 				</div>
 				<div class="floatright">';
 
-		if (!empty($plugin['settings'])) {
+		if (! empty($plugin['settings'])) {
 			echo '
 					<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
 		}
 
-		if (!empty($plugin['special'])) {
+		if (! empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
 				echo '
 						<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
@@ -139,7 +133,7 @@ function template_manage_plugins()
 		echo '
 				</div>';
 
-		if (!empty($plugin['settings']))
+		if (! empty($plugin['settings']))
 			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
 
 		echo '
@@ -154,15 +148,6 @@ function template_manage_plugins()
 	</script>';
 }
 
-/**
- * Block with the plugin's settings
- *
- * Блок с настройками плагина
- *
- * @param string $plugin_name
- * @param array $settings
- * @return void
- */
 function show_plugin_settings(string $plugin_name, array $settings)
 {
 	global $txt, $context, $modSettings;
@@ -185,21 +170,21 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		echo '
 				<div>';
 
-		if (!in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
+		if (! in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
 			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '>', $label, '</label>';
 		}
 
-		if ($value[0] == 'text') {
+		if ($value[0] === 'text') {
 			echo '
-					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '"', !empty($value['pattern']) ? (' pattern="' . $value['pattern'] . '"') : '', '>';
-		} elseif ($value[0] == 'large_text') {
+					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), '>';
+		} elseif ($value[0] === 'large_text') {
 			echo '
 					<br><textarea name="', $value[1], '" id="', $value[1], '">', $modSettings[$value[1]] ?? '', '</textarea>';
-		} elseif ($value[0] == 'url') {
+		} elseif ($value[0] === 'url') {
 			echo '
 					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
-		} elseif ($value[0] == 'color') {
+		} elseif ($value[0] === 'color') {
 			echo '
 					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $modSettings[$value[1]] ?? '', '">';
 		} elseif (in_array($value[0], ['float', 'int'])) {
@@ -209,31 +194,31 @@ function show_plugin_settings(string $plugin_name, array $settings)
 
 			echo '
 					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
-		} elseif ($value[0] == 'check') {
+		} elseif ($value[0] === 'check') {
 			echo '
-					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', !empty($modSettings[$value[1]]) ? ' checked' : '', ' value="1" class="checkbox">
+					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', empty($modSettings[$value[1]]) ? '' : ' checked', ' value="1" class="checkbox">
 					<label class="label" for="', $value[1], '">', $label, '</label>';
-		} elseif ($value[0] == 'callback' && !empty($value[2])) {
+		} elseif ($value[0] === 'callback' && ! empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
 				call_user_func($value[2]);
 			}
-		} elseif ($value[0] == 'title') {
+		} elseif ($value[0] === 'title') {
 			echo '
 					<div class="sub_bar"><h6 class="subbg">', $label, '</h6></div>';
-		} elseif ($value[0] == 'desc') {
+		} elseif ($value[0] === 'desc') {
 			echo '
 					<div class="roundframe">', $label, '</div>';
-		} elseif ($value[0] == 'multicheck') {
+		} elseif ($value[0] === 'multicheck') {
 			echo '
 					<fieldset>
 						<ul>';
 
-			$temp[$value[1] . '_options'] = !empty($modSettings[$value[1]]) ? json_decode($modSettings[$value[1]], true) : [];
+			$temp[$value[1] . '_options'] = empty($modSettings[$value[1]]) ? [] : json_decode($modSettings[$value[1]], true);
 			foreach ($value[2] as $key => $option_label) {
 				echo '
 							<li>
 								<label for="', $value[1], '[', $key, ']">
-									<input type="checkbox" name="', $value[1], '[', $key, ']" id="', $value[1], '[', $key, ']"', !empty($temp[$value[1] . '_options'][$key]) ? ' checked' : '', ' value="1"> ', $option_label, '
+									<input type="checkbox" name="', $value[1], '[', $key, ']" id="', $value[1], '[', $key, ']"', empty($temp[$value[1] . '_options'][$key]) ? '' : ' checked', ' value="1"> ', $option_label, '
 								</label>
 							</li>';
 			}
@@ -246,15 +231,15 @@ function show_plugin_settings(string $plugin_name, array $settings)
 
 			echo '
 					<br>
-					<select name="', $value[1], !empty($multiple) ? '[]' : '', '" id="', $value[1], '"', !empty($multiple) ? ' multiple style="height: auto"' : '', '>';
+					<select name="', $value[1], empty($multiple) ? '' : '[]', '" id="', $value[1], '"', empty($multiple) ? '' : ' multiple style="height: auto"', '>';
 
-			if (!empty($multiple)) {
-				if (!empty($modSettings[$value[1]])) {
+			if (! empty($multiple)) {
+				if (! empty($modSettings[$value[1]])) {
 					$modSettings[$value[1]] = json_decode($modSettings[$value[1]], true);
 
 					foreach ($value[2] as $option => $option_title) {
 						echo '
-						<option value="', $option, '"', !empty($modSettings[$value[1]]) && is_array($modSettings[$value[1]]) && in_array($option, $modSettings[$value[1]]) ? ' selected' : '', '>', $option_title, '</option>';
+						<option value="', $option, '"', ! empty($modSettings[$value[1]]) && is_array($modSettings[$value[1]]) && in_array($option, $modSettings[$value[1]]) ? ' selected' : '', '>', $option_title, '</option>';
 					}
 				} else {
 					foreach ($value[2] as $option => $option_title) {
@@ -265,7 +250,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 			} else {
 				foreach ($value[2] as $option => $option_title) {
 					echo '
-						<option value="', $option, '"', !empty($modSettings[$value[1]]) && $modSettings[$value[1]] == $option ? ' selected' : '', '>', $option_title, '</option>';
+						<option value="', $option, '"', ! empty($modSettings[$value[1]]) && $modSettings[$value[1]] == $option ? ' selected' : '', '>', $option_title, '</option>';
 				}
 			}
 
@@ -273,12 +258,12 @@ function show_plugin_settings(string $plugin_name, array $settings)
 					</select>';
 		}
 
-		if (!empty($value['postfix'])) {
+		if (! empty($value['postfix'])) {
 			echo '
 					', $value['postfix'];
 		}
 
-		if (!empty($value['subtext'])) {
+		if (! empty($value['subtext'])) {
 			echo '
 					<div class="roundframe">', $value['subtext'], '</div>';
 		}

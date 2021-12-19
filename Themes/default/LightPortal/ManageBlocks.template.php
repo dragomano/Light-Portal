@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Block management section template
- *
- * Шаблон раздела управления блоками
- *
- * @return void
- */
 function template_manage_blocks()
 {
 	global $context, $scripturl, $txt;
@@ -100,15 +93,6 @@ function template_manage_blocks()
 	</script>';
 }
 
-/**
- * Adding a row with block parameters to the common table
- *
- * Добавление строчки с параметрами блока в общую таблицу
- *
- * @param int $id
- * @param array $data
- * @return void
- */
 function show_block_entry(int $id, array $data)
 {
 	global $context, $language, $txt, $scripturl;
@@ -175,13 +159,6 @@ function show_block_entry(int $id, array $data)
 	</tr>';
 }
 
-/**
- * The page for adding blocks
- *
- * Страница добавления блоков
- *
- * @return void
- */
 function template_block_add()
 {
 	global $txt, $context;
@@ -219,25 +196,18 @@ function template_block_add()
 	</script>';
 }
 
-/**
- * Block creation/editing template
- *
- * Шаблон создания/редактирования блока
- *
- * @return void
- */
 function template_block_post()
 {
 	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
-		if (!empty($context['lp_block']['title_style']))
+		if (! empty($context['lp_block']['title_style']))
 			$context['preview_title'] = '<span style="' . $context['lp_block']['title_style'] . '">' . $context['preview_title'] . '</span>';
 
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
 
 		$style = '';
-		if (!empty($context['lp_block']['content_style']))
+		if (! empty($context['lp_block']['content_style']))
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
@@ -254,7 +224,7 @@ function template_block_post()
 	</div>';
 	}
 
-	if (!empty($context['post_errors'])) {
+	if (! empty($context['post_errors'])) {
 		echo '
 	<div class="errorbox">
 		<ul>';
@@ -327,7 +297,7 @@ function template_block_post()
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
 
-	if (!empty($context['lp_block']['id'])) {
+	if (! empty($context['lp_block']['id'])) {
 		echo '
 				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
 	}
@@ -413,13 +383,13 @@ function template_block_post()
 			}
 		});';
 
-	if (!empty($context['lp_block']['icon'])) {
+	if (! empty($context['lp_block']['icon'])) {
 		echo '
 		iconSelect.setData([{innerHTML: `', $context['lp_block']['icon_template'], '`, text: "', $context['lp_block']['icon'], '"}]);
 		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
 	}
 
-	if (!empty($context['lp_all_title_classes'])) {
+	if (! empty($context['lp_all_title_classes'])) {
 		echo '
 		new SlimSelect({
 			select: "#title_class",
@@ -443,7 +413,7 @@ function template_block_post()
 		});';
 	}
 
-	if (empty($context['lp_block']['options']['no_content_class']) && !empty($context['lp_all_content_classes'])) {
+	if (empty($context['lp_block']['options']['no_content_class']) && ! empty($context['lp_all_content_classes'])) {
 		echo '
 		new SlimSelect({
 			select: "#content_class",
@@ -471,13 +441,6 @@ function template_block_post()
 	</script>';
 }
 
-/**
- * Show a table with possible areas for displaying the block
- *
- * Отображаем табличку с возможными областями для вывода блока
- *
- * @return void
- */
 function template_show_areas_info()
 {
 	global $txt, $context;

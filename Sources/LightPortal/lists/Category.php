@@ -1,9 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Lists;
-
-use Exception;
-use Bugo\LightPortal\{Helpers, Page};
+declare(strict_types = 1);
 
 /**
  * Category.php
@@ -11,35 +8,31 @@ use Bugo\LightPortal\{Helpers, Page};
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Lists;
+
+use Bugo\LightPortal\{Helper, Page};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Category implements PageListInterface
+final class Category implements PageListInterface
 {
-	/**
-	 * Display all portal pages within selected category
-	 *
-	 * Отображение всех страниц портала внутри выбранной рубрики
-	 *
-	 * @return void
-	 * @throws Exception
-	 */
 	public function show()
 	{
 		global $context, $txt, $scripturl, $modSettings;
 
-		if (Helpers::request()->has('id') === false)
+		if (Helper::request()->has('id') === false)
 			$this->showAll();
 
-		$context['lp_category'] = Helpers::request('id');
+		$context['lp_category'] = Helper::request('id');
 
-		if (array_key_exists($context['lp_category'], Helpers::getAllCategories()) === false) {
+		if (array_key_exists($context['lp_category'], Helper::getAllCategories()) === false) {
 			$this->changeBackButton();
 			fatal_lang_error('lp_category_not_found', false, null, 404);
 		}
@@ -47,7 +40,7 @@ class Category implements PageListInterface
 		if (empty($context['lp_category'])) {
 			$context['page_title'] = $txt['lp_all_pages_without_category'];
 		} else {
-			$category = Helpers::getAllCategories()[$context['lp_category']];
+			$category = Helper::getAllCategories()[$context['lp_category']];
 			$context['page_title'] = sprintf($txt['lp_all_pages_with_category'], $category['name']);
 		}
 
@@ -65,7 +58,7 @@ class Category implements PageListInterface
 			'name' => $context['page_title']
 		);
 
-		if (!empty($modSettings['lp_show_items_as_articles']))
+		if (! empty($modSettings['lp_show_items_as_articles']))
 			(new Page)->showAsCards($this);
 
 		$listOptions = (new Page)->getList();
@@ -77,7 +70,7 @@ class Category implements PageListInterface
 			'function' => array($this, 'getTotalCountPages')
 		);
 
-		if (!empty($category['desc'])) {
+		if (! empty($category['desc'])) {
 			$listOptions['additional_rows'] = array(
 				array(
 					'position' => 'top_of_list',
@@ -87,7 +80,7 @@ class Category implements PageListInterface
 			);
 		}
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -96,17 +89,6 @@ class Category implements PageListInterface
 		obExit();
 	}
 
-	/**
-	 * Get the list of pages within selected category
-	 *
-	 * Получаем список страниц внутри указанной рубрики
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 * @throws Exception
-	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
 		global $smcFunc, $txt, $user_info, $context;
@@ -128,9 +110,9 @@ class Category implements PageListInterface
 				'guest'        => $txt['guest_title'],
 				'lang'         => $user_info['language'],
 				'id'           => $context['lp_category'],
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
 				'limit'        => $items_per_page
@@ -149,13 +131,6 @@ class Category implements PageListInterface
 		return $items;
 	}
 
-	/**
-	 * Get the total number of pages within selected category
-	 *
-	 * Подсчитываем общее количество страниц внутри указанной рубрики
-	 *
-	 * @return int
-	 */
 	public function getTotalCountPages(): int
 	{
 		global $smcFunc, $context;
@@ -169,9 +144,9 @@ class Category implements PageListInterface
 				AND permissions IN ({array_int:permissions})',
 			array(
 				'id'           => $context['lp_category'],
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
+				'permissions'  => Helper::getPermissions()
 			)
 		);
 
@@ -180,16 +155,9 @@ class Category implements PageListInterface
 		$smcFunc['db_free_result']($request);
 		$smcFunc['lp_num_queries']++;
 
-		return $num_items;
+		return (int) $num_items;
 	}
 
-	/**
-	 * Display all categories at once
-	 *
-	 * Отображение всех рубрик сразу
-	 *
-	 * @return void
-	 */
 	public function showAll()
 	{
 		global $context, $txt, $scripturl, $modSettings;
@@ -213,9 +181,7 @@ class Category implements PageListInterface
 				'function' => array($this, 'getAll')
 			),
 			'get_count' => array(
-				'function' => function () {
-					return count($this->getAll());
-				}
+				'function' => fn() => count($this->getAll())
 			),
 			'columns' => array(
 				'name' => array(
@@ -223,11 +189,8 @@ class Category implements PageListInterface
 						'value' => $txt['lp_category']
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' . (!empty($entry['desc']) ? '<p class="smalltext">' . $entry['desc'] . '</p>' : '');
-						},
-						'class' => 'centertext'
+						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
+							(empty($entry['desc']) ? '' : '<p class="smalltext">' . $entry['desc'] . '</p>')
 					),
 					'sort' => array(
 						'default' => 'c.name DESC',
@@ -253,7 +216,7 @@ class Category implements PageListInterface
 			)
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
@@ -262,13 +225,6 @@ class Category implements PageListInterface
 		obExit();
 	}
 
-	/**
-	 * Get the list of all categories
-	 *
-	 * Получаем список всех рубрик
-	 *
-	 * @return array
-	 */
 	public function getList(): array
 	{
 		global $smcFunc, $txt;
@@ -296,16 +252,6 @@ class Category implements PageListInterface
 		return $items;
 	}
 
-	/**
-	 * Get the list of all categories with the number of pages in each
-	 *
-	 * Получаем список всех рубрик с количеством страниц в каждой
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
 		global $smcFunc, $scripturl, $txt;
@@ -321,9 +267,9 @@ class Category implements PageListInterface
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			array(
-				'status'       => Page::STATUS_ACTIVE,
+				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
 				'limit'        => $items_per_page
@@ -350,10 +296,6 @@ class Category implements PageListInterface
 		return $items;
 	}
 
-	/**
-	 * @param array $categories
-	 * @return void
-	 */
 	public function updatePriority(array $categories)
 	{
 		global $smcFunc;
@@ -381,11 +323,6 @@ class Category implements PageListInterface
         $smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * @param string $name
-	 * @param string $desc
-	 * @return void
-	 */
 	public function add(string $name, string $desc = '')
 	{
 		global $smcFunc;
@@ -415,7 +352,7 @@ class Category implements PageListInterface
 
 		$smcFunc['lp_num_queries']++;
 
-		if (!empty($item)) {
+		if (! empty($item)) {
 			ob_start();
 
 			show_single_category($item, ['name' => $name, 'desc' => $desc]);
@@ -429,17 +366,11 @@ class Category implements PageListInterface
 			];
 		}
 
-		Helpers::cache()->forget('all_categories');
+		Helper::cache()->forget('all_categories');
 
 		exit(json_encode($result));
 	}
 
-
-	/**
-	 * @param int $item
-	 * @param string $value
-	 * @return void
-	 */
 	public function updateName(int $item, string $value)
 	{
 		global $smcFunc;
@@ -460,11 +391,6 @@ class Category implements PageListInterface
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * @param int $item
-	 * @param string $value
-	 * @return void
-	 */
 	public function updateDescription(int $item, string $value)
 	{
 		global $smcFunc;
@@ -485,10 +411,6 @@ class Category implements PageListInterface
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * @param array $items
-	 * @return void
-	 */
 	public function remove(array $items)
 	{
 		global $smcFunc;
@@ -516,16 +438,9 @@ class Category implements PageListInterface
 
 		$smcFunc['lp_num_queries'] += 2;
 
-		Helpers::cache()->flush();
+		Helper::cache()->flush();
 	}
 
-	/**
-	 * Get correct priority for a new category
-	 *
-	 * Получаем правильный приоритет для новой рубрики
-	 *
-	 * @return int
-	 */
 	private function getPriority(): int
 	{
 		global $smcFunc;
@@ -548,8 +463,6 @@ class Category implements PageListInterface
 	 * Change back button text and back button href
 	 *
 	 * Меняем текст и href кнопки «Назад»
-	 *
-	 * @return void
 	 */
 	private function changeBackButton()
 	{
@@ -557,7 +470,7 @@ class Category implements PageListInterface
 
 		addInlineJavaScript('
 		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		if (!document.referrer) {
+		if (! document.referrer) {
 			backButton.text = "' . $txt['lp_all_categories'] . '";
 			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=categories");
 		}', true);

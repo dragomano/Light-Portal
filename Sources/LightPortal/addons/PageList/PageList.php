@@ -6,29 +6,22 @@
  * @package PageList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class PageList extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-file-alt';
+	public string $icon = 'far fa-file-alt';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['page_list']['parameters'] = [
@@ -38,11 +31,6 @@ class PageList extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'page_list')
@@ -57,9 +45,6 @@ class PageList extends Plugin
 		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -68,7 +53,7 @@ class PageList extends Plugin
 			return;
 
 		// Prepare the category list
-		$all_categories     = Helpers::getAllCategories();
+		$all_categories     = Helper::getAllCategories();
 		$current_categories = $context['lp_block']['options']['parameters']['categories'] ?? [];
 		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
 
@@ -131,20 +116,12 @@ class PageList extends Plugin
 		);
 	}
 
-	/**
-	 * Get the list of active pages
-	 *
-	 * Получаем список активных страниц
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getData(array $parameters): array
 	{
 		global $smcFunc, $txt, $scripturl;
 
-		$titles = Helpers::getAllTitles();
-		$all_categories = Helpers::getAllCategories();
+		$titles = Helper::getAllTitles();
+		$all_categories = Helper::getAllCategories();
 
 		if (empty($parameters['categories']))
 			$parameters['categories'] = [];
@@ -159,15 +136,15 @@ class PageList extends Plugin
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})' . (!empty($categories) ? '
-				AND p.category_id IN ({array_int:categories})' : '') . '
-			ORDER BY {raw:sort} DESC' . (!empty($parameters['num_pages']) ? '
-			LIMIT {int:limit}' : ''),
+				AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
+				AND p.category_id IN ({array_int:categories})') . '
+			ORDER BY {raw:sort} DESC' . (empty($parameters['num_pages']) ? '' : '
+			LIMIT {int:limit}'),
 			array(
 				'guest'        => $txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'categories'   => $categories,
 				'sort'         => $parameters['sort'],
 				'limit'        => $parameters['num_pages']
@@ -176,7 +153,7 @@ class PageList extends Plugin
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['alias']))
+			if (Helper::isFrontpage($row['alias']))
 				continue;
 
 			$pages[$row['page_id']] = array(
@@ -201,13 +178,6 @@ class PageList extends Plugin
 		return $pages;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt, $modSettings;
@@ -215,24 +185,24 @@ class PageList extends Plugin
 		if ($type !== 'page_list')
 			return;
 
-		$page_list = Helpers::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'])
+		$page_list = Helper::cache('page_list_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (!empty($page_list)) {
+		if (! empty($page_list)) {
 			echo '
 		<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
-				if (empty($title = Helpers::getTranslatedTitle($page['title'])))
+				if (empty($title = Helper::getTranslatedTitle($page['title'])))
 					continue;
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helpers::getFriendlyTime($page['created_at']), ' (', Helpers::getText($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helper::getFriendlyTime($page['created_at']), ' (', Helper::getPluralText($page['num_views'], $txt['lp_views_set']);
 
-				if (!empty($page['num_comments']) && !empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] == 'default')
-					echo ', ' . Helpers::getText($page['num_comments'], $txt['lp_comments_set']);
+				if (! empty($page['num_comments']) && ! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === 'default')
+					echo ', ' . Helper::getPluralText($page['num_comments'], $txt['lp_comments_set']);
 
 				echo ')
 			</li>';

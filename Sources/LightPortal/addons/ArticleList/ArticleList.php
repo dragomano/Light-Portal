@@ -6,29 +6,22 @@
  * @package ArticleList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 17.12.21
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class ArticleList extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-file-alt';
+	public string $icon = 'far fa-file-alt';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['article_list']['no_content_class'] = true;
@@ -41,11 +34,6 @@ class ArticleList extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'article_list')
@@ -57,9 +45,6 @@ class ArticleList extends Plugin
 		$parameters['seek_images']  = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -126,21 +111,13 @@ class ArticleList extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'seek_images',
-				'checked' => !empty($context['lp_block']['options']['parameters']['seek_images'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['seek_images'])
 			)
 		);
 	}
 
-	/**
-	 * Get the list of active forum topics
-	 *
-	 * Получаем список активных тем форума
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getTopics(array $parameters): array
-    {
+	{
 		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
@@ -167,17 +144,15 @@ class ArticleList extends Plugin
 			censorText($row['subject']);
 			censorText($row['body']);
 
-			if (!empty($parameters['seek_images']))
-				$first_post_image = preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
-
-			$image = !empty($first_post_image) ? array_pop($value) : ($modSettings['lp_image_placeholder'] ?? null);
+			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
+			$image = empty($image) ? ($modSettings['lp_image_placeholder'] ?? '') : array_pop($value);
 
 			$body = parse_bbc($row['body'], $row['smileys_enabled'], $row['id_msg']);
 
 			$topics[$row['id_topic']] = array(
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
-				'description' => Helpers::getTeaser($body),
+				'description' => Helper::getTeaser($body),
 				'image'       => $image
 			);
 		}
@@ -188,22 +163,14 @@ class ArticleList extends Plugin
 		return $topics;
 	}
 
-	/**
-	 * Get the list of active pages
-	 *
-	 * Получаем список активных страниц
-	 *
-	 * @param array $parameters
-	 * @return array
-	 */
 	public function getPages(array $parameters): array
-    {
+	{
 		global $smcFunc, $modSettings;
 
 		if (empty($parameters['ids']))
 			return [];
 
-		$titles = Helpers::getAllTitles();
+		$titles = Helper::getAllTitles();
 
 		$request = $smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
@@ -216,31 +183,26 @@ class ArticleList extends Plugin
 			array(
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions(),
+				'permissions'  => Helper::getPermissions(),
 				'pages'        => $parameters['ids']
 			)
 		);
 
 		$pages = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helpers::isFrontpage($row['alias']))
+			if (Helper::isFrontpage($row['alias']))
 				continue;
 
-			if (!empty($parameters['seek_images'])) {
-				Helpers::parseContent($row['content'], $row['type']);
-				$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
-			}
+			Helper::parseContent($row['content'], $row['type']);
 
-			$image = !empty($first_post_image) ? array_pop($value) : null;
-			if (empty($image) && !empty($modSettings['lp_image_placeholder']))
-				$image = $modSettings['lp_image_placeholder'];
+			$image = empty($parameters['seek_images']) ? '' : Helper::getImageFromText($row['content']);
 
 			$pages[$row['page_id']] = array(
 				'id'          => $row['page_id'],
 				'title'       => $titles[$row['page_id']] ?? [],
 				'alias'       => $row['alias'],
-				'description' => Helpers::getTeaser($row['description'] ?: strip_tags($row['content'])),
-				'image'       => $image
+				'description' => Helper::getTeaser($row['description'] ?: strip_tags($row['content'])),
+				'image'       => $image ?: ($modSettings['lp_image_placeholder'] ?? '')
 			);
 		}
 
@@ -250,13 +212,6 @@ class ArticleList extends Plugin
 		return $pages;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $context, $txt;
@@ -265,22 +220,20 @@ class ArticleList extends Plugin
 			return;
 
 		$ids = explode(',', $parameters['ids']);
-		$parameters['ids'] = array_filter($ids, function($item) {
-			return is_numeric($item);
-		});
+		$parameters['ids'] = array_filter($ids, fn($item) => is_numeric($item));
 
-		$article_list = Helpers::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'])
+		$article_list = Helper::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
-		if (!empty($article_list)) {
+		if (! empty($article_list)) {
 			echo '
 		<div class="article_list">';
 
 			if (empty($parameters['display_type'])) {
 				foreach ($article_list as $topic) {
 					$content = '';
-					if (!empty($topic['image'])) {
+					if (! empty($topic['image'])) {
 						$content .= '
 				<div class="article_image">
 					<img src="' . $topic['image'] . '" loading="lazy" alt="' . $topic['title'] . '">
@@ -293,11 +246,11 @@ class ArticleList extends Plugin
 				}
 			} else {
 				foreach ($article_list as $page) {
-					if (empty($title = Helpers::getTranslatedTitle($page['title'])))
+					if (empty($title = Helper::getTranslatedTitle($page['title'])))
 						continue;
 
 					$content = '';
-					if (!empty($page['image'])) {
+					if (! empty($page['image'])) {
 						$content .= '
 				<div class="article_image">
 					<img src="' . $page['image'] . '" loading="lazy" alt="'. $title . '">

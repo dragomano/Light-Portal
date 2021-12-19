@@ -6,75 +6,51 @@
  * @package Search (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021 Bugo
+ * @copyright 2021-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class Search extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'fas fa-search';
+	public string $icon = 'fas fa-search';
 
-	/**
-	 * @return void
-	 */
 	public function init()
 	{
 		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
 	}
 
-	/**
-	 * @param array $config_vars
-	 * @return void
-	 */
 	public function addSettings(array &$config_vars)
 	{
 		global $modSettings;
 
 		$addSettings = [];
-		if (!isset($modSettings['lp_search_addon_min_chars']))
+		if (! isset($modSettings['lp_search_addon_min_chars']))
 			$addSettings['lp_search_addon_min_chars'] = 3;
-		if (!empty($addSettings))
+		if (! empty($addSettings))
 			updateSettings($addSettings);
 
 		$config_vars['search'][] = array('int', 'min_chars');
 	}
 
-	/**
-	 * Add support for the "?action=portal;sa=search", and "?action=portal;sa=qsearch"
-	 *
-	 * Добавляем поддержку действия "?action=portal;sa=search" и "?action=portal;sa=qsearch"
-	 *
-	 * @return void
-	 */
 	public function actions()
 	{
 		global $context;
 
-		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'qsearch')
+		if (Helper::request()->is(LP_ACTION) && $context['current_subaction'] === 'qsearch')
 			return call_user_func(array($this, 'prepareQuickResults'));
 
-		if (Helpers::request()->is(LP_ACTION) && $context['current_subaction'] == 'search')
+		if (Helper::request()->is(LP_ACTION) && $context['current_subaction'] === 'search')
 			return call_user_func(array($this, 'showResults'));
 	}
 
-	/**
-	 * Process the search and display the results
-	 *
-	 * Обрабатываем поиск и выводим результаты
-	 *
-	 * @return void
-	 */
 	public function showResults()
 	{
 		global $context, $txt;
@@ -95,18 +71,11 @@ class Search extends Plugin
 		obExit();
 	}
 
-	/**
-	 * Display quick search results as a JSON string
-	 *
-	 * Отображаем результаты быстрого поиска, в виде строки JSON
-	 *
-	 * @return void
-	 */
 	private function prepareQuickResults()
 	{
 		global $smcFunc;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($data['phrase']))
 			return;
@@ -116,21 +85,14 @@ class Search extends Plugin
 		exit(json_encode($this->query($query)));
 	}
 
-	/**
-	 * Get the results of a regular search, as an array
-	 *
-	 * Получаем результаты обычного поиска, в виде массива
-	 *
-	 * @return array
-	 */
 	private function getResults(): array
 	{
 		global $smcFunc;
 
-		if (Helpers::request()->notEmpty('search') === false)
+		if (Helper::request()->notEmpty('search') === false)
 			return [];
 
-		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars'](Helpers::request('search')));
+		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars'](Helper::request('search')));
 
 		if (empty($query))
 			return [];
@@ -138,14 +100,6 @@ class Search extends Plugin
 		return $this->query($query);
 	}
 
-	/**
-	 * Make a query to the database and get the results as an array
-	 *
-	 * Делаем запрос к базе данных и получаем результаты в виде массива
-	 *
-	 * @param string $query
-	 * @return array
-	 */
 	private function query(string $query): array
 	{
 		global $smcFunc, $context, $scripturl, $txt;
@@ -176,20 +130,20 @@ class Search extends Plugin
 				'current_lang' => $context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helpers::getPermissions()
+				'permissions'  => Helper::getPermissions()
 			)
 		);
 
 		$results = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request))	{
-			Helpers::parseContent($row['content'], $row['type']);
+			Helper::parseContent($row['content'], $row['type']);
 
 			$results[] = array(
 				'link'    => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 				'title'   => $row['title'],
-				'content' => Helpers::getTeaser($row['content']),
+				'content' => Helper::getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => Helpers::getFriendlyTime($row['date'])
+				'date'    => Helper::getFriendlyTime($row['date'])
 			);
 		}
 
@@ -199,10 +153,6 @@ class Search extends Plugin
 		return $results;
 	}
 
-	/**
-	 * @param string $type
-	 * @return void
-	 */
 	public function prepareContent(string $type)
 	{
 		global $scripturl, $context, $txt, $modSettings;
@@ -219,8 +169,8 @@ class Search extends Plugin
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",' . (!empty($modSettings['lp_search_addon_min_chars']) ? '
-				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',' : '') . '
+				selector: ".search_addon input",' . (empty($modSettings['lp_search_addon_min_chars']) ? '' : '
+				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',') . '
 				source: async function(term, response) {
 					const results = await fetch("', $scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
 						method: "POST",
@@ -250,10 +200,6 @@ class Search extends Plugin
 		</script>';
 	}
 
-	/**
-	 * @param array $links
-	 * @return void
-	 */
 	public function credits(array &$links)
 	{
 		$links[] = array(

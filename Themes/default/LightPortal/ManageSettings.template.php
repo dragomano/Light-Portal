@@ -28,9 +28,9 @@ function template_lp_basic_settings_below()
 			let change_mode = front_mode > 0;
 			let board_selector = $(".board_selector").parent("dd");
 
-			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
+			$("#lp_standalone_mode").attr("disabled", front_mode === 0);
 
-			if (front_mode == 0) {
+			if (front_mode === 0) {
 				$("#lp_standalone_mode").prop("checked", false);
 			}
 
@@ -160,7 +160,7 @@ function template_lp_basic_settings_below()
 				showContent: "down"
 			});';
 
-	if (!empty($modSettings['lp_frontpage_alias'])) {
+	if (! empty($modSettings['lp_frontpage_alias'])) {
 		echo '
 			aliasSelect.setData([{value: "', $modSettings['lp_frontpage_alias'], '", text: "', $modSettings['lp_frontpage_alias'], '"}]);
 			aliasSelect.set(', JavaScriptEscape($modSettings['lp_frontpage_alias']), ');';
@@ -186,7 +186,7 @@ function template_lp_extra_settings_below()
 	echo '
 	<script>
 		function toggleShowCommentBlock() {
-			let change_mode = $("#lp_show_comment_block").val() != "none";
+			let change_mode = $("#lp_show_comment_block").val() !== "none";
 
 			$("#', implode(', #', $show_comment_block_toggle), '").closest("dd").toggle(change_mode);
 			$("#', implode(', #', $show_comment_block_toggle_dt), '").closest("dt").toggle(change_mode);
@@ -209,13 +209,6 @@ function template_lp_extra_settings_below()
 	</script>';
 }
 
-/**
- * Callback template for selecting allowed tags in comments
- *
- * Callback-шаблон для выбора допустимых тегов в комментариях
- *
- * @return void
- */
 function template_callback_disabled_bbc_in_comments()
 {
 	global $txt, $scripturl, $context;
@@ -237,7 +230,7 @@ function template_callback_disabled_bbc_in_comments()
 	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
 		foreach ($bbcColumn as $bbcTag) {
 			echo '
-				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
+				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', in_array($bbcTag, $context['bbc_sections']['disabled']) ? '' : ' selected', '>
 					', $bbcTag, '
 				</option>';
 		}
@@ -273,13 +266,6 @@ function template_callback_disabled_bbc_in_comments()
 	</dd>';
 }
 
-/**
- * Callback template for selecting categories-sources of articles
- *
- * Callback-шаблон для выбора рубрик-источников статей
- *
- * @return void
- */
 function template_callback_frontpage_categories()
 {
 	global $txt, $context;
@@ -316,13 +302,6 @@ function template_callback_frontpage_categories()
 	</dd>';
 }
 
-/**
- * Template for the category management page
- *
- * Шаблон страницы управления рубриками
- *
- * @return void
- */
 function template_lp_category_settings()
 {
 	global $txt, $context;
@@ -390,15 +369,6 @@ function template_lp_category_settings()
 	</script>';
 }
 
-/**
- * Single category template
- *
- * Шаблон одиночной рубрики
- *
- * @param int $id
- * @param array $cat
- * @return void
- */
 function show_single_category(int $id, array $cat)
 {
 	global $txt;
@@ -429,13 +399,6 @@ function show_single_category(int $id, array $cat)
 	</tr>';
 }
 
-/**
- * Callback template to configure panel layouts
- *
- * Callback-шаблон для настройки макета панелей
- *
- * @return void
- */
 function template_callback_panel_layout()
 {
 	global $txt, $modSettings, $context;
@@ -445,7 +408,7 @@ function template_callback_panel_layout()
 	</div>
 	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
 	<div class="generic_list_wrapper">
-		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' column-reverse' : '', '">
+		<div class="centertext', empty($modSettings['lp_swap_header_footer']) ? '' : ' column-reverse', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
@@ -467,7 +430,7 @@ function template_callback_panel_layout()
 					</div>
 				</div>
 			</div>
-			<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">
+			<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
@@ -521,11 +484,11 @@ function template_callback_panel_layout()
 						</ul>
 						<hr>
 						<label for="lp_left_panel_sticky">', $txt['lp_left_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', !empty($modSettings['lp_left_panel_sticky']) ? ' checked="checked"' : '', '>
+						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', empty($modSettings['lp_left_panel_sticky']) ? '' : ' checked="checked"', '>
 					</div>
 				</div>
 				<div class="col-xs">
-					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' column-reverse' : '', '">
+					<div class="windowbg', empty($modSettings['lp_swap_top_bottom']) ? '' : ' column-reverse', '">
 						<strong>col-xs (auto)</strong>
 						<div class="row">
 							<div class="col-xs">
@@ -611,7 +574,7 @@ function template_callback_panel_layout()
 						</ul>
 						<hr>
 						<label for="lp_right_panel_sticky">', $txt['lp_right_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', !empty($modSettings['lp_right_panel_sticky']) ? ' checked="checked"' : '', '>
+						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', empty($modSettings['lp_right_panel_sticky']) ? '' : ' checked="checked"', '>
 					</div>
 				</div>
 			</div>
@@ -641,13 +604,6 @@ function template_callback_panel_layout()
 	<br>';
 }
 
-/**
- * Callback template for selecting the direction of blocks inside panels
- *
- * Callback-шаблон для выбора направления блоков внутри панелей
- *
- * @return void
- */
 function template_callback_panel_direction()
 {
 	global $txt, $context;
@@ -687,15 +643,6 @@ function template_callback_panel_direction()
 	<dl class="settings">';
 }
 
-/**
- * Display settings on multiple tabs
- *
- * Вывод настроек на нескольких вкладках
- *
- * @param array $fields
- * @param string $tab
- * @return void
- */
 function template_post_tab(array $fields, string $tab = 'content')
 {
 	global $context;

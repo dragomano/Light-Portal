@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Default template
- *
- * Шаблон по умолчанию
- *
- * @return void
- */
 function template_empty()
 {
 	global $txt;
@@ -15,13 +8,6 @@ function template_empty()
 	<div class="infobox">', $txt['lp_no_items'], '</div>';
 }
 
-/**
- * Wrong template
- *
- * Неверный шаблон
- *
- * @return void
- */
 function template_wrong_template()
 {
 	global $txt;
@@ -34,8 +20,6 @@ function template_wrong_template()
  * Default template view for frontpage articles
  *
  * Дефолтный шаблон отображения статей на главной
- *
- * @return void
  */
 function template_show_articles()
 {
@@ -55,7 +39,7 @@ function template_show_articles()
 		<div class="col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">
 			<article class="roundframe', $article['css_class'] ?? '', '">';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			if ($article['is_new']) {
 				echo '
 					<div class="new_hover">
@@ -87,7 +71,7 @@ function template_show_articles()
 				<div class="card_info">
 					<span class="card_date smalltext">';
 
-		if (!empty($article['section']['name'])) {
+		if (! empty($article['section']['name'])) {
 			echo '
 						<a class="floatleft" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
 		}
@@ -98,7 +82,7 @@ function template_show_articles()
 		}
 
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 						<time class="floatright" datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
 		}
@@ -109,7 +93,7 @@ function template_show_articles()
 						<a href="', $article['msg_link'], '">', $article['title'], '</a>
 					</h3>';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 					<p>', $article['teaser'], '</p>';
 		}
@@ -117,13 +101,13 @@ function template_show_articles()
 		echo '
 					<div>';
 
-		if (!empty($article['category'])) {
+		if (! empty($article['category'])) {
 			echo '
 						<span class="card_author"><i class="fas fa-list-alt"></i> ', $article['category'], '</span>';
 		}
 
-		if (!empty($modSettings['lp_show_author']) && !empty($article['author'])) {
-			if (!empty($article['author']['id']) && !empty($article['author']['name'])) {
+		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
+			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
 						<a href="', $article['author']['link'], '" class="card_author"><i class="fas fa-user"></i> ', $article['author']['name'], '</a>';
 			} else {
@@ -132,27 +116,27 @@ function template_show_articles()
 			}
 		}
 
-		if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+		if (! empty($modSettings['lp_show_num_views_and_comments'])) {
 			echo '
 						<span class="floatright">';
 
-			if (!empty($article['views'])) {
+			if (! empty($article['views'])) {
 				echo '
 							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
 			}
 
-			if (!empty($article['views']['after']))
+			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
-			if (!empty($article['is_redirect'])) {
+			if (! empty($article['is_redirect'])) {
 				echo '
 							<i class="fas fa-directions"></i>';
-			} elseif (!empty($article['replies']['num'])) {
+			} elseif (! empty($article['replies']['num'])) {
 				echo '
 							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
 
-			if (!empty($article['replies']['after']))
+			if (! empty($article['replies']['after']))
 				echo $article['replies']['after'];
 
 			echo '
@@ -180,8 +164,6 @@ function template_show_articles()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_alt()
 {
@@ -208,31 +190,31 @@ function template_show_articles_alt()
 					</div>
 					<div>';
 
-		if (!empty($modSettings['lp_show_num_views_and_comments'])) {
+		if (! empty($modSettings['lp_show_num_views_and_comments'])) {
 			echo '
 						<span class="floatleft">';
 
-			if (!empty($article['views'])) {
+			if (! empty($article['views'])) {
 				echo '
 							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
 			}
 
-			if (!empty($article['views']['after']))
+			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
-			if (!empty($article['replies']['num'])) {
+			if (! empty($article['replies']['num'])) {
 				echo '
 							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
 			}
 
-			if (!empty($article['replies']['after']))
+			if (! empty($article['replies']['after']))
 				echo $article['replies']['after'];
 
 			echo '
 						</span>';
 		}
 
-		if (!empty($article['section']['name'])) {
+		if (! empty($article['section']['name'])) {
 			echo '
 						<a class="floatright" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
 		}
@@ -240,7 +222,7 @@ function template_show_articles_alt()
 		echo '
 					</div>';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			echo '
 					<img src="', $article['image'], '" alt="', $article['title'], '">';
 		}
@@ -249,7 +231,7 @@ function template_show_articles_alt()
 				</header>
 				<div class="article_body">';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 					<p>', $article['teaser'], '</p>';
 		}
@@ -262,13 +244,13 @@ function template_show_articles_alt()
 					</div>
 					<div class="centertext">';
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 						<time datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
 		}
 
-		if (!empty($modSettings['lp_show_author']) && !empty($article['author'])) {
-			if (!empty($article['author']['id']) && !empty($article['author']['name'])) {
+		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
+			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
 						| <i class="fas fa-user"></i> <a href="', $article['author']['link'], '" class="card_author">', $article['author']['name'], '</a>';
 			} else {
@@ -298,8 +280,6 @@ function template_show_articles_alt()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_alt2()
 {
@@ -318,7 +298,7 @@ function template_show_articles_alt2()
 		echo '
 		<article class="descbox">';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			echo '
 			<a class="article_image_link" href="', $article['link'], '">
 				<div style="background-image: url(\'' . $article['image'] . '\')"></div>
@@ -330,7 +310,7 @@ function template_show_articles_alt2()
 				<div>
 					<header>';
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 						<time datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
 		}
@@ -339,7 +319,7 @@ function template_show_articles_alt2()
 						<h3><a href="', $article['msg_link'], '">', $article['title'], '</a></h3>
 					</header>';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 					<section>
 						<p>', $article['teaser'], '</p>
@@ -349,11 +329,11 @@ function template_show_articles_alt2()
 		echo '
 				</div>';
 
-		if (!empty($modSettings['lp_show_author']) && !empty($article['author'])) {
+		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
 			echo '
 				<footer>';
 
-			if (!empty($article['author']['avatar'])) {
+			if (! empty($article['author']['avatar'])) {
 				echo '
 					<img src="', $article['author']['avatar'], '" loading="lazy" alt="', $txt['author'], '">';
 			}
@@ -361,7 +341,7 @@ function template_show_articles_alt2()
 			echo '
 					<span>';
 
-			if (!empty($article['author']['id']) && !empty($article['author']['name'])) {
+			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
 						<a href="', $article['author']['link'], '">', $article['author']['name'], '</a>';
 			} else {
@@ -393,12 +373,10 @@ function template_show_articles_alt2()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_alt3()
 {
-	global $context, $modSettings, $txt, $scripturl;
+	global $context, $modSettings, $txt;
 
 	if (empty($context['lp_active_blocks']))
 		echo '
@@ -417,7 +395,7 @@ function template_show_articles_alt3()
 		<div class="card', $i % 2 === 0 ? ' alt': '', ' col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">
 			<div class="meta">';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			echo '
 				<div class="photo" style="background-image: url(\'', $article['image'], '\')"></div>';
 		}
@@ -425,12 +403,12 @@ function template_show_articles_alt3()
 		echo '
 				<ul class="details">';
 
-		if (!empty($modSettings['lp_show_author']) && !empty($article['author'])) {
+		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
 			echo '
 					<li class="author">
 						<i class="fas fa-user"></i>';
 
-			if (!empty($article['author']['id']) && !empty($article['author']['name'])) {
+			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
 						<a href="', $article['author']['link'], '">', $article['author']['name'], '</a>';
 			} else {
@@ -442,12 +420,12 @@ function template_show_articles_alt3()
 					</li>';
 		}
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 					<li class="date"><i class="fas fa-calendar"></i><time datetime="', $article['datetime'], '">', $article['date'], '</time></li>';
 		}
 
-		if (!empty($article['tags'])) {
+		if (! empty($article['tags'])) {
 			echo '
 					<li class="tags">
 						<i class="fas fa-tag"></i>
@@ -469,12 +447,12 @@ function template_show_articles_alt3()
 			<div class="description">
 				<h1><a href="', $article['link'], '">', $article['title'], '</a></h1>';
 
-		if (!empty($article['section']['name'])) {
+		if (! empty($article['section']['name'])) {
 			echo '
 				<h2><a href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a></h2>';
 		}
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 				<p>', $article['teaser'], '</p>';
 		}
@@ -501,8 +479,6 @@ function template_show_articles_alt3()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_simple()
 {
@@ -521,7 +497,7 @@ function template_show_articles_simple()
 		echo '
 		<div class="col-xs-12 col-sm-6 col-md-', $context['lp_frontpage_num_columns'], '">';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			echo '
 			<div class="article_image" style="background-image: url(\'' . $article['image'] . '\')"></div>';
 		}
@@ -530,7 +506,7 @@ function template_show_articles_simple()
 			<div class="mt-6 body">
 				<a class="article_title" href="', $article['link'], '">', $article['title'], '</a>';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 				<p class="article_teaser">', $article['teaser'], '</p>';
 		}
@@ -557,8 +533,6 @@ function template_show_articles_simple()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_simple2()
 {
@@ -582,7 +556,7 @@ function template_show_articles_simple2()
 					<div class="card-title">
 						<h3>', $article['title'], '</h3>';
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 						<time datetime="', $article['datetime'], '">', $article['date'], '</time>';
 		}
@@ -597,7 +571,7 @@ function template_show_articles_simple2()
 				<div class="card-body">
 					<div class="card-body-inner">';
 
-		if (!empty($article['datetime'])) {
+		if (! empty($article['datetime'])) {
 			echo '
 						<time datetime="', $article['datetime'], '">', $article['date'], '</time>';
 		}
@@ -605,7 +579,7 @@ function template_show_articles_simple2()
 		echo '
 						<h3>', $article['title'], '</h3>';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 						<p class="article_teaser">', $article['teaser'], '</p>';
 		}
@@ -636,8 +610,6 @@ function template_show_articles_simple2()
  * Example of custom view for frontpage articles
  *
  * Пример альтернативного отображения статей
- *
- * @return void
  */
 function template_show_articles_simple3()
 {
@@ -656,7 +628,7 @@ function template_show_articles_simple3()
 		echo '
 			<div>';
 
-		if (!empty($article['image'])) {
+		if (! empty($article['image'])) {
 			echo '
 				<img src="', $article['image'], '" alt="', $article['title'], '">';
 		}
@@ -665,7 +637,7 @@ function template_show_articles_simple3()
 				<div class="title">
 					<div><a class="bbc_link" href="', $article['link'], '">', $article['title'], '</a></div>';
 
-		if (!empty($article['teaser'])) {
+		if (! empty($article['teaser'])) {
 			echo '
 					<p>', $article['teaser'], '</p>';
 		}
@@ -673,7 +645,7 @@ function template_show_articles_simple3()
 		echo '
 				</div>';
 
-		if (!empty($article['tags'])) {
+		if (! empty($article['tags'])) {
 			echo '
 				<div class="tags">';
 
@@ -704,8 +676,6 @@ function template_show_articles_simple3()
  * Шаблон списка сортировки для страниц рубрик и тегов
  *
  * Template of sort list for category pages and tags
- *
- * @return void
  */
 function template_sorting_above()
 {
@@ -723,7 +693,7 @@ function template_sorting_above()
 		echo '
 	<div class="information">';
 
-		if (!empty($context['description'])) {
+		if (! empty($context['description'])) {
 			echo '
 		<div class="floatleft">', $context['description'], '</div>';
 		}
@@ -754,19 +724,15 @@ function template_sorting_below()
 {
 }
 
-/**
- * @param string $position
- * @return void
- */
 function show_pagination(string $position = 'top')
 {
 	global $context, $modSettings;
 
-	$show_on_top = $position == 'top' && !empty($modSettings['lp_show_pagination']);
+	$show_on_top = $position === 'top' && ! empty($modSettings['lp_show_pagination']);
 
-	$show_on_bottom = $position == 'bottom' && (empty($modSettings['lp_show_pagination']) || ($modSettings['lp_show_pagination'] == 1));
+	$show_on_bottom = $position === 'bottom' && (empty($modSettings['lp_show_pagination']) || ($modSettings['lp_show_pagination'] == 1));
 
-	if (!empty($context['page_index']) && ($show_on_top || $show_on_bottom))
+	if (! empty($context['page_index']) && ($show_on_top || $show_on_bottom))
 		echo '
 		<div class="col-xs-12 centertext">
 			<div class="pagesection">

@@ -6,11 +6,11 @@
  * @package News (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.12.21
  */
 
 namespace Bugo\LightPortal\Addons\News;
@@ -19,25 +19,13 @@ use Bugo\LightPortal\Addons\Plugin;
 
 class News extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-newspaper';
+	public string $icon = 'far fa-newspaper';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['news']['parameters']['selected_item'] = 0;
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'news')
@@ -46,9 +34,6 @@ class News extends Plugin
 		$parameters['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -69,7 +54,7 @@ class News extends Plugin
 		$this->getData();
 
 		$news = [$txt['lp_news']['random_news']];
-		if (!empty($context['news_lines'])) {
+		if (! empty($context['news_lines'])) {
 			array_unshift($context['news_lines'], $txt['lp_news']['random_news']);
 			$news = $context['news_lines'];
 		}
@@ -82,14 +67,6 @@ class News extends Plugin
 		}
 	}
 
-	/**
-	 * Get the forum news
-	 *
-	 * Получаем новость форума
-	 *
-	 * @param int $item
-	 * @return string
-	 */
 	public function getData(int $item = 0): string
 	{
 		global $context;
@@ -104,13 +81,6 @@ class News extends Plugin
 		return ssi_news('return');
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $txt;
@@ -118,8 +88,6 @@ class News extends Plugin
 		if ($type !== 'news')
 			return;
 
-		$news = $this->getData($parameters['selected_item']);
-
-		echo $news ?: $txt['lp_news']['no_items'];
+		echo $this->getData($parameters['selected_item']) ?: $txt['lp_news']['no_items'];
 	}
 }

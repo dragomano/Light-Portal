@@ -6,29 +6,22 @@
  * @package BoardList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class BoardList extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-list-alt';
+	public string $icon = 'far fa-list-alt';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['board_list']['no_content_class'] = true;
@@ -39,11 +32,6 @@ class BoardList extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'board_list')
@@ -53,9 +41,6 @@ class BoardList extends Plugin
 		$parameters['board_class']    = FILTER_SANITIZE_STRING;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -114,16 +99,9 @@ class BoardList extends Plugin
 		);
 	}
 
-	/**
-	 * Get the board list
-	 *
-	 * Получаем список разделов
-	 *
-	 * @return array
-	 */
 	public function getData(): array
 	{
-		Helpers::require('Subs-MessageIndex');
+		Helper::require('Subs-MessageIndex');
 
 		$boardListOptions = array(
 			'ignore_boards'   => true,
@@ -134,13 +112,6 @@ class BoardList extends Plugin
 		return getBoardList($boardListOptions);
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $context, $scripturl;
@@ -148,7 +119,7 @@ class BoardList extends Plugin
 		if ($type !== 'board_list')
 			return;
 
-		$board_list = Helpers::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'])
+		$board_list = Helper::cache('board_list_addon_b' . $block_id . '_u' . $context['user']['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData');
 
@@ -158,7 +129,7 @@ class BoardList extends Plugin
 		$context['current_board'] = $context['current_board'] ?? 0;
 
 		foreach ($board_list as $category) {
-			if (!empty($parameters['category_class']))
+			if (! empty($parameters['category_class']))
 				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
 
 			$content = '

@@ -1,8 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal;
-
-use Exception;
+declare(strict_types = 1);
 
 /**
  * Comment.php
@@ -10,42 +8,26 @@ use Exception;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class Comment
+final class Comment
 {
-	/**
-	 * Page alias
-	 *
-	 * @var string
-	 */
-	private $alias;
+	private string $alias;
 
-	/**
-	 * Comment construct
-	 *
-	 * @param string $alias
-	 */
 	public function __construct(string $alias = '')
 	{
 		$this->alias = $alias;
 	}
 
-	/**
-	 * Process comments
-	 *
-	 * Обрабатываем комментарии
-	 *
-	 * @return void
-	 * @throws Exception
-	 */
 	public function prepare()
 	{
 		global $context, $modSettings, $txt, $scripturl;
@@ -53,11 +35,11 @@ class Comment
 		if (empty($this->alias))
 			return;
 
-		$context['lp_allowed_bbc'] = !empty($modSettings['lp_enabled_bbc_in_comments']) ? explode(',', $modSettings['lp_enabled_bbc_in_comments']) : [];
+		$context['lp_allowed_bbc'] = empty($modSettings['lp_enabled_bbc_in_comments']) ? [] : explode(',', $modSettings['lp_enabled_bbc_in_comments']);
 		$context['lp_allowed_bbc'] = array_diff($context['lp_allowed_bbc'], array_intersect(explode(',', $modSettings['disabledBBC']), $context['lp_allowed_bbc']));
 
-		if (Helpers::request()->notEmpty('sa')) {
-			switch (Helpers::request('sa')) {
+		if (Helper::request()->notEmpty('sa')) {
+			switch (Helper::request('sa')) {
 				case 'add_comment':
 					$this->add();
 					break;
@@ -72,27 +54,27 @@ class Comment
 			}
 		}
 
-		$comments = Helpers::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
+		$comments = Helper::cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $context['lp_page']['id']);
 		$comments = array_map(function ($comment) {
-			$comment['created']    = Helpers::getFriendlyTime($comment['created_at']);
+			$comment['created']    = Helper::getFriendlyTime($comment['created_at']);
 			$comment['created_at'] = date('Y-m-d', $comment['created_at']);
 
 			return $comment;
 		}, $comments);
 
-		$txt['lp_comments'] = Helpers::getText(sizeof($comments), $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helper::getPluralText(sizeof($comments), $txt['lp_comments_set']);
 
 		$limit = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 
 		$pageIndexUrl = $context['canonical_url'];
-		if (!empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] === 'chosen_page' && !empty($modSettings['lp_frontpage_alias']))
+		if (! empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] === 'chosen_page' && ! empty($modSettings['lp_frontpage_alias']))
 			$pageIndexUrl = $scripturl . '?action=' . LP_ACTION;
 
-		$context['current_start'] = Helpers::request('start');
-		$context['page_index'] = constructPageIndex($pageIndexUrl, Helpers::request()->get('start'), $totalParentComments, $limit);
-		$start = Helpers::request('start');
+		$context['current_start'] = Helper::request('start');
+		$context['page_index'] = constructPageIndex($pageIndexUrl, Helper::request()->get('start'), $totalParentComments, $limit);
+		$start = Helper::request('start');
 
 		$context['page_info'] = [
 			'num_pages' => $num_pages = floor($totalParentComments / $limit) + 1,
@@ -107,7 +89,7 @@ class Comment
 		if ($context['user']['is_logged']) {
 			addInlineJavaScript('
 		const comment = new Comment({
-			pageUrl: "' . $context['canonical_url'] . (Helpers::request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
+			pageUrl: "' . $context['canonical_url'] . (Helper::request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
 			start: ' . $start . ',
 			lastStart: ' . $context['page_info']['start'] . ',
 			totalParentComments: ' . count($context['lp_page']['comments']) . ',
@@ -117,25 +99,16 @@ class Comment
 		}
 	}
 
-	/**
-	 * Get all comments (or for the current page only)
-	 *
-	 * Получаем все комментарии (или только для конкретной страницы)
-	 *
-	 * @param int $page_id
-	 * @return array
-	 * @throws Exception
-	 */
 	public function getAll(int $page_id = 0): array
 	{
 		global $smcFunc, $context, $modSettings;
 
-		Helpers::require('Subs-Post');
+		Helper::require('Subs-Post');
 
 		$request = $smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (!empty($page_id) ? '
+				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (! empty($page_id) ? '
 			WHERE com.page_id = {int:id}' : ''),
 			array(
 				'id' => $page_id
@@ -146,19 +119,17 @@ class Comment
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['message']);
 
-			$avatar = Helpers::getUserAvatar($row['author_id'])['image'];
-
 			$comments[$row['id']] = array(
-				'id'          => $row['id'],
-				'page_id'     => $row['page_id'],
-				'parent_id'   => $row['parent_id'],
-				'author_id'   => $row['author_id'],
+				'id'          => (int) $row['id'],
+				'page_id'     => (int) $row['page_id'],
+				'parent_id'   => (int) $row['parent_id'],
+				'author_id'   => (int) $row['author_id'],
 				'author_name' => $row['author_name'],
-				'avatar'      => $avatar,
+				'avatar'      => Helper::getUserAvatar((int) $row['author_id'])['image'],
 				'message'     => empty($context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $context['lp_allowed_bbc']),
 				'raw_message' => un_preparsecode($row['message']),
-				'created_at'  => $row['created_at'],
-				'can_edit'    => !empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60
+				'created_at'  => (int) $row['created_at'],
+				'can_edit'    => ! empty($modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $modSettings['lp_time_to_change_comments'] * 60
 			);
 		}
 
@@ -168,10 +139,6 @@ class Comment
 		return $comments;
 	}
 
-		/**
-	 * @return void
-	 * @throws Exception
-	 */
 	private function add()
 	{
 		global $user_info, $smcFunc, $context, $txt;
@@ -181,7 +148,7 @@ class Comment
 		if (empty($user_info['id']))
 			exit(json_encode($result));
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($data['message']))
 			exit(json_encode($result));
@@ -198,7 +165,7 @@ class Comment
 		if (empty($page_id) || empty($message))
 			exit(json_encode($result));
 
-		Helpers::require('Subs-Post');
+		Helper::require('Subs-Post');
 
 		preparsecode($message);
 
@@ -224,7 +191,7 @@ class Comment
 
 		$smcFunc['lp_num_queries']++;
 
-		if (!empty($item)) {
+		if (! empty($item)) {
 			$smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_comments = num_comments + 1
@@ -244,10 +211,10 @@ class Comment
 				'parent_id'   => $parent,
 				'author_id'   => $user_info['id'],
 				'author_name' => $user_info['name'],
-				'avatar'      => Helpers::getUserAvatar($user_info['id'])['image'],
+				'avatar'      => Helper::getUserAvatar($user_info['id'])['image'],
 				'message'     => empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
-				'created'     => Helpers::getFriendlyTime($time),
+				'created'     => Helper::getFriendlyTime($time),
 				'raw_message' => un_preparsecode($message),
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
@@ -270,31 +237,28 @@ class Comment
 				? $this->makeNotify('new_comment', 'page_comment', $result)
 				: $this->makeNotify('new_reply', 'page_comment_reply', $result);
 
-			Helpers::cache()->forget('page_' . $this->alias . '_comments');
+			Helper::cache()->forget('page_' . $this->alias . '_comments');
 		}
 
 		exit(json_encode($result));
 	}
 
-	/**
-	 * @return void
-	 */
 	private function edit()
 	{
 		global $context, $smcFunc;
 
-		$data = Helpers::request()->json();
+		$data = Helper::request()->json();
 
 		if (empty($data) || $context['user']['is_guest'])
 			exit;
 
 		$item    = $data['comment_id'];
-		$message = Helpers::validate($data['message']);
+		$message = Helper::validate($data['message']);
 
 		if (empty($item) || empty($message))
 			exit;
 
-		Helpers::require('Subs-Post');
+		Helper::require('Subs-Post');
 		preparsecode($message);
 
 		$smcFunc['db_query']('', '
@@ -313,19 +277,16 @@ class Comment
 
 		$message = empty($context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $context['lp_allowed_bbc']);
 
-		Helpers::cache()->forget('page_' . $this->alias . '_comments');
+		Helper::cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
 	}
 
-	/**
-	 * @return void
-	 */
 	private function remove()
 	{
 		global $smcFunc;
 
-		$items = Helpers::request()->json('items');
+		$items = Helper::request()->json('items');
 
 		if (empty($items))
 			return;
@@ -361,7 +322,7 @@ class Comment
 
 		$smcFunc['lp_num_queries'] += 3;
 
-		Helpers::cache()->forget('page_' . $this->alias . '_comments');
+		Helper::cache()->forget('page_' . $this->alias . '_comments');
 
 		exit;
 	}
@@ -370,11 +331,6 @@ class Comment
 	 * Creating a background task to notify subscribers of new comments
 	 *
 	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
-	 *
-	 * @param string $type
-	 * @param string $action
-	 * @param array $options
-	 * @return void
 	 */
 	private function makeNotify(string $type, string $action, array $options = [])
 	{
@@ -414,14 +370,6 @@ class Comment
 		$smcFunc['lp_num_queries']++;
 	}
 
-	/**
-	 * Get comment tree (parents and children)
-	 *
-	 * Получаем дерево комментариев
-	 *
-	 * @param array $data
-	 * @return array
-	 */
 	private function getTree(array $data): array
 	{
 		$tree = [];

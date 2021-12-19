@@ -6,29 +6,22 @@
  * @package RecentPosts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 15.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Helper;
 
 class RecentPosts extends Plugin
 {
-	/**
-	 * @var string
-	 */
-	public $icon = 'far fa-comment-alt';
+	public string $icon = 'far fa-comment-alt';
 
-	/**
-	 * @param array $options
-	 * @return void
-	 */
 	public function blockOptions(array &$options)
 	{
 		$options['recent_posts']['no_content_class'] = true;
@@ -45,11 +38,6 @@ class RecentPosts extends Plugin
 		];
 	}
 
-	/**
-	 * @param array $parameters
-	 * @param string $type
-	 * @return void
-	 */
 	public function validateBlockData(array &$parameters, string $type)
 	{
 		if ($type !== 'recent_posts')
@@ -65,9 +53,6 @@ class RecentPosts extends Plugin
 		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function prepareBlockFields()
 	{
 		global $context, $txt;
@@ -153,7 +138,7 @@ class RecentPosts extends Plugin
 			'type' => 'checkbox',
 			'attributes' => array(
 				'id'      => 'show_avatars',
-				'checked' => !empty($context['lp_block']['options']['parameters']['show_avatars'])
+				'checked' => ! empty($context['lp_block']['options']['parameters']['show_avatars'])
 			),
 			'tab' => 'appearance'
 		);
@@ -169,21 +154,12 @@ class RecentPosts extends Plugin
 		);
 	}
 
-	/**
-	 * Get the recent posts of the forum
-	 *
-	 * Получаем последние сообщения форума
-	 *
-	 * @param array $parameters
-	 * @return array
-	 * @throws \Exception
-	 */
 	public function getData(array $parameters): array
 	{
-		if (!empty($parameters['exclude_boards']))
+		if (! empty($parameters['exclude_boards']))
 			$exclude_boards = explode(',', $parameters['exclude_boards']);
 
-		if (!empty($parameters['include_boards']))
+		if (! empty($parameters['include_boards']))
 			$include_boards = explode(',', $parameters['include_boards']);
 
 		$this->loadSsi();
@@ -193,15 +169,15 @@ class RecentPosts extends Plugin
 		if (empty($posts))
 			return [];
 
-		if (!empty($parameters['exclude_topics'])) {
+		if (! empty($parameters['exclude_topics'])) {
 			$exclude_topics = array_flip(explode(',', $parameters['exclude_topics']));
 
 			$posts = array_filter($posts, function ($item) use ($exclude_topics) {
-				return !array_key_exists($item['topic'], $exclude_topics);
+				return ! array_key_exists($item['topic'], $exclude_topics);
 			});
 		}
 
-		if (!empty($parameters['include_topics'])) {
+		if (! empty($parameters['include_topics'])) {
 			$include_topics = array_flip(explode(',', $parameters['include_topics']));
 
 			$posts = array_filter($posts, function ($item) use ($include_topics) {
@@ -209,19 +185,21 @@ class RecentPosts extends Plugin
 			});
 		}
 
-		if (!empty($parameters['show_avatars'])) {
-			$posters = array_map(function ($item) {
-				return $item['poster']['id'];
-			}, $posts);
+		if (! empty($parameters['show_avatars'])) {
+			$posters = array_map(fn($item) => $item['poster']['id'], $posts);
 
 			loadMemberData(array_unique($posters));
 
 			$posts = array_map(function ($item) {
 				global $memberContext, $modSettings;
 
-				if (!empty($item['poster']['id'])) {
-					if (!isset($memberContext[$item['poster']['id']]))
-						loadMemberContext($item['poster']['id']);
+				if (! empty($item['poster']['id'])) {
+					if (! isset($memberContext[$item['poster']['id']]['avatar']))
+						try {
+							loadMemberContext($item['poster']['id']);
+						} catch (\Exception $e) {
+							log_error('[LP] RecentPosts addon (user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
+						}
 
 					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
 				} else {
@@ -235,13 +213,6 @@ class RecentPosts extends Plugin
 		return $posts;
 	}
 
-	/**
-	 * @param string $type
-	 * @param int $block_id
-	 * @param int $cache_time
-	 * @param array $parameters
-	 * @return void
-	 */
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		global $user_info, $scripturl, $txt;
@@ -249,7 +220,7 @@ class RecentPosts extends Plugin
 		if ($type !== 'recent_posts')
 			return;
 
-		$recent_posts = Helpers::cache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'])
+		$recent_posts = Helper::cache('recent_posts_addon_b' . $block_id . '_u' . $user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -265,7 +236,7 @@ class RecentPosts extends Plugin
 			echo '
 			<li class="windowbg">';
 
-			if (!empty($parameters['show_avatars']))
+			if (! empty($parameters['show_avatars']))
 				echo '
 				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
 
@@ -280,7 +251,7 @@ class RecentPosts extends Plugin
 				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
 
 			echo '
-				<br><span class="smalltext">', Helpers::getFriendlyTime($post['timestamp'], true), '</span>
+				<br><span class="smalltext">', Helper::getFriendlyTime($post['timestamp'], true), '</span>
 			</li>';
 		}
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Utils;
+declare(strict_types = 1);
 
 /**
  * Cache.php
@@ -8,44 +8,28 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Utils;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
 final class Cache
 {
-	/**
-	 * @var string
-	 */
-	private $prefix = 'lp_';
+	private string $prefix = 'lp_';
+	private ?string $key;
+	private int $lifeTime = 0;
 
-	/**
-	 * @var string
-	 */
-	private $key;
-
-	/**
-	 * @var int
-	 */
-	private $lifeTime = 0;
-
-	/**
-	 * @param string|null $key
-	 */
-	public function __construct(string $key = null)
+	public function __construct(?string $key = null)
 	{
 		$this->key = $key;
 	}
 
-	/**
-	 * @param int $lifeTime
-	 * @return $this
-	 */
 	public function setLifeTime(int $lifeTime): Cache
 	{
 		$this->lifeTime = $lifeTime;
@@ -77,39 +61,21 @@ final class Cache
 		return ${$this->key};
 	}
 
-	/**
-	 * @param string $key
-	 * @param int|null $time
-	 * @return mixed
-	 */
-	public function get(string $key, int $time = null)
+	public function get(string $key, ?int $time = null): ?array
 	{
 		return cache_get_data($this->prefix . $key, $time ?? $this->lifeTime);
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed $value
-	 * @param int|null $time
-	 * @return void
-	 */
-	public function put(string $key, $value, int $time = null)
+	public function put(string $key, ?array $value, ?int $time = null)
 	{
 		cache_put_data($this->prefix . $key, $value, $time ?? $this->lifeTime);
 	}
 
-	/**
-	 * @param string $key
-	 * @return void
-	 */
 	public function forget(string $key)
 	{
 		$this->put($key, null);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function flush()
 	{
 		clean_cache();

@@ -6,32 +6,22 @@
  * @package TinyPortal (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.10.21
+ * @version 17.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
 
-use Bugo\LightPortal\Impex\AbstractImport;
-use Bugo\LightPortal\Helpers;
+use Bugo\LightPortal\Impex\AbstractOtherBlockImport;
+use Bugo\LightPortal\Helper;
 
-class BlockImport extends AbstractImport
+class BlockImport extends AbstractOtherBlockImport
 {
-	/**
-	 * @var array
-	 */
-	private $supported_types = [5, 10, 11];
+	private array $supported_types = [5, 10, 11];
 
-	/**
-	 * TinyPortal blocks import
-	 *
-	 * Импорт блоков TinyPortal
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
@@ -119,10 +109,7 @@ class BlockImport extends AbstractImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>';
-						},
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
 						'class' => 'centertext'
 					)
 				)
@@ -141,23 +128,13 @@ class BlockImport extends AbstractImport
 			)
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
 		$context['default_list'] = 'lp_blocks';
 	}
 
-	/**
-	 * Get the list of blocks
-	 *
-	 * Получаем список блоков
-	 *
-	 * @param int $start
-	 * @param int $items_per_page
-	 * @param string $sort
-	 * @return array
-	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		global $smcFunc, $db_prefix, $txt, $context;
@@ -197,13 +174,6 @@ class BlockImport extends AbstractImport
 		return $items;
 	}
 
-	/**
-	 * Get the total number of blocks
-	 *
-	 * Подсчитываем общее количество блоков
-	 *
-	 * @return int
-	 */
 	public function getTotalCount(): int
 	{
 		global $smcFunc, $db_prefix;
@@ -230,119 +200,15 @@ class BlockImport extends AbstractImport
 		return (int) $num_blocks;
 	}
 
-	/**
-	 * Start importing data
-	 *
-	 * Запускаем импорт
-	 *
-	 * @return void
-	 */
-	protected function run()
-	{
-		global $db_temp_cache, $db_cache, $language, $smcFunc;
-
-		if (Helpers::post()->isEmpty('blocks') && Helpers::post()->has('import_all') === false)
-			return;
-
-		// Might take some time.
-		@set_time_limit(600);
-
-		// Don't allow the cache to get too full
-		$db_temp_cache = $db_cache;
-		$db_cache = [];
-
-		$blocks = !empty(Helpers::post('blocks')) && Helpers::post()->has('import_all') === false ? Helpers::post('blocks') : null;
-
-		$items = $this->getItems($blocks);
-
-		$titles = [];
-		foreach ($items as $block_id => $item) {
-			$titles[] = [
-				'type'  => 'block',
-				'lang'  => $language,
-				'title' => $item['title']
-			];
-
-			unset($items[$block_id]['title']);
-		}
-
-		$result = [];
-
-		if (!empty($items)) {
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$temp = $smcFunc['db_insert']('',
-					'{db_prefix}lp_blocks',
-					array(
-						'type'          => 'string',
-						'content'       => 'string-65534',
-						'placement'     => 'string-10',
-						'permissions'   => 'int',
-						'status'        => 'int',
-						'title_class'   => 'string',
-						'content_class' => 'string'
-					),
-					$items[$i],
-					array('block_id'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-
-				$result = array_merge($result, $temp);
-			}
-		}
-
-		if (!empty($titles) && !empty($result)) {
-			foreach ($result as $key => $value) {
-				$titles[$key]['item_id'] = $value;
-			}
-
-			$titles = array_chunk($titles, 100);
-			$count  = sizeof($titles);
-
-			for ($i = 0; $i < $count; $i++) {
-				$result = $smcFunc['db_insert']('',
-					'{db_prefix}lp_titles',
-					array(
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string',
-						'item_id' => 'int'
-					),
-					$titles[$i],
-					array('item_id', 'type', 'lang'),
-					2
-				);
-
-				$smcFunc['lp_num_queries']++;
-			}
-		}
-
-		if (empty($result))
-			fatal_lang_error('lp_import_failed', false);
-
-		// Restore the cache
-		$db_cache = $db_temp_cache;
-
-		Helpers::cache()->flush();
-	}
-
-	/**
-	 * @param array|null $blocks
-	 * @return array
-	 */
-	private function getItems(?array $blocks): array
+	protected function getItems(array $blocks): array
 	{
 		global $smcFunc, $context;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id, type, title, body, access, bar
 			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})' . (!empty($blocks) ? '
-				AND id IN ({array_int:blocks})' : ''),
+			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
+				AND id IN ({array_int:blocks})'),
 			array(
 				'types'  => $this->supported_types,
 				'blocks' => $blocks
@@ -382,10 +248,6 @@ class BlockImport extends AbstractImport
 		return $items;
 	}
 
-	/**
-	 * @param int $type
-	 * @return string
-	 */
 	private function getType(int $type): string
 	{
 		switch ($type) {
@@ -399,10 +261,6 @@ class BlockImport extends AbstractImport
 		}
 	}
 
-	/**
-	 * @param int $bar
-	 * @return string
-	 */
 	private function getPlacement(int $bar): string
 	{
 		switch ($bar) {

@@ -4,13 +4,6 @@ function template_debug_above()
 {
 }
 
-/**
- * Displaying the portal debugging information at the bottom of the page
- *
- * Отображение отладочной информации портала в нижней части страницы
- *
- * @return void
- */
 function template_debug_below()
 {
 	global $context;

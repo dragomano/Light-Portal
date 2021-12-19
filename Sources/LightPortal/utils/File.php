@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Utils;
+declare(strict_types = 1);
 
 /**
  * File.php
@@ -8,53 +8,39 @@ namespace Bugo\LightPortal\Utils;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
+
+namespace Bugo\LightPortal\Utils;
 
 final class File
 {
-	/**
-	 * @var array
-	 */
-	protected $storage = [];
+	protected array $storage = [];
 
-	/**
-	 * @param string|null $key
-	 */
-	public function __construct(?string $key)
+	public function __construct(?string $key = null)
 	{
 		$this->storage = &$_FILES;
 
 		if ($key) {
-			$this->storage = &$this->storage[$key] ?? [];
+			$storage = $this->storage[$key] ?? [];
+			$this->storage = &$storage;
 		}
 	}
 
-	/**
-	 * @return array
-	 */
 	public function get(): array
 	{
 		return $this->storage ? (is_array($this->storage['name']) ? $this->reArrayFiles($this->storage) : $this->storage) : [];
 	}
 
-	/**
-	 * @param string $key
-	 * @return void
-	 */
 	public function free(string $key)
 	{
 		unset($this->storage[$key]);
 	}
 
-	/**
-	 * @param array $source
-	 * @return array
-	 */
-	private function reArrayFiles(&$source)
+	private function reArrayFiles(array &$source): array
 	{
 		$files = [];
 		$numFiles = count($source['name']);

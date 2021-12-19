@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @return void
- */
 function template_callback_main_menu_table()
 {
 	global $txt, $scripturl, $context, $modSettings;
@@ -83,7 +80,7 @@ function template_callback_main_menu_table()
 	<script>
 		function handleItems() {
 			return {
-				items: ', !empty($modSettings['lp_main_menu_addon_items']) ? $modSettings['lp_main_menu_addon_items'] : "[]", ',
+				items: ', (empty($modSettings['lp_main_menu_addon_items']) ? '[]' : $modSettings['lp_main_menu_addon_items']), ',
 				add() {
 					this.items.push({
 						url: "",

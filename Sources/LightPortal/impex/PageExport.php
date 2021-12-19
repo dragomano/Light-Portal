@@ -1,8 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Impex;
-
-use Bugo\LightPortal\{Helpers, ManagePages};
+declare(strict_types = 1);
 
 /**
  * PageExport.php
@@ -10,24 +8,21 @@ use Bugo\LightPortal\{Helpers, ManagePages};
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Impex;
+
+use Bugo\LightPortal\{Helper, Admin\PageArea};
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
-class PageExport extends AbstractExport
+final class PageExport extends AbstractExport
 {
-	/**
-	 * Prepare to export
-	 *
-	 * Экспорт страниц
-	 *
-	 * @return void
-	 */
 	public function main()
 	{
 		global $context, $txt, $scripturl;
@@ -43,11 +38,11 @@ class PageExport extends AbstractExport
 
 		$this->run();
 
-		$pages = new ManagePages();
+		$pages = new PageArea();
 
 		$listOptions = array(
 			'id' => 'lp_pages',
-			'items_per_page' => ManagePages::NUM_PAGES,
+			'items_per_page' => PageArea::NUM_PAGES,
 			'title' => $txt['lp_pages_export'],
 			'no_items_label' => $txt['lp_no_items'],
 			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
@@ -111,10 +106,7 @@ class PageExport extends AbstractExport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					),
 					'data' => array(
-						'function' => function ($entry)
-						{
-							return '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>';
-						},
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					)
 				)
@@ -133,24 +125,21 @@ class PageExport extends AbstractExport
 			)
 		);
 
-		Helpers::require('Subs-List');
+		Helper::require('Subs-List');
 		createList($listOptions);
 
 		$context['sub_template'] = 'show_list';
 		$context['default_list'] = 'lp_pages';
 	}
 
-	/**
-	 * @return array
-	 */
 	protected function getData(): array
 	{
 		global $smcFunc;
 
-		if (Helpers::post()->isEmpty('pages') && Helpers::post()->has('export_all') === false)
+		if (Helper::post()->isEmpty('pages') && Helper::post()->has('export_all') === false)
 			return [];
 
-		$pages = !empty(Helpers::post('pages')) && Helpers::post()->has('export_all') === false ? Helpers::post('pages') : null;
+		$pages = ! empty(Helper::post('pages')) && Helper::post()->has('export_all') === false ? Helper::post('pages') : null;
 
 		$request = $smcFunc['db_query']('', '
 			SELECT
@@ -159,8 +148,8 @@ class PageExport extends AbstractExport
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (!empty($pages) ? '
-			WHERE p.page_id IN ({array_int:pages})' : ''),
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
+			WHERE p.page_id IN ({array_int:pages})'),
 			array(
 				'pages' => $pages
 			)
@@ -168,30 +157,29 @@ class PageExport extends AbstractExport
 
 		$items = [];
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (!isset($items[$row['page_id']]))
-				$items[$row['page_id']] = array(
-					'page_id'      => $row['page_id'],
-					'category_id'  => $row['category_id'],
-					'author_id'    => $row['author_id'],
-					'alias'        => $row['alias'],
-					'description'  => trim($row['description']),
-					'content'      => $row['content'],
-					'type'         => $row['type'],
-					'permissions'  => $row['permissions'],
-					'status'       => $row['status'],
-					'num_views'    => $row['num_views'],
-					'num_comments' => $row['num_comments'],
-					'created_at'   => $row['created_at'],
-					'updated_at'   => $row['updated_at']
-				);
+			$items[$row['page_id']] ??= array(
+				'page_id'      => $row['page_id'],
+				'category_id'  => $row['category_id'],
+				'author_id'    => $row['author_id'],
+				'alias'        => $row['alias'],
+				'description'  => trim($row['description']),
+				'content'      => $row['content'],
+				'type'         => $row['type'],
+				'permissions'  => $row['permissions'],
+				'status'       => $row['status'],
+				'num_views'    => $row['num_views'],
+				'num_comments' => $row['num_comments'],
+				'created_at'   => $row['created_at'],
+				'updated_at'   => $row['updated_at']
+			);
 
-			if (!empty($row['lang']) && !empty($row['title']))
+			if (! empty($row['lang']) && ! empty($row['title']))
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (!empty($row['name']) && !empty($row['value']))
+			if (! empty($row['name']) && ! empty($row['value']))
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (!empty(trim($row['message']))) {
+			if (! empty($row['message']) && ! empty(trim($row['message']))) {
 				$items[$row['page_id']]['comments'][$row['id']] = array(
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
@@ -208,13 +196,6 @@ class PageExport extends AbstractExport
 		return $items;
 	}
 
-	/**
-	 * Get an array of categories to export
-	 *
-	 * Получаем массив рубрик для экспорта
-	 *
-	 * @return array
-	 */
 	protected function getCategories(): array
 	{
 		$categories = (new \Bugo\LightPortal\Lists\Category)->getList();
@@ -225,13 +206,6 @@ class PageExport extends AbstractExport
 		return $categories;
 	}
 
-	/**
-	 * Get an array of tags to export
-	 *
-	 * Получаем массив тегов для экспорта
-	 *
-	 * @return array
-	 */
 	protected function getTags(): array
 	{
 		$tags = (new \Bugo\LightPortal\Lists\Tag)->getList();
@@ -241,79 +215,78 @@ class PageExport extends AbstractExport
 		return $tags;
 	}
 
-	/**
-	 * Get filename with XML data
-	 *
-	 * Получаем имя файла с XML-данными
-	 *
-	 * @return string
-	 */
 	protected function getXmlFile(): string
 	{
+		global $txt;
+
 		if (empty($items = $this->getData()))
 			return '';
 
-		$xml = new \DomDocument('1.0', 'utf-8');
-		$root = $xml->appendChild($xml->createElement('light_portal'));
+		try {
+			$xml = new \DomDocument('1.0', 'utf-8');
+			$root = $xml->appendChild($xml->createElement('light_portal'));
 
-		$xml->formatOutput = true;
+			$xml->formatOutput = true;
 
-		if (!empty($categories = $this->getCategories())) {
-			$xmlElements = $root->appendChild($xml->createElement('categories'));
-			foreach ($categories as $category) {
-				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-				foreach ($category as $key => $val) {
-					$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
+			if (! empty($categories = $this->getCategories())) {
+				$xmlElements = $root->appendChild($xml->createElement('categories'));
+				foreach ($categories as $category) {
+					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+					foreach ($category as $key => $val) {
+						$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
+						$xmlName->appendChild($xml->createTextNode($val));
+					}
+				}
+			}
+
+			if (! empty($tags = $this->getTags())) {
+				$xmlElements = $root->appendChild($xml->createElement('tags'));
+				foreach ($tags as $key => $val) {
+					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
+					$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
+					$xmlName->appendChild($xml->createTextNode((string) $key));
+					$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
 					$xmlName->appendChild($xml->createTextNode($val));
 				}
 			}
-		}
 
-		if (!empty($tags = $this->getTags())) {
-			$xmlElements = $root->appendChild($xml->createElement('tags'));
-			foreach ($tags as $key => $val) {
+			$xmlElements = $root->appendChild($xml->createElement('pages'));
+			foreach ($items as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-				$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
-				$xmlName->appendChild($xml->createTextNode($key));
-				$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
-				$xmlName->appendChild($xml->createTextNode($val));
-			}
-		}
+				foreach ($item as $key => $val) {
+					$xmlName = $xmlElement->appendChild(
+						in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+							? $xml->createAttribute($key)
+							: $xml->createElement($key)
+					);
 
-		$xmlElements = $root->appendChild($xml->createElement('pages'));
-		foreach ($items as $item) {
-			$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-			foreach ($item as $key => $val) {
-				$xmlName = $xmlElement->appendChild(
-					in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
-						? $xml->createAttribute($key)
-						: $xml->createElement($key)
-				);
-
-				if (in_array($key, ['titles', 'params'])) {
-					foreach ($val as $k => $v) {
-						$xmlTitle = $xmlName->appendChild($xml->createElement($k));
-						$xmlTitle->appendChild($xml->createTextNode($v));
-					}
-				} elseif (in_array($key, ['description', 'content'])) {
-					$xmlName->appendChild($xml->createCDATASection($val));
-				} elseif ($key == 'comments') {
-					foreach ($val as $comment) {
-						$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
-						foreach ($comment as $label => $text) {
-							$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
-							$xmlCommentElem->appendChild($label == 'message' ? $xml->createCDATASection($text) : $xml->createTextNode($text));
+					if (in_array($key, ['titles', 'params'])) {
+						foreach ($val as $k => $v) {
+							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
+							$xmlTitle->appendChild($xml->createTextNode($v));
 						}
+					} elseif (in_array($key, ['description', 'content'])) {
+						$xmlName->appendChild($xml->createCDATASection($val));
+					} elseif ($key == 'comments') {
+						foreach ($val as $comment) {
+							$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
+							foreach ($comment as $label => $text) {
+								$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
+								$xmlCommentElem->appendChild($label == 'message' ? $xml->createCDATASection($text) : $xml->createTextNode($text));
+							}
+						}
+					} else {
+						$xmlName->appendChild($xml->createTextNode($val));
 					}
-				} else {
-					$xmlName->appendChild($xml->createTextNode($val));
 				}
 			}
+
+			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
+			$xml->save($file);
+		} catch (\DOMException $e) {
+			log_error('[LP] ' . $txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
-		$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
-		$xml->save($file);
-
-		return $file;
+		return $file ?? '';
 	}
 }

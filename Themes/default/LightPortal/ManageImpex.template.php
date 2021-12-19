@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Block export template
- *
- * Шаблон экспорта блоков
- *
- * @return void
- */
 function template_manage_export_blocks()
 {
 	global $context, $txt, $language;
@@ -90,20 +83,14 @@ function template_manage_export_blocks()
 	</form>';
 }
 
-/**
- * The import template
- *
- * Шаблон импорта
- *
- * @return void
- */
 function template_manage_import()
 {
 	global $context, $txt;
 
-	if (!empty($context['import_successful']))
+	if (! empty($context['import_successful'])) {
 		echo '
 	<div class="infobox">', $context['import_successful'], '</div>';
+	}
 
 	echo '
 	<div class="cat_bar">

@@ -6,7 +6,7 @@
  * @package TopicRatingBar (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2021 Bugo
+ * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
@@ -22,7 +22,7 @@ class TopicRatingBar extends Plugin
 	/**
 	 * @var string
 	 */
-	public $type = 'article';
+	public string $type = 'article';
 
 	/**
 	 * Select total_votes and total_value columns from topic_ratings table for the frontpage topics
@@ -53,7 +53,7 @@ class TopicRatingBar extends Plugin
 	 */
 	public function frontTopicsOutput(array &$topics, array $row)
 	{
-		$topics[$row['id_topic']]['rating'] = !empty($row['total_votes']) ? number_format($row['total_value'] / $row['total_votes']) : 0;
+		$topics[$row['id_topic']]['rating'] = empty($row['total_votes']) ? 0 : (number_format($row['total_value'] / $row['total_votes']));
 	}
 
 	/**
@@ -71,7 +71,7 @@ class TopicRatingBar extends Plugin
 			return;
 
 		foreach ($context['lp_frontpage_articles'] as $id => $topic) {
-			if (!empty($topic['rating'])) {
+			if (! empty($topic['rating'])) {
 				$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}

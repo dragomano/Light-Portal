@@ -1,12 +1,5 @@
 <?php
 
-/**
- * The portal contributors & credits template
- *
- * Шаблон просмотра списков внесших вклад в развитие портала, а также списка используемых компонентов
- *
- * @return void
- */
 function template_portal_credits()
 {
 	global $txt, $context;
@@ -36,7 +29,7 @@ function template_portal_credits()
 		</div>
 		<ul>';
 
-	if (!empty($context['testers'])) {
+	if (! empty($context['testers'])) {
 		echo '
 				<li class="windowbg">';
 
@@ -57,7 +50,7 @@ function template_portal_credits()
 		</div>
 		<ul>';
 
-	if (!empty($context['sponsors'])) {
+	if (! empty($context['sponsors'])) {
 		echo '
 				<li class="windowbg">';
 
@@ -88,17 +81,17 @@ function template_portal_credits()
 		echo '
 			<li class="windowbg">';
 
-		if (!empty($item['link'])) {
-			echo '
-				<a class="bbc_link" href="', $item['link'], '" target="_blank" rel="noopener">', $item['title'], '</a>';
-		} else {
+		if (empty($item['link'])) {
 			echo '
 				', $item['title'];
+		} else {
+			echo '
+				<a class="bbc_link" href="', $item['link'], '" target="_blank" rel="noopener">', $item['title'], '</a>';
 		}
 
 		echo ' ', (isset($item['author']) ? ' | &copy; ' . $item['author'] : '');
 
-		if (!empty($item['license'])) {
+		if (! empty($item['license'])) {
 			echo ' | <a href="', $item['license']['link'], '" target="_blank" rel="noopener">', $item['license']['name'], '</a>';
 		}
 

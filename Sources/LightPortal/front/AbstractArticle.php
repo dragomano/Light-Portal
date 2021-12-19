@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugo\LightPortal\Front;
+declare(strict_types = 1);
 
 /**
  * AbstractArticle.php
@@ -8,22 +8,24 @@ namespace Bugo\LightPortal\Front;
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2021 Bugo
+ * @copyright 2019-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 1.10
+ * @version 2.0
  */
 
-if (!defined('SMF'))
+namespace Bugo\LightPortal\Front;
+
+if (! defined('SMF'))
 	die('Hacking attempt...');
 
 abstract class AbstractArticle
 {
-	protected $columns = [];
-	protected $tables  = [];
-	protected $wheres  = [];
-	protected $params  = [];
-	protected $orders  = [];
+	protected array $columns = [];
+	protected array $tables  = [];
+	protected array $wheres  = [];
+	protected array $params  = [];
+	protected array $orders  = [];
 
 	public static function load($class)
 	{
