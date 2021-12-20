@@ -222,52 +222,51 @@ final class Helper
 	 *
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
 	 */
-	public static function getFriendlyTime(int $timestamp, bool $use_user_offset = false): string
+	public static function getFriendlyTime(int $timestamp, bool $use_time_offset = false): string
 	{
 		global $modSettings, $user_info, $txt, $smcFunc;
 
-		$current_time = time();
+		$currentTime = time();
 
 		$tm = date('H:i', $timestamp); // Use 'g:i a' for am/pm
 		$d  = date('j', $timestamp);
 		$m  = date('m', $timestamp);
 		$y  = date('Y', $timestamp);
 
-		// Use forum and user offsets
-		if ($use_user_offset)
-			$timestamp = $timestamp - ($modSettings['time_offset'] + $user_info['time_offset']) * 3600;
+		if ($use_time_offset)
+			$timestamp = $timestamp - $user_info['time_offset'] * 3600;
 
 		// Difference between current time and $timestamp
-		$time_difference = $current_time - $timestamp;
+		$timeDifference = $currentTime - $timestamp;
 
 		// Just now?
-		if (empty($time_difference))
+		if (empty($timeDifference))
 			return $txt['lp_just_now'];
 
 		// Future time?
-		if ($time_difference < 0) {
+		if ($timeDifference < 0) {
 			// like "Tomorrow at ..."
 			if ($d.$m.$y == date('jmY', strtotime('+1 day')))
 				return $txt['lp_tomorrow'] . $tm;
 
-			$days = floor(($timestamp - $current_time) / 60 / 60 / 24);
+			$days = floor(($timestamp - $currentTime) / 60 / 60 / 24);
 			// like "In n days"
 			if ($days > 1) {
 				if ($days < 7)
 					return sprintf($txt['lp_time_label_in'], self::getPluralText($days, $txt['lp_days_set']));
 
 				// Future date in current month
-				if ($m == date('m', $current_time) && $y == date('Y', $current_time))
+				if ($m == date('m', $currentTime) && $y == date('Y', $currentTime))
 					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 				// Future date in current year
-				elseif ($y == date('Y', $current_time))
+				elseif ($y == date('Y', $currentTime))
 					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 
 				// Other future date
 				return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
 			}
 
-			$hours = ($timestamp - $current_time) / 60 / 60;
+			$hours = ($timestamp - $currentTime) / 60 / 60;
 			// like "In an hour"
 			if ($hours == 1)
 				return sprintf($txt['lp_time_label_in'], $txt['lp_hours_set'][0]);
@@ -276,7 +275,7 @@ final class Helper
 			if ($hours > 1)
 				return sprintf($txt['lp_time_label_in'], self::getPluralText($hours, $txt['lp_hours_set']));
 
-			$minutes = ($timestamp - $current_time) / 60;
+			$minutes = ($timestamp - $currentTime) / 60;
 			// like "In a minute"
 			if ($minutes == 1)
 				return sprintf($txt['lp_time_label_in'], explode(',', $txt['lp_minutes_set'])[0]);
@@ -286,15 +285,15 @@ final class Helper
 				return sprintf($txt['lp_time_label_in'], self::getPluralText(ceil($minutes), $txt['lp_minutes_set']));
 
 			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getPluralText(abs($time_difference), $txt['lp_seconds_set']));
+			return sprintf($txt['lp_time_label_in'], self::getPluralText(abs($timeDifference), $txt['lp_seconds_set']));
 		}
 
 		// Less than an hour
-		$last_minutes = round($time_difference / 60);
+		$last_minutes = round($timeDifference / 60);
 
 		// like "n seconds ago"
-		if ($time_difference < 60)
-			return self::getPluralText($time_difference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+		if ($timeDifference < 60)
+			return self::getPluralText($timeDifference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
@@ -302,16 +301,16 @@ final class Helper
 		elseif ($last_minutes < 60)
 			return self::getPluralText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
-		elseif ($d.$m.$y == date('jmY', $current_time))
+		elseif ($d.$m.$y == date('jmY', $currentTime))
 			return $txt['today'] . $tm;
 		// like "Yesterday at ..."
 		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
 			return $txt['yesterday'] . $tm;
 		// like "Tuesday, 20 February, H:m" (current month)
-		elseif ($m == date('m', $current_time) && $y == date('Y', $current_time))
+		elseif ($m == date('m', $currentTime) && $y == date('Y', $currentTime))
 			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 		// like "20 February, H:m" (current year)
-		elseif ($y == date('Y', $current_time))
+		elseif ($y == date('Y', $currentTime))
 			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
 
 		// like "20 February 2019" (last year)
@@ -736,7 +735,7 @@ final class Helper
 
 	public static function getImageFromText(string $text): string
 	{
-		$image = preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
+		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
 		return $value['src'] ??= '';
 	}

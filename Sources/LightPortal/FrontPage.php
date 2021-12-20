@@ -16,40 +16,28 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Front\AbstractArticle;
+use Bugo\LightPortal\Front\ArticleInterface;
 
 final class FrontPage
 {
+	private array $modes = [
+        'all_pages'     => Front\PageArticle::class,
+        'all_topics'    => Front\TopicArticle::class,
+        'chosen_boards' => Front\BoardArticle::class,
+        'chosen_pages'  => Front\ChosenPageArticle::class,
+        'chosen_topics' => Front\ChosenTopicArticle::class,
+	];
+
 	public function show()
 	{
 		global $modSettings, $context, $scripturl, $txt, $settings;
 
 		isAllowedTo('light_portal_view');
 
-		switch ($modSettings['lp_frontpage_mode']) {
-			case 'chosen_page':
-				return call_user_func(array(new Page, 'show'));
-
-			case 'all_topics':
-				$this->prepare('TopicArticle');
-				break;
-
-			case 'all_pages':
-				$this->prepare('PageArticle');
-				break;
-
-			case 'chosen_boards':
-				$this->prepare('BoardArticle');
-				break;
-
-			case 'chosen_topics':
-				$this->prepare('ChosenTopicArticle');
-				break;
-
-			case 'chosen_pages':
-			default:
-				$this->prepare('ChosenPageArticle');
-		}
+        if (array_key_exists($modSettings['lp_frontpage_mode'], $this->modes))
+            $this->prepare(new $this->modes[$modSettings['lp_frontpage_mode']]);
+        elseif ($modSettings['lp_frontpage_mode'] === 'chosen_page')
+            return call_user_func(array(new Page, 'show'));
 
 		$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -76,34 +64,24 @@ final class FrontPage
 		if (is_file($settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			loadTemplate('CustomFrontPage');
 
-		obExit();
+		return false;
 	}
 
-	public function prepare(string $entity = '')
+	public function prepare(ArticleInterface $article)
 	{
 		global $modSettings, $context, $scripturl;
-
-		$classname = '\Bugo\LightPortal\Front\\' . $entity;
-
-		if (! class_exists($classname))
-			return;
-
-		$entityClass = AbstractArticle::load($classname);
-
-		if (! $entityClass instanceof AbstractArticle)
-			return;
 
 		$start = (int) Helper::request('start');
 		$limit = (int) $modSettings['lp_num_items_per_page'] ?? 12;
 
-		$entityClass->init();
+		$article->init();
 
 		if (($data = Helper::cache()->get('articles_u' . $context['user']['id'] . '_' . $start . '_' . $limit)) === null) {
-			$data['total'] = $entityClass->getTotalCount();
+			$data['total'] = $article->getTotalCount();
 
 			$this->updateStart($data['total'], $start, $limit);
 
-			$data['articles'] = $entityClass->getData($start, $limit);
+			$data['articles'] = $article->getData($start, $limit);
 
 			Helper::cache()->put('articles_u' . $context['user']['id'] . '_' . $start . '_' . $limit, $data);
 		}
@@ -112,7 +90,7 @@ final class FrontPage
 
 		$context['total_articles'] = $total_items;
 
-		$articles = $this->postProcess($entity, $articles);
+		$articles = $this->postProcess($article, $articles);
 
 		$context['page_index'] = constructPageIndex($scripturl . '?action=' . LP_ACTION, Helper::request()->get('start'), $total_items, $limit);
 		$context['start'] = Helper::request()->get('start');
@@ -247,32 +225,32 @@ final class FrontPage
 	 *
 	 * Заключительная обработка статей
 	 */
-	private function postProcess(string $entity, array $articles): array
+	private function postProcess(ArticleInterface $article, array $articles): array
 	{
-		return array_map(function ($article) use ($entity) {
+		return array_map(function ($item) use ($article) {
 			global $context, $modSettings;
 
 			if ($context['user']['is_guest'])
-				$article['is_new'] = false;
+				$item['is_new'] = false;
 
-			if (! empty($article['date'])) {
-				$article['datetime'] = date('Y-m-d', (int) $article['date']);
+			if (! empty($item['date'])) {
+				$item['datetime'] = date('Y-m-d', (int) $item['date']);
 
-				$article['date'] = $this->getCardDate((int) $article['date']);
+				$item['date'] = $this->getCardDate((int) $item['date']);
 			}
 
-			$article['msg_link'] ??= $article['link'];
+			$item['msg_link'] ??= $item['link'];
 
-			if (isset($article['title']) && in_array($entity, ['PageArticle', 'ChosenPageArticle']))
-				$article['title'] = Helper::getTranslatedTitle($article['title']);
+			if (is_array($item['title']) && $article instanceof Front\PageArticle)
+				$item['title'] = Helper::getTranslatedTitle($item['title']);
 
-			if (empty($article['image']) && ! empty($modSettings['lp_image_placeholder']))
-				$article['image'] = $modSettings['lp_image_placeholder'];
+			if (empty($item['image']) && ! empty($modSettings['lp_image_placeholder']))
+				$item['image'] = $modSettings['lp_image_placeholder'];
 
-			if (isset($article['views']['num']))
-				$article['views']['num'] = Helper::getFriendlyNumber((int) $article['views']['num']);
+			if (isset($item['views']['num']))
+				$item['views']['num'] = Helper::getFriendlyNumber((int) $item['views']['num']);
 
-			return $article;
+			return $item;
 		}, $articles);
 	}
 
@@ -307,6 +285,6 @@ final class FrontPage
 			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
 		}
 
-		$start = abs($start);
+		$start = (int) abs($start);
 	}
 }

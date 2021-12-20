@@ -11,3 +11,5 @@ if (empty($modSettings['lp_standalone_mode']) || empty($modSettings['lp_standalo
 require_once $sourcedir . '/LightPortal/FrontPage.php';
 
 (new \Bugo\LightPortal\FrontPage)->show();
+
+obExit();

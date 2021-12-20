@@ -146,11 +146,9 @@ final class PageArea
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($txt, $context, $scripturl)
+						'function' => function ($entry) use ($context, $scripturl)
 						{
-							$type_hint = $context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type']);
-
-							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . $type_hint . '"></i> <a class="bbc_link' . (
+							return '<i class="' . ($context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 								$entry['is_front']
 									? ' highlight" href="' . $scripturl
 									: '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']

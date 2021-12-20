@@ -183,7 +183,7 @@ final class Integration
 		$disabled_actions[] = 'home';
 
 		if (! empty($context['current_board']) || Helper::request()->is('keywords'))
-			$current_action = ! empty($modSettings['lp_standalone_mode']) ? (!in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION) : 'home';
+			$current_action = empty($modSettings['lp_standalone_mode']) ? 'home' : (! in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION);
 	}
 
 	public function menuButtons(array &$buttons)
@@ -275,7 +275,7 @@ final class Integration
 				array(
 					'forum' => array(
 						'title'       => $txt['lp_forum'],
-						'href'        => empty($modSettings['lp_standalone_url']) ? ($scripturl . '?action=forum') : $scripturl,
+						'href'        => empty($modSettings['lp_standalone_url']) ? $scripturl . '?action=forum' : $scripturl,
 						'icon'        => 'im_on',
 						'show'        => true,
 						'action_hook' => true

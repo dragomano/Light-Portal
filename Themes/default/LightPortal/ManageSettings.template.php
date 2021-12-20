@@ -7,18 +7,18 @@ function template_lp_basic_settings_below()
 	global $txt, $scripturl, $modSettings;
 
 	// Frontpage mode toggle
-	$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
-	$frontpage_mode_toggle_dt = [];
-	foreach ($frontpage_mode_toggle as $item) {
-		$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+	$fpModeToggleDt = [];
+	foreach ($fpModeToggle as $item) {
+		$fpModeToggleDt[] = 'setting_' . $item;
 	}
 
-	$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
+	$fpAliasToggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
-	$frontpage_alias_toggle_dt = [];
-	foreach ($frontpage_alias_toggle as $item) {
-		$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+	$fpAliasToggleDt = [];
+	foreach ($fpAliasToggle as $item) {
+		$fpAliasToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
@@ -34,14 +34,14 @@ function template_lp_basic_settings_below()
 				$("#lp_standalone_mode").prop("checked", false);
 			}
 
-			$("#', implode(', #', $frontpage_mode_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $frontpage_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $fpModeToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $fpModeToggleDt), '").closest("dt").toggle(change_mode);
 			board_selector.toggle(change_mode);
 
 			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
 
-			$("#', implode(', #', $frontpage_alias_toggle), '").closest("dd").toggle(allow_change_title);
-			$("#', implode(', #', $frontpage_alias_toggle_dt), '").closest("dt").toggle(allow_change_title);
+			$("#', implode(', #', $fpAliasToggle), '").closest("dd").toggle(allow_change_title);
+			$("#', implode(', #', $fpAliasToggleDt), '").closest("dt").toggle(allow_change_title);
 			board_selector.toggle(allow_change_title);
 
 			let allow_change_alias = front_mode == "chosen_page";
@@ -97,19 +97,19 @@ function template_lp_basic_settings_below()
 		});';
 
 	// Standalone mode toggle
-	$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
+	$standaloneModeToggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
 
-	$standalone_mode_toggle_dt = [];
-	foreach ($standalone_mode_toggle as $item) {
-		$standalone_mode_toggle_dt[] = 'setting_' . $item;
+	$standaloneModeToggleDt = [];
+	foreach ($standaloneModeToggle as $item) {
+		$standaloneModeToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
 		function toggleStandaloneMode() {
 			let change_mode = $("#lp_standalone_mode").prop("checked");
 
-			$("#', implode(', #', $standalone_mode_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $standalone_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $standaloneModeToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $standaloneModeToggleDt), '").closest("dt").toggle(change_mode);
 		};
 
 		toggleStandaloneMode();
@@ -176,11 +176,11 @@ function template_lp_extra_settings_above() {}
 function template_lp_extra_settings_below()
 {
 	// Show comment block toggle
-	$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
+	$showCommentBlockToggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
 
-	$show_comment_block_toggle_dt = [];
-	foreach ($show_comment_block_toggle as $item) {
-		$show_comment_block_toggle_dt[] = 'setting_' . $item;
+	$showCommentBlockToggleDt = [];
+	foreach ($showCommentBlockToggle as $item) {
+		$showCommentBlockToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
@@ -188,8 +188,8 @@ function template_lp_extra_settings_below()
 		function toggleShowCommentBlock() {
 			let change_mode = $("#lp_show_comment_block").val() !== "none";
 
-			$("#', implode(', #', $show_comment_block_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $show_comment_block_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $showCommentBlockToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $showCommentBlockToggleDt), '").closest("dt").toggle(change_mode);
 
 			if (change_mode && $("#lp_show_comment_block").val() != "default") {
 				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
@@ -255,7 +255,6 @@ function template_callback_disabled_bbc_in_comments()
 					if (elem.checked) {
 						let allTags = document.querySelectorAll("#lp_disabled_bbc_in_comments option");
 						lpDisabledBbc.set(Array.from(allTags).map(el => el.value));
-
 						return;
 					}
 

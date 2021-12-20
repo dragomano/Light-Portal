@@ -86,15 +86,12 @@ final class PageExport extends AbstractExport
 						'value' => $txt['lp_title']
 					),
 					'data' => array(
-						'function' => function ($entry) use ($scripturl)
-						{
-							return '<a class="bbc_link' . (
-								$entry['is_front']
-									? ' new_posts" href="' . $scripturl
-									: '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
-								) . '">' . $entry['title'] . '</a>';
-						},
-						'class' => 'word_break'
+                        'function' => fn($entry) => '<a class="bbc_link' . (
+                            $entry['is_front']
+                                ? ' new_posts" href="' . $scripturl
+                                : '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
+                            ) . '">' . $entry['title'] . '</a>',
+                        'class' => 'word_break'
 					),
 					'sort' => array(
 						'default' => 't.title DESC',

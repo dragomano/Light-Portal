@@ -16,10 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
-if (! defined('SMF'))
-	die('Hacking attempt...');
-
-abstract class AbstractArticle
+abstract class AbstractArticle implements ArticleInterface
 {
 	protected array $columns = [];
 	protected array $tables  = [];
@@ -27,12 +24,9 @@ abstract class AbstractArticle
 	protected array $params  = [];
 	protected array $orders  = [];
 
-	public static function load($class)
-	{
-		return new $class;
-	}
-
 	abstract public function init();
+
 	abstract public function getData(int $start, int $limit);
+
 	abstract public function getTotalCount();
 }
