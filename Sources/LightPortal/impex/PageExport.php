@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\{Helper, Admin\PageArea};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class PageExport extends AbstractExport
 {

@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Admin;
 use \Bugo\LightPortal\{Addon, Helper, Page};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class PageArea
 {

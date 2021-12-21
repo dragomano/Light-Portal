@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Front;
 use Bugo\LightPortal\{Addon, Helper};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 class PageArticle extends AbstractArticle
 {

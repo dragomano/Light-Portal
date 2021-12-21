@@ -19,7 +19,7 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Utils\{Cache, File, Request, Session};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class Helper
 {

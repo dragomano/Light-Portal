@@ -17,7 +17,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Front;
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class ChosenTopicArticle extends TopicArticle
 {

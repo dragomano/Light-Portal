@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Lists;
 use Bugo\LightPortal\{Helper, Page};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class Category implements PageListInterface
 {

@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\{Helper, Admin\BlockArea};
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class BlockExport extends AbstractExport
 {

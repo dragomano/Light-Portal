@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
-	die('Hacking attempt...');
+	die('No direct access...');
 
 final class PageImport extends AbstractImport
 {
