@@ -25,6 +25,7 @@ final class Prune extends \SMF_BackgroundTask
 		@ini_set('opcache.enable', '0');
 
 		$this->removeRedundantValues();
+		$this->updateNumComments();
 		$this->optimizeTables();
 
 		$smcFunc['db_insert']('insert',
@@ -95,6 +96,46 @@ final class Prune extends \SMF_BackgroundTask
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT id FROM {db_prefix}lp_comments)',
 			array()
+		);
+	}
+
+	private function updateNumComments()
+	{
+		global $smcFunc;
+
+		$request = $smcFunc['db_query']('', '
+			SELECT p.page_id, COUNT(c.id) AS amount
+			FROM {db_prefix}lp_pages p
+				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id AND p.status = {int:status})
+			GROUP BY p.page_id
+			ORDER BY p.page_id',
+			array(
+				'status' => 1
+			)
+		);
+
+		$pages = [];
+		while ($row = $smcFunc['db_fetch_assoc']($request))
+			$pages[$row['page_id']] = $row['amount'];
+
+		$smcFunc['db_free_result']($request);
+
+		if (empty($pages))
+			return;
+
+		$line = '';
+		foreach ($pages as $page_id => $num_comments)
+			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $num_comments;
+
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_pages
+			SET num_comments = CASE ' . $line . '
+				ELSE num_comments
+				END
+			WHERE page_id IN ({array_int:pages})',
+			array(
+				'pages' => array_keys($pages)
+			)
 		);
 	}
 
