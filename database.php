@@ -1,16 +1,16 @@
 <?php
 
-if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF'))
+if (file_exists(dirname(__FILE__) . '/SSI.php') && ! defined('SMF'))
 	require_once(dirname(__FILE__) . '/SSI.php');
-elseif(!defined('SMF'))
+elseif(! defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
-if (version_compare(PHP_VERSION, '7.3', '<'))
-	die('This mod needs PHP 7.3 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '7.4', '<'))
+	die('This mod needs PHP 7.4 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
 global $user_info, $mbname, $modSettings, $settings;
 
-if ((SMF == 'SSI') && !$user_info['is_admin'])
+if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
 
 $tables[] = array(
@@ -483,17 +483,17 @@ $smcFunc['db_add_index']('{db_prefix}settings', array(
 ));
 
 $add_settings = [];
-if (!isset($modSettings['lp_enabled_plugins']))
+if (! isset($modSettings['lp_enabled_plugins']))
 	$add_settings['lp_enabled_plugins'] = 'Trumbowyg,UserInfo,ThemeSwitcher';
-if (!isset($modSettings['lp_show_comment_block']))
+if (! isset($modSettings['lp_show_comment_block']))
 	$add_settings['lp_show_comment_block'] = 'default';
-if (!isset($modSettings['lp_fa_source']))
+if (! isset($modSettings['lp_fa_source']))
 	$add_settings['lp_fa_source'] = 'css_cdn';
-if (!empty($add_settings))
+if (! empty($add_settings))
 	updateSettings($add_settings);
 
-if (!@is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
+if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
 	smf_chmod($css_dir, 0755);
 
-if (SMF == 'SSI')
+if (SMF === 'SSI')
 	echo 'Database changes are complete! Please wait...';
