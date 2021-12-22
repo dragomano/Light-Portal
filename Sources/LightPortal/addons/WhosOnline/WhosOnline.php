@@ -76,7 +76,7 @@ class WhosOnline extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt, $scripturl;
+		global $user_info, $scripturl;
 
 		if ($type !== 'whos_online')
 			return;
@@ -88,18 +88,18 @@ class WhosOnline extends Plugin
 		if (empty($whos_online))
 			return;
 
-		echo Helper::getPluralText(comma_format($whos_online['num_guests']), $txt['lp_guests_set']) . ', ' . Helper::getPluralText(comma_format($whos_online['num_users_online']), $txt['lp_users_set']);
+		echo Helper::getSmartContext('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . Helper::getSmartContext('lp_users_set', ['users' => $whos_online['num_users_online']]);
 
 		$online_list = [];
 
 		if (! empty($user_info['buddies']) && ! empty($whos_online['num_buddies']))
-			$online_list[] = Helper::getPluralText(comma_format($whos_online['num_buddies']), $txt['lp_buddies_set']);
+			$online_list[] = Helper::getSmartContext('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
 
 		if (! empty($whos_online['num_spiders']))
-			$online_list[] = Helper::getPluralText(comma_format($whos_online['num_spiders']), $txt['lp_spiders_set']);
+			$online_list[] = Helper::getSmartContext('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
 
 		if (! empty($whos_online['num_users_hidden']))
-			$online_list[] = Helper::getPluralText(comma_format($whos_online['num_users_hidden']), $txt['lp_hidden_set']);
+			$online_list[] = Helper::getSmartContext('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
 		if (! empty($online_list))
 			echo ' (' . sentence_list($online_list) . ')';

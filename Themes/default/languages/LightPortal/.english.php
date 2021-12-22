@@ -341,31 +341,82 @@ $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post 
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units
-$txt['lp_months_set'] = 'month, months';
-$txt['lp_days_set'] = 'day, days';
-$txt['lp_hours_set'] = 'an hour, hours';
-$txt['lp_minutes_set'] = 'a minute, minutes';
-$txt['lp_seconds_set'] = 'second, seconds';
+$txt['lp_months_set'] = '{months, plural,
+	one {a month}
+	other {# months}
+}';
+$txt['lp_days_set'] = '{days, plural,
+	one {a day}
+	other {# days}
+}';
+$txt['lp_hours_set'] = '{hours, plural,
+	one {an hour}
+	other {# hours}
+}';
+$txt['lp_minutes_set'] = '{minutes, plural,
+	one {a minute}
+	other {# minutes}
+}';
+$txt['lp_seconds_set'] = '{seconds, plural,
+	one {a second}
+	other {# seconds}
+}';
 $txt['lp_tomorrow'] = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now'] = 'Just now';
 $txt['lp_time_label_in'] = 'In %1$s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
-$txt['lp_posts_set'] = 'post, posts';
-$txt['lp_replies_set'] = 'reply, replies';
-$txt['lp_views_set'] = 'view, views';
-$txt['lp_comments_set'] = 'comment, comments';
-$txt['lp_articles_set'] = 'article, articles';
+$txt['lp_posts_set'] = '{posts, plural,
+	one {# post}
+	other {# posts}
+}';
+$txt['lp_replies_set'] = '{replies, plural,
+	one {# reply}
+	other {# replies}
+}';
+$txt['lp_views_set'] = '{views, plural,
+	one {# view}
+	other {# views}
+}';
+$txt['lp_comments_set'] = '{comments, plural,
+	one {# comment}
+	other {# comments}
+}';
+$txt['lp_articles_set'] = '{articles, plural,
+	one {# article}
+	other {# articles}
+}';
 
 // Other units
-$txt['lp_pages_set'] = 'page, pages';
-$txt['lp_blocks_set'] = 'block, blocks';
-$txt['lp_users_set'] = 'user, users';
-$txt['lp_guests_set'] = 'guest, guests';
-$txt['lp_spiders_set'] = 'spider, spiders';
-$txt['lp_hidden_set'] = 'hidden';
-$txt['lp_buddies_set'] = 'buddy, buddies';
+$txt['lp_pages_set'] = '{pages, plural,
+	one {# page}
+	other {# pages}
+}';
+$txt['lp_blocks_set'] = '{blocks, plural,
+	one {# block}
+	other {# blocks}
+}';
+$txt['lp_users_set'] = '{users, plural,
+	one {# user}
+	other {# users}
+}';
+$txt['lp_guests_set'] = '{guests, plural,
+	one {# guest}
+	other {# guests}
+}';
+$txt['lp_spiders_set'] = '{spiders, plural,
+	one {# spider}
+	other {# spiders}
+}';
+$txt['lp_hidden_set'] = '{hidden, plural,
+	one {# hidden}
+	other {# hidden}
+}';
+$txt['lp_buddies_set'] = '{buddies, plural,
+	one {# buddy}
+	other {# buddies}
+}';
 
 // Packages
 $txt['lp_addon_package'] = 'Light Portal addons';

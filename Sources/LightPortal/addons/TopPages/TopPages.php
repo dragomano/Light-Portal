@@ -159,7 +159,7 @@ class TopPages extends Plugin
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helper::getPluralText($page['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : Helper::getSmartContext('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $page['num_' . $parameters['popularity_type']]])), '</span>
 			</dd>';
 				}
 

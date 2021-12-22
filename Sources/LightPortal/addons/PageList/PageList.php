@@ -199,10 +199,10 @@ class PageList extends Plugin
 
 				echo '
 			<li>
-				<a href="', $scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helper::getFriendlyTime($page['created_at']), ' (', Helper::getPluralText($page['num_views'], $txt['lp_views_set']);
+				<a href="', $scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', Helper::getFriendlyTime($page['created_at']), ' (', Helper::getSmartContext('lp_views_set', ['views' => $page['num_views']]);
 
 				if (! empty($page['num_comments']) && ! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === 'default')
-					echo ', ' . Helper::getPluralText($page['num_comments'], $txt['lp_comments_set']);
+					echo ', ' . Helper::getSmartContext('lp_comments_set', ['comments' => $page['num_comments']]);
 
 				echo ')
 			</li>';

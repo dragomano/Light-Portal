@@ -62,7 +62,7 @@ final class Comment
 			return $comment;
 		}, $comments);
 
-		$txt['lp_comments'] = Helper::getPluralText(sizeof($comments), $txt['lp_comments_set']);
+		$txt['lp_comments'] = Helper::getSmartContext('lp_comments_set', ['comments' => sizeof($comments)]);
 
 		$limit = $modSettings['lp_num_comments_per_page'] ?? 10;
 		$commentTree = $this->getTree($comments);

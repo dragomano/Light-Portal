@@ -151,7 +151,7 @@ class Todays extends Plugin
 					echo $txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', Helper::getPluralText(count($result) - $parameters['max_items'], $txt['lp_todays']['birthdays_set']), '</span>
+				<span>', Helper::getSmartContext($txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

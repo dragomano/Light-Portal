@@ -95,7 +95,7 @@ class TopTopics extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt;
+		global $user_info;
 
 		if ($type !== 'top_topics')
 			return;
@@ -122,7 +122,7 @@ class TopTopics extends Plugin
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helper::getPluralText($topic['num_' . $parameters['popularity_type']], $txt['lp_' . $parameters['popularity_type'] . '_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helper::getSmartContext('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
 			</dd>';
 		}
 

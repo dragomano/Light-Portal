@@ -124,7 +124,7 @@ class TopBoards extends Plugin
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helper::getPluralText($board['num_' . $type], $txt['lp_top_boards'][$type])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helper::getSmartContext($txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
 			</dd>';
 		}
 

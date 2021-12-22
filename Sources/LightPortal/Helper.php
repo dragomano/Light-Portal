@@ -142,82 +142,6 @@ final class Helper
 	}
 
 	/**
-	 * Get the word with the correct ending, depending on the number $num and the array|string $str with possible forms
-	 *
-	 * Получаем слово с правильным окончанием, в зависимости от числа $num и массива|строки $str с возможными формами
-	 *
-	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
-	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
-	 * @see http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html
-	 *
-	 * @param int $num
-	 * @param array|string $str Массив или строка с возможными вариантами (если в языке только одна форма, см. rule #0)
-	 * @return string
-	 */
-	public static function getPluralText(int $num, $str): string
-	{
-		global $txt;
-
-		$str = is_array($str) ? $str : explode(',', $str);
-		$str = array_map('trim', $str);
-
-		// Plural rule #0 (Chinese, Japanese, Persian, Turkish, Thai, Indonesian, Malay)
-		if (in_array($txt['lang_dictionary'], array('zh', 'ja', 'fa', 'tr', 'th', 'id', 'ms')))
-			return $num . ' ' . $str[0];
-
-		// Plural rule #2 (French, Portuguese_brazilian)
-		if (in_array($txt['lang_dictionary'], array('fr', 'pt')))
-			return $num . ' ' . $str[($num == 0 || $num == 1) ? 0 : 1];
-
-		// Just in case
-		$str[1] ??= $str[0];
-		$str[2] ??= $str[1];
-
-		// Plural rule #5 (Romanian)
-		if ($txt['lang_dictionary'] === 'ro') {
-			$cases = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19');
-			return $num . ' ' . $str[$num == 1 ? 0 : ((empty($num) || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
-		}
-
-		// Plural rule #6 (Lithuanian)
-		if ($txt['lang_dictionary'] === 'lt') {
-			$cases = array('11', '12', '13', '14', '15', '16', '17', '18', '19');
-			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : (($num % 10 === 0 || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
-		}
-
-		// Plural rule #7 (Bosnian, Croatian, Serbian, Russian, Ukrainian)
-		if (in_array($txt['lang_dictionary'], array('bs', 'hr', 'sr', 'ru', 'uk'))) {
-			$cases = array(2, 0, 1, 1, 1, 2);
-			return $num . ' ' . $str[($num % 100 > 4 && $num % 100 < 20) ? 2 : $cases[min($num % 10, 5)]];
-		}
-
-		// Plural rule #8 (Czech, Slovak)
-		if (in_array($txt['lang_dictionary'], array('cs', 'sk')))
-			return $num . ' ' . $str[$num == 1 ? 0 : (in_array($num, array(2, 3, 4)) ? 1 : 2)];
-
-		// Plural rule #9 (Polish)
-		if ($txt['lang_dictionary'] === 'pl') {
-			$cases = array('12', '13', '14');
-			return $num . ' ' . $str[$num == 1 ? 0 : ((in_array(substr((string) $num, -1, 1), array(2, 3, 4)) || in_array(substr((string) $num, -2, 2), $cases)) ? 1 : 2)];
-		}
-
-		// Plural rule #15 (Macedonian)
-		if ($txt['lang_dictionary'] === 'mk')
-			return $num . ' ' . $str[($num % 10 === 1 && substr((string) $num, -2, 2) != '11') ? 0 : 1];
-
-		// Urdu
-		if ($txt['lang_dictionary'] === 'ur')
-			return $str[$num == 1 ? 0 : 1] . ' ' . $num;
-
-		// Arabic
-		if ($txt['lang_dictionary'] === 'ar')
-			return $str[in_array($num, array(0, 1, 2)) ? $num : ($num % 100 >= 3 && $num % 100 <= 10 ? 3 : ($num % 100 >= 11 ? 4 : 5))] . ' ' . $num;
-
-		// Plural rule #1 (Danish, Dutch, English, German, Norwegian, Swedish, Estonian, Finnish, Hungarian, Greek, Hebrew, Italian, Portuguese_pt, Spanish, Catalan, Vietnamese, Esperanto, Galician, Albanian, Bulgarian)
-		return $num . ' ' . $str[$num == 1 ? 0 : 1];
-	}
-
-	/**
 	 * Get the time in the format "Yesterday", "Today", "X minutes ago", etc.
 	 *
 	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
@@ -253,7 +177,7 @@ final class Helper
 			// like "In n days"
 			if ($days > 1) {
 				if ($days < 7)
-					return sprintf($txt['lp_time_label_in'], self::getPluralText($days, $txt['lp_days_set']));
+					return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_days_set', compact('days')));
 
 				// Future date in current month
 				if ($m == date('m', $currentTime) && $y == date('Y', $currentTime))
@@ -273,7 +197,7 @@ final class Helper
 
 			// like "In n hours"
 			if ($hours > 1)
-				return sprintf($txt['lp_time_label_in'], self::getPluralText($hours, $txt['lp_hours_set']));
+				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_hours_set', compact('hours')));
 
 			$minutes = ($timestamp - $currentTime) / 60;
 			// like "In a minute"
@@ -282,10 +206,10 @@ final class Helper
 
 			// like "In n minutes"
 			if ($minutes > 1)
-				return sprintf($txt['lp_time_label_in'], self::getPluralText(ceil($minutes), $txt['lp_minutes_set']));
+				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_minutes_set', ['minutes' => ceil($minutes)]));
 
 			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getPluralText(abs($timeDifference), $txt['lp_seconds_set']));
+			return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_seconds_set', ['seconds' => abs($timeDifference)]));
 		}
 
 		// Less than an hour
@@ -293,13 +217,13 @@ final class Helper
 
 		// like "n seconds ago"
 		if ($timeDifference < 60)
-			return self::getPluralText($timeDifference, $txt['lp_seconds_set']) . $txt['lp_time_label_ago'];
+			return self::getSmartContext('lp_seconds_set', ['seconds' => $timeDifference]) . $txt['lp_time_label_ago'];
 		// like "A minute ago"
 		elseif ($last_minutes == 1)
 			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($last_minutes < 60)
-			return self::getPluralText((int) $last_minutes, $txt['lp_minutes_set']) . $txt['lp_time_label_ago'];
+			return self::getSmartContext('lp_minutes_set', ['minutes' => (int) $last_minutes]) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y == date('jmY', $currentTime))
 			return $txt['today'] . $tm;
@@ -738,5 +662,19 @@ final class Helper
 		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
 		return $value['src'] ??= '';
+	}
+
+	/**
+	 * @see https://symfony.com/doc/current/translation/message_format.html
+	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
+	 * @see https://www.php.net/manual/en/class.messageformatter.php
+	 */
+	public static function getSmartContext(string $string, array $params = []): string
+	{
+		global $txt;
+
+		$string = $txt[$string] ?? $string ?? '';
+
+		return \MessageFormatter::formatMessage($txt['lang_locale'], $string, $params);
 	}
 }

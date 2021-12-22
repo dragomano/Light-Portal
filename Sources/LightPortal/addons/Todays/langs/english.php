@@ -10,6 +10,9 @@ return [
 	'max_items' => 'Maximum number of birthday men in the list',
 	'max_items_subtext' => 'If there are more birthday men, the remaining ones will be hidden under the spoiler.',
 	'and_more' => ' and more ',
-	'birthdays_set' => 'birthday man, birthday men',
+	'birthdays_set' => '{count, plural,
+		one {# birthday man}
+		other {# birthday men}
+	}',
 	'empty_list' => 'There is nothing today.',
 ];

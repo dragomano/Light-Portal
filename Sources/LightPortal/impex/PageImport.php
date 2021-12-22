@@ -295,7 +295,7 @@ final class PageImport extends AbstractImport
 
 		$smcFunc['db_transaction']('commit');
 
-		$context['import_successful'] = sprintf($txt['lp_import_success'], Helper::getPluralText($context['import_successful'], $txt['lp_pages_set']));
+		$context['import_successful'] = sprintf($txt['lp_import_success'], Helper::getSmartContext('lp_pages_set', ['pages' => $context['import_successful']]));
 
 		// Restore the cache
 		$db_cache = $db_temp_cache;

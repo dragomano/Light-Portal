@@ -118,7 +118,7 @@ class BoardNews extends Plugin
 			return;
 
 		foreach ($board_news as $news) {
-			$news['link'] = '<a href="' . $news['href'] . '">' . Helper::getPluralText($news['replies'], $txt['lp_comments_set']) . '</a>';
+			$news['link'] = '<a href="' . $news['href'] . '">' . Helper::getSmartContext('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
 
 			echo '
 			<div class="news_item">

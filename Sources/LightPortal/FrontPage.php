@@ -46,7 +46,7 @@ final class FrontPage
 		$context['page_title'] = $modSettings['lp_frontpage_title'] ?: ($context['forum_name'] . ' - ' . $txt['lp_portal']);
 		$context['linktree'][] = [
 			'name'        => $txt['lp_portal'],
-			'extra_after' => '(' . Helper::getPluralText($context['total_articles'], $txt['lp_articles_set']) . ')'
+			'extra_after' => '(' . Helper::getSmartContext('lp_articles_set', ['articles' => $context['total_articles']]) . ')'
 		];
 
 		if (empty($context['lp_frontpage_articles'])) {

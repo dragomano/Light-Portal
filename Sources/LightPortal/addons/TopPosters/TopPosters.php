@@ -125,7 +125,7 @@ class TopPosters extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt;
+		global $user_info;
 
 		if ($type !== 'top_posters')
 			return;
@@ -155,7 +155,7 @@ class TopPosters extends Plugin
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helper::getPluralText($poster['posts'], $txt['lp_posts_set'])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Helper::getSmartContext('lp_posts_set', ['posts' => $poster['posts']])), '</span>
 			</dd>';
 		}
 
