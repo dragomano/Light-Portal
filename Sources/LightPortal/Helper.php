@@ -610,23 +610,22 @@ final class Helper
 		return $icons;
 	}
 
-	public static function getUserAvatar(int $user_id): array
+	public static function getUserAvatar(int $userId): array
 	{
 		global $memberContext;
 
-		if (empty($user_id))
+		if (empty($userId))
 			return [];
 
-		try {
-			if (! isset($memberContext[$user_id])) {
-				loadMemberData($user_id);
-				loadMemberContext($user_id, true);
-			}
-		} catch (\Exception $e) {
-			log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
-		}
+        if (! isset($memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
+            try {
+                loadMemberContext($userId, true);
+            } catch (\Exception $e) {
+                log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
+            }
+        }
 
-		return $memberContext[$user_id]['avatar'] ?? [];
+		return $memberContext[$userId]['avatar'] ?? [];
 	}
 
 	public static function preparePostFields(string $defaultTab = 'tuning')

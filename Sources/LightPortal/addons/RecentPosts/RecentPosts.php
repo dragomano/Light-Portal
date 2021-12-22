@@ -180,35 +180,11 @@ class RecentPosts extends Plugin
 		if (! empty($parameters['include_topics'])) {
 			$include_topics = array_flip(explode(',', $parameters['include_topics']));
 
-			$posts = array_filter($posts, function ($item) use ($include_topics) {
-				return array_key_exists($item['topic'], $include_topics);
-			});
+			$posts = array_filter($posts, fn($item) => array_key_exists($item['topic'], $include_topics));
 		}
 
-		if (! empty($parameters['show_avatars'])) {
-			$posters = array_map(fn($item) => $item['poster']['id'], $posts);
-
-			loadMemberData(array_unique($posters));
-
-			$posts = array_map(function ($item) {
-				global $memberContext, $modSettings;
-
-				if (! empty($item['poster']['id'])) {
-					if (! isset($memberContext[$item['poster']['id']]['avatar']))
-						try {
-							loadMemberContext($item['poster']['id']);
-						} catch (\Exception $e) {
-							log_error('[LP] RecentPosts addon (user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
-						}
-
-					$item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
-				} else {
-					$item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" loading="lazy" alt="'. $item['poster']['name'] . '">';
-				}
-
-				return $item;
-			}, $posts);
-		}
+		if (! empty($parameters['show_avatars']))
+            $posts = $this->getPostsWithUserAvatars($posts);
 
 		return $posts;
 	}
@@ -236,7 +212,7 @@ class RecentPosts extends Plugin
 			echo '
 			<li class="windowbg">';
 
-			if (! empty($parameters['show_avatars']))
+			if (! empty($parameters['show_avatars']) && ! empty($post['poster']['avatar']))
 				echo '
 				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
 
@@ -258,4 +234,30 @@ class RecentPosts extends Plugin
 		echo '
 		</ul>';
 	}
+
+    private function getPostsWithUserAvatars(array $posts): array
+    {
+        $posters = array_map(fn($item) => $item['poster']['id'], $posts);
+
+        $loadedUserIds = loadMemberData(array_unique($posters));
+
+        return array_map(function ($item) use ($loadedUserIds) {
+            global $memberContext, $modSettings;
+
+            if (! empty($item['poster']['id']) && in_array($item['poster']['id'], $loadedUserIds)) {
+                if (! isset($memberContext[$item['poster']['id']]['avatar']))
+                    try {
+                        loadMemberContext($item['poster']['id']);
+                    } catch (\Exception $e) {
+                        log_error('[LP] RecentPosts addon (user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
+                    }
+
+                $item['poster']['avatar'] = $memberContext[$item['poster']['id']]['avatar']['image'];
+            } else {
+                $item['poster']['avatar'] = '<img class="avatar" src="' . $modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $item['poster']['name'] . '">';
+            }
+
+            return $item;
+        }, $posts);
+    }
 }

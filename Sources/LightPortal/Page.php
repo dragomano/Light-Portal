@@ -418,7 +418,7 @@ final class Page
 
 		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
 
-		$items[$row['page_id']]['author']['avatar'] = Helper::getUserAvatar($author_id)['href'];
+		$items[$row['page_id']]['author']['avatar'] = Helper::getUserAvatar($author_id)['href'] ?? '';
 
 		if (! empty($modSettings['lp_show_teaser']))
 			$items[$row['page_id']]['teaser'] = Helper::getTeaser($row['description'] ?: $row['content']);

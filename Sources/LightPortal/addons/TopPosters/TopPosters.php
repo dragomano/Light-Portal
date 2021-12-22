@@ -98,16 +98,17 @@ class TopPosters extends Plugin
 		if (empty($result))
 			return [];
 
-		loadMemberData(array_column($result, 'id_member'));
+		$loadedUserIds = loadMemberData(array_column($result, 'id_member'));
 
 		$posters = [];
 		foreach ($result as $row) {
-			if (! isset($memberContext[$row['id_member']]))
-				try {
-					loadMemberContext($row['id_member']);
-				} catch (\Exception $e) {
-					log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
-				}
+			if (! isset($memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
+                try {
+                    loadMemberContext($row['id_member']);
+                } catch (\Exception $e) {
+                    log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
+                }
+            }
 
 			$posters[] = array(
 				'name'   => $row['real_name'],

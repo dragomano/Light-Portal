@@ -115,7 +115,7 @@ class PageArticle extends AbstractArticle
 					'edit_link' => $scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 				);
 
-				$pages[$row['page_id']]['author']['avatar'] = Helper::getUserAvatar($author_id)['href'];
+				$pages[$row['page_id']]['author']['avatar'] = Helper::getUserAvatar($author_id)['href'] ?? '';
 
 				if (! empty($modSettings['lp_show_teaser']))
 					$pages[$row['page_id']]['teaser'] = Helper::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) && ! empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
