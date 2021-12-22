@@ -31,23 +31,31 @@ function template_show_page()
 
 	echo '
 	<section itemscope itemtype="https://schema.org/Article">
-		<div id="display_head" class="windowbg">
-			<h2 class="display_title" itemprop="headline">
-				<span id="top_subject">', $context['page_title'];
+		<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '" content="', $context['canonical_url'], '">';
 
-	if ($context['lp_page']['can_edit']) {
+	if (! empty($context['lp_page']['options']['show_title']) || ! empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
+		<div id="display_head" class="windowbg">
+			<h2 class="display_title" itemprop="headline">';
+
+		if (! empty($context['lp_page']['options']['show_title'])) {
+			echo '
+				<span id="top_subject">', $context['page_title'];
+		}
+
+		if ($context['lp_page']['can_edit']) {
+			echo '
 					<a class="floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '" title="', $txt['edit'], '">
 						<svg aria-hidden="true" width="30" height="30" focusable="false" data-prefix="fas" data-icon="edit" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path></svg>
 					</a>';
-	}
+		}
 
-	echo '
+		echo '
 				</span>
 			</h2>';
 
-	if (! empty($context['lp_page']['options']['show_author_and_date'])) {
-		echo '
+		if (! empty($context['lp_page']['options']['show_author_and_date'])) {
+			echo '
 			<p>
 				<span class="floatleft" itemprop="author" itemscope itemtype="https://schema.org/Person">
 					<i class="fas fa-user" aria-hidden="true"></i> <span itemprop="name">', $context['lp_page']['author'], '</span>
@@ -57,11 +65,13 @@ function template_show_page()
 					<i class="fas fa-clock" aria-hidden="true"></i> ', $context['lp_page']['created'], empty($context['lp_page']['updated_at']) ? '' : (' / ' . $context['lp_page']['updated'] . ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">'), '
 				</time>
 			</p>';
+		}
+
+		echo '
+		</div>';
 	}
 
 	echo '
-			<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '" content="', $context['canonical_url'], '">
-		</div>
 		<article class="roundframe" itemprop="articleBody">
 			<h3 style="display: none">', $context['lp_page']['author'], ' - ', $context['page_title'], '</h3>';
 

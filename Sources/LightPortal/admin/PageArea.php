@@ -550,6 +550,7 @@ final class PageArea
 	private function getOptions(): array
 	{
 		$options = [
+            'show_title'           => true,
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
@@ -592,6 +593,7 @@ final class PageArea
 
 			$parameters = array_merge(
 				array(
+                    'show_title'           => FILTER_VALIDATE_BOOLEAN,
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
@@ -848,6 +850,15 @@ final class PageArea
 				'options' => []
 			);
 		}
+
+        $context['posting_fields']['show_title']['label']['text'] = $context['lp_page_options']['show_title'];
+        $context['posting_fields']['show_title']['input'] = array(
+            'type' => 'checkbox',
+            'attributes' => array(
+                'id'      => 'show_title',
+                'checked' => ! empty($context['lp_page']['options']['show_title'])
+            )
+        );
 
 		$context['posting_fields']['show_author_and_date']['label']['text'] = $context['lp_page_options']['show_author_and_date'];
 		$context['posting_fields']['show_author_and_date']['input'] = array(

@@ -205,7 +205,7 @@ final class Sub
 	{
 		global $txt;
 
-		return array_combine(array('show_author_and_date', 'show_related_pages', 'allow_comments'), $txt['lp_page_options']);
+		return array_combine(array('show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'), $txt['lp_page_options']);
 	}
 
 	public static function getPluginTypes(): array

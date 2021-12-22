@@ -227,7 +227,7 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments');
+$txt['lp_page_options'] = array('Show the title', 'Show the author and creation date', 'Show related pages', 'Allow comments');
 
 // Tabs
 $txt['lp_tab_content'] = 'Content';
