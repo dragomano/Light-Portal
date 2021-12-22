@@ -356,7 +356,6 @@ final class ConfigArea
 			updateSettings($add_settings);
 
 		$config_vars = array(
-			array('check', 'lp_show_page_permissions', 'subtext' => $txt['lp_show_page_permissions_subtext']),
 			array('check', 'lp_show_tags_on_page'),
 			array('select', 'lp_page_og_image', $txt['lp_page_og_image_set']),
 			array('check', 'lp_show_related_pages'),

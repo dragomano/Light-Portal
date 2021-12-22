@@ -35,7 +35,7 @@ return [
 		}',
 	'extra_settings' => '
 		{
-			element: document.getElementById("setting_lp_show_page_permissions").parentNode.parentNode,
+			element: document.getElementById("setting_lp_show_tags_on_page").parentNode.parentNode,
 			intro: "' . $txt['lp_hello_portal']['extra_settings_tour'][0] . '",
 			position: "right"
 		},

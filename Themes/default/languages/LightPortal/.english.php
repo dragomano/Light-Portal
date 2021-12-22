@@ -81,8 +81,6 @@ $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP 
 $txt['lp_extra'] = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
-$txt['lp_show_page_permissions'] = 'Show information about the page permissions';
-$txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
 $txt['lp_page_og_image'] = 'Use an image from the page content';
 $txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
