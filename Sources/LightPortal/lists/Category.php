@@ -25,7 +25,7 @@ final class Category implements PageListInterface
 {
 	public function show()
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $scripturl, $txt, $modSettings;
 
 		if (Helper::request()->has('id') === false)
 			$this->showAll();
@@ -33,7 +33,8 @@ final class Category implements PageListInterface
 		$context['lp_category'] = Helper::request('id');
 
 		if (array_key_exists($context['lp_category'], Helper::getAllCategories()) === false) {
-			$this->changeBackButton();
+			$context['error_link'] = $scripturl . '?action=' . LP_ACTION . ';sa=categories';
+			$txt['back'] = $txt['lp_all_categories'];
 			fatal_lang_error('lp_category_not_found', false, null, 404);
 		}
 
@@ -457,22 +458,5 @@ final class Category implements PageListInterface
 		$smcFunc['lp_num_queries']++;
 
 		return (int) $priority;
-	}
-
-	/**
-	 * Change back button text and back button href
-	 *
-	 * Меняем текст и href кнопки «Назад»
-	 */
-	private function changeBackButton()
-	{
-		global $txt;
-
-		addInlineJavaScript('
-		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		if (! document.referrer) {
-			backButton.text = "' . $txt['lp_all_categories'] . '";
-			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=categories");
-		}', true);
 	}
 }

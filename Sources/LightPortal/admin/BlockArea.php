@@ -967,7 +967,7 @@ final class BlockArea
 		);
 
 		if (empty($smcFunc['db_num_rows']($request))) {
-			$this->changeBackButton();
+			$context['error_link'] = $scripturl . '?action=admin;area=lp_blocks';
 			fatal_lang_error('lp_block_not_found', false, null, 404);
 		}
 
@@ -1011,19 +1011,6 @@ final class BlockArea
 		$smcFunc['lp_num_queries']++;
 
 		return $data ?? [];
-	}
-
-	/**
-	 * Change back button position and back button href
-	 *
-	 * Меняем положение и href кнопки «Назад»
-	 */
-	private function changeBackButton()
-	{
-		addInlineJavaScript('
-		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		backButton.setAttribute("href", smf_scripturl + "?action=admin;area=lp_blocks");
-		backButton.className = "button floatnone";', true);
 	}
 
 	/**

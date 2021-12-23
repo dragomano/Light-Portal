@@ -43,17 +43,17 @@ final class Page
 		}
 
 		if (empty($context['lp_page'])) {
-			$this->changeBackButton();
+			$this->changeErrorPage();
 			fatal_lang_error('lp_page_not_found', false, null, 404);
 		}
 
 		if (empty($context['lp_page']['can_view'])) {
-			$this->changeBackButton();
+			$this->changeErrorPage();
 			fatal_lang_error('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($context['lp_page']['status']) && empty($context['lp_page']['can_edit'])) {
-			$this->changeBackButton();
+			$this->changeErrorPage();
 			fatal_lang_error('lp_page_not_activated', false);
 		}
 
@@ -424,25 +424,17 @@ final class Page
 			$items[$row['page_id']]['teaser'] = Helper::getTeaser($row['description'] ?: $row['content']);
 	}
 
-	/**
-	 * Change back button text and back button href
-	 *
-	 * Меняем текст и href кнопки «Назад»
-	 */
-	private function changeBackButton()
+	private function changeErrorPage()
 	{
-		global $modSettings, $txt;
+		global $context, $scripturl, $txt, $modSettings;
 
-		addInlineJavaScript('
-		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		if (! document.referrer) {
-			backButton.setAttribute("href", smf_scripturl);
-			backButton.text = "' . (empty($modSettings['lp_frontpage_mode']) ? $txt['lp_forum'] : $txt['lp_portal']) . '";
-			if (document.location.href == smf_scripturl && backButton.text == "' . $txt['lp_portal'] . '") {
-				backButton.setAttribute("href", smf_scripturl + "?action=forum");
-				backButton.text = "' . $txt['lp_forum'] . '";
-			}
-		}', true);
+		$context['error_link'] = $scripturl;
+		$txt['back'] = empty($modSettings['lp_frontpage_mode']) ? $txt['lp_forum'] : $txt['lp_portal'];
+
+		if ($txt['back'] === $txt['lp_portal']) {
+			$txt['back'] = $txt['lp_forum'];
+			$context['error_link'] .= '">' . $txt['lp_portal'] . '</a><a class="button floatnone" href="' . $scripturl . '?action=forum';
+		}
 	}
 
 	private function setMeta()

@@ -25,7 +25,7 @@ final class Tag implements PageListInterface
 {
 	public function show()
 	{
-		global $context, $txt, $scripturl, $modSettings;
+		global $context, $scripturl, $txt, $modSettings;
 
 		$context['lp_tag'] = Helper::request('id', 0);
 
@@ -33,7 +33,8 @@ final class Tag implements PageListInterface
 			$this->showAll();
 
 		if (array_key_exists($context['lp_tag'], Helper::getAllTags()) === false) {
-			$this->changeBackButton();
+			$context['error_link'] = $scripturl . '?action=' . LP_ACTION . ';sa=tags';
+			$txt['back'] = $txt['lp_all_page_tags'];
 			fatal_lang_error('lp_tag_not_found', false, null, 404);
 		}
 
@@ -278,22 +279,5 @@ final class Tag implements PageListInterface
 		$smcFunc['lp_num_queries']++;
 
 		return $items;
-	}
-
-	/**
-	 * Change back button text and back button href
-	 *
-	 * Меняем текст и href кнопки «Назад»
-	 */
-	private function changeBackButton()
-	{
-		global $txt;
-
-		addInlineJavaScript('
-		const backButton = document.querySelector("#fatal_error + .centertext > a.button");
-		if (! document.referrer) {
-			backButton.text = "' . $txt['lp_all_page_tags'] . '";
-			backButton.setAttribute("href", smf_scripturl + "?action=' . LP_ACTION . ';sa=tags");
-		}', true);
 	}
 }
