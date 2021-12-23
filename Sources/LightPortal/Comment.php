@@ -334,7 +334,7 @@ final class Comment
 	 */
 	private function makeNotify(string $type, string $action, array $options = [])
 	{
-		global $smcFunc, $user_info, $context;
+		global $smcFunc, $user_info, $context, $user_profile;
 
 		if (empty($options))
 			return;
@@ -360,7 +360,8 @@ final class Comment
 					'content_action' => $action,
 					'extra'          => $smcFunc['json_encode']([
 						'content_subject' => $options['title'],
-						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item']
+						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item'],
+                        'sender_gender'   => $user_profile[$user_info['id']]['options']['cust_gender'] === 'Female' ? 'female' : 'male'
 					])
 				]),
 			),

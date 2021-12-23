@@ -287,9 +287,17 @@ $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
 // Comment alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';
-$txt['alert_new_comment_page_comment'] = '{member_link} left a comment {page_comment_new_comment}';
+$txt['alert_new_comment_page_comment'] = '{gender, select,
+	female {{member_link} left a comment {content_subject}}
+	male   {{member_link} left a comment {content_subject}}
+	other  {{member_link} left a comment {content_subject}}
+}';
 $txt['alert_page_comment_reply'] = 'When my comment gets a reply';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your comment {page_comment_reply_new_reply}';
+$txt['alert_new_reply_page_comment_reply'] = '{gender, select,
+	female {{member_link} left a reply on your comment {content_subject}}
+	male   {{member_link} left a reply on your comment {content_subject}}
+	other  {{member_link} left a reply on your comment {content_subject}}
+}';
 
 // Errors
 $txt['lp_page_not_found'] = 'Page not found!';
@@ -341,82 +349,31 @@ $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post 
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units
-$txt['lp_months_set'] = '{months, plural,
-	one {a month}
-	other {# months}
-}';
-$txt['lp_days_set'] = '{days, plural,
-	one {a day}
-	other {# days}
-}';
-$txt['lp_hours_set'] = '{hours, plural,
-	one {an hour}
-	other {# hours}
-}';
-$txt['lp_minutes_set'] = '{minutes, plural,
-	one {a minute}
-	other {# minutes}
-}';
-$txt['lp_seconds_set'] = '{seconds, plural,
-	one {a second}
-	other {# seconds}
-}';
+$txt['lp_months_set'] = '{months, plural, one {a month} other {# months}}';
+$txt['lp_days_set'] = '{days, plural, one {a day} other {# days}}';
+$txt['lp_hours_set'] = '{hours, plural, one {an hour} other {# hours}}';
+$txt['lp_minutes_set'] = '{minutes, plural, one {a minute} other {# minutes}}';
+$txt['lp_seconds_set'] = '{seconds, plural, one {a second} other {# seconds}}';
 $txt['lp_tomorrow'] = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now'] = 'Just now';
 $txt['lp_time_label_in'] = 'In %1$s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
-$txt['lp_posts_set'] = '{posts, plural,
-	one {# post}
-	other {# posts}
-}';
-$txt['lp_replies_set'] = '{replies, plural,
-	one {# reply}
-	other {# replies}
-}';
-$txt['lp_views_set'] = '{views, plural,
-	one {# view}
-	other {# views}
-}';
-$txt['lp_comments_set'] = '{comments, plural,
-	one {# comment}
-	other {# comments}
-}';
-$txt['lp_articles_set'] = '{articles, plural,
-	one {# article}
-	other {# articles}
-}';
+$txt['lp_posts_set'] = '{posts, plural, one {# post} other {# posts}}';
+$txt['lp_replies_set'] = '{replies, plural, one {# reply} other {# replies}}';
+$txt['lp_views_set'] = '{views, plural, one {# view} other {# views}}';
+$txt['lp_comments_set'] = '{comments, plural, one {# comment} other {# comments}}';
+$txt['lp_articles_set'] = '{articles, plural, one {# article} other {# articles}}';
 
 // Other units
-$txt['lp_pages_set'] = '{pages, plural,
-	one {# page}
-	other {# pages}
-}';
-$txt['lp_blocks_set'] = '{blocks, plural,
-	one {# block}
-	other {# blocks}
-}';
-$txt['lp_users_set'] = '{users, plural,
-	one {# user}
-	other {# users}
-}';
-$txt['lp_guests_set'] = '{guests, plural,
-	one {# guest}
-	other {# guests}
-}';
-$txt['lp_spiders_set'] = '{spiders, plural,
-	one {# spider}
-	other {# spiders}
-}';
-$txt['lp_hidden_set'] = '{hidden, plural,
-	one {# hidden}
-	other {# hidden}
-}';
-$txt['lp_buddies_set'] = '{buddies, plural,
-	one {# buddy}
-	other {# buddies}
-}';
+$txt['lp_pages_set'] = '{pages, plural, one {# page} other {# pages}}';
+$txt['lp_blocks_set'] = '{blocks, plural, one {# block} other {# blocks}}';
+$txt['lp_users_set'] = '{users, plural, one {# user} other {# users}}';
+$txt['lp_guests_set'] = '{guests, plural, one {# guest} other {# guests}}';
+$txt['lp_spiders_set'] = '{spiders, plural, one {# spider} other {# spiders}}';
+$txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
+$txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
 
 // Packages
 $txt['lp_addon_package'] = 'Light Portal addons';

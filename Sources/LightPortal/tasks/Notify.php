@@ -30,7 +30,7 @@ final class Notify extends \SMF_BackgroundTask
 		require_once $sourcedir . '/Subs-Members.php';
 		$members = membersAllowedTo('light_portal_view');
 
-		$this->_details['content_type'] == 'new_comment'
+		$this->_details['content_type'] === 'new_comment'
 			? $members = array_intersect($members, [$this->_details['author_id']])
 			: $members = array_intersect($members, [$this->_details['commentator_id']]);
 
@@ -39,14 +39,14 @@ final class Notify extends \SMF_BackgroundTask
 			$members = array_diff($members, array($this->_details['sender_id']));
 
 		require_once $sourcedir . '/Subs-Notify.php';
-		$prefs = getNotifyPrefs($members, $this->_details['content_type'] == 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
+		$prefs = getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
 
 		if (! empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
 			loadMemberData($this->_details['sender_id'], false, 'minimal');
 
-			! empty($user_profile[$this->_details['sender_id']])
-				? $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name']
-				: $this->_details['sender_id'] = 0;
+            empty($user_profile[$this->_details['sender_id']])
+                ? $this->_details['sender_id'] = 0
+                : $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
 		}
 
 		$alert_bits = array(

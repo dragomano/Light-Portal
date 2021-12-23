@@ -387,29 +387,26 @@ final class Integration
 	 *
 	 * Добавляем оповещение о новых комментариях
 	 */
-	public function fetchAlerts(array &$alerts, array &$formats)
+	public function fetchAlerts(array &$alerts)
 	{
-		global $user_info;
+		global $user_info, $scripturl;
 
 		if (empty($alerts))
 			return;
 
 		foreach ($alerts as $id => $alert) {
-			if ($alert['content_action'] === 'page_comment' || $alert['content_action'] === 'page_comment_reply') {
-				if ($alert['sender_id'] != $user_info['id']) {
+			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply'])) {
+				if ($alert['sender_id'] !== $user_info['id']) {
 					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on') . '"></span>';
+                    $alerts[$id]['text'] = Helper::getSmartContext('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
 
-					$formats['page_comment_new_comment'] = array(
-						'required' => array('content_subject', 'content_link'),
-						'link'     => '<a href="%2$s">%1$s</a>',
-						'text'     => '<strong>%1$s</strong>'
-					);
+                    $substitutions = array(
+                        '{member_link}' => ! empty($alert['sender_id']) && $alert['show_links'] ? '<a href="' . $scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
+                        '{content_subject}' => $alert['extra']['content_subject']
+                    );
 
-					$formats['page_comment_reply_new_reply'] = array(
-						'required' => array('content_subject', 'content_link'),
-						'link'     => '<a href="%2$s">%1$s</a>',
-						'text'     => '<strong>%1$s</strong>'
-					);
+                    $alerts[$id]['text'] = strtr($alerts[$id]['text'], $substitutions);
+                    $alerts[$id]['target_href'] = $alert['extra']['content_link'];
 				} else {
 					unset($alerts[$id]);
 				}
