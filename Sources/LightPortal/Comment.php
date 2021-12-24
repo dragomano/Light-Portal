@@ -64,7 +64,7 @@ final class Comment
 
 		$txt['lp_comments'] = Helper::getSmartContext('lp_comments_set', ['comments' => sizeof($comments)]);
 
-		$limit = $modSettings['lp_num_comments_per_page'] ?? 10;
+		$limit = (int) $modSettings['lp_num_comments_per_page'] ?? 10;
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 

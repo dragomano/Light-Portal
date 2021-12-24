@@ -96,9 +96,7 @@ final class Helper
 		Addon::run('prepareIconList', array(&$all_icons, &$template));
 
 		$all_icons = $all_icons ?: Helper::getFaIcons();
-		$all_icons = array_filter($all_icons, function ($item) use ($search) {
-			return strpos($item, $search) !== false;
-		});
+		$all_icons = array_filter($all_icons, fn($item) => strpos($item, $search) !== false);
 
 		$results = [];
 		foreach ($all_icons as $icon) {
@@ -142,26 +140,26 @@ final class Helper
 	}
 
 	/**
-	 * Get the time in the format "Yesterday", "Today", "X minutes ago", etc.
+	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
 	 *
-	 * Получаем время в формате «Вчера», «Сегодня», «X минут назад» и т. д.
+	 * Получаем время в формате «Вчера в ...», «Сегодня в ...», «X минут назад» и т. д.
 	 */
-	public static function getFriendlyTime(int $timestamp, bool $use_time_offset = false): string
+	public static function getFriendlyTime(int $timestamp): string
 	{
-		global $modSettings, $user_info, $txt, $smcFunc;
+		global $user_settings, $txt, $smcFunc;
 
-		$currentTime = time();
+		$now = time();
 
-		$tm = date('H:i', $timestamp); // Use 'g:i a' for am/pm
-		$d  = date('j', $timestamp);
-		$m  = date('m', $timestamp);
-		$y  = date('Y', $timestamp);
+		$dateTime = new \DateTime;
+		$dateTime->setTimestamp($timestamp);
+		$dateTime->setTimezone(new \DateTimeZone($user_settings['timezone']));
 
-		if ($use_time_offset)
-			$timestamp = $timestamp - $user_info['time_offset'] * 3600;
+		$t = $dateTime->format('H:i');
+		$d = $dateTime->format('j');
+		$m = $dateTime->format('m');
+		$y = $dateTime->format('Y');
 
-		// Difference between current time and $timestamp
-		$timeDifference = $currentTime - $timestamp;
+		$timeDifference = $now - $timestamp;
 
 		// Just now?
 		if (empty($timeDifference))
@@ -170,42 +168,34 @@ final class Helper
 		// Future time?
 		if ($timeDifference < 0) {
 			// like "Tomorrow at ..."
-			if ($d.$m.$y == date('jmY', strtotime('+1 day')))
-				return $txt['lp_tomorrow'] . $tm;
+			if ($d.$m.$y === date('jmY', strtotime('+1 day')))
+				return $txt['lp_tomorrow'] . $t;
 
-			$days = floor(($timestamp - $currentTime) / 60 / 60 / 24);
 			// like "In n days"
+			$days = floor(($timestamp - $now) / 60 / 60 / 24);
 			if ($days > 1) {
 				if ($days < 7)
 					return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_days_set', compact('days')));
 
 				// Future date in current month
-				if ($m == date('m', $currentTime) && $y == date('Y', $currentTime))
-					return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+				if ($m === date('m', $now) && $y === date('Y', $now))
+					return self::getLocalDate($timestamp, 'full');
 				// Future date in current year
-				elseif ($y == date('Y', $currentTime))
-					return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+				elseif ($y === date('Y', $now))
+					return self::getLocalDate($timestamp, 'medium');
 
 				// Other future date
-				return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
+				return self::getLocalDate($timestamp, 'long', 'none');
 			}
 
-			$hours = ($timestamp - $currentTime) / 60 / 60;
-			// like "In an hour"
-			if ($hours == 1)
-				return sprintf($txt['lp_time_label_in'], $txt['lp_hours_set'][0]);
-
 			// like "In n hours"
-			if ($hours > 1)
-				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_hours_set', compact('hours')));
-
-			$minutes = ($timestamp - $currentTime) / 60;
-			// like "In a minute"
-			if ($minutes == 1)
-				return sprintf($txt['lp_time_label_in'], explode(',', $txt['lp_minutes_set'])[0]);
+			$hours = ($timestamp - $now) / 60 / 60;
+			if ($hours >= 1)
+				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_hours_set', ['hours' => ceil($hours)]));
 
 			// like "In n minutes"
-			if ($minutes > 1)
+			$minutes = ($timestamp - $now) / 60;
+			if ($minutes >= 1)
 				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_minutes_set', ['minutes' => ceil($minutes)]));
 
 			// like "In n seconds"
@@ -213,49 +203,64 @@ final class Helper
 		}
 
 		// Less than an hour
-		$last_minutes = round($timeDifference / 60);
+		$lastMinutes = round($timeDifference / 60);
 
 		// like "n seconds ago"
 		if ($timeDifference < 60)
-			return self::getSmartContext('lp_seconds_set', ['seconds' => $timeDifference]) . $txt['lp_time_label_ago'];
-		// like "A minute ago"
-		elseif ($last_minutes == 1)
-			return $smcFunc['ucfirst'](explode(',', $txt['lp_minutes_set'])[0]) . $txt['lp_time_label_ago'];
+			return $smcFunc['ucfirst'](self::getSmartContext('lp_seconds_set', ['seconds' => $timeDifference])) . $txt['lp_time_label_ago'];
 		// like "n minutes ago"
-		elseif ($last_minutes < 60)
-			return self::getSmartContext('lp_minutes_set', ['minutes' => (int) $last_minutes]) . $txt['lp_time_label_ago'];
+		elseif ($lastMinutes < 60)
+			return $smcFunc['ucfirst'](self::getSmartContext('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $txt['lp_time_label_ago'];
 		// like "Today at ..."
-		elseif ($d.$m.$y == date('jmY', $currentTime))
-			return $txt['today'] . $tm;
+		elseif ($d.$m.$y === date('jmY', $now))
+			return $txt['today'] . $t;
 		// like "Yesterday at ..."
-		elseif ($d.$m.$y == date('jmY', strtotime('-1 day')))
-			return $txt['yesterday'] . $tm;
+		elseif ($d.$m.$y === date('jmY', strtotime('-1 day')))
+			return $txt['yesterday'] . $t;
 		// like "Tuesday, 20 February, H:m" (current month)
-		elseif ($m == date('m', $currentTime) && $y == date('Y', $currentTime))
-			return $txt['days'][date('w', $timestamp)] . ', ' . self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+		elseif ($m === date('m', $now) && $y === date('Y', $now))
+			return self::getLocalDate($timestamp);
 		// like "20 February, H:m" (current year)
-		elseif ($y == date('Y', $currentTime))
-			return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $tm);
+		elseif ($y === date('Y', $now))
+			return self::getLocalDate($timestamp);
 
 		// like "20 February 2019" (last year)
-		return self::getDateFormat($d, $txt['months'][date('n', $timestamp)], $y);
+		return self::getLocalDate($timestamp, 'long', 'none');
 	}
 
-	/**
-	 * Get a string with the day and month in European or American format
-	 *
-	 * Получаем запись дня и месяца в европейском или американском формате
-	 */
-	public static function getDateFormat(string $day, string $month, string $postfix): string
+	public static function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
 	{
 		global $txt;
 
-		$comma = strpos($postfix, ":") === false ? ' ' : ', ';
+		if (extension_loaded('intl')) {
+			return (new \IntlDateFormatter($txt['lang_locale'], self::getPredefinedConstant($dateType), self::getPredefinedConstant($timeType)))->format($timestamp);
+		}
 
-		if ($txt['lang_locale'] == 'en_US')
-			return $month . ' ' . $day . $comma . $postfix;
+		log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
 
-		return $day . ' ' . $month . $comma . $postfix;
+		return '';
+	}
+
+	/**
+	 * @see https://www.php.net/manual/en/class.intldateformatter.php
+	 */
+	private static function getPredefinedConstant(string $type): int
+	{
+		switch ($type) {
+			case 'full':
+				$const = \IntlDateFormatter::FULL;
+				break;
+			case 'long':
+				$const = \IntlDateFormatter::LONG;
+				break;
+			case 'medium':
+				$const = \IntlDateFormatter::MEDIUM;
+				break;
+			default:
+				$const = \IntlDateFormatter::NONE;
+		}
+
+		return $const;
 	}
 
 	public static function createBbcEditor(string $content = '')
@@ -672,6 +677,12 @@ final class Helper
 	{
 		global $txt;
 
-		return \MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?: '';
+		if (extension_loaded('intl')) {
+			return \MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
+		}
+
+		log_error('[LP] getSmartContext helper: enable intl extension', 'critical');
+
+		return '';
 	}
 }

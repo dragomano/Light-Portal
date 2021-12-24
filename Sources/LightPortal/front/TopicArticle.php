@@ -165,7 +165,7 @@ class TopicArticle extends AbstractArticle
 				}
 
 				if (! empty($modSettings['lp_show_teaser']))
-					$topics[$row['id_topic']]['teaser'] = Helper::getTeaser(! empty($modSettings['lp_frontpage_article_sorting']) ? $body : $last_body);
+					$topics[$row['id_topic']]['teaser'] = Helper::getTeaser(empty($modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
 
 				if (! empty($row['new_from']) && $row['new_from'] <= $row['id_msg_modified'])
 					$topics[$row['id_topic']]['link'] = $scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';

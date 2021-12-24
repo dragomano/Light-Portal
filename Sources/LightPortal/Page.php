@@ -179,7 +179,7 @@ final class Page
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-			WHERE p.' . (! empty($params['alias']) ? 'alias = {string:alias}' : 'page_id = {int:item}'),
+			WHERE p.' . (empty($params['alias']) ? 'page_id = {int:item}' : 'alias = {string:alias}'),
 			array_merge(
 				$params,
 				array(
@@ -216,8 +216,8 @@ final class Page
 				'permissions' => (int) $row['permissions'],
 				'status'      => (int) $row['status'],
 				'num_views'   => (int) $row['num_views'],
-				'date'        => date('Y-m-d', (int) $row['created_at']),
-				'time'        => date('H:i', (int) $row['created_at']),
+				'date'        => $row['created_at'] >= time() ? date('Y-m-d', (int) $row['created_at']) : null,
+				'time'        => $row['created_at'] >= time() ? date('H:i', (int) $row['created_at']) : null,
 				'created_at'  => (int) $row['created_at'],
 				'updated_at'  => (int) $row['updated_at'],
 				'image'       => $og_image

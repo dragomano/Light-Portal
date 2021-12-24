@@ -34,11 +34,11 @@ function template_show_page()
 	<section itemscope itemtype="https://schema.org/Article">
 		<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="', $context['canonical_url'], '" content="', $context['canonical_url'], '">';
 
-	if (! empty($context['lp_page']['options']['show_title']) || ! empty($context['lp_page']['options']['show_author_and_date'])) {
+	if (! isset($context['lp_page']['options']['show_title']) || ! empty($context['lp_page']['options']['show_title']) || ! empty($context['lp_page']['options']['show_author_and_date'])) {
 		echo '
 		<div id="display_head" class="windowbg">';
 
-		if (! empty($context['lp_page']['options']['show_title'])) {
+		if (! isset($context['lp_page']['options']['show_title']) || ! empty($context['lp_page']['options']['show_title'])) {
 			echo '
 			<h2 class="display_title" itemprop="headline">
 				<span id="top_subject">', $context['page_title'], '</span>

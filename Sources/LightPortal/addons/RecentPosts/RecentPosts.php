@@ -227,7 +227,7 @@ class RecentPosts extends Plugin
 				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
 
 			echo '
-				<br><span class="smalltext">', Helper::getFriendlyTime($post['timestamp'], true), '</span>
+				<br><span class="smalltext">', Helper::getFriendlyTime($post['timestamp']), '</span>
 			</li>';
 		}
 

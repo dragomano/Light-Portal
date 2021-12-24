@@ -205,7 +205,7 @@ class RecentTopics extends Plugin
 				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
 
 				echo '
-				<br><span class="smalltext">', Helper::getFriendlyTime($topic['timestamp'], true), '</span>
+				<br><span class="smalltext">', Helper::getFriendlyTime($topic['timestamp']), '</span>
 			</li>';
 			}
 		}

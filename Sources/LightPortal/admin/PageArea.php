@@ -627,7 +627,7 @@ final class PageArea
 			'status'      => $context['lp_current_page']['status'] ?? (int) allowedTo('light_portal_approve_pages'),
 			'created_at'  => $context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $context['lp_current_page']['date'] ?? date('Y-m-d'),
-			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i'),
+			'time'        => $post_data['time'] ?? $context['lp_current_page']['time'] ?? date('H:i', strtotime('+1 minute')),
 			'content'     => $post_data['content'] ?? $context['lp_current_page']['content'] ?? '',
 			'options'     => $options
 		);
@@ -1045,8 +1045,8 @@ final class PageArea
 				'type'        => 'string',
 				'permissions' => 'int',
 				'status'      => 'int',
-				'created_at'  => 'int'
-			), $db_type == 'postgresql' ? array('page_id' => 'int') : array()),
+				'created_at'  => 'int',
+			), $db_type === 'postgresql' ? array('page_id' => 'int') : array()),
 			array_merge(array(
 				$context['lp_page']['category'],
 				$context['lp_page']['page_author'],
@@ -1057,7 +1057,7 @@ final class PageArea
 				$context['lp_page']['permissions'],
 				$context['lp_page']['status'],
 				$this->getPublishTime()
-			), $db_type == 'postgresql' ? array($this->getAutoIncrementValue()) : array()),
+			), $db_type === 'postgresql' ? array($this->getAutoIncrementValue()) : array()),
 			array('page_id'),
 			1
 		);
@@ -1103,7 +1103,7 @@ final class PageArea
 				'permissions' => $context['lp_page']['permissions'],
 				'status'      => $context['lp_page']['status'],
 				'created_at'  => ! empty($context['lp_page']['date']) && ! empty($context['lp_page']['time']) ? $this->getPublishTime() : $context['lp_page']['created_at'],
-				'updated_at'  => time()
+				'updated_at'  => time(),
 			)
 		);
 
