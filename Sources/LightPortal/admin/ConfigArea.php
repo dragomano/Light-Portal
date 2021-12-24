@@ -241,8 +241,6 @@ final class ConfigArea
 			array('large_text', 'lp_frontpage_topics', 'subtext' => $txt['lp_frontpage_topics_subtext']),
 			array('check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'),
 			array('text', 'lp_image_placeholder', '80" placeholder="' . $txt['lp_example'] . $settings['default_images_url'] . '/smflogo.svg'),
-			array('select', 'lp_frontpage_time_format', $txt['lp_frontpage_time_format_set']),
-			array('text', 'lp_frontpage_custom_time_format', 'help' => 'lp_frontpage_custom_time_format_help'),
 			array('check', 'lp_show_teaser'),
 			array('check', 'lp_show_author', 'help' => 'lp_show_author_help'),
 			array('check', 'lp_show_num_views_and_comments'),

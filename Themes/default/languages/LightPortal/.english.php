@@ -44,10 +44,6 @@ $txt['lp_frontpage_topics_subtext'] = 'IDs of the required topics, separated by 
 $txt['lp_show_images_in_articles'] = 'Show images that found in articles';
 $txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
-$txt['lp_frontpage_time_format'] = 'Time format in the article cards';
-$txt['lp_frontpage_time_format_set'] = array('Full (LP style)', 'As in the forum', 'Own format');
-$txt['lp_frontpage_custom_time_format'] = 'Own time format';
-$txt['lp_frontpage_custom_time_format_help'] = 'See the list of possible parameters in the <a class="bbc_link" href="https://www.php.net/manual/en/datetime.format.php">documentation</a>.';
 $txt['lp_show_teaser'] = 'Show the article summary';
 $txt['lp_show_author'] = 'Show the article author';
 $txt['lp_show_author_help'] = 'If the board card is displayed, it will be information about the category.';

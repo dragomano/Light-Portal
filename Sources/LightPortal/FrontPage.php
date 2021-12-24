@@ -174,26 +174,6 @@ final class FrontPage
 	}
 
 	/**
-	 * Get the formatted date for the portal cards
-	 *
-	 * Получаем отформатированную дату для карточек портала
-	 */
-	public function getCardDate(int $date): string
-	{
-		global $modSettings;
-
-		if (empty($modSettings['lp_frontpage_time_format'])) {
-			return Helper::getFriendlyTime($date);
-		}
-
-		if ($modSettings['lp_frontpage_time_format'] == 1) {
-			return timeformat($date, true);
-		}
-
-		return date($modSettings['lp_frontpage_custom_time_format'] ?? 'F j, Y', $date);
-	}
-
-	/**
 	 * Get the sort condition for SQL
 	 *
 	 * Получаем условие сортировки для SQL
@@ -235,8 +215,7 @@ final class FrontPage
 
 			if (! empty($item['date'])) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
-
-				$item['date'] = $this->getCardDate((int) $item['date']);
+				$item['date'] = Helper::getFriendlyTime((int) $item['date']);
 			}
 
 			$item['msg_link'] ??= $item['link'];

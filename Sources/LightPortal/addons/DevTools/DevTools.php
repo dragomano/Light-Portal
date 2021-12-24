@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 25.12.21
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -63,7 +63,7 @@ class DevTools extends Plugin
 						'name'   => $users[$id]['first_name'] . ' ' . $users[$id]['last_name'],
 						'avatar' => $users[$id]['avatar']
 					),
-					'date'      => (new FrontPage)->getCardDate($date),
+					'date'      => Helper::getFriendlyTime($date),
 					'title'     => shorten_subject(Lorem::ipsum(1), 40),
 					'link'      => $link = $scripturl . '?topic=' . $article['id'] . '.0',
 					'is_new'    => rand(0, 1),

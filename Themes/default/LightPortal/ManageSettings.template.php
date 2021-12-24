@@ -7,14 +7,14 @@ function template_lp_basic_settings_below()
 	global $txt, $scripturl, $modSettings;
 
 	// Frontpage mode toggle
-	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
 	$fpModeToggleDt = [];
 	foreach ($fpModeToggle as $item) {
 		$fpModeToggleDt[] = 'setting_' . $item;
 	}
 
-	$fpAliasToggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
+	$fpAliasToggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
 	$fpAliasToggleDt = [];
 	foreach ($fpAliasToggle as $item) {
@@ -79,21 +79,6 @@ function template_lp_basic_settings_below()
 		$("#lp_frontpage_mode").on("change", function () {
 			toggleFrontpageMode();
 			toggleTimeFormat();
-		});';
-
-	// Time format toggle
-	echo '
-		function toggleTimeFormat() {
-			let change_mode = $("#lp_frontpage_time_format").val() == 2;
-
-			$("#lp_frontpage_custom_time_format").closest("dd").toggle(change_mode);
-			$("#setting_lp_frontpage_custom_time_format").closest("dt").toggle(change_mode);
-		};
-
-		toggleTimeFormat();
-
-		$("#lp_frontpage_time_format").on("change", function () {
-			toggleTimeFormat()
 		});';
 
 	// Standalone mode toggle
