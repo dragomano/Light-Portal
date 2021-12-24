@@ -398,15 +398,15 @@ final class Integration
 			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply'])) {
 				if ($alert['sender_id'] !== $user_info['id']) {
 					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on') . '"></span>';
-                    $alerts[$id]['text'] = Helper::getSmartContext('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
+					$alerts[$id]['text'] = Helper::getSmartContext('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
 
-                    $substitutions = array(
-                        '{member_link}' => ! empty($alert['sender_id']) && $alert['show_links'] ? '<a href="' . $scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
-                        '{content_subject}' => $alert['extra']['content_subject']
-                    );
+					$substitutions = array(
+						'{member_link}' => ! empty($alert['sender_id']) && $alert['show_links'] ? '<a href="' . $scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
+						'{content_subject}' => $alert['extra']['content_subject']
+					);
 
-                    $alerts[$id]['text'] = strtr($alerts[$id]['text'], $substitutions);
-                    $alerts[$id]['target_href'] = $alert['extra']['content_link'];
+					$alerts[$id]['text'] = strtr($alerts[$id]['text'], $substitutions);
+					$alerts[$id]['target_href'] = $alert['extra']['content_link'];
 				} else {
 					unset($alerts[$id]);
 				}

@@ -101,7 +101,7 @@ final class BlockExport extends AbstractExport
 	}
 
 	protected function getXmlFile(): string
-    {
+	{
 		global $txt;
 
 		if (empty($items = $this->getData()))

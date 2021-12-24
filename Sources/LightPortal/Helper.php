@@ -617,13 +617,13 @@ final class Helper
 		if (empty($userId))
 			return [];
 
-        if (! isset($memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
-            try {
-                loadMemberContext($userId, true);
-            } catch (\Exception $e) {
-                log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
-            }
-        }
+		if (! isset($memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
+			try {
+				loadMemberContext($userId, true);
+			} catch (\Exception $e) {
+				log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
+			}
+		}
 
 		return $memberContext[$userId]['avatar'] ?? [];
 	}
@@ -668,12 +668,10 @@ final class Helper
 	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
 	 * @see https://www.php.net/manual/en/class.messageformatter.php
 	 */
-	public static function getSmartContext(string $string, array $params = []): string
+	public static function getSmartContext(string $pattern, array $values = []): string
 	{
 		global $txt;
 
-		$string = $txt[$string] ?? $string ?? '';
-
-		return \MessageFormatter::formatMessage($txt['lang_locale'], $string, $params);
+		return \MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?: '';
 	}
 }

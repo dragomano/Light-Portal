@@ -44,9 +44,9 @@ final class Notify extends \SMF_BackgroundTask
 		if (! empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
 			loadMemberData($this->_details['sender_id'], false, 'minimal');
 
-            empty($user_profile[$this->_details['sender_id']])
-                ? $this->_details['sender_id'] = 0
-                : $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
+			empty($user_profile[$this->_details['sender_id']])
+				? $this->_details['sender_id'] = 0
+				: $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
 		}
 
 		$alert_bits = array(

@@ -54,18 +54,18 @@ class UserInfo extends Plugin
 	}
 
 	public function getData(): array
-    {
-        global $user_info, $memberContext;
+	{
+		global $user_info, $memberContext;
 
-        $loadedUserIds = loadMemberData($user_info['id']);
+		$loadedUserIds = loadMemberData($user_info['id']);
 
-        if (! isset($memberContext[$user_info['id']]) && in_array($user_info['id'], $loadedUserIds)) {
-            try {
-                loadMemberContext($user_info['id']);
-            } catch (\Exception $e) {
-                log_error('[LP] UserInfo addon: ' . $e->getMessage(), 'user');
-            }
-        }
+		if (! isset($memberContext[$user_info['id']]) && in_array($user_info['id'], $loadedUserIds)) {
+			try {
+				loadMemberContext($user_info['id']);
+			} catch (\Exception $e) {
+				log_error('[LP] UserInfo addon: ' . $e->getMessage(), 'user');
+			}
+		}
 
 		return $memberContext[$user_info['id']];
 	}

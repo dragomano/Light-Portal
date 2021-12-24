@@ -312,16 +312,16 @@ final class Category implements PageListInterface
 		if (empty($conditions))
 			return;
 
-        $smcFunc['db_query']('', '
-            UPDATE {db_prefix}lp_categories
-            SET priority = CASE ' . $conditions . ' ELSE priority END
-            WHERE category_id IN ({array_int:categories})',
-            array(
-                'categories' => $categories
-            )
-        );
+		$smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_categories
+			SET priority = CASE ' . $conditions . ' ELSE priority END
+			WHERE category_id IN ({array_int:categories})',
+			array(
+				'categories' => $categories
+			)
+		);
 
-        $smcFunc['lp_num_queries']++;
+		$smcFunc['lp_num_queries']++;
 	}
 
 	public function add(string $name, string $desc = '')

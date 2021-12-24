@@ -21,11 +21,11 @@ use Bugo\LightPortal\Front\ArticleInterface;
 final class FrontPage
 {
 	private array $modes = [
-        'all_pages'     => Front\PageArticle::class,
-        'all_topics'    => Front\TopicArticle::class,
-        'chosen_boards' => Front\BoardArticle::class,
-        'chosen_pages'  => Front\ChosenPageArticle::class,
-        'chosen_topics' => Front\ChosenTopicArticle::class,
+		'all_pages'     => Front\PageArticle::class,
+		'all_topics'    => Front\TopicArticle::class,
+		'chosen_boards' => Front\BoardArticle::class,
+		'chosen_pages'  => Front\ChosenPageArticle::class,
+		'chosen_topics' => Front\ChosenTopicArticle::class,
 	];
 
 	public function show()
@@ -34,10 +34,10 @@ final class FrontPage
 
 		isAllowedTo('light_portal_view');
 
-        if (array_key_exists($modSettings['lp_frontpage_mode'], $this->modes))
-            $this->prepare(new $this->modes[$modSettings['lp_frontpage_mode']]);
-        elseif ($modSettings['lp_frontpage_mode'] === 'chosen_page')
-            return call_user_func(array(new Page, 'show'));
+		if (array_key_exists($modSettings['lp_frontpage_mode'], $this->modes))
+			$this->prepare(new $this->modes[$modSettings['lp_frontpage_mode']]);
+		elseif ($modSettings['lp_frontpage_mode'] === 'chosen_page')
+			return call_user_func(array(new Page, 'show'));
 
 		$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -255,7 +255,7 @@ final class FrontPage
 	}
 
 	private function simplePaginate(string $url, int $total, int $limit): string
-    {
+	{
 		global $context, $txt;
 
 		$max_pages = (($total - 1) / $limit) * $limit;

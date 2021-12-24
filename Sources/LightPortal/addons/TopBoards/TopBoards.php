@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 23.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
