@@ -45,6 +45,7 @@ final class Integration
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\CreditArea::show#', false, '$sourcedir/LightPortal/CreditArea.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Admin\ConfigArea::adminAreas#', false, '$sourcedir/LightPortal/admin/ConfigArea.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Admin\ConfigArea::adminSearch#', false, '$sourcedir/LightPortal/admin/ConfigArea.php');
+		add_integration_function('integrate_helpadmin', __NAMESPACE__ . '\Admin\ConfigArea::helpadmin#', false, '$sourcedir/LightPortal/admin/ConfigArea.php');
 	}
 
 	public function autoload(array &$classMap)

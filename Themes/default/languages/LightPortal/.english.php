@@ -62,7 +62,7 @@ $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_url'] = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for instance, <strong>%1$s</strong>).<br>In this case, the forum frontpage will remain available at <strong>%2$s</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions'] = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_standalone_mode_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';

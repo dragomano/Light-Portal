@@ -123,6 +123,13 @@ final class ConfigArea
 		$settings_search[] = array(array($this, 'misc'), 'area=lp_settings;sa=misc');
 	}
 
+	public function helpadmin()
+	{
+		global $txt, $boardurl, $scripturl;
+
+		$txt['lp_standalone_url_help'] = sprintf($txt['lp_standalone_url_help'], $boardurl . '/portal.php', $scripturl);
+	}
+
 	/**
 	 * List of tabs with settings
 	 *
