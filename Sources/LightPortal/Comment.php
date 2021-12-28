@@ -347,7 +347,7 @@ final class Comment
 				'task_data'  => 'string'
 			),
 			array(
-				'task_file'  => '$sourcedir/LightPortal/tasks/Notifier.php',
+				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
 				'task_class' => '\Bugo\LightPortal\Tasks\Notifier',
 				'task_data'  => $smcFunc['json_encode']([
 					'time'           => $options['created'],

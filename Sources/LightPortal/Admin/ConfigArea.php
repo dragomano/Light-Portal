@@ -633,7 +633,7 @@ final class ConfigArea
 				$smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
-					array('$sourcedir/LightPortal/tasks/Maintainer.php', '\Bugo\LightPortal\Tasks\Maintainer', ''),
+					array('$sourcedir/LightPortal/Tasks/Maintainer.php', '\Bugo\LightPortal\Tasks\Maintainer', ''),
 					array('id_task')
 				);
 			}

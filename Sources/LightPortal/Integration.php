@@ -23,7 +23,6 @@ final class Integration
 {
 	public function hooks()
 	{
-		add_integration_function('integrate_autoload', __CLASS__ . '::autoload#', false, __FILE__);
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
 		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
@@ -48,18 +47,6 @@ final class Integration
 		add_integration_function('integrate_helpadmin', __NAMESPACE__ . '\Admin\ConfigArea::helpadmin#', false, '$sourcedir/LightPortal/admin/ConfigArea.php');
 	}
 
-	public function autoload(array &$classMap)
-	{
-		$classMap['Bugo\\LightPortal\\']         = 'LightPortal/';
-		$classMap['Bugo\\LightPortal\\Addons\\'] = 'LightPortal/addons/';
-		$classMap['Bugo\\LightPortal\\Admin\\']  = 'LightPortal/admin/';
-		$classMap['Bugo\\LightPortal\\Front\\']  = 'LightPortal/front/';
-		$classMap['Bugo\\LightPortal\\Impex\\']  = 'LightPortal/impex/';
-		$classMap['Bugo\\LightPortal\\Lists\\']  = 'LightPortal/lists/';
-		$classMap['Bugo\\LightPortal\\Tasks\\']  = 'LightPortal/tasks/';
-		$classMap['Bugo\\LightPortal\\Utils\\']  = 'LightPortal/utils/';
-	}
-
 	public function userInfo()
 	{
 		global $context, $smcFunc, $modSettings;
@@ -70,7 +57,7 @@ final class Integration
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0 alpha');
 		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-07');
-		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/addons');
+		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) $modSettings['lp_cache_update_interval'] ?? 3600);
 		defined('LP_ACTION') || define('LP_ACTION', $modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $modSettings['lp_page_param'] ?? 'page');

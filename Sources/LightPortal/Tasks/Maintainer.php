@@ -37,7 +37,7 @@ final class Maintainer extends \SMF_BackgroundTask
 				'claimed_time' => 'int'
 			),
 			array(
-				'$sourcedir/LightPortal/tasks/Maintainer.php',
+				'$sourcedir/LightPortal/Tasks/Maintainer.php',
 				__CLASS__,
 				'',
 				time() + (7 * 24 * 60 * 60)

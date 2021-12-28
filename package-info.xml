@@ -11,12 +11,12 @@
 		<require-dir name="Sources" destination="$boarddir" />
 		<require-dir name="Themes" destination="$boarddir" />
 		<require-file name="portal.php" destination="$boarddir" />
-		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks#" file="$sourcedir/LightPortal/Integration.php" />
+		<hook hook="integrate_pre_include" file="$sourcedir/LightPortal/app.php" />
 		<redirect url="?action=admin;area=lp_settings" timeout="3000" />
 	</install>
 
 	<uninstall for="2.1.*">
-		<hook hook="integrate_pre_load" function="Bugo\LightPortal\Integration::hooks#" file="$sourcedir/LightPortal/Integration.php" reverse="true" />
+		<hook hook="integrate_pre_include" file="$sourcedir/LightPortal/app.php" reverse="true" />
 		<remove-file name="$boarddir/portal.php" />
 		<remove-dir name="$themedir/LightPortal" />
 		<remove-dir name="$themedir/css/light_portal" />
