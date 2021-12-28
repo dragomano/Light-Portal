@@ -625,7 +625,7 @@ final class ConfigArea
 				DELETE FROM {db_prefix}background_tasks
 				WHERE task_class = {string:task_class}',
 				array(
-					'task_class' => '\Bugo\LightPortal\Tasks\Prune'
+					'task_class' => '\Bugo\LightPortal\Tasks\Maintainer'
 				)
 			);
 
@@ -633,7 +633,7 @@ final class ConfigArea
 				$smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					array('task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'),
-					array('$sourcedir/LightPortal/tasks/Prune.php', '\Bugo\LightPortal\Tasks\Prune', ''),
+					array('$sourcedir/LightPortal/tasks/Maintainer.php', '\Bugo\LightPortal\Tasks\Maintainer', ''),
 					array('id_task')
 				);
 			}

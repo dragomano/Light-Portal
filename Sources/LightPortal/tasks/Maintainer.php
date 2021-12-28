@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 /**
- * Prune.php
+ * Maintainer.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Tasks;
 
-final class Prune extends \SMF_BackgroundTask
+final class Maintainer extends \SMF_BackgroundTask
 {
 	public function execute(): bool
 	{
@@ -28,7 +28,7 @@ final class Prune extends \SMF_BackgroundTask
 		$this->updateNumComments();
 		$this->optimizeTables();
 
-		$smcFunc['db_insert']('insert',
+		return (bool) $smcFunc['db_insert']('insert',
 			'{db_prefix}background_tasks',
 			array(
 				'task_file'    => 'string-255',
@@ -37,15 +37,14 @@ final class Prune extends \SMF_BackgroundTask
 				'claimed_time' => 'int'
 			),
 			array(
-				'$sourcedir/LightPortal/tasks/Prune.php',
+				'$sourcedir/LightPortal/tasks/Maintainer.php',
 				__CLASS__,
 				'',
 				time() + (7 * 24 * 60 * 60)
 			),
-			array('id_task')
+			array('id_task'),
+			1
 		);
-
-		return true;
 	}
 
 	private function removeRedundantValues()

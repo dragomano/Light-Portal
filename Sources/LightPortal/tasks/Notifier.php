@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 /**
- * Notify.php
+ * Notifier.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Tasks;
 
-final class Notify extends \SMF_BackgroundTask
+final class Notifier extends \SMF_BackgroundTask
 {
 	/**
 	 * Performing the task of notifying subscribers about new comments to portal pages
