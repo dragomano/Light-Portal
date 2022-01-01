@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\{Helper, Admin\PageArea};
+use Bugo\LightPortal\Areas\PageArea;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,120 +25,116 @@ final class PageExport extends AbstractExport
 {
 	public function main()
 	{
-		global $context, $txt, $scripturl;
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_export'];
+		$this->context['page_area_title'] = $this->txt['lp_pages_export'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=export';
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_pages_export'];
-		$context['page_area_title'] = $txt['lp_pages_export'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=export';
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $txt['lp_pages_export_description']
-		);
+			'description' => $this->txt['lp_pages_export_description']
+		];
 
 		$this->run();
 
 		$pages = new PageArea();
 
-		$listOptions = array(
+		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => PageArea::NUM_PAGES,
-			'title' => $txt['lp_pages_export'],
-			'no_items_label' => $txt['lp_no_items'],
-			'base_href' => $scripturl . '?action=admin;area=lp_pages;sa=export',
+			'title' => $this->txt['lp_pages_export'],
+			'no_items_label' => $this->txt['lp_no_items'],
+			'base_href' => $this->scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
-			'get_items' => array(
-				'function' => array($pages, 'getAll')
-			),
-			'get_count' => array(
-				'function' => array($pages, 'getTotalCount')
-			),
-			'columns' => array(
-				'id' => array(
-					'header' => array(
+			'get_items' => [
+				'function' => [$pages, 'getAll']
+			],
+			'get_count' => [
+				'function' => [$pages, 'getTotalCount']
+			],
+			'columns' => [
+				'id' => [
+					'header' => [
 						'value' => '#',
 						'style' => 'width: 5%'
-					),
-					'data' => array(
+					],
+					'data' => [
 						'db'    => 'id',
 						'class' => 'centertext'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 'p.page_id',
 						'reverse' => 'p.page_id DESC'
-					)
-				),
-				'alias' => array(
-					'header' => array(
-						'value' => $txt['lp_page_alias']
-					),
-					'data' => array(
+					]
+				],
+				'alias' => [
+					'header' => [
+						'value' => $this->txt['lp_page_alias']
+					],
+					'data' => [
 						'db'    => 'alias',
 						'class' => 'centertext word_break'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 'p.alias DESC',
 						'reverse' => 'p.alias'
-					)
-				),
-				'title' => array(
-					'header' => array(
-						'value' => $txt['lp_title']
-					),
-					'data' => array(
+					]
+				],
+				'title' => [
+					'header' => [
+						'value' => $this->txt['lp_title']
+					],
+					'data' => [
                         'function' => fn($entry) => '<a class="bbc_link' . (
                             $entry['is_front']
-                                ? ' new_posts" href="' . $scripturl
-                                : '" href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
+                                ? ' new_posts" href="' . $this->scripturl
+                                : '" href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
                             ) . '">' . $entry['title'] . '</a>',
                         'class' => 'word_break'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 't.title DESC',
 						'reverse' => 't.title'
-					)
-				),
-				'actions' => array(
-					'header' => array(
+					]
+				],
+				'actions' => [
+					'header' => [
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
-					),
-					'data' => array(
+					],
+					'data' => [
 						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
-					)
-				)
-			),
-			'form' => array(
-				'href' => $scripturl . '?action=admin;area=lp_pages;sa=export'
-			),
-			'additional_rows' => array(
-				array(
+					]
+				]
+			],
+			'form' => [
+				'href' => $this->scripturl . '?action=admin;area=lp_pages;sa=export'
+			],
+			'additional_rows' => [
+				[
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . $txt['lp_export_run'] . '" class="button">
-						<input type="submit" name="export_all" value="' . $txt['lp_export_all'] . '" class="button">'
-				)
-			)
-		);
+						<input type="submit" name="export_selection" value="' . $this->txt['lp_export_run'] . '" class="button">
+						<input type="submit" name="export_all" value="' . $this->txt['lp_export_all'] . '" class="button">'
+				]
+			]
+		];
 
-		Helper::require('Subs-List');
+		$this->require('Subs-List');
 		createList($listOptions);
 
-		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'lp_pages';
+		$this->context['sub_template'] = 'show_list';
+		$this->context['default_list'] = 'lp_pages';
 	}
 
 	protected function getData(): array
 	{
-		global $smcFunc;
-
-		if (Helper::post()->isEmpty('pages') && Helper::post()->has('export_all') === false)
+		if ($this->post()->isEmpty('pages') && $this->post()->has('export_all') === false)
 			return [];
 
-		$pages = ! empty(Helper::post('pages')) && Helper::post()->has('export_all') === false ? Helper::post('pages') : null;
+		$pages = ! empty($this->post('pages')) && $this->post()->has('export_all') === false ? $this->post('pages') : null;
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -147,14 +143,14 @@ final class PageExport extends AbstractExport
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
 			WHERE p.page_id IN ({array_int:pages})'),
-			array(
+			[
 				'pages' => $pages
-			)
+			]
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['page_id']] ??= array(
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$items[$row['page_id']] ??= [
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
 				'author_id'    => $row['author_id'],
@@ -168,7 +164,7 @@ final class PageExport extends AbstractExport
 				'num_comments' => $row['num_comments'],
 				'created_at'   => $row['created_at'],
 				'updated_at'   => $row['updated_at']
-			);
+			];
 
 			if (! empty($row['lang']) && ! empty($row['title']))
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
@@ -177,18 +173,18 @@ final class PageExport extends AbstractExport
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
 			if (! empty($row['message']) && ! empty(trim($row['message']))) {
-				$items[$row['page_id']]['comments'][$row['id']] = array(
+				$items[$row['page_id']]['comments'][$row['id']] = [
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
 					'message'    => trim($row['message']),
 					'created_at' => $row['com_created_at']
-				);
+				];
 			}
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -203,19 +199,8 @@ final class PageExport extends AbstractExport
 		return $categories;
 	}
 
-	protected function getTags(): array
-	{
-		$tags = (new \Bugo\LightPortal\Lists\Tag)->getList();
-
-		ksort($tags);
-
-		return $tags;
-	}
-
 	protected function getXmlFile(): string
 	{
-		global $txt;
-
 		if (empty($items = $this->getData()))
 			return '';
 
@@ -236,7 +221,7 @@ final class PageExport extends AbstractExport
 				}
 			}
 
-			if (! empty($tags = $this->getTags())) {
+			if (! empty($tags = $this->getAllTags())) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
 				foreach ($tags as $key => $val) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
@@ -281,7 +266,7 @@ final class PageExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (\DOMException $e) {
-			log_error('[LP] ' . $txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
+			\log_error('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

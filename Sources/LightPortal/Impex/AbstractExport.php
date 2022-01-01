@@ -16,8 +16,12 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
+use Bugo\LightPortal\Helper;
+
 abstract class AbstractExport implements ExportInterface
 {
+	use Helper;
+
 	abstract protected function getData();
 
 	abstract protected function getXmlFile();

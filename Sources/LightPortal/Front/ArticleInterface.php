@@ -20,7 +20,7 @@ interface ArticleInterface
 {
 	public function init();
 
-	public function getData(int $start, int $limit);
+	public function getData(int $start, int $limit): array;
 
-	public function getTotalCount();
+	public function getTotalCount(): int;
 }

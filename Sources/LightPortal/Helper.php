@@ -18,17 +18,57 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Utils\{Cache, File, Request, Session};
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class Helper
+/**
+ * @property array $context
+ * @property array $txt
+ * @property array $smcFunc
+ * @property array $user_info
+ * @property array $user_profile
+ * @property array $user_settings
+ * @property array $modSettings
+ * @property array $settings
+ * @property array $options
+ * @property array $db_cache
+ * @property array $db_temp_cache
+ * @property string $language
+ * @property string $scripturl
+ * @property string $boardurl
+ * @property string $boarddir
+ * @property string $sourcedir
+ */
+trait Helper
 {
-	public static function cache(?string $key = null): Cache
+	/**
+	 * @return mixed
+	 */
+	public function &__get(string $name)
+	{
+		return $GLOBALS[$name];
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	public function __set(string $name, $value)
+	{
+		$GLOBALS[$name] = &$value;
+	}
+
+	public function require(string $filename)
+	{
+		if (empty($filename))
+			return;
+
+		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
+			require_once $path;
+	}
+
+	public function cache(?string $key = null): Cache
 	{
 		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
-	public static function file(?string $key = null): File
+	public function file(?string $key = null): File
 	{
 		return new File($key);
 	}
@@ -38,7 +78,7 @@ final class Helper
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function post(?string $key = null, $default = null)
+	public function post(?string $key = null, $default = null)
 	{
 		return $key ? ((new Request(true))->get($key) ?? $default) : new Request(true);
 	}
@@ -48,241 +88,243 @@ final class Helper
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public static function request(?string $key = null, $default = null)
+	public function request(?string $key = null, $default = null)
 	{
 		return $key ? ((new Request)->get($key) ?? $default) : new Request;
 	}
 
-	public static function session(): Session
+	public function session(): Session
 	{
 		return new Session;
 	}
 
-	public static function require(string $filename)
+	public function getAllTitles(string $type = 'page'): array
 	{
-		if (empty($filename))
-			return;
+		if (($titles = $this->cache()->get('all_titles')) === null) {
+			$request = $this->smcFunc['db_query']('', '
+				SELECT item_id, lang, title
+				FROM {db_prefix}lp_titles
+				WHERE type = {string:type}
+				ORDER BY lang, title',
+				[
+					'type' => $type
+				]
+			);
 
-		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
-			require_once $path;
+			$titles = [];
+			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+				if (! empty($row['lang']))
+					$titles[$row['item_id']][$row['lang']] = $row['title'];
+			}
+
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
+
+			$this->cache()->put('all_titles', $titles);
+		}
+
+		return $titles;
 	}
 
 	/**
-	 * @param array|string $data
-	 * @return void
+	 * @return mixed
 	 */
-	public static function cleanBbcode(&$data)
+	public function getAllCategories()
 	{
-		$data = preg_replace('~\[[^]]+]~', '', $data);
+		return $this->cache('all_categories')->setFallback(Lists\Category::class, 'getList');
 	}
 
-	public static function prepareIconList()
+	/**
+	 * @return mixed
+	 */
+	public function getAllTags()
 	{
-		global $smcFunc;
+		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
+	}
 
-		if (Helper::request()->has('icons') === false)
-			return;
+	public function getUserAvatar(int $userId): array
+	{
+		if (empty($userId))
+			return [];
 
-		$data = Helper::request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$search = trim($smcFunc['strtolower']($search));
-
-		$all_icons = [];
-		$template = '<i class="%1$s"></i>&nbsp;%1$s';
-
-		Addon::run('prepareIconList', array(&$all_icons, &$template));
-
-		$all_icons = $all_icons ?: Helper::getFaIcons();
-		$all_icons = array_filter($all_icons, fn($item) => strpos($item, $search) !== false);
-
-		$results = [];
-		foreach ($all_icons as $icon) {
-			$results[] = [
-				'innerHTML' => sprintf($template, $icon),
-				'text'      => $icon
-			];
+		if (! isset($this->memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
+			try {
+				\loadMemberContext($userId, true);
+			} catch (\Exception $e) {
+				\log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
+			}
 		}
 
-		exit(json_encode($results));
+		return $this->memberContext[$userId]['avatar'] ?? [];
 	}
 
-	public static function getIcon(?string $icon = ''): string
+	public function getFrontPageLayouts(): array
+	{
+		$layouts = $values = [];
+
+		$allFunctions = get_defined_functions()['user'];
+
+		\loadTemplate('LightPortal/ViewFrontPage');
+
+		// Support of custom templates
+		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
+			require_once $customTemplates;
+
+		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
+
+		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
+
+		if (! empty($matches[1])) {
+			foreach ($matches[1] as $k => $v) {
+				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
+				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
+			}
+
+			$layouts = array_combine($layouts, $values);
+		}
+
+		return $layouts;
+	}
+
+	/**
+	 * Get a list of all used classes for blocks with a header
+	 *
+	 * Получаем список всех используемых классов для блоков с заголовком
+	 */
+	public function getTitleClasses(): array
+	{
+		return [
+			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
+			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
+			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
+			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
+			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
+			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
+			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
+			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
+			''                     => '<div>%1$s</div>',
+		];
+	}
+
+	/**
+	 * Get a list of all used classes for blocks with content
+	 *
+	 * Получаем список всех используемых классов для блоков с контентом
+	 */
+	public function getContentClasses(): array
+	{
+		return [
+			'roundframe'           => '<div class="roundframe noup" %2$s>%1$s</div>',
+			'roundframe2'          => '<div class="roundframe" %2$s>%1$s</div>',
+			'windowbg'             => '<div class="windowbg noup" %2$s>%1$s</div>',
+			'windowbg2'            => '<div class="windowbg" %2$s>%1$s</div>',
+			'information'          => '<div class="information" %2$s>%1$s</div>',
+			'errorbox'             => '<div class="errorbox" %2$s>%1$s</div>',
+			'noticebox'            => '<div class="noticebox" %2$s>%1$s</div>',
+			'infobox'              => '<div class="infobox" %2$s>%1$s</div>',
+			'descbox'              => '<div class="descbox" %2$s>%1$s</div>',
+			'bbc_code'             => '<div class="bbc_code" %2$s>%1$s</div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper" %2$s>%1$s</div>',
+			''                     => '<div%2$s>%1$s</div>',
+		];
+	}
+
+	public function getBlockPlacements(): array
+	{
+		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], $this->txt['lp_block_placement_set']);
+	}
+
+	public function getPageOptions(): array
+	{
+		return array_combine(['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'], $this->txt['lp_page_options']);
+	}
+
+	public function getPluginTypes(): array
+	{
+		return array_combine(['block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'other', 'block_options', 'page_options'], $this->txt['lp_plugins_types']);
+	}
+
+	public function getContentTypes(): array
+	{
+		$types = array_combine(['bbc', 'html', 'php'], $this->txt['lp_page_types']);
+
+		return $this->user_info['is_admin'] || empty($this->modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
+	}
+
+	public function getForumThemes(): array
+	{
+		if (($themes = $this->cache()->get('forum_themes')) === null) {
+			$result = $this->smcFunc['db_query']('', '
+				SELECT id_theme, value
+				FROM {db_prefix}themes
+				WHERE variable = {literal:name}',
+				[]
+			);
+
+			$themes = [];
+			while ($row = $this->smcFunc['db_fetch_assoc']($result))
+				$themes[$row['id_theme']] = $row['value'];
+
+			$this->smcFunc['db_free_result']($result);
+			$this->context['lp_num_queries']++;
+
+			$this->cache()->put('forum_themes', $themes);
+		}
+
+		return $themes;
+	}
+
+	public function prepareForumLanguages()
+	{
+		\getLanguages();
+
+		if (empty($this->modSettings['userLanguage'])) {
+			$default_lang = $this->context['languages'][$this->language];
+			$this->context['languages'] = [];
+			$this->context['languages'][$this->language] = $default_lang;
+		}
+
+		// Move default lang to the top
+		$default_lang = $this->context['languages'][$this->language];
+		unset($this->context['languages'][$this->language]);
+		array_unshift($this->context['languages'], $default_lang);
+	}
+
+	public function getIcon(?string $icon = ''): string
 	{
 		if (empty($icon))
 			return '';
 
 		$template = '<i class="' . $icon . '"></i> ';
 
-		Addon::run('prepareIconTemplate', array(&$template, $icon));
+		(new Addon)->run('prepareIconTemplate', [&$template, $icon]);
 
 		return $template;
 	}
 
-	public static function getPreviewTitle(string $prefix = ''): string
-	{
-		global $context, $txt;
-
-		return self::getFloatSpan(
-			(! empty($prefix) ? $prefix . ' ' : '') . $context['preview_title'],
-			$context['right_to_left'] ? 'right' : 'left'
-		) . self::getFloatSpan(
-			$txt['preview'],
-			$context['right_to_left'] ? 'left' : 'right'
-		) . '<br>';
-	}
-
-	private static function getFloatSpan(string $text, string $direction = 'left'): string
-	{
-		return '<span class="float' . $direction . '">' . $text . '</span>';
-	}
-
 	/**
-	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
-	 *
-	 * Получаем время в формате «Вчера в ...», «Сегодня в ...», «X минут назад» и т. д.
+	 * @param array|string $data
+	 * @return void
 	 */
-	public static function getFriendlyTime(int $timestamp): string
+	public function cleanBbcode(&$data)
 	{
-		global $user_settings, $txt, $smcFunc;
-
-		$now = time();
-
-		$dateTime = new \DateTime;
-		$dateTime->setTimestamp($timestamp);
-		$dateTime->setTimezone(new \DateTimeZone($user_settings['timezone']));
-
-		$t = $dateTime->format('H:i');
-		$d = $dateTime->format('j');
-		$m = $dateTime->format('m');
-		$y = $dateTime->format('Y');
-
-		$timeDifference = $now - $timestamp;
-
-		// Just now?
-		if (empty($timeDifference))
-			return $txt['lp_just_now'];
-
-		// Future time?
-		if ($timeDifference < 0) {
-			// like "Tomorrow at ..."
-			if ($d.$m.$y === date('jmY', strtotime('+1 day')))
-				return $txt['lp_tomorrow'] . $t;
-
-			// like "In n days"
-			$days = floor(($timestamp - $now) / 60 / 60 / 24);
-			if ($days > 1) {
-				if ($days < 7)
-					return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_days_set', compact('days')));
-
-				// Future date in current month
-				if ($m === date('m', $now) && $y === date('Y', $now))
-					return self::getLocalDate($timestamp, 'full');
-				// Future date in current year
-				elseif ($y === date('Y', $now))
-					return self::getLocalDate($timestamp, 'medium');
-
-				// Other future date
-				return self::getLocalDate($timestamp, 'long', 'none');
-			}
-
-			// like "In n hours"
-			$hours = ($timestamp - $now) / 60 / 60;
-			if ($hours >= 1)
-				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_hours_set', ['hours' => ceil($hours)]));
-
-			// like "In n minutes"
-			$minutes = ($timestamp - $now) / 60;
-			if ($minutes >= 1)
-				return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_minutes_set', ['minutes' => ceil($minutes)]));
-
-			// like "In n seconds"
-			return sprintf($txt['lp_time_label_in'], self::getSmartContext('lp_seconds_set', ['seconds' => abs($timeDifference)]));
-		}
-
-		// Less than an hour
-		$lastMinutes = round($timeDifference / 60);
-
-		// like "n seconds ago"
-		if ($timeDifference < 60)
-			return $smcFunc['ucfirst'](self::getSmartContext('lp_seconds_set', ['seconds' => $timeDifference])) . $txt['lp_time_label_ago'];
-		// like "n minutes ago"
-		elseif ($lastMinutes < 60)
-			return $smcFunc['ucfirst'](self::getSmartContext('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $txt['lp_time_label_ago'];
-		// like "Today at ..."
-		elseif ($d.$m.$y === date('jmY', $now))
-			return $txt['today'] . $t;
-		// like "Yesterday at ..."
-		elseif ($d.$m.$y === date('jmY', strtotime('-1 day')))
-			return $txt['yesterday'] . $t;
-		// like "Tuesday, 20 February, H:m" (current month)
-		elseif ($m === date('m', $now) && $y === date('Y', $now))
-			return self::getLocalDate($timestamp);
-		// like "20 February, H:m" (current year)
-		elseif ($y === date('Y', $now))
-			return self::getLocalDate($timestamp);
-
-		// like "20 February 2019" (last year)
-		return self::getLocalDate($timestamp, 'long', 'none');
+		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
 
-	public static function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
+	public function getSnakeName(string $value): string
 	{
-		global $txt;
-
-		if (extension_loaded('intl')) {
-			return (new \IntlDateFormatter($txt['lang_locale'], self::getPredefinedConstant($dateType), self::getPredefinedConstant($timeType)))->format($timestamp);
-		}
-
-		log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
-
-		return '';
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
-	/**
-	 * @see https://www.php.net/manual/en/class.intldateformatter.php
-	 */
-	private static function getPredefinedConstant(string $type): int
+	public function getCamelName(string $value): string
 	{
-		switch ($type) {
-			case 'full':
-				$const = \IntlDateFormatter::FULL;
-				break;
-			case 'long':
-				$const = \IntlDateFormatter::LONG;
-				break;
-			case 'medium':
-				$const = \IntlDateFormatter::MEDIUM;
-				break;
-			default:
-				$const = \IntlDateFormatter::NONE;
-		}
-
-		return $const;
+		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
 	}
 
-	public static function createBbcEditor(string $content = '')
+	public function getTeaser(string $text, int $length = 150): string
 	{
-		global $context;
-
-		$editorOptions = array(
-			'id'           => 'content',
-			'value'        => $content,
-			'height'       => '1px',
-			'width'        => '100%',
-			'preview_type' => 2,
-			'required'     => true
-		);
-
-		Helper::require('Subs-Editor');
-		create_control_richedit($editorOptions);
-
-		$context['post_box_name'] = $editorOptions['id'];
-
-		addJavaScriptVar('oEditorID', $context['post_box_name'], true);
-		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $context['post_box_name'], true);
+		return \shorten_subject(strip_tags($text), $length) ?: '...';
 	}
 
 	/**
@@ -290,19 +332,17 @@ final class Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public static function canViewItem(int $permissions): bool
+	public function canViewItem(int $permissions): bool
 	{
-		global $user_info;
-
 		switch ($permissions) {
 			case 0:
-				return $user_info['is_admin'] == 1;
+				return $this->user_info['is_admin'] == 1;
 
 			case 1:
-				return $user_info['is_guest'] == 1;
+				return $this->user_info['is_guest'] == 1;
 
 			case 2:
-				return ! empty($user_info['id']);
+				return ! empty($this->user_info['id']);
 
 			default:
 				return true;
@@ -314,167 +354,42 @@ final class Helper
 	 *
 	 * Возвращает допустимый набор прав доступа текущего пользователя
 	 */
-	public static function getPermissions(): array
+	public function getPermissions(): array
 	{
-		global $user_info;
-
-		if ($user_info['is_admin'] == 1)
+		if ($this->user_info['is_admin'] == 1)
 			return [0, 1, 2, 3];
-		elseif ($user_info['is_guest'] == 1)
+		elseif ($this->user_info['is_guest'] == 1)
 			return [1, 3];
-		elseif (! empty($user_info['id']))
+		elseif (! empty($this->user_info['id']))
 			return [2, 3];
 
 		return [3];
 	}
 
-	public static function isFrontpage(string $alias): bool
+	public function isFrontpage(string $alias): bool
 	{
-		global $modSettings;
-
 		if (empty($alias))
 			return false;
 
-		return ! empty($modSettings['lp_frontpage_mode'])
-			&& $modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& ! empty($modSettings['lp_frontpage_alias'])
-			&& $modSettings['lp_frontpage_alias'] === $alias;
+		return ! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
+			&& ! empty($this->modSettings['lp_frontpage_alias']) && $this->modSettings['lp_frontpage_alias'] === $alias;
 	}
 
-	public static function getTranslatedTitle(array $titleArray): string
+	public function getTranslatedTitle(array $titleArray): string
 	{
-		global $user_info, $language;
-
 		if (empty($titleArray))
 			return '';
 
-		if (! empty($titleArray[$user_info['language']]))
-			return $titleArray[$user_info['language']];
+		if (! empty($titleArray[$this->user_info['language']]))
+			return $titleArray[$this->user_info['language']];
 
-		if (! empty($titleArray[$language]))
-			return $titleArray[$language];
+		if (! empty($titleArray[$this->language]))
+			return $titleArray[$this->language];
 
 		if (! empty($titleArray['english']))
 			return $titleArray['english'];
 
 		return '';
-	}
-
-	public static function getSnakeName(string $value): string
-	{
-		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
-	}
-
-	public static function getCamelName(string $value): string
-	{
-		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
-	}
-
-	public static function getTeaser(string $text, int $length = 150): string
-	{
-		return shorten_subject(strip_tags($text), $length) ?: '...';
-	}
-
-	public static function getForumThemes(): array
-	{
-		global $smcFunc;
-
-		$result = $smcFunc['db_query']('', '
-			SELECT id_theme, value
-			FROM {db_prefix}themes
-			WHERE variable = {literal:name}',
-			array()
-		);
-
-		$themes = [];
-		while ($row = $smcFunc['db_fetch_assoc']($result))
-			$themes[$row['id_theme']] = $row['value'];
-
-		$smcFunc['db_free_result']($result);
-		$smcFunc['lp_num_queries']++;
-
-		return $themes;
-	}
-
-	public static function prepareForumLanguages()
-	{
-		global $modSettings, $context, $language;
-
-		getLanguages();
-
-		if (empty($modSettings['userLanguage'])) {
-			$default_lang = $context['languages'][$language];
-			$context['languages'] = [];
-			$context['languages'][$language] = $default_lang;
-		}
-
-		// Move default lang to the top
-		$default_lang = $context['languages'][$language];
-		unset($context['languages'][$language]);
-		array_unshift($context['languages'], $default_lang);
-	}
-
-	public static function prepareContent(string &$content, string $type = 'bbc', int $block_id = 0, int $cache_time = 0)
-	{
-		global $context;
-
-		! empty($block_id) && ! empty($context['lp_active_blocks'][$block_id])
-			? $parameters = $context['lp_active_blocks'][$block_id]['parameters'] ?? []
-			: $parameters = $context['lp_block']['options']['parameters'] ?? [];
-
-		ob_start();
-
-		Addon::run('prepareContent', array($type, $block_id, $cache_time, $parameters));
-
-		$content = ob_get_clean();
-	}
-
-	public static function prepareBbcContent(array &$entity)
-	{
-		global $smcFunc;
-
-		if ($entity['type'] !== 'bbc')
-			return;
-
-		$entity['content'] = $smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
-
-		Helper::require('Subs-Post');
-
-		preparsecode($entity['content']);
-	}
-
-	public static function parseContent(string &$content, string $type = 'bbc')
-	{
-		if ($type === 'bbc') {
-			$content = parse_bbc($content);
-
-			// Integrate with the Paragrapher mod
-			call_integration_hook('integrate_paragrapher_string', array(&$content));
-
-			return;
-		} elseif ($type === 'html') {
-			$content = un_htmlspecialchars($content);
-
-			return;
-		} elseif ($type === 'php') {
-			$content = trim(un_htmlspecialchars($content));
-			$content = trim($content, '<?php');
-			$content = trim($content, '?>');
-
-			ob_start();
-
-			try {
-				eval(html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
-			} catch (\ParseError $p) {
-				echo $p->getMessage();
-			}
-
-			$content = ob_get_clean();
-
-			return;
-		}
-
-		Addon::run('parseContent', array(&$content, $type));
 	}
 
 	/**
@@ -486,7 +401,7 @@ final class Helper
 	 * @param string|array $type
 	 * @return mixed
 	 */
-	public static function validate(string $key, $type = 'string')
+	public function validate(string $key, $type = 'string')
 	{
 		if (is_array($type)) {
 			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
@@ -528,7 +443,7 @@ final class Helper
 	 * @param int $value
 	 * @return int|float
 	 */
-	public static function getFriendlyNumber(int $value = 0)
+	public function getFriendlyNumber(int $value = 0)
 	{
 		if ($value < 10000)
 			return $value;
@@ -547,142 +462,137 @@ final class Helper
 		return $value;
 	}
 
-	public static function getAllTitles(string $type = 'page'): array
+	public function getDateTime(int $timestamp = 0): \DateTime
 	{
-		global $smcFunc;
+		$dateTime = new \DateTime;
+		$dateTime->setTimestamp($timestamp ?: time());
+		$dateTime->setTimezone(new \DateTimeZone($this->user_settings['timezone'] ?: $this->modSettings['default_timezone']));
 
-		if (($titles = self::cache()->get('all_titles')) === null) {
-			$request = $smcFunc['db_query']('', '
-				SELECT item_id, lang, title
-				FROM {db_prefix}lp_titles
-				WHERE type = {string:type}
-				ORDER BY lang, title',
-				array(
-					'type' => $type
-				)
-			);
-
-			$titles = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request)) {
-				if (! empty($row['lang']))
-					$titles[$row['item_id']][$row['lang']] = $row['title'];
-			}
-
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
-
-			self::cache()->put('all_titles', $titles);
-		}
-
-		return $titles;
+		return $dateTime;
 	}
 
 	/**
-	 * @return mixed
+	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
+	 *
+	 * Получаем время в формате «Вчера в ...», «Сегодня в ...», «X минут назад» и т. д.
 	 */
-	public static function getAllCategories()
+	public function getFriendlyTime(int $timestamp): string
 	{
-		return self::cache('all_categories')->setFallback(Lists\Category::class, 'getList');
+		$now = time();
+
+		$dateTime = $this->getDateTime($timestamp);
+
+		$t = $dateTime->format('H:i');
+		$d = $dateTime->format('j');
+		$m = $dateTime->format('m');
+		$y = $dateTime->format('Y');
+
+		$timeDifference = $now - $timestamp;
+
+		// Just now?
+		if (empty($timeDifference))
+			return $this->txt['lp_just_now'];
+
+		// Future time?
+		if ($timeDifference < 0) {
+			// like "Tomorrow at ..."
+			if ($d.$m.$y === date('jmY', strtotime('+1 day')))
+				return $this->txt['lp_tomorrow'] . $t;
+
+			// like "In n days"
+			$days = floor(($timestamp - $now) / 60 / 60 / 24);
+			if ($days > 1) {
+				if ($days < 7)
+					return sprintf($this->txt['lp_time_label_in'], __('lp_days_set', compact('days')));
+
+				// Future date in current month
+				if ($m === date('m', $now) && $y === date('Y', $now))
+					return $this->getLocalDate($timestamp, 'full');
+				// Future date in current year
+				elseif ($y === date('Y', $now))
+					return $this->getLocalDate($timestamp, 'medium');
+
+				// Other future date
+				return $this->getLocalDate($timestamp, 'long', 'none');
+			}
+
+			// like "In n hours"
+			$hours = ($timestamp - $now) / 60 / 60;
+			if ($hours >= 1)
+				return sprintf($this->txt['lp_time_label_in'], __('lp_hours_set', ['hours' => ceil($hours)]));
+
+			// like "In n minutes"
+			$minutes = ($timestamp - $now) / 60;
+			if ($minutes >= 1)
+				return sprintf($this->txt['lp_time_label_in'], __('lp_minutes_set', ['minutes' => ceil($minutes)]));
+
+			// like "In n seconds"
+			return sprintf($this->txt['lp_time_label_in'], __('lp_seconds_set', ['seconds' => abs($timeDifference)]));
+		}
+
+		// Less than an hour
+		$lastMinutes = round($timeDifference / 60);
+
+		// like "n seconds ago"
+		if ($timeDifference < 60)
+			return $this->smcFunc['ucfirst'](__('lp_seconds_set', ['seconds' => $timeDifference])) . $this->txt['lp_time_label_ago'];
+		// like "n minutes ago"
+		elseif ($lastMinutes < 60)
+			return $this->smcFunc['ucfirst'](__('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $this->txt['lp_time_label_ago'];
+		// like "Today at ..."
+		elseif ($d.$m.$y === date('jmY', $now))
+			return $this->txt['today'] . $t;
+		// like "Yesterday at ..."
+		elseif ($d.$m.$y === date('jmY', strtotime('-1 day')))
+			return $this->txt['yesterday'] . $t;
+		// like "Tuesday, 20 February, H:m" (current month)
+		elseif ($m === date('m', $now) && $y === date('Y', $now))
+			return $this->getLocalDate($timestamp);
+		// like "20 February, H:m" (current year)
+		elseif ($y === date('Y', $now))
+			return $this->getLocalDate($timestamp);
+
+		// like "20 February 2019" (last year)
+		return $this->getLocalDate($timestamp, 'long', 'none');
+	}
+
+	public function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
+	{
+		if (extension_loaded('intl')) {
+			return (new \IntlDateFormatter($this->txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType)))->format($timestamp);
+		}
+
+		\log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
+
+		return '';
 	}
 
 	/**
-	 * @return mixed
+	 * @see https://www.php.net/manual/en/class.intldateformatter.php
 	 */
-	public static function getAllTags()
+	public function getPredefinedConstant(string $type): int
 	{
-		return self::cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
-	}
-
-	public static function getFaIcons(): array
-	{
-		if (($icons = self::cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
-			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
-			$json = json_decode($content);
-
-			if (empty($json))
-				return [];
-
-			$icons = [];
-			foreach ($json as $icon => $value) {
-				foreach ($value->styles as $style) {
-					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
-				}
-			}
-
-			self::cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
+		switch ($type) {
+			case 'full':
+				$const = \IntlDateFormatter::FULL;
+				break;
+			case 'long':
+				$const = \IntlDateFormatter::LONG;
+				break;
+			case 'medium':
+				$const = \IntlDateFormatter::MEDIUM;
+				break;
+			default:
+				$const = \IntlDateFormatter::NONE;
 		}
 
-		return $icons;
+		return $const;
 	}
 
-	public static function getUserAvatar(int $userId): array
-	{
-		global $memberContext;
-
-		if (empty($userId))
-			return [];
-
-		if (! isset($memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
-			try {
-				loadMemberContext($userId, true);
-			} catch (\Exception $e) {
-				log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
-			}
-		}
-
-		return $memberContext[$userId]['avatar'] ?? [];
-	}
-
-	public static function preparePostFields(string $defaultTab = 'tuning')
-	{
-		global $context;
-
-		foreach ($context['posting_fields'] as $item => $data) {
-			if (! empty($data['input']['after'])) {
-				$tag = 'div';
-
-				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
-					$tag = 'span';
-
-				$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
-			}
-
-			// Fancy checkbox
-			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
-				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($context['posting_fields'][$item]['input']['after'] ?? '');
-				$context['posting_fields'][$item] = $data;
-			}
-
-			if (empty($data['input']['tab']))
-				$context['posting_fields'][$item]['input']['tab'] = $defaultTab;
-		}
-
-		loadTemplate('LightPortal/ManageSettings');
-	}
-
-	public static function getImageFromText(string $text): string
+	public function getImageFromText(string $text): string
 	{
 		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
 		return $value['src'] ??= '';
-	}
-
-	/**
-	 * @see https://symfony.com/doc/current/translation/message_format.html
-	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
-	 * @see https://www.php.net/manual/en/class.messageformatter.php
-	 */
-	public static function getSmartContext(string $pattern, array $values = []): string
-	{
-		global $txt;
-
-		if (extension_loaded('intl')) {
-			return \MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
-		}
-
-		log_error('[LP] getSmartContext helper: enable intl extension', 'critical');
-
-		return '';
 	}
 }

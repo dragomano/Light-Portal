@@ -21,7 +21,11 @@ if (! defined('SMF'))
 
 final class Addon
 {
-	public static function getAll(): array
+	use Helper;
+
+	private array $chest = [];
+
+	public function getAll(): array
 	{
 		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
 			return [];
@@ -29,23 +33,21 @@ final class Addon
 		return array_map(fn($item): string => basename($item), $dirs);
 	}
 
-	public static function prepareAssets()
+	public function prepareAssets(): Addon
 	{
-		global $settings;
-
 		$assets = [];
 
-		Addon::run('prepareAssets', array(&$assets));
+		$this->run('prepareAssets', [&$assets]);
 
 		if (empty($assets))
-			return;
+			return $this;
 
 		foreach (['css', 'scripts'] as $type) {
 			if (! isset($assets[$type]))
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$addonAssetDir = $settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+				$addonAssetDir = $this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
 
 				if (! is_dir($addonAssetDir)) {
 					@mkdir($addonAssetDir);
@@ -59,21 +61,18 @@ final class Addon
 				}
 			}
 		}
+
+		return $this;
 	}
 
 	/**
 	 * @see https://dragomano.github.io/Light-Portal/#/plugins/all_hooks
 	 */
-	public static function run(string $hook = '', array $vars = [], array $plugins = [])
+	public function run(string $hook = '', array $vars = [], array $plugins = [])
 	{
-		global $context;
 		static $results = [];
 
-		$context['lp_bbc']['icon']  = 'fab fa-bimobject';
-		$context['lp_html']['icon'] = 'fab fa-html5';
-		$context['lp_php']['icon']  = 'fab fa-php';
-
-		$addons = $plugins ?: $context['lp_enabled_plugins'];
+		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
 
 		if (empty($addons))
 			return;
@@ -86,65 +85,65 @@ final class Addon
 
 			$class = new $className;
 
-			if (empty($results[$addon]['snake'])) {
-				$results[$addon]['snake'] = Helper::getSnakeName($addon);
+			$snakeName = $this->getSnakeName($addon);
+
+			if (empty($this->chest[$snakeName])) {
+				$this->chest[$snakeName] = [
+					'name' => $addon,
+					'icon' => $class->icon,
+					'type' => $class->type,
+				];
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
-				self::loadLanguage($path, $results[$addon]['snake']);
-				self::loadAssets($path, $results[$addon]['snake']);
-
-				$context['lp_' . $results[$addon]['snake']]['type'] = $class->type;
-				$context['lp_' . $results[$addon]['snake']]['icon'] = $class->icon;
+				$this->loadLanguage($path, $snakeName);
+				$this->loadAssets($path, $snakeName);
 			}
 
 			// Hook init should run only once
-			if (empty($results[$addon]['init']) && method_exists($class, 'init') && in_array($addon, $context['lp_enabled_plugins'])) {
+			if (empty($results[$addon]) && method_exists($class, 'init') && in_array($addon, $this->context['lp_enabled_plugins'])) {
 				$class->init();
-				$results[$addon]['init'] = true;
+				$results[$addon] = true;
 			}
 
 			if (method_exists($class, $hook)) {
 				$class->$hook(...$vars);
 			}
 		}
+
+		$this->context['lp_loaded_addons'] = $this->chest;
 	}
 
-	private static function loadLanguage(string $path, string $snake_name)
+	private function loadLanguage(string $path, string $snakeName)
 	{
-		global $txt, $user_info;
-
-		if (isset($txt['lp_' . $snake_name]))
+		if (isset($this->txt['lp_' . $snakeName]))
 			return;
 
-		$languages = array_unique(['english', $user_info['language']]);
+		$languages = array_unique(['english', $this->user_info['language']]);
 
 		$addonLanguages = [];
 		foreach ($languages as $lang) {
-			$lang_file = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
-
-			$addonLanguages[$lang] = is_file($lang_file) ? require_once $lang_file : [];
+			$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
+			$addonLanguages[$lang] = is_file($langFile) ? require_once $langFile : [];
 		}
 
 		if (is_array($addonLanguages['english']))
-			$txt['lp_' . $snake_name] = array_merge($addonLanguages['english'], $addonLanguages[$user_info['language']]);
+			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private static function loadAssets(string $path, string $snake_name)
+	private function loadAssets(string $path, string $snakeName)
 	{
-		global $settings;
-
 		if (! is_file($style = $path . 'style.css'))
 			return;
 
-		$addonCss = $settings['default_theme_dir'] . '/css/light_portal/addon_' . $snake_name . '.css';
+		$addonCss = $this->settings['default_theme_dir'] . '/css/light_portal/addon_' . $snakeName . '.css';
 
 		$isFileExists = true;
 		if (! is_file($addonCss) || filemtime($style) > filemtime($addonCss))
 			$isFileExists = @copy($style, $addonCss);
 
-		if (! @is_writable($settings['default_theme_dir'] . '/css/light_portal') || ! $isFileExists)
+		if (! @is_writable($this->settings['default_theme_dir'] . '/css/light_portal') || ! $isFileExists)
 			return;
 
-		loadCSSFile('light_portal/addon_' . $snake_name . '.css');
+		loadCSSFile('light_portal/addon_' . $snakeName . '.css');
 	}
 }

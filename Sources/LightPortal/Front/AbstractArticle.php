@@ -16,8 +16,12 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
+use Bugo\LightPortal\Helper;
+
 abstract class AbstractArticle implements ArticleInterface
 {
+	use Helper;
+
 	protected array $columns = [];
 	protected array $tables  = [];
 	protected array $wheres  = [];
@@ -26,7 +30,7 @@ abstract class AbstractArticle implements ArticleInterface
 
 	abstract public function init();
 
-	abstract public function getData(int $start, int $limit);
+	abstract public function getData(int $start, int $limit): array;
 
-	abstract public function getTotalCount();
+	abstract public function getTotalCount(): int;
 }

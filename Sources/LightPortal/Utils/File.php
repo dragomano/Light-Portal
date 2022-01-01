@@ -40,7 +40,7 @@ final class File
 		unset($this->storage[$key]);
 	}
 
-	private function reArrayFiles(array &$source): array
+	private function reArrayFiles(array $source): array
 	{
 		$files = [];
 		$numFiles = count($source['name']);

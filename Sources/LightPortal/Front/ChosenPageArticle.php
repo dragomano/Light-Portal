@@ -25,13 +25,11 @@ final class ChosenPageArticle extends PageArticle
 
 	public function init()
 	{
-		global $modSettings;
-
 		parent::init();
 
 		$this->selected_categories = [];
 
-		$this->selected_pages = empty($modSettings['lp_frontpage_pages']) ? [] : explode(',', $modSettings['lp_frontpage_pages']);
+		$this->selected_pages = empty($this->modSettings['lp_frontpage_pages']) ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
 
 		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';
 

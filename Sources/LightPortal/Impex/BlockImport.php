@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Helper;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -25,37 +23,33 @@ final class BlockImport extends AbstractImport
 {
 	public function main()
 	{
-		global $context, $txt, $scripturl;
-
 		loadTemplate('LightPortal/ManageImpex');
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_import'];
-		$context['page_area_title'] = $txt['lp_blocks_import'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=import';
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_import'];
+		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import';
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_import_description']
-		);
+			'description' => $this->txt['lp_blocks_import_description']
+		];
 
-		$context['sub_template'] = 'manage_import';
+		$this->context['sub_template'] = 'manage_import';
 
 		$this->run();
 	}
 
 	protected function run()
 	{
-		global $db_temp_cache, $db_cache, $smcFunc, $context, $txt;
-
-		if (empty($file = Helper::file('import_file')->get()))
+		if (empty($file = $this->file('import_file')->get()))
 			return;
 
 		// Might take some time.
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$db_temp_cache = $db_cache;
-		$db_cache = [];
+		$this->db_temp_cache = $this->db_cache;
+		$this->db_cache = [];
 
 		if ($file['type'] !== 'text/xml')
 			return;
@@ -118,17 +112,17 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		$smcFunc['db_transaction']('begin');
+		$this->smcFunc['db_transaction']('begin');
 
 		if (! empty($items)) {
-			$context['import_successful'] = count($items);
+			$this->context['import_successful'] = count($items);
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $smcFunc['db_insert']('replace',
+				$results = $this->smcFunc['db_insert']('replace',
 					'{db_prefix}lp_blocks',
-					array(
+					[
 						'block_id'      => 'int',
 						'user_id'       => 'int',
 						'icon'          => 'string',
@@ -144,13 +138,13 @@ final class BlockImport extends AbstractImport
 						'title_style'   => 'string',
 						'content_class' => 'string',
 						'content_style' => 'string'
-					),
+					],
 					$items[$i],
-					array('block_id'),
+					['block_id'],
 					2
 				);
 
-				$smcFunc['lp_num_queries']++;
+				$this->context['lp_num_queries']++;
 			}
 		}
 
@@ -159,20 +153,20 @@ final class BlockImport extends AbstractImport
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $smcFunc['db_insert']('replace',
+				$results = $this->smcFunc['db_insert']('replace',
 					'{db_prefix}lp_titles',
-					array(
+					[
 						'item_id' => 'int',
 						'type'    => 'string',
 						'lang'    => 'string',
 						'title'   => 'string'
-					),
+					],
 					$titles[$i],
-					array('item_id', 'type', 'lang'),
+					['item_id', 'type', 'lang'],
 					2
 				);
 
-				$smcFunc['lp_num_queries']++;
+				$this->context['lp_num_queries']++;
 			}
 		}
 
@@ -181,35 +175,35 @@ final class BlockImport extends AbstractImport
 			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $smcFunc['db_insert']('replace',
+				$results = $this->smcFunc['db_insert']('replace',
 					'{db_prefix}lp_params',
-					array(
+					[
 						'item_id' => 'int',
 						'type'    => 'string',
 						'name'    => 'string',
 						'value'   => 'string'
-					),
+					],
 					$params[$i],
-					array('item_id', 'type', 'name'),
+					['item_id', 'type', 'name'],
 					2
 				);
 
-				$smcFunc['lp_num_queries']++;
+				$this->context['lp_num_queries']++;
 			}
 		}
 
 		if (empty($results)) {
-			$smcFunc['db_transaction']('rollback');
+			$this->smcFunc['db_transaction']('rollback');
 			fatal_lang_error('lp_import_failed', false);
 		}
 
-		$smcFunc['db_transaction']('commit');
+		$this->smcFunc['db_transaction']('commit');
 
-		$context['import_successful'] = sprintf($txt['lp_import_success'], Helper::getSmartContext('lp_blocks_set', ['blocks' => $context['import_successful']]));
+		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], __('lp_blocks_set', ['blocks' => $this->context['import_successful']]));
 
 		// Restore the cache
-		$db_cache = $db_temp_cache;
+		$this->db_cache = $this->db_temp_cache;
 
-		Helper::cache()->flush();
+		$this->cache()->flush();
 	}
 }

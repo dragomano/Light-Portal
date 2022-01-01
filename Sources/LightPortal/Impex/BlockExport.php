@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\{Helper, Admin\BlockArea};
+use Bugo\LightPortal\Areas\BlockArea;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,51 +25,47 @@ final class BlockExport extends AbstractExport
 {
 	public function main()
 	{
-		global $context, $txt, $scripturl;
-
 		loadTemplate('LightPortal/ManageImpex');
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_blocks_export'];
-		$context['page_area_title'] = $txt['lp_blocks_export'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_blocks;sa=export';
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_export'];
+		$this->context['page_area_title'] = $this->txt['lp_blocks_export'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=export';
 
-		$context[$context['admin_menu_name']]['tab_data'] = array(
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $txt['lp_blocks_export_description']
-		);
+			'description' => $this->txt['lp_blocks_export_description']
+		];
 
 		$this->run();
 
-		$context['lp_current_blocks'] = (new BlockArea)->getAll();
-		$context['lp_current_blocks'] = array_merge(array_flip(array_keys($context['lp_block_placements'])), $context['lp_current_blocks']);
+		$this->context['lp_current_blocks'] = (new BlockArea)->getAll();
+		$this->context['lp_current_blocks'] = array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $this->context['lp_current_blocks']);
 
-		$context['sub_template'] = 'manage_export_blocks';
+		$this->context['sub_template'] = 'manage_export_blocks';
 	}
 
 	protected function getData(): array
 	{
-		global $smcFunc;
-
-		if (Helper::post()->isEmpty('blocks') && Helper::post()->has('export_all') === false)
+		if ($this->post()->isEmpty('blocks') && $this->post()->has('export_all') === false)
 			return [];
 
-		$blocks = ! empty(Helper::post('blocks')) && Helper::post()->has('export_all') === false ? Helper::post('blocks') : null;
+		$blocks = ! empty($this->post('blocks')) && $this->post()->has('export_all') === false ? $this->post('blocks') : null;
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (empty($blocks) ? '' : '
 			WHERE b.block_id IN ({array_int:blocks})'),
-			array(
+			[
 				'blocks' => $blocks
-			)
+			]
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['block_id']] ??= array(
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$items[$row['block_id']] ??= [
 				'block_id'      => $row['block_id'],
 				'user_id'       => $row['user_id'],
 				'icon'          => $row['icon'],
@@ -85,7 +81,7 @@ final class BlockExport extends AbstractExport
 				'title_style'   => $row['title_style'],
 				'content_class' => $row['content_class'],
 				'content_style' => $row['content_style']
-			);
+			];
 
 			if (! empty($row['lang']) && ! empty($row['title']))
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
@@ -94,16 +90,14 @@ final class BlockExport extends AbstractExport
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $items;
 	}
 
 	protected function getXmlFile(): string
 	{
-		global $txt;
-
 		if (empty($items = $this->getData()))
 			return '';
 
@@ -135,7 +129,7 @@ final class BlockExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (\DOMException $e) {
-			log_error('[LP] ' . $txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
+			\log_error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

@@ -25,13 +25,11 @@ final class ChosenTopicArticle extends TopicArticle
 
 	public function init()
 	{
-		global $modSettings;
-
 		parent::init();
 
 		$this->selected_boards = [];
 
-		$this->selected_topics = empty($modSettings['lp_frontpage_topics']) ? [] : explode(',', $modSettings['lp_frontpage_topics']);
+		$this->selected_topics = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
 
 		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
 

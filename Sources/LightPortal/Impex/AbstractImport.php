@@ -15,7 +15,11 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
+use Bugo\LightPortal\Helper;
+
 abstract class AbstractImport implements ImportInterface
 {
+	use Helper;
+
 	abstract protected function run();
 }

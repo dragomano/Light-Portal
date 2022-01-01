@@ -16,8 +16,12 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Tasks;
 
+use Bugo\LightPortal\Helper;
+
 final class Notifier extends \SMF_BackgroundTask
 {
+	use Helper;
+
 	/**
 	 * Performing the task of notifying subscribers about new comments to portal pages
 	 *
@@ -25,10 +29,8 @@ final class Notifier extends \SMF_BackgroundTask
 	 */
 	public function execute(): bool
 	{
-		global $sourcedir, $user_profile, $smcFunc;
-
-		require_once $sourcedir . '/Subs-Members.php';
-		$members = membersAllowedTo('light_portal_view');
+		$this->require('Subs-Members');
+		$members = \membersAllowedTo('light_portal_view');
 
 		$this->_details['content_type'] === 'new_comment'
 			? $members = array_intersect($members, [$this->_details['author_id']])
@@ -36,22 +38,22 @@ final class Notifier extends \SMF_BackgroundTask
 
 		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
 		if (! empty($this->_details['sender_id']))
-			$members = array_diff($members, array($this->_details['sender_id']));
+			$members = array_diff($members, [$this->_details['sender_id']]);
 
-		require_once $sourcedir . '/Subs-Notify.php';
-		$prefs = getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
+		$this->require('Subs-Notify');
+		$prefs = \getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
 
 		if (! empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
-			loadMemberData($this->_details['sender_id'], false, 'minimal');
+			\loadMemberData($this->_details['sender_id'], false, 'minimal');
 
-			empty($user_profile[$this->_details['sender_id']])
+			empty($this->user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_id'] = 0
-				: $this->_details['sender_name'] = $user_profile[$this->_details['sender_id']]['real_name'];
+				: $this->_details['sender_name'] = $this->user_profile[$this->_details['sender_id']]['real_name'];
 		}
 
-		$alert_bits = array(
+		$alert_bits = [
 			'alert' => self::RECEIVE_NOTIFY_ALERT
-		);
+		];
 
 		$notifies = [];
 		foreach ($prefs as $member => $pref_option) {
@@ -69,7 +71,7 @@ final class Notifier extends \SMF_BackgroundTask
 		if (! empty($notifies['alert'])) {
 			$insert_rows = [];
 			foreach ($notifies['alert'] as $member) {
-				$insert_rows[] = array(
+				$insert_rows[] = [
 					'alert_time'        => $this->_details['time'],
 					'id_member'         => $member,
 					'id_member_started' => $this->_details['sender_id'],
@@ -79,13 +81,13 @@ final class Notifier extends \SMF_BackgroundTask
 					'content_action'    => $this->_details['content_action'],
 					'is_read'           => 0,
 					'extra'             => $this->_details['extra']
-				);
+				];
 			}
 
 			if (! empty($insert_rows)) {
-				$smcFunc['db_insert']('',
+				$this->smcFunc['db_insert']('',
 					'{db_prefix}user_alerts',
-					array(
+					[
 						'alert_time'        => 'int',
 						'id_member'         => 'int',
 						'id_member_started' => 'int',
@@ -95,12 +97,12 @@ final class Notifier extends \SMF_BackgroundTask
 						'content_action'    => 'string',
 						'is_read'           => 'int',
 						'extra'             => 'string'
-					),
+					],
 					$insert_rows,
-					array('id_alert')
+					['id_alert']
 				);
 
-				updateMemberData($notifies['alert'], array('alerts' => '+'));
+				\updateMemberData($notifies['alert'], ['alerts' => '+']);
 			}
 		}
 

@@ -25,7 +25,7 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.<br>The portal always needs new testers, translators and frontpage template makers.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thanks</a>.<br>The portal always needs new testers, translators and frontpage template makers.';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -252,8 +252,6 @@ $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its
 $txt['lp_plugins_types'] = array(
 	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other', 'Block options', 'Page options'
 );
-$txt['lp_plugins_requires'] = 'Required plugins';
-$txt['lp_plugins_disables'] = 'Conflict plugins';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';
