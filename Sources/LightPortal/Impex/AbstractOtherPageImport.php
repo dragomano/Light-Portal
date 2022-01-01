@@ -15,7 +15,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 
 abstract class AbstractOtherPageImport implements ImportInterface, OtherImportInterface
 {
@@ -40,7 +40,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		$results = $titles = $params = $comments = [];
 		$items = $this->getItems($pages);
 
-		(new Addon)->run('importPages', [&$items, &$titles, &$params, &$comments]);
+		$this->addon('importPages', [&$items, &$titles, &$params, &$comments]);
 
 		if (! empty($items)) {
 			$items = array_chunk($items, 100);

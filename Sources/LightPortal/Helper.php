@@ -98,6 +98,11 @@ trait Helper
 		return new Session;
 	}
 
+	public function addon(string $hook, array $vars = [], array $plugins = [])
+	{
+		(new Addon)->run($hook, $vars, $plugins);
+	}
+
 	public function getAllTitles(string $type = 'page'): array
 	{
 		if (($titles = $this->cache()->get('all_titles')) === null) {
@@ -298,7 +303,7 @@ trait Helper
 
 		$template = '<i class="' . $icon . '"></i> ';
 
-		(new Addon)->run('prepareIconTemplate', [&$template, $icon]);
+		$this->addon('prepareIconTemplate', [&$template, $icon]);
 
 		return $template;
 	}

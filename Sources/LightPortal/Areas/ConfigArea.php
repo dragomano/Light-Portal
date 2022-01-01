@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Addon, Helper, Lists\Category};
+use Bugo\LightPortal\{Helper, Lists\Category};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -107,7 +107,7 @@ final class ConfigArea
 			];
 		}
 
-		(new Addon)->run('addAdminAreas', [&$admin_areas]);
+		$this->addon('addAdminAreas', [&$admin_areas]);
 	}
 
 	/**
@@ -275,7 +275,7 @@ final class ConfigArea
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
 		];
 
-		(new Addon)->run('addBasicSettings', [&$config_vars]);
+		$this->addon('addBasicSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -312,7 +312,7 @@ final class ConfigArea
 			$save_vars[] = ['text', 'lp_frontpage_categories'];
 			$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			(new Addon)->run('addBasicSaveSettings', [&$save_vars]);
+			$this->addon('addBasicSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -385,7 +385,7 @@ final class ConfigArea
 			],
 		];
 
-		(new Addon)->run('addExtraSettings', [&$config_vars]);
+		$this->addon('addExtraSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -424,7 +424,7 @@ final class ConfigArea
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
 
-			(new Addon)->run('addExtraSaveSettings', [&$save_vars]);
+			$this->addon('addExtraSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -525,7 +525,7 @@ final class ConfigArea
 			['callback', 'panel_direction']
 		];
 
-		(new Addon)->run('addPanelsSettings', [&$config_vars]);
+		$this->addon('addPanelsSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -549,7 +549,7 @@ final class ConfigArea
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
 
-			(new Addon)->run('addPanelsSaveSettings', [&$save_vars]);
+			$this->addon('addPanelsSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -595,7 +595,7 @@ final class ConfigArea
 			['check', 'lp_weekly_cleaning']
 		];
 
-		(new Addon)->run('addMiscSettings', [&$config_vars]);
+		$this->addon('addMiscSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -624,7 +624,7 @@ final class ConfigArea
 
 			$save_vars = $config_vars;
 
-			(new Addon)->run('addMiscSaveSettings', [&$save_vars]);
+			$this->addon('addMiscSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -651,7 +651,7 @@ final class ConfigArea
 			$subActions['import'] = [new \Bugo\LightPortal\Impex\BlockImport, 'main'];
 		}
 
-		(new Addon)->run('addBlockAreas', [&$subActions]);
+		$this->addon('addBlockAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -671,7 +671,7 @@ final class ConfigArea
 			$subActions['import'] = [new \Bugo\LightPortal\Impex\PageImport, 'main'];
 		}
 
-		(new Addon)->run('addPageAreas', [&$subActions]);
+		$this->addon('addPageAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -684,7 +684,7 @@ final class ConfigArea
 			'main' => [new PluginArea, 'main']
 		];
 
-		(new Addon)->run('addPluginAreas', [&$subActions]);
+		$this->addon('addPluginAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}

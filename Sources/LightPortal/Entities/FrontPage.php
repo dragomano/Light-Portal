@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Entities;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
 
 final class FrontPage
@@ -57,7 +57,7 @@ final class FrontPage
 		}
 
 		// Mod authors can define their own template
-		(new Addon)->run('frontCustomTemplate');
+		$this->addon('frontCustomTemplate');
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -100,7 +100,7 @@ final class FrontPage
 		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? $this->scripturl . '?action=' . LP_ACTION . ';start=' . ($this->request('start') + $limit) : '';
 		$this->context['lp_frontpage_articles'] = $articles;
 
-		(new Addon)->run('frontAssets');
+		$this->addon('frontAssets');
 	}
 
 	/**

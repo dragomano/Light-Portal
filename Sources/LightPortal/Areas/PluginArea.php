@@ -69,7 +69,7 @@ final class PluginArea
 		$config_vars = [];
 
 		// You can add settings for your plugins
-		(new Addon)->run('addSettings', [&$config_vars], $this->context['lp_plugins']);
+		$this->addon('addSettings', [&$config_vars], $this->context['lp_plugins']);
 
 		// Saving of plugin settings
 		if ($this->request()->has('save')) {
@@ -107,7 +107,7 @@ final class PluginArea
 			}
 
 			// You can do additional actions after settings saving
-			(new Addon)->run('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
+			$this->addon('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
 
 			if (! empty($plugin_options))
 				updateSettings($plugin_options);

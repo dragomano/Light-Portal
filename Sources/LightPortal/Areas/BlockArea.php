@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -279,7 +279,7 @@ final class BlockArea
 
 		$this->context['lp_num_queries'] += 3;
 
-		(new Addon)->run('onBlockRemoving', [$items]);
+		$this->addon('onBlockRemoving', [$items]);
 	}
 
 	private function makeCopy(int $item)
@@ -360,7 +360,7 @@ final class BlockArea
 			];
 		}
 
-		(new Addon)->run('blockOptions', [&$options]);
+		$this->addon('blockOptions', [&$options]);
 
 		return $options;
 	}
@@ -392,7 +392,7 @@ final class BlockArea
 
 			$parameters = [];
 
-			(new Addon)->run('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
+			$this->addon('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
 
 			$post_data['parameters'] = filter_var_array($this->post()->only(array_keys($parameters)), $parameters);
 
@@ -469,7 +469,7 @@ final class BlockArea
 		if (! empty($data['areas']) && empty($this->validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
 
-		(new Addon)->run('findBlockErrors', [$data, &$post_errors]);
+		$this->addon('findBlockErrors', [$data, &$post_errors]);
 
 		if (! empty($post_errors)) {
 			$this->post()->put('preview', true);
@@ -620,7 +620,7 @@ final class BlockArea
 			}
 		}
 
-		(new Addon)->run('prepareBlockFields');
+		$this->addon('prepareBlockFields');
 
 		$this->preparePostFields();
 
@@ -675,7 +675,7 @@ final class BlockArea
 
 	private function prepareEditor()
 	{
-		(new Addon)->run('prepareEditor', [$this->context['lp_block']]);
+		$this->addon('prepareEditor', [$this->context['lp_block']]);
 	}
 
 	private function preparePreview()
@@ -805,7 +805,7 @@ final class BlockArea
 			return 0;
 		}
 
-		(new Addon)->run('onBlockSaving', [$item]);
+		$this->addon('onBlockSaving', [$item]);
 
 		if (! empty($this->context['lp_block']['title'])) {
 			$titles = [];
@@ -892,7 +892,7 @@ final class BlockArea
 
 		$this->context['lp_num_queries']++;
 
-		(new Addon)->run('onBlockSaving', array($item));
+		$this->addon('onBlockSaving', [$item]);
 
 		if (! empty($this->context['lp_block']['title'])) {
 			$titles = [];

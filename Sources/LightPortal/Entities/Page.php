@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Entities;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Lists\PageListInterface;
 
 if (! defined('SMF'))
@@ -493,7 +493,7 @@ final class Page
 
 		$data['addons'] = '';
 
-		(new Addon)->run('preparePageData', [&$data, $is_author]);
+		$this->addon('preparePageData', [&$data, $is_author]);
 	}
 
 	private function prepareComments()
@@ -506,7 +506,7 @@ final class Page
 
 		loadLanguage('Editor');
 
-		(new Addon)->run('comments');
+		$this->addon('comments');
 
 		if (! empty($this->context['lp_' . $this->modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;

@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Addon;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -42,7 +40,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC'
 		];
 
-		(new Addon)->run('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->addon('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -120,7 +118,7 @@ class BoardArticle extends AbstractArticle
 			if (empty($boards[$row['id_board']]['is_redirect']))
 				$boards[$row['id_board']]['msg_link'] = $this->scripturl . '?msg=' . $row['id_msg'];
 
-			(new Addon)->run('frontBoardsOutput', [&$boards, $row]);
+			$this->addon('frontBoardsOutput', [&$boards, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);

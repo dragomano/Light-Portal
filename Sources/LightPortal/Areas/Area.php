@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Addon;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -115,7 +113,7 @@ trait Area
 		$all_icons = [];
 		$template = '<i class="%1$s"></i>&nbsp;%1$s';
 
-		(new Addon)->run('prepareIconList', [&$all_icons, &$template]);
+		$this->addon('prepareIconList', [&$all_icons, &$template]);
 
 		$all_icons = $all_icons ?: $this->getFaIcons();
 		$all_icons = array_filter($all_icons, fn($item) => strpos($item, $search) !== false);

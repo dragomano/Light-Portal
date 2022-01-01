@@ -15,7 +15,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 
 abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportInterface
 {
@@ -40,7 +40,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		$results = $titles = [];
 		$items = $this->getItems($blocks);
 
-		(new Addon)->run('importBlocks', [&$items, &$titles]);
+		$this->addon('importBlocks', [&$items, &$titles]);
 
 		if (! empty($items)) {
 			foreach ($items as $block_id => $item) {

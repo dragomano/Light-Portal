@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Addon;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -46,7 +44,7 @@ class PageArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		(new Addon)->run('frontPages', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->addon('frontPages', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -122,7 +120,7 @@ class PageArticle extends AbstractArticle
 
 			$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
-			(new Addon)->run('frontPagesOutput', [&$pages, $row]);
+			$this->addon('frontPagesOutput', [&$pages, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);

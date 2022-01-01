@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -157,7 +157,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		(new Addon)->run('credits', [&$links]);
+		$this->addon('credits', [&$links]);
 
 		$this->context['lp_components'] = $links;
 	}

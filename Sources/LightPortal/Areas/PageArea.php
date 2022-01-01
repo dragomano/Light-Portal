@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
 
 if (! defined('SMF'))
@@ -501,7 +501,7 @@ final class PageArea
 
 		$this->context['lp_num_queries'] += 5;
 
-		(new Addon)->run('onPageRemoving', [$items]);
+		$this->addon('onPageRemoving', [$items]);
 	}
 
 	private function getOptions(): array
@@ -513,7 +513,7 @@ final class PageArea
 			'allow_comments'       => false,
 		];
 
-		(new Addon)->run('pageOptions', [&$options]);
+		$this->addon('pageOptions', [&$options]);
 
 		return $options;
 	}
@@ -544,7 +544,7 @@ final class PageArea
 
 			$parameters = [];
 
-			(new Addon)->run('validatePageData', [&$parameters]);
+			$this->addon('validatePageData', [&$parameters]);
 
 			$parameters = array_merge(
 				[
@@ -636,7 +636,7 @@ final class PageArea
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
 
-		(new Addon)->run('findPageErrors', [$data, &$post_errors]);
+		$this->addon('findPageErrors', [$data, &$post_errors]);
 
 		if (! empty($post_errors)) {
 			$this->post()->put('preview', true);
@@ -842,7 +842,7 @@ final class PageArea
 			];
 		}
 
-		(new Addon)->run('preparePageFields');
+		$this->addon('preparePageFields');
 
 		$this->preparePostFields();
 	}
@@ -890,7 +890,7 @@ final class PageArea
 
 	private function prepareEditor()
 	{
-		(new Addon)->run('prepareEditor', [$this->context['lp_page']]);
+		$this->addon('prepareEditor', [$this->context['lp_page']]);
 	}
 
 	private function preparePreview()
@@ -1006,7 +1006,7 @@ final class PageArea
 			return 0;
 		}
 
-		(new Addon)->run('onPageSaving', [$item]);
+		$this->addon('onPageSaving', [$item]);
 
 		$this->saveTitles($item);
 		$this->saveTags();
@@ -1041,7 +1041,7 @@ final class PageArea
 
 		$this->context['lp_num_queries']++;
 
-		(new Addon)->run('onPageSaving', [$item]);
+		$this->addon('onPageSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags();
