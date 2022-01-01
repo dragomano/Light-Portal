@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class FlarumStyle extends Plugin
 {
@@ -24,35 +23,29 @@ class FlarumStyle extends Plugin
 
 	public function frontCustomTemplate()
 	{
-		global $modSettings, $context;
-
-		if (! in_array($modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
+		if (! in_array($this->modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
 			return;
 
-		$context['is_portal'] = in_array($modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
+		$this->context['is_portal'] = in_array($this->modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
 
-		$context['lp_all_categories'] = $this->getCategories();
+		$this->context['lp_all_categories'] = $this->getCategories();
 
-		$context['lp_need_lower_case'] = $this->isLowerCaseForDates();
+		$this->context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
-		$this->loadTemplate();
+		$this->loadTemplate('show_articles_as_flarum_style');
 
 		$this->prepareFantomBLock();
-
-		$context['sub_template'] = 'show_articles_as_flarum_style';
 	}
 
 	private function prepareFantomBLock()
 	{
-		global $context;
-
 		ob_start();
 
 		show_ffs_sidebar();
 
 		$content = ob_get_clean();
 
-		$context['lp_blocks']['left'][] = [
+		$this->context['lp_blocks']['left'][] = [
 			'id'      => uniqid(),
 			'type'    => 'flarum_style',
 			'content' => $content
@@ -61,38 +54,36 @@ class FlarumStyle extends Plugin
 
 	private function getCategories(): array
 	{
-		global $context, $txt, $modSettings;
+		if ($this->context['is_portal']) {
+			$all_categories = $this->getAllCategories();
 
-		if ($context['is_portal']) {
-			$all_categories = Helper::getAllCategories();
-
-			$categories = array(
-				array(
-					'name'   => $txt['lp_categories'],
+			$categories = [
+				[
+					'name'   => $this->txt['lp_categories'],
 					'boards' => []
-				)
-			);
+				]
+			];
 
 			foreach ($all_categories as $id => $cat) {
-				$categories[0]['boards'][] = array(
+				$categories[0]['boards'][] = [
 					'id'          => $id,
 					'name'        => $cat['name'],
 					'child_level' => 0,
 					'selected'    => false
-				);
+				];
 			}
 
 			return $categories;
 		}
 
-		Helper::require('Subs-MessageIndex');
+		$this->require('Subs-MessageIndex');
 
-		$boardListOptions = array(
+		$boardListOptions = [
 			'ignore_boards'   => true,
 			'use_permissions' => true,
 			'not_redirection' => true,
-			'included_boards' => empty($modSettings['lp_frontpage_boards']) ? [] : explode(',', $modSettings['lp_frontpage_boards'])
-		);
+			'included_boards' => empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards'])
+		];
 
 		return getBoardList($boardListOptions);
 	}
@@ -104,8 +95,6 @@ class FlarumStyle extends Plugin
 	 */
 	private function isLowerCaseForDates(): bool
 	{
-		global $txt;
-
-		return in_array($txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
+		return in_array($this->txt['lang_dictionary'], ['pl', 'es', 'ru', 'uk']);
 	}
 }

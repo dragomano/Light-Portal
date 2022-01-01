@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class ThemeSwitcher extends Plugin
 {
@@ -29,25 +28,21 @@ class ThemeSwitcher extends Plugin
 
 	public function manageThemes()
 	{
-		if (Helper::request()->only(['done', 'do']))
-			Helper::cache()->flush();
+		if ($this->request()->only(['done', 'do']))
+			$this->cache()->flush();
 	}
 
 	public function getAvailableThemes(): array
 	{
-		global $modSettings;
-
-		return empty($modSettings['knownThemes']) ? [] : array_intersect_key(Helper::getForumThemes(), array_flip(explode(',', $modSettings['knownThemes'])));
+		return empty($this->modSettings['knownThemes']) ? [] : array_intersect_key($this->getForumThemes(), array_flip(explode(',', $this->modSettings['knownThemes'])));
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time)
 	{
-		global $settings;
-
 		if ($type !== 'theme_switcher')
 			return;
 
-		$available_themes = Helper::cache('theme_switcher_addon')
+		$available_themes = $this->cache('theme_switcher_addon')
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getAvailableThemes');
 
@@ -60,7 +55,7 @@ class ThemeSwitcher extends Plugin
 
 		foreach ($available_themes as $theme_id => $name) {
 			echo '
-					<option value="', $theme_id, '"', $settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
+					<option value="', $theme_id, '"', $this->settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>', $name, '</option>';
 		}
 
 		echo '

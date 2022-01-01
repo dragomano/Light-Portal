@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class RandomTopics extends Plugin
 {
@@ -38,31 +37,27 @@ class RandomTopics extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'random_topics')
+		if ($this->context['lp_block']['type'] !== 'random_topics')
 			return;
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_random_topics']['num_topics'];
-		$context['posting_fields']['num_topics']['input'] = array(
+		$this->context['posting_fields']['num_topics']['label']['text'] = $this->txt['lp_random_topics']['num_topics'];
+		$this->context['posting_fields']['num_topics']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'num_topics',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_topics']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['num_topics']
+			]
+		];
 	}
 
 	public function getData(int $num_topics): array
 	{
-		global $db_type, $smcFunc, $user_info, $context, $modSettings, $settings, $scripturl;
-
 		if (empty($num_topics))
 			return [];
 
-		if ($db_type === 'postgresql') {
-			$request = $smcFunc['db_query']('', '
+		if ($this->db_type === 'postgresql') {
+			$request = $this->smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -97,99 +92,97 @@ class RandomTopics extends Plugin
 				SELECT t.id_topic
 				FROM {db_prefix}topics AS t, r
 				WHERE r.id_topic = t.id_topic',
-				array(
+				[
 					'is_approved' => 1,
 					'limit'       => $num_topics
-				)
+				]
 			);
 
 			$topic_ids = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request))
+			while ($row = $this->smcFunc['db_fetch_assoc']($request))
 				$topic_ids[] = $row['id_topic'];
 
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
 
 			if (empty($topic_ids))
 				return $this->getData($num_topics - 1);
 
-			$request = $smcFunc['db_query']('', '
+			$request = $this->smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($this->user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
 					AND t.id_topic IN ({array_int:topic_ids})',
-				array(
-					'current_member' => $user_info['id'],
+				[
+					'current_member' => $this->user_info['id'],
 					'topic_ids'      => $topic_ids
-				)
+				]
 			);
 		} else {
-			$request = $smcFunc['db_query']('', '
+			$request = $this->smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($user_info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($this->user_info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
 					AND t.approved = {int:is_approved}
 				ORDER BY RAND()
 				LIMIT {int:limit}',
-				array(
-					'current_member' => $user_info['id'],
+				[
+					'current_member' => $this->user_info['id'],
 					'is_approved'    => 1,
 					'limit'          => $num_topics
-				)
+				]
 			);
 		}
 
 		$icon_sources = [];
-		foreach ($context['stable_icons'] as $icon)
+		foreach ($this->context['stable_icons'] as $icon)
 			$icon_sources[$icon] = 'images_url';
 
 		$topics = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (! empty($modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
-				$icon_sources[$row['icon']] = file_exists($settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			if (! empty($this->modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
+				$icon_sources[$row['icon']] = file_exists($this->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
 			} elseif (! isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = 'images_url';
 			}
 
-			$topics[] = array(
-				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
+			$topics[] = [
+				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
 				'time'   => $row['poster_time'],
-				'link'   => '<a href="' . $scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
+				'link'   => '<a href="' . $this->scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
 				'is_new' => empty($row['is_read']),
-				'icon'   => '<img class="centericon" src="' . $settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
-			);
+				'icon'   => '<img class="centericon" src="' . $this->settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $topics;
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt;
-
 		if ($type !== 'random_topics')
 			return;
 
-		$randomTopics = Helper::cache('random_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+		$randomTopics = $this->cache('random_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
 
@@ -200,9 +193,9 @@ class RandomTopics extends Plugin
 			foreach ($randomTopics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
-					<span class="new_posts">' . $txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
-					<br><span class="smalltext">', $txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', Helper::getFriendlyTime($topic['time']), '</span>
+					<span class="new_posts">' . $this->txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
+					<br><span class="smalltext">', $this->txt['by'], ' ', $topic['poster'], '</span>
+					<br><span class="smalltext">', $this->getFriendlyTime($topic['time']), '</span>
 				</li>';
 			}
 

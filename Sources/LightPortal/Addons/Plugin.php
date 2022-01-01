@@ -16,10 +16,13 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Addons;
 
+use Bugo\LightPortal\Helper;
 use ReflectionClass;
 
 abstract class Plugin
 {
+	use Helper;
+
 	/** Addon type */
 	public string $type = 'block';
 
@@ -32,12 +35,6 @@ abstract class Plugin
 	/** Addon site link */
 	public string $link = '';
 
-	/** List of required addons separated by comma */
-	public array $requires = [];
-
-	/** Addon list those will be disabled on enabling */
-	public array $disables = [];
-
 	public function getCalledClass(): ReflectionClass
 	{
 		return new ReflectionClass(get_called_class());
@@ -48,19 +45,31 @@ abstract class Plugin
 		return $this->getCalledClass()->getShortName();
 	}
 
-	public function loadTemplate(string $template = 'template')
+	public function loadTemplate(string $sub_template = ''): Plugin
 	{
-		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $template . '.php';
+		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . 'template.php';
 
 		if (is_file($path))
 			require_once $path;
+
+		if (! empty($sub_template))
+			$this->context['sub_template'] = $sub_template;
+
+		return $this;
 	}
 
-	public function loadSsi()
+	public function withLayer(string $layer)
+	{
+		$this->context['template_layers'][] = $layer;
+	}
+
+	public function loadSsi(): Plugin
 	{
 		$path = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
 		if (is_file($path))
 			require_once $path;
+
+		return $this;
 	}
 }

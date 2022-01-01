@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -23,33 +23,27 @@ class Disqus extends Plugin
 
 	public function init()
 	{
-		global $txt;
-
-		$txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
+		$this->txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
 	}
 
 	public function addSettings(array &$config_vars)
 	{
-		global $txt;
-
-		$config_vars['disqus'][] = array('text', 'shortname', 'subtext' => $txt['lp_disqus']['shortname_subtext']);
+		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext']];
 	}
 
 	public function comments()
 	{
-		global $modSettings, $context;
-
-		if (! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === 'disqus' && ! empty($modSettings['lp_disqus_addon_shortname'])) {
-			$context['lp_disqus_comment_block'] = '
+		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->modSettings['lp_disqus_addon_shortname'])) {
+			$this->context['lp_disqus_comment_block'] = '
 				<div id="disqus_thread" class="windowbg"></div>
 				<script>
 					let disqus_config = function () {
-						this.page.url = "' . $context['canonical_url'] . '";
-						this.page.identifier = "' . $context['lp_page']['id'] . '";
+						this.page.url = "' . $this->context['canonical_url'] . '";
+						this.page.identifier = "' . $this->context['lp_page']['id'] . '";
 					};
 					(function () {
 						let d = document, s = d.createElement("script");
-						s.src = "https://' . $modSettings['lp_disqus_addon_shortname'] . '.disqus.com/embed.js";
+						s.src = "https://' . $this->modSettings['lp_disqus_addon_shortname'] . '.disqus.com/embed.js";
 						s.setAttribute("data-timestamp", +new Date());
 						(d.head || d.body).appendChild(s);
 					})();
@@ -59,27 +53,25 @@ class Disqus extends Plugin
 
 	public function frontAssets()
 	{
-		global $context, $modSettings;
-
-		if (empty($context['lp_frontpage_articles']))
+		if (empty($this->context['lp_frontpage_articles']))
 			return;
 
-		if (empty($modSettings['lp_show_comment_block']) || $modSettings['lp_show_comment_block'] !== 'disqus' || empty($modSettings['lp_disqus_addon_shortname']))
+		if (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] !== 'disqus' || empty($this->modSettings['lp_disqus_addon_shortname']))
 			return;
 
 		loadJavaScriptFile(
-			'https://' . $modSettings['lp_disqus_addon_shortname'] . '.disqus.com/count.js',
-			array(
+			'https://' . $this->modSettings['lp_disqus_addon_shortname'] . '.disqus.com/count.js',
+			[
 				'external' => true,
 				'async' => true,
-				'attributes' => array(
+				'attributes' => [
 					'id' => 'dsq-count-scr'
-				)
-			)
+				]
+			]
 		);
 
-		foreach ($context['lp_frontpage_articles'] as $id => $page) {
-			$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
+		foreach ($this->context['lp_frontpage_articles'] as $id => $page) {
+			$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
 		}
 	}
 }

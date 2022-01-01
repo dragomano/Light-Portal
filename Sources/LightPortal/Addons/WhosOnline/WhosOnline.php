@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class WhosOnline extends Plugin
 {
@@ -41,30 +40,28 @@ class WhosOnline extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'whos_online')
+		if ($this->context['lp_block']['type'] !== 'whos_online')
 			return;
 
-		$context['posting_fields']['show_group_key']['label']['text'] = $txt['lp_whos_online']['show_group_key'];
-		$context['posting_fields']['show_group_key']['input'] = array(
+		$this->context['posting_fields']['show_group_key']['label']['text'] = $this->txt['lp_whos_online']['show_group_key'];
+		$this->context['posting_fields']['show_group_key']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'show_group_key',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['show_group_key'])
-			),
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_group_key'])
+			],
 			'tab' => 'content'
-		);
+		];
 
-		$context['posting_fields']['update_interval']['label']['text'] = $txt['lp_whos_online']['update_interval'];
-		$context['posting_fields']['update_interval']['input'] = array(
+		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_whos_online']['update_interval'];
+		$this->context['posting_fields']['update_interval']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'update_interval',
 				'min'   => 0,
-				'value' => $context['lp_block']['options']['parameters']['update_interval']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['update_interval']
+			]
+		];
 	}
 
 	public function getData(): array
@@ -76,30 +73,28 @@ class WhosOnline extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $scripturl;
-
 		if ($type !== 'whos_online')
 			return;
 
-		$whos_online = Helper::cache('whos_online_addon_b' . $block_id . '_u' . $user_info['id'])
+		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(__CLASS__, 'getData');
 
 		if (empty($whos_online))
 			return;
 
-		echo Helper::getSmartContext('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . Helper::getSmartContext('lp_users_set', ['users' => $whos_online['num_users_online']]);
+		echo __('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . __('lp_users_set', ['users' => $whos_online['num_users_online']]);
 
 		$online_list = [];
 
-		if (! empty($user_info['buddies']) && ! empty($whos_online['num_buddies']))
-			$online_list[] = Helper::getSmartContext('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
+		if (! empty($this->user_info['buddies']) && ! empty($whos_online['num_buddies']))
+			$online_list[] = __('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
 
 		if (! empty($whos_online['num_spiders']))
-			$online_list[] = Helper::getSmartContext('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
+			$online_list[] = __('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
 
 		if (! empty($whos_online['num_users_hidden']))
-			$online_list[] = Helper::getSmartContext('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
+			$online_list[] = __('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
 		if (! empty($online_list))
 			echo ' (' . sentence_list($online_list) . ')';
@@ -115,7 +110,7 @@ class WhosOnline extends Plugin
 					continue;
 
 				if (allowedTo('view_mlist')) {
-					$groups[] = '<a href="' . $scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</a>';
+					$groups[] = '<a href="' . $this->scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</a>';
 				} else {
 					$groups[] = '<span' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</span>';
 				}

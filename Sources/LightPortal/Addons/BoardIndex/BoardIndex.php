@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\BoardIndex;
@@ -28,21 +28,17 @@ class BoardIndex extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		global $txt, $scripturl, $modSettings;
+		$this->txt['lp_board_index']['description'] = sprintf($this->txt['lp_board_index']['description'], $this->scripturl . '?action=forum');
 
-		$txt['lp_board_index']['description'] = sprintf($txt['lp_board_index']['description'], $scripturl . '?action=forum');
-
-		if (! isset($modSettings['lp_board_index_addon_allow_for_spiders']))
+		if (! isset($this->modSettings['lp_board_index_addon_allow_for_spiders']))
 			updateSettings(['lp_board_index_addon_allow_for_spiders' => false]);
 
-		$config_vars['board_index'][] = array('check', 'allow_for_spiders');
+		$config_vars['board_index'][] = ['check', 'allow_for_spiders'];
 	}
 
 	public function toggleRobotNoIndex()
 	{
-		global $modSettings, $context;
-
-		if (! empty($modSettings['lp_frontpage_mode']))
-			$context['robot_no_index'] = empty($modSettings['lp_board_index_addon_allow_for_spiders']);
+		if (! empty($this->modSettings['lp_frontpage_mode']))
+			$this->context['robot_no_index'] = empty($this->modSettings['lp_board_index_addon_allow_for_spiders']);
 	}
 }

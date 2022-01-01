@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class TagList extends Plugin
 {
@@ -39,97 +38,91 @@ class TagList extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'tag_list')
+		if ($this->context['lp_block']['type'] !== 'tag_list')
 			return;
 
-		$sources = array_combine(array('lp_tags', 'keywords'), $txt['lp_tag_list']['source_set']);
+		$sources = array_combine(['lp_tags', 'keywords'], $this->txt['lp_tag_list']['source_set']);
 
 		if (! class_exists('\Bugo\Optimus\Keywords'))
 			unset($sources['keywords']);
 
-		$context['posting_fields']['source']['label']['text'] = $txt['lp_tag_list']['source'];
-		$context['posting_fields']['source']['input'] = array(
+		$this->context['posting_fields']['source']['label']['text'] = $this->txt['lp_tag_list']['source'];
+		$this->context['posting_fields']['source']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'source'
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'content'
-		);
+		];
 
 		foreach ($sources as $key => $value) {
-			$context['posting_fields']['source']['input']['options'][$value] = array(
+			$this->context['posting_fields']['source']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['source']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['source']
+			];
 		}
 
-		$context['posting_fields']['sorting']['label']['text'] = $txt['lp_tag_list']['sorting'];
-		$context['posting_fields']['sorting']['input'] = array(
+		$this->context['posting_fields']['sorting']['label']['text'] = $this->txt['lp_tag_list']['sorting'];
+		$this->context['posting_fields']['sorting']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'sorting'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$sortingSet = array_combine(array('name', 'frequency'), $txt['lp_tag_list']['sorting_set']);
+		$sortingSet = array_combine(['name', 'frequency'], $this->txt['lp_tag_list']['sorting_set']);
 		foreach ($sortingSet as $key => $value) {
-			$context['posting_fields']['sorting']['input']['options'][$value] = array(
+			$this->context['posting_fields']['sorting']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['sorting']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['sorting']
+			];
 		}
 	}
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		global $smcFunc, $scripturl;
-
 		if (!class_exists('\Bugo\Optimus\Keywords'))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
 			GROUP BY ok.id, ok.name
 			ORDER BY {raw:sort}',
-			array(
+			[
 				'sort' => $sort
-			)
+			]
 		);
 
 		$keywords = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$keywords[] = array(
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$keywords[] = [
 				'value'     => $row['name'],
-				'link'      => $scripturl . '?action=keywords;id=' . $row['id'],
+				'link'      => $this->scripturl . '?action=keywords;id=' . $row['id'],
 				'frequency' => $row['frequency']
-			);
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $keywords;
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt;
-
 		if ($type !== 'tag_list')
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = Helper::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 				->setLifeTime($cache_time)
 				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
 		} else {
-			$tag_list = Helper::cache('tag_list_addon_b' . $block_id . '_u' . $user_info['id'])
+			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 				->setLifeTime($cache_time)
 				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
@@ -140,7 +133,7 @@ class TagList extends Plugin
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
 		} else {
-			echo $txt['lp_no_tags'];
+			echo $this->txt['lp_no_tags'];
 		}
 	}
 }

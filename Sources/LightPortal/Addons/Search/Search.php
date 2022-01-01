@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 01.01.21
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class Search extends Plugin
 {
@@ -29,70 +28,58 @@ class Search extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		global $modSettings;
-
 		$addSettings = [];
-		if (! isset($modSettings['lp_search_addon_min_chars']))
+		if (! isset($this->modSettings['lp_search_addon_min_chars']))
 			$addSettings['lp_search_addon_min_chars'] = 3;
 		if (! empty($addSettings))
 			updateSettings($addSettings);
 
-		$config_vars['search'][] = array('int', 'min_chars');
+		$config_vars['search'][] = ['int', 'min_chars'];
 	}
 
 	public function actions()
 	{
-		global $context;
+		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'qsearch')
+			return call_user_func([$this, 'prepareQuickResults']);
 
-		if (Helper::request()->is(LP_ACTION) && $context['current_subaction'] === 'qsearch')
-			return call_user_func(array($this, 'prepareQuickResults'));
-
-		if (Helper::request()->is(LP_ACTION) && $context['current_subaction'] === 'search')
-			return call_user_func(array($this, 'showResults'));
+		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'search')
+			return call_user_func([$this, 'showResults']);
 	}
 
 	public function showResults()
 	{
-		global $context, $txt;
+		$this->context['page_title']     = $this->txt['lp_search']['title'];
+		$this->context['robot_no_index'] = true;
 
-		$context['page_title']     = $txt['lp_search']['title'];
-		$context['robot_no_index'] = true;
+		$this->context['linktree'][] = [
+			'name' => $this->context['page_title']
+		];
 
-		$context['linktree'][] = array(
-			'name' => $context['page_title']
-		);
+		$this->context['search_results'] = $this->getResults();
 
-		$context['search_results'] = $this->getResults();
-
-		$this->loadTemplate();
-
-		$context['sub_template'] = 'show_results';
+		$this->loadTemplate('show_results');
 
 		obExit();
 	}
 
 	private function prepareQuickResults()
 	{
-		global $smcFunc;
-
-		$data = Helper::request()->json();
+		$data = $this->request()->json();
 
 		if (empty($data['phrase']))
 			return;
 
-		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars']($data['phrase']));
+		$query = $this->smcFunc['htmltrim']($this->smcFunc['htmlspecialchars']($data['phrase']));
 
 		exit(json_encode($this->query($query)));
 	}
 
 	private function getResults(): array
 	{
-		global $smcFunc;
-
-		if (Helper::request()->notEmpty('search') === false)
+		if ($this->request()->notEmpty('search') === false)
 			return [];
 
-		$query = $smcFunc['htmltrim']($smcFunc['htmlspecialchars'](Helper::request('search')));
+		$query = $this->smcFunc['htmltrim']($this->smcFunc['htmlspecialchars']($this->request('search')));
 
 		if (empty($query))
 			return [];
@@ -102,8 +89,6 @@ class Search extends Plugin
 
 	private function query(string $query): array
 	{
-		global $smcFunc, $context, $scripturl, $txt;
-
 		$title_words = explode(' ', $query);
 
 		$search_formula = '';
@@ -115,7 +100,7 @@ class Search extends Plugin
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 1 . ' ELSE 0 END';
 		}
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $search_formula . ') AS related, t.title, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -126,53 +111,51 @@ class Search extends Plugin
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY related DESC
 			LIMIT 10',
-			array(
-				'current_lang' => $context['user']['language'],
+			[
+				'current_lang' => $this->context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helper::getPermissions()
-			)
+				'permissions'  => $this->getPermissions()
+			]
 		);
 
 		$results = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))	{
-			Helper::parseContent($row['content'], $row['type']);
+		while ($row = $this->smcFunc['db_fetch_assoc']($request))	{
+			$row['content'] = parse_content($row['content'], $row['type']);
 
-			$results[] = array(
-				'link'    => $scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
+			$results[] = [
+				'link'    => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 				'title'   => $row['title'],
-				'content' => Helper::getTeaser($row['content']),
-				'author'  => empty($row['id_member']) ? $txt['guest'] : ('<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => Helper::getFriendlyTime($row['date'])
-			);
+				'content' => $this->getTeaser($row['content']),
+				'author'  => empty($row['id_member']) ? $this->txt['guest'] : ('<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
+				'date'    => $this->getFriendlyTime($row['date'])
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $results;
 	}
 
 	public function prepareContent(string $type)
 	{
-		global $scripturl, $context, $txt, $modSettings;
-
 		if ($type !== 'search')
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', ['external' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', ['external' => true]);
 
 		echo '
-		<form class="search_addon centertext" action="', $scripturl, '?action=', LP_ACTION, ';sa=search" method="post" accept-charset="', $context['character_set'], '">
-			<input type="search" name="search" placeholder="', $txt['lp_search']['title'], '">
+		<form class="search_addon centertext" action="', $this->scripturl, '?action=', LP_ACTION, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
+			<input type="search" name="search" placeholder="', $this->txt['lp_search']['title'], '">
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",' . (empty($modSettings['lp_search_addon_min_chars']) ? '' : '
-				minChars: ' . $modSettings['lp_search_addon_min_chars'] . ',') . '
+				selector: ".search_addon input",' . (empty($this->modSettings['lp_search_addon_min_chars']) ? '' : '
+				minChars: ' . $this->modSettings['lp_search_addon_min_chars'] . ',') . '
 				source: async function(term, response) {
-					const results = await fetch("', $scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
+					const results = await fetch("', $this->scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"
@@ -202,14 +185,14 @@ class Search extends Plugin
 
 	public function credits(array &$links)
 	{
-		$links[] = array(
+		$links[] = [
 			'title' => 'Vanilla JavaScript autoComplete',
 			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
 			'author' => 'Simon Steinberger / Pixabay.com',
-			'license' => array(
+			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://www.opensource.org/licenses/mit-license.php'
-			)
-		);
+			]
+		];
 	}
 }

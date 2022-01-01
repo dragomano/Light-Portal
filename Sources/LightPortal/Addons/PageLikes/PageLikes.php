@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 use Likes;
 
 /**
@@ -34,34 +33,32 @@ class PageLikes extends Plugin
 
 	public function validLikes(string $type, int $content)
 	{
-		global $smcFunc, $user_info;
-
 		if ($type !== 'lpp')
 			return false;
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT alias, author_id
 			FROM {db_prefix}lp_pages
 			WHERE page_id = {int:id}
 			LIMIT 1',
-			array(
+			[
 				'id' => $content
-			)
+			]
 		);
 
-		[$alias, $author_id] = $smcFunc['db_fetch_row']($request);
+		[$alias, $author_id] = $this->smcFunc['db_fetch_row']($request);
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		if (empty($alias))
 			return false;
 
 		return [
 			'type'        => $type,
-			'flush_cache' => 'lp_likes_page_' . $content . '_' . $user_info['id'],
+			'flush_cache' => 'lp_likes_page_' . $content . '_' . $this->user_info['id'],
 			'redirect'    => LP_PAGE_PARAM . '=' . $alias,
-			'can_like'    => $user_info['id'] == $author_id ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
+			'can_like'    => $this->user_info['id'] == $author_id ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
 		];
 	}
 
@@ -70,25 +67,23 @@ class PageLikes extends Plugin
 		if ($obj->get('type') !== 'lpp')
 			return;
 
-		Helper::cache()->put('likes_page_' . $obj->get('content') . '_count', ['num_likes' => $obj->get('numLikes')]);
+		$this->cache()->put('likes_page_' . $obj->get('content') . '_count', ['num_likes' => $obj->get('numLikes')]);
 	}
 
 	public function preparePageData(array &$data, bool $is_author)
 	{
-		global $modSettings, $user_info;
-
-		if (empty($modSettings['enable_likes']))
+		if (empty($this->modSettings['enable_likes']))
 			return;
 
-		loadJavaScriptFile('topic.js', array('defer' => false, 'minimize' => true), 'smf_topic');
+		loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
-		$user_likes = $user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
+		$user_likes = $this->user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
 
-		$data['likes'] = array(
+		$data['likes'] = [
 			'count'    => $this->getLikesCount($data['id']),
 			'you'      => in_array($data['id'], $user_likes),
-			'can_like' => ! $user_info['is_guest'] && ! $is_author && allowedTo('likes_like')
-		);
+			'can_like' => ! $this->user_info['is_guest'] && ! $is_author && allowedTo('likes_like')
+		];
 
 		ob_start();
 
@@ -101,35 +96,33 @@ class PageLikes extends Plugin
 
 	private function prepareLikesContext(int $page): array
 	{
-		global $user_info, $smcFunc;
-
 		if (empty($page))
 			return [];
 
-		$cache_key = 'likes_page_' . $page . '_' . $user_info['id'];
+		$cache_key = 'likes_page_' . $page . '_' . $this->user_info['id'];
 
-		if (($liked_pages = Helper::cache()->get($cache_key)) === null) {
-			$request = $smcFunc['db_query']('', '
+		if (($liked_pages = $this->cache()->get($cache_key)) === null) {
+			$request = $this->smcFunc['db_query']('', '
 				SELECT content_id
 				FROM {db_prefix}user_likes AS l
 					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
 				WHERE l.id_member = {int:current_user}
 					AND l.content_type = {literal:lpp}
 					AND p.page_id = {int:page}',
-				array(
-					'current_user' => $user_info['id'],
+				[
+					'current_user' => $this->user_info['id'],
 					'page'         => $page
-				)
+				]
 			);
 
 			$liked_pages = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request))
+			while ($row = $this->smcFunc['db_fetch_assoc']($request))
 				$liked_pages[] = (int) $row['content_id'];
 
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
 
-			Helper::cache()->put($cache_key, $liked_pages);
+			$this->cache()->put($cache_key, $liked_pages);
 		}
 
 		return $liked_pages;
@@ -137,31 +130,29 @@ class PageLikes extends Plugin
 
 	private function getLikesCount(int $page): int
 	{
-		global $smcFunc;
-
 		if (empty($page))
 			return 0;
 
 		$cache_key = 'likes_page_' . $page . '_count';
 
-		if (($num_likes = Helper::cache()->get($cache_key)) === null) {
-			$request = $smcFunc['db_query']('', '
+		if (($num_likes = $this->cache()->get($cache_key)) === null) {
+			$request = $this->smcFunc['db_query']('', '
 				SELECT COUNT(content_id)
 				FROM {db_prefix}user_likes AS l
 					INNER JOIN {db_prefix}lp_pages AS p ON (l.content_id = p.page_id)
 				WHERE l.content_type = {literal:lpp}
 					AND p.page_id = {int:page}',
-				array(
+				[
 					'page' => $page
-				)
+				]
 			);
 
-			[$num_likes] = $smcFunc['db_fetch_row']($request);
+			[$num_likes] = $this->smcFunc['db_fetch_row']($request);
 
-			$smcFunc['db_free_result']($request);
-			$smcFunc['lp_num_queries']++;
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
 
-			Helper::cache()->put($cache_key, ['num_likes' => $num_likes]);
+			$this->cache()->put($cache_key, ['num_likes' => $num_likes]);
 		}
 
 		return is_array($num_likes) ? $num_likes['num_likes'] : (int) $num_likes;

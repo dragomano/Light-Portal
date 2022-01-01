@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -26,7 +26,7 @@ class BootstrapIcons extends Plugin
 
 	public function init()
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', array('external' => true, 'seed' => false));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['external' => true, 'seed' => false]);
 	}
 
 	public function prepareIconTemplate(string &$template, string $icon)
@@ -50,14 +50,14 @@ class BootstrapIcons extends Plugin
 
 	public function credits(array &$links)
 	{
-		$links[] = array(
+		$links[] = [
 			'title' => 'Bootstrap Icons',
 			'link' => 'https://github.com/twbs/icons',
 			'author' => 'The Bootstrap Authors',
-			'license' => array(
+			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/twbs/icons/blob/main/LICENSE.md'
-			)
-		);
+			]
+		];
 	}
 }

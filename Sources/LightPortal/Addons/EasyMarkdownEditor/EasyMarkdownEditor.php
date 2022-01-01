@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -23,34 +23,32 @@ class EasyMarkdownEditor extends Plugin
 
 	public function prepareEditor(array $object)
 	{
-		global $txt, $editortxt;
-
 		if ($object['type'] !== 'markdown')
 			return;
 
 		loadLanguage('Editor');
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', ['external' => true]);
 		addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . $txt['lp_easy_markdown_editor']['lines'] . '"
+			content: "' . $this->txt['lp_easy_markdown_editor']['lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . $txt['lp_easy_markdown_editor']['words'] . '"
+			content: "' . $this->txt['lp_easy_markdown_editor']['words'] . '"
 		}
 		.CodeMirror pre {
 			max-height: none;
 		}');
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', array('external' => true));
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', ['external' => true]);
 		addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autofocus: true,
 			spellChecker: false,
-			placeholder: "' . $txt['lp_post_error_no_content'] . '",
+			placeholder: "' . $this->txt['lp_post_error_no_content'] . '",
 			forceSync: true,
 			onToggleFullScreen: function () {
 				toggleStickedPanels();
@@ -60,19 +58,19 @@ class EasyMarkdownEditor extends Plugin
 					name: "bold",
 					action: EasyMDE.toggleBold,
 					className: "fas fa-bold",
-					title: "' . $editortxt['bold'] . '"
+					title: "' . $this->editortxt['bold'] . '"
 				},
 				{
 					name: "italic",
 					action: EasyMDE.toggleItalic,
 					className: "fas fa-italic",
-					title: "' . $editortxt['italic'] . '"
+					title: "' . $this->editortxt['italic'] . '"
 				},
 				{
 					name: "strikethrough",
 					action: EasyMDE.toggleStrikethrough,
 					className: "fas fa-strikethrough",
-					title: "' . $editortxt['strikethrough'] . '"
+					title: "' . $this->editortxt['strikethrough'] . '"
 				},
 				"|",
 				{
@@ -82,52 +80,52 @@ class EasyMarkdownEditor extends Plugin
 						EasyMDE.toggleHeadingSmaller(editor);
 					},
 					className: "fas fa-header",
-					title: "' . $txt['lp_title'] . '"
+					title: "' . $this->txt['lp_title'] . '"
 				},
 				"|",
 				{
 					name: "image",
 					action: EasyMDE.drawImage,
 					className: "fas fa-picture-o",
-					title: "' . $editortxt['insert_image'] . '"
+					title: "' . $this->editortxt['insert_image'] . '"
 				},
 				{
 					name: "link",
 					action: EasyMDE.drawLink,
 					className: "fas fa-link",
-					title: "' . $editortxt['insert_link'] . '"
+					title: "' . $this->editortxt['insert_link'] . '"
 				},
 				"|",
 				{
 					name: "table",
 					action: EasyMDE.drawTable,
 					className: "fas fa-table",
-					title: "' . $editortxt['insert_table'] . '"
+					title: "' . $this->editortxt['insert_table'] . '"
 				},
 				{
 					name: "code",
 					action: EasyMDE.toggleCodeBlock,
 					className: "fas fa-code",
-					title: "' . $editortxt['code'] . '"
+					title: "' . $this->editortxt['code'] . '"
 				},
 				{
 					name: "quote",
 					action: EasyMDE.toggleBlockquote,
 					className: "fas fa-quote-left",
-					title: "' . $editortxt['insert_quote'] . '"
+					title: "' . $this->editortxt['insert_quote'] . '"
 				},
 				"|",
 				{
 					name: "unordered-list",
 					action: EasyMDE.toggleUnorderedList,
 					className: "fas fa-list-ul",
-					title: "' . $editortxt['bullet_list'] . '"
+					title: "' . $this->editortxt['bullet_list'] . '"
 				},
 				{
 					name: "ordered-list",
 					action: EasyMDE.toggleOrderedList,
 					className: "fas fa-list-ol",
-					title: "' . $editortxt['numbered_list'] . '"
+					title: "' . $this->editortxt['numbered_list'] . '"
 				},
 				{
 					name: "task-list",
@@ -136,39 +134,39 @@ class EasyMarkdownEditor extends Plugin
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . $txt['lp_easy_markdown_editor']['tasks'] . '"
+					title: "' . $this->txt['lp_easy_markdown_editor']['tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
 					action: EasyMDE.drawHorizontalRule,
 					className: "fas fa-minus",
-					title: "' . $editortxt['insert_horizontal_rule'] . '"
+					title: "' . $this->editortxt['insert_horizontal_rule'] . '"
 				},
 				"|",
 				{
 					name: "preview",
 					action: EasyMDE.togglePreview,
 					className: "fas fa-eye no-disable",
-					title: "' . $txt['preview'] . '"
+					title: "' . $this->txt['preview'] . '"
 				},
 				{
 					name: "side-by-side",
 					action: EasyMDE.toggleSideBySide,
 					className: "fas fa-columns no-disable no-mobile",
-					title: "' . $txt['lp_easy_markdown_editor']['toggle'] . '"
+					title: "' . $this->txt['lp_easy_markdown_editor']['toggle'] . '"
 				},
 				{
 					name: "fullscreen",
 					action: EasyMDE.toggleFullScreen,
 					className: "fas fa-arrows-alt no-disable no-mobile",
-					title: "' . $editortxt['maximize'] . '"
+					title: "' . $this->editortxt['maximize'] . '"
 				},
 				"|",
 				{
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . $txt['lp_easy_markdown_editor']['guide'] . '"
+					title: "' . $this->txt['lp_easy_markdown_editor']['guide'] . '"
 				}
 			]
 		});
@@ -205,14 +203,14 @@ class EasyMarkdownEditor extends Plugin
 
 	public function credits(array &$links)
 	{
-		$links[] = array(
+		$links[] = [
 			'title' => 'EasyMDE',
 			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
 			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',
-			'license' => array(
+			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
-			)
-		);
+			]
+		];
 	}
 }

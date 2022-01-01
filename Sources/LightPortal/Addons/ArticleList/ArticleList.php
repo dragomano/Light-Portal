@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class ArticleList extends Plugin
 {
@@ -47,14 +46,12 @@ class ArticleList extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'article_list')
+		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
 
 		$data = [];
-		foreach ($context['lp_all_content_classes'] as $key => $template) {
-			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $context['lp_block']['options']['parameters']['body_class'] ? 'true' : 'false') . '}';
+		foreach ($this->context['lp_all_content_classes'] as $key => $template) {
+			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $this->txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $this->context['lp_block']['options']['parameters']['body_class'] ? 'true' : 'false') . '}';
 		}
 
 		addInlineJavaScript('
@@ -67,63 +64,61 @@ class ArticleList extends Plugin
 			closeOnSelect: true
 		});', true);
 
-		$context['posting_fields']['body_class']['label']['text'] = $txt['lp_article_list']['body_class'];
-		$context['posting_fields']['body_class']['input'] = array(
+		$this->context['posting_fields']['body_class']['label']['text'] = $this->txt['lp_article_list']['body_class'];
+		$this->context['posting_fields']['body_class']['input'] = [
 			'type' => 'select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'body_class'
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'appearance'
-		);
+		];
 
-		$context['posting_fields']['display_type']['label']['text'] = $txt['lp_article_list']['display_type'];
-		$context['posting_fields']['display_type']['input'] = array(
+		$this->context['posting_fields']['display_type']['label']['text'] = $this->txt['lp_article_list']['display_type'];
+		$this->context['posting_fields']['display_type']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'display_type'
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'content'
-		);
+		];
 
-		foreach ($txt['lp_article_list']['display_type_set'] as $article_type => $title) {
-			$context['posting_fields']['display_type']['input']['options'][$title] = array(
+		foreach ($this->txt['lp_article_list']['display_type_set'] as $article_type => $title) {
+			$this->context['posting_fields']['display_type']['input']['options'][$title] = [
 				'value'    => $article_type,
-				'selected' => $article_type == $context['lp_block']['options']['parameters']['display_type']
-			);
+				'selected' => $article_type == $this->context['lp_block']['options']['parameters']['display_type']
+			];
 		}
 
-		$context['posting_fields']['ids']['label']['text'] = $txt['lp_article_list']['ids'];
-		$context['posting_fields']['ids']['input'] = array(
+		$this->context['posting_fields']['ids']['label']['text'] = $this->txt['lp_article_list']['ids'];
+		$this->context['posting_fields']['ids']['input'] = [
 			'type' => 'text',
-			'after' => $txt['lp_article_list']['ids_subtext'],
-			'attributes' => array(
+			'after' => $this->txt['lp_article_list']['ids_subtext'],
+			'attributes' => [
 				'id'    => 'ids',
-				'value' => $context['lp_block']['options']['parameters']['ids'],
+				'value' => $this->context['lp_block']['options']['parameters']['ids'],
 				'style' => 'width: 100%'
-			),
+			],
 			'tab' => 'content'
-		);
+		];
 
-		$context['posting_fields']['seek_images']['label']['text'] = $txt['lp_article_list']['seek_images'];
-		$context['posting_fields']['seek_images']['input'] = array(
+		$this->context['posting_fields']['seek_images']['label']['text'] = $this->txt['lp_article_list']['seek_images'];
+		$this->context['posting_fields']['seek_images']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'seek_images',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['seek_images'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['seek_images'])
+			]
+		];
 	}
 
 	public function getTopics(array $parameters): array
 	{
-		global $smcFunc, $modSettings;
-
 		if (empty($parameters['ids']))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
@@ -133,46 +128,44 @@ class ArticleList extends Plugin
 				AND t.approved = {int:is_approved}
 				AND m.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
-			array(
+			[
 				'topics'      => $parameters['ids'],
 				'is_approved' => 1
-			)
+			]
 		);
 
 		$topics = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			censorText($row['subject']);
 			censorText($row['body']);
 
 			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
-			$image = empty($image) ? ($modSettings['lp_image_placeholder'] ?? '') : array_pop($value);
+			$image = empty($image) ? ($this->modSettings['lp_image_placeholder'] ?? '') : array_pop($value);
 
 			$body = parse_bbc($row['body'], $row['smileys_enabled'], $row['id_msg']);
 
-			$topics[$row['id_topic']] = array(
+			$topics[$row['id_topic']] = [
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
-				'description' => Helper::getTeaser($body),
+				'description' => $this->getTeaser($body),
 				'image'       => $image
-			);
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $topics;
 	}
 
 	public function getPages(array $parameters): array
 	{
-		global $smcFunc, $modSettings;
-
 		if (empty($parameters['ids']))
 			return [];
 
-		$titles = Helper::getAllTitles();
+		$titles = $this->getAllTitles();
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
@@ -180,49 +173,47 @@ class ArticleList extends Plugin
 				AND permissions IN ({array_int:permissions})
 				AND page_id IN ({array_int:pages})
 			ORDER BY page_id DESC',
-			array(
+			[
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => Helper::getPermissions(),
+				'permissions'  => $this->getPermissions(),
 				'pages'        => $parameters['ids']
-			)
+			]
 		);
 
 		$pages = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			if (Helper::isFrontpage($row['alias']))
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			if ($this->isFrontpage($row['alias']))
 				continue;
 
-			Helper::parseContent($row['content'], $row['type']);
+			$row['content'] = parse_content($row['content'], $row['type']);
 
-			$image = empty($parameters['seek_images']) ? '' : Helper::getImageFromText($row['content']);
+			$image = empty($parameters['seek_images']) ? '' : $this->getImageFromText($row['content']);
 
-			$pages[$row['page_id']] = array(
+			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
 				'title'       => $titles[$row['page_id']] ?? [],
 				'alias'       => $row['alias'],
-				'description' => Helper::getTeaser($row['description'] ?: strip_tags($row['content'])),
-				'image'       => $image ?: ($modSettings['lp_image_placeholder'] ?? '')
-			);
+				'description' => $this->getTeaser($row['description'] ?: strip_tags($row['content'])),
+				'image'       => $image ?: ($this->modSettings['lp_image_placeholder'] ?? '')
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $pages;
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $scripturl, $context, $txt;
-
 		if ($type !== 'article_list')
 			return;
 
 		$ids = explode(',', $parameters['ids']);
 		$parameters['ids'] = array_filter($ids, fn($item) => is_numeric($item));
 
-		$article_list = Helper::cache('article_list_addon_b' . $block_id . '_u' . $user_info['id'])
+		$article_list = $this->cache('article_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
@@ -240,13 +231,13 @@ class ArticleList extends Plugin
 				</div>';
 					}
 
-					$content .= '<a href="' . $scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
+					$content .= '<a href="' . $this->scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['body_class']], $content, null);
+					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}
 			} else {
 				foreach ($article_list as $page) {
-					if (empty($title = Helper::getTranslatedTitle($page['title'])))
+					if (empty($title = $this->getTranslatedTitle($page['title'])))
 						continue;
 
 					$content = '';
@@ -257,16 +248,16 @@ class ArticleList extends Plugin
 				</div>';
 					}
 
-					$content .= '<a href="' . $scripturl . '?' . LP_PAGE_PARAM . '=' . $page['alias'] . '">' . $title . '</a>';
+					$content .= '<a href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $page['alias'] . '">' . $title . '</a>';
 
-					echo sprintf($context['lp_all_content_classes'][$parameters['body_class']], $content, null);
+					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}
 			}
 
 			echo '
 		</div>';
 		} else {
-			echo '<div class="errorbox">', $txt['lp_article_list']['no_items'], '</div>';
+			echo '<div class="errorbox">', $this->txt['lp_article_list']['no_items'], '</div>';
 		}
 	}
 }

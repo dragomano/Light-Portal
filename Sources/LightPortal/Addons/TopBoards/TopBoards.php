@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class TopBoards extends Plugin
 {
@@ -43,47 +42,45 @@ class TopBoards extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'top_boards')
+		if ($this->context['lp_block']['type'] !== 'top_boards')
 			return;
 
-		$context['posting_fields']['num_boards']['label']['text'] = $txt['lp_top_boards']['num_boards'];
-		$context['posting_fields']['num_boards']['input'] = array(
+		$this->context['posting_fields']['num_boards']['label']['text'] = $this->txt['lp_top_boards']['num_boards'];
+		$this->context['posting_fields']['num_boards']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'num_boards',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_boards']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['num_boards']
+			]
+		];
 
-		$context['posting_fields']['entity_type']['label']['text'] = $txt['lp_top_boards']['entity_type'];
-		$context['posting_fields']['entity_type']['input'] = array(
+		$this->context['posting_fields']['entity_type']['label']['text'] = $this->txt['lp_top_boards']['entity_type'];
+		$this->context['posting_fields']['entity_type']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'entity_type'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$entity_types = array_combine(array('num_topics', 'num_posts'), $txt['lp_top_boards']['entity_type_set']);
+		$entity_types = array_combine(['num_topics', 'num_posts'], $this->txt['lp_top_boards']['entity_type_set']);
 
 		foreach ($entity_types as $key => $value) {
-			$context['posting_fields']['entity_type']['input']['options'][$value] = array(
+			$this->context['posting_fields']['entity_type']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['entity_type']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['entity_type']
+			];
 		}
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_boards']['show_numbers_only'];
-		$context['posting_fields']['show_numbers_only']['input'] = array(
+		$this->context['posting_fields']['show_numbers_only']['label']['text'] = $this->txt['lp_top_boards']['show_numbers_only'];
+		$this->context['posting_fields']['show_numbers_only']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['show_numbers_only'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+			]
+		];
 	}
 
 	public function getData(int $num_boards): array
@@ -95,12 +92,10 @@ class TopBoards extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $txt;
-
 		if ($type !== 'top_boards')
 			return;
 
-		$top_boards = Helper::cache('top_boards_addon_b' . $block_id . '_u' . $user_info['id'])
+		$top_boards = $this->cache('top_boards_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['num_boards']);
 
@@ -124,7 +119,7 @@ class TopBoards extends Plugin
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Helper::getSmartContext($txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : __($this->txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
 			</dd>';
 		}
 

@@ -10,195 +10,186 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\EhPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherPageImport;
-use Bugo\LightPortal\Helper;
 
 class Import extends AbstractOtherPageImport
 {
 	public function main()
 	{
-		global $context, $txt, $scripturl;
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_eh_portal']['label_name'];
+		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
 
-		$context['page_title']      = $txt['lp_portal'] . ' - ' . $txt['lp_eh_portal']['label_name'];
-		$context['page_area_title'] = $txt['lp_pages_import'];
-		$context['canonical_url']   = $scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
-
-		$context[$context['admin_menu_name']]['tab_data'] = array(
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $txt['lp_eh_portal']['desc']
-		);
+			'description' => $this->txt['lp_eh_portal']['desc']
+		];
 
 		$this->run();
 
-		$listOptions = array(
+		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 50,
-			'title' => $txt['lp_pages_import'],
-			'no_items_label' => $txt['lp_no_items'],
-			'base_href' => $context['canonical_url'],
+			'title' => $this->txt['lp_pages_import'],
+			'no_items_label' => $this->txt['lp_no_items'],
+			'base_href' => $this->context['canonical_url'],
 			'default_sort_col' => 'id',
-			'get_items' => array(
-				'function' => array($this, 'getAll')
-			),
-			'get_count' => array(
-				'function' => array($this, 'getTotalCount')
-			),
-			'columns' => array(
-				'id' => array(
-					'header' => array(
+			'get_items' => [
+				'function' => [$this, 'getAll']
+			],
+			'get_count' => [
+				'function' => [$this, 'getTotalCount']
+			],
+			'columns' => [
+				'id' => [
+					'header' => [
 						'value' => '#',
 						'style' => 'width: 5%'
-					),
-					'data' => array(
+					],
+					'data' => [
 						'db'    => 'id',
 						'class' => 'centertext'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 'id_page',
 						'reverse' => 'id_page DESC'
-					)
-				),
-				'alias' => array(
-					'header' => array(
-						'value' => $txt['lp_page_alias']
-					),
-					'data' => array(
+					]
+				],
+				'alias' => [
+					'header' => [
+						'value' => $this->txt['lp_page_alias']
+					],
+					'data' => [
 						'db'    => 'alias',
 						'class' => 'centertext word_break'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 'namespace DESC',
 						'reverse' => 'namespace'
-					)
-				),
-				'title' => array(
-					'header' => array(
-						'value' => $txt['lp_title']
-					),
-					'data' => array(
+					]
+				],
+				'title' => [
+					'header' => [
+						'value' => $this->txt['lp_title']
+					],
+					'data' => [
 						'db'    => 'title',
 						'class' => 'word_break'
-					),
-					'sort' => array(
+					],
+					'sort' => [
 						'default' => 'title DESC',
 						'reverse' => 'title'
-					)
-				),
-				'actions' => array(
-					'header' => array(
+					]
+				],
+				'actions' => [
+					'header' => [
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
-					),
-					'data' => array(
+					],
+					'data' => [
 						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
-					)
-				)
-			),
-			'form' => array(
-				'href' => $context['canonical_url']
-			),
-			'additional_rows' => array(
-				array(
+					]
+				]
+			],
+			'form' => [
+				'href' => $this->context['canonical_url']
+			],
+			'additional_rows' => [
+				[
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $txt['lp_eh_portal']['button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $txt['lp_eh_portal']['button_all'] . '" class="button">'
-				)
-			)
-		);
+						<input type="submit" name="import_selection" value="' . $this->txt['lp_eh_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $this->txt['lp_eh_portal']['button_all'] . '" class="button">'
+				]
+			]
+		];
 
-		Helper::require('Subs-List');
+		$this->require('Subs-List');
 		createList($listOptions);
 
-		$context['sub_template'] = 'show_list';
-		$context['default_list'] = 'lp_pages';
+		$this->context['sub_template'] = 'show_list';
+		$this->context['default_list'] = 'lp_pages';
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
-		global $smcFunc, $db_prefix, $user_info;
-
 		db_extend();
 
-		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'sp_pages')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'sp_pages')))
 			return [];
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array(
+			[
 				'sort'  => $sort,
 				'start' => $start,
 				'limit' => $items_per_page
-			)
+			]
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['id_page']] = array(
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
 				'alias'      => $row['namespace'],
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['views'],
-				'author_id'  => $user_info['id'],
-				'created_at' => Helper::getFriendlyTime(time()),
+				'author_id'  => $this->user_info['id'],
+				'created_at' => $this->getFriendlyTime(time()),
 				'title'      => $row['title']
-			);
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		global $smcFunc, $db_prefix;
-
 		db_extend();
 
-		if (empty($smcFunc['db_list_tables'](false, $db_prefix . 'sp_pages')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'sp_pages')))
 			return 0;
 
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_pages',
-			array()
+			[]
 		);
 
-		[$num_pages] = $smcFunc['db_fetch_row']($request);
+		[$num_pages] = $this->smcFunc['db_fetch_row']($request);
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return (int) $num_pages;
 	}
 
 	protected function getItems(array $pages): array
 	{
-		global $smcFunc, $user_info;
-
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
-			array(
+			[
 				'pages' => $pages
-			)
+			]
 		);
 
 		$items = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			if (! empty($row['permission_set'])) {
 				$perm = $row['permission_set'];
 			} else {
@@ -215,9 +206,9 @@ class Import extends AbstractOtherPageImport
 				}
 			}
 
-			$items[$row['id_page']] = array(
+			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
-				'author_id'    => $user_info['id'],
+				'author_id'    => $this->user_info['id'],
 				'alias'        => $row['namespace'] ?: ('page_' . $row['id_page']),
 				'description'  => '',
 				'content'      => $row['body'],
@@ -229,11 +220,11 @@ class Import extends AbstractOtherPageImport
 				'created_at'   => time(),
 				'updated_at'   => 0,
 				'title'        => $row['title']
-			);
+			];
 		}
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $items;
 	}

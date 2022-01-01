@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class TinySlider extends Plugin
 {
@@ -55,7 +54,7 @@ class TinySlider extends Plugin
 		if ($type !== 'tiny_slider')
 			return;
 
-		$data = Helper::post()->only(['image_title', 'image_link']);
+		$data = $this->post()->only(['image_title', 'image_link']);
 
 		$images = [];
 		if (! empty($data) && ! empty($data['image_title']) && ! empty($data['image_link'])) {
@@ -69,7 +68,7 @@ class TinySlider extends Plugin
 				];
 			}
 
-			Helper::post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
+			$this->post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
 		$parameters['use_cdn']            = FILTER_VALIDATE_BOOLEAN;
@@ -96,216 +95,214 @@ class TinySlider extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'tiny_slider')
+		if ($this->context['lp_block']['type'] !== 'tiny_slider')
 			return;
 
-		$context['posting_fields']['use_cdn']['label']['text'] = $txt['lp_tiny_slider']['use_cdn'];
-		$context['posting_fields']['use_cdn']['label']['after'] = ' <img src="https://data.jsdelivr.com/v1/package/npm/tiny-slider/badge?style=rounded" alt="">';
-		$context['posting_fields']['use_cdn']['input'] = array(
+		$this->context['posting_fields']['use_cdn']['label']['text'] = $this->txt['lp_tiny_slider']['use_cdn'];
+		$this->context['posting_fields']['use_cdn']['label']['after'] = ' <img src="https://data.jsdelivr.com/v1/package/npm/tiny-slider/badge?style=rounded" alt="">';
+		$this->context['posting_fields']['use_cdn']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'use_cdn',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['use_cdn'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['use_cdn'])
+			]
+		];
 
-		$context['posting_fields']['axis']['label']['text'] = $txt['lp_tiny_slider']['axis'];
-		$context['posting_fields']['axis']['input'] = array(
+		$this->context['posting_fields']['axis']['label']['text'] = $this->txt['lp_tiny_slider']['axis'];
+		$this->context['posting_fields']['axis']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'axis'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$axis_directions = array_combine(array('vertical', 'horizontal'), $txt['lp_panel_direction_set']);
+		$axis_directions = array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']);
 
 		foreach ($axis_directions as $key => $value) {
-			$context['posting_fields']['axis']['input']['options'][$value] = array(
+			$this->context['posting_fields']['axis']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['axis']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['axis']
+			];
 		}
 
-		$context['posting_fields']['num_items']['label']['text'] = $txt['lp_tiny_slider']['num_items'];
-		$context['posting_fields']['num_items']['input'] = array(
-			'after' => $txt['lp_tiny_slider']['num_items_subtext'],
+		$this->context['posting_fields']['num_items']['label']['text'] = $this->txt['lp_tiny_slider']['num_items'];
+		$this->context['posting_fields']['num_items']['input'] = [
+			'after' => $this->txt['lp_tiny_slider']['num_items_subtext'],
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'num_items',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_items']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['num_items']
+			]
+		];
 
-		$context['posting_fields']['gutter']['label']['text'] = $txt['lp_tiny_slider']['gutter'];
-		$context['posting_fields']['gutter']['input'] = array(
+		$this->context['posting_fields']['gutter']['label']['text'] = $this->txt['lp_tiny_slider']['gutter'];
+		$this->context['posting_fields']['gutter']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'gutter',
 				'min'   => 0,
-				'value' => $context['lp_block']['options']['parameters']['gutter']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['gutter']
+			]
+		];
 
-		$context['posting_fields']['edge_padding']['label']['text'] = $txt['lp_tiny_slider']['edge_padding'];
-		$context['posting_fields']['edge_padding']['input'] = array(
+		$this->context['posting_fields']['edge_padding']['label']['text'] = $this->txt['lp_tiny_slider']['edge_padding'];
+		$this->context['posting_fields']['edge_padding']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'edge_padding',
 				'min'   => 0,
-				'value' => $context['lp_block']['options']['parameters']['edge_padding']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['edge_padding']
+			]
+		];
 
-		$context['posting_fields']['controls']['label']['text'] = $txt['lp_tiny_slider']['controls'];
-		$context['posting_fields']['controls']['input'] = array(
+		$this->context['posting_fields']['controls']['label']['text'] = $this->txt['lp_tiny_slider']['controls'];
+		$this->context['posting_fields']['controls']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'controls',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['controls'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['controls'])
+			]
+		];
 
-		$context['posting_fields']['nav']['label']['text'] = $txt['lp_tiny_slider']['nav'];
-		$context['posting_fields']['nav']['input'] = array(
+		$this->context['posting_fields']['nav']['label']['text'] = $this->txt['lp_tiny_slider']['nav'];
+		$this->context['posting_fields']['nav']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'nav',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['nav'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['nav'])
+			]
+		];
 
-		$context['posting_fields']['nav_as_thumbnails']['label']['text'] = $txt['lp_tiny_slider']['nav_as_thumbnails'];
-		$context['posting_fields']['nav_as_thumbnails']['input'] = array(
+		$this->context['posting_fields']['nav_as_thumbnails']['label']['text'] = $this->txt['lp_tiny_slider']['nav_as_thumbnails'];
+		$this->context['posting_fields']['nav_as_thumbnails']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'nav_as_thumbnails',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['nav_as_thumbnails'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['nav_as_thumbnails'])
+			]
+		];
 
-		$context['posting_fields']['arrow_keys']['label']['text'] = $txt['lp_tiny_slider']['arrow_keys'];
-		$context['posting_fields']['arrow_keys']['input'] = array(
+		$this->context['posting_fields']['arrow_keys']['label']['text'] = $this->txt['lp_tiny_slider']['arrow_keys'];
+		$this->context['posting_fields']['arrow_keys']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'arrow_keys',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['arrow_keys'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['arrow_keys'])
+			]
+		];
 
-		$context['posting_fields']['fixed_width']['label']['text'] = $txt['lp_tiny_slider']['fixed_width'];
-		$context['posting_fields']['fixed_width']['input'] = array(
-			'after' => $txt['zero_for_no_limit'],
+		$this->context['posting_fields']['fixed_width']['label']['text'] = $this->txt['lp_tiny_slider']['fixed_width'];
+		$this->context['posting_fields']['fixed_width']['input'] = [
+			'after' => $this->txt['zero_for_no_limit'],
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'fixed_width',
 				'min'   => 0,
-				'value' => $context['lp_block']['options']['parameters']['fixed_width']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['fixed_width']
+			]
+		];
 
-		$context['posting_fields']['slide_by']['label']['text'] = $txt['lp_tiny_slider']['slide_by'];
-		$context['posting_fields']['slide_by']['input'] = array(
+		$this->context['posting_fields']['slide_by']['label']['text'] = $this->txt['lp_tiny_slider']['slide_by'];
+		$this->context['posting_fields']['slide_by']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'slide_by',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['slide_by']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['slide_by']
+			]
+		];
 
-		$context['posting_fields']['speed']['label']['text'] = $txt['lp_tiny_slider']['speed'];
-		$context['posting_fields']['speed']['input'] = array(
+		$this->context['posting_fields']['speed']['label']['text'] = $this->txt['lp_tiny_slider']['speed'];
+		$this->context['posting_fields']['speed']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'speed',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['speed']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['speed']
+			]
+		];
 
-		$context['posting_fields']['autoplay']['label']['text'] = $txt['lp_tiny_slider']['autoplay'];
-		$context['posting_fields']['autoplay']['input'] = array(
+		$this->context['posting_fields']['autoplay']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay'];
+		$this->context['posting_fields']['autoplay']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'autoplay',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['autoplay'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['autoplay'])
+			]
+		];
 
-		$context['posting_fields']['autoplay_timeout']['label']['text'] = $txt['lp_tiny_slider']['autoplay_timeout'];
-		$context['posting_fields']['autoplay_timeout']['input'] = array(
+		$this->context['posting_fields']['autoplay_timeout']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay_timeout'];
+		$this->context['posting_fields']['autoplay_timeout']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'autoplay_timeout',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['autoplay_timeout']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['autoplay_timeout']
+			]
+		];
 
-		$context['posting_fields']['autoplay_direction']['label']['text'] = $txt['lp_tiny_slider']['autoplay_direction'];
-		$context['posting_fields']['autoplay_direction']['input'] = array(
+		$this->context['posting_fields']['autoplay_direction']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay_direction'];
+		$this->context['posting_fields']['autoplay_direction']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'autoplay_direction'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$autoplay_directions = array_combine(array('forward', 'backward'), $txt['lp_tiny_slider']['autoplay_direction_set']);
+		$autoplay_directions = array_combine(['forward', 'backward'], $this->txt['lp_tiny_slider']['autoplay_direction_set']);
 
 		foreach ($autoplay_directions as $key => $value) {
-			$context['posting_fields']['autoplay_direction']['input']['options'][$value] = array(
+			$this->context['posting_fields']['autoplay_direction']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['autoplay_direction']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['autoplay_direction']
+			];
 		}
 
-		$context['posting_fields']['loop']['label']['text'] = $txt['lp_tiny_slider']['loop'];
-		$context['posting_fields']['loop']['input'] = array(
+		$this->context['posting_fields']['loop']['label']['text'] = $this->txt['lp_tiny_slider']['loop'];
+		$this->context['posting_fields']['loop']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'loop',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['loop'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['loop'])
+			]
+		];
 
-		$context['posting_fields']['rewind']['label']['text'] = $txt['lp_tiny_slider']['rewind'];
-		$context['posting_fields']['rewind']['input'] = array(
+		$this->context['posting_fields']['rewind']['label']['text'] = $this->txt['lp_tiny_slider']['rewind'];
+		$this->context['posting_fields']['rewind']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'rewind',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['rewind'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['rewind'])
+			]
+		];
 
-		$context['posting_fields']['lazyload']['label']['text'] = $txt['lp_tiny_slider']['lazyload'];
-		$context['posting_fields']['lazyload']['input'] = array(
+		$this->context['posting_fields']['lazyload']['label']['text'] = $this->txt['lp_tiny_slider']['lazyload'];
+		$this->context['posting_fields']['lazyload']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'lazyload',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['lazyload'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['lazyload'])
+			]
+		];
 
-		$context['posting_fields']['mouse_drag']['label']['text'] = $txt['lp_tiny_slider']['mouse_drag'];
-		$context['posting_fields']['mouse_drag']['input'] = array(
+		$this->context['posting_fields']['mouse_drag']['label']['text'] = $this->txt['lp_tiny_slider']['mouse_drag'];
+		$this->context['posting_fields']['mouse_drag']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'mouse_drag',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['mouse_drag'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['mouse_drag'])
+			]
+		];
 
 		$this->loadTemplate();
 
 		addInlineJavaScript('
 		function handleImages() {
 			return {
-				images: ' . ($context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
+				images: ' . ($this->context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
 				addNewImage() {
 					this.images.push({
 						link: "",
@@ -318,15 +315,13 @@ class TinySlider extends Plugin
 			}
 		}');
 
-		$context['posting_fields']['images']['label']['html'] = $txt['lp_tiny_slider']['images'];
-		$context['posting_fields']['images']['input']['html'] = tiny_slider_images();
-		$context['posting_fields']['images']['input']['tab']  = 'content';
+		$this->context['posting_fields']['images']['label']['html'] = $this->txt['lp_tiny_slider']['images'];
+		$this->context['posting_fields']['images']['input']['html'] = tiny_slider_images();
+		$this->context['posting_fields']['images']['input']['tab']  = 'content';
 	}
 
 	public function getData(int $block_id, array $parameters): array
 	{
-		global $txt;
-
 		if (empty($parameters['images']))
 			return [];
 
@@ -371,7 +366,7 @@ class TinySlider extends Plugin
 		}
 
 		if (! empty($parameters['controls'])) {
-			$buttons = array_combine(array('prev', 'next'), $txt['lp_tiny_slider']['controls_buttons']);
+			$buttons = array_combine(['prev', 'next'], $this->txt['lp_tiny_slider']['controls_buttons']);
 
 			$html .= '
 			<ul class="controls customize-controls">
@@ -398,12 +393,10 @@ class TinySlider extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info;
-
 		if ($type !== 'tiny_slider')
 			return;
 
-		$tiny_slider_html = Helper::cache('tiny_slider_addon_b' . $block_id . '_' . $user_info['language'])
+		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $block_id, $parameters);
 
@@ -411,11 +404,11 @@ class TinySlider extends Plugin
 			return;
 
 		if (! empty($parameters['use_cdn'])) {
-			loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', array('external' => true));
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', array('external' => true));
+			loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', ['external' => true]);
+			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', ['external' => true]);
 		} else {
 			loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', array('minimize' => true));
+			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
 		}
 
 		addInlineJavaScript('
@@ -465,14 +458,14 @@ class TinySlider extends Plugin
 
 	public function credits(array &$links)
 	{
-		$links[] = array(
+		$links[] = [
 			'title' => 'Tiny Slider 2',
 			'link' => 'https://github.com/ganlanyuan/tiny-slider',
 			'author' => 'William Lin',
-			'license' => array(
+			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/ganlanyuan/tiny-slider/blob/master/LICENSE'
-			)
-		);
+			]
+		];
 	}
 }

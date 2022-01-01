@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -25,22 +25,20 @@ class HidingBlocks extends Plugin
 
 	public function init()
 	{
-		global $context;
-
-		if (empty($context['lp_active_blocks']))
+		if (empty($this->context['lp_active_blocks']))
 			return;
 
-		foreach ($context['lp_active_blocks'] as $id => $block) {
+		foreach ($this->context['lp_active_blocks'] as $id => $block) {
 			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
 				continue;
 
 			$breakpoints = array_flip(explode(',', $block['parameters']['hidden_breakpoints']));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
-					if (empty($context['lp_active_blocks'][$id]['custom_class']))
-						$context['lp_active_blocks'][$id]['custom_class'] = '';
+					if (empty($this->context['lp_active_blocks'][$id]['custom_class']))
+						$this->context['lp_active_blocks'][$id]['custom_class'] = '';
 
-					$context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
+					$this->context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
 				}
 			}
 		}
@@ -48,29 +46,25 @@ class HidingBlocks extends Plugin
 
 	public function blockOptions(array &$options)
 	{
-		global $context;
-
-		$options[$context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
+		$options[$this->context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
 	}
 
 	public function validateBlockData(array &$parameters)
 	{
-		$parameters['hidden_breakpoints'] = array(
+		$parameters['hidden_breakpoints'] = [
 			'name'   => 'hidden_breakpoints',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
-		);
+		];
 	}
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
 		// Prepare the breakpoints list
-		$current_breakpoints = $context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
+		$current_breakpoints = $this->context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
 		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
 
-		$breakpoints = array_combine(array('xs', 'sm', 'md', 'lg', 'xl'), $txt['lp_hiding_blocks']['hidden_breakpoints_set']);
+		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], $this->txt['lp_hiding_blocks']['hidden_breakpoints_set']);
 
 		$data = [];
 		foreach ($breakpoints as $bp => $name) {
@@ -84,21 +78,21 @@ class HidingBlocks extends Plugin
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
+			placeholder: "' . $this->txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
 
-		$context['posting_fields']['hidden_breakpoints']['label']['text'] = $txt['lp_hiding_blocks']['hidden_breakpoints'];
-		$context['posting_fields']['hidden_breakpoints']['input'] = array(
+		$this->context['posting_fields']['hidden_breakpoints']['label']['text'] = $this->txt['lp_hiding_blocks']['hidden_breakpoints'];
+		$this->context['posting_fields']['hidden_breakpoints']['input'] = [
 			'type' => 'select',
-			'attributes' => array(
+			'attributes' => [
 				'id'       => 'hidden_breakpoints',
 				'name'     => 'hidden_breakpoints[]',
 				'multiple' => true
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'access_placement'
-		);
+		];
 	}
 }

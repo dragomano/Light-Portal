@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 30.12.21
  */
 
 namespace Bugo\LightPortal\Addons\FaBoardIcons;
@@ -31,21 +31,17 @@ class FaBoardIcons extends Plugin
 
 	public function frontBoardsOutput(array &$boards, array $row)
 	{
-		global $modSettings;
-
 		if (! $this->isBaseModInstalled())
 			return;
 
-		$icon = ! empty($row['fabi_icon']) && empty($modSettings['fabi_force_default_icon']) ? $row['fabi_icon'] : (empty($modSettings['fabi_default_icon']) ? 'fas fa-comments' : $modSettings['fabi_default_icon']);
-		$color = ! empty($row['fabi_color']) && empty($modSettings['fabi_force_default_color']) ? $row['fabi_color'] : (empty($modSettings['fabi_default_color']) ? '' : $modSettings['fabi_default_color']);
+		$icon = ! empty($row['fabi_icon']) && empty($this->modSettings['fabi_force_default_icon']) ? $row['fabi_icon'] : (empty($this->modSettings['fabi_default_icon']) ? 'fas fa-comments' : $this->modSettings['fabi_default_icon']);
+		$color = ! empty($row['fabi_color']) && empty($this->modSettings['fabi_force_default_color']) ? $row['fabi_color'] : (empty($this->modSettings['fabi_default_color']) ? '' : $this->modSettings['fabi_default_color']);
 
 		$boards[$row['id_board']]['title'] = '<i class="' . $icon . ' fa"' . (empty($color) ? '' : ' style="color: ' . $color . '"') . '></i> ' . $boards[$row['id_board']]['title'];
 	}
 
 	private function isBaseModInstalled(): bool
 	{
-		global $sourcedir;
-
-		return is_file($sourcedir . '/FA-BoardIcons/FA-BoardIcons.php');
+		return is_file($this->sourcedir . '/FA-BoardIcons/FA-BoardIcons.php');
 	}
 }

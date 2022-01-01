@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
@@ -36,40 +36,38 @@ class Polls extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'polls')
+		if ($this->context['lp_block']['type'] !== 'polls')
 			return;
 
-		$context['posting_fields']['selected_item']['label']['text'] = $txt['lp_polls']['selected_item'];
+		$this->context['posting_fields']['selected_item']['label']['text'] = $this->txt['lp_polls']['selected_item'];
 
 		$polls = $this->getAll();
 
 		if (empty($polls)) {
-			$context['posting_fields']['selected_item']['input'] = array(
+			$this->context['posting_fields']['selected_item']['input'] = [
 				'type' => 'input',
-				'after' => $txt['lp_polls']['no_items'],
-				'attributes' => array(
+				'after' => $this->txt['lp_polls']['no_items'],
+				'attributes' => [
 					'id' => 'selected_item',
 					'disabled' => true
-				),
+				],
 				'tab' => 'content'
-			);
+			];
 		} else {
-			$context['posting_fields']['selected_item']['input'] = array(
+			$this->context['posting_fields']['selected_item']['input'] = [
 				'type' => 'select',
-				'attributes' => array(
+				'attributes' => [
 					'id' => 'selected_item'
-				),
-				'options' => array(),
+				],
+				'options' => [],
 				'tab' => 'content'
-			);
+			];
 
 			foreach ($polls as $key => $value) {
-				$context['posting_fields']['selected_item']['input']['options'][$value] = array(
+				$this->context['posting_fields']['selected_item']['input']['options'][$value] = [
 					'value'    => $key,
-					'selected' => $key == $context['lp_block']['options']['parameters']['selected_item']
-				);
+					'selected' => $key == $this->context['lp_block']['options']['parameters']['selected_item']
+				];
 			}
 		}
 	}
@@ -83,8 +81,6 @@ class Polls extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $boardurl, $context, $txt, $scripturl;
-
 		if ($type !== 'polls')
 			return;
 
@@ -93,7 +89,7 @@ class Polls extends Plugin
 		if (! empty($poll)) {
 			if ($poll['allow_vote']) {
 				echo '
-		<form action="', $boardurl, '/SSI.php?ssi_function=pollVote" method="post" accept-charset="', $context['character_set'], '">
+		<form action="', $this->boardurl, '/SSI.php?ssi_function=pollVote" method="post" accept-charset="', $this->context['character_set'], '">
 			<strong>', $poll['question'], '</strong><br>
 			', empty($poll['allowed_warning']) ? '' : ($poll['allowed_warning'] . '<br>');
 
@@ -103,15 +99,15 @@ class Polls extends Plugin
 				}
 
 				echo '
-			<input type="submit" value="', $txt['poll_vote'], '" class="button">
+			<input type="submit" value="', $this->txt['poll_vote'], '" class="button">
 			<input type="hidden" name="poll" value="', $poll['id'], '">
-			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
+			<input type="hidden" name="', $this->context['session_var'], '" value="', $this->context['session_id'], '">
 		</form>';
 			} else {
 				echo '
 		<div>
 			<strong>
-				<a class="bbc_link" href="', $scripturl, '?topic=', $poll['topic'], '.0">', $poll['question'], '</a>
+				<a class="bbc_link" href="', $this->scripturl, '?topic=', $poll['topic'], '.0">', $poll['question'], '</a>
 			</strong>
 			<dl class="stats">';
 
@@ -132,36 +128,34 @@ class Polls extends Plugin
 
 				echo '
 			</dl>', ($poll['allow_view_results'] ? '
-			<strong>' . $txt['poll_total_voters'] . ': ' . $poll['total_votes'] . '</strong>' : ''), '
+			<strong>' . $this->txt['poll_total_voters'] . ': ' . $poll['total_votes'] . '</strong>' : ''), '
 		</div>';
 			}
 		} else {
-			echo $txt['lp_polls']['no_items'];
+			echo $this->txt['lp_polls']['no_items'];
 		}
 	}
 
 	private function getAll(): array
 	{
-		global $smcFunc;
-
-		$request = $smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', '
 			SELECT t.id_topic, p.question
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)
 				INNER JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
 			WHERE {query_see_board}
 				AND t.approved = {int:is_approved}',
-			array(
+			[
 				'is_approved' => 1
-			)
+			]
 		);
 
 		$polls = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $this->smcFunc['db_fetch_assoc']($request))
 			$polls[$row['id_topic']] = $row['question'];
 
-		$smcFunc['db_free_result']($request);
-		$smcFunc['lp_num_queries']++;
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $polls;
 	}

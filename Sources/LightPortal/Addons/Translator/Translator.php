@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -44,72 +44,68 @@ class Translator extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'translator')
+		if ($this->context['lp_block']['type'] !== 'translator')
 			return;
 
-		$context['posting_fields']['engine']['label']['text'] = $txt['lp_translator']['engine'];
-		$context['posting_fields']['engine']['input'] = array(
+		$this->context['posting_fields']['engine']['label']['text'] = $this->txt['lp_translator']['engine'];
+		$this->context['posting_fields']['engine']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'engine'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$engines = array_combine(array('google', 'yandex'), $txt['lp_translator']['engine_set']);
+		$engines = array_combine(['google', 'yandex'], $this->txt['lp_translator']['engine_set']);
 
 		foreach ($engines as $key => $value) {
-			$context['posting_fields']['engine']['input']['options'][$value] = array(
+			$this->context['posting_fields']['engine']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['engine']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['engine']
+			];
 		}
 
-		if ($context['lp_block']['options']['parameters']['engine'] == 'google')
+		if ($this->context['lp_block']['options']['parameters']['engine'] == 'google')
 			return;
 
-		$context['posting_fields']['widget_theme']['label']['text'] = $txt['lp_translator']['widget_theme'];
-		$context['posting_fields']['widget_theme']['input'] = array(
+		$this->context['posting_fields']['widget_theme']['label']['text'] = $this->txt['lp_translator']['widget_theme'];
+		$this->context['posting_fields']['widget_theme']['input'] = [
 			'type' => 'select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'widget_theme'
-			)
-		);
+			]
+		];
 
-		$context['posting_fields']['widget_theme']['input']['options'] = array(
-			'light' => array(
+		$this->context['posting_fields']['widget_theme']['input']['options'] = [
+			'light' => [
 				'value'    => 'light',
-				'selected' => 'light' == $context['lp_block']['options']['parameters']['widget_theme']
-			),
-			'dark' => array(
+				'selected' => 'light' == $this->context['lp_block']['options']['parameters']['widget_theme']
+			],
+			'dark' => [
 				'value'    => 'dark',
-				'selected' => 'dark' == $context['lp_block']['options']['parameters']['widget_theme']
-			)
-		);
+				'selected' => 'dark' == $this->context['lp_block']['options']['parameters']['widget_theme']
+			]
+		];
 
-		$context['posting_fields']['auto_mode']['label']['text'] = $txt['lp_translator']['auto_mode'];
-		$context['posting_fields']['auto_mode']['input'] = array(
+		$this->context['posting_fields']['auto_mode']['label']['text'] = $this->txt['lp_translator']['auto_mode'];
+		$this->context['posting_fields']['auto_mode']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'auto_mode',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['auto_mode'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['auto_mode'])
+			]
+		];
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $language;
-
 		if ($type !== 'translator')
 			return;
 
 		if ($parameters['engine'] == 'yandex') {
 			echo '
 		<div id="ytWidget', $block_id, '" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $block_id, '&amp;pageLang=', substr($language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		} else {
 			echo '
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -118,7 +114,7 @@ class Translator extends Plugin
 			<script>
 				function googleTranslateElementInit() {
 					new google.translate.TranslateElement({
-						pageLanguage: "', substr($language, 0, 2), '"
+						pageLanguage: "', substr($this->language, 0, 2), '"
 					}, "google_translate_element', $block_id, '");
 				}
 			</script>

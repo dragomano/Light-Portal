@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class CurrentMonth extends Plugin
 {
@@ -29,9 +28,7 @@ class CurrentMonth extends Plugin
 
 	public function getData(): array
 	{
-		global $options, $modSettings;
-
-		Helper::require('Subs-Calendar');
+		$this->require('Subs-Calendar');
 
 		$today = getTodayInfo();
 		$year  = $today['year'];
@@ -39,32 +36,30 @@ class CurrentMonth extends Plugin
 		$day   = $today['day'];
 
 		$start_object = checkdate($month, $day, $year) === true
-			? date_create(implode('-', array($year, $month, $day)))
-			: date_create(implode('-', array(
+			? date_create(implode('-', [$year, $month, $day]))
+			: date_create(implode('-', [
 				$today['year'],
 				$today['month'],
 				$today['day']
-			)));
+			]));
 
-		$calendarOptions = array(
-			'start_day'          => $options['calendar_start_day'] ?: 0,
-			'show_birthdays'     => in_array($modSettings['cal_showbdays'], array(1, 2)),
-			'show_events'        => in_array($modSettings['cal_showevents'], array(1, 2)),
-			'show_holidays'      => in_array($modSettings['cal_showholidays'], array(1, 2)),
+		$calendarOptions = [
+			'start_day'          => $this->options['calendar_start_day'] ?: 0,
+			'show_birthdays'     => in_array($this->modSettings['cal_showbdays'], [1, 2]),
+			'show_events'        => in_array($this->modSettings['cal_showevents'], [1, 2]),
+			'show_holidays'      => in_array($this->modSettings['cal_showholidays'], [1, 2]),
 			'show_week_num'      => true,
-			'short_day_titles'   => ! empty($modSettings['cal_short_days']),
-			'short_month_titles' => ! empty($modSettings['cal_short_months']),
-			'show_next_prev'     => ! empty($modSettings['cal_prev_next_links']),
-			'show_week_links'    => $modSettings['cal_week_links'] ?? 0
-		);
+			'short_day_titles'   => ! empty($this->modSettings['cal_short_days']),
+			'short_month_titles' => ! empty($this->modSettings['cal_short_months']),
+			'show_next_prev'     => ! empty($this->modSettings['cal_prev_next_links']),
+			'show_week_links'    => $this->modSettings['cal_week_links'] ?? 0
+		];
 
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
 	}
 
 	private function showCurrentMonthGrid(array $data)
 	{
-		global $txt, $modSettings, $scripturl;
-
 		if (empty($data))
 			return;
 
@@ -80,7 +75,7 @@ class CurrentMonth extends Plugin
 
 			foreach ($calendar_data['week_days'] as $day)
 				echo '
-							<th scope="col">', $txt['days_short'][$day], '</th>';
+							<th scope="col">', $this->txt['days_short'][$day], '</th>';
 
 			echo '
 						</tr>
@@ -93,11 +88,11 @@ class CurrentMonth extends Plugin
 						<tr class="days_wrapper">';
 
 			foreach ($week['days'] as $day) {
-				$classes = array('days');
+				$classes = ['days'];
 				if (! empty($day['day'])) {
 					$classes[] = empty($day['is_today']) ? 'windowbg' : 'calendar_today';
 
-					foreach (array('events', 'holidays', 'birthdays') as $event_type)
+					foreach (['events', 'holidays', 'birthdays'] as $event_type)
 						if (! empty($day[$event_type]))
 							$classes[] = $event_type;
 				} else {
@@ -108,9 +103,9 @@ class CurrentMonth extends Plugin
 							<td class="', implode(' ', $classes), '">';
 
 				if (! empty($day['day'])) {
-					if (! empty($modSettings['cal_enabled'])) {
+					if (! empty($this->modSettings['cal_enabled'])) {
 						echo '
-								<a href="', $scripturl, '?action=calendar;viewlist;year=', $calendar_data['current_year'], ';month=', $calendar_data['current_month'], ';day=', $day['day'], '"><span class="day_text">', $day['day'], '</span></a>';
+								<a href="', $this->scripturl, '?action=calendar;viewlist;year=', $calendar_data['current_year'], ';month=', $calendar_data['current_month'], ';day=', $day['day'], '"><span class="day_text">', $day['day'], '</span></a>';
 					} else {
 						echo '
 								<span class="day_text">', $day['day'], '</span>';
@@ -132,25 +127,23 @@ class CurrentMonth extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time)
 	{
-		global $user_info, $txt, $context;
-
 		if ($type !== 'current_month')
 			return;
 
-		$calendar_data = Helper::cache('current_month_addon_u' . $user_info['id'])
+		$calendar_data = $this->cache('current_month_addon_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData');
 
 		if (! empty($calendar_data)) {
 			$calendar_data['block_id'] = $block_id;
 
-			$title = $txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
+			$title = $this->txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
 
 			// Auto title
-			if (isset($context['preview_title']) && empty($context['preview_title'])) {
-				$context['preview_title'] = $title;
-			} elseif (! empty($block_id) && empty($context['lp_active_blocks'][$block_id]['title'][$user_info['language']])) {
-				$context['lp_active_blocks'][$block_id]['title'][$user_info['language']] = $title;
+			if (isset($this->context['preview_title']) && empty($this->context['preview_title'])) {
+				$this->context['preview_title'] = $title;
+			} elseif (! empty($block_id) && empty($this->context['lp_active_blocks'][$block_id]['title'][$this->user_info['language']])) {
+				$this->context['lp_active_blocks'][$block_id]['title'][$this->user_info['language']] = $title;
 			}
 
 			$this->showCurrentMonthGrid($calendar_data);

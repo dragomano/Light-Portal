@@ -11,6 +11,6 @@ return [
 	'newbie' => 'Newbie',
 	'online_today' => 'Online today',
 	'max_online' => 'Most max online',
-	'guests' => $txt['guests'],
-	'spiders' => $txt['spiders'],
+	'guests' => 'Guests',
+	'spiders' => 'Spiders',
 ];

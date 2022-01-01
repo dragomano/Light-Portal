@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\SimpleRssFeeder;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class SimpleRssFeeder extends Plugin
 {
@@ -41,33 +40,31 @@ class SimpleRssFeeder extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt, $scripturl;
-
-		if ($context['lp_block']['type'] !== 'simple_rss_feeder')
+		if ($this->context['lp_block']['type'] !== 'simple_rss_feeder')
 			return;
 
-		$context['posting_fields']['url']['label']['text'] = $txt['lp_simple_rss_feeder']['url'];
-		$context['posting_fields']['url']['input'] = array(
+		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_simple_rss_feeder']['url'];
+		$this->context['posting_fields']['url']['input'] = [
 			'type' => 'url',
-			'attributes' => array(
+			'attributes' => [
 				'maxlength'   => 255,
-				'value'       => $context['lp_block']['options']['parameters']['url'],
-				'placeholder' => $scripturl . '?action=.xml;type=rss2',
+				'value'       => $this->context['lp_block']['options']['parameters']['url'],
+				'placeholder' => $this->scripturl . '?action=.xml;type=rss2',
 				'required'    => true,
 				'style'       => 'width: 100%'
-			),
+			],
 			'tab' => 'content'
-		);
+		];
 
-		$context['posting_fields']['show_text']['label']['text'] = $txt['lp_simple_rss_feeder']['show_text'];
-		$context['posting_fields']['show_text']['input'] = array(
+		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_simple_rss_feeder']['show_text'];
+		$this->context['posting_fields']['show_text']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'show_text',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['show_text'])
-			),
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_text'])
+			],
 			'tab' => 'content'
-		);
+		];
 	}
 
 	public function getData(string $url): array
@@ -86,7 +83,7 @@ class SimpleRssFeeder extends Plugin
 		if ($type !== 'simple_rss_feeder')
 			return;
 
-		$feed = Helper::cache('simple_rss_feeder_addon_b' . $block_id)
+		$feed = $this->cache('simple_rss_feeder_addon_b' . $block_id)
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['url']);
 
@@ -102,7 +99,7 @@ class SimpleRssFeeder extends Plugin
 			<div class="block">
 				<span class="floatleft half_content">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-					<em>', Helper::getFriendlyTime(strtotime($item->pubDate)), '</em>
+					<em>', $this->getFriendlyTime(strtotime($item->pubDate)), '</em>
 				</span>
 			</div>';
 

@@ -1,6 +1,6 @@
 <?php
 
-function template_callback_main_menu_table()
+function callback_main_menu_table()
 {
 	global $txt, $scripturl, $context, $modSettings;
 

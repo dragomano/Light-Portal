@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.21
+ * @version 30.12.21
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -42,11 +42,9 @@ abstract class Lorem
 
 	public static function ipsum(int $num_paragraphs): string
 	{
-		global $smcFunc;
-
 		$paragraphs = [];
 		for ($p = 0; $p < $num_paragraphs; ++$p) {
-			$num_sentences = $smcFunc['random_int'](3, 8);
+			$num_sentences = $this->smcFunc['random_int'](3, 8);
 			$sentences = [];
 
 			for ($s = 0; $s < $num_sentences; ++$s) {
@@ -54,11 +52,11 @@ abstract class Lorem
 				$comma_chance = .33;
 
 				while (true) {
-					$num_words = $smcFunc['random_int'](3, 15);
+					$num_words = $this->smcFunc['random_int'](3, 15);
 					$words = self::random_values(self::WORDS, $num_words);
 					$frags[] = implode(' ', $words);
 
-					if (($smcFunc['random_int'](0, PHP_INT_MAX - 1) / PHP_INT_MAX) >= $comma_chance) {
+					if (($this->smcFunc['random_int'](0, PHP_INT_MAX - 1) / PHP_INT_MAX) >= $comma_chance) {
 						break;
 					}
 

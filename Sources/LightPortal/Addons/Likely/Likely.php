@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -37,59 +37,57 @@ class Likely extends Plugin
 
 		$parameters['size']    = FILTER_SANITIZE_STRING;
 		$parameters['skin']    = FILTER_SANITIZE_STRING;
-		$parameters['buttons'] = array(
+		$parameters['buttons'] = [
 			'name'   => 'buttons',
 			'filter' => FILTER_SANITIZE_STRING,
 			'flags'  => FILTER_REQUIRE_ARRAY
-		);
+		];
 	}
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'likely')
+		if ($this->context['lp_block']['type'] !== 'likely')
 			return;
 
-		$context['posting_fields']['size']['label']['text'] = $txt['lp_likely']['size'];
-		$context['posting_fields']['size']['input'] = array(
+		$this->context['posting_fields']['size']['label']['text'] = $this->txt['lp_likely']['size'];
+		$this->context['posting_fields']['size']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'size'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		foreach ($txt['lp_likely']['size_set'] as $value => $title) {
-			$context['posting_fields']['size']['input']['options'][$title] = array(
+		foreach ($this->txt['lp_likely']['size_set'] as $value => $title) {
+			$this->context['posting_fields']['size']['input']['options'][$title] = [
 				'value'    => $value,
-				'selected' => $value == $context['lp_block']['options']['parameters']['size']
-			);
+				'selected' => $value == $this->context['lp_block']['options']['parameters']['size']
+			];
 		}
 
-		$context['posting_fields']['skin']['label']['text'] = $txt['lp_likely']['skin'];
-		$context['posting_fields']['skin']['input'] = array(
+		$this->context['posting_fields']['skin']['label']['text'] = $this->txt['lp_likely']['skin'];
+		$this->context['posting_fields']['skin']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'skin'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		foreach ($txt['lp_likely']['skin_set'] as $value => $title) {
-			$context['posting_fields']['skin']['input']['options'][$title] = array(
+		foreach ($this->txt['lp_likely']['skin_set'] as $value => $title) {
+			$this->context['posting_fields']['skin']['input']['options'][$title] = [
 				'value'    => $value,
-				'selected' => $value == $context['lp_block']['options']['parameters']['skin']
-			);
+				'selected' => $value == $this->context['lp_block']['options']['parameters']['skin']
+			];
 		}
 
-		if (! is_array($context['lp_block']['options']['parameters']['buttons'])) {
-			$context['lp_block']['options']['parameters']['buttons'] = explode(',', $context['lp_block']['options']['parameters']['buttons']);
+		if (! is_array($this->context['lp_block']['options']['parameters']['buttons'])) {
+			$this->context['lp_block']['options']['parameters']['buttons'] = explode(',', $this->context['lp_block']['options']['parameters']['buttons']);
 		}
 
 		$data = [];
 		foreach ($this->buttons as $button) {
-			$data[] = "\t\t\t\t" . '{text: "' . $button . '", selected: ' . (in_array($button, $context['lp_block']['options']['parameters']['buttons']) ? 'true' : 'false') . '}';
+			$data[] = "\t\t\t\t" . '{text: "' . $button . '", selected: ' . (in_array($button, $this->context['lp_block']['options']['parameters']['buttons']) ? 'true' : 'false') . '}';
 		}
 
 		addInlineJavaScript('
@@ -99,37 +97,35 @@ class Likely extends Plugin
 			],
 			hideSelectedOption: true,
 			showSearch: false,
-			placeholder: "' . $txt['lp_likely']['select_buttons'] . '",
+			placeholder: "' . $this->txt['lp_likely']['select_buttons'] . '",
 			searchHighlight: true,
 			closeOnSelect: false
 		});', true);
 
-		$context['posting_fields']['buttons']['label']['text'] = $txt['lp_likely']['buttons'];
-		$context['posting_fields']['buttons']['input'] = array(
+		$this->context['posting_fields']['buttons']['label']['text'] = $this->txt['lp_likely']['buttons'];
+		$this->context['posting_fields']['buttons']['input'] = [
 			'type' => 'select',
-			'attributes' => array(
+			'attributes' => [
 				'id'       => 'buttons',
 				'name'     => 'buttons[]',
 				'multiple' => true,
 				'style'    => 'height: auto'
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'content'
-		);
+		];
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $txt, $modSettings, $settings;
-
 		if ($type !== 'likely')
 			return;
 
 		if (empty($parameters['buttons']))
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', array('external' => true));
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', array('external' => true));
+		loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', ['external' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', ['external' => true]);
 
 		echo '
 			<div class="centertext likely_links">
@@ -138,9 +134,9 @@ class Likely extends Plugin
 		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
 
 		foreach ($buttons as $service) {
-			if (! empty($txt['lp_likely']['buttons_set'][$service])) {
+			if (! empty($this->txt['lp_likely']['buttons_set'][$service])) {
 				echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', $txt['lp_likely']['buttons_set'][$service], '"', (! empty($modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $modSettings['optimus_tw_cards'] . '"' : ''), (! empty($settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $settings['og_image'] . '"' : ''), '>', $txt['lp_likely']['buttons_set'][$service], '</div>';
+					<div class="', $service, '" tabindex="0" role="link" aria-label="', $this->txt['lp_likely']['buttons_set'][$service], '"', (! empty($this->modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $this->modSettings['optimus_tw_cards'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $this->settings['og_image'] . '"' : ''), '>', $this->txt['lp_likely']['buttons_set'][$service], '</div>';
 			}
 		}
 
@@ -151,14 +147,14 @@ class Likely extends Plugin
 
 	public function credits(array &$links)
 	{
-		$links[] = array(
+		$links[] = [
 			'title' => 'Likely',
 			'link' => 'https://github.com/NikolayRys/Likely',
 			'author' => 'Artem Sapegin, Evgeny Steblinsky, Ilya Birman',
-			'license' => array(
+			'license' => [
 				'name' => 'the MIT License',
 				'link' => 'https://github.com/NikolayRys/Likely/blob/master/license.txt'
-			)
-		);
+			]
+		];
 	}
 }

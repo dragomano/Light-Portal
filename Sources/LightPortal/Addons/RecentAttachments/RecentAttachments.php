@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class RecentAttachments extends Plugin
 {
@@ -43,49 +42,47 @@ class RecentAttachments extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'recent_attachments')
+		if ($this->context['lp_block']['type'] !== 'recent_attachments')
 			return;
 
-		$context['posting_fields']['num_attachments']['label']['text'] = $txt['lp_recent_attachments']['num_attachments'];
-		$context['posting_fields']['num_attachments']['input'] = array(
+		$this->context['posting_fields']['num_attachments']['label']['text'] = $this->txt['lp_recent_attachments']['num_attachments'];
+		$this->context['posting_fields']['num_attachments']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'num_attachments',
 				'min' => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_attachments']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['num_attachments']
+			]
+		];
 
-		$context['posting_fields']['extensions']['label']['text']  = $txt['lp_recent_attachments']['extensions'];
-		$context['posting_fields']['extensions']['input'] = array(
+		$this->context['posting_fields']['extensions']['label']['text']  = $this->txt['lp_recent_attachments']['extensions'];
+		$this->context['posting_fields']['extensions']['input'] = [
 			'type' => 'text',
-			'after' => $txt['lp_recent_attachments']['extensions_subtext'],
-			'attributes' => array(
+			'after' => $this->txt['lp_recent_attachments']['extensions_subtext'],
+			'attributes' => [
 				'id'        => 'extensions',
 				'maxlength' => 30,
-				'value'     => $context['lp_block']['options']['parameters']['extensions'],
+				'value'     => $this->context['lp_block']['options']['parameters']['extensions'],
 				'style'     => 'width: 100%'
-			)
-		);
+			]
+		];
 
-		$context['posting_fields']['direction']['label']['text'] = $txt['lp_recent_attachments']['direction'];
-		$context['posting_fields']['direction']['input'] = array(
+		$this->context['posting_fields']['direction']['label']['text'] = $this->txt['lp_recent_attachments']['direction'];
+		$this->context['posting_fields']['direction']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'direction'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$directions = array_combine(array('vertical', 'horizontal'), $txt['lp_panel_direction_set']);
+		$directions = array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']);
 
 		foreach ($directions as $direction => $title) {
-			$context['posting_fields']['direction']['input']['options'][$title] = array(
+			$this->context['posting_fields']['direction']['input']['options'][$title] = [
 				'value'    => $direction,
-				'selected' => $direction == $context['lp_block']['options']['parameters']['direction']
-			);
+				'selected' => $direction == $this->context['lp_block']['options']['parameters']['direction']
+			];
 		}
 	}
 
@@ -100,12 +97,10 @@ class RecentAttachments extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info, $settings;
-
 		if ($type !== 'recent_attachments')
 			return;
 
-		$attachment_list = Helper::cache('recent_attachments_addon_b' . $block_id . '_u' . $user_info['id'])
+		$attachment_list = $this->cache('recent_attachments_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -127,7 +122,7 @@ class RecentAttachments extends Plugin
 				echo '
 			<div class="item">
 				<a href="', $attach['file']['href'], '">
-					<img class="centericon" src="', $settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
+					<img class="centericon" src="', $this->settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
 				</a> (', $attach['file']['filesize'], ')
 			</div>';
 			}

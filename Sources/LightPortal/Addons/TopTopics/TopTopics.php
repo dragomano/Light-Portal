@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class TopTopics extends Plugin
 {
@@ -43,47 +42,45 @@ class TopTopics extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'top_topics')
+		if ($this->context['lp_block']['type'] !== 'top_topics')
 			return;
 
-		$context['posting_fields']['popularity_type']['label']['text'] = $txt['lp_top_topics']['type'];
-		$context['posting_fields']['popularity_type']['input'] = array(
+		$this->context['posting_fields']['popularity_type']['label']['text'] = $this->txt['lp_top_topics']['type'];
+		$this->context['posting_fields']['popularity_type']['input'] = [
 			'type' => 'radio_select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'popularity_type'
-			),
-			'options' => array()
-		);
+			],
+			'options' => []
+		];
 
-		$types = array_combine(array('replies', 'views'), $txt['lp_top_topics']['type_set']);
+		$types = array_combine(['replies', 'views'], $this->txt['lp_top_topics']['type_set']);
 
 		foreach ($types as $key => $value) {
-			$context['posting_fields']['popularity_type']['input']['options'][$value] = array(
+			$this->context['posting_fields']['popularity_type']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['popularity_type']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['popularity_type']
+			];
 		}
 
-		$context['posting_fields']['num_topics']['label']['text'] = $txt['lp_top_topics']['num_topics'];
-		$context['posting_fields']['num_topics']['input'] = array(
+		$this->context['posting_fields']['num_topics']['label']['text'] = $this->txt['lp_top_topics']['num_topics'];
+		$this->context['posting_fields']['num_topics']['input'] = [
 			'type' => 'number',
-			'attributes' => array(
+			'attributes' => [
 				'id'    => 'num_topics',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['num_topics']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['num_topics']
+			]
+		];
 
-		$context['posting_fields']['show_numbers_only']['label']['text'] = $txt['lp_top_topics']['show_numbers_only'];
-		$context['posting_fields']['show_numbers_only']['input'] = array(
+		$this->context['posting_fields']['show_numbers_only']['label']['text'] = $this->txt['lp_top_topics']['show_numbers_only'];
+		$this->context['posting_fields']['show_numbers_only']['input'] = [
 			'type' => 'checkbox',
-			'attributes' => array(
+			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($context['lp_block']['options']['parameters']['show_numbers_only'])
-			)
-		);
+				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+			]
+		];
 	}
 
 	public function getData(array $parameters): array
@@ -95,12 +92,10 @@ class TopTopics extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $user_info;
-
 		if ($type !== 'top_topics')
 			return;
 
-		$top_topics = Helper::cache('top_topics_addon_b' . $block_id . '_u' . $user_info['id'])
+		$top_topics = $this->cache('top_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
@@ -122,7 +117,7 @@ class TopTopics extends Plugin
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Helper::getSmartContext('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : __('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
 			</dd>';
 		}
 

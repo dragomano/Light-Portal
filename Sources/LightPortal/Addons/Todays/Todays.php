@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.21
+ * @version 31.12.21
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helper;
 
 class Todays extends Plugin
 {
@@ -29,20 +28,16 @@ class Todays extends Plugin
 
 	public function menuButtons(array &$buttons)
 	{
-		global $context, $modSettings;
-
-		$buttons['calendar']['show'] = ! empty($context['allow_calendar']) && empty($modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = ! empty($this->context['allow_calendar']) && empty($this->modSettings['lp_todays_addon_hide_calendar_in_menu']);
 	}
 
 	public function addSettings(array &$config_vars)
 	{
-		global $txt, $scripturl;
-
-		$config_vars['todays'][] = array(
+		$config_vars['todays'][] = [
 			'check',
 			'hide_calendar_in_menu',
-			'subtext' => sprintf($txt['lp_todays']['hide_calendar_in_menu_subtext'], $scripturl . '?action=admin;area=managecalendar;sa=settings')
-		);
+			'subtext' => sprintf($this->txt['lp_todays']['hide_calendar_in_menu_subtext'], $this->scripturl . '?action=admin;area=managecalendar;sa=settings')
+		];
 	}
 
 	public function blockOptions(array &$options)
@@ -64,40 +59,38 @@ class Todays extends Plugin
 
 	public function prepareBlockFields()
 	{
-		global $context, $txt;
-
-		if ($context['lp_block']['type'] !== 'todays')
+		if ($this->context['lp_block']['type'] !== 'todays')
 			return;
 
-		$context['posting_fields']['widget_type']['label']['text'] = $txt['lp_todays']['type'];
-		$context['posting_fields']['widget_type']['input'] = array(
+		$this->context['posting_fields']['widget_type']['label']['text'] = $this->txt['lp_todays']['type'];
+		$this->context['posting_fields']['widget_type']['input'] = [
 			'type' => 'select',
-			'attributes' => array(
+			'attributes' => [
 				'id' => 'widget_type'
-			),
-			'options' => array(),
+			],
+			'options' => [],
 			'tab' => 'content'
-		);
+		];
 
-		$types = array_combine(array('birthdays', 'holidays', 'events', 'calendar'), $txt['lp_todays']['type_set']);
+		$types = array_combine(['birthdays', 'holidays', 'events', 'calendar'], $this->txt['lp_todays']['type_set']);
 
 		foreach ($types as $key => $value) {
-			$context['posting_fields']['widget_type']['input']['options'][$value] = array(
+			$this->context['posting_fields']['widget_type']['input']['options'][$value] = [
 				'value'    => $key,
-				'selected' => $key == $context['lp_block']['options']['parameters']['widget_type']
-			);
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['widget_type']
+			];
 		}
 
-		$context['posting_fields']['max_items']['label']['text'] = $txt['lp_todays']['max_items'];
-		$context['posting_fields']['max_items']['input'] = array(
+		$this->context['posting_fields']['max_items']['label']['text'] = $this->txt['lp_todays']['max_items'];
+		$this->context['posting_fields']['max_items']['input'] = [
 			'type' => 'number',
-			'after' => $txt['lp_todays']['max_items_subtext'],
-			'attributes' => array(
+			'after' => $this->txt['lp_todays']['max_items_subtext'],
+			'attributes' => [
 				'id'    => 'max_items',
 				'min'   => 1,
-				'value' => $context['lp_block']['options']['parameters']['max_items']
-			)
-		);
+				'value' => $this->context['lp_block']['options']['parameters']['max_items']
+			]
+		];
 	}
 
 	public function getData(string $type, string $output_method = 'echo')
@@ -111,8 +104,6 @@ class Todays extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		global $txt, $scripturl;
-
 		if ($type !== 'todays')
 			return;
 
@@ -122,7 +113,7 @@ class Todays extends Plugin
 			if (! empty($result['calendar_holidays']) || ! empty($result['calendar_birthdays']) || ! empty($result['calendar_events']))
 				$this->getData($parameters['widget_type']);
 			else
-				echo $txt['lp_todays']['empty_list'];
+				echo $this->txt['lp_todays']['empty_list'];
 		} elseif (! empty($result)) {
 			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);
@@ -133,7 +124,7 @@ class Todays extends Plugin
 
 				foreach ($visibleItems as $member) {
 					echo '
-		<a href="', $scripturl, '?action=profile;u=', $member['id'], '">
+		<a href="', $this->scripturl, '?action=profile;u=', $member['id'], '">
 			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
 		</a>' . ($member['is_last'] ? '' : ', ');
 				}
@@ -141,23 +132,23 @@ class Todays extends Plugin
 				$hiddenContent = '';
 				foreach ($hiddenItems as $member) {
 					$hiddenContent .= '
-		<a href="' . $scripturl . '?action=profile;u=' . $member['id'] . '">
+		<a href="' . $this->scripturl . '?action=profile;u=' . $member['id'] . '">
 			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
 		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
 				// HTML5 spoiler
 				if (! empty($hiddenContent))
-					echo $txt['lp_todays']['and_more'], '
+					echo $this->txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', Helper::getSmartContext($txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
+				<span>', __($this->txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';
 			}
 		} else {
-			echo $txt['lp_todays']['empty_list'];
+			echo $this->txt['lp_todays']['empty_list'];
 		}
 	}
 }
