@@ -8,6 +8,9 @@ elseif(! defined('SMF'))
 if (version_compare(PHP_VERSION, '7.4', '<'))
 	die('This mod needs PHP 7.4 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
 
+if (! extension_loaded('intl'))
+	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
+
 global $user_info, $mbname, $modSettings, $settings;
 
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
