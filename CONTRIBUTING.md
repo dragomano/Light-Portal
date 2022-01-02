@@ -88,7 +88,7 @@ $test = isset($variable) ? $variable : 'default_value';
 ```
 
 ### JavaScript Styleguide
-* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) (2.x) instead of jQuery.
+* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) (3.x) instead of jQuery.
 * Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts.
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 

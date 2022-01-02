@@ -184,7 +184,7 @@ final class PageArea
 					'data'   => [
 						'function' => fn($entry) => '
 						<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
-							<div class="context_menu" @click.away="showContextMenu = false">
+							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
 									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
 								</button>
@@ -194,7 +194,7 @@ final class PageArea
 											<a href="' . $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . $this->txt['modify'] . '</a>
 										</li>
 										<li>
-											<a @click.prevent="showContextMenu = false; page.remove($el)" class="button error">' . $this->txt['remove'] . '</a>
+											<a @click.prevent="showContextMenu = false; page.remove($root)" class="button error">' . $this->txt['remove'] . '</a>
 										</li>
 									</ul>
 								</div>
@@ -677,7 +677,7 @@ final class PageArea
 			'attributes' => [
 				'disabled' => empty($this->context['lp_page']['title'][$this->context['user']['language']]) && empty($this->context['lp_page']['alias']),
 				'x-ref'    => 'type',
-				'@change'  => 'page.toggleType($el)',
+				'@change'  => 'page.toggleType($root)',
 			],
 			'tab'        => 'content',
 		];

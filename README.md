@@ -62,12 +62,12 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 
 ## Roadmap
 
-- [ ] Rating of comments
-- [ ] Migrate to AlpineJS 3
 - [x] Migrate to PHP 7.4
-- [ ] Tests
-- [ ] Ajax pagination
+- [x] Migrate to AlpineJS 3
 - [ ] New UI icons
+- [ ] Rating of comments
+- [ ] Ajax pagination
+- [ ] Tests
 
 ## Supported by
 

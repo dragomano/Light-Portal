@@ -250,7 +250,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 			</form>
 		</div>
 		<div class="footer">
-			<span x-ref="info" x-show.transition="success" class="infobox floatleft">', $txt['settings_saved'], '</span>
+			<span x-ref="info" x-show="success" x-transition class="infobox floatleft">', $txt['settings_saved'], '</span>
 			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $txt['find_close'], '</button>
 			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $txt['save'], '</button>
 		</div>

@@ -613,7 +613,7 @@ function template_show_articles_simple2()
  */
 function template_show_articles_simple3()
 {
-	global $context, $scripturl;
+	global $context;
 
 	if (empty($context['lp_active_blocks']))
 		echo '

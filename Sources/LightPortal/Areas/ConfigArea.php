@@ -30,7 +30,7 @@ final class ConfigArea
 		loadCSSFile('light_portal/slimselect.min.css');
 		loadJavaScriptFile('light_portal/slimselect.min.js');
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', ['external' => true, 'defer' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3.7/dist/cdn.min.js', ['external' => true, 'defer' => true]);
 		loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		loadLanguage('ManageSettings');

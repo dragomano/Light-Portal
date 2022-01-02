@@ -131,14 +131,14 @@ function show_block_entry(int $id, array $data)
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td class="actions">
-			<div class="context_menu" @click.away="showContextMenu = false">
+			<div class="context_menu" @click.outside="showContextMenu = false">
 				<button class="button floatnone" @click.prevent="showContextMenu = true">
 					<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
 				</button>
 				<div class="roundframe" x-show="showContextMenu">
 					<ul>
 						<li>
-							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
+							<a @click.prevent="block.clone($root)" class="button">', $txt['lp_action_clone'], '</a>
 						</li>';
 
 	if (isset($txt['lp_' . $data['type']]['title'])) {
@@ -150,7 +150,7 @@ function show_block_entry(int $id, array $data)
 
 	echo '
 						<li>
-							<a @click.prevent="showContextMenu = false; block.remove($el)" class="button error">', $txt['remove'], '</a>
+							<a @click.prevent="showContextMenu = false; block.remove($root)" class="button error">', $txt['remove'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -175,7 +175,7 @@ function template_block_add()
 	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
-					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el.children[0])">
+					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el)">
 						<i class="', $block['icon'], '"></i>
 						<strong>', $block['title'], '</strong>
 						<hr>
@@ -303,9 +303,9 @@ function template_block_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($el)">', $txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">', $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">', $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

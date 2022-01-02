@@ -362,14 +362,14 @@ function show_single_category(int $id, array $cat)
 		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
 		<td>
 			<span class="floatright">
-				<span @click="category.remove($el)" title="', $txt['remove'], '" class="error">&times;</span>
+				<span @click="category.remove($root)" title="', $txt['remove'], '" class="error">&times;</span>
 			</span>
 			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], ' #', $id, '</label>
 			<input
 				type="text"
 				value="', $cat['name'], '"
 				maxlength="255"
-				@change="category.updateName($el, $event.target)"
+				@change="category.updateName($root, $event.target)"
 			>
 			<br>
 			<textarea
@@ -377,7 +377,7 @@ function show_single_category(int $id, array $cat)
 				rows="2"
 				placeholder="', $txt['lp_page_description'], '"
 				maxlength="255"
-				@change="category.updateDescription($el, $event.target.value)"
+				@change="category.updateDescription($root, $event.target.value)"
 			>', $cat['desc'], '</textarea>
 		</td>
 	</tr>';
