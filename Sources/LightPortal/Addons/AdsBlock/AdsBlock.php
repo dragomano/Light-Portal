@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.21
+ * @version 01.01.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
