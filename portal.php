@@ -8,8 +8,8 @@ if (empty($sourcedir))
 if (empty($modSettings['lp_standalone_mode']) || empty($modSettings['lp_standalone_url']))
 	redirectexit();
 
-require_once $sourcedir . '/LightPortal/FrontPage.php';
+require_once $sourcedir . '/LightPortal/Entities/FrontPage.php';
 
-(new \Bugo\LightPortal\FrontPage)->show();
+(new \Bugo\LightPortal\Entities\FrontPage)->show();
 
 obExit();

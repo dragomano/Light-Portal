@@ -93,7 +93,7 @@ final class Integration extends Main
 
 	public function redirect(string &$setLocation)
 	{
-		if (empty($this->modSettings['lp_frontpage_mode']) || (! empty($this->modSettings['lp_standalone_mode']) && ! empty($this->modSettings['lp_standalone_url'])))
+		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
 			return;
 
 		if ($this->request()->is('markasread'))
@@ -103,15 +103,15 @@ final class Integration extends Main
 	public function actions(array &$actions)
 	{
 		if (! empty($this->modSettings['lp_frontpage_mode']))
-			$actions[LP_ACTION] = array('LightPortal/Entities/FrontPage.php', array(new Entities\FrontPage, 'show'));
+			$actions[LP_ACTION] = ['LightPortal/Entities/FrontPage.php', [new Entities\FrontPage, 'show']];
 
-		$actions['forum'] = array('BoardIndex.php', 'BoardIndex');
+		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
-			return call_user_func(array(new Lists\Category, 'show'));
+			return call_user_func([new Lists\Category, 'show']);
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'tags')
-			return call_user_func(array(new Lists\Tag, 'show'));
+			return call_user_func([new Lists\Tag, 'show']);
 
 		if (! empty($this->modSettings['lp_standalone_mode'])) {
 			$this->unsetDisabledActions($actions);
@@ -124,15 +124,15 @@ final class Integration extends Main
 	public function defaultAction()
 	{
 		if ($this->request()->notEmpty(LP_PAGE_PARAM))
-			return call_user_func(array(new Entities\Page, 'show'));
+			return call_user_func([new Entities\Page, 'show']);
 
-		if (empty($this->modSettings['lp_frontpage_mode']) || (! empty($this->modSettings['lp_standalone_mode']) && ! empty($this->modSettings['lp_standalone_url']))) {
+		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
 			$this->require('BoardIndex');
 
 			return call_user_func('BoardIndex');
 		}
 
-		return call_user_func(array(new Entities\FrontPage, 'show'));
+		return call_user_func([new Entities\FrontPage, 'show']);
 	}
 
 	/**
@@ -148,7 +148,7 @@ final class Integration extends Main
 		if ($this->request()->isEmpty('action')) {
 			$current_action = LP_ACTION;
 
-			if (! empty($this->modSettings['lp_standalone_mode']) && ! empty($this->modSettings['lp_standalone_url']) &&
+			if (! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])) &&
 				$this->modSettings['lp_standalone_url'] !== $this->request()->url()) {
 				$current_action = 'forum';
 			}
@@ -190,34 +190,34 @@ final class Integration extends Main
 
 			$buttons['admin']['sub_buttons'] = array_merge(
 				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				array(
-					'portal_settings' => array(
-						'title' => $this->txt['lp_settings'],
-						'href'  => $this->scripturl . '?action=admin;area=lp_settings',
-						'show'  => true,
-						'sub_buttons' => array(
-							'blocks' => array(
+				[
+					'portal_settings' => [
+						'title'       => $this->txt['lp_settings'],
+						'href'        => $this->scripturl . '?action=admin;area=lp_settings',
+						'show'        => true,
+						'sub_buttons' => [
+							'blocks'  => [
 								'title' => $this->txt['lp_blocks'],
 								'href'  => $this->scripturl . '?action=admin;area=lp_blocks',
 								'amt'   => $this->context['lp_num_active_blocks'],
-								'show'  => true
-							),
-							'pages' => array(
-								'title'   => $this->txt['lp_pages'],
-								'href'    => $this->scripturl . '?action=admin;area=lp_pages',
-								'amt'     => $this->context['lp_num_active_pages'],
-								'show'    => true
-							),
-							'plugins' => array(
+								'show'  => true,
+							],
+							'pages'   => [
+								'title' => $this->txt['lp_pages'],
+								'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+								'amt'   => $this->context['lp_num_active_pages'],
+								'show'  => true,
+							],
+							'plugins' => [
 								'title'   => $this->txt['lp_plugins'],
 								'href'    => $this->scripturl . '?action=admin;area=lp_plugins',
 								'amt'     => count($this->context['lp_enabled_plugins']),
 								'show'    => true,
-								'is_last' => true
-							)
-						)
-					)
-				),
+								'is_last' => true,
+							],
+						],
+					],
+				],
 				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
 			);
 		}
@@ -228,14 +228,16 @@ final class Integration extends Main
 			return;
 
 		// Display "Portal" item in Main Menu
-		$buttons = array_merge(array(LP_ACTION => array(
-			'title'       => $this->txt['lp_portal'],
-			'href'        => $this->scripturl,
-			'icon'        => 'home',
-			'show'        => true,
-			'action_hook' => true,
-			'is_last'     => $this->context['right_to_left']
-		)), $buttons);
+		$buttons = array_merge([
+			LP_ACTION => [
+				'title'       => $this->txt['lp_portal'],
+				'href'        => $this->scripturl,
+				'icon'        => 'home',
+				'show'        => true,
+				'action_hook' => true,
+				'is_last'     => $this->context['right_to_left'],
+			],
+		], $buttons);
 
 		// "Forum"
 		$buttons['home']['title'] = $this->txt['lp_forum'];
@@ -251,15 +253,15 @@ final class Integration extends Main
 
 			$buttons = array_merge(
 				array_slice($buttons, 0, 2, true),
-				array(
-					'forum' => array(
+				[
+					'forum' => [
 						'title'       => $this->txt['lp_forum'],
 						'href'        => empty($this->modSettings['lp_standalone_url']) ? $this->scripturl . '?action=forum' : $this->scripturl,
 						'icon'        => 'im_on',
 						'show'        => true,
-						'action_hook' => true
-					)
-				),
+						'action_hook' => true,
+					],
+				],
 				array_slice($buttons, 2, null, true)
 			);
 
@@ -284,18 +286,18 @@ final class Integration extends Main
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
-			array(
-				'users' => $users
-			)
+			[
+				'users' => $users,
+			]
 		);
 
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}user_alerts
 			WHERE id_member IN ({array_int:users})
 				OR id_member_started IN ({array_int:users})',
-			array(
-				'users' => $users
-			)
+			[
+				'users' => $users,
+			]
 		);
 
 		$this->cache()->flush();
@@ -305,11 +307,11 @@ final class Integration extends Main
 	{
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
-			array(
+			[
 				'light_portal_manage_own_blocks',
 				'light_portal_manage_own_pages',
-				'light_portal_approve_pages'
-			)
+				'light_portal_approve_pages',
+			]
 		);
 	}
 
