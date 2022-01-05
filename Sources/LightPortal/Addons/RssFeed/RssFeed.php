@@ -1,29 +1,29 @@
 <?php
 
 /**
- * SimpleRssFeeder.php
+ * RssFeed.php
  *
- * @package SimpleRssFeeder (Light Portal)
+ * @package RssFeed (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2022 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
-namespace Bugo\LightPortal\Addons\SimpleRssFeeder;
+namespace Bugo\LightPortal\Addons\RssFeed;
 
 use Bugo\LightPortal\Addons\Plugin;
 
-class SimpleRssFeeder extends Plugin
+class RssFeed extends Plugin
 {
 	public string $icon = 'fas fa-rss';
 
 	public function blockOptions(array &$options)
 	{
-		$options['simple_rss_feeder']['parameters'] = [
+		$options['rss_feed']['parameters'] = [
 			'url'       => '',
 			'show_text' => false,
 		];
@@ -31,7 +31,7 @@ class SimpleRssFeeder extends Plugin
 
 	public function validateBlockData(array &$parameters, string $type)
 	{
-		if ($type !== 'simple_rss_feeder')
+		if ($type !== 'rss_feed')
 			return;
 
 		$parameters['url']       = FILTER_VALIDATE_URL;
@@ -40,10 +40,10 @@ class SimpleRssFeeder extends Plugin
 
 	public function prepareBlockFields()
 	{
-		if ($this->context['lp_block']['type'] !== 'simple_rss_feeder')
+		if ($this->context['lp_block']['type'] !== 'rss_feed')
 			return;
 
-		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_simple_rss_feeder']['url'];
+		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_rss_feed']['url'];
 		$this->context['posting_fields']['url']['input'] = [
 			'type' => 'url',
 			'attributes' => [
@@ -56,12 +56,12 @@ class SimpleRssFeeder extends Plugin
 			'tab' => 'content'
 		];
 
-		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_simple_rss_feeder']['show_text'];
+		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_rss_feed']['show_text'];
 		$this->context['posting_fields']['show_text']['input'] = [
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_text',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_text'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_text']
 			],
 			'tab' => 'content'
 		];
@@ -80,10 +80,10 @@ class SimpleRssFeeder extends Plugin
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		if ($type !== 'simple_rss_feeder')
+		if ($type !== 'rss_feed')
 			return;
 
-		$feed = $this->cache('simple_rss_feeder_addon_b' . $block_id)
+		$feed = $this->cache('rss_feed_addon_b' . $block_id)
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['url']);
 
