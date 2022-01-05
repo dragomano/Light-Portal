@@ -18,6 +18,9 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities;
 use function add_integration_function;
+use function allowedTo;
+use function loadLanguage;
+use function redirectexit;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +28,7 @@ if (! defined('SMF'))
 /**
  * This class contains only hook methods
  */
-final class Integration extends Main
+final class Integration extends AbstractMain
 {
 	public function hooks()
 	{
@@ -67,6 +70,9 @@ final class Integration extends Main
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
 	}
 
+	/**
+	 * @hook integrate_pre_css_output
+	 */
 	public function preCssOutput()
 	{
 		if (SMF === 'BACKGROUND')
@@ -74,7 +80,7 @@ final class Integration extends Main
 
 		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
 
-		if (! empty($this->context['portal_next_page']))
+		if (isset($this->context['portal_next_page']))
 			echo "\n\t" . '<link rel="prerender" href="' . $this->context['portal_next_page'] . '">';
 	}
 
@@ -83,7 +89,7 @@ final class Integration extends Main
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		\loadLanguage('LightPortal/');
+		loadLanguage('LightPortal/');
 
 		$this->defineVars();
 		$this->loadCssFiles();
@@ -102,21 +108,21 @@ final class Integration extends Main
 
 	public function actions(array &$actions)
 	{
-		if (! empty($this->modSettings['lp_frontpage_mode']))
+		if ($this->modSettings['lp_frontpage_mode'])
 			$actions[LP_ACTION] = ['LightPortal/Entities/FrontPage.php', [new Entities\FrontPage, 'show']];
 
 		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
-			return call_user_func([new Lists\Category, 'show']);
+			call_user_func([new Lists\Category, 'show']);
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'tags')
-			return call_user_func([new Lists\Tag, 'show']);
+			call_user_func([new Lists\Tag, 'show']);
 
-		if (! empty($this->modSettings['lp_standalone_mode'])) {
+		if ($this->modSettings['lp_standalone_mode']) {
 			$this->unsetDisabledActions($actions);
 
-			if (! empty($this->context['current_action']) && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
+			if ($this->context['current_action'] && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
 				redirectexit();
 		}
 	}
@@ -163,7 +169,7 @@ final class Integration extends Main
 		$disabled_actions = empty($this->modSettings['lp_standalone_mode_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_standalone_mode_disabled_actions']);
 		$disabled_actions[] = 'home';
 
-		if (! empty($this->context['current_board']) || $this->request()->is('keywords'))
+		if (isset($this->context['current_board']) || $this->request()->is('keywords'))
 			$current_action = empty($this->modSettings['lp_standalone_mode']) ? 'home' : (! in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION);
 	}
 
@@ -172,9 +178,9 @@ final class Integration extends Main
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->context['allow_light_portal_view']              = \allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_own_blocks'] = \allowedTo('light_portal_manage_own_blocks');
-		$this->context['allow_light_portal_manage_own_pages']  = \allowedTo('light_portal_manage_own_pages');
+		$this->context['allow_light_portal_view']              = allowedTo('light_portal_view');
+		$this->context['allow_light_portal_manage_own_blocks'] = allowedTo('light_portal_manage_own_blocks');
+		$this->context['allow_light_portal_manage_own_pages']  = allowedTo('light_portal_manage_own_pages');
 
 		(new Entities\Block)->show();
 
@@ -211,7 +217,7 @@ final class Integration extends Main
 							'plugins' => [
 								'title'   => $this->txt['lp_plugins'],
 								'href'    => $this->scripturl . '?action=admin;area=lp_plugins',
-								'amt'     => count($this->context['lp_enabled_plugins']),
+								'amt'     => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
 								'show'    => true,
 								'is_last' => true,
 							],
@@ -245,9 +251,9 @@ final class Integration extends Main
 		$buttons['home']['icon']  = 'im_on';
 
 		// Standalone mode
-		if (! empty($this->modSettings['lp_standalone_mode'])) {
+		if ($this->modSettings['lp_standalone_mode']) {
 			$buttons[LP_ACTION]['title']   = $this->txt['lp_portal'];
-			$buttons[LP_ACTION]['href']    = empty($this->modSettings['lp_standalone_url']) ? $this->scripturl : $this->modSettings['lp_standalone_url'];
+			$buttons[LP_ACTION]['href']    = $this->modSettings['lp_standalone_url'] ?: $this->scripturl;
 			$buttons[LP_ACTION]['icon']    = 'home';
 			$buttons[LP_ACTION]['is_last'] = $this->context['right_to_left'];
 
@@ -256,7 +262,7 @@ final class Integration extends Main
 				[
 					'forum' => [
 						'title'       => $this->txt['lp_forum'],
-						'href'        => empty($this->modSettings['lp_standalone_url']) ? $this->scripturl . '?action=forum' : $this->scripturl,
+						'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
 						'icon'        => 'im_on',
 						'show'        => true,
 						'action_hook' => true,
@@ -303,6 +309,9 @@ final class Integration extends Main
 		$this->cache()->flush();
 	}
 
+	/**
+	 * @hook integrate_load_illegal_guest_permissions
+	 */
 	public function loadIllegalGuestPermissions()
 	{
 		$this->context['non_guest_permissions'] = array_merge(
@@ -315,6 +324,9 @@ final class Integration extends Main
 		);
 	}
 
+	/**
+	 * @hook integrate_load_permissions
+	 */
 	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
@@ -332,15 +344,16 @@ final class Integration extends Main
 	}
 
 	/**
-	 * Adding the "Light Portal" section to the notification settings in user profile
-	 *
-	 * Добавляем раздел «Light Portal» в настройки уведомлений в профиле
+	 * @hook integrate_alert_types
 	 */
 	public function alertTypes(array &$alert_types)
 	{
+		if (empty($this->modSettings['lp_show_comment_block']))
+			return;
+
 		$this->txt['alert_group_light_portal'] = LP_NAME;
 
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default')
+		if ($this->modSettings['lp_show_comment_block'] === 'default')
 			$alert_types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
@@ -372,7 +385,7 @@ final class Integration extends Main
 					$alerts[$id]['text'] = __('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
 
 					$substitutions = [
-						'{member_link}' => ! empty($alert['sender_id']) && $alert['show_links'] ? '<a href="' . $this->scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
+						'{member_link}' => $alert['sender_id'] && $alert['show_links'] ? '<a href="' . $this->scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
 						'{content_subject}' => $alert['extra']['content_subject']
 					];
 
@@ -392,7 +405,7 @@ final class Integration extends Main
 	 */
 	public function preProfileAreas(array &$profile_areas)
 	{
-		if (! empty($this->context['user']['is_admin']))
+		if ($this->context['user']['is_admin'])
 			return;
 
 		$profile_areas['info']['areas']['lp_my_blocks'] = [
@@ -419,16 +432,14 @@ final class Integration extends Main
 	}
 
 	/**
-	 * Register the "My pages" item in the profile popup window
-	 *
-	 * Регистрируем пункт «Мои страницы» в попап-окне профиля
+	 * @hook integrate_profile_popup
 	 */
 	public function profilePopup(array &$profile_items)
 	{
-		if (! empty($this->context['user']['is_admin']))
+		if ($this->context['user']['is_admin'])
 			return;
 
-		if (! \allowedTo('light_portal_manage_own_blocks') && ! \allowedTo('light_portal_manage_own_blocks'))
+		if (! (allowedTo('light_portal_manage_own_blocks') || allowedTo('light_portal_manage_own_blocks')))
 			return;
 
 		$counter = 0;
@@ -441,13 +452,13 @@ final class Integration extends Main
 
 		$portal_items = [];
 
-		if (\allowedTo('light_portal_manage_own_blocks'))
+		if (allowedTo('light_portal_manage_own_blocks'))
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_blocks'
 			];
 
-		if (\allowedTo('light_portal_manage_own_pages'))
+		if (allowedTo('light_portal_manage_own_pages'))
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_pages'
@@ -463,26 +474,31 @@ final class Integration extends Main
 		);
 	}
 
+	/**
+	 * @hook integrate_whos_online
+	 */
 	public function whoisOnline(array $actions): string
 	{
 		$result = '';
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf($this->txt['lp_who_viewing_frontpage'], $this->scripturl);
 
-			if (! empty($this->modSettings['lp_standalone_mode']) && ! empty($this->modSettings['lp_standalone_url']))
+			if ($this->modSettings['lp_standalone_mode'] && $this->modSettings['lp_standalone_url'])
 				$result = sprintf($this->txt['lp_who_viewing_index'], $this->modSettings['lp_standalone_url'], $this->scripturl);
 		}
 
-		if (! empty($actions[LP_PAGE_PARAM]))
+		if (isset($actions[LP_PAGE_PARAM]))
 			$result = sprintf($this->txt['lp_who_viewing_page'], $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $actions[LP_PAGE_PARAM]);
 
 		if (empty($actions['action']))
 			return $result;
 
 		if ($actions['action'] === LP_ACTION) {
-			if (! empty($actions['sa']) && $actions['sa'] === 'tags') {
-				! empty($actions['key'])
-					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;key=' . $actions['key'], $actions['key'])
+			if ($actions['sa'] === 'tags') {
+				$tags = $this->getAllTags();
+
+				isset($actions['id'])
+					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
 					: $result = sprintf($this->txt['lp_who_viewing_tags'], $this->scripturl . '?action=' . LP_ACTION . ';sa=tags');
 			} else {
 				$result = sprintf($this->txt['lp_who_viewing_frontpage'], $this->scripturl . '?action=' . LP_ACTION);
@@ -496,25 +512,25 @@ final class Integration extends Main
 			$result = sprintf($this->txt['lp_who_viewing_portal_settings'], $this->scripturl . '?action=admin;area=lp_settings');
 
 		if ($actions['action'] === 'lp_blocks') {
-			if (! empty($actions['area']) && $actions['area'] === 'lp_blocks') {
+			if ($actions['area'] === 'lp_blocks') {
 				$result = sprintf($this->txt['lp_who_viewing_portal_blocks'], $this->scripturl . '?action=admin;area=lp_blocks');
 
-				if (! empty($actions['sa']) && $actions['sa'] === 'edit' && ! empty($actions['id']))
+				if ($actions['sa'] === 'edit' && $actions['id'])
 					$result = sprintf($this->txt['lp_who_viewing_editing_block'], $actions['id']);
 
-				if (! empty($actions['sa']) && $actions['sa'] === 'add')
+				if ($actions['sa'] === 'add')
 					$result = $this->txt['lp_who_viewing_adding_block'];
 			}
 		}
 
 		if ($actions['action'] === 'lp_pages') {
-			if (! empty($actions['area']) && $actions['area'] === 'lp_pages') {
+			if ($actions['area'] === 'lp_pages') {
 				$result = sprintf($this->txt['lp_who_viewing_portal_pages'], $this->scripturl . '?action==admin;area=lp_pages');
 
-				if (! empty($actions['sa']) && $actions['sa'] === 'edit' && ! empty($actions['id']))
+				if ($actions['sa'] === 'edit' && $actions['id'])
 					$result = sprintf($this->txt['lp_who_viewing_editing_page'], $actions['id']);
 
-				if (! empty($actions['sa']) && $actions['sa'] === 'add')
+				if ($actions['sa'] === 'add')
 					$result = $this->txt['lp_who_viewing_adding_page'];
 			}
 		}
@@ -523,15 +539,16 @@ final class Integration extends Main
 	}
 
 	/**
-	 * Add support for a new modification type by the Package manager
-	 *
-	 * Добавляем поддержку нового типа модификаций Менеджером пакетов
+	 * @hook integrate_modification_types
 	 */
 	public function modificationTypes()
 	{
 		$this->context['modification_types'][] = 'lp_addon';
 	}
 
+	/**
+	 * @hook integrate_packages_sort_id
+	 */
 	public function packagesSortId(array &$sort_id)
 	{
 		$sort_id['lp_addon'] = 1;

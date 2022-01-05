@@ -413,7 +413,7 @@ function template_block_post()
 		});';
 	}
 
-	if (empty($context['lp_block']['options']['no_content_class']) && ! empty($context['lp_all_content_classes'])) {
+	if (empty($context['lp_block']['options']['no_content_class'])) {
 		echo '
 		new SlimSelect({
 			select: "#content_class",

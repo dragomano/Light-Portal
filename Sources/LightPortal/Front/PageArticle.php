@@ -44,7 +44,7 @@ class PageArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		$this->addon('frontPages', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontPages', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -57,6 +57,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
+		/** @noinspection SqlResolve */
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at,
@@ -87,11 +88,11 @@ class PageArticle extends AbstractArticle
 						'link' => empty($row['category_id']) ? '' : ($this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'])
 					],
 					'author' => [
-						'id' => $author_id = (int) (empty($this->modSettings['lp_frontpage_article_sorting']) && ! empty($row['num_comments']) ? $row['comment_author_id'] : $row['author_id']),
+						'id' => $author_id = (int) (empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_id'] : $row['author_id']),
 						'link' => $this->scripturl . '?action=profile;u=' . $author_id,
-						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) && ! empty($row['num_comments']) ? $row['comment_author_name'] : $row['author_name']
+						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_name'] : $row['author_name']
 					],
-					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && ! empty($row['comment_date']) ? $row['comment_date'] : $row['created_at'],
+					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['comment_date'] ? $row['comment_date'] : $row['created_at'],
 					'link' => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
 					'views' => [
 						'num' => $row['num_views'],
@@ -99,7 +100,7 @@ class PageArticle extends AbstractArticle
 						'after' => ''
 					],
 					'replies' => [
-						'num' => ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
+						'num' => $this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
 						'title' => $this->txt['lp_comments'],
 						'after' => ''
 					],
@@ -111,16 +112,16 @@ class PageArticle extends AbstractArticle
 
 				$pages[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
 
-				if (! empty($this->modSettings['lp_show_teaser']))
-					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) && ! empty($row['num_comments']) ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
+				if ($this->modSettings['lp_show_teaser'])
+					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
 
-				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3)
 					$pages[$row['page_id']]['date'] = $row['date'];
 			}
 
 			$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 
-			$this->addon('frontPagesOutput', [&$pages, $row]);
+			$this->hook('frontPagesOutput', [&$pages, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);
@@ -133,6 +134,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
+		/** @noinspection SqlResolve */
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '

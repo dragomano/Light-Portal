@@ -17,6 +17,14 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\{Addon, Helper};
+use ReflectionClass;
+use ReflectionException;
+use function checkSession;
+use function fetch_web_data;
+use function loadJavaScriptFile;
+use function loadLanguage;
+use function loadTemplate;
+use function updateSettings;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -69,7 +77,7 @@ final class PluginArea
 		$config_vars = [];
 
 		// You can add settings for your plugins
-		$this->addon('addSettings', [&$config_vars], $this->context['lp_plugins']);
+		$this->hook('addSettings', [&$config_vars], $this->context['lp_plugins']);
 
 		// Saving of plugin settings
 		if ($this->request()->has('save')) {
@@ -107,9 +115,9 @@ final class PluginArea
 			}
 
 			// You can do additional actions after settings saving
-			$this->addon('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
+			$this->hook('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
 
-			if (! empty($plugin_options))
+			if ($plugin_options)
 				updateSettings($plugin_options);
 
 			exit;
@@ -124,7 +132,7 @@ final class PluginArea
 
 			try {
 				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;
-				$addonClass = new \ReflectionClass($className);
+				$addonClass = new ReflectionClass($className);
 
 				if ($addonClass->hasProperty('author'))
 					$author = $addonClass->getProperty('author')->getValue(new $className);
@@ -139,7 +147,7 @@ final class PluginArea
 					$disables = $addonClass->getProperty('disables')->getValue(new $className);
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
-			} catch (\ReflectionException $e) {
+			} catch (ReflectionException $e) {
 				if (isset($this->context['lp_can_donate'][$item])) {
 					$this->context['lp_loaded_addons'][$snake_name]['type'] = $this->context['lp_can_donate'][$item]['type'] ?? 'other';
 					$special = $this->txt['lp_can_donate'];
@@ -204,14 +212,14 @@ final class PluginArea
 		if (empty($xml) || ! is_array($xml))
 			return;
 
-		if (! empty($xml['donate'])) {
+		if ($xml['donate']) {
 			foreach ($xml['donate'] as $addon) {
 				$this->context['lp_plugins'][] = $addon['name'];
 				$this->context['lp_can_donate'][$addon['name']] = $addon;
 			}
 		}
 
-		if (! empty($xml['download'])) {
+		if ($xml['download']) {
 			foreach ($xml['download'] as $addon) {
 				$this->context['lp_plugins'][] = $addon['name'];
 				$this->context['lp_can_download'][$addon['name']] = $addon;

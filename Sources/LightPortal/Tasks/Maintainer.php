@@ -17,8 +17,9 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
+use SMF_BackgroundTask;
 
-final class Maintainer extends \SMF_BackgroundTask
+final class Maintainer extends SMF_BackgroundTask
 {
 	use Helper;
 
@@ -72,7 +73,7 @@ final class Maintainer extends \SMF_BackgroundTask
 		[$usedTags] = $this->smcFunc['db_fetch_row']($request);
 		$this->smcFunc['db_free_result']($request);
 
-		if (! empty($usedTags)) {
+		if ($usedTags) {
 			$this->smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_tags
 				WHERE tag_id NOT IN ({array_int:tags})',
@@ -90,7 +91,7 @@ final class Maintainer extends \SMF_BackgroundTask
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
+		$this->smcFunc['db_query']('', /** @lang text */ '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT id FROM {db_prefix}lp_comments)',
@@ -124,6 +125,7 @@ final class Maintainer extends \SMF_BackgroundTask
 		foreach ($pages as $page_id => $num_comments)
 			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $num_comments;
 
+		/** @noinspection SqlResolve */
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE ' . $line . '

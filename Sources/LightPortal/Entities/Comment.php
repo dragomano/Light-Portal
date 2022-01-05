@@ -17,6 +17,10 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+use function addInlineJavaScript;
+use function censorText;
+use function preparsecode;
+use function send_http_status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -71,7 +75,7 @@ final class Comment
 		$totalParentComments = sizeof($commentTree);
 
 		$pageIndexUrl = $this->context['canonical_url'];
-		if (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && ! empty($this->modSettings['lp_frontpage_alias']))
+		if ($this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias'])
 			$pageIndexUrl = $this->scripturl . '?action=' . LP_ACTION;
 
 		$this->context['current_start'] = $this->request('start');
@@ -105,10 +109,11 @@ final class Comment
 	{
 		$this->require('Subs-Post');
 
+		/** @noinspection SqlResolve */
 		$request = $this->smcFunc['db_query']('', '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . (! empty($page_id) ? '
+				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
 			WHERE com.page_id = {int:id}' : ''),
 			[
 				'id' => $page_id
@@ -129,7 +134,7 @@ final class Comment
 				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
 				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => (int) $row['created_at'],
-				'can_edit'    => ! empty($this->modSettings['lp_time_to_change_comments']) && time() - $row['created_at'] <= (int) $this->modSettings['lp_time_to_change_comments'] * 60
+				'can_edit'    => $this->modSettings['lp_time_to_change_comments'] && time() - $row['created_at'] <= (int) $this->modSettings['lp_time_to_change_comments'] * 60
 			];
 		}
 
@@ -189,7 +194,7 @@ final class Comment
 
 		$this->context['lp_num_queries']++;
 
-		if (! empty($item)) {
+		if ($item) {
 			$this->smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_comments = num_comments + 1

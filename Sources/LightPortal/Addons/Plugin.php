@@ -52,7 +52,7 @@ abstract class Plugin
 		if (is_file($path))
 			require_once $path;
 
-		if (! empty($sub_template))
+		if ($sub_template)
 			$this->context['sub_template'] = $sub_template;
 
 		return $this;
@@ -63,13 +63,15 @@ abstract class Plugin
 		$this->context['template_layers'][] = $layer;
 	}
 
-	public function loadSsi(): Plugin
+	public function getFromSsi(string $function, ...$params)
 	{
-		$path = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
+		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
-		if (is_file($path))
-			require_once $path;
+		$function = 'ssi_' . $function;
 
-		return $this;
+		if (function_exists($function))
+			return $function(...$params);
+
+		return false;
 	}
 }

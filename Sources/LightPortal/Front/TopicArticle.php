@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
+use function censorText;
+use function parse_bbc;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -43,7 +46,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		$this->addon('frontTopics', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontTopics', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -98,7 +101,7 @@ class TopicArticle extends AbstractArticle
 
 				$body = $last_body = '';
 
-				if (! empty($this->modSettings['lp_show_teaser'])) {
+				if ($this->modSettings['lp_show_teaser']) {
 					censorText($row['body']);
 					censorText($row['last_body']);
 
@@ -118,7 +121,7 @@ class TopicArticle extends AbstractArticle
 
 				$image = empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(parse_bbc($row['body'], false));
 
-				if (! empty($row['id_attach']) && empty($image)) {
+				if ($row['id_attach'] && empty($image)) {
 					$image = $this->scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
 				}
 
@@ -133,7 +136,7 @@ class TopicArticle extends AbstractArticle
 						'link' => $this->scripturl . '?action=profile;u=' . $author_id,
 						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) ? $row['last_poster_name'] : $row['poster_name']
 					],
-					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && ! empty($row['last_msg_time']) ? $row['last_msg_time'] : $row['poster_time'],
+					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['last_msg_time'] ? $row['last_msg_time'] : $row['poster_time'],
 					'title' => $row['subject'],
 					'link' => $this->scripturl . '?topic=' . $row['id_topic'] . '.0',
 					'is_new' => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $this->user_info['id'],
@@ -149,31 +152,31 @@ class TopicArticle extends AbstractArticle
 					],
 					'css_class' => $row['is_sticky'] ? ' sticky' : '',
 					'image' => $image ?? '',
-					'can_edit' => $this->user_info['is_admin'] || (! empty($this->user_info['id']) && $row['id_member'] == $this->user_info['id']),
+					'can_edit' => $this->user_info['is_admin'] || ($this->user_info['id'] && $row['id_member'] == $this->user_info['id']),
 					'edit_link' => $this->scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
 				];
 
 				$topics[$row['id_topic']]['author']['avatar'] = $this->modSettings['avatar_url'] . '/default.png';
-				if (! empty($avatar = $this->getUserAvatar($author_id))) {
+				if ($avatar = $this->getUserAvatar($author_id)) {
 					$topics[$row['id_topic']]['author']['avatar'] = $avatar['href'];
 				}
 
-				if (! empty($this->modSettings['lp_show_teaser']))
+				if ($this->modSettings['lp_show_teaser'])
 					$topics[$row['id_topic']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
 
-				if (! empty($row['new_from']) && $row['new_from'] <= $row['id_msg_modified'])
+				if ($row['new_from'] && $row['new_from'] <= $row['id_msg_modified'])
 					$topics[$row['id_topic']]['link'] = $this->scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
 
 				$topics[$row['id_topic']]['msg_link'] = $topics[$row['id_topic']]['link'];
 
-				if (! empty($topics[$row['id_topic']]['num_replies']))
+				if ($row['num_replies'])
 					$topics[$row['id_topic']]['msg_link'] = $this->scripturl . '?msg=' . $row['id_msg'];
 
-				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3)
 					$topics[$row['id_topic']]['date'] = $row['date'];
 			}
 
-			$this->addon('frontTopicsOutput', [&$topics, $row]);
+			$this->hook('frontTopicsOutput', [&$topics, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);
@@ -187,6 +190,7 @@ class TopicArticle extends AbstractArticle
 		if (empty($this->selected_boards) && $this->modSettings['lp_frontpage_mode'] === 'all_topics')
 			return 0;
 
+		/** @noinspection SqlResolve */
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(t.id_topic)
 			FROM {db_prefix}topics AS t

@@ -17,6 +17,9 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use function isAllowedTo;
+use function loadTemplate;
+use function obExit;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +32,7 @@ final class CreditArea
 	{
 		$this->context['credits_modifications'][] = $this->getLink();
 
-		if (! empty($this->context['current_subaction']) && $this->context['current_subaction'] === 'light_portal') {
+		if ($this->context['current_subaction'] && $this->context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
 			loadTemplate('LightPortal/ViewCredits');
@@ -157,7 +160,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		$this->addon('credits', [&$links]);
+		$this->hook('credits', [&$links]);
 
 		$this->context['lp_components'] = $links;
 	}

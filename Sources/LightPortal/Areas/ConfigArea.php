@@ -16,7 +16,22 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Helper, Lists\Category};
+use Bugo\LightPortal\{Helper, Impex\BlockExport, Impex\BlockImport, Impex\PageExport, Impex\PageImport, Lists\Category};
+use function addInlineCss;
+use function call_helper;
+use function checkSession;
+use function db_extend;
+use function fetch_web_data;
+use function isAllowedTo;
+use function loadCSSFile;
+use function loadJavaScriptFile;
+use function loadLanguage;
+use function loadTemplate;
+use function parse_bbc;
+use function prepareDBSettingContext;
+use function redirectexit;
+use function saveDBSettings;
+use function updateSettings;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -83,7 +98,7 @@ final class ConfigArea
 							'label' => $this->txt['lp_plugins'],
 							'function' => [$this, 'pluginAreas'],
 							'icon' => 'maintain',
-							'amt' => count($this->context['lp_enabled_plugins']),
+							'amt' => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
 							'permission' => ['admin_forum'],
 							'subsections' => [
 								'main' => ['<i class="fas fa-tasks"></i> ' . $this->txt['lp_plugins_manage']]
@@ -107,13 +122,11 @@ final class ConfigArea
 			];
 		}
 
-		$this->addon('addAdminAreas', [&$admin_areas]);
+		$this->hook('addAdminAreas', [&$admin_areas]);
 	}
 
 	/**
-	 * Easy access to the mod settings via a quick search in the admin panel
-	 *
-	 * Легкий доступ к настройкам мода через быстрый поиск в админке
+	 * @hook integrate_admin_search
 	 */
 	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
@@ -222,7 +235,7 @@ final class ConfigArea
 			$add_settings['lp_standalone_url'] = $this->boardurl . '/portal.php';
 		if (! isset($this->modSettings['lp_prohibit_php']))
 			$add_settings['lp_prohibit_php'] = 1;
-		if (! empty($add_settings))
+		if ($add_settings)
 			updateSettings($add_settings);
 
 		$config_vars = [
@@ -275,7 +288,7 @@ final class ConfigArea
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
 		];
 
-		$this->addon('addBasicSettings', [&$config_vars]);
+		$this->hook('addBasicSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -306,13 +319,13 @@ final class ConfigArea
 						$frontpage_categories[] = $id;
 			}
 
-			$this->post()->put('lp_frontpage_categories', ! empty($frontpage_categories) ? implode(',', $frontpage_categories) : '');
+			$this->post()->put('lp_frontpage_categories', $frontpage_categories ? implode(',', $frontpage_categories) : '');
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_categories'];
 			$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			$this->addon('addBasicSaveSettings', [&$save_vars]);
+			$this->hook('addBasicSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -349,7 +362,7 @@ final class ConfigArea
 		$add_settings = [];
 		if (! isset($this->modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 12;
-		if (! empty($add_settings))
+		if ($add_settings)
 			updateSettings($add_settings);
 
 		$config_vars = [
@@ -385,7 +398,7 @@ final class ConfigArea
 			],
 		];
 
-		$this->addon('addExtraSettings', [&$config_vars]);
+		$this->hook('addExtraSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -424,7 +437,7 @@ final class ConfigArea
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
 
-			$this->addon('addExtraSaveSettings', [&$save_vars]);
+			$this->hook('addExtraSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -455,19 +468,19 @@ final class ConfigArea
 		if ($this->request()->has('actions')) {
 			$data = $this->request()->json();
 
-			if (! empty($data['update_priority']))
+			if (isset($data['update_priority']))
 				$this->updatePriority($data['update_priority']);
 
-			if (! empty($data['new_name']))
+			if (isset($data['new_name']))
 				$this->add($data['new_name'], $data['new_desc'] ?? '');
 
-			if (! empty($data['name']))
+			if (isset($data['name']))
 				$this->updateName((int) $data['item'], $data['name']);
 
-			if (! empty($data['desc']))
+			if (isset($data['desc']))
 				$this->updateDescription((int) $data['item'], $data['desc']);
 
-			if (! empty($data['del_item']))
+			if (isset($data['del_item']))
 				$this->remove([(int) $data['del_item']]);
 
 			exit;
@@ -498,7 +511,7 @@ final class ConfigArea
 		// Initial settings | Первоначальные настройки
 		$add_settings = [];
 		if (! isset($this->modSettings['lp_swap_left_right']))
-			$add_settings['lp_swap_left_right'] = ! empty($this->txt['lang_rtl']);
+			$add_settings['lp_swap_left_right'] = (bool) $this->txt['lang_rtl'];
 		if (! isset($this->modSettings['lp_header_panel_width']))
 			$add_settings['lp_header_panel_width'] = 12;
 		if (! isset($this->modSettings['lp_left_panel_width']))
@@ -511,7 +524,7 @@ final class ConfigArea
 			$add_settings['lp_left_panel_sticky'] = 1;
 		if (! isset($this->modSettings['lp_right_panel_sticky']))
 			$add_settings['lp_right_panel_sticky'] = 1;
-		if (! empty($add_settings))
+		if ($add_settings)
 			updateSettings($add_settings);
 
 		$this->context['lp_left_right_width_values']    = [2, 3, 4];
@@ -525,7 +538,7 @@ final class ConfigArea
 			['callback', 'panel_direction']
 		];
 
-		$this->addon('addPanelsSettings', [&$config_vars]);
+		$this->hook('addPanelsSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -549,7 +562,7 @@ final class ConfigArea
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
 
-			$this->addon('addPanelsSaveSettings', [&$save_vars]);
+			$this->hook('addPanelsSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -581,7 +594,7 @@ final class ConfigArea
 			$add_settings['lp_portal_action'] = LP_ACTION;
 		if (! isset($this->modSettings['lp_page_param']))
 			$add_settings['lp_page_param'] = LP_PAGE_PARAM;
-		if (! empty($add_settings))
+		if ($add_settings)
 			updateSettings($add_settings);
 
 		$config_vars = [
@@ -595,7 +608,7 @@ final class ConfigArea
 			['check', 'lp_weekly_cleaning']
 		];
 
-		$this->addon('addMiscSettings', [&$config_vars]);
+		$this->hook('addMiscSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -624,7 +637,7 @@ final class ConfigArea
 
 			$save_vars = $config_vars;
 
-			$this->addon('addMiscSaveSettings', [&$save_vars]);
+			$this->hook('addMiscSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -647,11 +660,11 @@ final class ConfigArea
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new \Bugo\LightPortal\Impex\BlockExport, 'main'];
-			$subActions['import'] = [new \Bugo\LightPortal\Impex\BlockImport, 'main'];
+			$subActions['export'] = [new BlockExport, 'main'];
+			$subActions['import'] = [new BlockImport, 'main'];
 		}
 
-		$this->addon('addBlockAreas', [&$subActions]);
+		$this->hook('addBlockAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -667,11 +680,11 @@ final class ConfigArea
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new \Bugo\LightPortal\Impex\PageExport, 'main'];
-			$subActions['import'] = [new \Bugo\LightPortal\Impex\PageImport, 'main'];
+			$subActions['export'] = [new PageExport, 'main'];
+			$subActions['import'] = [new PageImport, 'main'];
 		}
 
-		$this->addon('addPageAreas', [&$subActions]);
+		$this->hook('addPageAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -684,7 +697,7 @@ final class ConfigArea
 			'main' => [new PluginArea, 'main']
 		];
 
-		$this->addon('addPluginAreas', [&$subActions]);
+		$this->hook('addPluginAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
@@ -738,7 +751,7 @@ final class ConfigArea
 	{
 		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $this->context['lp_enabled_plugins']) . "'" . PHP_EOL;
 		foreach ($this->modSettings as $key => $value) {
-			if (strpos((string) $key, 'lp_') === 0 && isset($this->txt[$key]) && ! empty($value)) {
+			if (strpos((string) $key, 'lp_') === 0 && isset($this->txt[$key]) && $value) {
 				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
 			}
 		}
@@ -816,6 +829,7 @@ final class ConfigArea
 		if (empty($conditions))
 			return;
 
+		/** @noinspection SqlResolve */
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_categories
 			SET priority = CASE ' . $conditions . ' ELSE priority END
@@ -855,7 +869,7 @@ final class ConfigArea
 
 		$this->context['lp_num_queries']++;
 
-		if (! empty($item)) {
+		if ($item) {
 			ob_start();
 
 			show_single_category($item, ['name' => $name, 'desc' => $desc]);
@@ -940,7 +954,7 @@ final class ConfigArea
 
 	private function getPriority(): int
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_categories',
 			[]

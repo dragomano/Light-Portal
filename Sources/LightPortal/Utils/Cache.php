@@ -16,6 +16,10 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Utils;
 
+use function cache_get_data;
+use function cache_put_data;
+use function clean_cache;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -63,12 +67,12 @@ final class Cache
 
 	public function get(string $key, ?int $time = null): ?array
 	{
-		return \cache_get_data($this->prefix . $key, $time ?? $this->lifeTime);
+		return cache_get_data($this->prefix . $key, $time ?? $this->lifeTime);
 	}
 
 	public function put(string $key, ?array $value, ?int $time = null)
 	{
-		\cache_put_data($this->prefix . $key, $value, $time ?? $this->lifeTime);
+		cache_put_data($this->prefix . $key, $value, $time ?? $this->lifeTime);
 	}
 
 	public function forget(string $key)
@@ -78,6 +82,6 @@ final class Cache
 
 	public function flush()
 	{
-		\clean_cache();
+		clean_cache();
 	}
 }

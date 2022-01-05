@@ -17,8 +17,13 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
+use SMF_BackgroundTask;
+use function getNotifyPrefs;
+use function loadMemberData;
+use function membersAllowedTo;
+use function updateMemberData;
 
-final class Notifier extends \SMF_BackgroundTask
+final class Notifier extends SMF_BackgroundTask
 {
 	use Helper;
 
@@ -30,21 +35,21 @@ final class Notifier extends \SMF_BackgroundTask
 	public function execute(): bool
 	{
 		$this->require('Subs-Members');
-		$members = \membersAllowedTo('light_portal_view');
+		$members = membersAllowedTo('light_portal_view');
 
 		$this->_details['content_type'] === 'new_comment'
 			? $members = array_intersect($members, [$this->_details['author_id']])
 			: $members = array_intersect($members, [$this->_details['commentator_id']]);
 
 		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
-		if (! empty($this->_details['sender_id']))
+		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
 
 		$this->require('Subs-Notify');
-		$prefs = \getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
+		$prefs = getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
 
-		if (! empty($this->_details['sender_id']) && empty($this->_details['sender_name'])) {
-			\loadMemberData($this->_details['sender_id'], false, 'minimal');
+		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
+			loadMemberData($this->_details['sender_id'], false, 'minimal');
 
 			empty($this->user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_id'] = 0
@@ -68,7 +73,7 @@ final class Notifier extends \SMF_BackgroundTask
 			}
 		}
 
-		if (! empty($notifies['alert'])) {
+		if ($notifies['alert']) {
 			$insert_rows = [];
 			foreach ($notifies['alert'] as $member) {
 				$insert_rows[] = [
@@ -84,7 +89,7 @@ final class Notifier extends \SMF_BackgroundTask
 				];
 			}
 
-			if (! empty($insert_rows)) {
+			if ($insert_rows) {
 				$this->smcFunc['db_insert']('',
 					'{db_prefix}user_alerts',
 					[
@@ -102,7 +107,7 @@ final class Notifier extends \SMF_BackgroundTask
 					['id_alert']
 				);
 
-				\updateMemberData($notifies['alert'], ['alerts' => '+']);
+				updateMemberData($notifies['alert'], ['alerts' => '+']);
 			}
 		}
 

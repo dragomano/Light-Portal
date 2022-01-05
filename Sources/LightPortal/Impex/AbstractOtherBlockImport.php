@@ -16,6 +16,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
+use function fatal_lang_error;
 
 abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportInterface
 {
@@ -35,14 +36,14 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		$this->db_temp_cache = $this->db_cache;
 		$this->db_cache = [];
 
-		$blocks = ! empty($this->post('blocks')) && $this->post()->has('import_all') === false ? $this->post('blocks') : [];
+		$blocks = $this->post('blocks') && $this->post()->has('import_all') === false ? $this->post('blocks') : [];
 
 		$results = $titles = [];
 		$items = $this->getItems($blocks);
 
-		$this->addon('importBlocks', [&$items, &$titles]);
+		$this->hook('importBlocks', [&$items, &$titles]);
 
-		if (! empty($items)) {
+		if ($items) {
 			foreach ($items as $block_id => $item) {
 				$titles[] = [
 					'type'  => 'block',
@@ -79,7 +80,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 			}
 		}
 
-		if (! empty($titles) && ! empty($results)) {
+		if ($titles && $results) {
 			foreach ($results as $key => $value) {
 				$titles[$key]['item_id'] = $value;
 			}

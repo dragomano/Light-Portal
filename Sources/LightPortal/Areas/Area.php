@@ -16,6 +16,11 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
+use function addJavaScriptVar;
+use function create_control_richedit;
+use function loadTemplate;
+use function preparsecode;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -44,7 +49,7 @@ trait Area
 	public function preparePostFields(string $defaultTab = 'tuning')
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
-			if (! empty($data['input']['after'])) {
+			if (isset($data['input']['after'])) {
 				$tag = 'div';
 
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
@@ -110,12 +115,11 @@ trait Area
 
 		$search = trim($this->smcFunc['strtolower']($search));
 
-		$all_icons = [];
+		$all_icons = $this->getFaIcons();
 		$template = '<i class="%1$s"></i>&nbsp;%1$s';
 
-		$this->addon('prepareIconList', [&$all_icons, &$template]);
+		$this->hook('prepareIconList', [&$all_icons, &$template]);
 
-		$all_icons = $all_icons ?: $this->getFaIcons();
 		$all_icons = array_filter($all_icons, fn($item) => strpos($item, $search) !== false);
 
 		$results = [];

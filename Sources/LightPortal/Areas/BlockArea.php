@@ -17,6 +17,15 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
+use function allowedTo;
+use function censorText;
+use function checkSubmitOnce;
+use function fatal_lang_error;
+use function loadTemplate;
+use function redirectexit;
+use function template_control_richedit;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +38,7 @@ final class BlockArea
 
 	public function main()
 	{
-		\loadTemplate('LightPortal/ManageBlocks');
+		loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_manage'];
 
@@ -90,13 +99,13 @@ final class BlockArea
 
 		$data = $this->request()->json();
 
-		if (! empty($data['del_item']))
+		if (isset($data['del_item']))
 			$this->remove([(int) $data['del_item']]);
 
-		if (! empty($data['clone_block']))
+		if (isset($data['clone_block']))
 			$this->makeCopy((int) $data['clone_block']);
 
-		if (! empty($data['toggle_item']))
+		if (isset($data['toggle_item']))
 			$this->toggleStatus([(int) $data['toggle_item']]);
 
 		$this->updatePriority();
@@ -108,7 +117,7 @@ final class BlockArea
 
 	public function add()
 	{
-		\loadTemplate('LightPortal/ManageBlocks');
+		loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title']    = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_add_title'];
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_blocks;sa=add';
@@ -148,9 +157,9 @@ final class BlockArea
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
 		if (empty($item))
-			\fatal_lang_error('lp_block_not_found', false, null, 404);
+			fatal_lang_error('lp_block_not_found', false, null, 404);
 
-		\loadTemplate('LightPortal/ManageBlocks');
+		loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_edit_title'];
 
@@ -165,11 +174,11 @@ final class BlockArea
 		$this->context['current_block'] = $this->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			\fatal_lang_error('lp_block_not_editable', false);
+			fatal_lang_error('lp_block_not_editable', false);
 
 		if ($this->post()->has('remove')) {
 			$this->remove([$item]);
-			\redirectexit('action=admin;area=lp_blocks;sa=main');
+			redirectexit('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
@@ -201,7 +210,7 @@ final class BlockArea
 
 		if (empty($this->smcFunc['db_num_rows']($request))) {
 			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
-			\fatal_lang_error('lp_block_not_found', false, null, 404);
+			fatal_lang_error('lp_block_not_found', false, null, 404);
 		}
 
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
@@ -210,7 +219,7 @@ final class BlockArea
 				$row['content'] = un_preparsecode($row['content']);
 			}
 
-			\censorText($row['content']);
+			censorText($row['content']);
 
 			$data ??= [
 				'id'            => (int) $row['block_id'],
@@ -230,15 +239,12 @@ final class BlockArea
 				'content_style' => $row['content_style'],
 			];
 
-			if (! empty($row['lang']))
-				$data['title'][$row['lang']] = $row['title'];
+			$data['title'][$row['lang']] = $row['title'];
 
-			if (! empty($row['name']))
-				$data['options']['parameters'][$row['name']] = $row['value'];
+			$data['options']['parameters'][$row['name']] = $row['value'];
+
+			$this->prepareMissingBlockTypes($row['type']);
 		}
-
-		if (! empty($data['type']))
-			$this->prepareMissingBlockTypes($data['type']);
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
@@ -279,7 +285,7 @@ final class BlockArea
 
 		$this->context['lp_num_queries'] += 3;
 
-		$this->addon('onBlockRemoving', [$items]);
+		$this->hook('onBlockRemoving', [$items]);
 	}
 
 	private function makeCopy(int $item)
@@ -293,7 +299,7 @@ final class BlockArea
 		$this->context['lp_block']       = $this->getData($item);
 		$this->context['lp_block']['id'] = $this->setData();
 
-		if (! empty($this->context['lp_block']['id'])) {
+		if ($this->context['lp_block']['id']) {
 			$result = [
 				'id'      => $this->context['lp_block']['id'],
 				'success' => true
@@ -309,7 +315,7 @@ final class BlockArea
 	{
 		$data = $this->request()->json();
 
-		if (! isset($data['update_priority']))
+		if (empty($data['update_priority']))
 			return;
 
 		$blocks = $data['update_priority'];
@@ -322,7 +328,8 @@ final class BlockArea
 		if (empty($conditions))
 			return;
 
-		if (! empty($blocks) && is_array($blocks)) {
+		if (is_array($blocks)) {
+			/** @noinspection SqlResolve */
 			$this->smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_blocks
 				SET priority = CASE ' . $conditions . ' ELSE priority END
@@ -334,7 +341,7 @@ final class BlockArea
 
 			$this->context['lp_num_queries']++;
 
-			if (! empty($data['update_placement'])) {
+			if ($data['update_placement']) {
 				$this->smcFunc['db_query']('', '
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
@@ -360,7 +367,7 @@ final class BlockArea
 			];
 		}
 
-		$this->addon('blockOptions', [&$options]);
+		$this->hook('blockOptions', [&$options]);
 
 		return $options;
 	}
@@ -392,7 +399,7 @@ final class BlockArea
 
 			$parameters = [];
 
-			$this->addon('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
+			$this->hook('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
 
 			$post_data['parameters'] = filter_var_array($this->post()->only(array_keys($parameters)), $parameters);
 
@@ -408,9 +415,9 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! \allowedTo('light_portal_manage_own_blocks') ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => $this->user_info['is_admin'] || ! allowedTo('light_portal_manage_own_blocks') ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
 			'title'         => $this->context['current_block']['title'] ?? [],
-			'icon'          => ! empty($post_data['block_id']) ? ($post_data['icon'] ?? '') : ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? ''),
+			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
 			'note'          => $post_data['note'] ?? $this->context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $this->context['current_block']['content'] ?? '',
@@ -426,17 +433,20 @@ final class BlockArea
 			'options'       => $options[$this->context['current_block']['type']],
 		];
 
-		if (! empty($this->context['lp_block']['options']['no_content_class'])) {
-			$this->context['lp_block']['content_class'] = '';
-		}
+		if ($this->context['lp_block']['icon'] === 'undefined')
+			$this->context['lp_block']['icon'] = '';
 
 		$this->context['lp_block']['icon_template'] = $this->getIcon($this->context['lp_block']['icon']) . $this->context['lp_block']['icon'];
 
 		$this->context['lp_block']['priority'] = empty($this->context['lp_block']['id']) ? $this->getPriority() : $this->context['lp_block']['priority'];
 
-		if (! empty($this->context['lp_block']['options']['parameters'])) {
+		if (! empty($this->context['lp_block']['options']['no_content_class'])) {
+			$this->context['lp_block']['content_class'] = '';
+		}
+
+		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
-				if (! empty($parameters[$option]) && ! empty($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
+				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
 					if ($parameters[$option] == FILTER_SANITIZE_STRING)
 						$post_data[$option] = '';
 
@@ -466,12 +476,12 @@ final class BlockArea
 			$post_errors[] = 'no_areas';
 
 		$areas_format['options'] = ['regexp' => '/' . self::AREAS_PATTERN . '/'];
-		if (! empty($data['areas']) && empty($this->validate($data['areas'], $areas_format)))
+		if ($data['areas'] && empty($this->validate($data['areas'], $areas_format)))
 			$post_errors[] = 'no_valid_areas';
 
-		$this->addon('findBlockErrors', [$data, &$post_errors]);
+		$this->hook('findBlockErrors', [$data, &$post_errors]);
 
-		if (! empty($post_errors)) {
+		if ($post_errors) {
 			$this->post()->put('preview', true);
 			$this->context['post_errors'] = [];
 
@@ -482,7 +492,7 @@ final class BlockArea
 
 	private function prepareFormFields()
 	{
-		\checkSubmitOnce('register');
+		checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
@@ -598,7 +608,7 @@ final class BlockArea
 			];
 		}
 
-		if (! empty($this->context['lp_block']['options']['content'])) {
+		if (isset($this->context['lp_block']['options']['content'])) {
 			$this->context['posting_fields']['content']['label']['html'] = ' ';
 
 			if ($this->context['lp_block']['type'] !== 'bbc') {
@@ -613,14 +623,14 @@ final class BlockArea
 				$this->createBbcEditor($this->context['lp_block']['content']);
 
 				ob_start();
-				\template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+				template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 				$this->context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean() . '</div>';
 
 				$this->context['posting_fields']['content']['input']['tab'] = 'content';
 			}
 		}
 
-		$this->addon('prepareBlockFields');
+		$this->hook('prepareBlockFields');
 
 		$this->preparePostFields();
 
@@ -664,7 +674,7 @@ final class BlockArea
 			return false;
 
 		$result = [];
-		foreach (new \RecursiveIteratorIterator(new \RecursiveArrayIterator($data), \RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
+		foreach (new RecursiveIteratorIterator(new RecursiveArrayIterator($data), RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
 			if ($check_key === $key) {
 				$result[] = $value;
 			}
@@ -675,7 +685,7 @@ final class BlockArea
 
 	private function prepareEditor()
 	{
-		$this->addon('prepareEditor', [$this->context['lp_block']]);
+		$this->hook('prepareEditor', [$this->context['lp_block']]);
 	}
 
 	private function preparePreview()
@@ -683,14 +693,14 @@ final class BlockArea
 		if ($this->post()->has('preview') === false)
 			return;
 
-		\checkSubmitOnce('free');
+		checkSubmitOnce('free');
 
 		$this->context['preview_title']   = $this->context['lp_block']['title'][$this->context['user']['language']] ?? '';
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_block']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);
-		\censorText($this->context['preview_title']);
-		\censorText($this->context['preview_content']);
+		censorText($this->context['preview_title']);
+		censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
 			? prepare_content($this->context['lp_block']['type'])
@@ -727,14 +737,14 @@ final class BlockArea
 	 */
 	private function setData(int $item = 0)
 	{
-		if (! empty($this->context['post_errors']) || (
+		if (isset($this->context['post_errors']) || (
 			$this->post()->has('save') === false &&
 			$this->post()->has('save_exit') === false &&
 			$this->post()->has('clone') === false)
 		)
 			return 0;
 
-		\checkSubmitOnce('check');
+		checkSubmitOnce('check');
 
 		$this->prepareBbcContent($this->context['lp_block']);
 
@@ -750,10 +760,10 @@ final class BlockArea
 		$this->cache()->flush();
 
 		if ($this->post()->has('save_exit'))
-			\redirectexit('action=admin;area=lp_blocks;sa=main');
+			redirectexit('action=admin;area=lp_blocks;sa=main');
 
 		if ($this->post()->has('save'))
-			\redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+			redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int
@@ -805,9 +815,9 @@ final class BlockArea
 			return 0;
 		}
 
-		$this->addon('onBlockSaving', [$item]);
+		$this->hook('onBlockSaving', [$item]);
 
-		if (! empty($this->context['lp_block']['title'])) {
+		if (isset($this->context['lp_block']['title'])) {
 			$titles = [];
 			foreach ($this->context['lp_block']['title'] as $lang => $title) {
 				$titles[] = [
@@ -833,7 +843,7 @@ final class BlockArea
 			$this->context['lp_num_queries']++;
 		}
 
-		if (! empty($this->context['lp_block']['options']['parameters'])) {
+		if (isset($this->context['lp_block']['options']['parameters'])) {
 			$params = [];
 			foreach ($this->context['lp_block']['options']['parameters'] as $param_name => $value) {
 				$value = is_array($value) ? implode(',', $value) : $value;
@@ -892,9 +902,9 @@ final class BlockArea
 
 		$this->context['lp_num_queries']++;
 
-		$this->addon('onBlockSaving', [$item]);
+		$this->hook('onBlockSaving', [$item]);
 
-		if (! empty($this->context['lp_block']['title'])) {
+		if (isset($this->context['lp_block']['title'])) {
 			$titles = [];
 			foreach ($this->context['lp_block']['title'] as $lang => $title) {
 				$titles[] = [
@@ -920,7 +930,7 @@ final class BlockArea
 			$this->context['lp_num_queries']++;
 		}
 
-		if (! empty($this->context['lp_block']['options']['parameters'])) {
+		if (isset($this->context['lp_block']['options']['parameters'])) {
 			$params = [];
 			foreach ($this->context['lp_block']['options']['parameters'] as $param_name => $value) {
 				$value = is_array($value) ? implode(',', $value) : $value;

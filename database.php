@@ -6,7 +6,7 @@ elseif(! defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
 if (version_compare(PHP_VERSION, '7.4', '<'))
-	die('This mod needs PHP 7.4 or greater. You will not be able to install/use this mod, contact your host and ask for a php upgrade.');
+	die('This mod needs PHP 7.4 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
 
 if (! extension_loaded('intl'))
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');

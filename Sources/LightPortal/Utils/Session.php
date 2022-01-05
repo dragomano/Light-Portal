@@ -31,11 +31,7 @@ final class Session
 	 */
 	public function get(string $key)
 	{
-		if (isset($this->storage[$key])) {
-			return $this->storage[$key];
-		}
-
-		return false;
+		return $this->storage[$key] ?? false;
 	}
 
 	/**

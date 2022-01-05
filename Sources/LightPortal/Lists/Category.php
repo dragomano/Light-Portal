@@ -57,7 +57,7 @@ final class Category extends AbstractPageList
 			'name' => $this->context['page_title']
 		];
 
-		if (! empty($this->modSettings['lp_show_items_as_articles']))
+		if ($this->modSettings['lp_show_items_as_articles'])
 			(new Page)->showAsCards($this);
 
 		$listOptions = (new Page)->getList();
@@ -69,7 +69,7 @@ final class Category extends AbstractPageList
 			'function' => [$this, 'getTotalCountPages']
 		];
 
-		if (! empty($category['desc'])) {
+		if (isset($category['desc'])) {
 			$listOptions['additional_rows'] = [
 				[
 					'position' => 'top_of_list',
@@ -220,7 +220,7 @@ final class Category extends AbstractPageList
 
 	public function getList(): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT category_id, name, description, priority
 			FROM {db_prefix}lp_categories
 			ORDER BY priority',
@@ -267,7 +267,7 @@ final class Category extends AbstractPageList
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			if (! empty($row['description']) && strpos($row['description'], ']') !== false) {
+			if ($row['description'] && strpos($row['description'], ']') !== false) {
 				$row['description'] = parse_bbc($row['description']);
 			}
 

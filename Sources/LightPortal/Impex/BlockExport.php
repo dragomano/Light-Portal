@@ -17,6 +17,10 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Areas\BlockArea;
+use DomDocument;
+use DOMException;
+use function loadTemplate;
+use function log_error;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -49,7 +53,7 @@ final class BlockExport extends AbstractExport
 		if ($this->post()->isEmpty('blocks') && $this->post()->has('export_all') === false)
 			return [];
 
-		$blocks = ! empty($this->post('blocks')) && $this->post()->has('export_all') === false ? $this->post('blocks') : null;
+		$blocks = $this->post('blocks') && $this->post()->has('export_all') === false ? $this->post('blocks') : null;
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
@@ -83,10 +87,10 @@ final class BlockExport extends AbstractExport
 				'content_style' => $row['content_style']
 			];
 
-			if (! empty($row['lang']) && ! empty($row['title']))
+			if ($row['lang'] && $row['title'])
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (! empty($row['name']) && ! empty($row['value']))
+			if ($row['name'] && $row['value'])
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
@@ -102,7 +106,7 @@ final class BlockExport extends AbstractExport
 			return '';
 
 		try {
-			$xml = new \DomDocument('1.0', 'utf-8');
+			$xml = new DomDocument('1.0', 'utf-8');
 			$root = $xml->appendChild($xml->createElement('light_portal'));
 
 			$xml->formatOutput = true;
@@ -128,8 +132,8 @@ final class BlockExport extends AbstractExport
 
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
-		} catch (\DOMException $e) {
-			\log_error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
+		} catch (DOMException $e) {
+			log_error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

@@ -17,24 +17,34 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Utils\{Cache, File, Request, Session};
+use DateTime;
+use DateTimeZone;
+use Exception;
+use IntlDateFormatter;
+use function getLanguages;
+use function loadMemberContext;
+use function loadTemplate;
+use function log_error;
+use function shorten_subject;
 
 /**
  * @property array $context
  * @property array $txt
- * @property array $smcFunc
- * @property array $user_info
- * @property array $user_profile
- * @property array $user_settings
- * @property array $modSettings
- * @property array $settings
- * @property array $options
  * @property array $db_cache
  * @property array $db_temp_cache
- * @property string $language
- * @property string $scripturl
- * @property string $boardurl
- * @property string $boarddir
- * @property string $sourcedir
+ * @property-read array $smcFunc
+ * @property-read array $user_info
+ * @property-read array $user_profile
+ * @property-read array $user_settings
+ * @property-read array $modSettings
+ * @property-read array $settings
+ * @property-read array $options
+ * @property-read string $db_type
+ * @property-read string $language
+ * @property-read string $scripturl
+ * @property-read string $boardurl
+ * @property-read string $boarddir
+ * @property-read string $sourcedir
  */
 trait Helper
 {
@@ -44,14 +54,6 @@ trait Helper
 	public function &__get(string $name)
 	{
 		return $GLOBALS[$name];
-	}
-
-	/**
-	 * @param mixed $value
-	 */
-	public function __set(string $name, $value)
-	{
-		$GLOBALS[$name] = &$value;
 	}
 
 	public function require(string $filename)
@@ -98,7 +100,7 @@ trait Helper
 		return new Session;
 	}
 
-	public function addon(string $hook, array $vars = [], array $plugins = [])
+	public function hook(string $hook, array $vars = [], array $plugins = [])
 	{
 		(new Addon)->run($hook, $vars, $plugins);
 	}
@@ -110,16 +112,17 @@ trait Helper
 				SELECT item_id, lang, title
 				FROM {db_prefix}lp_titles
 				WHERE type = {string:type}
+					AND title <> {string:blank_string}
 				ORDER BY lang, title',
 				[
-					'type' => $type
+					'type'         => $type,
+					'blank_string' => '',
 				]
 			);
 
 			$titles = [];
 			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-				if (! empty($row['lang']))
-					$titles[$row['item_id']][$row['lang']] = $row['title'];
+				$titles[$row['item_id']][$row['lang']] = $row['title'];
 			}
 
 			$this->smcFunc['db_free_result']($request);
@@ -154,9 +157,9 @@ trait Helper
 
 		if (! isset($this->memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
 			try {
-				\loadMemberContext($userId, true);
-			} catch (\Exception $e) {
-				\log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
+				loadMemberContext($userId, true);
+			} catch (Exception $e) {
+				log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
 			}
 		}
 
@@ -169,7 +172,7 @@ trait Helper
 
 		$allFunctions = get_defined_functions()['user'];
 
-		\loadTemplate('LightPortal/ViewFrontPage');
+		loadTemplate('LightPortal/ViewFrontPage');
 
 		// Support of custom templates
 		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
@@ -179,7 +182,7 @@ trait Helper
 
 		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
 
-		if (! empty($matches[1])) {
+		if ($matches[1]) {
 			foreach ($matches[1] as $k => $v) {
 				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
 				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
@@ -282,7 +285,7 @@ trait Helper
 
 	public function prepareForumLanguages()
 	{
-		\getLanguages();
+		getLanguages();
 
 		if (empty($this->modSettings['userLanguage'])) {
 			$default_lang = $this->context['languages'][$this->language];
@@ -303,7 +306,7 @@ trait Helper
 
 		$template = '<i class="' . $icon . '"></i> ';
 
-		$this->addon('prepareIconTemplate', [&$template, $icon]);
+		$this->hook('prepareIconTemplate', [&$template, $icon]);
 
 		return $template;
 	}
@@ -329,7 +332,7 @@ trait Helper
 
 	public function getTeaser(string $text, int $length = 150): string
 	{
-		return \shorten_subject(strip_tags($text), $length) ?: '...';
+		return shorten_subject(strip_tags($text), $length) ?: '...';
 	}
 
 	/**
@@ -341,13 +344,13 @@ trait Helper
 	{
 		switch ($permissions) {
 			case 0:
-				return $this->user_info['is_admin'] == 1;
+				return $this->user_info['is_admin'];
 
 			case 1:
-				return $this->user_info['is_guest'] == 1;
+				return $this->user_info['is_guest'];
 
 			case 2:
-				return ! empty($this->user_info['id']);
+				return $this->user_info['id'] > 0;
 
 			default:
 				return true;
@@ -361,11 +364,11 @@ trait Helper
 	 */
 	public function getPermissions(): array
 	{
-		if ($this->user_info['is_admin'] == 1)
+		if ($this->user_info['is_admin'])
 			return [0, 1, 2, 3];
-		elseif ($this->user_info['is_guest'] == 1)
+		elseif ($this->user_info['is_guest'])
 			return [1, 3];
-		elseif (! empty($this->user_info['id']))
+		elseif ($this->user_info['id'])
 			return [2, 3];
 
 		return [3];
@@ -376,25 +379,13 @@ trait Helper
 		if (empty($alias))
 			return false;
 
-		return ! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& ! empty($this->modSettings['lp_frontpage_alias']) && $this->modSettings['lp_frontpage_alias'] === $alias;
+		return $this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
+			&& $this->modSettings['lp_frontpage_alias'] && $this->modSettings['lp_frontpage_alias'] === $alias;
 	}
 
-	public function getTranslatedTitle(array $titleArray): string
+	public function getTranslatedTitle(array $titles): string
 	{
-		if (empty($titleArray))
-			return '';
-
-		if (! empty($titleArray[$this->user_info['language']]))
-			return $titleArray[$this->user_info['language']];
-
-		if (! empty($titleArray[$this->language]))
-			return $titleArray[$this->language];
-
-		if (! empty($titleArray['english']))
-			return $titleArray['english'];
-
-		return '';
+		return $titles[$this->user_info['language']] ?? $titles[$this->language] ?? $titles['english'] ?? '';
 	}
 
 	/**
@@ -467,11 +458,11 @@ trait Helper
 		return $value;
 	}
 
-	public function getDateTime(int $timestamp = 0): \DateTime
+	public function getDateTime(int $timestamp = 0): DateTime
 	{
-		$dateTime = new \DateTime;
+		$dateTime = new DateTime;
 		$dateTime->setTimestamp($timestamp ?: time());
-		$dateTime->setTimezone(new \DateTimeZone($this->user_settings['timezone'] ?: $this->modSettings['default_timezone']));
+		$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?: $this->modSettings['default_timezone']));
 
 		return $dateTime;
 	}
@@ -564,10 +555,10 @@ trait Helper
 	public function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
 	{
 		if (extension_loaded('intl')) {
-			return (new \IntlDateFormatter($this->txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType)))->format($timestamp);
+			return (new IntlDateFormatter($this->txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType)))->format($timestamp);
 		}
 
-		\log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
+		log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
 
 		return '';
 	}
@@ -579,16 +570,16 @@ trait Helper
 	{
 		switch ($type) {
 			case 'full':
-				$const = \IntlDateFormatter::FULL;
+				$const = IntlDateFormatter::FULL;
 				break;
 			case 'long':
-				$const = \IntlDateFormatter::LONG;
+				$const = IntlDateFormatter::LONG;
 				break;
 			case 'medium':
-				$const = \IntlDateFormatter::MEDIUM;
+				$const = IntlDateFormatter::MEDIUM;
 				break;
 			default:
-				$const = \IntlDateFormatter::NONE;
+				$const = IntlDateFormatter::NONE;
 		}
 
 		return $const;

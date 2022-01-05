@@ -78,7 +78,6 @@ function template_lp_basic_settings_below()
 
 		$("#lp_frontpage_mode").on("change", function () {
 			toggleFrontpageMode();
-			toggleTimeFormat();
 		});';
 
 	// Standalone mode toggle

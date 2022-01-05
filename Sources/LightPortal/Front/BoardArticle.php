@@ -40,7 +40,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC'
 		];
 
-		$this->addon('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -61,7 +61,7 @@ class BoardArticle extends AbstractArticle
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
 				LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . ($this->user_info['is_guest'] ? '' : '
-				LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (! empty($this->modSettings['lp_show_images_in_articles']) ? '
+				LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . ($this->modSettings['lp_show_images_in_articles'] ? '
 				LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE b.id_board IN ({array_int:selected_boards})
@@ -78,10 +78,10 @@ class BoardArticle extends AbstractArticle
 			$description = parse_bbc($row['description'], false, '', $this->context['description_allowed_tags']);
 			$cat_name    = parse_bbc($row['cat_name'], false, '', $this->context['description_allowed_tags']);
 
-			if (! empty($this->modSettings['lp_show_images_in_articles'])) {
+			if ($this->modSettings['lp_show_images_in_articles']) {
 				$image = $this->getImageFromText($description);
 
-				if (! empty($row['attach_id']) && empty($image)) {
+				if ($row['attach_id'] && empty($image)) {
 					$image = $this->scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach=' . $row['attach_id'] . ';image';
 				}
 
@@ -104,10 +104,10 @@ class BoardArticle extends AbstractArticle
 				'is_redirect' => $row['is_redirect']
 			];
 
-			if (! empty($this->modSettings['lp_show_teaser']))
+			if ($this->modSettings['lp_show_teaser'])
 				$boards[$row['id_board']]['teaser'] = $this->getTeaser($description);
 
-			if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3 && ! empty($row['last_updated'])) {
+			if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3 && $row['last_updated']) {
 				$boards[$row['id_board']]['last_post'] = $this->scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($this->user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
 
 				$boards[$row['id_board']]['date'] = $row['last_updated'];
@@ -118,7 +118,7 @@ class BoardArticle extends AbstractArticle
 			if (empty($boards[$row['id_board']]['is_redirect']))
 				$boards[$row['id_board']]['msg_link'] = $this->scripturl . '?msg=' . $row['id_msg'];
 
-			$this->addon('frontBoardsOutput', [&$boards, $row]);
+			$this->hook('frontBoardsOutput', [&$boards, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);
@@ -132,6 +132,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selected_boards))
 			return 0;
 
+		/** @noinspection SqlResolve */
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(b.id_board)
 			FROM {db_prefix}boards AS b

@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 /**
- * Main.php
+ * AbstractMain.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -16,16 +16,19 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
+use function loadCSSFile;
+use function loadTemplate;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class Main
+abstract class AbstractMain
 {
 	use Helper;
 
 	protected function isPortalCanBeLoaded(): bool
 	{
-		if (! defined('LP_NAME') || ! empty($this->context['uninstalling']) || $this->request()->is('printpage')) {
+		if (! defined('LP_NAME') || isset($this->context['uninstalling']) || $this->request()->is('printpage')) {
 			$this->modSettings['minimize_files'] = 0;
 			return false;
 		}
@@ -61,24 +64,24 @@ abstract class Main
 	protected function loadCssFiles()
 	{
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn') {
-			\loadCSSFile(
+			loadCSSFile(
 				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css',
 				['external' => true, 'seed' => false],
 				'portal_fontawesome'
 			);
 		} elseif ($this->modSettings['lp_fa_source'] === 'css_local') {
-			\loadCSSFile('all.min.css', [], 'portal_fontawesome');
-		} elseif ($this->modSettings['lp_fa_source'] === 'custom' && ! empty($this->modSettings['lp_fa_custom'])) {
-			\loadCSSFile(
+			loadCSSFile('all.min.css', [], 'portal_fontawesome');
+		} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
+			loadCSSFile(
 				$this->modSettings['lp_fa_custom'],
 				['external' => true, 'seed' => false],
 				'portal_fontawesome'
 			);
 		}
 
-		\loadCSSFile('light_portal/flexboxgrid.css');
-		\loadCSSFile('light_portal/portal.css');
-		\loadCSSFile('custom_frontpage.css');
+		loadCSSFile('light_portal/flexboxgrid.css');
+		loadCSSFile('light_portal/portal.css');
+		loadCSSFile('custom_frontpage.css');
 	}
 
 	/**
@@ -135,7 +138,7 @@ abstract class Main
 
 		$old_url = explode('#', $this->context['linktree'][1]['url']);
 
-		if (! empty($old_url[1]))
+		if ($old_url[1])
 			$this->context['linktree'][1]['url'] = $this->scripturl . '?action=forum#' . $old_url[1];
 	}
 

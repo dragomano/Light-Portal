@@ -16,6 +16,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
+use function fatal_lang_error;
 
 abstract class AbstractOtherPageImport implements ImportInterface, OtherImportInterface
 {
@@ -35,14 +36,14 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		$this->db_temp_cache = $this->db_cache;
 		$this->db_cache = [];
 
-		$pages = ! empty($this->post('pages')) && $this->post()->has('import_all') === false ? $this->post('pages') : [];
+		$pages = $this->post('pages') && $this->post()->has('import_all') === false ? $this->post('pages') : [];
 
 		$results = $titles = $params = $comments = [];
 		$items = $this->getItems($pages);
 
-		$this->addon('importPages', [&$items, &$titles, &$params, &$comments]);
+		$this->hook('importPages', [&$items, &$titles, &$params, &$comments]);
 
-		if (! empty($items)) {
+		if ($items) {
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
@@ -75,7 +76,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		if (empty($results))
 			fatal_lang_error('lp_import_failed', false);
 
-		if (! empty($titles)) {
+		if ($titles) {
 			$titles = array_chunk($titles, 100);
 			$count  = sizeof($titles);
 
@@ -97,7 +98,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			}
 		}
 
-		if (! empty($params)) {
+		if ($params) {
 			$params = array_chunk($params, 100);
 			$count  = sizeof($params);
 
@@ -119,7 +120,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			}
 		}
 
-		if (! empty($comments)) {
+		if ($comments) {
 			$tempCommentArray = [];
 
 			foreach ($comments as $comment) {

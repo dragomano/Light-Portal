@@ -18,6 +18,9 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
+use function isAllowedTo;
+use function loadTemplate;
+use function send_http_status;
 
 final class FrontPage
 {
@@ -57,7 +60,7 @@ final class FrontPage
 		}
 
 		// Mod authors can define their own template
-		$this->addon('frontCustomTemplate');
+		$this->hook('frontCustomTemplate');
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
@@ -94,13 +97,13 @@ final class FrontPage
 		$this->context['page_index'] = constructPageIndex($this->scripturl . '?action=' . LP_ACTION, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
-		if (! empty($this->modSettings['lp_use_simple_pagination']))
+		if ($this->modSettings['lp_use_simple_pagination'])
 			$this->context['page_index'] = $this->simplePaginate($this->scripturl . '?action=' . LP_ACTION, $total_items, $limit);
 
 		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? $this->scripturl . '?action=' . LP_ACTION . ';start=' . ($this->request('start') + $limit) : '';
 		$this->context['lp_frontpage_articles'] = $articles;
 
-		$this->addon('frontAssets');
+		$this->hook('frontAssets');
 	}
 
 	/**
@@ -171,7 +174,7 @@ final class FrontPage
 			if ($this->context['user']['is_guest'])
 				$item['is_new'] = false;
 
-			if (! empty($item['date'])) {
+			if ($item['date']) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
 				$item['date'] = $this->getFriendlyTime((int) $item['date']);
 			}
@@ -181,7 +184,7 @@ final class FrontPage
 			if (is_array($item['title']) && $article instanceof PageArticle)
 				$item['title'] = $this->getTranslatedTitle($item['title']);
 
-			if (empty($item['image']) && ! empty($this->modSettings['lp_image_placeholder']))
+			if (empty($item['image']) && $this->modSettings['lp_image_placeholder'])
 				$item['image'] = $this->modSettings['lp_image_placeholder'];
 
 			if (isset($item['views']['num']))

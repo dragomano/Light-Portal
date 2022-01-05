@@ -25,7 +25,7 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thanks</a>.<br>The portal always needs new testers, translators and frontpage template makers.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy some cups of coffee as thanks</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -46,12 +46,12 @@ $txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article 
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
 $txt['lp_show_teaser'] = 'Show the article summary';
 $txt['lp_show_author'] = 'Show the article author';
-$txt['lp_show_author_help'] = 'If the board card is displayed, it will be information about the category.';
+$txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will be information about the category.';
 $txt['lp_show_num_views_and_comments'] = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting'] = 'Sorting articles';
 $txt['lp_frontpage_article_sorting_set'] = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
-$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
@@ -233,11 +233,11 @@ $txt['lp_tab_tuning'] = 'Tuning';
 // Import and Export
 $txt['lp_pages_export'] = 'Page export';
 $txt['lp_pages_import'] = 'Page import';
-$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or for transfer them to another forum.';
+$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
 $txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
-$txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or for transfer them to another forum.';
+$txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
 $txt['lp_export_run'] = 'Export selection';
 $txt['lp_import_run'] = 'Run import';
@@ -288,9 +288,9 @@ $txt['alert_new_comment_page_comment'] = '{gender, select,
 }';
 $txt['alert_page_comment_reply'] = 'When my comment gets a reply';
 $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
-	female {{member_link} left a reply on your comment {content_subject}}
-	male   {{member_link} left a reply on your comment {content_subject}}
-	other  {{member_link} left a reply on your comment {content_subject}}
+	female {{member_link} left a reply to your comment {content_subject}}
+	male   {{member_link} left a reply to your comment {content_subject}}
+	other  {{member_link} left a reply to your comment {content_subject}}
 }';
 
 // Errors

@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
+use function fatal_lang_error;
+use function loadTemplate;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -41,22 +44,7 @@ final class PageImport extends AbstractImport
 
 	protected function run()
 	{
-		if (empty($file = $this->file('import_file')->get()))
-			return;
-
-		// Might take some time.
-		@set_time_limit(600);
-
-		// Don't allow the cache to get too full
-		$this->db_temp_cache = $this->db_cache;
-		$this->db_cache = [];
-
-		if ($file['type'] !== 'text/xml')
-			return;
-
-		$xml = simplexml_load_file($file['tmp_name']);
-
-		if ($xml === false)
+		if (empty($xml = $this->getXmlFile()))
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))
@@ -90,7 +78,7 @@ final class PageImport extends AbstractImport
 						'alias'        => (string) $item->alias,
 						'description'  => $item->description,
 						'content'      => $item->content,
-						'type'         => str_replace('md', 'markdown', $item->type),
+						'type'         => str_replace('md', 'markdown', (string) $item->type),
 						'permissions'  => intval($item['permissions']),
 						'status'       => intval($item['status']),
 						'num_views'    => intval($item['num_views']),
@@ -99,7 +87,7 @@ final class PageImport extends AbstractImport
 						'updated_at'   => intval($item['updated_at'])
 					];
 
-					if (! empty($item->titles)) {
+					if ($item->titles) {
 						foreach ($item->titles as $title) {
 							foreach ($title as $k => $v) {
 								$titles[] = [
@@ -112,7 +100,7 @@ final class PageImport extends AbstractImport
 						}
 					}
 
-					if (! empty($item->comments)) {
+					if ($item->comments) {
 						foreach ($item->comments as $comment) {
 							foreach ($comment as $v) {
 								$comments[] = [
@@ -127,7 +115,7 @@ final class PageImport extends AbstractImport
 						}
 					}
 
-					if (! empty($item->params)) {
+					if ($item->params) {
 						foreach ($item->params as $param) {
 							foreach ($param as $k => $v) {
 								$params[] = [
@@ -145,7 +133,7 @@ final class PageImport extends AbstractImport
 
 		$this->smcFunc['db_transaction']('begin');
 
-		if (! empty($categories)) {
+		if ($categories) {
 			$this->smcFunc['db_insert']('replace',
 				'{db_prefix}lp_categories',
 				[
@@ -162,7 +150,7 @@ final class PageImport extends AbstractImport
 			$this->context['lp_num_queries']++;
 		}
 
-		if (! empty($tags)) {
+		if ($tags) {
 			$tags  = array_chunk($tags, 100);
 			$count = sizeof($tags);
 
@@ -182,7 +170,9 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		if (! empty($items)) {
+		$results = [];
+
+		if ($items) {
 			$this->context['import_successful'] = count($items);
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
@@ -214,29 +204,9 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		if (! empty($titles) && ! empty($results)) {
-			$titles = array_chunk($titles, 100);
-			$count  = sizeof($titles);
+		$this->replaceTitles($titles, $results);
 
-			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
-					'{db_prefix}lp_titles',
-					[
-						'item_id' => 'int',
-						'type'    => 'string',
-						'lang'    => 'string',
-						'title'   => 'string'
-					],
-					$titles[$i],
-					['item_id', 'type', 'lang'],
-					2
-				);
-
-				$this->context['lp_num_queries']++;
-			}
-		}
-
-		if (! empty($comments) && ! empty($results)) {
+		if ($comments && $results) {
 			$comments = array_chunk($comments, 100);
 			$count    = sizeof($comments);
 
@@ -260,40 +230,8 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		if (! empty($params) && ! empty($results)) {
-			$params = array_chunk($params, 100);
-			$count  = sizeof($params);
+		$this->replaceParams($params, $results);
 
-			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
-					'{db_prefix}lp_params',
-					[
-						'item_id' => 'int',
-						'type'    => 'string',
-						'name'    => 'string',
-						'value'   => 'string'
-					],
-					$params[$i],
-					['item_id', 'type', 'name'],
-					2
-				);
-
-				$this->context['lp_num_queries']++;
-			}
-		}
-
-		if (empty($results)) {
-			$this->smcFunc['db_transaction']('rollback');
-			fatal_lang_error('lp_import_failed', false);
-		}
-
-		$this->smcFunc['db_transaction']('commit');
-
-		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], __('lp_pages_set', ['pages' => $this->context['import_successful']]));
-
-		// Restore the cache
-		$this->db_cache = $this->db_temp_cache;
-
-		$this->cache()->flush();
+		$this->finish($results, 'pages');
 	}
 }

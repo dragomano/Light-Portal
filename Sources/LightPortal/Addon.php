@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
+use function fetch_web_data;
+use function loadCSSFile;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

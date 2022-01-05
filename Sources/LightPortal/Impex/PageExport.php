@@ -17,6 +17,11 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Areas\PageArea;
+use Bugo\LightPortal\Lists\Category;
+use DomDocument;
+use DOMException;
+use function createList;
+use function log_error;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -132,7 +137,7 @@ final class PageExport extends AbstractExport
 		if ($this->post()->isEmpty('pages') && $this->post()->has('export_all') === false)
 			return [];
 
-		$pages = ! empty($this->post('pages')) && $this->post()->has('export_all') === false ? $this->post('pages') : null;
+		$pages = $this->post('pages') && $this->post()->has('export_all') === false ? $this->post('pages') : null;
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
@@ -166,13 +171,13 @@ final class PageExport extends AbstractExport
 				'updated_at'   => $row['updated_at']
 			];
 
-			if (! empty($row['lang']) && ! empty($row['title']))
+			if ($row['lang'] && $row['title'])
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
 
-			if (! empty($row['name']) && ! empty($row['value']))
+			if ($row['name'] && $row['value'])
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 
-			if (! empty($row['message']) && ! empty(trim($row['message']))) {
+			if ($row['message'] && trim($row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = [
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
@@ -191,7 +196,7 @@ final class PageExport extends AbstractExport
 
 	protected function getCategories(): array
 	{
-		$categories = (new \Bugo\LightPortal\Lists\Category)->getList();
+		$categories = (new Category)->getList();
 
 		unset($categories[0]);
 		ksort($categories);
@@ -205,12 +210,12 @@ final class PageExport extends AbstractExport
 			return '';
 
 		try {
-			$xml = new \DomDocument('1.0', 'utf-8');
+			$xml = new DomDocument('1.0', 'utf-8');
 			$root = $xml->appendChild($xml->createElement('light_portal'));
 
 			$xml->formatOutput = true;
 
-			if (! empty($categories = $this->getCategories())) {
+			if ($categories = $this->getCategories()) {
 				$xmlElements = $root->appendChild($xml->createElement('categories'));
 				foreach ($categories as $category) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
@@ -221,7 +226,7 @@ final class PageExport extends AbstractExport
 				}
 			}
 
-			if (! empty($tags = $this->getAllTags())) {
+			if ($tags = $this->getAllTags()) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
 				foreach ($tags as $key => $val) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
@@ -265,8 +270,8 @@ final class PageExport extends AbstractExport
 
 			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
 			$xml->save($file);
-		} catch (\DOMException $e) {
-			\log_error('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
+		} catch (DOMException $e) {
+			log_error('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

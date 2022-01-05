@@ -49,7 +49,7 @@ final class Tag extends AbstractPageList
 			'name' => $this->context['page_title']
 		];
 
-		if (! empty($this->modSettings['lp_show_items_as_articles']))
+		if ($this->modSettings['lp_show_items_as_articles'])
 			(new Page)->showAsCards($this);
 
 		$listOptions = (new Page)->getList();
@@ -104,7 +104,7 @@ final class Tag extends AbstractPageList
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$page->fetchQueryResults($items, $row);
 
-			if (! empty($row['category_id'])) {
+			if ($row['category_id']) {
 				$items[$row['page_id']]['section'] = [
 					'name' => $this->getAllCategories()[$row['category_id']]['name'],
 					'link' => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id']
@@ -211,7 +211,7 @@ final class Tag extends AbstractPageList
 
 	public function getList(): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
 			ORDER BY value',

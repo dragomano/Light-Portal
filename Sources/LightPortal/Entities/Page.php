@@ -18,6 +18,17 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Lists\PageListInterface;
+use function allowedTo;
+use function censorText;
+use function fatal_lang_error;
+use function isAllowedTo;
+use function loadJavaScriptFile;
+use function loadLanguage;
+use function loadTemplate;
+use function obExit;
+use function redirectexit;
+use function send_http_status;
+use function un_preparsecode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,7 +43,7 @@ final class Page
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
-		if (empty($alias) && ! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && ! empty($this->modSettings['lp_frontpage_alias'])) {
+		if (empty($alias) && $this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias']) {
 			$this->context['lp_page'] = $this->getDataByAlias($this->modSettings['lp_frontpage_alias']);
 		} else {
 			$alias = explode(';', $alias)[0];
@@ -75,7 +86,7 @@ final class Page
 			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['title']) ?: $this->txt['lp_post_error_no_title'];
 			$this->context['canonical_url'] = $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
 
-			if (! empty($this->context['lp_page']['category'])) {
+			if ($this->context['lp_page']['category']) {
 				$this->context['linktree'][] = [
 					'name' => $this->context['lp_page']['category'],
 					'url'  => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $this->context['lp_page']['category_id']
@@ -189,7 +200,7 @@ final class Page
 			censorText($row['content']);
 
 			$og_image = null;
-			if (! empty($this->modSettings['lp_page_og_image'])) {
+			if ($this->modSettings['lp_page_og_image']) {
 				$content = $row['content'];
 				$content = parse_content($content, $row['type']);
 				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
@@ -218,11 +229,9 @@ final class Page
 				'image'       => $og_image
 			];
 
-			if (! empty($row['lang']))
-				$data['title'][$row['lang']] = $row['title'];
+			$data['title'][$row['lang']] = $row['title'];
 
-			if (! empty($row['name']))
-				$data['options'][$row['name']] = $row['value'];
+			$data['options'][$row['name']] = $row['value'];
 		}
 
 		$this->smcFunc['db_free_result']($request);
@@ -364,12 +373,12 @@ final class Page
 		$row['content'] = parse_content($row['content'], $row['type']);
 
 		$image = null;
-		if (! empty($this->modSettings['lp_show_images_in_articles'])) {
+		if ($this->modSettings['lp_show_images_in_articles']) {
 			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			$image = $first_post_image ? array_pop($value) : null;
 		}
 
-		if (empty($image) && ! empty($this->modSettings['lp_image_placeholder']))
+		if (empty($image) && $this->modSettings['lp_image_placeholder'])
 			$image = $this->modSettings['lp_image_placeholder'];
 
 		$items[$row['page_id']] = [
@@ -388,7 +397,7 @@ final class Page
 				'title' => $this->txt['lp_views']
 			],
 			'replies'   => [
-				'num'   => ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
+				'num'   => $this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
 				'title' => $this->txt['lp_comments']
 			],
 			'title'     => $row['title'],
@@ -403,7 +412,7 @@ final class Page
 
 		$items[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
 
-		if (! empty($this->modSettings['lp_show_teaser']))
+		if ($this->modSettings['lp_show_teaser'])
 			$items[$row['page_id']]['teaser'] = $this->getTeaser($row['description'] ?: $row['content']);
 	}
 
@@ -426,7 +435,7 @@ final class Page
 		$this->context['meta_description'] = $this->context['lp_page']['description'];
 
 		$keywords = [];
-		if (! empty($this->context['lp_page']['tags'])) {
+		if (isset($this->context['lp_page']['tags'])) {
 			$keywords = array_column($this->context['lp_page']['tags'], 'name');
 
 			$this->modSettings['meta_keywords'] = implode(', ', $keywords);
@@ -440,23 +449,23 @@ final class Page
 			'content'  => date('Y-m-d\TH:i:s', (int) $this->context['lp_page']['created_at'])
 		];
 
-		if (! empty($this->context['lp_page']['updated_at']))
+		if ($this->context['lp_page']['updated_at'])
 			$this->context['meta_tags'][] = [
 				'prefix'   => 'article: http://ogp.me/ns/article#',
 				'property' => 'article:modified_time',
 				'content'  => date('Y-m-d\TH:i:s', (int) $this->context['lp_page']['updated_at'])
 			];
 
-		if (! empty($this->context['lp_page']['category']))
+		if ($this->context['lp_page']['category'])
 			$this->context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:section', 'content' => $this->context['lp_page']['category']];
 
-		if (! empty($keywords)) {
+		if ($keywords) {
 			foreach ($keywords as $value) {
 				$this->context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value];
 			}
 		}
 
-		if (! empty($this->modSettings['lp_page_og_image']) && ! empty($this->context['lp_page']['image']))
+		if ($this->modSettings['lp_page_og_image'] && $this->context['lp_page']['image'])
 			$this->settings['og_image'] = $this->context['lp_page']['image'];
 	}
 
@@ -473,7 +482,7 @@ final class Page
 		if (empty($data))
 			return;
 
-		$is_author = ! empty($data['author_id']) && $data['author_id'] == $this->user_info['id'];
+		$is_author = $data['author_id'] && $data['author_id'] == $this->user_info['id'];
 
 		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
 		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
@@ -493,7 +502,7 @@ final class Page
 
 		$data['addons'] = '';
 
-		$this->addon('preparePageData', [&$data, $is_author]);
+		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
 	private function prepareComments()
@@ -506,9 +515,9 @@ final class Page
 
 		loadLanguage('Editor');
 
-		$this->addon('comments');
+		$this->hook('comments');
 
-		if (! empty($this->context['lp_' . $this->modSettings['lp_show_comment_block'] . '_comment_block']))
+		if (isset($this->context['lp_' . $this->modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;
 
 		(new Comment($this->context['lp_page']['alias']))->prepare();

@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class Request
+final class Request
 {
 	protected array $storage = [];
 
