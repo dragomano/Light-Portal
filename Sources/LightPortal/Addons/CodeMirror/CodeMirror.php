@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -31,7 +31,7 @@ class CodeMirror extends Plugin
 
 	public function prepareEditor(array $object)
 	{
-		if ($object['type'] === 'bbc' || (! empty($object['options']['content']) && $object['options']['content'] === 'bbc'))
+		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
 		$modes = empty($this->modSettings['lp_code_mirror_addon_modes']) ? [] : json_decode($this->modSettings['lp_code_mirror_addon_modes'], true);
@@ -39,15 +39,15 @@ class CodeMirror extends Plugin
 		if (empty($modes))
 			return;
 
-		if (($object['type'] === 'html' || (! empty($object['options']['content']) && $object['options']['content'] === 'html')) && ! empty($modes['html'])) {
+		if (($object['type'] === 'html' || (isset($object['options']['content']) && $object['options']['content'] === 'html')) && $modes['html'] === 1) {
 			$current_mode = 'html';
-		} elseif (($object['type'] === 'php' || (! empty($object['options']['content']) && $object['options']['content'] === 'php')) && ! empty($modes['php'])) {
+		} elseif (($object['type'] === 'php' || (isset($object['options']['content']) && $object['options']['content'] === 'php')) && $modes['php'] === 1) {
 			$current_mode = 'php';
-		} elseif (($object['type'] === 'markdown' || (! empty($object['options']['content']) && $object['options']['content'] === 'markdown')) && ! empty($modes['markdown'])) {
+		} elseif (($object['type'] === 'markdown' || (isset($object['options']['content']) && $object['options']['content'] === 'markdown')) && $modes['markdown'] === 1) {
 			$current_mode = 'markdown';
-		} elseif (($object['type'] === 'pug' || (! empty($object['options']['content']) && $object['options']['content'] === 'pug')) && ! empty($modes['pug'])) {
+		} elseif (($object['type'] === 'pug' || (isset($object['options']['content']) && $object['options']['content'] === 'pug')) && $modes['pug'] === 1) {
 			$current_mode = 'pug';
-		} elseif (($object['type'] === 'twig' || (! empty($object['options']['content']) && $object['options']['content'] === 'twig')) && ! empty($modes['twig'])) {
+		} elseif (($object['type'] === 'twig' || (isset($object['options']['content']) && $object['options']['content'] === 'twig')) && $modes['twig'] === 1) {
 			$current_mode = 'twig';
 		}
 

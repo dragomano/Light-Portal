@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -92,7 +92,7 @@ class Translator extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'auto_mode',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['auto_mode'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['auto_mode']
 			]
 		];
 	}
@@ -102,7 +102,7 @@ class Translator extends Plugin
 		if ($type !== 'translator')
 			return;
 
-		if ($parameters['engine'] == 'yandex') {
+		if ($parameters['engine'] === 'yandex') {
 			echo '
 		<div id="ytWidget', $block_id, '" class="centertext noup"></div>
 		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';

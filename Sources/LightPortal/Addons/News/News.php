@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\News;
@@ -52,7 +52,7 @@ class News extends Plugin
 		$this->getData();
 
 		$news = [$this->txt['lp_news']['random_news']];
-		if (! empty($this->context['news_lines'])) {
+		if (isset($this->context['news_lines'])) {
 			array_unshift($this->context['news_lines'], $this->txt['lp_news']['random_news']);
 			$news = $this->context['news_lines'];
 		}
@@ -67,14 +67,12 @@ class News extends Plugin
 
 	public function getData(int $item = 0): string
 	{
-		$this->loadSsi();
-
 		setupThemeContext();
 
 		if ($item > 0)
 			return $this->context['news_lines'][$item - 1];
 
-		return ssi_news('return');
+		return $this->getFromSsi('news', 'return');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)

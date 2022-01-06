@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -88,11 +88,9 @@ class RecentAttachments extends Plugin
 
 	public function getData(array $parameters): array
 	{
-		$this->loadSsi();
-
 		$extensions = empty($parameters['extensions']) ? [] : explode(',', $parameters['extensions']);
 
-		return ssi_recentAttachments($parameters['num_attachments'], $extensions, 'array');
+		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -113,7 +111,7 @@ class RecentAttachments extends Plugin
 		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
 
 		foreach ($attachment_list as $attach) {
-			if (! empty($attach['file']['image'])) {
+			if ($attach['file']['image']) {
 				echo '
 			<div class="item">
 				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>

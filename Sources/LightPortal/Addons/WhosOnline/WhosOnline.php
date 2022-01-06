@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -48,7 +48,7 @@ class WhosOnline extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_group_key',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_group_key'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_group_key']
 			],
 			'tab' => 'content'
 		];
@@ -64,21 +64,17 @@ class WhosOnline extends Plugin
 		];
 	}
 
-	public function getData(): array
-	{
-		$this->loadSsi();
-
-		return ssi_whosOnline('array');
-	}
-
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'whos_online')
 			return;
 
+		if ($this->post()->has('preview'))
+			$parameters['update_interval'] = 0;
+
 		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(__CLASS__, 'getFromSsi', 'whosOnline', 'array');
 
 		if (empty($whos_online))
 			return;
@@ -87,22 +83,22 @@ class WhosOnline extends Plugin
 
 		$online_list = [];
 
-		if (! empty($this->user_info['buddies']) && ! empty($whos_online['num_buddies']))
+		if ($this->user_info['buddies'] && $whos_online['num_buddies'])
 			$online_list[] = __('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
 
-		if (! empty($whos_online['num_spiders']))
+		if ($whos_online['num_spiders'])
 			$online_list[] = __('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
 
-		if (! empty($whos_online['num_users_hidden']))
+		if ($whos_online['num_users_hidden'])
 			$online_list[] = __('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
-		if (! empty($online_list))
+		if ($online_list)
 			echo ' (' . sentence_list($online_list) . ')';
 
 		echo '
 			<br>' . implode(', ', $whos_online['list_users_online']);
 
-		if (! empty($parameters['show_group_key']) && ! empty($whos_online['online_groups'])) {
+		if ($parameters['show_group_key'] && $whos_online['online_groups']) {
 			$groups = [];
 
 			foreach ($whos_online['online_groups'] as $group) {

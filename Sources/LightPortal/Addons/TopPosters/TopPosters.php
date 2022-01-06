@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -50,7 +50,7 @@ class TopPosters extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_avatars',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_avatars'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
 			]
 		];
 
@@ -69,7 +69,7 @@ class TopPosters extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
 			]
 		];
 	}
@@ -98,17 +98,17 @@ class TopPosters extends Plugin
 		$posters = [];
 		foreach ($result as $row) {
 			if (! isset($this->memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
-                try {
-                    loadMemberContext($row['id_member']);
-                } catch (\Exception $e) {
-                    log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
-                }
-            }
+				try {
+					loadMemberContext($row['id_member']);
+				} catch (\Exception $e) {
+					log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
+				}
+			}
 
 			$posters[] = [
 				'name'   => $row['real_name'],
 				'link'   => allowedTo('profile_view') ? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
-				'avatar' => $parameters['show_avatars'] ? $this->memberContext[$row['id_member']]['avatar']['image'] : null,
+				'avatar' => $parameters['show_avatars'] ? $this->memberContext[$row['id_member']]['avatar']['image'] : '',
 				'posts'  => $row['posts']
 			];
 		}
@@ -137,16 +137,10 @@ class TopPosters extends Plugin
 		$max = $top_posters[0]['posts'];
 
 		foreach ($top_posters as $poster) {
-			echo '
-			<dt>';
-
-			if (! empty($poster['avatar']))
-				echo $poster['avatar'];
-
 			$width = $poster['posts'] * 100 / $max;
 
-			echo ' ', $poster['link'], '
-			</dt>
+			echo '
+			<dt>', $poster['avatar'], ' ', $poster['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : __('lp_posts_set', ['posts' => $poster['posts']])), '</span>

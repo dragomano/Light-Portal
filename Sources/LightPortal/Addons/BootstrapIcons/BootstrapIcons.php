@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 06.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -29,23 +29,21 @@ class BootstrapIcons extends Plugin
 		loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['external' => true, 'seed' => false]);
 	}
 
-	public function prepareIconTemplate(string &$template, string $icon)
+	public function prepareIconList(array &$all_icons)
 	{
-		$template = '<i class="bi bi-' . $icon . '"></i> ';
-	}
+		if (($icons = $this->cache()->get('all_bi_icons', LP_CACHE_TIME * 7)) === null) {
+			$content = file_get_contents('https://raw.githubusercontent.com/twbs/icons/main/font/bootstrap-icons.json');
+			$json = array_flip(json_decode($content, true));
 
-	public function prepareIconList(array &$all_icons, string &$template)
-	{
-		$content = file_get_contents('https://raw.githubusercontent.com/twbs/icons/main/font/bootstrap-icons.json');
-		$icons = json_decode($content);
-
-		if (! empty($icons)) {
-			foreach ($icons as $icon => $id) {
-				$all_icons[$id] = $icon;
+			$icons = [];
+			foreach ($json as $icon) {
+				$icons[] = 'bi bi-' . $icon;
 			}
+
+			$this->cache()->put('all_bi_icons', $icons, LP_CACHE_TIME * 7);
 		}
 
-		$template = '<i class="bi bi-%1$s"></i>&nbsp;%1$s';
+		$all_icons = array_merge($all_icons, $icons);
 	}
 
 	public function credits(array &$links)

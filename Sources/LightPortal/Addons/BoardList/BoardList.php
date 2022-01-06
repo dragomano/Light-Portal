@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -124,7 +124,7 @@ class BoardList extends Plugin
 		$this->context['current_board'] = $this->context['current_board'] ?? 0;
 
 		foreach ($board_list as $category) {
-			if (! empty($parameters['category_class']))
+			if ($parameters['category_class'])
 				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
 
 			$content = '

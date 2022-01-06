@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -78,7 +78,7 @@ class TopPages extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
 			]
 		];
 	}
@@ -131,7 +131,7 @@ class TopPages extends Plugin
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (! empty($top_pages)) {
+		if ($top_pages) {
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))

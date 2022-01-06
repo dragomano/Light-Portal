@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -33,6 +33,7 @@ class Trumbowyg extends Plugin
 			return;
 
 		$dark_themes = empty($this->modSettings['lp_trumbowyg_addon_dark_themes']) ? [] : json_decode($this->modSettings['lp_trumbowyg_addon_dark_themes'], true);
+		$auto_grow = empty($this->modSettings['lp_trumbowyg_addon_auto_grow']) ? 0 : (int) $this->modSettings['lp_trumbowyg_addon_auto_grow'];
 
 		loadLanguage('Editor');
 
@@ -77,8 +78,8 @@ class Trumbowyg extends Plugin
 			urlProtocol: true,
 			resetCss: true,
 			removeformatPasted: true,
-			imageWidthModalEdit: true' . (! empty($this->modSettings['lp_trumbowyg_addon_auto_grow']) && $this->modSettings['lp_trumbowyg_addon_auto_grow'] == 1 ? ',
-			autogrow: true' : '') . (! empty($this->modSettings['lp_trumbowyg_addon_auto_grow']) && $this->modSettings['lp_trumbowyg_addon_auto_grow'] == 2 ? ',
+			imageWidthModalEdit: true' . ($auto_grow === 1 ? ',
+			autogrow: true' : '') . ($auto_grow === 2 ? ',
 			autogrowOnEnter: true' : '') . '
 		}).on("tbwopenfullscreen", function() {
 			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
@@ -86,7 +87,7 @@ class Trumbowyg extends Plugin
 		}).on("tbwclosefullscreen", function() {
 			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
 			$(".sticky_sidebar").css("position", "sticky");
-		});' . (! empty($dark_themes) && ! empty($dark_themes[$this->settings['theme_id']]) ? '
+		});' . ($dark_themes && $dark_themes[$this->settings['theme_id']] ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);
 	}
 

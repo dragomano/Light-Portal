@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -135,7 +135,7 @@ class RecentPosts extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_avatars',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_avatars'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
 			],
 			'tab' => 'appearance'
 		];
@@ -153,15 +153,10 @@ class RecentPosts extends Plugin
 
 	public function getData(array $parameters): array
 	{
-		if (! empty($parameters['exclude_boards']))
-			$exclude_boards = explode(',', $parameters['exclude_boards']);
+		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
+		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
 
-		if (! empty($parameters['include_boards']))
-			$include_boards = explode(',', $parameters['include_boards']);
-
-		$this->loadSsi();
-
-		$posts = ssi_recentPosts($parameters['num_posts'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+		$posts = $this->getFromSsi('recentPosts', (int) $parameters['num_posts'], $exclude_boards, $include_boards, 'array');
 
 		if (empty($posts))
 			return [];
@@ -180,7 +175,7 @@ class RecentPosts extends Plugin
 			$posts = array_filter($posts, fn($item) => array_key_exists($item['topic'], $include_topics));
 		}
 
-		if (! empty($parameters['show_avatars']))
+		if ($parameters['show_avatars'])
 			$posts = $this->getPostsWithUserAvatars($posts);
 
 		return $posts;
@@ -190,6 +185,9 @@ class RecentPosts extends Plugin
 	{
 		if ($type !== 'recent_posts')
 			return;
+
+		if ($this->post()->has('preview'))
+			$parameters['update_interval'] = 0;
 
 		$recent_posts = $this->cache('recent_posts_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
@@ -207,7 +205,7 @@ class RecentPosts extends Plugin
 			echo '
 			<li class="windowbg">';
 
-			if (! empty($parameters['show_avatars']) && ! empty($post['poster']['avatar']))
+			if ($parameters['show_avatars'] && $post['poster']['avatar'])
 				echo '
 				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
 
@@ -237,7 +235,7 @@ class RecentPosts extends Plugin
 		$loadedUserIds = loadMemberData(array_unique($posters));
 
 		return array_map(function ($item) use ($loadedUserIds) {
-			if (! empty($item['poster']['id']) && in_array($item['poster']['id'], $loadedUserIds)) {
+			if ($item['poster']['id'] && in_array($item['poster']['id'], $loadedUserIds)) {
 				if (! isset($this->memberContext[$item['poster']['id']]['avatar']))
 					try {
 						loadMemberContext($item['poster']['id']);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
@@ -44,7 +44,7 @@ class UserInfo extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'use_fa_icons',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['use_fa_icons'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_fa_icons']
 			],
 			'tab' => 'appearance'
 		];
@@ -70,8 +70,6 @@ class UserInfo extends Plugin
 		if ($type !== 'user_info')
 			return;
 
-		$fa = ! empty($parameters['use_fa_icons']);
-
 		if ($this->context['user']['is_logged']) {
 			$userData = $this->cache('user_info_addon_u' . $this->context['user']['id'])
 				->setLifeTime($cache_time)
@@ -81,7 +79,7 @@ class UserInfo extends Plugin
 			<ul class="centertext">
 				<li>', $this->txt['hello_member'], ' <strong>', $userData['name_color'], '</strong></li>';
 
-			if (! empty($userData['avatar'])) {
+			if ($userData['avatar']) {
 				echo '
 				<li>', $userData['avatar']['image'], '</li>';
 			}
@@ -90,21 +88,21 @@ class UserInfo extends Plugin
 				<li>', $userData['primary_group'] ?: ($userData['post_group'] ?: ''), '</li>
 				<li>', $userData['group_icons'], '</li>';
 
-			if (! empty($this->context['allow_light_portal_manage_own_blocks'])) {
+			if ($this->context['allow_light_portal_manage_own_blocks']) {
 				echo '
 				<li>
 					<hr>
-					', $fa ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $this->scripturl, '?action=admin;area=lp_blocks;sa=add;', $this->context['session_var'], '=', $this->context['session_id'], '">
+					', $parameters['use_fa_icons'] ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $this->scripturl, '?action=admin;area=lp_blocks;sa=add;', $this->context['session_var'], '=', $this->context['session_id'], '">
 						', $this->txt['lp_blocks_add'], '
 					</a>
 				</li>';
 			}
 
-			if (! empty($this->context['allow_light_portal_manage_own_pages'])) {
+			if ($this->context['allow_light_portal_manage_own_pages']) {
 				echo '
 				<li>
 					<hr>
-					', $fa ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $this->scripturl, '?action=admin;area=lp_pages;sa=add;', $this->context['session_var'], '=', $this->context['session_id'], '">
+					', $parameters['use_fa_icons'] ? '<i class="fas fa-plus-circle"></i>' : '<span class="main_icons post_moderation_allow"></span>', ' <a href="', $this->scripturl, '?action=admin;area=lp_pages;sa=add;', $this->context['session_var'], '=', $this->context['session_id'], '">
 						', $this->txt['lp_pages_add'], '
 					</a>
 				</li>';
@@ -114,10 +112,10 @@ class UserInfo extends Plugin
 				<li>
 					<hr>
 					<span class="floatleft">
-						', $fa ? '<i class="fas fa-user"></i>' : '<span class="main_icons members"></span>', ' <a href="', $userData['href'], '">', $this->txt['profile'], '</a>
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-user"></i>' : '<span class="main_icons members"></span>', ' <a href="', $userData['href'], '">', $this->txt['profile'], '</a>
 					</span>
 					<span class="floatright">
-						', $fa ? '<i class="fas fa-sign-out-alt"></i>' : '<span class="main_icons logout"></span>', ' <a href="', $this->scripturl, '?action=logout;', $this->context['session_var'], '=', $this->context['session_id'], '">', $this->txt['logout'], '</a>
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-sign-out-alt"></i>' : '<span class="main_icons logout"></span>', ' <a href="', $this->scripturl, '?action=logout;', $this->context['session_var'], '=', $this->context['session_id'], '">', $this->txt['logout'], '</a>
 					</span>
 				</li>
 			</ul>';
@@ -131,13 +129,13 @@ class UserInfo extends Plugin
 			if ($this->context['can_register']) {
 				echo '
 					<span class="floatleft">
-						', $fa ? '<i class="fas fa-user-plus"></i>' : '<span class="main_icons signup"></span>', ' <a href="', $this->scripturl, '?action=signup">', $this->txt['register'], '</a>
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-user-plus"></i>' : '<span class="main_icons signup"></span>', ' <a href="', $this->scripturl, '?action=signup">', $this->txt['register'], '</a>
 					</span>';
 			}
 
 			echo '
 					<span', $this->context['can_register'] ? ' class="floatright"' : '', '>
-						', $fa ? '<i class="fas fa-sign-in-alt"></i>' : '<span class="main_icons login"></span>', ' <a href="', $this->scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape($this->txt['login']), ');">', $this->txt['login'], '</a>
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-sign-in-alt"></i>' : '<span class="main_icons login"></span>', ' <a href="', $this->scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape($this->txt['login']), ');">', $this->txt['login'], '</a>
 					</span>
 				</li>
 			</ul>';

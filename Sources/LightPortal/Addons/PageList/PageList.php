@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -182,7 +182,7 @@ class PageList extends Plugin
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
 
-		if (! empty($page_list)) {
+		if ($page_list) {
 			echo '
 		<ul class="normallist page_list">';
 
@@ -194,7 +194,7 @@ class PageList extends Plugin
 			<li>
 				<a href="', $this->scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $this->txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', __('lp_views_set', ['views' => $page['num_views']]);
 
-				if (! empty($page['num_comments']) && ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default')
+				if ($page['num_comments'] && ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default')
 					echo ', ' . __('lp_comments_set', ['comments' => $page['num_comments']]);
 
 				echo ')

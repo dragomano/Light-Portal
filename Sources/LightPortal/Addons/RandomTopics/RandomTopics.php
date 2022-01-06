@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -186,7 +186,7 @@ class RandomTopics extends Plugin
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
 
-		if (! empty($randomTopics)) {
+		if ($randomTopics) {
 			echo '
 			<ul class="random_topics noup">';
 

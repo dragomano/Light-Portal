@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -54,7 +54,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_latest_member',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_latest_member'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_latest_member']
 			],
 			'tab' => 'content'
 		];
@@ -64,7 +64,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_basic_info',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_basic_info'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_basic_info']
 			],
 			'tab' => 'content'
 		];
@@ -74,7 +74,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_whos_online',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_whos_online'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_whos_online']
 			],
 			'tab' => 'content'
 		];
@@ -84,7 +84,7 @@ class BoardStats extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'use_fa_icons',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['use_fa_icons'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_fa_icons']
 			],
 			'tab' => 'appearance'
 		];
@@ -105,10 +105,8 @@ class BoardStats extends Plugin
 		if (empty($parameters['show_latest_member']) && empty($parameters['show_basic_info']) && empty($parameters['show_whos_online']))
 			return [];
 
-		$this->loadSsi();
-
-		if (! empty($parameters['show_basic_info'])) {
-			$basic_info = ssi_boardStats('array');
+		if ($parameters['show_basic_info']) {
+			$basic_info = $this->getFromSsi('boardStats', 'array');
 			$basic_info['max_online_today'] = comma_format($this->modSettings['mostOnlineToday']);
 			$basic_info['max_online']       = comma_format($this->modSettings['mostOnline']);
 		}
@@ -116,7 +114,7 @@ class BoardStats extends Plugin
 		return [
 			'latest_member' => $this->modSettings['latestRealName'] ?? '',
 			'basic_info'    => $basic_info ?? [],
-			'whos_online'   => empty($parameters['show_whos_online']) ? [] : ssi_whosOnline('array')
+			'whos_online'   => empty($parameters['show_whos_online']) ? [] : $this->getFromSsi('whosOnline', 'array')
 		];
 	}
 
@@ -125,6 +123,9 @@ class BoardStats extends Plugin
 		if ($type !== 'board_stats')
 			return;
 
+		if ($this->post()->has('preview'))
+			$parameters['update_interval'] = 0;
+
 		$board_stats = $this->cache('board_stats_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(__CLASS__, 'getData', $parameters);
@@ -132,16 +133,14 @@ class BoardStats extends Plugin
 		if (empty($board_stats))
 			return;
 
-		$fa = ! empty($parameters['use_fa_icons']);
-
 		echo '
 			<div class="board_stats_areas">';
 
-		if (! empty($parameters['show_latest_member']) && ! empty($board_stats['latest_member'])) {
+		if ($parameters['show_latest_member'] && $board_stats['latest_member']) {
 			echo '
 				<div>
 					<h4>
-						', $fa ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $this->txt['lp_board_stats']['newbie'], '
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', $this->txt['lp_board_stats']['newbie'], '
 					</h4>
 					<ul class="bbc_list">
 						<li>', $board_stats['latest_member'], '</li>
@@ -149,13 +148,13 @@ class BoardStats extends Plugin
 				</div>';
 		}
 
-		if (! empty($parameters['show_basic_info']) && ! empty($board_stats['basic_info'])) {
+		if ($parameters['show_basic_info'] && $board_stats['basic_info']) {
 			$stats_title = allowedTo('view_stats') ? '<a href="' . $this->scripturl . '?action=stats">' . $this->txt['forum_stats'] . '</a>' : $this->txt['forum_stats'];
 
 			echo '
 				<div>
 					<h4>
-						', $fa ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $stats_title, '
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $stats_title, '
 					</h4>';
 
 			echo '
@@ -175,13 +174,13 @@ class BoardStats extends Plugin
 				</div>';
 		}
 
-		if (! empty($parameters['show_whos_online']) && ! empty($board_stats['whos_online'])) {
+		if ($parameters['show_whos_online'] && $board_stats['whos_online']) {
 			$online_title = allowedTo('who_view') ? '<a href="' . $this->scripturl . '?action=who">' . $this->txt['online_users'] . '</a>' : $this->txt['online_users'];
 
 			echo '
 				<div>
 					<h4>
-						', $fa ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $online_title, '
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $online_title, '
 					</h4>
 					<ul class="bbc_list">
 						<li>', $this->txt['members'], ': ', comma_format($board_stats['whos_online']['num_users_online']), '</li>

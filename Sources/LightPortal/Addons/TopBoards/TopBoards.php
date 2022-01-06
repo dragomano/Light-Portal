@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -78,16 +78,9 @@ class TopBoards extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
 			]
 		];
-	}
-
-	public function getData(int $num_boards): array
-	{
-		$this->loadSsi();
-
-		return ssi_topBoards($num_boards, 'array');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -97,7 +90,7 @@ class TopBoards extends Plugin
 
 		$top_boards = $this->cache('top_boards_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['num_boards']);
+			->setFallback(__CLASS__, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
 
 		if (empty($top_boards))
 			return;

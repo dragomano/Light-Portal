@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\EhPortal;
@@ -190,9 +190,7 @@ class Import extends AbstractOtherPageImport
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			if (! empty($row['permission_set'])) {
-				$perm = $row['permission_set'];
-			} else {
+			if (empty($row['permission_set'])) {
 				$groups = $row['groups_allowed'];
 
 				if ($groups == -1) {
@@ -204,6 +202,8 @@ class Import extends AbstractOtherPageImport
 				} else {
 					$perm = 3;
 				}
+			} else {
+				$perm = $row['permission_set'];
 			}
 
 			$items[$row['id_page']] = [

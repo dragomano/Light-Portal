@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -127,7 +127,7 @@ class TagList extends Plugin
 				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
-		if (! empty($tag_list)) {
+		if ($tag_list) {
 			foreach ($tag_list as $tag) {
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';

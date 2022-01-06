@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
@@ -78,16 +78,9 @@ class TopTopics extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_numbers_only',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_numbers_only'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
 			]
 		];
-	}
-
-	public function getData(array $parameters): array
-	{
-		$this->loadSsi();
-
-		return ssi_topTopics($parameters['popularity_type'], $parameters['num_topics'], 'array');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -97,7 +90,7 @@ class TopTopics extends Plugin
 
 		$top_topics = $this->cache('top_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(__CLASS__, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
 
 		if (empty($top_topics))
 			return;

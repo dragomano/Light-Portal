@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -37,7 +37,7 @@ class SimpleMenu extends Plugin
 		$data = $this->post()->only(['item_name', 'item_link']);
 
 		$items = [];
-		if (! empty($data) && ! empty($data['item_name']) && ! empty($data['item_link'])) {
+		if ($data && isset($data['item_name']) && isset($data['item_link'])) {
 			foreach ($data['item_name'] as $key => $item) {
 				if (empty($link = $data['item_link'][$key]))
 					continue;

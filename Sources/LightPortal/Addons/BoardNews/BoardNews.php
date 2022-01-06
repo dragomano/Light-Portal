@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 07.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -91,13 +91,6 @@ class BoardNews extends Plugin
 		];
 	}
 
-	public function getData(array $parameters): array
-	{
-		$this->loadSsi();
-
-		return ssi_boardNews($parameters['board_id'], $parameters['num_posts'], null, null, 'array');
-	}
-
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'board_news')
@@ -105,7 +98,7 @@ class BoardNews extends Plugin
 
 		$board_news = $this->cache('board_news_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, null, 'array');
 
 		if (empty($board_news))
 			return;
@@ -127,12 +120,12 @@ class BoardNews extends Plugin
 				echo '
 					<ul>';
 
-				if (! empty($news['likes']['can_like'])) {
+				if ($news['likes']['can_like']) {
 					echo '
 						<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $this->scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $this->context['session_var'], '=', $this->context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $this->txt['unlike'] : $this->txt['like']), '</a></li>';
 				}
 
-				if (! empty($news['likes']['count'])) {
+				if ($news['likes']['count'] > 0) {
 					$this->context['some_likes'] = true;
 					$count = $news['likes']['count'];
 					$base = 'likes_';

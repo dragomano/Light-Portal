@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 03.01.22
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -108,7 +108,7 @@ class ArticleList extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'seek_images',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['seek_images'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['seek_images']
 			]
 		];
 	}
@@ -217,14 +217,14 @@ class ArticleList extends Plugin
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
-		if (! empty($article_list)) {
+		if ($article_list) {
 			echo '
 		<div class="article_list">';
 
 			if (empty($parameters['display_type'])) {
 				foreach ($article_list as $topic) {
 					$content = '';
-					if (! empty($topic['image'])) {
+					if ($topic['image']) {
 						$content .= '
 				<div class="article_image">
 					<img src="' . $topic['image'] . '" loading="lazy" alt="' . $topic['title'] . '">
@@ -241,7 +241,7 @@ class ArticleList extends Plugin
 						continue;
 
 					$content = '';
-					if (! empty($page['image'])) {
+					if ($page['image']) {
 						$content .= '
 				<div class="article_image">
 					<img src="' . $page['image'] . '" loading="lazy" alt="'. $title . '">

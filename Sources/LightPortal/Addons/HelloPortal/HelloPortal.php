@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 05.01.22
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -80,7 +80,7 @@ class HelloPortal extends Plugin
 			$addSettings['lp_hello_portal_addon_show_buttons'] = 1;
 		if (! isset($this->modSettings['lp_hello_portal_addon_keyboard_navigation']))
 			$addSettings['lp_hello_portal_addon_keyboard_navigation'] = 1;
-		if (! empty($addSettings))
+		if ($addSettings)
 			updateSettings($addSettings);
 
 		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, $this->txt['lp_hello_portal']['theme_set'])];

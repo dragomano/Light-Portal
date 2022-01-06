@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.22
+ * @version 06.01.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -219,18 +219,18 @@ class AdsBlock extends Plugin
 
 		$this->context['lp_ads_blocks'] = $this->getData();
 
-		if (! empty($this->context['lp_ads_blocks']))
+		if ($this->context['lp_ads_blocks'])
 			$this->context['lp_blocks'] = array_merge($this->context['lp_blocks'], $this->context['lp_ads_blocks']);
 
-		if (! empty($this->context['lp_blocks']['ads'])) {
+		if (isset($this->context['lp_blocks']['ads'])) {
 			foreach ($this->context['lp_blocks']['ads'] as $block) {
-				if (! empty($block['parameters']) && ! empty($block['parameters']['loader_code'])) {
+				if ($block['parameters'] && isset($block['parameters']['loader_code'])) {
 					$this->context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
 				}
 
-				if (! empty($block['parameters']) && ! empty($block['parameters']['end_date'])) {
+				if ($block['parameters'] && isset($block['parameters']['end_date'])) {
 					if ($this->getEndTime($block['parameters']) <= time()) {
-						$this->toggleStatus([$block['id']]);
+						$this->disableBlock($block['id']);
 					}
 				}
 			}
@@ -254,7 +254,7 @@ class AdsBlock extends Plugin
 	 */
 	public function displayButtons()
 	{
-		if (! empty($this->modSettings['lp_ads_block_addon_min_replies']) && $this->context['topicinfo']['num_replies'] <
+		if (isset($this->modSettings['lp_ads_block_addon_min_replies']) && $this->context['topicinfo']['num_replies'] <
 			$this->modSettings['lp_ads_block_addon_min_replies'])
 			return;
 
@@ -266,10 +266,9 @@ class AdsBlock extends Plugin
 	 *
 	 * Отображаем рекламу в сообщениях
 	 */
-	public function prepareDisplayContext(array &$output, array &$message, int $counter)
+	public function prepareDisplayContext(array $output, array &$message, int $counter)
 	{
-		if (! empty($this->modSettings['lp_ads_block_addon_min_replies']) && $this->context['topicinfo']['num_replies'] <
-			$this->modSettings['lp_ads_block_addon_min_replies'])
+		if (empty($this->context['lp_ads_blocks']) || ($this->modSettings['lp_ads_block_addon_min_replies'] && $this->context['topicinfo']['num_replies'] < $this->modSettings['lp_ads_block_addon_min_replies']))
 			return;
 
 		$current_counter = empty($this->options['view_newest_first']) ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
@@ -279,7 +278,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы перед первым сообщением
 		 */
-		if (! empty($this->context['lp_ads_blocks']['before_first_post']) && $current_counter == $output['counter'] &&
+		if ($this->context['lp_ads_blocks']['before_first_post'] && $current_counter == $output['counter'] &&
 			empty($this->context['start'])) {
 			lp_show_blocks('before_first_post');
 		}
@@ -289,7 +288,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы перед каждым первым сообщением
 		 */
-		if (! empty($this->context['lp_ads_blocks']['before_every_first_post']) && $current_counter == $output['counter']) {
+		if ($this->context['lp_ads_blocks']['before_every_first_post'] && $current_counter == $output['counter']) {
 			lp_show_blocks('before_every_first_post');
 		}
 
@@ -298,7 +297,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после первого сообщения
 		 */
-		if (! empty($this->context['lp_ads_blocks']['after_first_post']) && ($counter == (empty($this->options['view_newest_first']) ? 2 : $this->context['total_visible_posts'] - 2))) {
+		if ($this->context['lp_ads_blocks']['after_first_post'] && ($counter == (empty($this->options['view_newest_first']) ? 2 : $this->context['total_visible_posts'] - 2))) {
 			lp_show_blocks('after_first_post');
 		}
 
@@ -307,7 +306,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после каждого первого сообщения
 		 */
-		if (! empty($this->context['lp_ads_blocks']['after_every_first_post']) && ($output['counter'] == (empty($this->options['view_newest_first']) ? $this->context['start'] + 1 : $current_counter - 1))) {
+		if ($this->context['lp_ads_blocks']['after_every_first_post'] && ($output['counter'] == (empty($this->options['view_newest_first']) ? $this->context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
 		}
 
@@ -319,7 +318,7 @@ class AdsBlock extends Plugin
 		$before_every_last_post = empty($this->options['view_newest_first'])
 			? $counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0
 			: ($output['id'] == $this->context['topic_first_message'] || ($this->context['total_visible_posts'] - $counter) % $this->context['messages_per_page'] == 0);
-		if (! empty($this->context['lp_ads_blocks']['before_every_last_post']) && $before_every_last_post) {
+		if ($this->context['lp_ads_blocks']['before_every_last_post'] && $before_every_last_post) {
 			lp_show_blocks('before_every_last_post');
 		}
 
@@ -328,7 +327,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы перед последним сообщением
 		 */
-		if (! empty($this->context['lp_ads_blocks']['before_last_post']) &&
+		if ($this->context['lp_ads_blocks']['before_last_post'] &&
 			$output['id'] == (empty($this->options['view_newest_first']) ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
 			lp_show_blocks('before_last_post');
 		}
@@ -338,7 +337,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после каждого последнего сообщения
 		 */
-		if (! empty($this->context['lp_ads_blocks']['after_every_last_post']) && ($counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0)) {
+		if ($this->context['lp_ads_blocks']['after_every_last_post'] && ($counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0)) {
 			ob_start();
 
 			lp_show_blocks('after_every_last_post');
@@ -356,7 +355,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после последнего сообщения
 		 */
-		if (! empty($this->context['lp_ads_blocks']['after_last_post']) &&
+		if ($this->context['lp_ads_blocks']['after_last_post'] &&
 			$output['id'] == (empty($this->options['view_newest_first']) ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
 			ob_start();
 
@@ -390,24 +389,22 @@ class AdsBlock extends Plugin
 		if (empty($position))
 			return [];
 
-		$context = $this->context;
-
 		return array_filter($this->context['lp_blocks']['ads'], function ($block) use ($position) {
-			if (! empty($block['parameters']['ads_boards'])) {
+			if (isset($block['parameters']['ads_boards'])) {
 				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
 
 				if (! array_key_exists($this->context['current_board'], $boards))
 					return false;
 			}
 
-			if (! empty($block['parameters']['ads_topics']) && ! empty($this->context['current_topic'])) {
+			if (isset($block['parameters']['ads_topics']) && isset($this->context['current_topic'])) {
 				$topics = array_flip(explode(',', $block['parameters']['ads_topics']));
 
 				if (! array_key_exists($this->context['current_topic'], $topics))
 					return false;
 			}
 
-			if (! empty($block['parameters']['ads_placement'])) {
+			if ($block['parameters']['ads_placement']) {
 				$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
 
 				return array_key_exists($position, $placements);
@@ -442,12 +439,28 @@ class AdsBlock extends Plugin
 	{
 		$end_time = time();
 
-		if (! empty($params['end_date']))
+		if ($params['end_date'])
 			$end_time = strtotime($params['end_date']);
 
-		if (! empty($params['end_time']))
+		if ($params['end_time'])
 			$end_time = strtotime(date('Y-m-d', $end_time) . ' ' . $params['end_time']);
 
 		return $end_time;
+	}
+
+	private function disableBlock(int $item)
+	{
+		/** @noinspection SqlResolve */
+		$this->smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_blocks
+			SET status = {int:status}
+			WHERE block_id = {int:item}',
+			[
+				'status' => 0,
+				'item'   => $item
+			]
+		);
+
+		$this->context['lp_num_queries']++;
 	}
 }

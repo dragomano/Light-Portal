@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -61,7 +61,7 @@ class RecentTopics extends Plugin
 			'after' => $this->txt['lp_recent_topics']['use_simple_style_subtext'],
 			'attributes' => [
 				'id'      => 'use_simple_style',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_simple_style']
 			],
 			'tab' => 'appearance'
 		];
@@ -71,7 +71,7 @@ class RecentTopics extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_avatars',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_avatars']) && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => $this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
 			],
 			'tab' => 'appearance'
 		];
@@ -81,7 +81,7 @@ class RecentTopics extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'show_icons',
-				'checked' => ! empty($this->context['lp_block']['options']['parameters']['show_icons']) && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
+				'checked' => $this->context['lp_block']['options']['parameters']['show_icons'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
 			],
 			'tab' => 'appearance'
 		];
@@ -131,20 +131,15 @@ class RecentTopics extends Plugin
 
 	public function getData(array $parameters): array
 	{
-		if (! empty($parameters['exclude_boards']))
-			$exclude_boards = explode(',', $parameters['exclude_boards']);
+		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
+		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
 
-		if (! empty($parameters['include_boards']))
-			$include_boards = explode(',', $parameters['include_boards']);
-
-		$this->loadSsi();
-
-		$topics = ssi_recentTopics($parameters['num_topics'], $exclude_boards ?? null, $include_boards ?? null, 'array');
+		$topics = $this->getFromSsi('recentTopics', (int) $parameters['num_topics'], $exclude_boards, $include_boards, 'array');
 
 		if (empty($topics))
 			return [];
 
-		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style']))
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$topics = $this->getTopicsWithUserAvatars($topics);
 
 		return $topics;
@@ -154,6 +149,9 @@ class RecentTopics extends Plugin
 	{
 		if ($type !== 'recent_topics')
 			return;
+
+		if ($this->post()->has('preview'))
+			$parameters['update_interval'] = 0;
 
 		$recent_topics = $this->cache('recent_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
@@ -165,7 +163,7 @@ class RecentTopics extends Plugin
 		echo '
 		<ul class="recent_topics noup">';
 
-		if (! empty($parameters['use_simple_style'])) {
+		if ($parameters['use_simple_style']) {
 			foreach ($recent_topics as $topic) {
 				echo '
 			<li class="windowbg">
@@ -185,7 +183,7 @@ class RecentTopics extends Plugin
 				echo '
 			<li class="windowbg">';
 
-				if (! empty($parameters['show_avatars']) && ! empty($topic['poster']['avatar']))
+				if ($parameters['show_avatars'] && $topic['poster']['avatar'])
 					echo '
 				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
 
@@ -193,7 +191,7 @@ class RecentTopics extends Plugin
 					echo '
 				<a class="new_posts" href="', $this->scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $this->txt['new'], '</a> ';
 
-				echo (empty($parameters['show_icons']) ? '' : ($topic['icon'] . ' ')), $topic['link'];
+				echo ($parameters['show_icons'] ? $topic['icon'] . ' ' : ''), $topic['link'];
 
 				if (empty($parameters['show_avatars']))
 					echo '
@@ -216,7 +214,7 @@ class RecentTopics extends Plugin
 		$loadedUserIds = loadMemberData(array_unique($posters));
 
 		return array_map(function ($item) use ($loadedUserIds) {
-			if (! empty($item['poster']['id']) && in_array($item['poster']['id'], $loadedUserIds)) {
+			if ($item['poster']['id'] && in_array($item['poster']['id'], $loadedUserIds)) {
 				if (! isset($this->memberContext[$item['poster']['id']]))
 					try {
 						loadMemberContext($item['poster']['id']);

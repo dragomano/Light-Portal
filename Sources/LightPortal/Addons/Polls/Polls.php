@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
@@ -72,21 +72,14 @@ class Polls extends Plugin
 		}
 	}
 
-	public function getData(int $topic = 0): array
-	{
-		$this->loadSsi();
-
-		return ssi_showPoll($topic, 'array');
-	}
-
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'polls')
 			return;
 
-		$poll = $this->getData($parameters['selected_item']);
+		$poll = $this->getFromSsi('showPoll', $parameters['selected_item'], 'array');
 
-		if (! empty($poll)) {
+		if ($poll) {
 			if ($poll['allow_vote']) {
 				echo '
 		<form action="', $this->boardurl, '/SSI.php?ssi_function=pollVote" method="post" accept-charset="', $this->context['character_set'], '">

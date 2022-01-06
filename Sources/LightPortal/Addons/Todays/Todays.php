@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 04.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -28,7 +28,7 @@ class Todays extends Plugin
 
 	public function menuButtons(array &$buttons)
 	{
-		$buttons['calendar']['show'] = ! empty($this->context['allow_calendar']) && empty($this->modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = $this->context['allow_calendar'] && empty($this->modSettings['lp_todays_addon_hide_calendar_in_menu']);
 	}
 
 	public function addSettings(array &$config_vars)
@@ -95,11 +95,7 @@ class Todays extends Plugin
 
 	public function getData(string $type, string $output_method = 'echo')
 	{
-		$this->loadSsi();
-
-		$funcName = 'ssi_todays' . ucfirst($type);
-
-		return function_exists($funcName) ? $funcName($output_method) : '';
+		return $this->getFromSsi('todays' . ucfirst($type), $output_method);
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -110,11 +106,11 @@ class Todays extends Plugin
 		$result = $this->getData($parameters['widget_type'], 'array');
 
 		if ($parameters['widget_type'] == 'calendar') {
-			if (! empty($result['calendar_holidays']) || ! empty($result['calendar_birthdays']) || ! empty($result['calendar_events']))
+			if ($result['calendar_holidays'] || $result['calendar_birthdays'] || $result['calendar_events'])
 				$this->getData($parameters['widget_type']);
 			else
 				echo $this->txt['lp_todays']['empty_list'];
-		} elseif (! empty($result)) {
+		} elseif ($result) {
 			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);
 			} else {
@@ -138,7 +134,7 @@ class Todays extends Plugin
 				}
 
 				// HTML5 spoiler
-				if (! empty($hiddenContent))
+				if ($hiddenContent)
 					echo $this->txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
