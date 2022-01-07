@@ -1,10 +1,10 @@
 **/.idea/
 **/.vscode/
 **/vendor/
-**/addons/**/*.less
-**/addons/**/russian.php
-**/addons/**/polish.php
-**/addons/**/spanish*.php
-**/addons/**/turkish.php
-**/addons/**/french.php
-**/addons/**/ukrainian.php
+**/Addons/**/*.less
+**/Addons/**/russian.php
+**/Addons/**/polish.php
+**/Addons/**/spanish*.php
+**/Addons/**/turkish.php
+**/Addons/**/french.php
+**/Addons/**/ukrainian.php
