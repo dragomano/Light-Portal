@@ -101,7 +101,7 @@ class TopicArticle extends AbstractArticle
 
 				$body = $last_body = '';
 
-				if ($this->modSettings['lp_show_teaser']) {
+				if (! empty($this->modSettings['lp_show_teaser'])) {
 					censorText($row['body']);
 					censorText($row['last_body']);
 
@@ -161,7 +161,7 @@ class TopicArticle extends AbstractArticle
 					$topics[$row['id_topic']]['author']['avatar'] = $avatar['href'];
 				}
 
-				if ($this->modSettings['lp_show_teaser'])
+				if (! empty($this->modSettings['lp_show_teaser']))
 					$topics[$row['id_topic']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
 
 				if ($row['new_from'] && $row['new_from'] <= $row['id_msg_modified'])
@@ -172,7 +172,7 @@ class TopicArticle extends AbstractArticle
 				if ($row['num_replies'])
 					$topics[$row['id_topic']]['msg_link'] = $this->scripturl . '?msg=' . $row['id_msg'];
 
-				if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
 					$topics[$row['id_topic']]['date'] = $row['date'];
 			}
 

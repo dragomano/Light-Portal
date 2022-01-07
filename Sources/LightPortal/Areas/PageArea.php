@@ -266,7 +266,7 @@ final class PageArea
 				</a>
 			</span>' . $listOptions['title'];
 
-		if ($this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] !== 'default') {
+		if (! (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] === 'default')) {
 			unset($listOptions['columns']['num_comments']);
 		}
 
@@ -600,19 +600,19 @@ final class PageArea
 			'options'     => $options,
 		];
 
-		if ($this->modSettings['lp_prohibit_php'] && ! $this->user_info['is_admin'] && $this->context['lp_page']['type'] == 'php') {
+		if (! (empty($this->modSettings['lp_prohibit_php']) || $this->user_info['is_admin']) && $this->context['lp_page']['type'] === 'php') {
 			$this->context['lp_page']['type'] = 'bbc';
 		}
 
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
-				if ($parameters[$option] == FILTER_SANITIZE_STRING)
+				if ($parameters[$option] === FILTER_SANITIZE_STRING)
 					$post_data[$option] = '';
 
-				if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
+				if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
 					$post_data[$option] = 0;
 
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY)
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 					$post_data[$option] = [];
 			}
 
@@ -833,7 +833,7 @@ final class PageArea
 			],
 		];
 
-		if ($this->modSettings['lp_show_related_pages']) {
+		if (! empty($this->modSettings['lp_show_related_pages'])) {
 			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->context['lp_page_options']['show_related_pages'];
 			$this->context['posting_fields']['show_related_pages']['input'] = [
 				'type'       => 'checkbox',
@@ -843,7 +843,7 @@ final class PageArea
 			];
 		}
 
-		if ($this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] != 'none') {
+		if (! (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] === 'none')) {
 			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->context['lp_page_options']['allow_comments'];
 			$this->context['posting_fields']['allow_comments']['input'] = [
 				'type'       => 'checkbox',

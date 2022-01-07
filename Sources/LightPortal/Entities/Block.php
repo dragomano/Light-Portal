@@ -29,7 +29,7 @@ final class Block
 
 	public function show()
 	{
-		if ($this->modSettings['lp_hide_blocks_in_admin_section'] && $this->request()->is('admin'))
+		if ($this->isHideBlocksInAdmin())
 			return;
 
 		if (empty($this->context['allow_light_portal_view']) || empty($this->context['template_layers']) || empty($this->context['lp_active_blocks']))
@@ -79,7 +79,7 @@ final class Block
 
 	public function getActive(): array
 	{
-		if ($this->modSettings['lp_hide_blocks_in_admin_section'] && $this->request()->is('admin'))
+		if ($this->isHideBlocksInAdmin())
 			return [];
 
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
@@ -135,7 +135,7 @@ final class Block
 	{
 		$area = $this->context['current_action'] ?: (empty($this->modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION);
 
-		if ($this->modSettings['lp_standalone_mode'] && $this->modSettings['lp_standalone_url']) {
+		if (! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
 			if ($this->modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty($this->context['current_action'])) {
@@ -197,5 +197,10 @@ final class Block
 		}
 
 		return $ids;
+	}
+
+	private function isHideBlocksInAdmin(): bool
+	{
+		return ! empty($this->modSettings['lp_hide_blocks_in_admin_section']) && $this->request()->is('admin');
 	}
 }

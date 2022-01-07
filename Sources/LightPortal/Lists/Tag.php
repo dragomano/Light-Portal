@@ -49,7 +49,7 @@ final class Tag extends AbstractPageList
 			'name' => $this->context['page_title']
 		];
 
-		if ($this->modSettings['lp_show_items_as_articles'])
+		if (! empty($this->modSettings['lp_show_items_as_articles']))
 			(new Page)->showAsCards($this);
 
 		$listOptions = (new Page)->getList();

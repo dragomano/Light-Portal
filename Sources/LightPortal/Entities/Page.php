@@ -200,7 +200,7 @@ final class Page
 			censorText($row['content']);
 
 			$og_image = null;
-			if ($this->modSettings['lp_page_og_image']) {
+			if (! empty($this->modSettings['lp_page_og_image'])) {
 				$content = $row['content'];
 				$content = parse_content($content, $row['type']);
 				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
@@ -373,7 +373,7 @@ final class Page
 		$row['content'] = parse_content($row['content'], $row['type']);
 
 		$image = null;
-		if ($this->modSettings['lp_show_images_in_articles']) {
+		if (! empty($this->modSettings['lp_show_images_in_articles'])) {
 			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
 			$image = $first_post_image ? array_pop($value) : null;
 		}
@@ -412,7 +412,7 @@ final class Page
 
 		$items[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
 
-		if ($this->modSettings['lp_show_teaser'])
+		if (! empty($this->modSettings['lp_show_teaser']))
 			$items[$row['page_id']]['teaser'] = $this->getTeaser($row['description'] ?: $row['content']);
 	}
 
@@ -465,7 +465,7 @@ final class Page
 			}
 		}
 
-		if ($this->modSettings['lp_page_og_image'] && $this->context['lp_page']['image'])
+		if (! (empty($this->modSettings['lp_page_og_image']) || empty($this->context['lp_page']['image'])))
 			$this->settings['og_image'] = $this->context['lp_page']['image'];
 	}
 
@@ -510,7 +510,7 @@ final class Page
 		if (empty($this->modSettings['lp_show_comment_block']) || empty($this->context['lp_page']['options']['allow_comments']))
 			return;
 
-		if ($this->modSettings['lp_show_comment_block'] == 'none')
+		if ($this->modSettings['lp_show_comment_block'] === 'none')
 			return;
 
 		loadLanguage('Editor');

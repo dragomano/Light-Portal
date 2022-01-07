@@ -112,10 +112,10 @@ class PageArticle extends AbstractArticle
 
 				$pages[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
 
-				if ($this->modSettings['lp_show_teaser'])
+				if (! empty($this->modSettings['lp_show_teaser']))
 					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
 
-				if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
 					$pages[$row['page_id']]['date'] = $row['date'];
 			}
 

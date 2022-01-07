@@ -74,12 +74,8 @@ final class Comment
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 
-		$pageIndexUrl = $this->context['canonical_url'];
-		if ($this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias'])
-			$pageIndexUrl = $this->scripturl . '?action=' . LP_ACTION;
-
 		$this->context['current_start'] = $this->request('start');
-		$this->context['page_index'] = constructPageIndex($pageIndexUrl, $this->request()->get('start'), $totalParentComments, $limit);
+		$this->context['page_index'] = constructPageIndex($this->getPageIndexUrl(), $this->request()->get('start'), $totalParentComments, $limit);
 		$start = $this->request('start');
 
 		$this->context['page_info'] = [
@@ -379,5 +375,13 @@ final class Comment
 		}
 
 		return $tree;
+	}
+
+	private function getPageIndexUrl(): string
+	{
+		if (! (empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_page') && ! empty($this->modSettings['lp_frontpage_alias']))
+			return $this->scripturl . '?action=' . LP_ACTION;
+
+		return $this->context['canonical_url'];
 	}
 }

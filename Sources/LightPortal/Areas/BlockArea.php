@@ -447,13 +447,13 @@ final class BlockArea
 		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
 				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-					if ($parameters[$option] == FILTER_SANITIZE_STRING)
+					if ($parameters[$option] === FILTER_SANITIZE_STRING)
 						$post_data[$option] = '';
 
-					if ($parameters[$option] == FILTER_VALIDATE_BOOLEAN)
+					if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
 						$post_data['parameters'][$option] = 0;
 
-					if (is_array($parameters[$option]) && $parameters[$option]['flags'] == FILTER_REQUIRE_ARRAY)
+					if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 						$post_data['parameters'][$option] = [];
 				}
 

@@ -108,7 +108,7 @@ final class Integration extends AbstractMain
 
 	public function actions(array &$actions)
 	{
-		if ($this->modSettings['lp_frontpage_mode'])
+		if (! empty($this->modSettings['lp_frontpage_mode']))
 			$actions[LP_ACTION] = ['LightPortal/Entities/FrontPage.php', [new Entities\FrontPage, 'show']];
 
 		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
@@ -119,7 +119,7 @@ final class Integration extends AbstractMain
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'tags')
 			call_user_func([new Lists\Tag, 'show']);
 
-		if ($this->modSettings['lp_standalone_mode']) {
+		if (! empty($this->modSettings['lp_standalone_mode'])) {
 			$this->unsetDisabledActions($actions);
 
 			if ($this->context['current_action'] && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
@@ -251,7 +251,7 @@ final class Integration extends AbstractMain
 		$buttons['home']['icon']  = 'im_on';
 
 		// Standalone mode
-		if ($this->modSettings['lp_standalone_mode']) {
+		if (! empty($this->modSettings['lp_standalone_mode'])) {
 			$buttons[LP_ACTION]['title']   = $this->txt['lp_portal'];
 			$buttons[LP_ACTION]['href']    = $this->modSettings['lp_standalone_url'] ?: $this->scripturl;
 			$buttons[LP_ACTION]['icon']    = 'home';
@@ -483,7 +483,7 @@ final class Integration extends AbstractMain
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf($this->txt['lp_who_viewing_frontpage'], $this->scripturl);
 
-			if ($this->modSettings['lp_standalone_mode'] && $this->modSettings['lp_standalone_url'])
+			if (! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
 				$result = sprintf($this->txt['lp_who_viewing_index'], $this->modSettings['lp_standalone_url'], $this->scripturl);
 		}
 

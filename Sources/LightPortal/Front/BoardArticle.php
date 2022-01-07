@@ -78,7 +78,7 @@ class BoardArticle extends AbstractArticle
 			$description = parse_bbc($row['description'], false, '', $this->context['description_allowed_tags']);
 			$cat_name    = parse_bbc($row['cat_name'], false, '', $this->context['description_allowed_tags']);
 
-			if ($this->modSettings['lp_show_images_in_articles']) {
+			if (! empty($this->modSettings['lp_show_images_in_articles'])) {
 				$image = $this->getImageFromText($description);
 
 				if ($row['attach_id'] && empty($image)) {
@@ -104,10 +104,10 @@ class BoardArticle extends AbstractArticle
 				'is_redirect' => $row['is_redirect']
 			];
 
-			if ($this->modSettings['lp_show_teaser'])
+			if (! empty($this->modSettings['lp_show_teaser']))
 				$boards[$row['id_board']]['teaser'] = $this->getTeaser($description);
 
-			if ($this->modSettings['lp_frontpage_article_sorting'] && $this->modSettings['lp_frontpage_article_sorting'] == 3 && $row['last_updated']) {
+			if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3 && $row['last_updated']) {
 				$boards[$row['id_board']]['last_post'] = $this->scripturl . '?topic=' . $row['id_topic'] . '.msg' . ($this->user_info['is_guest'] ? $row['id_msg'] : $row['new_from']) . (empty($row['is_read']) ? ';boardseen' : '') . '#new';
 
 				$boards[$row['id_board']]['date'] = $row['last_updated'];
