@@ -12,7 +12,7 @@ function template_manage_blocks()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="', $txt['lp_blocks_add'], '"></i>
+					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '" class=', $context['lp_icon_set']['plus']), '
 				</a>
 			</span>
 			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -125,7 +125,7 @@ function show_block_entry(int $id, array $data)
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' ', str_replace(' class="', ' title="' . $txt['lp_action_move'] . '" class="handle ', $context['lp_icon_set']['sort']), '
 		</td>
 		<td class="status">
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
@@ -176,7 +176,7 @@ function template_block_add()
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
 					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el)">
-						<i class="', $block['icon'], '"></i>
+						<i class="', $block['icon'], '" aria-hidden="true"></i>
 						<strong>', $block['title'], '</strong>
 						<hr>
 						<p>', $block['desc'], '</p>
@@ -246,16 +246,16 @@ function template_block_post()
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd"><i class="far fa-newspaper"></i> <span>', $txt['lp_tab_content'], '</span></label>
+				<label for="tab1" class="bg odd">' . $context['lp_icon_set']['content'] . '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd"><i class="fas fa-key"></i> <span>', $txt['lp_tab_access_placement'], '</span></label>
+				<label for="tab2" class="bg odd">' . $context['lp_icon_set']['access'] . '<span>', $txt['lp_tab_access_placement'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd"><i class="fas fa-object-group"></i> <span>', $txt['lp_tab_appearance'], '</span></label>';
+				<label for="tab3" class="bg odd">' . $context['lp_icon_set']['design'] . '<span>', $txt['lp_tab_appearance'], '</span></label>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
 				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>';
+				<label for="tab4" class="bg odd">' . $context['lp_icon_set']['tools'] . '<span>', $txt['lp_tab_tuning'], '</span></label>';
 	}
 
 	echo '
@@ -303,9 +303,9 @@ function template_block_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview" @click="block.post($root)">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($root)">', $txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

@@ -30,7 +30,7 @@ function template_manage_plugins()
 	<div class="information" x-data>
 		', $txt['lp_plugins_desc'], '
 		<div class="hidden-xs floatright" style="cursor: pointer">
-			<i class="fas fa-bars fa-2x" @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })"></i> <i class="fas fa-border-all fa-2x" @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })"></i>
+			', str_replace(' class=', ' @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })" class=', $context['lp_icon_set']['simple_list']), ' ', str_replace(' class=', ' @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })" class=', $context['lp_icon_set']['block_list']), '
 		</div>
 	</div>';
 
@@ -94,10 +94,10 @@ function template_manage_plugins()
 		if (! empty($plugin['special'])) {
 			if ($plugin['special'] === $txt['lp_can_donate']) {
 				echo '
-						<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-donate"></i></a>';
+					<a href="', $context['lp_can_donate'][$plugin['name']]['link'], '" rel="noopener" target="_blank">', $context['lp_icon_set']['donate'], '</a>';
 			} elseif ($plugin['special'] === $txt['lp_can_download']) {
 				echo '
-						<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank"><i class="fas fa-3x fa-download"></i></a>';
+					<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank">', $context['lp_icon_set']['download'], '</a>';
 			}
 		} else {
 			echo '
@@ -124,7 +124,7 @@ function template_manage_plugins()
 
 function show_plugin_settings(string $plugin_name, array $settings)
 {
-	global $txt, $context, $modSettings;
+	global $context, $txt, $modSettings;
 
 	echo '
 	<br class="clear">
@@ -251,8 +251,8 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		</div>
 		<div class="footer">
 			<span x-ref="info" x-show="success" x-transition class="infobox floatleft">', $txt['settings_saved'], '</span>
-			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $txt['find_close'], '</button>
-			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $txt['save'], '</button>
+			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $context['lp_icon_set']['close'], $txt['find_close'], '</button>
+			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $context['lp_icon_set']['save'], $txt['save'], '</button>
 		</div>
 	</div>';
 }

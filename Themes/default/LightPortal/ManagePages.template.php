@@ -41,11 +41,11 @@ function template_page_post()
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd"><i class="far fa-newspaper"></i> <span>', $txt['lp_tab_content'], '</span></label>
+				<label for="tab1" class="bg odd">' . $context['lp_icon_set']['content'] . '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd"><i class="fas fa-spider"></i> <span>', $txt['lp_tab_seo'], '</span></label>
+				<label for="tab2" class="bg odd">' . $context['lp_icon_set']['spider'] . '<span>', $txt['lp_tab_seo'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>
+				<label for="tab3" class="bg odd">' . $context['lp_icon_set']['tools'] . '<span>', $txt['lp_tab_tuning'], '</span></label>
 				<section id="content-tab1" class="bg even">';
 
 	template_post_tab($fields);
@@ -76,9 +76,9 @@ function template_page_post()
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview" @click="page.post($root)">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="page.post($root)">', $txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="page.post($root)">', $txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="page.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="page.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="page.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

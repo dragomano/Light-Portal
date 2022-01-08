@@ -54,7 +54,7 @@ function template_show_articles()
 					<div class="info_hover">
 						<div class="edit_icon">
 							<a href="', $article['edit_link'], '">
-								<i class="fas fa-edit" title="', $txt['edit'], '"></i>
+								', str_replace(' class=', ' title="' . $txt['edit'] . '" class=', $context['lp_icon_set']['edit']), '
 							</a>
 						</div>
 					</div>';
@@ -73,7 +73,7 @@ function template_show_articles()
 
 		if (! empty($article['section']['name'])) {
 			echo '
-						<a class="floatleft" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
+						<a class="floatleft" href="', $article['section']['link'], '">', $context['lp_icon_set']['category'], $article['section']['name'], '</a>';
 		}
 
 		if ($article['is_new'] && empty($article['image'])) {
@@ -84,7 +84,7 @@ function template_show_articles()
 
 		if (! empty($article['datetime'])) {
 			echo '
-						<time class="floatright" datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
+						<time class="floatright" datetime="', $article['datetime'], '">', $context['lp_icon_set']['date'], $article['date'], '</time>';
 		}
 
 		echo '
@@ -103,13 +103,13 @@ function template_show_articles()
 
 		if (! empty($article['category'])) {
 			echo '
-						<span class="card_author"><i class="fas fa-list-alt"></i> ', $article['category'], '</span>';
+						<span class="card_author">', $context['lp_icon_set']['category'], $article['category'], '</span>';
 		}
 
 		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
 			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
-						<a href="', $article['author']['link'], '" class="card_author"><i class="fas fa-user"></i> ', $article['author']['name'], '</a>';
+						<a href="', $article['author']['link'], '" class="card_author">', $context['lp_icon_set']['user'], $article['author']['name'], '</a>';
 			} else {
 				echo '
 						<span class="card_author">', $txt['guest_title'], '</span>';
@@ -120,20 +120,16 @@ function template_show_articles()
 			echo '
 						<span class="floatright">';
 
-			if (! empty($article['views'])) {
-				echo '
-							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
-			}
+			if (! empty($article['views']['num']))
+				echo str_replace(' class=', ' title="' . $article['views']['title'] . '" class=', $context['lp_icon_set']['views']), $article['views']['num'];
 
 			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
 			if (! empty($article['is_redirect'])) {
-				echo '
-							<i class="fas fa-directions"></i>';
+				echo $context['lp_icon_set']['redirect'];
 			} elseif (! empty($article['replies']['num'])) {
-				echo '
-							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
+				echo ' ' . str_replace(' class=', ' title="' . $article['replies']['title'] . '" class=', $context['lp_icon_set']['replies']), $article['replies']['num'];
 			}
 
 			if (! empty($article['replies']['after']))
@@ -194,18 +190,14 @@ function template_show_articles_alt()
 			echo '
 						<span class="floatleft">';
 
-			if (! empty($article['views'])) {
-				echo '
-							<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
-			}
+			if (! empty($article['views']['num']))
+				echo str_replace(' class=', ' title="' . $article['views']['title'] . '" class=', $context['lp_icon_set']['views']), $article['views']['num'];
 
 			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
-			if (! empty($article['replies']['num'])) {
-				echo '
-							<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
-			}
+			if (! empty($article['replies']['num']))
+				echo ' ' . str_replace(' class=', ' title="' . $article['replies']['title'] . '" class=', $context['lp_icon_set']['replies']), $article['replies']['num'];
 
 			if (! empty($article['replies']['after']))
 				echo $article['replies']['after'];
@@ -216,7 +208,7 @@ function template_show_articles_alt()
 
 		if (! empty($article['section']['name'])) {
 			echo '
-						<a class="floatright" href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a>';
+						<a class="floatright" href="', $article['section']['link'], '">', $context['lp_icon_set']['category'], $article['section']['name'], '</a>';
 		}
 
 		echo '
@@ -246,13 +238,13 @@ function template_show_articles_alt()
 
 		if (! empty($article['datetime'])) {
 			echo '
-						<time datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
+						<time datetime="', $article['datetime'], '">', $context['lp_icon_set']['date'], $article['date'], '</time>';
 		}
 
 		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
 			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
-						| <i class="fas fa-user"></i> <a href="', $article['author']['link'], '" class="card_author">', $article['author']['name'], '</a>';
+						| ', $context['lp_icon_set']['user'], '<a href="', $article['author']['link'], '" class="card_author">', $article['author']['name'], '</a>';
 			} else {
 				echo '
 						| <span class="card_author">', $txt['guest_title'], '</span>';
@@ -312,7 +304,7 @@ function template_show_articles_alt2()
 
 		if (! empty($article['datetime'])) {
 			echo '
-						<time datetime="', $article['datetime'], '"><i class="fas fa-clock"></i> ', $article['date'], '</time>';
+						<time datetime="', $article['datetime'], '">', $context['lp_icon_set']['date'], $article['date'], '</time>';
 		}
 
 		echo '
@@ -406,7 +398,7 @@ function template_show_articles_alt3()
 		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
 			echo '
 					<li class="author">
-						<i class="fas fa-user"></i>';
+						', $context['lp_icon_set']['user'];
 
 			if (! empty($article['author']['id']) && ! empty($article['author']['name'])) {
 				echo '
@@ -422,13 +414,13 @@ function template_show_articles_alt3()
 
 		if (! empty($article['datetime'])) {
 			echo '
-					<li class="date"><i class="fas fa-calendar"></i><time datetime="', $article['datetime'], '">', $article['date'], '</time></li>';
+					<li class="date">', $context['lp_icon_set']['calendar'], '<time datetime="', $article['datetime'], '">', $article['date'], '</time></li>';
 		}
 
 		if (! empty($article['tags'])) {
 			echo '
 					<li class="tags">
-						<i class="fas fa-tag"></i>
+						', $context['lp_icon_set']['tag'], '
 						<ul style="display: inline">';
 
 			foreach ($article['tags'] as $key) {
@@ -449,7 +441,7 @@ function template_show_articles_alt3()
 
 		if (! empty($article['section']['name'])) {
 			echo '
-				<h2><a href="', $article['section']['link'], '"><i class="far fa-list-alt"></i> ', $article['section']['name'], '</a></h2>';
+				<h2><a href="', $article['section']['link'], '">', $context['lp_icon_set']['category'], $article['section']['name'], '</a></h2>';
 		}
 
 		if (! empty($article['teaser'])) {
@@ -459,7 +451,7 @@ function template_show_articles_alt3()
 
 		echo '
 				<div class="read_more">
-					<a class="bbc_link" href="', $article['msg_link'], '">', $txt['lp_read_more'], '</a> <i class="fas fa-arrow-right"></i>
+					<a class="bbc_link" href="', $article['msg_link'], '">', $txt['lp_read_more'], '</a> ', $context['lp_icon_set']['arrow_right'], '
 				</div>
 			</div>
 		</div>';

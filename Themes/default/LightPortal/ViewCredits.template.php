@@ -6,7 +6,7 @@ function template_portal_credits()
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg"><i class="fas fa-users"></i> ', $txt['lp_contributors'], '</h3>
+		<h3 class="catbg">', $context['lp_icon_set']['users'], $txt['lp_contributors'], '</h3>
 	</div>
 	<div class="roundframe noup">
 		<div class="title_bar">
@@ -72,7 +72,7 @@ function template_portal_credits()
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg"><i class="far fa-copyright"></i> ', $txt['lp_used_components'], '</h3>
+		<h3 class="catbg">', $context['lp_icon_set']['copyright'], $txt['lp_used_components'], '</h3>
 	</div>
 	<div class="roundframe noup">
 		<ul>';

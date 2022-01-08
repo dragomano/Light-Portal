@@ -354,11 +354,11 @@ function template_lp_category_settings()
 
 function show_single_category(int $id, array $cat)
 {
-	global $txt;
+	global $txt, $context;
 
 	echo '
 	<tr class="windowbg" data-id="', $id, '" x-data>
-		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
+		<td class="centertext handle">', $context['lp_icon_set']['arrows'], '</td>
 		<td>
 			<span class="floatright">
 				<span @click="category.remove($root)" title="', $txt['remove'], '" class="error">&times;</span>
@@ -486,7 +486,7 @@ function template_callback_panel_layout()
 						<div class="row">
 							<div class="col-xs">
 								<div class="descbox alternative">
-									<strong><i class="far fa-newspaper fa-2x"></i></i></strong>
+									<strong>', $context['lp_icon_set']['content'], '</strong>
 									<div>', $txt['lp_content'], '</div>
 									col-xs (auto)
 								</div>
