@@ -124,8 +124,6 @@ final class PluginArea
 		}
 
 		$this->context['all_lp_plugins'] = array_map(function ($item) use ($config_vars) {
-			$requires = [];
-			$disables = [];
 			$composer = false;
 
 			$snake_name = $this->getSnakeName($item);
@@ -139,12 +137,6 @@ final class PluginArea
 
 				if ($addonClass->hasProperty('link'))
 					$link = $addonClass->getProperty('link')->getValue(new $className);
-
-				if ($addonClass->hasProperty('requires'))
-					$requires = $addonClass->getProperty('requires')->getValue(new $className);
-
-				if ($addonClass->hasProperty('disables'))
-					$disables = $addonClass->getProperty('disables')->getValue(new $className);
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException $e) {
@@ -169,8 +161,6 @@ final class PluginArea
 				'types'      => $this->getTypes($snake_name),
 				'special'    => $special ?? '',
 				'settings'   => $config_vars[$snake_name] ?? [],
-				'requires'   => array_diff($requires, $this->context['lp_enabled_plugins']),
-				'disables'   => array_intersect($disables, $this->context['lp_enabled_plugins']),
 				'composer'   => $composer,
 			];
 		}, $this->context['lp_plugins']);
