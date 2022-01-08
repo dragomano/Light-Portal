@@ -304,7 +304,7 @@ trait Helper
 		if (empty($icon))
 			return '';
 
-		$template = '<i class="' . $icon . '"></i> ';
+		$template = '<i class="' . $icon . '" aria-hidden="true"></i> ';
 
 		$this->hook('prepareIconTemplate', [&$template, $icon]);
 
@@ -462,7 +462,7 @@ trait Helper
 	{
 		$dateTime = new DateTime;
 		$dateTime->setTimestamp($timestamp ?: time());
-		$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?: $this->modSettings['default_timezone']));
+		$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?? $this->modSettings['default_timezone']));
 
 		return $dateTime;
 	}

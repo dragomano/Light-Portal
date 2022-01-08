@@ -65,11 +65,11 @@ final class ConfigArea
 							'icon' => 'features',
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'basic'      => ['<i class="fas fa-cog fa-spin"></i> ' . $this->txt['mods_cat_features']],
-								'extra'      => ['<i class="fas fa-pager"></i> ' . $this->txt['lp_extra']],
-								'categories' => ['<i class="fas fa-folder"></i> ' . $this->txt['lp_categories']],
-								'panels'     => ['<i class="fas fa-columns"></i> ' . $this->txt['lp_panels']],
-								'misc'       => ['<i class="fas fa-tools"></i> ' . $this->txt['lp_misc']]
+								'basic'      => [$this->context['lp_icon_set']['basic'] . $this->txt['mods_cat_features']],
+								'extra'      => [$this->context['lp_icon_set']['extra'] . $this->txt['lp_extra']],
+								'categories' => [$this->context['lp_icon_set']['folder'] . $this->txt['lp_categories']],
+								'panels'     => [$this->context['lp_icon_set']['panels'] . $this->txt['lp_panels']],
+								'misc'       => [$this->context['lp_icon_set']['tools'] . $this->txt['lp_misc']]
 							]
 						],
 						'lp_blocks' => [
@@ -79,8 +79,8 @@ final class ConfigArea
 							'amt' => $this->context['lp_num_active_blocks'],
 							'permission' => ['admin_forum', 'light_portal_manage_own_blocks'],
 							'subsections' => [
-								'main' => ['<i class="fas fa-tasks"></i> ' . $this->txt['lp_blocks_manage']],
-								'add'  => ['<i class="fas fa-plus"></i> ' . $this->txt['lp_blocks_add']]
+								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_blocks_manage']],
+								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_blocks_add']]
 							]
 						],
 						'lp_pages' => [
@@ -90,8 +90,8 @@ final class ConfigArea
 							'amt' => $this->context['lp_num_active_pages'],
 							'permission' => ['admin_forum', 'light_portal_manage_own_pages'],
 							'subsections' => [
-								'main' => ['<i class="fas fa-tasks"></i> ' . $this->txt['lp_pages_manage']],
-								'add'  => ['<i class="fas fa-plus"></i> ' . $this->txt['lp_pages_add']]
+								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_pages_manage']],
+								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_pages_add']]
 							]
 						],
 						'lp_plugins' => [
@@ -101,7 +101,7 @@ final class ConfigArea
 							'amt' => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'main' => ['<i class="fas fa-tasks"></i> ' . $this->txt['lp_plugins_manage']]
+								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_plugins_manage']]
 							]
 						]
 					]
@@ -112,13 +112,13 @@ final class ConfigArea
 
 		if ($this->context['user']['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
-				'export' => ['<i class="fas fa-file-export"></i> ' . $this->txt['lp_blocks_export']],
-				'import' => ['<i class="fas fa-file-import"></i> ' . $this->txt['lp_blocks_import']]
+				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_blocks_export']],
+				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_blocks_import']]
 			];
 
 			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += [
-				'export' => ['<i class="fas fa-file-export"></i> ' . $this->txt['lp_pages_export']],
-				'import' => ['<i class="fas fa-file-import"></i> ' . $this->txt['lp_pages_import']]
+				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_pages_export']],
+				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
 			];
 		}
 
@@ -191,7 +191,7 @@ final class ConfigArea
 			return;
 
 		$this->context['settings_title'] .= '<span class="floatright" x-data>
-			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $this->txt['lp_debug_info'] . '"><i class="fas fa-info-circle"></i></a>
+			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $this->txt['lp_debug_info'] . '">' . $this->context['lp_icon_set']['info'] . '</a>
 		</span>';
 	}
 

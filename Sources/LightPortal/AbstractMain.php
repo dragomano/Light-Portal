@@ -51,14 +51,20 @@ abstract class AbstractMain
 
 		// Width of some panels | Ширина некоторых панелей
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
-		$this->context['lp_left_panel_width'] = empty($this->modSettings['lp_left_panel_width']) ? ['md' => 3, 'lg' => 3, 'xl' => 2] : json_decode($this->modSettings['lp_left_panel_width'], true);
-		$this->context['lp_right_panel_width'] = empty($this->modSettings['lp_right_panel_width']) ? ['md' => 3, 'lg' => 3, 'xl' => 2] : json_decode($this->modSettings['lp_right_panel_width'], true);
+		$this->context['lp_left_panel_width'] = empty($this->modSettings['lp_left_panel_width'])
+			? ['md' => 3, 'lg' => 3, 'xl' => 2]
+			: json_decode($this->modSettings['lp_left_panel_width'], true);
+		$this->context['lp_right_panel_width'] = empty($this->modSettings['lp_right_panel_width'])
+			? ['md' => 3, 'lg' => 3, 'xl' => 2]
+			: json_decode($this->modSettings['lp_right_panel_width'], true);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
 		// Block direction in panels | Направление блоков в панелях
 		$this->context['lp_panel_direction'] = empty($this->modSettings['lp_panel_direction']) ? [] : json_decode($this->modSettings['lp_panel_direction'], true);
 
 		$this->context['lp_active_blocks'] = (new Entities\Block)->getActive();
+
+		$this->context['lp_icon_set'] = (new Lists\IconList)->getAll();
 	}
 
 	protected function loadCssFiles()

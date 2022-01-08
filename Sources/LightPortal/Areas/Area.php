@@ -116,7 +116,7 @@ trait Area
 		$search = trim($this->smcFunc['strtolower']($search));
 
 		$all_icons = $this->getFaIcons();
-		$template = '<i class="%1$s"></i>&nbsp;%1$s';
+		$template = '<i class="%1$s" aria-hidden="true"></i>&nbsp;%1$s';
 
 		$this->hook('prepareIconList', [&$all_icons, &$template]);
 

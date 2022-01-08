@@ -114,7 +114,7 @@ final class PageArea
 				],
 				'num_views'    => [
 					'header' => [
-						'value' => '<i class="fas fa-eye" title="' . $this->txt['lp_views'] . '"></i>',
+						'value' => str_replace(' class=', ' title="' . $this->txt['lp_views'] . '" class=', $this->context['lp_icon_set']['views'])
 					],
 					'data'   => [
 						'db'    => 'num_views',
@@ -127,7 +127,7 @@ final class PageArea
 				],
 				'num_comments' => [
 					'header' => [
-						'value' => '<i class="fas fa-comment" title="' . $this->txt['lp_comments'] . '"></i>',
+						'value' => str_replace(' class=', '  title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
 					],
 					'data'   => [
 						'db'    => 'num_comments',
@@ -242,7 +242,9 @@ final class PageArea
 								<input type="search" name="search" value="' . $this->context['search']['string'] . '" placeholder="' . $this->txt['lp_pages_search'] . '" style="width: 100%">
 							</div>
 							<div class="col-lg-2">
-								<button type="submit" name="is_search" class="button floatnone" style="width: 100%"><i class="fas fa-search"></i> ' . $this->txt['search'] . '</button>
+								<button type="submit" name="is_search" class="button floatnone" style="width: 100%">
+									' . $this->context['lp_icon_set']['search'] . $this->txt['search'] . '
+								</button>
 							</div>
 						</div>',
 				],
@@ -262,7 +264,7 @@ final class PageArea
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . $this->scripturl . '?action=admin;area=lp_pages;sa=add;' . $this->context['session_var'] . '=' . $this->context['session_id'] . '" x-data>
-					<i class="fas fa-plus" @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" title="' . $this->txt['lp_pages_add'] . '"></i>
+					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" title="' . $this->txt['lp_pages_add'] . '" class=', $this->context['lp_icon_set']['plus'])) . '
 				</a>
 			</span>' . $listOptions['title'];
 

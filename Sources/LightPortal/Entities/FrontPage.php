@@ -205,13 +205,13 @@ final class FrontPage
 		$paginate = '';
 
 		if ($prev >= 0)
-			$paginate .= '<i class="fas fa-arrow-left"></i> <a href="' . $url . ';start=' . $prev . '">' . $this->txt['prev'] . '</a>';
+			$paginate .= $this->context['lp_icon_set']['arrow_left'] . '<a href="' . $url . ';start=' . $prev . '">' . $this->txt['prev'] . '</a>';
 
 		if ($prev >= 0 && $next)
-			$paginate .= ' <i class="fas fa-map-signs"></i> ';
+			$paginate .= ' ' . $this->context['lp_icon_set']['map_signs'];
 
 		if ($next)
-			$paginate .= '<a href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . '</a> <i class="fas fa-arrow-right"></i>';
+			$paginate .= '<a href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . '</a> ' . $this->context['lp_icon_set']['arrow_right'];
 
 		return $paginate;
 	}
