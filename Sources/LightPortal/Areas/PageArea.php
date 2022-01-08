@@ -25,6 +25,7 @@ use function createList;
 use function fatal_lang_error;
 use function loadLanguage;
 use function loadTemplate;
+use function updateSettings;
 use function redirectexit;
 use function template_control_richedit;
 
@@ -253,7 +254,9 @@ final class PageArea
 					'value'    => '
 						<select name="page_actions">
 							<option value="delete">' . $this->txt['remove'] . '</option>' . (allowedTo('light_portal_approve_pages') ? '
-							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . '
+							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
+							<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
+							<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
 					'class'    => 'floatright',
@@ -389,6 +392,14 @@ final class PageArea
 			case 'toggle':
 				$this->toggleStatus($items, 'page');
 				break;
+
+			case 'promote_up':
+				$this->promote($items);
+				break;
+
+			case 'promote_down':
+				$this->promote($items, 'down');
+				break;
 		}
 
 		redirectexit($redirect);
@@ -515,6 +526,20 @@ final class PageArea
 		$this->context['lp_num_queries'] += 5;
 
 		$this->hook('onPageRemoving', [$items]);
+	}
+
+	private function promote(array $items, string $type = 'up')
+	{
+		if (empty($items))
+			return;
+
+		if ($type === 'down') {
+			$items = array_diff($this->context['lp_frontpage_pages'], $items);
+		} else {
+			$items = array_merge(array_diff($items, $this->context['lp_frontpage_pages']), $this->context['lp_frontpage_pages']);
+		}
+
+		updateSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
 	private function getOptions(): array

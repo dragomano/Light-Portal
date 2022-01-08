@@ -18,6 +18,8 @@ namespace Bugo\LightPortal;
 
 use function loadCSSFile;
 use function loadTemplate;
+use function updateSettings;
+use function redirectexit;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -47,14 +49,16 @@ abstract class AbstractMain
 		$this->context['lp_plugin_types']        = $this->getPluginTypes();
 		$this->context['lp_content_types']       = $this->getContentTypes();
 
-		$this->context['lp_enabled_plugins'] = empty($this->modSettings['lp_enabled_plugins']) ? [] : explode(',', $this->modSettings['lp_enabled_plugins']);
+		$this->context['lp_enabled_plugins']  = empty($this->modSettings['lp_enabled_plugins']) ? [] : explode(',', $this->modSettings['lp_enabled_plugins']);
+		$this->context['lp_frontpage_pages']  = empty($this->modSettings['lp_frontpage_pages']) ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
+		$this->context['lp_frontpage_topics'] = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
 
 		// Width of some panels | Ширина некоторых панелей
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
-		$this->context['lp_left_panel_width'] = empty($this->modSettings['lp_left_panel_width'])
+		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
 			: json_decode($this->modSettings['lp_left_panel_width'], true);
-		$this->context['lp_right_panel_width'] = empty($this->modSettings['lp_right_panel_width'])
+		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
 			: json_decode($this->modSettings['lp_right_panel_width'], true);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
@@ -172,6 +176,24 @@ abstract class AbstractMain
 			['debug'],
 			array_slice($this->context['template_layers'], $key, null, true)
 		);
+	}
+
+	protected function promoteTopic()
+	{
+		if (empty($this->user_info['is_admin']) || empty($this->request()->has('t')))
+			return;
+
+		$topic = $this->request('t');
+
+		if (($key = array_search($topic, $this->context['lp_frontpage_topics'])) !== false) {
+			unset($this->context['lp_frontpage_topics'][$key]);
+		} else {
+			$this->context['lp_frontpage_topics'][] = $topic;
+		}
+
+		updateSettings(['lp_frontpage_topics' => implode(',', $this->context['lp_frontpage_topics'])]);
+
+		redirectexit('topic=' . $topic);
 	}
 
 	private function getNumActiveEntities(): array

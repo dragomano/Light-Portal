@@ -29,6 +29,7 @@ use function obExit;
 use function redirectexit;
 use function send_http_status;
 use function un_preparsecode;
+use function updateSettings;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -102,6 +103,7 @@ final class Page
 
 		$this->context['sub_template'] = 'show_page';
 
+		$this->promote();
 		$this->setMeta();
 		$this->prepareRelatedPages();
 		$this->prepareComments();
@@ -425,6 +427,24 @@ final class Page
 			$this->txt['back'] = $this->txt['lp_forum'];
 			$this->context['error_link'] .= '">' . $this->txt['lp_portal'] . '</a><a class="button floatnone" href="' . $this->scripturl . '?action=forum';
 		}
+	}
+
+	private function promote()
+	{
+		if (empty($this->user_info['is_admin']) || empty($this->request()->has('promote')))
+			return;
+
+		$page = $this->context['lp_page']['id'];
+
+		if (($key = array_search($page, $this->context['lp_frontpage_pages'])) !== false) {
+			unset($this->context['lp_frontpage_pages'][$key]);
+		} else {
+			$this->context['lp_frontpage_pages'][] = $page;
+		}
+
+		updateSettings(['lp_frontpage_pages' => implode(',', $this->context['lp_frontpage_pages'])]);
+
+		redirectexit($this->context['canonical_url']);
 	}
 
 	private function setMeta()

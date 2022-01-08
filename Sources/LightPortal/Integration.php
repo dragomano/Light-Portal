@@ -40,6 +40,7 @@ final class Integration extends AbstractMain
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
 		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
 		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
@@ -118,6 +119,9 @@ final class Integration extends AbstractMain
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'tags')
 			call_user_func([new Lists\Tag, 'show']);
+
+		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'promote')
+			$this->promoteTopic();
 
 		if (! empty($this->modSettings['lp_standalone_mode'])) {
 			$this->unsetDisabledActions($actions);
@@ -277,6 +281,24 @@ final class Integration extends AbstractMain
 		// Other fixes
 		$this->fixCanonicalUrl();
 		$this->fixLinktree();
+	}
+
+	/**
+	 * Add "Promote to frontpage" (or "Remove from frontpage") button if the "Selected topics" portal mode is selected
+	 *
+	 * Добавляем кнопку «Добавить на главную» (или «Убрать с главной»), если выбран режим портала «Выбранные темы»
+	 *
+	 * @hook integrate_display_buttons
+	 */
+	public function displayButtons()
+	{
+		if (empty($this->user_info['is_admin']) || empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_topics')
+			return;
+
+		$this->context['normal_buttons']['lp_promote'] = array(
+			'text' => in_array($this->context['current_topic'], $this->context['lp_frontpage_topics']) ? 'lp_remove_from_fp' : 'lp_promote_to_fp',
+			'url'  => $this->scripturl . '?action=portal;sa=promote;t=' . $this->context['current_topic']
+		);
 	}
 
 	/**

@@ -25,6 +25,7 @@ final class IconList implements IconListInterface
 	public function getAll(): array
 	{
 		$set = [
+			'home'        => 'fas fa-home',
 			'basic'       => 'fas fa-cog fa-spin',
 			'extra'       => 'fas fa-pager',
 			'folder'      => 'fas fa-folder',
