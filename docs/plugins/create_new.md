@@ -1,8 +1,6 @@
 # Add plugin
 Plugins, or addons - add-ons that expand the capabilities of the Light Portal. To create your own addon, just follow the instructions below.
 
-!> Since version 1.5, Light Portal has built-in functionality for creating plugin skeletons. To use it, go to the section _Admin -> Portal settings -> Plugins -> Add plugin_.
-
 !> Since version 1.9, the functionality for creating plugins has been moved to a separate plugin — **PluginMaker**. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
 
 ## Choosing the type of addon
@@ -19,10 +17,10 @@ Currently, the following types of addons are available:
 * 'block_options' and 'page_options' — addons that add additional parameters for the corresponding entity (block or page)
 
 ## Creating an addon directory
-Create a separate folder for your addon files, inside `/Sources/LightPortal/addons`. For example, if your addon is called `HelloWorld`, the folder structure should look like this:
+Create a separate folder for your addon files, inside `/Sources/LightPortal/Addons`. For example, if your addon is called `HelloWorld`, the folder structure should look like this:
 
 ```php
-    ...(addons)
+    ...(Addons)
         HelloWorld\
             langs\
                  english.php
@@ -46,24 +44,23 @@ File `index.php` can be copied from folders of other addons. The file `HelloWorl
  * @license Link to the license under which your addon is distributed and the name of the license
  *
  * @category addon
- * @version 26.10.21 (date when the source code of the addon was created or last updated, in the format dd.mm.yy)
+ * @version 08.01.22 (date when the source code of the addon was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Helpers; // Leave it if you use portal helpers in your code
 
 class HelloWorld extends Plugin
 {
     // Used properties and methods
-
-    // Calling of language variables: $txt['lp_hello_world']['variable_name']
+    // Access to global variables: $this->context['user'], $this->modSettings['variable'], etc.
+    // Access to language variables: $this->txt['lp_hello_world']['variable_name']
 }
 
 ```
 
 ## Using Composer
-Your plugin can use third-party scripts installed through Composer.
+Your plugin can use third-party libraries installed through Composer.
 Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. The `src` directory may contain key files of the scripts you use.
 Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).

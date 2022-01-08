@@ -121,11 +121,14 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 (`&$boards, $row`)
 > various manipulations with query results to _getData_ function
 
-## Miscellaneous
+## Work with icons
 
 ### prepareIconList
 (`&$all_icons, &$template`)
 > adding custom list of icons (instead of FontAwesome)
 ### prepareIconTemplate
 (`&$template, $icon`)
-> Adding custom template for displaying icons
+> adding custom template for displaying icons
+### changeIconSet
+(`&$set`)
+> ability to add or override current interface icons
