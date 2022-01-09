@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\BoardIndex;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class BoardIndex extends Plugin
 {
 	public string $type = 'other';
@@ -36,6 +39,9 @@ class BoardIndex extends Plugin
 		$config_vars['board_index'][] = ['check', 'allow_for_spiders'];
 	}
 
+	/**
+	 * @hook integrate_mark_read_button
+	 */
 	public function toggleRobotNoIndex()
 	{
 		$this->context['robot_no_index'] = ! empty($this->modSettings['lp_frontpage_mode']) && empty($this->modSettings['lp_board_index_addon_allow_for_spiders']);

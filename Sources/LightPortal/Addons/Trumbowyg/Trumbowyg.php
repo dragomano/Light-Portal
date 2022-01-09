@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\Trumbowyg;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Trumbowyg extends Plugin
 {
 	public string $type = 'editor';

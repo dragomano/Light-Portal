@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\EhPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherPageImport;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Import extends AbstractOtherPageImport
 {
 	public function main()
@@ -190,6 +193,8 @@ class Import extends AbstractOtherPageImport
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$perm = $row['permission_set'];
+
 			if (empty($row['permission_set'])) {
 				$groups = $row['groups_allowed'];
 
@@ -202,8 +207,6 @@ class Import extends AbstractOtherPageImport
 				} else {
 					$perm = 3;
 				}
-			} else {
-				$perm = $row['permission_set'];
 			}
 
 			$items[$row['id_page']] = [

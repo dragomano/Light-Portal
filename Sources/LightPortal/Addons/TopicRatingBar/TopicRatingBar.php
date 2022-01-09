@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class TopicRatingBar extends Plugin
 {
 	public string $type = 'article';

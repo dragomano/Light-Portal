@@ -18,6 +18,9 @@ namespace Bugo\LightPortal\Lists;
 
 use Bugo\LightPortal\Helper;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractPageList implements PageListInterface
 {
 	use Helper;

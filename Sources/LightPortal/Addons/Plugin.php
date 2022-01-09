@@ -19,6 +19,9 @@ namespace Bugo\LightPortal\Addons;
 use Bugo\LightPortal\Helper;
 use ReflectionClass;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class Plugin
 {
 	use Helper;

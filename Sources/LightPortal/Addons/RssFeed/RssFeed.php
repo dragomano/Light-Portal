@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\RssFeed;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class RssFeed extends Plugin
 {
 	public string $icon = 'fas fa-rss';

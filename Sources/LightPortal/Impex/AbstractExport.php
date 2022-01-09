@@ -18,6 +18,9 @@ namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractExport implements ExportInterface
 {
 	use Helper;

@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class PageList extends Plugin
 {
 	public string $icon = 'far fa-file-alt';

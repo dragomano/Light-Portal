@@ -10,12 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 09.01.22
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
 
 use Bugo\LightPortal\Addons\Plugin;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 class PrettyUrls extends Plugin
 {
@@ -41,7 +44,7 @@ class PrettyUrls extends Plugin
 			'enabled' => 0,
 			'filter' => [
 				'priority' => 30,
-				'callback' => __CLASS__ . '::filter',
+				'callback' => [$this, 'filter'],
 			],
 			'rewrite' => [
 				'priority' => 30,
@@ -56,7 +59,7 @@ class PrettyUrls extends Plugin
 			pretty_update_filters();
 	}
 
-	public static function filter(array $urls): array
+	public function filter(array $urls): array
 	{
 		$pattern = '`' . $this->scripturl . '(.*)' . LP_PAGE_PARAM . '=([^;]+)`S';
 		$replacement = $this->boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';

@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\RecentPosts;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class RecentPosts extends Plugin
 {
 	public string $icon = 'far fa-comment-alt';

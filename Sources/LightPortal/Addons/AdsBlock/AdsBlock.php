@@ -10,12 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.01.22
+ * @version 09.01.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
 use Bugo\LightPortal\Addons\Plugin;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 class AdsBlock extends Plugin
 {
@@ -30,6 +33,8 @@ class AdsBlock extends Plugin
 	 * Add advertising areas to panel settings
 	 *
 	 * Добавляем рекламные области в настройки панелей
+	 *
+	 * @hook
 	 */
 	public function addPanelsSettings()
 	{
@@ -180,6 +185,9 @@ class AdsBlock extends Plugin
 			<input type="time" name="end_time" value="' . $this->context['lp_block']['options']['parameters']['end_time'] . '">';
 	}
 
+	/**
+	 * @hook
+	 */
 	public function findBlockErrors(array $data, array &$post_errors)
 	{
 		if ($data['placement'] !== 'ads')
@@ -206,6 +214,8 @@ class AdsBlock extends Plugin
 	 * Fetch info about all ads blocks
 	 *
 	 * Собираем информацию обо всех рекламных блоках
+	 *
+	 * @hook integrate_menu_buttons
 	 */
 	public function menuButtons()
 	{
@@ -241,6 +251,8 @@ class AdsBlock extends Plugin
 	 * Display ads within boards
 	 *
 	 * Отображаем рекламу в разделах
+	 *
+	 * @hook integrate_messageindex_buttons
 	 */
 	public function messageindexButtons()
 	{
@@ -251,11 +263,12 @@ class AdsBlock extends Plugin
 	 * Display ads within topics
 	 *
 	 * Отображаем рекламу в темах
+	 *
+	 * @hook integrate_display_buttons
 	 */
 	public function displayButtons()
 	{
-		if (isset($this->modSettings['lp_ads_block_addon_min_replies']) && $this->context['topicinfo']['num_replies'] <
-			$this->modSettings['lp_ads_block_addon_min_replies'])
+		if ($this->isTopicNumRepliesLesserThanMinReplies())
 			return;
 
 		$this->loadTemplate()->withLayer('ads_placement_topic');
@@ -265,10 +278,12 @@ class AdsBlock extends Plugin
 	 * Display ads within posts
 	 *
 	 * Отображаем рекламу в сообщениях
+	 *
+	 * @hook integrate_prepare_display_context
 	 */
 	public function prepareDisplayContext(array $output, array &$message, int $counter)
 	{
-		if (empty($this->context['lp_ads_blocks']) || ($this->modSettings['lp_ads_block_addon_min_replies'] && $this->context['topicinfo']['num_replies'] < $this->modSettings['lp_ads_block_addon_min_replies']))
+		if (empty($this->context['lp_ads_blocks']) || ($this->isTopicNumRepliesLesserThanMinReplies()))
 			return;
 
 		$current_counter = empty($this->options['view_newest_first']) ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
@@ -461,5 +476,11 @@ class AdsBlock extends Plugin
 		);
 
 		$this->context['lp_num_queries']++;
+	}
+
+	private function isTopicNumRepliesLesserThanMinReplies(): bool
+	{
+		return isset($this->modSettings['lp_ads_block_addon_min_replies'])
+			&& $this->context['topicinfo']['num_replies'] < (int) $this->modSettings['lp_ads_block_addon_min_replies'];
 	}
 }

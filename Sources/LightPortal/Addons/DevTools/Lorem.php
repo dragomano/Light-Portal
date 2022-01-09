@@ -10,10 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.12.21
+ * @version 09.01.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
+
+use Exception;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 /**
  * https://stackoverflow.com/a/39986034/14091866
@@ -40,11 +45,14 @@ abstract class Lorem
 		'senectus', 'netus', 'fames', 'nisl', 'iaculis', 'cras', 'aenean'
 	];
 
+	/**
+	 * @throws Exception
+	 */
 	public static function ipsum(int $num_paragraphs): string
 	{
 		$paragraphs = [];
 		for ($p = 0; $p < $num_paragraphs; ++$p) {
-			$num_sentences = $this->smcFunc['random_int'](3, 8);
+			$num_sentences = random_int(3, 8);
 			$sentences = [];
 
 			for ($s = 0; $s < $num_sentences; ++$s) {
@@ -52,11 +60,11 @@ abstract class Lorem
 				$comma_chance = .33;
 
 				while (true) {
-					$num_words = $this->smcFunc['random_int'](3, 15);
-					$words = self::random_values(self::WORDS, $num_words);
+					$num_words = random_int(3, 15);
+					$words = self::random_values($num_words);
 					$frags[] = implode(' ', $words);
 
-					if (($this->smcFunc['random_int'](0, PHP_INT_MAX - 1) / PHP_INT_MAX) >= $comma_chance) {
+					if ((random_int(0, PHP_INT_MAX - 1) / PHP_INT_MAX) >= $comma_chance) {
 						break;
 					}
 
@@ -72,13 +80,13 @@ abstract class Lorem
 		return implode(PHP_EOL . PHP_EOL, $paragraphs);
 	}
 
-	private static function random_values(array $arr, int $count): array
+	private static function random_values(int $count): array
 	{
-		$keys = array_rand($arr, $count);
+		$keys = array_rand(self::WORDS, $count);
 		if ($count === 1) {
 			$keys = [$keys];
 		}
 
-		return array_intersect_key($arr, array_fill_keys($keys, null));
+		return array_intersect_key(self::WORDS, array_fill_keys($keys, null));
 	}
 }

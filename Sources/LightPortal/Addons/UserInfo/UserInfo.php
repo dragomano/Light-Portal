@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\UserInfo;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class UserInfo extends Plugin
 {
 	public string $icon = 'fas fa-user';

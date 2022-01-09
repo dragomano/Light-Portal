@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Search extends Plugin
 {
 	public string $icon = 'fas fa-search';

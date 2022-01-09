@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class ThemeSwitcher extends Plugin
 {
 	public string $icon = 'fas fa-desktop';

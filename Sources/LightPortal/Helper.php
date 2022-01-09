@@ -27,6 +27,9 @@ use function loadTemplate;
 use function log_error;
 use function shorten_subject;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 /**
  * @property array $context
  * @property array $txt

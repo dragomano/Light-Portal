@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Front;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 interface ArticleInterface
 {
 	public function init();

@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Utils;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class File
 {
 	protected array $storage = [];

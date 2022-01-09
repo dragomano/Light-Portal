@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\KarmaPostRating;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class KarmaPostRating extends Plugin
 {
 	public string $type = 'article';

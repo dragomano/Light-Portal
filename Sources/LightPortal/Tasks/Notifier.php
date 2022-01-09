@@ -23,6 +23,9 @@ use function loadMemberData;
 use function membersAllowedTo;
 use function updateMemberData;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Notifier extends SMF_BackgroundTask
 {
 	use Helper;

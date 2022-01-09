@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Impex;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 interface ImportInterface
 {
 	public function main();

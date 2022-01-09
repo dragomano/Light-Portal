@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\TinyPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherBlockImport;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class BlockImport extends AbstractOtherBlockImport
 {
 	private array $supported_types = [5, 10, 11];

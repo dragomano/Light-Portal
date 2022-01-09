@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\TopPosters;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class TopPosters extends Plugin
 {
 	public string $icon = 'fas fa-users';

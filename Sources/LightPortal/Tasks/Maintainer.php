@@ -19,6 +19,9 @@ namespace Bugo\LightPortal\Tasks;
 use Bugo\LightPortal\Helper;
 use SMF_BackgroundTask;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Maintainer extends SMF_BackgroundTask
 {
 	use Helper;

@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\EzPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherPageImport;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Import extends AbstractOtherPageImport
 {
 	public function main()

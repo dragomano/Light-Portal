@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Likely extends Plugin
 {
 	public string $icon = 'far fa-share-square';

@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\VkComments;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class VkComments extends Plugin
 {
 	public string $type = 'comment';

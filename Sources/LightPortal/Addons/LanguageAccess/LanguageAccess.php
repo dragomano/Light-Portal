@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\LanguageAccess;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class LanguageAccess extends Plugin
 {
 	public string $type = 'block_options';

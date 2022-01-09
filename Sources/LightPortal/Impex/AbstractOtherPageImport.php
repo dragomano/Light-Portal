@@ -18,6 +18,9 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Helper;
 use function fatal_lang_error;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractOtherPageImport implements ImportInterface, OtherImportInterface
 {
 	use Helper;

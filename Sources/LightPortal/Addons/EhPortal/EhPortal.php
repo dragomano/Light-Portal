@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\EhPortal;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class EhPortal extends Plugin
 {
 	public string $type = 'impex';

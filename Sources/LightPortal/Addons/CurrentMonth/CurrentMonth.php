@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\CurrentMonth;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class CurrentMonth extends Plugin
 {
 	public string $icon = 'fas fa-calendar-check';

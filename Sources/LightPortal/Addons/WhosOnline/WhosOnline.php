@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\WhosOnline;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class WhosOnline extends Plugin
 {
 	public string $icon = 'far fa-eye';

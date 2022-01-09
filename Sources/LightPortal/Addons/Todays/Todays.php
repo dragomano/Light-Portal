@@ -10,12 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 09.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
 use Bugo\LightPortal\Addons\Plugin;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 class Todays extends Plugin
 {
@@ -105,13 +108,13 @@ class Todays extends Plugin
 
 		$result = $this->getData($parameters['widget_type'], 'array');
 
-		if ($parameters['widget_type'] == 'calendar') {
+		if ($parameters['widget_type'] === 'calendar') {
 			if ($result['calendar_holidays'] || $result['calendar_birthdays'] || $result['calendar_events'])
 				$this->getData($parameters['widget_type']);
 			else
 				echo $this->txt['lp_todays']['empty_list'];
 		} elseif ($result) {
-			if ($parameters['widget_type'] != 'birthdays' || count($result) <= $parameters['max_items']) {
+			if ($parameters['widget_type'] !== 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);
 			} else {
 				$visibleItems = array_slice($result, 0, $parameters['max_items']);

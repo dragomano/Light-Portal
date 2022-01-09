@@ -18,6 +18,9 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Helper;
 use SimpleXMLElement;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractImport implements ImportInterface
 {
 	use Helper;

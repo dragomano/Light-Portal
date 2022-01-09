@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class EasyMarkdownEditor extends Plugin
 {
 	public string $type = 'editor';

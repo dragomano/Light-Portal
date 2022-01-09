@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\RecentTopics;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class RecentTopics extends Plugin
 {
 	public string $icon = 'fas fa-book-open';

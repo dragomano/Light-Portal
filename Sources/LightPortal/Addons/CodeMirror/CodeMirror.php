@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\CodeMirror;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class CodeMirror extends Plugin
 {
 	public string $type = 'editor';

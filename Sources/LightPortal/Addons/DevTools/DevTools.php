@@ -16,6 +16,11 @@
 namespace Bugo\LightPortal\Addons\DevTools;
 
 use Bugo\LightPortal\Addons\Plugin;
+use DateTime;
+use Exception;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
 
 class DevTools extends Plugin
 {
@@ -27,6 +32,10 @@ class DevTools extends Plugin
 		$config_vars['dev_tools'][] = ['check', 'fake_cards', 'subtext' => $this->txt['lp_dev_tools']['fake_cards_subtext']];
 	}
 
+	/**
+	 * @hook
+	 * @throws Exception
+	 */
 	public function frontCustomTemplate()
 	{
 		if (empty($this->modSettings['lp_dev_tools_addon_show_template_switcher']) && empty($this->modSettings['lp_dev_tools_addon_fake_cards']))
@@ -43,7 +52,7 @@ class DevTools extends Plugin
 				->setFallback(__CLASS__, 'getUsers');
 
 			foreach ($products as $id => $article) {
-				$date = $this->smcFunc['random_int']((new \DateTime('-2 years'))->getTimestamp(), time());
+				$date = $this->smcFunc['random_int']((new DateTime('-2 years'))->getTimestamp(), time());
 
 				$demo_articles[$article['id']] = [
 					'id'        => $article['id'],

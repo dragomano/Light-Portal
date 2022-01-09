@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\TopBoards;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class TopBoards extends Plugin
 {
 	public string $icon = 'fas fa-balance-scale-left';

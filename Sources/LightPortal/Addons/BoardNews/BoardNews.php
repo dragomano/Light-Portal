@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class BoardNews extends Plugin
 {
 	public string $icon = 'fas fa-newspaper';

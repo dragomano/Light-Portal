@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Lists;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 interface PageListInterface
 {
 	public function show();

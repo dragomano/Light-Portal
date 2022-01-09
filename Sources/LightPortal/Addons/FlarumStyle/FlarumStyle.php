@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\FlarumStyle;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class FlarumStyle extends Plugin
 {
 	public string $type = 'frontpage';

@@ -417,12 +417,8 @@ final class ConfigArea
 				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
-			$bbcTags = [];
 			$parse_tags = parse_bbc(false);
-
-			foreach ($parse_tags as $tag) {
-				$bbcTags[] = $tag['tag'];
-			}
+			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
 			if ($this->post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
 				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', []);

@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class BoardList extends Plugin
 {
 	public string $icon = 'far fa-list-alt';

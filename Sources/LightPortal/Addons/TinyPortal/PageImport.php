@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\TinyPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherPageImport;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class PageImport extends AbstractOtherPageImport
 {
 	public function main()

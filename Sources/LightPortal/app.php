@@ -1,5 +1,8 @@
 <?php
 
+use Bugo\LightPortal\Integration;
+use Bugo\LightPortal\Addon;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -15,6 +18,8 @@ spl_autoload_register(function ($classname) {
 		return false;
 
 	require_once $file_path;
+
+	return true;
 });
 
 // Define important helper functions
@@ -26,7 +31,7 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 
 	ob_start();
 
-	(new \Bugo\LightPortal\Addon)->run('prepareContent', [$type, $block_id, $cache_time, $parameters]);
+	(new Addon)->run('prepareContent', [$type, $block_id, $cache_time, $parameters]);
 
 	return ob_get_clean();
 }
@@ -34,16 +39,16 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 function parse_content(string $content, string $type = 'bbc'): string
 {
 	if ($type === 'bbc') {
-		$content = \parse_bbc($content);
+		$content = parse_bbc($content);
 
 		// Integrate with the Paragrapher mod
-		\call_integration_hook('integrate_paragrapher_string', [&$content]);
+		call_integration_hook('integrate_paragrapher_string', [&$content]);
 
 		return $content;
 	} elseif ($type === 'html') {
-		return \un_htmlspecialchars($content);
+		return un_htmlspecialchars($content);
 	} elseif ($type === 'php') {
-		$content = trim(\un_htmlspecialchars($content));
+		$content = trim(un_htmlspecialchars($content));
 		$content = trim($content, '<?php');
 		$content = trim($content, '?>');
 
@@ -51,14 +56,14 @@ function parse_content(string $content, string $type = 'bbc'): string
 
 		try {
 			eval(html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
-		} catch (\ParseError $p) {
+		} catch (ParseError $p) {
 			echo $p->getMessage();
 		}
 
 		return ob_get_clean();
 	}
 
-	(new \Bugo\LightPortal\Addon)->run('parseContent', [&$content, $type]);
+	(new Addon)->run('parseContent', [&$content, $type]);
 
 	return $content;
 }
@@ -74,14 +79,14 @@ function __(string $pattern, array $values = []): string
 	global $txt;
 
 	if (extension_loaded('intl')) {
-		return \MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
+		return MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
 	}
 
-	\log_error('[LP] __ helper: enable intl extension', 'critical');
+	log_error('[LP] __ helper: enable intl extension', 'critical');
 
 	return '';
 }
 
 // Run portal
-$portal = new \Bugo\LightPortal\Integration;
+$portal = new Integration;
 $portal->hooks();

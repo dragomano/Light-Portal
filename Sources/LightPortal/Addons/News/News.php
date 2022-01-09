@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\News;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class News extends Plugin
 {
 	public string $icon = 'far fa-newspaper';

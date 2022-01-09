@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Addons\Polls;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Polls extends Plugin
 {
 	public string $icon = 'fas fa-poll';
