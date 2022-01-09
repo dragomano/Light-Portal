@@ -113,7 +113,7 @@ class Block extends PortalEntity {
 		let placement = ''
 
 		for (let i = 0; i < items2.length; i++) {
-			const key = items2[i].querySelector('span.handle') ? parseInt(items2[i].querySelector('span.handle').parentNode.parentNode.dataset.id, 10) : null
+			const key = items2[i].querySelector('.handle') ? parseInt(items2[i].querySelector('.handle').parentNode.parentNode.dataset.id, 10) : null
 			const place = items[i] && items[i].parentNode ? items[i].parentNode.dataset.placement : null
 			const place2 = items2[i] && items2[i].parentNode ? items2[i].parentNode.dataset.placement : null
 
@@ -204,13 +204,23 @@ class Plugin extends PortalEntity {
 
 		if (! response.ok) console.error(response)
 
+		let togglerClass
+
+		const classes = ['fa', 'bi']
+		classes.forEach(function(item) {
+			if ((new RegExp(item, 'i')).test(target.classList[1])) {
+				togglerClass = item
+				return
+			}
+		});
+
 		if (target.dataset.toggle === 'on') {
-			target.classList.toggle('fa-toggle-on')
-			target.classList.toggle('fa-toggle-off')
+			target.classList.toggle(togglerClass + '-toggle-on')
+			target.classList.toggle(togglerClass + '-toggle-off')
 			target.setAttribute('data-toggle', 'off')
 		} else {
-			target.classList.toggle('fa-toggle-off')
-			target.classList.toggle('fa-toggle-on')
+			target.classList.toggle(togglerClass + '-toggle-off')
+			target.classList.toggle(togglerClass + '-toggle-on')
 			target.setAttribute('data-toggle', 'on')
 		}
 	}

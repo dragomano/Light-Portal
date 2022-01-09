@@ -105,8 +105,7 @@ final class Comment
 	{
 		$this->require('Subs-Post');
 
-		/** @noinspection SqlResolve */
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '

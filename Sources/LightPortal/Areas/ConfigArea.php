@@ -65,9 +65,9 @@ final class ConfigArea
 							'icon' => 'features',
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'basic'      => [$this->context['lp_icon_set']['basic'] . $this->txt['mods_cat_features']],
-								'extra'      => [$this->context['lp_icon_set']['extra'] . $this->txt['lp_extra']],
-								'categories' => [$this->context['lp_icon_set']['folder'] . $this->txt['lp_categories']],
+								'basic'      => [$this->context['lp_icon_set']['cog_spin'] . $this->txt['mods_cat_features']],
+								'extra'      => [$this->context['lp_icon_set']['pager'] . $this->txt['lp_extra']],
+								'categories' => [$this->context['lp_icon_set']['sections'] . $this->txt['lp_categories']],
 								'panels'     => [$this->context['lp_icon_set']['panels'] . $this->txt['lp_panels']],
 								'misc'       => [$this->context['lp_icon_set']['tools'] . $this->txt['lp_misc']]
 							]
@@ -361,7 +361,7 @@ final class ConfigArea
 		// Initial settings
 		$add_settings = [];
 		if (! isset($this->modSettings['lp_num_comments_per_page']))
-			$add_settings['lp_num_comments_per_page'] = 12;
+			$add_settings['lp_num_comments_per_page'] = 10;
 		if ($add_settings)
 			updateSettings($add_settings);
 
@@ -829,8 +829,7 @@ final class ConfigArea
 		if (empty($conditions))
 			return;
 
-		/** @noinspection SqlResolve */
-		$this->smcFunc['db_query']('', '
+		$this->smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}lp_categories
 			SET priority = CASE ' . $conditions . ' ELSE priority END
 			WHERE category_id IN ({array_int:categories})',

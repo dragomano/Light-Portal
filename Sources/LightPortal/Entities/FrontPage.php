@@ -97,7 +97,7 @@ final class FrontPage
 		$this->context['page_index'] = constructPageIndex($this->scripturl . '?action=' . LP_ACTION, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
-		if ($this->modSettings['lp_use_simple_pagination'])
+		if (! empty($this->modSettings['lp_use_simple_pagination']))
 			$this->context['page_index'] = $this->simplePaginate($this->scripturl . '?action=' . LP_ACTION, $total_items, $limit);
 
 		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? $this->scripturl . '?action=' . LP_ACTION . ';start=' . ($this->request('start') + $limit) : '';

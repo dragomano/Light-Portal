@@ -19,7 +19,6 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\LightPortal\Helper;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
-use function allowedTo;
 use function censorText;
 use function checkSubmitOnce;
 use function fatal_lang_error;
@@ -55,12 +54,13 @@ final class BlockArea
 		$this->context['sub_template'] = 'manage_blocks';
 	}
 
-	public function getAll(): array
+	public function getAll(bool $with_customs = false): array
 	{
 		$request = $this->smcFunc['db_query']('', '
 			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($this->user_info['is_admin'] ? '' : '
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($this->user_info['is_admin'] ? ($with_customs ? '' : '
+			WHERE b.user_id = 0') : '
 			WHERE b.user_id = {int:user_id}') . '
 			ORDER BY b.placement DESC, b.priority',
 			[
@@ -329,8 +329,7 @@ final class BlockArea
 			return;
 
 		if (is_array($blocks)) {
-			/** @noinspection SqlResolve */
-			$this->smcFunc['db_query']('', '
+			$this->smcFunc['db_query']('', /** @lang text */ '
 				UPDATE {db_prefix}lp_blocks
 				SET priority = CASE ' . $conditions . ' ELSE priority END
 				WHERE block_id IN ({array_int:blocks})',
@@ -415,7 +414,7 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! allowedTo('light_portal_manage_own_blocks') ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_own_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
@@ -440,9 +439,10 @@ final class BlockArea
 
 		$this->context['lp_block']['priority'] = empty($this->context['lp_block']['id']) ? $this->getPriority() : $this->context['lp_block']['priority'];
 
-		if (! empty($this->context['lp_block']['options']['no_content_class'])) {
+		$this->context['lp_block']['permissions'] = empty($this->context['user']['is_admin']) ? 4 : $this->context['lp_block']['permissions'];
+
+		if (! empty($this->context['lp_block']['options']['no_content_class']))
 			$this->context['lp_block']['content_class'] = '';
-		}
 
 		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
@@ -540,20 +540,22 @@ final class BlockArea
 			];
 		}
 
-		$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
-		$this->context['posting_fields']['permissions']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-		];
-
-		foreach ($this->txt['lp_permissions'] as $level => $title) {
-			if (empty($this->context['user']['is_admin']) && empty($level))
-				continue;
-
-			$this->context['posting_fields']['permissions']['input']['options'][$title] = [
-				'value'    => $level,
-				'selected' => $level == $this->context['lp_block']['permissions'],
+		if ($this->context['user']['is_admin']) {
+			$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
+			$this->context['posting_fields']['permissions']['input'] = [
+				'type' => 'select',
+				'tab'  => 'access_placement',
 			];
+
+			foreach ($this->txt['lp_permissions'] as $level => $title) {
+				if (empty($this->context['user']['is_admin']) && empty($level))
+					continue;
+
+				$this->context['posting_fields']['permissions']['input']['options'][$title] = [
+					'value'    => $level,
+					'selected' => $level == $this->context['lp_block']['permissions'],
+				];
+			}
 		}
 
 		$this->context['posting_fields']['areas']['label']['text'] = $this->txt['lp_block_areas'];

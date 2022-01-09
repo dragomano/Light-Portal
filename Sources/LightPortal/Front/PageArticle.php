@@ -57,8 +57,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		/** @noinspection SqlResolve */
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at,
 				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name,
@@ -134,8 +133,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		/** @noinspection SqlResolve */
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '

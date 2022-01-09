@@ -118,9 +118,8 @@ final class Category extends AbstractPageList
 
 		$items = [];
 		$page  = new Page;
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($request))
 			$page->fetchQueryResults($items, $row);
-		}
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;

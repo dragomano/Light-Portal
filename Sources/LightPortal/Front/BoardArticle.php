@@ -132,8 +132,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selected_boards))
 			return 0;
 
-		/** @noinspection SqlResolve */
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(b.id_board)
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (empty($this->tables) ? '' : '

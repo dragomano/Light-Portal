@@ -125,8 +125,7 @@ final class Maintainer extends SMF_BackgroundTask
 		foreach ($pages as $page_id => $num_comments)
 			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $num_comments;
 
-		/** @noinspection SqlResolve */
-		$this->smcFunc['db_query']('', '
+		$this->smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE ' . $line . '
 				ELSE num_comments

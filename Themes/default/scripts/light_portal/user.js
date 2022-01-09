@@ -272,21 +272,21 @@ class Toolbar {
 	pressButton(target) {
 		if (target.tagName !== 'I') return
 
-		let button = target.classList[1]
+		let type = target.dataset.type
 
 		this.message = target.parentNode.nextElementSibling
 
 		const tags = {
-			'fa-bold'       : ['[b]', '[/b]'],
-			'fa-italic'     : ['[i]', '[/i]'],
-			'fa-youtube'    : ['[youtube]', '[/youtube]'],
-			'fa-image'      : ['[img]', '[/img]'],
-			'fa-link'       : ['[url]', '[/url]'],
-			'fa-code'       : ['[code]', '[/code]'],
-			'fa-quote-right': ['[quote]', '[/quote]']
+			'bold'   : ['[b]', '[/b]'],
+			'italic' : ['[i]', '[/i]'],
+			'youtube': ['[youtube]', '[/youtube]'],
+			'image'  : ['[img]', '[/img]'],
+			'link'   : ['[url]', '[/url]'],
+			'code'   : ['[code]', '[/code]'],
+			'quote'  : ['[quote]', '[/quote]']
 		}
 
-		return this.insertTags(...tags[button])
+		return this.insertTags(...tags[type])
 	}
 
 	insertTags(open, close) {

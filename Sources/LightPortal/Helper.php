@@ -340,7 +340,7 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions): bool
+	public function canViewItem(int $permissions, int $author_id = 0): bool
 	{
 		switch ($permissions) {
 			case 0:
@@ -351,6 +351,9 @@ trait Helper
 
 			case 2:
 				return $this->user_info['id'] > 0;
+
+			case 4:
+				return $this->user_info['id'] === $author_id;
 
 			default:
 				return true;
@@ -376,10 +379,10 @@ trait Helper
 
 	public function isFrontpage(string $alias): bool
 	{
-		if (empty($alias))
+		if (empty($alias) || empty($this->modSettings['lp_frontpage_mode']))
 			return false;
 
-		return $this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
+		return $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
 			&& $this->modSettings['lp_frontpage_alias'] && $this->modSettings['lp_frontpage_alias'] === $alias;
 	}
 

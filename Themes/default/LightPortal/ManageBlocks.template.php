@@ -246,11 +246,11 @@ function template_block_post()
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">' . $context['lp_icon_set']['content'] . '<span>', $txt['lp_tab_content'], '</span></label>
+				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">' . $context['lp_icon_set']['access'] . '<span>', $txt['lp_tab_access_placement'], '</span></label>
+				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">' . $context['lp_icon_set']['design'] . '<span>', $txt['lp_tab_appearance'], '</span></label>';
+				<label for="tab3" class="bg odd">', $context['lp_icon_set']['design'], '<span>', $txt['lp_tab_appearance'], '</span></label>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
@@ -312,7 +312,6 @@ function template_block_post()
 
 	<script>
 		const block = new Block();
-
 		const placementSelect = document.getElementById("placement");
 
 		if (placementSelect.style.display !== "none") {
@@ -323,16 +322,20 @@ function template_block_post()
 				closeOnSelect: true,
 				showContent: "down"
 			});
-		}
+		}';
 
+	if ($context['user']['is_admin']) {
+		echo '
 		new SlimSelect({
 			select: "#permissions",
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});
+		});';
+	}
 
+	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,

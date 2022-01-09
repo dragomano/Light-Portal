@@ -30,7 +30,7 @@ function template_manage_plugins()
 	<div class="information" x-data>
 		', $txt['lp_plugins_desc'], '
 		<div class="hidden-xs floatright" style="cursor: pointer">
-			', str_replace(' class=', ' @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })" class=', $context['lp_icon_set']['simple_list']), ' ', str_replace(' class=', ' @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })" class=', $context['lp_icon_set']['block_list']), '
+			', str_replace(' class=', ' @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })" class=', $context['lp_icon_set']['simple']), ' ', str_replace(' class=', ' @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })" class=', $context['lp_icon_set']['tile']), '
 		</div>
 	</div>';
 
@@ -87,8 +87,7 @@ function template_manage_plugins()
 				<div class="floatright">';
 
 		if (! empty($plugin['settings'])) {
-			echo '
-					<img class="lp_plugin_settings" data-id="', $plugin['snake_name'], '_', $context['session_id'], '" src="', $settings['default_images_url'], '/icons/config_hd.png" alt="', $txt['settings'], '" @click="plugin.showSettings($event.target)">';
+			echo str_replace(' class="', ' @click="plugin.showSettings($event.target)" data-id="' . $plugin['snake_name'] . '_' . $context['session_id'] . '" class="gear ', $context['lp_icon_set']['gear']);
 		}
 
 		if (! empty($plugin['special'])) {
@@ -100,15 +99,13 @@ function template_manage_plugins()
 					<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank">', $context['lp_icon_set']['download'], '</a>';
 			}
 		} else {
-			echo '
-					<i class="lp_plugin_toggle fas fa-3x fa-toggle-', $plugin['status'], '" data-toggle="', $plugin['status'], '" @click="plugin.toggle($event.target)"></i>';
+			echo str_replace([' class="', 'toggle-'], [' @click.self="plugin.toggle($event.target)" data-toggle="' . $plugin['status'] . '" class="', 'toggle-' . $plugin['status']], $context['lp_icon_set']['toggle']);
 		}
 
 		echo '
 				</div>';
 
-		if (! empty($plugin['settings']))
-			show_plugin_settings($plugin['snake_name'], $plugin['settings']);
+		show_plugin_settings($plugin);
 
 		echo '
 			</div>
@@ -122,24 +119,27 @@ function template_manage_plugins()
 	</script>';
 }
 
-function show_plugin_settings(string $plugin_name, array $settings)
+function show_plugin_settings(array $plugin)
 {
 	global $context, $txt, $modSettings;
 
+	if (empty($plugin['settings']))
+		return;
+
 	echo '
 	<br class="clear">
-	<div class="roundframe" id="', $plugin_name, '_', $context['session_id'], '_settings" style="display: none" x-data="{ success: false }">
+	<div class="roundframe" id="', $plugin['snake_name'], '_', $context['session_id'], '_settings" style="display: none" x-data="{ success: false }">
 		<div class="title_bar">
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
 		<div class="noticebox">
-			<form id="', $plugin_name, '_form_', $context['session_id'], '" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="success = plugin.saveSettings($event.target, $refs)">
-				<input type="hidden" name="plugin_name" value="', $plugin_name, '">
+			<form id="', $plugin['snake_name'], '_form_', $context['session_id'], '" class="form_settings" action="', $context['post_url'], '" method="post" accept-charset="', $context['character_set'], '" @submit.prevent="success = plugin.saveSettings($event.target, $refs)">
+				<input type="hidden" name="plugin_name" value="', $plugin['snake_name'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">';
 
-	foreach ($settings as $value) {
-		$label = $txt['lp_' . $plugin_name][$value[1]] ?? '';
-		$value[1] = 'lp_' . $plugin_name . '_addon_' . $value[1];
+	foreach ($plugin['settings'] as $value) {
+		$label = $txt['lp_' . $plugin['snake_name']][$value[1]] ?? '';
+		$value[1] = 'lp_' . $plugin['snake_name'] . '_addon_' . $value[1];
 
 		echo '
 				<div>';
@@ -252,7 +252,7 @@ function show_plugin_settings(string $plugin_name, array $settings)
 		<div class="footer">
 			<span x-ref="info" x-show="success" x-transition class="infobox floatleft">', $txt['settings_saved'], '</span>
 			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $context['lp_icon_set']['close'], $txt['find_close'], '</button>
-			<button form="', $plugin_name, '_form_', $context['session_id'], '" type="submit" class="button">', $context['lp_icon_set']['save'], $txt['save'], '</button>
+			<button form="', $plugin['snake_name'], '_form_', $context['session_id'], '" type="submit" class="button">', $context['lp_icon_set']['save'], $txt['save'], '</button>
 		</div>
 	</div>';
 }

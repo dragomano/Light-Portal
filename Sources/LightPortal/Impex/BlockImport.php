@@ -63,7 +63,7 @@ final class BlockImport extends AbstractImport
 					'content'       => $item->content,
 					'placement'     => $item->placement,
 					'priority'      => intval($item['priority']),
-					'permissions'   => intval($item['permissions']),
+					'permissions'   => $item['user_id'] > 0 ? 4 : intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
 					'title_class'   => strpos((string) $item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,

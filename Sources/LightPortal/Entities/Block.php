@@ -40,7 +40,7 @@ final class Block
 
 		// Block placement
 		foreach ($blocks as $item => $data) {
-			if ($this->canViewItem($data['permissions']) === false)
+			if ($this->canViewItem($data['permissions'], $data['user_id']) === false)
 				continue;
 
 			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_own_blocks'] && $data['user_id'] == $this->context['user']['id']);

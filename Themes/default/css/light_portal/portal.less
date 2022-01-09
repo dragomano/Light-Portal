@@ -1462,8 +1462,20 @@ section {
 		width: 80%;
 	}
 
-	.fa-toggle-on {
-		color: @color-checked;
+	.floatright {
+		.pointer;
+
+		.gear {
+			position: relative;
+			top: -5px;
+			right: 5px;
+		}
+
+		i {
+			&[data-toggle="on"] {
+				color: @color-checked;
+			}
+		}
 	}
 
 	form {
@@ -1471,17 +1483,6 @@ section {
 			width: 100%;
 		}
 	}
-}
-
-.lp_plugin_toggle,
-.lp_plugin_settings {
-	.pointer;
-}
-
-.lp_plugin_settings {
-	position: relative;
-	top: -3px;
-	.valign(baseline) !important;
 }
 
 .form_settings {
@@ -1536,6 +1537,10 @@ section {
 	}
 }
 
+.handle {
+	cursor: grab;
+}
+
 .lp_categories {
 	input {
 		width: 100%;
@@ -1546,9 +1551,6 @@ section {
 		margin-top: 1px;
 	}
 	dt {
-		.handle {
-			cursor: grab;
-		}
 		td.handle {
 			font-size: 1.2rem;
 		}

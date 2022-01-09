@@ -1148,20 +1148,19 @@ section #display_head span {
 .features .floatleft {
   width: 80%;
 }
-.features .fa-toggle-on {
+.features .floatright {
+  cursor: pointer;
+}
+.features .floatright .gear {
+  position: relative;
+  top: -5px;
+  right: 5px;
+}
+.features .floatright i[data-toggle="on"] {
   color: #00cc33;
 }
 .features form textarea {
   width: 100%;
-}
-.lp_plugin_toggle,
-.lp_plugin_settings {
-  cursor: pointer;
-}
-.lp_plugin_settings {
-  position: relative;
-  top: -3px;
-  vertical-align: baseline !important;
 }
 .form_settings > div {
   margin: 1.2em;
@@ -1206,6 +1205,9 @@ section #display_head span {
 .new_posts.lp_type_page_options {
   background: #52647a;
 }
+.handle {
+  cursor: grab;
+}
 .lp_categories input {
   width: 100%;
 }
@@ -1213,9 +1215,6 @@ section #display_head span {
   width: 100%;
   resize: none;
   margin-top: 1px;
-}
-.lp_categories dt .handle {
-  cursor: grab;
 }
 .lp_categories dt td.handle {
   font-size: 1.2rem;

@@ -18,7 +18,6 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities;
 use function add_integration_function;
-use function allowedTo;
 use function loadLanguage;
 use function redirectexit;
 
@@ -64,9 +63,9 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0 alpha');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-07');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-09');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
-		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) $this->modSettings['lp_cache_update_interval'] ?? 3600);
+		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
 	}
@@ -96,6 +95,8 @@ final class Integration extends AbstractMain
 		$this->loadCssFiles();
 
 		(new Addon)->prepareAssets()->run();
+
+		(new Entities\Block)->show();
 	}
 
 	public function redirect(string &$setLocation)
@@ -181,12 +182,6 @@ final class Integration extends AbstractMain
 	{
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
-
-		$this->context['allow_light_portal_view']              = allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_own_blocks'] = allowedTo('light_portal_manage_own_blocks');
-		$this->context['allow_light_portal_manage_own_pages']  = allowedTo('light_portal_manage_own_pages');
-
-		(new Entities\Block)->show();
 
 		// Display "Portal settings" in Main Menu => Admin
 		if ($this->context['user']['is_admin']) {
@@ -461,7 +456,7 @@ final class Integration extends AbstractMain
 		if ($this->context['user']['is_admin'])
 			return;
 
-		if (! (allowedTo('light_portal_manage_own_blocks') || allowedTo('light_portal_manage_own_blocks')))
+		if (! ($this->context['allow_light_portal_manage_own_blocks'] || $this->context['allow_light_portal_manage_own_pages']))
 			return;
 
 		$counter = 0;
@@ -474,13 +469,13 @@ final class Integration extends AbstractMain
 
 		$portal_items = [];
 
-		if (allowedTo('light_portal_manage_own_blocks'))
+		if ($this->context['allow_light_portal_manage_own_blocks'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_blocks'
 			];
 
-		if (allowedTo('light_portal_manage_own_pages'))
+		if ($this->context['allow_light_portal_manage_own_pages'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_pages'

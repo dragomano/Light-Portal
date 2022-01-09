@@ -190,8 +190,7 @@ class TopicArticle extends AbstractArticle
 		if (empty($this->selected_boards) && $this->modSettings['lp_frontpage_mode'] === 'all_topics')
 			return 0;
 
-		/** @noinspection SqlResolve */
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(t.id_topic)
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (empty($this->tables) ? '' : '

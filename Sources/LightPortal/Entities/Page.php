@@ -87,7 +87,7 @@ final class Page
 			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['title']) ?: $this->txt['lp_post_error_no_title'];
 			$this->context['canonical_url'] = $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
 
-			if ($this->context['lp_page']['category']) {
+			if (isset($this->context['lp_page']['category'])) {
 				$this->context['linktree'][] = [
 					'name' => $this->context['lp_page']['category'],
 					'url'  => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $this->context['lp_page']['category_id']
@@ -399,7 +399,7 @@ final class Page
 				'title' => $this->txt['lp_views']
 			],
 			'replies'   => [
-				'num'   => $this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] == 'default' ? $row['num_comments'] : 0,
+				'num'   => isset($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
 				'title' => $this->txt['lp_comments']
 			],
 			'title'     => $row['title'],
@@ -476,13 +476,11 @@ final class Page
 				'content'  => date('Y-m-d\TH:i:s', (int) $this->context['lp_page']['updated_at'])
 			];
 
-		if ($this->context['lp_page']['category'])
+		if (isset($this->context['lp_page']['category']))
 			$this->context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:section', 'content' => $this->context['lp_page']['category']];
 
-		if ($keywords) {
-			foreach ($keywords as $value) {
-				$this->context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value];
-			}
+		foreach ($keywords as $value) {
+			$this->context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value];
 		}
 
 		if (! (empty($this->modSettings['lp_page_og_image']) || empty($this->context['lp_page']['image'])))
