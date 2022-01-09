@@ -4,7 +4,7 @@ return [
 	'description' => 'Interactive tutorial to get acquainted with the portal features.<br>Once enabled, look for the "Interactive tour" button on the portal admin areas.',
 	'tour_button' => 'Interactive tour',
 	'theme' => 'Theme',
-	'theme_set' => ['Classic', 'Royal', 'Nassim', 'Nazanin', 'Dark', 'Modern', 'Flattener'],
+	'theme_set' => ['Classic', 'Dark', 'Modern', 'Flattener'],
 	'show_progress' => 'Show introduction progress',
 	'show_buttons' => 'Show introduction navigation buttons',
 	'exit_on_overlay_click' => 'Exit introduction when clicking on overlay layer',

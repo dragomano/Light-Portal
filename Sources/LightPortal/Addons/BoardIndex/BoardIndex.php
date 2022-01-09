@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 09.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardIndex;
@@ -38,6 +38,6 @@ class BoardIndex extends Plugin
 
 	public function toggleRobotNoIndex()
 	{
-		$this->context['robot_no_index'] = $this->modSettings['lp_frontpage_mode'] && empty($this->modSettings['lp_board_index_addon_allow_for_spiders']);
+		$this->context['robot_no_index'] = ! empty($this->modSettings['lp_frontpage_mode']) && empty($this->modSettings['lp_board_index_addon_allow_for_spiders']);
 	}
 }

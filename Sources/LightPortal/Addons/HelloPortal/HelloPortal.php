@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 07.01.22
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -24,7 +24,7 @@ class HelloPortal extends Plugin
 {
 	public string $type = 'other';
 
-	private array $themes = [false, 'royal', 'nassim', 'nazanin', 'dark', 'modern', 'flattener'];
+	private array $themes = [false, 'dark', 'modern', 'flattener'];
 
 	public function init()
 	{

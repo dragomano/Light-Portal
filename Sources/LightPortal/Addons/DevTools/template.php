@@ -10,7 +10,7 @@ function template_layout_switcher_above()
 
 		if ($context['user']['is_admin']) {
 			echo '
-		<div class="floatleft error"><i class="fab fa-dev fa-2x" title="DevTools"></i></div>';
+		<div class="floatleft error"><i class="fab fa-dev fa-2x" title="DevTools" aria-hidden="true"></i></div>';
 		}
 
 		echo '

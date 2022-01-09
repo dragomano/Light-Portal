@@ -450,7 +450,6 @@ class AdsBlock extends Plugin
 
 	private function disableBlock(int $item)
 	{
-		/** @noinspection SqlResolve */
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
