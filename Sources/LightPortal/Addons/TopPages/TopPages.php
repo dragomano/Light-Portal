@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -115,7 +115,7 @@ class TopPages extends Plugin
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias']
+				'href'         => LP_PAGE_URL . $row['alias']
 			];
 		}
 

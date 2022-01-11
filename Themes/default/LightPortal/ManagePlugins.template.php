@@ -2,7 +2,7 @@
 
 function template_manage_plugins()
 {
-	global $context, $scripturl, $txt, $settings;
+	global $context, $scripturl, $txt;
 
 	echo '
 	<div class="cat_bar">

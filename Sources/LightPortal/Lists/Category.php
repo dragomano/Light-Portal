@@ -31,7 +31,7 @@ final class Category extends AbstractPageList
 		$this->context['lp_category'] = $this->request('id');
 
 		if (array_key_exists($this->context['lp_category'], $this->getAllCategories()) === false) {
-			$this->context['error_link'] = $this->scripturl . '?action=' . LP_ACTION . ';sa=categories';
+			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
 			$this->txt['back'] = $this->txt['lp_all_categories'];
 			fatal_lang_error('lp_category_not_found', false, null, 404);
 		}
@@ -45,12 +45,12 @@ final class Category extends AbstractPageList
 
 		$this->context['description'] = $category['desc'] ?? '';
 
-		$this->context['canonical_url']  = $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $this->context['lp_category'];
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $this->context['lp_category'];
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
 			'name' => $this->txt['lp_all_categories'],
-			'url'  => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories'
+			'url'  => LP_BASE_URL . ';sa=categories'
 		];
 
 		$this->context['linktree'][] = [
@@ -93,7 +93,7 @@ final class Category extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, t.title
+				mem.real_name AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
@@ -116,15 +116,12 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		$items = [];
-		$page  = new Page;
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))
-			$page->fetchQueryResults($items, $row);
+		$rows = $this->smcFunc['db_fetch_all']($request);
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $items;
+		return $this->getPreparedResults($rows);
 	}
 
 	public function getTotalCountPages(): int
@@ -155,7 +152,7 @@ final class Category extends AbstractPageList
 	public function showAll()
 	{
 		$this->context['page_title']     = $this->txt['lp_all_categories'];
-		$this->context['canonical_url']  = $this->scripturl . '?action=' . LP_ACTION . ';sa=categories';
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories';
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
@@ -273,7 +270,7 @@ final class Category extends AbstractPageList
 			$items[$row['category_id']] = [
 				'name'      => $row['name'] ?: $this->txt['lp_no_category'],
 				'desc'      => $row['description'] ?? '',
-				'link'      => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
+				'link'      => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'num_pages' => $row['frequency']
 			];
 		}

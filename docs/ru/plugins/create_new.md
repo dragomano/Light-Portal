@@ -52,6 +52,9 @@ namespace Bugo\LightPortal\Addons\HelloWorld;
 
 use Bugo\LightPortal\Addons\Plugin;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class HelloWorld extends Plugin
 {
     // Используемые свойства и методы

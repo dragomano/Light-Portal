@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
+use function allowedTo;
+use function smf_json_decode;
 use function loadCSSFile;
 use function loadTemplate;
 use function updateSettings;
@@ -58,22 +60,18 @@ abstract class AbstractMain
 		$this->context['lp_frontpage_pages']  = empty($this->modSettings['lp_frontpage_pages']) ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
 		$this->context['lp_frontpage_topics'] = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
 
-		// Width of some panels | Ширина некоторых панелей
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
 		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: json_decode($this->modSettings['lp_left_panel_width'], true);
+			: smf_json_decode($this->modSettings['lp_left_panel_width'], true, false);
 		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: json_decode($this->modSettings['lp_right_panel_width'], true);
+			: smf_json_decode($this->modSettings['lp_right_panel_width'], true, false);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
-		// Block direction in panels | Направление блоков в панелях
-		$this->context['lp_panel_direction'] = empty($this->modSettings['lp_panel_direction']) ? [] : json_decode($this->modSettings['lp_panel_direction'], true);
-
-		$this->context['lp_active_blocks'] = (new Entities\Block)->getActive();
-
-		$this->context['lp_icon_set'] = (new Lists\IconList)->getAll();
+		$this->context['lp_panel_direction'] = smf_json_decode($this->modSettings['lp_panel_direction'] ?? '', true, false);
+		$this->context['lp_active_blocks']   = (new Entities\Block)->getActive();
+		$this->context['lp_icon_set']        = (new Lists\IconList)->getAll();
 	}
 
 	protected function loadCssFiles()

@@ -587,7 +587,8 @@ section #display_head span {
   align-items: flex-end;
   padding: 0 25px 5px;
 }
-.article_alt2_view article .article_body footer img {
+.article_alt2_view article .article_body footer img,
+.article_alt2_view article .article_body footer svg {
   margin-right: 5px;
   width: 25px;
   height: 25px;

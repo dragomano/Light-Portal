@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -43,7 +43,7 @@ class BootstrapIcons extends Plugin
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', LP_CACHE_TIME * 7)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/twbs/icons/main/font/bootstrap-icons.json');
-			$json = array_flip(json_decode($content, true));
+			$json = array_flip(smf_json_decode($content, true));
 
 			$icons = [];
 			foreach ($json as $icon) {
@@ -80,9 +80,9 @@ class BootstrapIcons extends Plugin
 		$set['import']      = 'file-arrow-up';
 		$set['simple']      = 'list';
 		$set['tile']        = 'layout-split';
-		$set['save_exit']   = 'box-arrow-down';
-		$set['save']        = 'save';
-		$set['preview']     = 'binoculars';
+		$set['save_exit']   = 'check-square';
+		$set['save']        = 'check-circle';
+		$set['preview']     = 'check-all';
 		$set['reply']       = 'reply';
 		$set['edit']        = 'pencil-square';
 		$set['undo']        = 'backspace';

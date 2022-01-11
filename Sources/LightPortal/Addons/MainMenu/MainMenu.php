@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -35,7 +35,7 @@ class MainMenu extends Plugin
 
 	public function menuButtons(array &$buttons)
 	{
-		$this->context['lp_main_menu_addon_items'] = empty($this->modSettings['lp_main_menu_addon_items']) ? [] : json_decode($this->modSettings['lp_main_menu_addon_items'], true);
+		$this->context['lp_main_menu_addon_items'] = smf_json_decode($this->modSettings['lp_main_menu_addon_items'] ?? '', true);
 
 		if (empty($this->context['lp_main_menu_addon_items']))
 			return;

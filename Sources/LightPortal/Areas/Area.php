@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Areas;
 
 use function addJavaScriptVar;
+use function smf_json_decode;
 use function create_control_richedit;
 use function loadTemplate;
 use function preparsecode;
@@ -77,11 +78,9 @@ trait Area
 		if (empty($items))
 			return;
 
-		$new_status = $this->smcFunc['db_title'] === POSTGRE_TITLE ? 'CASE WHEN status = 1 THEN 0 ELSE 1 END' : '!status';
-
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
-			SET status = ' . $new_status . '
+			SET status = ' . $this->smcFunc['db_custom_order']('status', [1, 0]) . '
 			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
 			[
 				'items' => $items
@@ -137,7 +136,7 @@ trait Area
 	{
 		if (($icons = $this->cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
-			$json = json_decode($content);
+			$json = smf_json_decode($content);
 
 			if (empty($json))
 				return [];

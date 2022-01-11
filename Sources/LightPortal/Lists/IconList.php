@@ -49,9 +49,7 @@ final class IconList implements IconListInterface
 			'import'      => 'file-import',
 			'simple'      => 'bars fa-2x',
 			'tile'        => 'border-all fa-2x',
-			'save_exit'   => 'door-open',
-			'save'        => 'save',
-			'preview'     => 'check-square',
+			'preview'     => 'check-double',
 			'reply'       => 'reply',
 			'edit'        => 'edit',
 			'undo'        => 'undo',
@@ -86,7 +84,10 @@ final class IconList implements IconListInterface
 
 		$set = array_map(fn($icon): string => $this->prefix . $icon, $set);
 
-		$set['youtube'] = 'fab fa-youtube';
+		$set['youtube']   = 'fab fa-youtube';
+		$set['save_exit'] = 'far fa-check-square';
+		$set['save']      = 'far fa-check-circle';
+		$set['undo']      = 'far fa-times-circle';
 
 		// Plugin authors can use other icon packs
 		$this->hook('changeIconSet', [&$set]);

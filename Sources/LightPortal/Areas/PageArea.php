@@ -159,7 +159,7 @@ final class PageArea
 						'function' => fn($entry) => '<i class="' . ($this->context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
-								: '" href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
+								: '" href="' . LP_PAGE_URL . $entry['alias']
 							) . '">' . $entry['title'] . '</a>',
 						'class'    => 'word_break',
 					],

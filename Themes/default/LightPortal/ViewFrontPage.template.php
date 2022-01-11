@@ -325,10 +325,8 @@ function template_show_articles_alt2()
 			echo '
 				<footer>';
 
-			if (! empty($article['author']['avatar'])) {
-				echo '
-					<img src="', $article['author']['avatar'], '" loading="lazy" alt="', $txt['author'], '">';
-			}
+			if (! empty($article['author']['avatar']))
+				echo $article['author']['avatar'];
 
 			echo '
 					<span>';
@@ -611,10 +609,10 @@ function template_show_articles_simple3()
 		echo '
 	<div class="col-xs">';
 
+	show_pagination();
+
 	echo '
 		<div class="article_simple3_view">';
-
-	show_pagination();
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '

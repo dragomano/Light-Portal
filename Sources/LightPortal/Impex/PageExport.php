@@ -92,7 +92,7 @@ final class PageExport extends AbstractExport
                         'function' => fn($entry) => '<a class="bbc_link' . (
                             $entry['is_front']
                                 ? ' new_posts" href="' . $this->scripturl
-                                : '" href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
+                                : '" href="' . LP_PAGE_URL . $entry['alias']
                             ) . '">' . $entry['title'] . '</a>',
                         'class' => 'word_break'
 					],

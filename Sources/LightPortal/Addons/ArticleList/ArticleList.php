@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.01.22
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -251,7 +251,7 @@ class ArticleList extends Plugin
 				</div>';
 					}
 
-					$content .= '<a href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $page['alias'] . '">' . $title . '</a>';
+					$content .= '<a href="' . LP_PAGE_URL . $page['alias'] . '">' . $title . '</a>';
 
 					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content, null);
 				}

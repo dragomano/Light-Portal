@@ -28,6 +28,7 @@ use function loadJavaScriptFile;
 use function loadLanguage;
 use function loadTemplate;
 use function parse_bbc;
+use function smf_json_decode;
 use function prepareDBSettingContext;
 use function redirectexit;
 use function saveDBSettings;
@@ -705,7 +706,7 @@ final class ConfigArea
 		if (empty($data))
 			return LP_VERSION;
 
-		$data = json_decode($data, true);
+		$data = smf_json_decode($data, true);
 
 		if (LP_RELEASE_DATE < $data['published_at'])
 			return str_replace('v', '', $data['tag_name']);

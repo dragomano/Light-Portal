@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -80,9 +80,9 @@ class DevTools extends Plugin
 					'teaser'    => $this->getTeaser(Lorem::ipsum(4)),
 					'msg_link'  => $num_replies ? $this->scripturl . '?msg=' . $msg_id : $link,
 					'tags'      => [
-						['name' => 'Tag1', 'href' => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)],
-						['name' => 'Tag2', 'href' => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)],
-						['name' => 'Tag3', 'href' => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)]
+						['name' => 'Tag1', 'href' => LP_BASE_URL . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)],
+						['name' => 'Tag2', 'href' => LP_BASE_URL . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)],
+						['name' => 'Tag3', 'href' => LP_BASE_URL . ';sa=tags;id=' . $this->smcFunc['random_int'](1, 99)]
 					],
 					'datetime'  => date('Y-m-d', $date)
 				];
@@ -107,14 +107,14 @@ class DevTools extends Plugin
 	{
 		$products = fetch_web_data('https://reqres.in/api/products');
 
-		return json_decode($products, true)['data'] ?? [];
+		return smf_json_decode($products, true)['data'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
 		$users = fetch_web_data('https://reqres.in/api/users');
 
-		return json_decode($users, true)['data'] ?? [];
+		return smf_json_decode($users, true)['data'] ?? [];
 	}
 
 	public function credits(array &$links)

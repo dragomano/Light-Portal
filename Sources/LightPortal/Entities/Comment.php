@@ -19,6 +19,8 @@ namespace Bugo\LightPortal\Entities;
 use Bugo\LightPortal\Helper;
 use function addInlineJavaScript;
 use function censorText;
+use function un_preparsecode;
+use function loadMemberData;
 use function preparsecode;
 use function send_http_status;
 
@@ -123,9 +125,10 @@ final class Comment
 				'id'          => (int) $row['id'],
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
-				'author_id'   => (int) $row['author_id'],
-				'author_name' => $row['author_name'],
-				'avatar'      => $this->getUserAvatar((int) $row['author_id'])['image'],
+				'poster'      => [
+					'id'   => (int) $row['author_id'],
+					'name' => $row['author_name']
+				],
 				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
 				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => (int) $row['created_at'],
@@ -136,7 +139,7 @@ final class Comment
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $comments;
+		return $this->getCommentsWithUserAvatars($comments);
 	}
 
 	private function add()
@@ -207,9 +210,11 @@ final class Comment
 				'id'          => $item,
 				'start'       => $start,
 				'parent_id'   => $parent,
-				'author_id'   => $this->user_info['id'],
-				'author_name' => $this->user_info['name'],
-				'avatar'      => $this->getUserAvatar($this->user_info['id'])['image'],
+				'poster'      => [
+					'id'     => $this->user_info['id'],
+					'name'   => $this->user_info['name'],
+					'avatar' => $this->getUserAvatar($this->user_info['id']),
+				],
 				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => $this->getFriendlyTime($time),
@@ -379,8 +384,30 @@ final class Comment
 	private function getPageIndexUrl(): string
 	{
 		if (! (empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_page') && ! empty($this->modSettings['lp_frontpage_alias']))
-			return $this->scripturl . '?action=' . LP_ACTION;
+			return LP_BASE_URL;
 
 		return $this->context['canonical_url'];
+	}
+
+	private function getCommentsWithUserAvatars(array $comments): array
+	{
+		$userData = loadMemberData(array_map(fn($item) => $item['poster']['id'], $comments));
+
+		return array_map(function ($item) use ($userData) {
+			if ($item['poster']['id'] && in_array($item['poster']['id'], $userData)) {
+				if (! isset($this->memberContext[$item['poster']['id']]))
+					try {
+						loadMemberContext($item['poster']['id']);
+					} catch (\Exception $e) {
+						log_error('[LP] Comments (page #' . $item['page_id'] . ', user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
+					}
+
+				$item['poster']['avatar'] = $this->memberContext[$item['poster']['id']]['avatar']['image'];
+			} else {
+				$item['poster']['avatar'] = '<img class="avatar" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $item['poster']['name'] . '">';
+			}
+
+			return $item;
+		}, $comments);
 	}
 }

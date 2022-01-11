@@ -68,6 +68,8 @@ final class Integration extends AbstractMain
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
+		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
+		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 	}
 
 	/**
@@ -292,7 +294,7 @@ final class Integration extends AbstractMain
 
 		$this->context['normal_buttons']['lp_promote'] = array(
 			'text' => in_array($this->context['current_topic'], $this->context['lp_frontpage_topics']) ? 'lp_remove_from_fp' : 'lp_promote_to_fp',
-			'url'  => $this->scripturl . '?action=portal;sa=promote;t=' . $this->context['current_topic']
+			'url'  => LP_BASE_URL . ';sa=promote;t=' . $this->context['current_topic']
 		);
 	}
 
@@ -505,7 +507,7 @@ final class Integration extends AbstractMain
 		}
 
 		if (isset($actions[LP_PAGE_PARAM]))
-			$result = sprintf($this->txt['lp_who_viewing_page'], $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $actions[LP_PAGE_PARAM]);
+			$result = sprintf($this->txt['lp_who_viewing_page'], LP_PAGE_URL . $actions[LP_PAGE_PARAM]);
 
 		if (empty($actions['action']))
 			return $result;
@@ -515,10 +517,10 @@ final class Integration extends AbstractMain
 				$tags = $this->getAllTags();
 
 				isset($actions['id'])
-					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
-					: $result = sprintf($this->txt['lp_who_viewing_tags'], $this->scripturl . '?action=' . LP_ACTION . ';sa=tags');
+					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
+					: $result = sprintf($this->txt['lp_who_viewing_tags'], LP_BASE_URL . ';sa=tags');
 			} else {
-				$result = sprintf($this->txt['lp_who_viewing_frontpage'], $this->scripturl . '?action=' . LP_ACTION);
+				$result = sprintf($this->txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 			}
 		}
 

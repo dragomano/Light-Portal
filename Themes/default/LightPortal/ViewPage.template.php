@@ -223,7 +223,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
 	global $context, $txt;
 
-	if (empty($comment['author_id']))
+	if (empty($comment['poster']['id']))
 		return;
 
 	echo '
@@ -234,7 +234,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		data-counter="', $i, '"
 		data-level="', $level, '"
 		data-start="', $comment['start'] ?? $context['current_start'], '"
-		data-commentator="', $comment['author_id'], '"
+		data-commentator="', $comment['poster']['id'], '"
 		itemprop="comment"
 		itemscope="itemscope"
 		itemtype="https://schema.org/Comment"', empty($context['user']['is_guest']) ? '
@@ -242,9 +242,9 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		x-data="{ replyForm: false }"' : '', '
 	>
 		<div class="comment_avatar"', $context['right_to_left'] ? ' style="padding: 0 0 0 10px"' : '', '>
-			', $comment['avatar'];
+			', $comment['poster']['avatar'];
 
-	if (! empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['author_id'])
+	if (! empty($context['lp_page']['author_id']) && $context['lp_page']['author_id'] == $comment['poster']['id'])
 		echo '
 			<span class="new_posts">', $txt['author'], '</span>';
 
@@ -260,7 +260,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 						data-id="' . $comment['id'] . '"') : '', $context['user']['is_logged'] && $level < 5 ? '
 						@click="comment.pasteNick($event.target, $refs)"' : '', '
 					>
-						', $comment['author_name'], '
+						', $comment['poster']['name'], '
 					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
 						<span itemprop="datePublished" content="' , $comment['created_at'], '">
@@ -282,7 +282,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		}
 
 		// Only comment author can edit comments
-		if ($comment['can_edit'] && empty($comment['children']) && $comment['author_id'] == $context['user']['id']) {
+		if ($comment['can_edit'] && empty($comment['children']) && $comment['poster']['id'] == $context['user']['id']) {
 			echo '
 				<span class="modify_button" data-id="', $comment['id'], '" @click.self="comment.modify($event.target)">', $context['lp_icon_set']['edit'], $txt['modify'], '</span>
 				<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)">', $context['lp_icon_set']['save'], $txt['save'], '</span>
@@ -290,7 +290,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		}
 
 		// Only comment author or admin can remove comments
-		if ($comment['author_id'] == $context['user']['id'] || $context['user']['is_admin']) {
+		if ($comment['poster']['id'] == $context['user']['id'] || $context['user']['is_admin']) {
 			echo '
 					<span class="remove_button floatright" data-id="', $comment['id'], '" data-level="', $level, '" @click.once="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')">', $context['lp_icon_set']['remove'], $txt['remove'], '</span>';
 		}

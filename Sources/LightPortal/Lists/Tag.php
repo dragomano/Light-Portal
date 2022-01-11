@@ -31,18 +31,18 @@ final class Tag extends AbstractPageList
 		$this->context['lp_tag'] = $this->request('id', 0);
 
 		if (array_key_exists($this->context['lp_tag'], $this->getAllTags()) === false) {
-			$this->context['error_link'] = $this->scripturl . '?action=' . LP_ACTION . ';sa=tags';
+			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
 			$this->txt['back'] = $this->txt['lp_all_page_tags'];
 			fatal_lang_error('lp_tag_not_found', false, null, 404);
 		}
 
 		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getAllTags()[$this->context['lp_tag']]);
-		$this->context['canonical_url']  = $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $this->context['lp_tag'];
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $this->context['lp_tag'];
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
 			'name' => $this->txt['lp_all_page_tags'],
-			'url'  => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags'
+			'url'  => LP_BASE_URL . ';sa=tags'
 		];
 
 		$this->context['linktree'][] = [
@@ -75,7 +75,7 @@ final class Tag extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, ps.value, t.title
+				mem.real_name AS author_name, ps.value, t.title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -99,23 +99,12 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		$items = [];
-		$page  = new Page;
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$page->fetchQueryResults($items, $row);
-
-			if ($row['category_id']) {
-				$items[$row['page_id']]['section'] = [
-					'name' => $this->getAllCategories()[$row['category_id']]['name'],
-					'link' => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id']
-				];
-			}
-		}
+		$rows = $this->smcFunc['db_fetch_all']($request);
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $items;
+		return $this->getPreparedResults($rows);
 	}
 
 	public function getTotalCountPages(): int
@@ -147,7 +136,7 @@ final class Tag extends AbstractPageList
 	public function showAll()
 	{
 		$this->context['page_title']     = $this->txt['lp_all_page_tags'];
-		$this->context['canonical_url']  = $this->scripturl . '?action=' . LP_ACTION . ';sa=tags';
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags';
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
@@ -256,7 +245,7 @@ final class Tag extends AbstractPageList
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['tag_id']] = [
 				'value'     => $row['value'],
-				'link'      => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id'],
+				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => $row['num']
 			];
 		}

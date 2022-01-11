@@ -156,11 +156,6 @@ class TopicArticle extends AbstractArticle
 					'edit_link' => $this->scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
 				];
 
-				$topics[$row['id_topic']]['author']['avatar'] = $this->modSettings['avatar_url'] . '/default.png';
-				if ($avatar = $this->getUserAvatar($author_id)) {
-					$topics[$row['id_topic']]['author']['avatar'] = $avatar['href'];
-				}
-
 				if (! empty($this->modSettings['lp_show_teaser']))
 					$topics[$row['id_topic']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
 
@@ -182,7 +177,7 @@ class TopicArticle extends AbstractArticle
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $topics;
+		return $this->getItemsWithUserAvatars($topics);
 	}
 
 	public function getTotalCount(): int

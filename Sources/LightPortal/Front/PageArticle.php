@@ -84,7 +84,7 @@ class PageArticle extends AbstractArticle
 					'id' => $row['page_id'],
 					'section' => [
 						'name' => empty($row['category_id']) ? '' : $categories[$row['category_id']]['name'],
-						'link' => empty($row['category_id']) ? '' : ($this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'])
+						'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id'])
 					],
 					'author' => [
 						'id' => $author_id = (int) (empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_id'] : $row['author_id']),
@@ -92,7 +92,7 @@ class PageArticle extends AbstractArticle
 						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_name'] : $row['author_name']
 					],
 					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['comment_date'] ? $row['comment_date'] : $row['created_at'],
-					'link' => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
+					'link' => LP_PAGE_URL . $row['alias'],
 					'views' => [
 						'num' => $row['num_views'],
 						'title' => $this->txt['lp_views'],
@@ -105,11 +105,9 @@ class PageArticle extends AbstractArticle
 					],
 					'is_new' => $this->user_info['last_login'] < $row['date'] && $row['author_id'] != $this->user_info['id'],
 					'image' => empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($row['content']),
-					'can_edit' => $this->user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $this->user_info['id']),
+					'can_edit' => $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $row['author_id'] == $this->user_info['id']),
 					'edit_link' => $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 				];
-
-				$pages[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
 
 				if (! empty($this->modSettings['lp_show_teaser']))
 					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? parse_bbc($row['comment_message']) : ($row['description'] ?: $row['content']));
@@ -125,6 +123,8 @@ class PageArticle extends AbstractArticle
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
+
+		$pages = $this->getItemsWithUserAvatars($pages);
 
 		$this->prepareTags($pages);
 
@@ -173,7 +173,7 @@ class PageArticle extends AbstractArticle
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$pages[$row['item_id']]['tags'][] = [
 				'name' => $row['value'],
-				'href' => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
+				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 

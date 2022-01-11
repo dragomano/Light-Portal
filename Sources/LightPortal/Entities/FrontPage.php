@@ -94,13 +94,13 @@ final class FrontPage
 
 		$articles = $this->postProcess($article, $articles);
 
-		$this->context['page_index'] = constructPageIndex($this->scripturl . '?action=' . LP_ACTION, $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
 		if (! empty($this->modSettings['lp_use_simple_pagination']))
-			$this->context['page_index'] = $this->simplePaginate($this->scripturl . '?action=' . LP_ACTION, $total_items, $limit);
+			$this->context['page_index'] = $this->simplePaginate(LP_BASE_URL, $total_items, $limit);
 
-		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? $this->scripturl . '?action=' . LP_ACTION . ';start=' . ($this->request('start') + $limit) : '';
+		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? LP_BASE_URL . ';start=' . ($this->request('start') + $limit) : '';
 		$this->context['lp_frontpage_articles'] = $articles;
 
 		$this->hook('frontAssets');

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.22
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -127,7 +127,7 @@ class Search extends Plugin
 			$row['content'] = parse_content($row['content'], $row['type']);
 
 			$results[] = [
-				'link'    => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
+				'link'    => LP_PAGE_URL . $row['alias'],
 				'title'   => $row['title'],
 				'content' => $this->getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? $this->txt['guest'] : ('<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
@@ -150,7 +150,7 @@ class Search extends Plugin
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', ['external' => true]);
 
 		echo '
-		<form class="search_addon centertext" action="', $this->scripturl, '?action=', LP_ACTION, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
+		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
 			<input type="search" name="search" placeholder="', $this->txt['lp_search']['title'], '">
 		</form>
 		<script>
@@ -158,7 +158,7 @@ class Search extends Plugin
 				selector: ".search_addon input",' . (empty($this->modSettings['lp_search_addon_min_chars']) ? '' : '
 				minChars: ' . $this->modSettings['lp_search_addon_min_chars'] . ',') . '
 				source: async function(term, response) {
-					const results = await fetch("', $this->scripturl, '?action=', LP_ACTION, ';sa=qsearch", {
+					const results = await fetch("', LP_BASE_URL, ';sa=qsearch", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"

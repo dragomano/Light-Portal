@@ -40,6 +40,7 @@ if (! defined('SMF'))
  * @property-read array $user_profile
  * @property-read array $user_settings
  * @property-read array $modSettings
+ * @property-read array $memberContext
  * @property-read array $settings
  * @property-read array $options
  * @property-read string $db_type
@@ -153,12 +154,15 @@ trait Helper
 		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
 	}
 
-	public function getUserAvatar(int $userId): array
+	public function getUserAvatar(int $userId, array $userData = []): string
 	{
 		if (empty($userId))
-			return [];
+			return '';
 
-		if (! isset($this->memberContext[$userId]) && in_array($userId, loadMemberData($userId))) {
+		if (empty($userData))
+			$userData = loadMemberData($userId);
+
+		if (! isset($this->memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
 				loadMemberContext($userId, true);
 			} catch (Exception $e) {
@@ -166,7 +170,24 @@ trait Helper
 			}
 		}
 
-		return $this->memberContext[$userId]['avatar'] ?? [];
+		if (empty($this->memberContext[$userId]))
+			return '';
+
+		if (isset($this->memberContext[$userId]['avatar']) && isset($this->memberContext[$userId]['avatar']['image'])) {
+			return $this->memberContext[$userId]['avatar']['image'];
+		}
+
+		return '<img class="avatar" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
+	}
+
+	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
+	{
+		$userData = loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+
+		return array_map(function ($item) use ($userData, $entity) {
+			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
+			return $item;
+		}, $items);
 	}
 
 	public function getFrontPageLayouts(): array
@@ -343,7 +364,7 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $author_id = 0): bool
+	public function canViewItem(int $permissions, int $check_id = 0): bool
 	{
 		switch ($permissions) {
 			case 0:
@@ -356,7 +377,7 @@ trait Helper
 				return $this->user_info['id'] > 0;
 
 			case 4:
-				return $this->user_info['id'] === $author_id;
+				return $this->user_info['id'] === $check_id;
 
 			default:
 				return true;

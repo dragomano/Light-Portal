@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
@@ -51,7 +51,7 @@ class FacebookComments extends Plugin
 	public function comments()
 	{
 		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'facebook') {
-			$dark_themes = empty($this->modSettings['lp_facebook_comments_addon_dark_themes']) ? [] : json_decode($this->modSettings['lp_facebook_comments_addon_dark_themes'], true);
+			$dark_themes = empty($this->modSettings['lp_facebook_comments_addon_dark_themes']) ? [] : smf_json_decode($this->modSettings['lp_facebook_comments_addon_dark_themes'], true);
 
 			$this->context['lp_facebook_comment_block'] = '
 				<div id="fb-root"></div>

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -331,7 +331,7 @@ class TinySlider extends Plugin
 		$html = '
 		<div id="tiny_slider' . $block_id . '">';
 
-		$images = json_decode($parameters['images'], true);
+		$images = smf_json_decode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -143,7 +143,7 @@ class RecentTopics extends Plugin
 			return [];
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
-			$topics = $this->getTopicsWithUserAvatars($topics);
+			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
 
 		return $topics;
 	}
@@ -208,29 +208,5 @@ class RecentTopics extends Plugin
 
 		echo '
 		</ul>';
-	}
-
-	private function getTopicsWithUserAvatars(array $topics): array
-	{
-		$posters = array_map(fn($item) => $item['poster']['id'], $topics);
-
-		$loadedUserIds = loadMemberData(array_unique($posters));
-
-		return array_map(function ($item) use ($loadedUserIds) {
-			if ($item['poster']['id'] && in_array($item['poster']['id'], $loadedUserIds)) {
-				if (! isset($this->memberContext[$item['poster']['id']]))
-					try {
-						loadMemberContext($item['poster']['id']);
-					} catch (\Exception $e) {
-						log_error('[LP] RecentTopics addon (user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
-					}
-
-				$item['poster']['avatar'] = $this->memberContext[$item['poster']['id']]['avatar']['image'];
-			} else {
-				$item['poster']['avatar'] = '<img class="avatar" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $item['poster']['name'] . '">';
-			}
-
-			return $item;
-		}, $topics);
 	}
 }

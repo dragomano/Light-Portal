@@ -21,6 +21,7 @@ use ReflectionClass;
 use ReflectionException;
 use function checkSession;
 use function fetch_web_data;
+use function smf_json_decode;
 use function loadJavaScriptFile;
 use function loadLanguage;
 use function loadTemplate;
@@ -194,7 +195,7 @@ final class PluginArea
 			if (empty($addon_list))
 				return;
 
-			$xml = json_decode($addon_list, true);
+			$xml = smf_json_decode($addon_list, true);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}

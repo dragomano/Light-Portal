@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 10.01.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -158,7 +158,7 @@ class PageList extends Plugin
 				'id'            => $row['page_id'],
 				'category_id'   => $row['category_id'],
 				'category_name' => $all_categories[$row['category_id']]['name'],
-				'category_link' => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $row['category_id'],
+				'category_link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],

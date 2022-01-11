@@ -18,7 +18,6 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Lists\PageListInterface;
-use function allowedTo;
 use function censorText;
 use function fatal_lang_error;
 use function isAllowedTo;
@@ -85,12 +84,12 @@ final class Page
 			$this->context['linktree'][]    = ['name' => $this->txt['lp_portal']];
 		} else {
 			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['title']) ?: $this->txt['lp_post_error_no_title'];
-			$this->context['canonical_url'] = $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $alias;
+			$this->context['canonical_url'] = LP_PAGE_URL . $alias;
 
 			if (isset($this->context['lp_page']['category'])) {
 				$this->context['linktree'][] = [
 					'name' => $this->context['lp_page']['category'],
-					'url'  => $this->scripturl . '?action=' . LP_ACTION . ';sa=categories;id=' . $this->context['lp_page']['category_id']
+					'url'  => LP_BASE_URL . ';sa=categories;id=' . $this->context['lp_page']['category_id']
 				];
 			}
 
@@ -165,7 +164,7 @@ final class Page
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
 				'alias' => $row['alias'],
-				'link'  => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
+				'link'  => LP_PAGE_URL . $row['alias'],
 				'image' => $image ?: ($this->modSettings['lp_image_placeholder'] ?? '')
 			];
 		}
@@ -328,7 +327,7 @@ final class Page
 						'function' => fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . $this->scripturl
-								: '" href="' . $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $entry['alias']
+								: '" href="' . LP_PAGE_URL . $entry['alias']
 						) . '">' . $entry['title'] . '</a>',
 						'class' => 'word_break'
 					],
@@ -368,54 +367,6 @@ final class Page
 				'href' => $this->context['canonical_url']
 			]
 		];
-	}
-
-	public function fetchQueryResults(array &$items, array $row)
-	{
-		$row['content'] = parse_content($row['content'], $row['type']);
-
-		$image = null;
-		if (! empty($this->modSettings['lp_show_images_in_articles'])) {
-			$first_post_image = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
-			$image = $first_post_image ? array_pop($value) : null;
-		}
-
-		if (empty($image) && $this->modSettings['lp_image_placeholder'])
-			$image = $this->modSettings['lp_image_placeholder'];
-
-		$items[$row['page_id']] = [
-			'id'        => $row['page_id'],
-			'alias'     => $row['alias'],
-			'author'    => [
-				'id'   => $author_id = (int) $row['author_id'],
-				'link' => $this->scripturl . '?action=profile;u=' . $author_id,
-				'name' => $row['author_name']
-			],
-			'date'      => $this->getFriendlyTime((int) $row['date']),
-			'datetime'  => date('Y-m-d', (int) $row['date']),
-			'link'      => $this->scripturl . '?' . LP_PAGE_PARAM . '=' . $row['alias'],
-			'views'     => [
-				'num'   => $row['num_views'],
-				'title' => $this->txt['lp_views']
-			],
-			'replies'   => [
-				'num'   => isset($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
-				'title' => $this->txt['lp_comments']
-			],
-			'title'     => $row['title'],
-			'is_new'    => $this->user_info['last_login'] < $row['date'] && $row['author_id'] != $this->user_info['id'],
-			'is_front'  => $this->isFrontpage($row['alias']),
-			'image'     => $image,
-			'can_edit'  => $this->user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $row['author_id'] == $this->user_info['id']),
-			'edit_link' => $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
-		];
-
-		$items[$row['page_id']]['msg_link'] = $items[$row['page_id']]['link'];
-
-		$items[$row['page_id']]['author']['avatar'] = $this->getUserAvatar($author_id)['href'] ?? '';
-
-		if (! empty($this->modSettings['lp_show_teaser']))
-			$items[$row['page_id']]['teaser'] = $this->getTeaser($row['description'] ?: $row['content']);
 	}
 
 	private function changeErrorPage()
@@ -505,7 +456,7 @@ final class Page
 		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
 		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
 		$data['can_view'] = $this->canViewItem($data['permissions']) || $this->user_info['is_admin'] || $is_author;
-		$data['can_edit'] = $this->user_info['is_admin'] || (allowedTo('light_portal_manage_own_pages') && $is_author);
+		$data['can_edit'] = $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
 
 		if ($data['type'] === 'bbc') {
 			$this->require('Subs-Post');
@@ -557,7 +508,7 @@ final class Page
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['tag_id']] = [
 				'name' => $row['value'],
-				'href' => $this->scripturl . '?action=' . LP_ACTION . ';sa=tags;id=' . $row['tag_id']
+				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
