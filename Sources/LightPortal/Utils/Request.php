@@ -95,7 +95,7 @@ final class Request
 		return empty($this->storage[$key]);
 	}
 
-	public function notEmpty(string $key): bool
+	public function isNotEmpty(string $key): bool
 	{
 		return empty($this->isEmpty($key));
 	}

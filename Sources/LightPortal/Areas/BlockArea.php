@@ -756,7 +756,7 @@ final class BlockArea
 			$this->updateData($item);
 		}
 
-		if ($this->post()->notEmpty('clone'))
+		if ($this->post()->isNotEmpty('clone'))
 			return $item;
 
 		$this->cache()->flush();

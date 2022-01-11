@@ -81,7 +81,7 @@ class MainMenu extends Plugin
 		if ($this->request()->url() === $this->context['canonical_url'] && in_array($this->context['canonical_url'], array_column($this->context['lp_main_menu_addon_items'], 'url'))) {
 			$current_action = 'portal_action_' . $current_action;
 
-			if ($this->request()->isEmpty('action') && $this->request()->notEmpty(LP_PAGE_PARAM)) {
+			if ($this->request()->isEmpty('action') && $this->request()->isNotEmpty(LP_PAGE_PARAM)) {
 				$current_action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
 			}
 		}

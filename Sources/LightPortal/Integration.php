@@ -63,7 +63,7 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0 alpha');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-09');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-12');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -136,7 +136,7 @@ final class Integration extends AbstractMain
 
 	public function defaultAction()
 	{
-		if ($this->request()->notEmpty(LP_PAGE_PARAM))
+		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
 			return call_user_func([new Entities\Page, 'show']);
 
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
@@ -166,7 +166,7 @@ final class Integration extends AbstractMain
 				$current_action = 'forum';
 			}
 
-			if ($this->request()->notEmpty(LP_PAGE_PARAM)) {
+			if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
 				$current_action = LP_ACTION;
 			}
 		} else {

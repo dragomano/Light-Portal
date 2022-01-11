@@ -46,7 +46,7 @@ final class Comment
 		$this->context['lp_allowed_bbc'] = empty($this->modSettings['lp_enabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_enabled_bbc_in_comments']);
 		$this->context['lp_allowed_bbc'] = array_diff($this->context['lp_allowed_bbc'], array_intersect(explode(',', $this->modSettings['disabledBBC']), $this->context['lp_allowed_bbc']));
 
-		if ($this->request()->notEmpty('sa')) {
+		if ($this->request()->isNotEmpty('sa')) {
 			switch ($this->request('sa')) {
 				case 'add_comment':
 					$this->add();

@@ -307,14 +307,14 @@ final class ConfigArea
 			if ($this->post()->isEmpty('lp_frontpage_mode'))
 				$this->post()->put('lp_standalone_url', 0);
 
-			if ($this->post()->notEmpty('lp_image_placeholder'))
+			if ($this->post()->isNotEmpty('lp_image_placeholder'))
 				$this->post()->put('lp_image_placeholder', $this->validate($this->post('lp_image_placeholder'), 'url'));
 
-			if ($this->post()->notEmpty('lp_standalone_url'))
+			if ($this->post()->isNotEmpty('lp_standalone_url'))
 				$this->post()->put('lp_standalone_url', $this->validate($this->post('lp_standalone_url'), 'url'));
 
 			$frontpage_categories = [];
-			if ($this->post()->notEmpty('lp_frontpage_categories')) {
+			if ($this->post()->isNotEmpty('lp_frontpage_categories')) {
 				foreach ($this->post('lp_frontpage_categories') as $id => $dummy)
 					if (isset($this->context['lp_all_categories'][$id]))
 						$frontpage_categories[] = $id;
@@ -414,7 +414,7 @@ final class ConfigArea
 		if ($this->request()->has('save')) {
 			checkSession();
 
-			if ($this->post()->notEmpty('lp_fa_custom'))
+			if ($this->post()->isNotEmpty('lp_fa_custom'))
 				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags

@@ -79,7 +79,7 @@ class Search extends Plugin
 
 	private function getResults(): array
 	{
-		if ($this->request()->notEmpty('search') === false)
+		if ($this->request()->isNotEmpty('search') === false)
 			return [];
 
 		$query = $this->smcFunc['htmltrim']($this->smcFunc['htmlspecialchars']($this->request('search')));
