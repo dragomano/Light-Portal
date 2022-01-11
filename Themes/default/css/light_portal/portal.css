@@ -1195,16 +1195,22 @@ section #display_head span {
   background: #d68b4f;
 }
 .new_posts.lp_type_impex {
-  background: #4b93d1;
+  background: #2361ad;
+}
+.new_posts.lp_type_block_options {
+  background: #ac7bd6;
+}
+.new_posts.lp_type_page_options {
+  background: #a39d47;
+}
+.new_posts.lp_type_icons {
+  background: #2a7750;
+}
+.new_posts.lp_type_seo {
+  background: #c61a12;
 }
 .new_posts.lp_type_other {
   background: #414141;
-}
-.new_posts.lp_type_block_options {
-  background: #8597ad;
-}
-.new_posts.lp_type_page_options {
-  background: #52647a;
 }
 .handle {
   cursor: grab;

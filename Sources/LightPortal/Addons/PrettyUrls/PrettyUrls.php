@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.01.22
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
@@ -22,7 +22,7 @@ if (! defined('LP_NAME'))
 
 class PrettyUrls extends Plugin
 {
-	public string $type = 'other';
+	public string $type = 'seo';
 
 	public function init()
 	{

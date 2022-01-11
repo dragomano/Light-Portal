@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 11.01.22
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -25,7 +25,7 @@ if (! defined('LP_NAME'))
  */
 class ExtendedMetaTags extends Plugin
 {
-	public string $type = 'page_options';
+	public string $type = 'page_options seo';
 
 	private array $meta_robots = ['', 'index, follow', 'index, nofollow', 'noindex, follow', 'noindex, nofollow'];
 	private array $meta_rating = ['', '14 years', 'adult', 'general', 'mature', 'restricted', 'save for kids'];

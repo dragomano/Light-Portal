@@ -225,9 +225,10 @@ final class PluginArea
 		if (empty($snake_name) || empty($type = $this->context['lp_loaded_addons'][$snake_name]['type'] ?? ''))
 			return [$this->txt['not_applicable'] => ''];
 
-		if (is_array($type)) {
+		$types = explode(' ', $type);
+		if (isset($types[1])) {
 			$all_types = [];
-			foreach ($type as $t) {
+			foreach ($types as $t) {
 				$all_types[$this->context['lp_plugin_types'][$t]] = $this->getTypeClass($t);
 			}
 
@@ -278,7 +279,7 @@ final class PluginArea
 					labels: ["' . implode('", "', $this->context['lp_plugin_types']) . '"],
 					datasets: [{
 						data: [' . implode(', ', $typeCount) . '],
-						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#4b93d1", "#414141", "#8597ad", "#52647a"]
+						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#2361ad", "#ac7bd6", "#a39d47", "#2a7750", "#c61a12", "#414141"]
 					}]
 				},
 				options: {
