@@ -13,8 +13,10 @@ Currently, the following types of addons are available:
 * 'article' — addons for processing the content of article cards on the main page
 * 'frontpage' — addons for changing the main page of the portal
 * 'impex' — addons for importing and exporting various portal elements
-* 'other' — addons that are not related to any of the categories above
 * 'block_options' and 'page_options' — addons that add additional parameters for the corresponding entity (block or page)
+* 'icons' — addons that add new icon libraries to replace interface elements or for use in block headers
+* 'seo' — addons that somehow affect the visibility of the forum on the network
+* 'other' — addons that are not related to any of the categories above
 
 ## Creating an addon directory
 Create a separate folder for your addon files, inside `/Sources/LightPortal/Addons`. For example, if your addon is called `HelloWorld`, the folder structure should look like this:
