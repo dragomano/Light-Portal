@@ -485,7 +485,15 @@ $smcFunc['db_add_index']('{db_prefix}settings', array(
 	'type' => 'primary'
 ));
 
-$add_settings = [];
+$smcFunc['db_query']('', '
+	DELETE FROM {db_prefix}background_tasks
+	WHERE task_file LIKE {string:task_file}',
+	[
+		'task_file' => '%$sourcedir/LightPortal%'
+	]
+);
+
+$add_settings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
 	$add_settings['lp_enabled_plugins'] = 'Trumbowyg,UserInfo,ThemeSwitcher';
 if (! isset($modSettings['lp_show_comment_block']))
