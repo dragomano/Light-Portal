@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Area.php
@@ -159,7 +157,7 @@ trait Area
 		return $this->getFloatSpan((empty($prefix) ? '' : ($prefix . ' ')) . $this->context['preview_title'], $this->context['right_to_left'] ? 'right' : 'left') . $this->getFloatSpan($this->txt['preview'], $this->context['right_to_left'] ? 'left' : 'right') . '<br>';
 	}
 
-	public function getFloatSpan(string $text, string $direction = 'left'): string
+	private function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}

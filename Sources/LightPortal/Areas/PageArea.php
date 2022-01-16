@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
+
 use function censorText;
 use function checkSubmitOnce;
 use function createList;
@@ -31,11 +32,12 @@ use function template_control_richedit;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageArea
+final class PageArea extends AbstractArea
 {
-	use Helper, Area;
-
 	public const NUM_PAGES = 20;
+
+	protected string $entity = 'page';
+
 	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 
 	public function main()
@@ -156,7 +158,7 @@ final class PageArea
 						'value' => $this->txt['lp_title'],
 					],
 					'data'   => [
-						'function' => fn($entry) => '<i class="' . ($this->context['lp_' . $entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . ($this->context['lp_loaded_addons'][$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -387,15 +389,12 @@ final class PageArea
 			case 'delete':
 				$this->remove($items);
 				break;
-
 			case 'toggle':
 				$this->toggleStatus($items, 'page');
 				break;
-
 			case 'promote_up':
 				$this->promote($items);
 				break;
-
 			case 'promote_down':
 				$this->promote($items, 'down');
 				break;
@@ -418,7 +417,6 @@ final class PageArea
 		];
 
 		$this->prepareForumLanguages();
-
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
@@ -1066,7 +1064,6 @@ final class PageArea
 			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
-				'page_id'     => $item,
 				'category_id' => $this->context['lp_page']['category'],
 				'author_id'   => $this->context['lp_page']['page_author'],
 				'alias'       => $this->context['lp_page']['alias'],
@@ -1076,6 +1073,7 @@ final class PageArea
 				'permissions' => $this->context['lp_page']['permissions'],
 				'status'      => $this->context['lp_page']['status'],
 				'updated_at'  => time(),
+				'page_id'     => $item,
 			]
 		);
 
@@ -1088,36 +1086,6 @@ final class PageArea
 		$this->saveOptions($item, 'replace');
 
 		$this->smcFunc['db_transaction']('commit');
-	}
-
-	private function saveTitles(int $item, string $method = '')
-	{
-		$titles = [];
-		foreach ($this->context['lp_page']['title'] as $lang => $title) {
-			$titles[] = [
-				'item_id' => $item,
-				'type'    => 'page',
-				'lang'    => $lang,
-				'title'   => $title,
-			];
-		}
-
-		if (empty($titles))
-			return;
-
-		$this->smcFunc['db_insert']($method,
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'title'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
-
-		$this->context['lp_num_queries']++;
 	}
 
 	private function saveTags()
@@ -1144,38 +1112,6 @@ final class PageArea
 		}
 
 		$this->context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
-	}
-
-	private function saveOptions(int $item, string $method = '')
-	{
-		$params = [];
-		foreach ($this->context['lp_page']['options'] as $param_name => $value) {
-			$value = is_array($value) ? implode(',', $value) : $value;
-
-			$params[] = [
-				'item_id' => $item,
-				'type'    => 'page',
-				'name'    => $param_name,
-				'value'   => $value,
-			];
-		}
-
-		if (empty($params))
-			return;
-
-		$this->smcFunc['db_insert']($method,
-			'{db_prefix}lp_params',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'name'    => 'string',
-				'value'   => 'string',
-			],
-			$params,
-			['item_id', 'type', 'name']
-		);
-
-		$this->context['lp_num_queries']++;
 	}
 
 	private function getAutoIncrementValue(): int

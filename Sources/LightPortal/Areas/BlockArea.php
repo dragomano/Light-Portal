@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * BlockArea.php
@@ -19,6 +17,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\LightPortal\Helper;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
+
 use function censorText;
 use function checkSubmitOnce;
 use function fatal_lang_error;
@@ -29,9 +28,9 @@ use function template_control_richedit;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BlockArea
+final class BlockArea extends AbstractArea
 {
-	use Helper, Area;
+	protected string $entity = 'block';
 
 	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
 
@@ -241,7 +240,8 @@ final class BlockArea
 
 			$data['title'][$row['lang']] = $row['title'];
 
-			$data['options']['parameters'][$row['name']] = $row['value'];
+			if (! empty($row['value']))
+				$data['options']['parameters'][$row['name']] = $row['value'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
@@ -750,6 +750,8 @@ final class BlockArea
 
 		$this->prepareBbcContent($this->context['lp_block']);
 
+		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'];
+
 		if (empty($item)) {
 			$item = $this->addData();
 		} else {
@@ -819,59 +821,8 @@ final class BlockArea
 
 		$this->hook('onBlockSaving', [$item]);
 
-		if (isset($this->context['lp_block']['title'])) {
-			$titles = [];
-			foreach ($this->context['lp_block']['title'] as $lang => $title) {
-				$titles[] = [
-					'item_id' => $item,
-					'type'    => 'block',
-					'lang'    => $lang,
-					'title'   => $title,
-				];
-			}
-
-			$this->smcFunc['db_insert']('',
-				'{db_prefix}lp_titles',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'title'   => 'string',
-				],
-				$titles,
-				['item_id', 'type', 'lang']
-			);
-
-			$this->context['lp_num_queries']++;
-		}
-
-		if (isset($this->context['lp_block']['options']['parameters'])) {
-			$params = [];
-			foreach ($this->context['lp_block']['options']['parameters'] as $param_name => $value) {
-				$value = is_array($value) ? implode(',', $value) : $value;
-
-				$params[] = [
-					'item_id' => $item,
-					'type'    => 'block',
-					'name'    => $param_name,
-					'value'   => $value,
-				];
-			}
-
-			$this->smcFunc['db_insert']('',
-				'{db_prefix}lp_params',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string',
-				],
-				$params,
-				['item_id', 'type', 'name']
-			);
-
-			$this->context['lp_num_queries']++;
-		}
+		$this->saveTitles($item);
+		$this->saveOptions($item);
 
 		$this->smcFunc['db_transaction']('commit');
 
@@ -887,7 +838,6 @@ final class BlockArea
 			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
 			WHERE block_id = {int:block_id}',
 			[
-				'block_id'      => $item,
 				'icon'          => $this->context['lp_block']['icon'],
 				'type'          => $this->context['lp_block']['type'],
 				'note'          => $this->context['lp_block']['note'],
@@ -899,6 +849,7 @@ final class BlockArea
 				'title_style'   => $this->context['lp_block']['title_style'],
 				'content_class' => $this->context['lp_block']['content_class'],
 				'content_style' => $this->context['lp_block']['content_style'],
+				'block_id'      => $item,
 			]
 		);
 
@@ -906,59 +857,8 @@ final class BlockArea
 
 		$this->hook('onBlockSaving', [$item]);
 
-		if (isset($this->context['lp_block']['title'])) {
-			$titles = [];
-			foreach ($this->context['lp_block']['title'] as $lang => $title) {
-				$titles[] = [
-					'item_id' => $item,
-					'type'    => 'block',
-					'lang'    => $lang,
-					'title'   => $title
-				];
-			}
-
-			$this->smcFunc['db_insert']('replace',
-				'{db_prefix}lp_titles',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'title'   => 'string'
-				],
-				$titles,
-				['item_id', 'type', 'lang']
-			);
-
-			$this->context['lp_num_queries']++;
-		}
-
-		if (isset($this->context['lp_block']['options']['parameters'])) {
-			$params = [];
-			foreach ($this->context['lp_block']['options']['parameters'] as $param_name => $value) {
-				$value = is_array($value) ? implode(',', $value) : $value;
-
-				$params[] = [
-					'item_id' => $item,
-					'type'    => 'block',
-					'name'    => $param_name,
-					'value'   => $value,
-				];
-			}
-
-			$this->smcFunc['db_insert']('replace',
-				'{db_prefix}lp_params',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string',
-				],
-				$params,
-				['item_id', 'type', 'name']
-			);
-
-			$this->context['lp_num_queries']++;
-		}
+		$this->saveTitles($item, 'replace');
+		$this->saveOptions($item, 'replace');
 
 		$this->smcFunc['db_transaction']('commit');
 
@@ -974,8 +874,12 @@ final class BlockArea
 	 */
 	private function prepareMissingBlockTypes(string $type)
 	{
-		if (! isset($this->txt['lp_' . $type]['title']))
-			$this->context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($this->txt['lp_addon_not_installed'], $this->getCamelName($type)) . '</span>';
+		if (isset($this->txt['lp_' . $type]['title']))
+			return;
+
+		$addon = $this->getCamelName($type);
+		$message = in_array($addon, $this->getAllAddons()) ? $this->txt['lp_addon_not_activated'] : $this->txt['lp_addon_not_installed'];
+		$this->context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
 	}
 
 	private function prepareBlockList()

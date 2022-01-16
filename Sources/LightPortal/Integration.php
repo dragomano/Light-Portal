@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Integration.php
@@ -16,7 +14,9 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities;
+use Bugo\LightPortal\Entities\{Block, Page, FrontPage};
+use Bugo\LightPortal\Lists\{Category, Tag};
+
 use function add_integration_function;
 use function loadLanguage;
 use function redirectexit;
@@ -63,7 +63,7 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0 alpha');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-12');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-01-25');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -97,8 +97,7 @@ final class Integration extends AbstractMain
 		$this->loadCssFiles();
 
 		(new Addon)->prepareAssets()->run();
-
-		(new Entities\Block)->show();
+		(new Block)->show();
 	}
 
 	public function redirect(string &$setLocation)
@@ -113,15 +112,15 @@ final class Integration extends AbstractMain
 	public function actions(array &$actions)
 	{
 		if (! empty($this->modSettings['lp_frontpage_mode']))
-			$actions[LP_ACTION] = ['LightPortal/Entities/FrontPage.php', [new Entities\FrontPage, 'show']];
+			$actions[LP_ACTION] = [false, [new FrontPage, 'show']];
 
 		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
-			call_user_func([new Lists\Category, 'show']);
+			(new Category)->show(new Page);
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'tags')
-			call_user_func([new Lists\Tag, 'show']);
+			(new Tag)->show(new Page);
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'promote')
 			$this->promoteTopic();
@@ -137,7 +136,7 @@ final class Integration extends AbstractMain
 	public function defaultAction()
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return call_user_func([new Entities\Page, 'show']);
+			return call_user_func([new Page, 'show']);
 
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
 			$this->require('BoardIndex');
@@ -145,7 +144,7 @@ final class Integration extends AbstractMain
 			return call_user_func('BoardIndex');
 		}
 
-		return call_user_func([new Entities\FrontPage, 'show']);
+		return call_user_func([new FrontPage, 'show']);
 	}
 
 	/**
@@ -346,7 +345,7 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_load_permissions
 	 */
-	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array $permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
@@ -428,10 +427,10 @@ final class Integration extends AbstractMain
 			return;
 
 		$profile_areas['info']['areas']['lp_my_blocks'] = [
-			'label' => $this->txt['lp_my_blocks'],
+			'label'      => $this->txt['lp_my_blocks'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
-			'icon' => 'modifications',
-			'enabled' => $this->request('area') === 'popup',
+			'icon'       => 'modifications',
+			'enabled'    => $this->request('area') === 'popup',
 			'permission' => [
 				'own' => ['light_portal_manage_own_blocks'],
 				'any' => []
@@ -439,10 +438,10 @@ final class Integration extends AbstractMain
 		];
 
 		$profile_areas['info']['areas']['lp_my_pages'] = [
-			'label' => $this->txt['lp_my_pages'],
+			'label'      => $this->txt['lp_my_pages'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
-			'icon' => 'reports',
-			'enabled' => $this->request('area') === 'popup',
+			'icon'       => 'reports',
+			'enabled'    => $this->request('area') === 'popup',
 			'permission' => [
 				'own' => ['light_portal_manage_own_pages'],
 				'any' => []

@@ -19,6 +19,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\LightPortal\{Addon, Helper};
 use ReflectionClass;
 use ReflectionException;
+
 use function checkSession;
 use function fetch_web_data;
 use function smf_json_decode;
@@ -49,7 +50,7 @@ final class PluginArea
 			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon'),
 		];
 
-		$this->context['lp_plugins'] = (new Addon)->getAll();
+		$this->context['lp_plugins'] = $this->getAllAddons();
 
 		$this->extendPluginList();
 

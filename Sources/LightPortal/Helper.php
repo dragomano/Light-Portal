@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Helper.php
@@ -16,11 +14,13 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, File, Request, Session};
+use Bugo\LightPortal\Utils\{Cache, Request};
+
 use DateTime;
 use DateTimeZone;
 use Exception;
 use IntlDateFormatter;
+
 use function getLanguages;
 use function loadMemberContext;
 use function loadTemplate;
@@ -32,6 +32,7 @@ if (! defined('SMF'))
 
 /**
  * @property array $context
+ * @property array $modSettings
  * @property array $txt
  * @property array $db_cache
  * @property array $db_temp_cache
@@ -39,7 +40,6 @@ if (! defined('SMF'))
  * @property-read array $user_info
  * @property-read array $user_profile
  * @property-read array $user_settings
- * @property-read array $modSettings
  * @property-read array $memberContext
  * @property-read array $settings
  * @property-read array $options
@@ -60,23 +60,14 @@ trait Helper
 		return $GLOBALS[$name];
 	}
 
-	public function require(string $filename)
+	/**
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function request(?string $key = null, $default = null)
 	{
-		if (empty($filename))
-			return;
-
-		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
-			require_once $path;
-	}
-
-	public function cache(?string $key = null): Cache
-	{
-		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
-	}
-
-	public function file(?string $key = null): File
-	{
-		return new File($key);
+		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
 	/**
@@ -86,27 +77,33 @@ trait Helper
 	 */
 	public function post(?string $key = null, $default = null)
 	{
-		return $key ? ((new Request(true))->get($key) ?? $default) : new Request(true);
+		return $key ? ((new Request('post'))->get($key) ?? $default) : new Request('post');
 	}
 
-	/**
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
-	 */
-	public function request(?string $key = null, $default = null)
+	public function cache(?string $key = null): Cache
 	{
-		return $key ? ((new Request)->get($key) ?? $default) : new Request;
+		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
-	public function session(): Session
+	public function files(?string $key = null)
 	{
-		return new Session;
+		return $key ? (new Request('files'))->get($key) : new Request('files');
+	}
+
+	public function session(): Request
+	{
+		return new Request('session');
 	}
 
 	public function hook(string $hook, array $vars = [], array $plugins = [])
 	{
 		(new Addon)->run($hook, $vars, $plugins);
+	}
+
+	public function require(string $filename)
+	{
+		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
+			require_once $path;
 	}
 
 	public function getAllTitles(string $type = 'page'): array
@@ -152,6 +149,11 @@ trait Helper
 	public function getAllTags()
 	{
 		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
+	}
+
+	public function getAllAddons(): array
+	{
+		return (new Addon)->getAll();
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
@@ -216,68 +218,6 @@ trait Helper
 		}
 
 		return $layouts;
-	}
-
-	/**
-	 * Get a list of all used classes for blocks with a header
-	 *
-	 * Получаем список всех используемых классов для блоков с заголовком
-	 */
-	public function getTitleClasses(): array
-	{
-		return [
-			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
-			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
-			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
-			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
-			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
-			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
-			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
-			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
-			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
-			''                     => '<div>%1$s</div>',
-		];
-	}
-
-	/**
-	 * Get a list of all used classes for blocks with content
-	 *
-	 * Получаем список всех используемых классов для блоков с контентом
-	 */
-	public function getContentClasses(): array
-	{
-		return [
-			'roundframe'           => '<div class="roundframe noup" %2$s>%1$s</div>',
-			'roundframe2'          => '<div class="roundframe" %2$s>%1$s</div>',
-			'windowbg'             => '<div class="windowbg noup" %2$s>%1$s</div>',
-			'windowbg2'            => '<div class="windowbg" %2$s>%1$s</div>',
-			'information'          => '<div class="information" %2$s>%1$s</div>',
-			'errorbox'             => '<div class="errorbox" %2$s>%1$s</div>',
-			'noticebox'            => '<div class="noticebox" %2$s>%1$s</div>',
-			'infobox'              => '<div class="infobox" %2$s>%1$s</div>',
-			'descbox'              => '<div class="descbox" %2$s>%1$s</div>',
-			'bbc_code'             => '<div class="bbc_code" %2$s>%1$s</div>',
-			'generic_list_wrapper' => '<div class="generic_list_wrapper" %2$s>%1$s</div>',
-			''                     => '<div%2$s>%1$s</div>',
-		];
-	}
-
-	public function getBlockPlacements(): array
-	{
-		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], $this->txt['lp_block_placement_set']);
-	}
-
-	public function getPageOptions(): array
-	{
-		return array_combine(['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'], $this->txt['lp_page_options']);
-	}
-
-	public function getPluginTypes(): array
-	{
-		return array_combine(
-			['block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
-			$this->txt['lp_plugins_types']
-		);
 	}
 
 	public function getContentTypes(): array
@@ -372,16 +312,16 @@ trait Helper
 		switch ($permissions) {
 			case 0:
 				return $this->user_info['is_admin'];
-
+				// no break
 			case 1:
 				return $this->user_info['is_guest'];
-
+				// no break
 			case 2:
 				return $this->user_info['id'] > 0;
-
+				// no break
 			case 4:
 				return $this->user_info['id'] === $check_id;
-
+				// no break
 			default:
 				return true;
 		}
@@ -437,23 +377,18 @@ trait Helper
 			case 'string':
 				$filter = FILTER_SANITIZE_STRING;
 				break;
-
 			case 'int':
 				$filter = FILTER_VALIDATE_INT;
 				break;
-
 			case 'float':
 				$filter = FILTER_VALIDATE_FLOAT;
 				break;
-
 			case 'bool':
 				$filter = FILTER_VALIDATE_BOOLEAN;
 				break;
-
 			case 'url':
 				$filter = FILTER_VALIDATE_URL;
 				break;
-
 			default:
 				$filter = FILTER_DEFAULT;
 		}

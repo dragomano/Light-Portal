@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Request.php
@@ -21,15 +19,25 @@ if (! defined('SMF'))
 
 final class Request
 {
-	protected array $storage = [];
+	private array $storage = [];
 
-	public function __construct($is_only_post = false)
+	public function __construct(string $type = 'request')
 	{
-		$this->storage = &$_REQUEST;
-
-		if ($is_only_post) {
-			$this->storage = &$_POST;
+		switch ($type) {
+			case 'post':
+				$data = &$_POST;
+				break;
+			case 'files':
+				$data = &$_FILES;
+				break;
+			case 'session':
+				$data = &$_SESSION;
+				break;
+			default:
+				$data = &$_REQUEST;
 		}
+
+		$this->storage = &$data;
 	}
 
 	/**
@@ -139,7 +147,7 @@ final class Request
 	 */
 	public function json(?string $key = null, $default = null)
 	{
-		$data = json_decode(file_get_contents('php://input'), true);
+		$data = json_decode(file_get_contents('php://input'), true) ?? [];
 
 		if (isset($data[$key])) {
 			return $data[$key] ?: $default;
@@ -148,8 +156,13 @@ final class Request
 		return $data;
 	}
 
-	public static function url(): string
+	public function url(): string
 	{
 		return $_SERVER['REQUEST_URL'] ?? '';
+	}
+
+	public function free(string $key)
+	{
+		unset($this->storage[$key]);
 	}
 }

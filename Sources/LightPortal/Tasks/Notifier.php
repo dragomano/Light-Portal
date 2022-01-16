@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Notifier.php
@@ -18,6 +16,7 @@ namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
 use SMF_BackgroundTask;
+
 use function getNotifyPrefs;
 use function loadMemberData;
 use function membersAllowedTo;

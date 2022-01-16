@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * IconList.php
@@ -21,7 +19,7 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class IconList implements IconListInterface
+final class IconList
 {
 	use Helper;
 

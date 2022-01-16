@@ -6,19 +6,19 @@ class PortalEntity {
 	async toggleStatus(target) {
 		const item = target.dataset.id
 
-		if (item) {
-			let response = await fetch(this.workUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					toggle_item: item
-				})
-			})
+		if (! item) return false
 
-			if (! response.ok) console.error(response)
-		}
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				toggle_item: item
+			})
+		})
+
+		if (! response.ok) console.error(response)
 	}
 
 	async remove(target) {
@@ -26,19 +26,19 @@ class PortalEntity {
 
 		const item = target.dataset.id
 
-		if (item) {
-			let response = await fetch(this.workUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					del_item: item
-				})
-			})
+		if (! item) return false
 
-			response.ok ? target.closest('tr').remove() : console.error(response)
-		}
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				del_item: item
+			})
+		})
+
+		response.ok ? target.closest('tr').remove() : console.error(response)
 	}
 
 	post(target) {
@@ -70,31 +70,27 @@ class Block extends PortalEntity {
 	async clone(target) {
 		const item = target.dataset.id
 
-		if (item) {
-			let response = await fetch(this.workUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					clone_block: item
-				})
+		if (! item) return false
+
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				clone_block: item
 			})
+		})
 
-			if (response.ok) {
-				const json = await response.json()
+		if (! response.ok) return console.error(response)
 
-				if (json.success) {
-					const div = target.cloneNode(true)
+		const json = await response.json()
 
-					div.dataset.id = json.id
-					target.after(div)
-				}
+		if (json.success) {
+			const div = target.cloneNode(true)
 
-				return
-			}
-
-			console.error(response)
+			div.dataset.id = json.id
+			target.after(div)
 		}
 	}
 
@@ -133,20 +129,16 @@ class Block extends PortalEntity {
 			})
 		})
 
-		if (response.ok) {
-			const nextElem = e.item.nextElementSibling
-			const prevElem = e.item.previousElementSibling
+		if (! response.ok) return console.error(response.status, priority)
 
-			if (nextElem && nextElem.className === 'windowbg centertext') {
-				nextElem.remove()
-			} else if (prevElem && prevElem.className === 'windowbg centertext') {
-				prevElem.remove()
-			}
+		const nextElem = e.item.nextElementSibling
+		const prevElem = e.item.previousElementSibling
 
-			return
+		if (nextElem && nextElem.className === 'windowbg centertext') {
+			nextElem.remove()
+		} else if (prevElem && prevElem.className === 'windowbg centertext') {
+			prevElem.remove()
 		}
-
-		console.error(response.status, priority)
 	}
 }
 
@@ -202,7 +194,7 @@ class Plugin extends PortalEntity {
 			})
 		})
 
-		if (! response.ok) console.error(response)
+		if (! response.ok) return console.error(response)
 
 		let togglerClass
 
@@ -228,7 +220,9 @@ class Plugin extends PortalEntity {
 	showSettings(target) {
 		const el = document.getElementById(target.dataset.id + '_settings')
 
+		this.toggleSpin(target)
 		el.style.display = el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none' ? 'block' : 'none'
+		setTimeout(() => this.toggleSpin(target), 1000);
 	}
 
 	hideSettings(target) {
@@ -329,22 +323,18 @@ class Category extends PortalEntity {
 			})
 		})
 
-		if (response.ok) {
-			const json = await response.json()
+		if (! response.ok) return console.error(response)
 
-			if (json.success) {
-				refs.category_list.insertAdjacentHTML('beforeend', json.section);
+		const json = await response.json()
 
-				refs.cat_name.value = ''
-				refs.cat_desc.value = ''
+		if (json.success) {
+			refs.category_list.insertAdjacentHTML('beforeend', json.section);
 
-				document.getElementById('category_desc' + json.item).focus()
-			}
+			refs.cat_name.value = ''
+			refs.cat_desc.value = ''
 
-			return
+			document.getElementById('category_desc' + json.item).focus()
 		}
-
-		console.error(response)
 	}
 
 	async updateName(target, event) {
@@ -371,19 +361,19 @@ class Category extends PortalEntity {
 	async updateDescription(target, value) {
 		const item = target.dataset.id
 
-		if (item) {
-			let response = await fetch(this.workUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					item,
-					desc: value
-				})
-			})
+		if (! item) return false
 
-			if (! response.ok) console.error(response)
-		}
+		let response = await fetch(this.workUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				item,
+				desc: value
+			})
+		})
+
+		if (! response.ok) console.error(response)
 	}
 }

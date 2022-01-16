@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * PageListInterface.php
@@ -17,6 +15,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Entities\Page;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +24,7 @@ abstract class AbstractPageList implements PageListInterface
 {
 	use Helper;
 
-	abstract public function show();
+	abstract public function show(Page $page);
 
 	abstract public function getPages(int $start, int $items_per_page, string $sort): array;
 

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Category.php
@@ -23,7 +21,7 @@ if (! defined('SMF'))
 
 final class Category extends AbstractPageList
 {
-	public function show()
+	public function show(Page $page)
 	{
 		if ($this->request()->has('id') === false)
 			$this->showAll();
@@ -58,9 +56,9 @@ final class Category extends AbstractPageList
 		];
 
 		if (! empty($this->modSettings['lp_show_items_as_articles']))
-			(new Page)->showAsCards($this);
+			$page->showAsCards($this);
 
-		$listOptions = (new Page)->getList();
+		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']

@@ -314,6 +314,7 @@ $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
+$txt['lp_addon_not_activated'] = 'Plugin %1$s is not activated';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * AbstractOtherPageImport.php
@@ -16,6 +14,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
+
 use function fatal_lang_error;
 
 if (! defined('SMF'))

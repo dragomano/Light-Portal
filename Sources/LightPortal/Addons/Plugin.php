@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Plugin.php
@@ -26,16 +24,12 @@ abstract class Plugin
 {
 	use Helper;
 
-	/** Addon type */
 	public string $type = 'block';
 
-	/** Block icon */
 	public string $icon = 'fas fa-puzzle-piece';
 
-	/** Addon author */
 	public string $author = '';
 
-	/** Addon site link */
 	public string $link = '';
 
 	public function getCalledClass(): ReflectionClass

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * ConfigArea.php
@@ -16,7 +14,15 @@ declare(strict_types = 1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Helper, Impex\BlockExport, Impex\BlockImport, Impex\PageExport, Impex\PageImport, Lists\Category};
+use Bugo\LightPortal\{
+	Helper,
+	Impex\BlockExport,
+	Impex\BlockImport,
+	Impex\PageExport,
+	Impex\PageImport,
+	Lists\Category
+};
+
 use function addInlineCss;
 use function call_helper;
 use function checkSession;

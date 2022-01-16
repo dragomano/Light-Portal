@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Comment.php
@@ -17,10 +15,10 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+
 use function addInlineJavaScript;
 use function censorText;
 use function un_preparsecode;
-use function loadMemberData;
 use function preparsecode;
 use function send_http_status;
 
@@ -51,11 +49,9 @@ final class Comment
 				case 'add_comment':
 					$this->add();
 					break;
-
 				case 'edit_comment':
 					$this->edit();
 					break;
-
 				case 'del_comment':
 					$this->remove();
 					break;
@@ -139,7 +135,7 @@ final class Comment
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $this->getCommentsWithUserAvatars($comments);
+		return $this->getItemsWithUserAvatars($comments, 'poster');
 	}
 
 	private function add()
@@ -358,7 +354,7 @@ final class Comment
 					'extra'          => $this->smcFunc['json_encode']([
 						'content_subject' => $options['title'],
 						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item'],
-                        'sender_gender'   => $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === 'Female' ? 'female' : 'male'
+						'sender_gender'   => $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === 'Female' ? 'female' : 'male'
 					])
 				]),
 			],
@@ -387,27 +383,5 @@ final class Comment
 			return LP_BASE_URL;
 
 		return $this->context['canonical_url'];
-	}
-
-	private function getCommentsWithUserAvatars(array $comments): array
-	{
-		$userData = loadMemberData(array_map(fn($item) => $item['poster']['id'], $comments));
-
-		return array_map(function ($item) use ($userData) {
-			if ($item['poster']['id'] && in_array($item['poster']['id'], $userData)) {
-				if (! isset($this->memberContext[$item['poster']['id']]))
-					try {
-						loadMemberContext($item['poster']['id']);
-					} catch (\Exception $e) {
-						log_error('[LP] Comments (page #' . $item['page_id'] . ', user #' . $item['poster']['id'] . '): ' . $e->getMessage(), 'user');
-					}
-
-				$item['poster']['avatar'] = $this->memberContext[$item['poster']['id']]['avatar']['image'];
-			} else {
-				$item['poster']['avatar'] = '<img class="avatar" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $item['poster']['name'] . '">';
-			}
-
-			return $item;
-		}, $comments);
 	}
 }

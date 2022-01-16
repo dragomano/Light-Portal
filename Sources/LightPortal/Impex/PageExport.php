@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * PageExport.php
@@ -20,6 +18,7 @@ use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Lists\Category;
 use DomDocument;
 use DOMException;
+
 use function createList;
 use function log_error;
 

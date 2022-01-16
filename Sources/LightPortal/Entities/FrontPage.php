@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * FrontPage.php
@@ -18,6 +16,7 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
+
 use function isAllowedTo;
 use function loadTemplate;
 use function send_http_status;
@@ -122,15 +121,12 @@ final class FrontPage
 			case '1':
 				$num_columns /= 2;
 				break;
-
 			case '2':
 				$num_columns /= 3;
 				break;
-
 			case '3':
 				$num_columns /= 4;
 				break;
-
 			default:
 				$num_columns /= 6;
 		}

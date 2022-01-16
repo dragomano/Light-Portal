@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Cache.php
@@ -26,7 +24,9 @@ if (! defined('SMF'))
 final class Cache
 {
 	private string $prefix = 'lp_';
+
 	private ?string $key;
+
 	private int $lifeTime = 0;
 
 	public function __construct(?string $key = null)

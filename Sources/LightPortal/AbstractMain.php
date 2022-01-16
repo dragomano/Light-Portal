@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * AbstractMain.php
@@ -232,5 +230,67 @@ abstract class AbstractMain
 		}
 
 		return array_values($num_entities);
+	}
+
+	/**
+	 * Get a list of all used classes for blocks with a header
+	 *
+	 * Получаем список всех используемых классов для блоков с заголовком
+	 */
+	private function getTitleClasses(): array
+	{
+		return [
+			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
+			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
+			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
+			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
+			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
+			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
+			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
+			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
+			''                     => '<div>%1$s</div>',
+		];
+	}
+
+	/**
+	 * Get a list of all used classes for blocks with content
+	 *
+	 * Получаем список всех используемых классов для блоков с контентом
+	 */
+	private function getContentClasses(): array
+	{
+		return [
+			'roundframe'           => '<div class="roundframe noup" %2$s>%1$s</div>',
+			'roundframe2'          => '<div class="roundframe" %2$s>%1$s</div>',
+			'windowbg'             => '<div class="windowbg noup" %2$s>%1$s</div>',
+			'windowbg2'            => '<div class="windowbg" %2$s>%1$s</div>',
+			'information'          => '<div class="information" %2$s>%1$s</div>',
+			'errorbox'             => '<div class="errorbox" %2$s>%1$s</div>',
+			'noticebox'            => '<div class="noticebox" %2$s>%1$s</div>',
+			'infobox'              => '<div class="infobox" %2$s>%1$s</div>',
+			'descbox'              => '<div class="descbox" %2$s>%1$s</div>',
+			'bbc_code'             => '<div class="bbc_code" %2$s>%1$s</div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper" %2$s>%1$s</div>',
+			''                     => '<div%2$s>%1$s</div>',
+		];
+	}
+
+	private function getBlockPlacements(): array
+	{
+		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], $this->txt['lp_block_placement_set']);
+	}
+
+	private function getPageOptions(): array
+	{
+		return array_combine(['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'], $this->txt['lp_page_options']);
+	}
+
+	private function getPluginTypes(): array
+	{
+		return array_combine(
+			['block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
+			$this->txt['lp_plugins_types']
+		);
 	}
 }

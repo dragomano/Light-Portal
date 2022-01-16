@@ -1,7 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Integration;
-use Bugo\LightPortal\Addon;
+use Bugo\LightPortal\{Addon, Integration};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -12,12 +11,12 @@ spl_autoload_register(function ($classname) {
 		return false;
 
 	$classname = str_replace('\\', '/', str_replace('Bugo\LightPortal\\', '', $classname));
-	$file_path = __DIR__ . '/' . $classname . '.php';
+	$path = __DIR__ . '/' . $classname . '.php';
 
-	if (! file_exists($file_path))
+	if (! file_exists($path))
 		return false;
 
-	require_once $file_path;
+	require_once $path;
 
 	return true;
 });
@@ -25,7 +24,7 @@ spl_autoload_register(function ($classname) {
 // Define important helper functions
 function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_time = 0): string
 {
-	global $context;
+	$context = $GLOBALS['context'];
 
 	$parameters = ($context['lp_active_blocks'][$block_id] ?? $context['lp_block']['options'])['parameters'] ?? [];
 
@@ -76,11 +75,13 @@ function parse_content(string $content, string $type = 'bbc'): string
  */
 function __(string $pattern, array $values = []): string
 {
-	global $txt;
+	$txt = $GLOBALS['txt'];
 
-	if (extension_loaded('intl')) {
+	if (empty($txt['lang_locale']))
+		return '';
+
+	if (extension_loaded('intl'))
 		return MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
-	}
 
 	log_error('[LP] __ helper: enable intl extension', 'critical');
 
@@ -88,5 +89,5 @@ function __(string $pattern, array $values = []): string
 }
 
 // Run portal
-$portal = new Integration;
+$portal = new Integration();
 $portal->hooks();

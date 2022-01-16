@@ -67,7 +67,7 @@ return [
 		'Which is more interesting - to study ready-made plugins or to make your own?',
 		'Whatever you call the ship, that is how it sails. Does this apply to plugins? Who knows....',
 		'No way to make a plugin without a type. Like a ship without an anchor.',
-		'The description should be clear to anyone (even to a hedgehog).',
+		'The description should be clear to anyone.',
 		'No way to make a plugin without a census. The world needs to know its heroes!',
 		'If your plugin cannot work without settings, take a look here.',
 		'Lastly, a little bit of paperwork. Well, where would not it be?',

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Page.php
@@ -18,6 +16,7 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Lists\PageListInterface;
+
 use function censorText;
 use function fatal_lang_error;
 use function isAllowedTo;

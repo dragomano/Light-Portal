@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * BlockExport.php
@@ -19,6 +17,7 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Areas\BlockArea;
 use DomDocument;
 use DOMException;
+
 use function loadTemplate;
 use function log_error;
 

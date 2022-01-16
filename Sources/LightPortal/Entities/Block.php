@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Block.php
@@ -17,6 +15,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+
 use function censorText;
 use function loadTemplate;
 

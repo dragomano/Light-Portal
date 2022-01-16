@@ -59,9 +59,7 @@ class Comment {
 
 		const toolbar = refs.comment_form.querySelector('.toolbar')
 
-		if (toolbar) {
-			toolbar.style.display = 'none'
-		}
+		if (toolbar) toolbar.style.display = 'none'
 
 		this.totalParentComments++
 
@@ -203,13 +201,11 @@ class Comment {
 			})
 		})
 
-		if (response.ok) {
-			let comment = await response.json()
+		if (! response.ok) return console.error(response)
 
-			this.cancel(target, comment)
-		} else {
-			console.error(response)
-		}
+		let comment = await response.json()
+
+		this.cancel(target, comment)
 	}
 
 	cancel(target, source = null) {
@@ -233,38 +229,34 @@ class Comment {
 	async remove(target) {
 		const item = target.dataset.id
 
-		if (target.dataset.level === '1') {
-			this.totalParentComments--
-		}
+		if (target.dataset.level === '1') this.totalParentComments--
 
-		if (item) {
-			const items = [item],
-				commentTree = document.querySelectorAll('li[data-id="' + item + '"] li'),
-				removedItem = target.closest('li')
+		if (! item) return
 
-			commentTree.forEach(function (el) {
-				if (el.dataset.id) items.push(el.dataset.id)
+		const items = [item],
+			commentTree = document.querySelectorAll('li[data-id="' + item + '"] li'),
+			removedItem = target.closest('li')
+
+		commentTree.forEach(function (el) {
+			if (el.dataset.id) items.push(el.dataset.id)
+		})
+
+		let response = await fetch(this.pageUrl + 'sa=del_comment', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				items
 			})
+		})
 
-			let response = await fetch(this.pageUrl + 'sa=del_comment', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					items
-				})
-			})
+		if (! response.ok) return console.error(response)
 
-			if (response.ok) {
-				setTimeout(() => {
-					removedItem.style.opacity = 0;
-					setTimeout(() => removedItem.remove(), 300);
-				}, 400);
-			} else {
-				console.error(response)
-			}
-		}
+		setTimeout(() => {
+			removedItem.style.opacity = 0;
+			setTimeout(() => removedItem.remove(), 300);
+		}, 400);
 	}
 }
 

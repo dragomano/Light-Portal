@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * CreditArea.php
@@ -17,6 +15,7 @@ declare(strict_types = 1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+
 use function isAllowedTo;
 use function loadTemplate;
 use function obExit;
@@ -57,10 +56,11 @@ final class CreditArea
 		isAllowedTo('light_portal_view');
 
 		$this->context['portal_translations'] = [
-			'Polish'  => ['Adrek', 'jsqx'],
-			'Spanish' => ['Rock Lee', 'Diego Andrés'],
-			'French'  => ['Papoune57'],
-			'Turkish' => ['gevv'],
+			'Polish'    => ['Adrek', 'jsqx'],
+			'Spanish'   => ['Rock Lee', 'Diego Andrés'],
+			'French'    => ['Papoune57'],
+			'Turkish'   => ['gevv'],
+			'Ukrainian' => ['valciriya1986']
 		];
 
 		$this->context['testers'] = [

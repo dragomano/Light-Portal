@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * Tag.php
@@ -23,7 +21,7 @@ if (! defined('SMF'))
 
 final class Tag extends AbstractPageList
 {
-	public function show()
+	public function show(Page $page)
 	{
 		if ($this->request()->has('id') === false)
 			$this->showAll();
@@ -50,9 +48,9 @@ final class Tag extends AbstractPageList
 		];
 
 		if (! empty($this->modSettings['lp_show_items_as_articles']))
-			(new Page)->showAsCards($this);
+			$page->showAsCards($this);
 
-		$listOptions = (new Page)->getList();
+		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_tags';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']
