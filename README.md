@@ -8,22 +8,21 @@
 * **Author:** Bugo [dragomano.ru](https://dragomano.ru/mods/light-portal)
 * **License:** [GNU GPLv3](https://github.com/dragomano/Light-Portal/blob/master/LICENSE)
 * **Compatible with:** SMF 2.1+ / PHP 7.4+
-* **Tested on:** PHP 7.4.26-8.1.0 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 9.6.22
+* **Tested on:** PHP 7.4.27-8.1.1 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 9.6.22
 * **Hooks only:** Yes
 * **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian
 
 ## Description
-This modification will transform your forum into a portal that includes:
-* the customizable frontpage,
-* separate pages with keywords,
+This modification will transform your forum into a portal that includes:
+* the customizable frontpage,
+* separate pages with keywords,
 * blocks within 12-column flexbox grid.
 
-The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) content within pages and custom blocks.
+The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via plugins) content within pages and custom blocks.
 
 ### Features:
 * Blocks and pages with multilingual titles.
-* 120 block appearance options.
-* Support for the FontAwesome icons.
+* Support for the FontAwesome icons and any other similar packs.
 * Using the Flexbox to output blocks.
 * Available panels: header, left and right sidebars, center (top and bottom), footer.
 * Frontpage article system: portal pages, forum topics, or boards.
@@ -34,20 +33,18 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 * Import and export for pages and blocks.
 * Support for addons (+ Plugin Maker).
 * Support for standalone mode.
-* Caching for portal elements.
 
 ## Описание
 Модификация преобразует ваш форум в портал:
-* настраиваемая главная страница,
-* отдельные страницы с ключевыми словами,
+* настраиваемая главная страница,
+* отдельные страницы с ключевыми словами,
 * блоки внутри 12-колоночной flexbox-сетки.
 
-Поддержка контента с форумными тегами, HTML, PHP, Markdown (через плагин), и Pug (через плагин) в страницах и пользовательских блоках.
+Поддержка контента с форумными тегами (BBCode), HTML, PHP, а также Markdown, Pug и даже Twig (через плагины) в страницах и пользовательских блоках.
 
 ### Особенности:
 * Блоки и страницы с многоязычными заголовками.
-* 120 вариантов оформления блоков.
-* Поддержка иконок FontAwesome.
+* Поддержка иконок FontAwesome и любых других подобных.
 * Использование Flexbox для вывода блоков.
 * Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
 * Статьи на главной: отображение тем, разделов или страниц портала.
@@ -58,21 +55,12 @@ The portal supports BBC, HTML, PHP, Markdown (via addon), and Pug (via addon) c
 * Импорт и экспорт страниц и блоков.
 * Поддержка плагинов (+ мастер создания плагинов).
 * Поддержка автономного режима.
-* Кэширование элементов портала.
-
-## Roadmap
-
-- [x] Migrate to PHP 7.4
-- [x] Migrate to AlpineJS 3
-- [ ] New UI icons
-- [ ] Rating of comments
-- [ ] Ajax pagination
-- [ ] Tests
 
 ## Supported by
 
-[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo." width="250">](https://www.jetbrains.com/?from=LightPortal)
-[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo." width="250">](https://crowdin.com/project/light-portal)
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo" width="250">](https://www.jetbrains.com/?from=LightPortal)
+[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo" width="250">](https://crowdin.com/project/light-portal)
+[<img src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11ddcc39341db4958c5cc_Supportbutton.png" alt="Ko-fi logo" width="250">](https://ko-fi.com/dragomano)
 
 ### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY.
