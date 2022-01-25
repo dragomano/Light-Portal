@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, Request};
+use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
 
 use DateTime;
 use DateTimeZone;
@@ -77,7 +77,7 @@ trait Helper
 	 */
 	public function post(?string $key = null, $default = null)
 	{
-		return $key ? ((new Request('post'))->get($key) ?? $default) : new Request('post');
+		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
 	public function cache(?string $key = null): Cache
@@ -87,12 +87,12 @@ trait Helper
 
 	public function files(?string $key = null)
 	{
-		return $key ? (new Request('files'))->get($key) : new Request('files');
+		return $key ? (new File())->get($key) : new File();
 	}
 
-	public function session(): Request
+	public function session(): Session
 	{
-		return new Request('session');
+		return new Session;
 	}
 
 	public function hook(string $hook, array $vars = [], array $plugins = [])
