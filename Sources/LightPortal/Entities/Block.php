@@ -175,7 +175,7 @@ final class Block
 					$topics = $this->getAllowedIds($entity[1]);
 			}
 
-			return in_array($this->context['current_board'], $boards) || (isset($cthis->ontext['current_topic']) && in_array($this->context['current_topic'], $topics));
+			return in_array($this->context['current_board'], $boards) || (isset($this->context['current_topic']) && in_array($this->context['current_topic'], $topics));
 		});
 	}
 

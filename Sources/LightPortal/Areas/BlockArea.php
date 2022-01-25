@@ -750,7 +750,7 @@ final class BlockArea extends AbstractArea
 
 		$this->prepareBbcContent($this->context['lp_block']);
 
-		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'];
+		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'] ?? [];
 
 		if (empty($item)) {
 			$item = $this->addData();
