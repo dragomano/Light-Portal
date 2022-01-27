@@ -1004,17 +1004,23 @@ section #display_head span {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
 }
+.article_simple3_view > div .title div a {
+  line-height: 1.2em;
+}
 .article_simple3_view > div .tags {
   padding: 1rem 1.5rem 0.5rem;
 }
 .article_simple3_view > div .tags a {
   display: inline-block;
-  border-radius: 9999px;
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
+}
+.article_simple3_view > div .tags a:hover {
+  border-bottom: 1px dashed #ef564f;
+  text-decoration: none;
 }
 .comment_list {
   list-style: none;

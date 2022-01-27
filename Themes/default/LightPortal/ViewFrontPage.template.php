@@ -641,7 +641,7 @@ function template_show_articles_simple3()
 
 			foreach ($article['tags'] as $key) {
 				echo '
-					<a class="new_posts" href="', $key['href'], '">#', $key['name'], '</a>';
+					<a href="', $key['href'], '">#', $key['name'], '</a>';
 			}
 
 			echo '
