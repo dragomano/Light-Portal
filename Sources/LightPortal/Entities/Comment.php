@@ -296,8 +296,7 @@ final class Comment
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE WHEN num_comments - {int:num_items} >= 0 THEN num_comments - {int:num_items}
-				ELSE num_comments END
+			SET num_comments = CASE WHEN CAST(num_comments AS SIGNED) - {int:num_items} > 0 THEN CAST(num_comments AS SIGNED) - {int:num_items} ELSE 0 END
 			WHERE alias = {string:alias}',
 			[
 				'num_items' => count($items),
