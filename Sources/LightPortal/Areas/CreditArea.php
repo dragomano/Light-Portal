@@ -157,6 +157,15 @@ final class CreditArea
 					'link' => 'https://jscolor.com/download/#open-source-license'
 				]
 			],
+			[
+				'title' => 'LazyLoad',
+				'link' => 'https://github.com/verlok/vanilla-lazyload',
+				'author' => 'Andrea Verlicchi',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/verlok/vanilla-lazyload/blob/master/LICENSE'
+				]
+			]
 		];
 
 		// Adding copyrights of used plugins

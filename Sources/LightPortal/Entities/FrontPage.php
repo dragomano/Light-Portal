@@ -63,6 +63,8 @@ final class FrontPage
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
+		$this->addLazyLoadingForImages();
+
 		// Also, theme makers can load their own layouts from the special template file
 		if (is_file($this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			loadTemplate('CustomFrontPage');
@@ -220,5 +222,12 @@ final class FrontPage
 		}
 
 		$start = (int) abs($start);
+	}
+
+	private function addLazyLoadingForImages()
+	{
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js', ['external' => true]);
+		addInlineJavaScript('
+		new LazyLoad();', true);
 	}
 }

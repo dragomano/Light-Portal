@@ -63,7 +63,7 @@ function template_show_articles()
 			echo '
 				<div class="card_img"></div>
 				<a href="', $article['link'], '">
-					<div class="card_img_hover" style="background-image: url(\'', $article['image'], '\')"></div>
+					<div class="card_img_hover lazy" data-bg="', $article['image'], '"></div>
 				</a>';
 		}
 
@@ -216,7 +216,7 @@ function template_show_articles_alt()
 
 		if (! empty($article['image'])) {
 			echo '
-					<img src="', $article['image'], '" alt="', $article['title'], '">';
+					<img class="lazy" data-src="', $article['image'], '" width="443" height="221" alt="', $article['title'], '">';
 		}
 
 		echo '
@@ -293,7 +293,7 @@ function template_show_articles_alt2()
 		if (! empty($article['image'])) {
 			echo '
 			<a class="article_image_link" href="', $article['link'], '">
-				<div style="background-image: url(\'' . $article['image'] . '\')"></div>
+				<div class="lazy" data-bg="', $article['image'], '"></div>
 			</a>';
 		}
 
@@ -387,7 +387,7 @@ function template_show_articles_alt3()
 
 		if (! empty($article['image'])) {
 			echo '
-				<div class="photo" style="background-image: url(\'', $article['image'], '\')"></div>';
+				<div class="photo lazy" data-bg="', $article['image'], '"></div>';
 		}
 
 		echo '
@@ -489,7 +489,7 @@ function template_show_articles_simple()
 
 		if (! empty($article['image'])) {
 			echo '
-			<div class="article_image" style="background-image: url(\'' . $article['image'] . '\')"></div>';
+			<div class="article_image lazy" data-bg="', $article['image'], '"></div>';
 		}
 
 		echo '
@@ -542,7 +542,7 @@ function template_show_articles_simple2()
 		<div class="col-xs-12">
 			<div class="card">
 				<div class="card-header">
-					<div class="card-image" style="background-image: url(\'' . $article['image'] . '\')"></div>
+					<div class="card-image lazy" data-bg="', $article['image'], '"></div>
 					<div class="card-title">
 						<h3>', $article['title'], '</h3>';
 
@@ -620,7 +620,7 @@ function template_show_articles_simple3()
 
 		if (! empty($article['image'])) {
 			echo '
-				<img src="', $article['image'], '" alt="', $article['title'], '">';
+				<img class="lazy" data-src="', $article['image'], '" width="311" height="155" alt="', $article['title'], '">';
 		}
 
 		echo '
