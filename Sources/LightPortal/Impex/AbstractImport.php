@@ -30,7 +30,7 @@ abstract class AbstractImport implements ImportInterface
 	 */
 	protected function getXmlFile()
 	{
-		if (empty($file = $this->file('import_file')->get()))
+		if (empty($file = $this->files('import_file')))
 			return false;
 
 		// Might take some time.

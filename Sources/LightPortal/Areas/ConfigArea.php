@@ -169,7 +169,7 @@ final class ConfigArea
 
 		// Tabs
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
-			'title' => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
+			'title' => LP_NAME,
 			'tabs' => [
 				'basic' => [
 					'description' => '<img class="floatright" src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png" alt="Light Portal logo">' . sprintf($this->txt['lp_base_info'], LP_VERSION, phpversion(), $this->smcFunc['db_title'], $this->smcFunc['db_get_version']())
@@ -737,6 +737,8 @@ final class ConfigArea
 	 */
 	private function loadGeneralSettingParameters(array $subActions = [], ?string $defaultAction = null)
 	{
+		$this->showDocsLink();
+
 		$this->require('ManageServer');
 
 		$this->context['sub_template'] = 'show_settings';
@@ -748,6 +750,15 @@ final class ConfigArea
 		$this->context['sub_action'] = $subAction;
 
 		call_helper($subActions[$subAction]);
+	}
+
+	private function showDocsLink()
+	{
+		if (! empty($this->context['template_layers']) && strpos($this->request('area'), 'lp_') !== false) {
+			loadTemplate('LightPortal/ViewDebug');
+
+			$this->context['template_layers'][] = 'docs';
+		}
 	}
 
 	private function generateDumpFile()

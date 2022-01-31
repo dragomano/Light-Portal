@@ -48,7 +48,7 @@ final class PageArea extends AbstractArea
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_manage'];
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
-			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
+			'title'       => LP_NAME,
 			'description' => $this->txt['lp_pages_manage_' . ($this->context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
 
@@ -1009,7 +1009,7 @@ final class PageArea extends AbstractArea
 	{
 		$this->smcFunc['db_transaction']('begin');
 
-		$item = $this->smcFunc['db_insert']('',
+		$item = (int) $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_pages',
 			array_merge([
 				'category_id' => 'int',

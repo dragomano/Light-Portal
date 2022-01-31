@@ -119,7 +119,7 @@ class TopicArticle extends AbstractArticle
 
 				$image = empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(parse_bbc($row['body'], false));
 
-				if ($row['id_attach'] && empty($image)) {
+				if (! empty($row['id_attach']) && empty($image)) {
 					$image = $this->scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
 				}
 

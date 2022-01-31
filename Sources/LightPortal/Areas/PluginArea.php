@@ -46,7 +46,7 @@ final class PluginArea
 		$this->context['post_url'] = $this->scripturl . '?action=admin;area=lp_plugins;save';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
-			'title'       => '<a href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener"><span class="main_icons help"></span></a> ' . LP_NAME,
+			'title'       => LP_NAME,
 			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon'),
 		];
 

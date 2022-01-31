@@ -1,5 +1,17 @@
 <?php
 
+function template_docs_above()
+{
+	global $context, $txt;
+
+	echo '
+	<div class="infobox"><a class="bbc_link" href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener">', $txt['admin_search_type_online'], '</a></div>';
+}
+
+function template_docs_below()
+{
+}
+
 function template_debug_above()
 {
 }

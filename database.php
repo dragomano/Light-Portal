@@ -11,7 +11,7 @@ if (version_compare(PHP_VERSION, '7.4', '<'))
 if (! extension_loaded('intl'))
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
 
-global $user_info, $mbname, $modSettings, $settings;
+global $user_info, $mbname, $modSettings, $settings, $db_type;
 
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
@@ -479,11 +479,13 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
-$smcFunc['db_remove_index']('{db_prefix}settings', 'primary');
-$smcFunc['db_add_index']('{db_prefix}settings', array(
-	'columns' => array('variable(60)'),
-	'type' => 'primary'
-));
+if ($db_type !== 'postgresql') {
+	$smcFunc['db_remove_index']('{db_prefix}settings', 'primary');
+	$smcFunc['db_add_index']('{db_prefix}settings', array(
+		'columns' => array('variable(60)'),
+		'type' => 'primary'
+	));
+}
 
 $smcFunc['db_query']('', '
 	DELETE FROM {db_prefix}background_tasks
