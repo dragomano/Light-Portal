@@ -87,7 +87,7 @@ return [
 			position: "right"
 		},
 		{
-			element: document.querySelector("#adm_submenus + .cat_bar"),
+			element: document.querySelector(".infobox + .cat_bar"),
 			intro: "' . $this->txt['lp_hello_portal']['blocks_tour'][1] . '"
 		},
 		{
@@ -156,11 +156,11 @@ return [
 			position: "right"
 		},
 		{
-			element: document.querySelector(".features .lp_plugin_settings"),
+			element: document.querySelector(".features .gear"),
 			intro: "' . $this->txt['lp_hello_portal']['plugins_tour'][3] . '"
 		},
 		{
-			element: document.querySelector(".features .lp_plugin_toggle"),
+			element: document.querySelector(".features .gear + i"),
 			intro: "' . $this->txt['lp_hello_portal']['plugins_tour'][4] . '"
 		}',
 	'add_plugins' => '
