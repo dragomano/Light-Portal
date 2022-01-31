@@ -203,13 +203,10 @@ final class FrontPage
 		$paginate = '';
 
 		if ($prev >= 0)
-			$paginate .= $this->context['lp_icon_set']['arrow_left'] . '<a href="' . $url . ';start=' . $prev . '">' . $this->txt['prev'] . '</a>';
-
-		if ($prev >= 0 && $next)
-			$paginate .= ' ' . $this->context['lp_icon_set']['map_signs'];
+			$paginate .= '<a class="button" href="' . $url . ';start=' . $prev . '">' . $this->context['lp_icon_set']['arrow_left'] . ' ' . $this->txt['prev'] . '</a>';
 
 		if ($next)
-			$paginate .= '<a href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . '</a> ' . $this->context['lp_icon_set']['arrow_right'];
+			$paginate .= '<a class="button" href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . ' ' . $this->context['lp_icon_set']['arrow_right'] . '</a>';
 
 		return $paginate;
 	}
