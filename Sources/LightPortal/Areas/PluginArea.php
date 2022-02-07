@@ -189,7 +189,7 @@ final class PluginArea
 		$this->context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$link = $this->user_info['ip'] === '127.0.0.1' ? $this->boardurl . '/addons.json' : 'https://dragomano.ru/addons.json';
+			$link = 'https://gist.githubusercontent.com/dragomano/5afc89aa2ec61281773e4d016e122fa7/raw/9fcc5bb5f2c3627680c3a34ec0003bbca5f12685/addons.json';
 
 			$addon_list = fetch_web_data($link);
 
