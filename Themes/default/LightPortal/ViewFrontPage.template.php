@@ -282,7 +282,7 @@ function template_show_articles_alt2()
 	<div class="col-xs">';
 
 	echo '
-	<div class="article_alt2_view">';
+	<div class="lp_frontpage_articles article_alt2_view">';
 
 	show_pagination();
 
@@ -612,7 +612,7 @@ function template_show_articles_simple3()
 	show_pagination();
 
 	echo '
-		<div class="article_simple3_view">';
+		<div class="lp_frontpage_articles article_simple3_view">';
 
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
