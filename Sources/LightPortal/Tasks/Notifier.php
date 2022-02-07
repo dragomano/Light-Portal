@@ -75,7 +75,7 @@ final class Notifier extends SMF_BackgroundTask
 			}
 		}
 
-		if ($notifies['alert']) {
+		if (! empty($notifies['alert'])) {
 			$insert_rows = [];
 			foreach ($notifies['alert'] as $member) {
 				$insert_rows[] = [

@@ -128,7 +128,7 @@ final class Comment
 				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
 				'raw_message' => un_preparsecode($row['message']),
 				'created_at'  => (int) $row['created_at'],
-				'can_edit'    => $this->modSettings['lp_time_to_change_comments'] && time() - $row['created_at'] <= (int) $this->modSettings['lp_time_to_change_comments'] * 60
+				'can_edit'    => $this->isCanEdit((int) $row['created_at'])
 			];
 		}
 
@@ -136,6 +136,16 @@ final class Comment
 		$this->context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($comments, 'poster');
+	}
+
+	private function isCanEdit(int $date): bool
+	{
+		if (empty($this->modSettings['lp_time_to_change_comments']))
+			return false;
+
+		$time_to_change = (int) $this->modSettings['lp_time_to_change_comments'];
+
+		return $time_to_change && time() - $date <= $time_to_change * 60;
 	}
 
 	private function add()
@@ -353,7 +363,7 @@ final class Comment
 					'extra'          => $this->smcFunc['json_encode']([
 						'content_subject' => $options['title'],
 						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item'],
-						'sender_gender'   => $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === 'Female' ? 'female' : 'male'
+						'sender_gender'   => strtolower($this->user_profile[$this->user_info['id']]['options']['cust_gender'] ?? 'male')
 					])
 				]),
 			],
