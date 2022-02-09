@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Block management section template
- *
- * Шаблон раздела управления блоками
- *
- * @return void
- */
 function template_manage_blocks()
 {
 	global $context, $scripturl, $txt;
@@ -19,7 +12,7 @@ function template_manage_blocks()
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					<i class="fas fa-plus" @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="', $txt['lp_blocks_add'], '"></i>
+					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '" class=', $context['lp_icon_set']['plus']), '
 				</a>
 			</span>
 			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -100,15 +93,6 @@ function template_manage_blocks()
 	</script>';
 }
 
-/**
- * Adding a row with block parameters to the common table
- *
- * Добавление строчки с параметрами блока в общую таблицу
- *
- * @param int $id
- * @param array $data
- * @return void
- */
 function show_block_entry(int $id, array $data)
 {
 	global $context, $language, $txt, $scripturl;
@@ -141,20 +125,20 @@ function show_block_entry(int $id, array $data)
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' <span class="handle fas fa-sort fa-lg" title="', $txt['lp_action_move'], '"></span>
+			', $data['priority'], ' ', str_replace(' class="', ' title="' . $txt['lp_action_move'] . '" class="handle ', $context['lp_icon_set']['sort']), '
 		</td>
 		<td class="status">
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td class="actions">
-			<div class="context_menu" @click.away="showContextMenu = false">
+			<div class="context_menu" @click.outside="showContextMenu = false">
 				<button class="button floatnone" @click.prevent="showContextMenu = true">
 					<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
 				</button>
 				<div class="roundframe" x-show="showContextMenu">
 					<ul>
 						<li>
-							<a @click.prevent="block.clone($el)" class="button">', $txt['lp_action_clone'], '</a>
+							<a @click.prevent="block.clone($root)" class="button">', $txt['lp_action_clone'], '</a>
 						</li>';
 
 	if (isset($txt['lp_' . $data['type']]['title'])) {
@@ -166,7 +150,7 @@ function show_block_entry(int $id, array $data)
 
 	echo '
 						<li>
-							<a @click.prevent="showContextMenu = false; block.remove($el)" class="button error">', $txt['remove'], '</a>
+							<a @click.prevent="showContextMenu = false; block.remove($root)" class="button error">', $txt['remove'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -175,13 +159,6 @@ function show_block_entry(int $id, array $data)
 	</tr>';
 }
 
-/**
- * The page for adding blocks
- *
- * Страница добавления блоков
- *
- * @return void
- */
 function template_block_add()
 {
 	global $txt, $context;
@@ -198,8 +175,8 @@ function template_block_add()
 	foreach ($context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
-					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el.children[0])">
-						<i class="', $block['icon'], '"></i>
+					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el)">
+						<i class="', $block['icon'], '" aria-hidden="true"></i>
 						<strong>', $block['title'], '</strong>
 						<hr>
 						<p>', $block['desc'], '</p>
@@ -219,25 +196,18 @@ function template_block_add()
 	</script>';
 }
 
-/**
- * Block creation/editing template
- *
- * Шаблон создания/редактирования блока
- *
- * @return void
- */
 function template_block_post()
 {
 	global $context, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
-		if (!empty($context['lp_block']['title_style']))
+		if (! empty($context['lp_block']['title_style']))
 			$context['preview_title'] = '<span style="' . $context['lp_block']['title_style'] . '">' . $context['preview_title'] . '</span>';
 
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
 
 		$style = '';
-		if (!empty($context['lp_block']['content_style']))
+		if (! empty($context['lp_block']['content_style']))
 			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
@@ -254,7 +224,7 @@ function template_block_post()
 	</div>';
 	}
 
-	if (!empty($context['post_errors'])) {
+	if (! empty($context['post_errors'])) {
 		echo '
 	<div class="errorbox">
 		<ul>';
@@ -276,16 +246,16 @@ function template_block_post()
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd"><i class="far fa-newspaper"></i> <span>', $txt['lp_tab_content'], '</span></label>
+				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd"><i class="fas fa-key"></i> <span>', $txt['lp_tab_access_placement'], '</span></label>
+				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd"><i class="fas fa-object-group"></i> <span>', $txt['lp_tab_appearance'], '</span></label>';
+				<label for="tab3" class="bg odd">', $context['lp_icon_set']['design'], '<span>', $txt['lp_tab_appearance'], '</span></label>';
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
 				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd"><i class="fas fa-tools"></i> <span>', $txt['lp_tab_tuning'], '</span></label>';
+				<label for="tab4" class="bg odd">' . $context['lp_icon_set']['tools'] . '<span>', $txt['lp_tab_tuning'], '</span></label>';
 	}
 
 	echo '
@@ -327,22 +297,21 @@ function template_block_post()
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
 
-	if (!empty($context['lp_block']['id'])) {
+	if (! empty($context['lp_block']['id'])) {
 		echo '
 				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
 	}
 
 	echo '
-				<button type="submit" class="button" name="preview" @click="block.post($el)">', $txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($el)">', $txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($el)">', $txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>
 
 	<script>
 		const block = new Block();
-
 		const placementSelect = document.getElementById("placement");
 
 		if (placementSelect.style.display !== "none") {
@@ -353,16 +322,20 @@ function template_block_post()
 				closeOnSelect: true,
 				showContent: "down"
 			});
-		}
+		}';
 
+	if ($context['user']['is_admin']) {
+		echo '
 		new SlimSelect({
 			select: "#permissions",
 			showSearch: false,
 			hideSelectedOption: true,
 			closeOnSelect: true,
 			showContent: "down"
-		});
+		});';
+	}
 
+	echo '
 		let iconSelect = new SlimSelect({
 			select: "#icon",
 			allowDeselect: true,
@@ -413,13 +386,13 @@ function template_block_post()
 			}
 		});';
 
-	if (!empty($context['lp_block']['icon'])) {
+	if (! empty($context['lp_block']['icon'])) {
 		echo '
 		iconSelect.setData([{innerHTML: `', $context['lp_block']['icon_template'], '`, text: "', $context['lp_block']['icon'], '"}]);
 		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
 	}
 
-	if (!empty($context['lp_all_title_classes'])) {
+	if (! empty($context['lp_all_title_classes'])) {
 		echo '
 		new SlimSelect({
 			select: "#title_class",
@@ -443,7 +416,7 @@ function template_block_post()
 		});';
 	}
 
-	if (empty($context['lp_block']['options']['no_content_class']) && !empty($context['lp_all_content_classes'])) {
+	if (empty($context['lp_block']['options']['no_content_class'])) {
 		echo '
 		new SlimSelect({
 			select: "#content_class",
@@ -471,13 +444,6 @@ function template_block_post()
 	</script>';
 }
 
-/**
- * Show a table with possible areas for displaying the block
- *
- * Отображаем табличку с возможными областями для вывода блока
- *
- * @return void
- */
 function template_show_areas_info()
 {
 	global $txt, $context;

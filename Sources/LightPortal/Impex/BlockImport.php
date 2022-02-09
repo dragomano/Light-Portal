@@ -1,0 +1,145 @@
+<?php declare(strict_types=1);
+
+/**
+ * BlockImport.php
+ *
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2022 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.0
+ */
+
+namespace Bugo\LightPortal\Impex;
+
+use function fatal_lang_error;
+use function loadTemplate;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class BlockImport extends AbstractImport
+{
+	public function main()
+	{
+		loadTemplate('LightPortal/ManageImpex');
+
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_import'];
+		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import';
+
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+			'title'       => LP_NAME,
+			'description' => $this->txt['lp_blocks_import_description']
+		];
+
+		$this->context['sub_template'] = 'manage_import';
+
+		$this->run();
+	}
+
+	protected function run()
+	{
+		if (empty($xml = $this->getXmlFile()))
+			return;
+
+		if (! isset($xml->blocks->item[0]['block_id']))
+			fatal_lang_error('lp_wrong_import_file', false);
+
+		$items = $titles = $params = [];
+
+		foreach ($xml as $element) {
+			foreach ($element->item as $item) {
+				$items[] = [
+					'block_id'      => $block_id = intval($item['block_id']),
+					'user_id'       => intval($item['user_id']),
+					'icon'          => $item->icon,
+					'type'          => str_replace('md', 'markdown', (string) $item->type),
+					'note'          => $item->note,
+					'content'       => $item->content,
+					'placement'     => $item->placement,
+					'priority'      => intval($item['priority']),
+					'permissions'   => $item['user_id'] > 0 ? 4 : intval($item['permissions']),
+					'status'        => intval($item['status']),
+					'areas'         => $item->areas,
+					'title_class'   => strpos((string) $item->title_class, 'div.') !== false ? 'cat_bar' : $item->title_class,
+					'title_style'   => $item->title_style,
+					'content_class' => strpos((string) $item->content_class, 'div.') !== false ? 'roundframe' : $item->content_class,
+					'content_style' => $item->content_style
+				];
+
+				if ($item->titles) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'lang'    => $k,
+								'title'   => $v
+							];
+						}
+					}
+				}
+
+				if ($item->params) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'name'    => $k,
+								'value'   => $v
+							];
+						}
+					}
+				}
+			}
+		}
+
+		$this->smcFunc['db_transaction']('begin');
+
+		$results = [];
+
+		if ($items) {
+			$this->context['import_successful'] = count($items);
+			$items = array_chunk($items, 100);
+			$count = sizeof($items);
+
+			for ($i = 0; $i < $count; $i++) {
+				$results = $this->smcFunc['db_insert']('replace',
+					'{db_prefix}lp_blocks',
+					[
+						'block_id'      => 'int',
+						'user_id'       => 'int',
+						'icon'          => 'string',
+						'type'          => 'string',
+						'note'          => 'string',
+						'content'       => 'string-65534',
+						'placement'     => 'string-10',
+						'priority'      => 'int',
+						'permissions'   => 'int',
+						'status'        => 'int',
+						'areas'         => 'string',
+						'title_class'   => 'string',
+						'title_style'   => 'string',
+						'content_class' => 'string',
+						'content_style' => 'string'
+					],
+					$items[$i],
+					['block_id'],
+					2
+				);
+
+				$this->context['lp_num_queries']++;
+			}
+		}
+
+		$this->replaceTitles($titles, $results);
+
+		$this->replaceParams($params, $results);
+
+		$this->finish($results);
+	}
+}

@@ -21,11 +21,13 @@ $txt['lp_default'] = 'Default';
 $txt['lp_can_donate'] = 'For sponsors';
 $txt['lp_can_download'] = 'Can download';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';
+$txt['lp_promote_to_fp'] = 'Promote to frontpage';
+$txt['lp_remove_from_fp'] = 'Remove from frontpage';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy a cup of coffee as a thank</a>.<br>The portal always needs new testers, translators and frontpage template makers.';
+$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>You can also <a class="bbc_link" href="https://ko-fi.com/U7U41XD2G">buy some cups of coffee as thanks</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
 $txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -44,18 +46,14 @@ $txt['lp_frontpage_topics_subtext'] = 'IDs of the required topics, separated by 
 $txt['lp_show_images_in_articles'] = 'Show images that found in articles';
 $txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
-$txt['lp_frontpage_time_format'] = 'Time format in the article cards';
-$txt['lp_frontpage_time_format_set'] = array('Full (LP style)', 'As in the forum', 'Own format');
-$txt['lp_frontpage_custom_time_format'] = 'Own time format';
-$txt['lp_frontpage_custom_time_format_help'] = 'See the list of possible parameters in the <a class="bbc_link" href="https://www.php.net/manual/en/datetime.format.php">documentation</a>.';
 $txt['lp_show_teaser'] = 'Show the article summary';
 $txt['lp_show_author'] = 'Show the article author';
-$txt['lp_show_author_help'] = 'If the board card is displayed, it will be information about the category.';
+$txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will be information about the category.';
 $txt['lp_show_num_views_and_comments'] = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_num_replies'] = 'First to display articles with the highest number of comments';
 $txt['lp_frontpage_article_sorting'] = 'Sorting articles';
 $txt['lp_frontpage_article_sorting_set'] = array('By the last comment', 'By the date of creation (new first)', 'By the date of creation (old first)', 'By the date of updation (fresh first)');
-$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they available).';
+$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = array('1 column', '2 columns', '3 columns', '4 columns', '6 columns');
@@ -66,7 +64,7 @@ $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_url'] = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for example, <strong>https://yourforum/portal.php</strong>).<br>In this case, the forum frontpage will remain available at <strong>https://yourforum/index.php</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for instance, <strong>%1$s</strong>).<br>In this case, the forum frontpage will remain available at <strong>%2$s</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_standalone_mode_disabled_actions'] = 'Disabled actions';
 $txt['lp_standalone_mode_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_standalone_mode_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
@@ -81,8 +79,6 @@ $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP 
 $txt['lp_extra'] = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
-$txt['lp_show_page_permissions'] = 'Show information about the page permissions';
-$txt['lp_show_page_permissions_subtext'] = 'Only those who have the permission to edit the page can see it.';
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
 $txt['lp_page_og_image'] = 'Use an image from the page content';
 $txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
@@ -227,7 +223,7 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Show the author and creation date', 'Show related pages', 'Allow comments');
+$txt['lp_page_options'] = array('Show the title', 'Show the author and creation date', 'Show related pages', 'Allow comments');
 
 // Tabs
 $txt['lp_tab_content'] = 'Content';
@@ -239,11 +235,11 @@ $txt['lp_tab_tuning'] = 'Tuning';
 // Import and Export
 $txt['lp_pages_export'] = 'Page export';
 $txt['lp_pages_import'] = 'Page import';
-$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or for transfer them to another forum.';
+$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
 $txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
-$txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or for transfer them to another forum.';
+$txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
 $txt['lp_export_run'] = 'Export selection';
 $txt['lp_import_run'] = 'Run import';
@@ -256,10 +252,8 @@ $txt['lp_plugins_manage'] = 'Manage plugins';
 $txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
 $txt['lp_plugins_types'] = array(
-	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Other', 'Block options', 'Page options'
+	'Block', 'Editor', 'Comment widget', 'Content parser', 'Processing articles', 'The layout of the frontpage', 'Import and export', 'Block options', 'Page options', 'Icons', 'SEO', 'Other'
 );
-$txt['lp_plugins_requires'] = 'Required plugins';
-$txt['lp_plugins_disables'] = 'Conflict plugins';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';
@@ -289,9 +283,17 @@ $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
 // Comment alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';
-$txt['alert_new_comment_page_comment'] = '{member_link} left a comment {page_comment_new_comment}';
+$txt['alert_new_comment_page_comment'] = '{gender, select,
+	female {{member_link} left a comment {content_subject}}
+	male   {{member_link} left a comment {content_subject}}
+	other  {{member_link} left a comment {content_subject}}
+}';
 $txt['alert_page_comment_reply'] = 'When my comment gets a reply';
-$txt['alert_new_reply_page_comment_reply'] = '{member_link} left a reply on your comment {page_comment_reply_new_reply}';
+$txt['alert_new_reply_page_comment_reply'] = '{gender, select,
+	female {{member_link} left a reply to your comment {content_subject}}
+	male   {{member_link} left a reply to your comment {content_subject}}
+	other  {{member_link} left a reply to your comment {content_subject}}
+}';
 
 // Errors
 $txt['lp_page_not_found'] = 'Page not found!';
@@ -312,6 +314,7 @@ $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
+$txt['lp_addon_not_activated'] = 'Plugin %1$s is not activated';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
@@ -343,31 +346,31 @@ $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post 
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units
-$txt['lp_months_set'] = 'month, months';
-$txt['lp_days_set'] = 'day, days';
-$txt['lp_hours_set'] = 'an hour, hours';
-$txt['lp_minutes_set'] = 'a minute, minutes';
-$txt['lp_seconds_set'] = 'second, seconds';
+$txt['lp_months_set'] = '{months, plural, one {a month} other {# months}}';
+$txt['lp_days_set'] = '{days, plural, one {a day} other {# days}}';
+$txt['lp_hours_set'] = '{hours, plural, one {an hour} other {# hours}}';
+$txt['lp_minutes_set'] = '{minutes, plural, one {a minute} other {# minutes}}';
+$txt['lp_seconds_set'] = '{seconds, plural, one {a second} other {# seconds}}';
 $txt['lp_tomorrow'] = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now'] = 'Just now';
 $txt['lp_time_label_in'] = 'In %1$s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
-$txt['lp_posts_set'] = 'post, posts';
-$txt['lp_replies_set'] = 'reply, replies';
-$txt['lp_views_set'] = 'view, views';
-$txt['lp_comments_set'] = 'comment, comments';
-$txt['lp_articles_set'] = 'article, articles';
+$txt['lp_posts_set'] = '{posts, plural, one {# post} other {# posts}}';
+$txt['lp_replies_set'] = '{replies, plural, one {# reply} other {# replies}}';
+$txt['lp_views_set'] = '{views, plural, one {# view} other {# views}}';
+$txt['lp_comments_set'] = '{comments, plural, one {# comment} other {# comments}}';
+$txt['lp_articles_set'] = '{articles, plural, one {# article} other {# articles}}';
 
 // Other units
-$txt['lp_pages_set'] = 'page, pages';
-$txt['lp_blocks_set'] = 'block, blocks';
-$txt['lp_users_set'] = 'user, users';
-$txt['lp_guests_set'] = 'guest, guests';
-$txt['lp_spiders_set'] = 'spider, spiders';
-$txt['lp_hidden_set'] = 'hidden';
-$txt['lp_buddies_set'] = 'buddy, buddies';
+$txt['lp_pages_set'] = '{pages, plural, one {# page} other {# pages}}';
+$txt['lp_blocks_set'] = '{blocks, plural, one {# block} other {# blocks}}';
+$txt['lp_users_set'] = '{users, plural, one {# user} other {# users}}';
+$txt['lp_guests_set'] = '{guests, plural, one {# guest} other {# guests}}';
+$txt['lp_spiders_set'] = '{spiders, plural, one {# spider} other {# spiders}}';
+$txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
+$txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
 
 // Packages
 $txt['lp_addon_package'] = 'Light Portal addons';

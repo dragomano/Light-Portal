@@ -1,0 +1,277 @@
+<?php
+
+/**
+ * BlockImport.php
+ *
+ * @package TinyPortal (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2020-2022 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @category addon
+ * @version 31.12.21
+ */
+
+namespace Bugo\LightPortal\Addons\TinyPortal;
+
+use Bugo\LightPortal\Impex\AbstractOtherBlockImport;
+
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+class BlockImport extends AbstractOtherBlockImport
+{
+	private array $supported_types = [5, 10, 11];
+
+	public function main()
+	{
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal']['label_name'];
+		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
+
+		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+			'title'       => LP_NAME,
+			'description' => $this->txt['lp_tiny_portal']['block_import_desc']
+		];
+
+		$this->run();
+
+		$listOptions = [
+			'id' => 'lp_blocks',
+			'items_per_page' => 50,
+			'title' => $this->txt['lp_blocks_import'],
+			'no_items_label' => $this->txt['lp_no_items'],
+			'base_href' => $this->context['canonical_url'],
+			'default_sort_col' => 'id',
+			'get_items' => [
+				'function' => [$this, 'getAll']
+			],
+			'get_count' => [
+				'function' => [$this, 'getTotalCount']
+			],
+			'columns' => [
+				'id' => [
+					'header' => [
+						'value' => '#',
+						'style' => 'width: 5%'
+					],
+					'data' => [
+						'db'    => 'id',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'id',
+						'reverse' => 'id DESC'
+					]
+				],
+				'title' => [
+					'header' => [
+						'value' => $this->txt['lp_title']
+					],
+					'data' => [
+						'db'    => 'title',
+						'class' => 'word_break'
+					],
+					'sort' => [
+						'default' => 'title DESC',
+						'reverse' => 'title'
+					]
+				],
+				'type' => [
+					'header' => [
+						'value' => $this->txt['lp_block_type']
+					],
+					'data' => [
+						'db'    => 'type',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'type DESC',
+						'reverse' => 'type'
+					]
+				],
+				'placement' => [
+					'header' => [
+						'value' => $this->txt['lp_block_placement']
+					],
+					'data' => [
+						'db'    => 'placement',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'bar DESC',
+						'reverse' => 'bar'
+					]
+				],
+				'actions' => [
+					'header' => [
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+					],
+					'data' => [
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
+						'class' => 'centertext'
+					]
+				]
+			],
+			'form' => [
+				'href' => $this->context['canonical_url']
+			],
+			'additional_rows' => [
+				[
+					'position' => 'below_table_data',
+					'value' => '
+						<input type="hidden">
+						<input type="submit" name="import_selection" value="' . $this->txt['lp_tiny_portal']['button_run'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $this->txt['lp_tiny_portal']['button_all'] . '" class="button">'
+				]
+			]
+		];
+
+		$this->require('Subs-List');
+		createList($listOptions);
+
+		$this->context['sub_template'] = 'show_list';
+		$this->context['default_list'] = 'lp_blocks';
+	}
+
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
+	{
+		db_extend();
+
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
+			return [];
+
+		$request = $this->smcFunc['db_query']('', '
+			SELECT id, type, title, bar
+			FROM {db_prefix}tp_blocks
+			WHERE type IN ({array_int:types})
+			ORDER BY {raw:sort}
+			LIMIT {int:start}, {int:limit}',
+			[
+				'types' => $this->supported_types,
+				'sort'  => $sort,
+				'start' => $start,
+				'limit' => $items_per_page
+			]
+		);
+
+		$items = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$items[$row['id']] = [
+				'id'        => $row['id'],
+				'type'      => $this->txt['lp_' . $this->getType($row['type'])]['title'],
+				'title'     => $row['title'],
+				'placement' => $this->context['lp_block_placements'][$this->getPlacement($row['bar'])]
+			];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		return $items;
+	}
+
+	public function getTotalCount(): int
+	{
+		db_extend();
+
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
+			return 0;
+
+		$request = $this->smcFunc['db_query']('', '
+			SELECT COUNT(*)
+			FROM {db_prefix}tp_blocks
+			WHERE type IN ({array_int:types})',
+			[
+				'types' => $this->supported_types
+			]
+		);
+
+		[$num_blocks] = $this->smcFunc['db_fetch_row']($request);
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		return (int) $num_blocks;
+	}
+
+	protected function getItems(array $blocks): array
+	{
+		$request = $this->smcFunc['db_query']('', '
+			SELECT id, type, title, body, access, bar
+			FROM {db_prefix}tp_blocks
+			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
+				AND id IN ({array_int:blocks})'),
+			[
+				'types'  => $this->supported_types,
+				'blocks' => $blocks
+			]
+		);
+
+		$items = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$permissions = explode(',', $row['access']);
+
+			$perm = 0;
+			if (count($permissions) == 1 && $permissions[0] == -1) {
+				$perm = 1;
+			} elseif (count($permissions) == 1 && $permissions[0] == 0) {
+				$perm = 2;
+			} elseif (in_array(-1, $permissions)) {
+				$perm = 3;
+			} elseif (in_array(0, $permissions)) {
+				$perm = 3;
+			}
+
+			$items[$row['id']] = [
+				'type'          => $this->getType($row['type']),
+				'title'         => $row['title'],
+				'content'       => $row['body'],
+				'placement'     => $this->getPlacement($row['bar']),
+				'permissions'   => $perm,
+				'status'        => 0,
+				'title_class'   => array_key_first($this->context['lp_all_title_classes']),
+				'content_class' => array_key_first($this->context['lp_all_content_classes'])
+			];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		return $items;
+	}
+
+	private function getType(int $type): string
+	{
+		switch ($type) {
+			case 5:
+				return 'bbc';
+			case 10:
+				return 'php';
+			case 11:
+			default:
+				return 'html';
+		}
+	}
+
+	private function getPlacement(int $bar): string
+	{
+		switch ($bar) {
+			case 1:
+				return 'left';
+			case 2:
+				return 'right';
+			case 5:
+				return 'footer';
+			case 6:
+				return 'header';
+			case 7:
+				return 'bottom';
+			case 3:
+			case 4:
+			default:
+				return 'top';
+		}
+	}
+}

@@ -811,7 +811,7 @@ section {
 				align-items: flex-end;
 				padding: 0 25px 5px;
 
-				img {
+				img, svg {
 					margin-right: 5px;
 					width: 25px;
 					height: 25px;
@@ -1290,6 +1290,10 @@ section {
 				font-weight: 700;
 				font-size: 1.25rem;
 				margin-bottom: .5rem;
+
+				a {
+					line-height: 1.2em;
+				}
 			}
 		}
 
@@ -1298,12 +1302,16 @@ section {
 
 			a {
 				display: inline-block;
-				.bradius(9999px);
 				padding: .25rem .75rem;
 				font-size: .875rem;
 				font-weight: 600;
 				margin-right: .5rem;
 				margin-bottom: .5rem;
+
+				&:hover {
+					border-bottom: 1px dashed #ef564f;
+					text-decoration: none;
+				}
 			}
 		}
 	}
@@ -1462,8 +1470,20 @@ section {
 		width: 80%;
 	}
 
-	.fa-toggle-on {
-		color: @color-checked;
+	.floatright {
+		.pointer;
+
+		.gear {
+			position: relative;
+			top: -5px;
+			right: 5px;
+		}
+
+		i {
+			&[data-toggle="on"] {
+				color: @color-checked;
+			}
+		}
 	}
 
 	form {
@@ -1471,17 +1491,6 @@ section {
 			width: 100%;
 		}
 	}
-}
-
-.lp_plugin_toggle,
-.lp_plugin_settings {
-	.pointer;
-}
-
-.lp_plugin_settings {
-	position: relative;
-	top: -3px;
-	.valign(baseline) !important;
 }
 
 .form_settings {
@@ -1504,36 +1513,49 @@ section {
 
 .new_posts {
 	@block_color: #667d99;
+	@editor_color: #48bf83;
+	@comment_color: #9354ca;
+	@article_color: #ef564f;
 	&.lp_type_block {
 		background: @block_color;
 	}
 	&.lp_type_editor {
-		background: #48bf83;
+		background: @editor_color;
 	}
 	&.lp_type_comment {
-		background: #9354ca;
+		background: @comment_color;
 	}
 	&.lp_type_parser {
 		background: #91ae26;
 	}
 	&.lp_type_article {
-		background: #ef564f;
+		background: @article_color;
 	}
 	&.lp_type_frontpage {
 		background: #d68b4f;
 	}
 	&.lp_type_impex {
-		background: #4b93d1;
+		background:#2361ad;
+	}
+	&.lp_type_block_options {
+		background: lighten(@comment_color, 10%);
+	}
+	&.lp_type_page_options {
+		background: #a39d47;
+	}
+	&.lp_type_icons {
+		background: darken(@editor_color, 20%);
+	}
+	&.lp_type_seo {
+		background: darken(@article_color, 20%);
 	}
 	&.lp_type_other {
 		background: #414141;
 	}
-	&.lp_type_block_options {
-		background: lighten(@block_color, 10%);
-	}
-	&.lp_type_page_options {
-		background: darken(@block_color, 10%);
-	}
+}
+
+.handle {
+	cursor: grab;
 }
 
 .lp_categories {
@@ -1546,9 +1568,6 @@ section {
 		margin-top: 1px;
 	}
 	dt {
-		.handle {
-			cursor: grab;
-		}
 		td.handle {
 			font-size: 1.2rem;
 		}

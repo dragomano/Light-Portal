@@ -7,18 +7,18 @@ function template_lp_basic_settings_below()
 	global $txt, $scripturl, $modSettings;
 
 	// Frontpage mode toggle
-	$frontpage_mode_toggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
+	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
-	$frontpage_mode_toggle_dt = [];
-	foreach ($frontpage_mode_toggle as $item) {
-		$frontpage_mode_toggle_dt[] = 'setting_' . $item;
+	$fpModeToggleDt = [];
+	foreach ($fpModeToggle as $item) {
+		$fpModeToggleDt[] = 'setting_' . $item;
 	}
 
-	$frontpage_alias_toggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_frontpage_time_format', 'lp_frontpage_custom_time_format', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
+	$fpAliasToggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
 
-	$frontpage_alias_toggle_dt = [];
-	foreach ($frontpage_alias_toggle as $item) {
-		$frontpage_alias_toggle_dt[] = 'setting_' . $item;
+	$fpAliasToggleDt = [];
+	foreach ($fpAliasToggle as $item) {
+		$fpAliasToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
@@ -28,20 +28,20 @@ function template_lp_basic_settings_below()
 			let change_mode = front_mode > 0;
 			let board_selector = $(".board_selector").parent("dd");
 
-			$("#lp_standalone_mode").attr("disabled", front_mode == 0);
+			$("#lp_standalone_mode").attr("disabled", front_mode === 0);
 
-			if (front_mode == 0) {
+			if (front_mode === 0) {
 				$("#lp_standalone_mode").prop("checked", false);
 			}
 
-			$("#', implode(', #', $frontpage_mode_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $frontpage_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $fpModeToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $fpModeToggleDt), '").closest("dt").toggle(change_mode);
 			board_selector.toggle(change_mode);
 
 			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
 
-			$("#', implode(', #', $frontpage_alias_toggle), '").closest("dd").toggle(allow_change_title);
-			$("#', implode(', #', $frontpage_alias_toggle_dt), '").closest("dt").toggle(allow_change_title);
+			$("#', implode(', #', $fpAliasToggle), '").closest("dd").toggle(allow_change_title);
+			$("#', implode(', #', $fpAliasToggleDt), '").closest("dt").toggle(allow_change_title);
 			board_selector.toggle(allow_change_title);
 
 			let allow_change_alias = front_mode == "chosen_page";
@@ -78,38 +78,22 @@ function template_lp_basic_settings_below()
 
 		$("#lp_frontpage_mode").on("change", function () {
 			toggleFrontpageMode();
-			toggleTimeFormat();
-		});';
-
-	// Time format toggle
-	echo '
-		function toggleTimeFormat() {
-			let change_mode = $("#lp_frontpage_time_format").val() == 2;
-
-			$("#lp_frontpage_custom_time_format").closest("dd").toggle(change_mode);
-			$("#setting_lp_frontpage_custom_time_format").closest("dt").toggle(change_mode);
-		};
-
-		toggleTimeFormat();
-
-		$("#lp_frontpage_time_format").on("change", function () {
-			toggleTimeFormat()
 		});';
 
 	// Standalone mode toggle
-	$standalone_mode_toggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
+	$standaloneModeToggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
 
-	$standalone_mode_toggle_dt = [];
-	foreach ($standalone_mode_toggle as $item) {
-		$standalone_mode_toggle_dt[] = 'setting_' . $item;
+	$standaloneModeToggleDt = [];
+	foreach ($standaloneModeToggle as $item) {
+		$standaloneModeToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
 		function toggleStandaloneMode() {
 			let change_mode = $("#lp_standalone_mode").prop("checked");
 
-			$("#', implode(', #', $standalone_mode_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $standalone_mode_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $standaloneModeToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $standaloneModeToggleDt), '").closest("dt").toggle(change_mode);
 		};
 
 		toggleStandaloneMode();
@@ -160,7 +144,7 @@ function template_lp_basic_settings_below()
 				showContent: "down"
 			});';
 
-	if (!empty($modSettings['lp_frontpage_alias'])) {
+	if (! empty($modSettings['lp_frontpage_alias'])) {
 		echo '
 			aliasSelect.setData([{value: "', $modSettings['lp_frontpage_alias'], '", text: "', $modSettings['lp_frontpage_alias'], '"}]);
 			aliasSelect.set(', JavaScriptEscape($modSettings['lp_frontpage_alias']), ');';
@@ -176,20 +160,20 @@ function template_lp_extra_settings_above() {}
 function template_lp_extra_settings_below()
 {
 	// Show comment block toggle
-	$show_comment_block_toggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
+	$showCommentBlockToggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
 
-	$show_comment_block_toggle_dt = [];
-	foreach ($show_comment_block_toggle as $item) {
-		$show_comment_block_toggle_dt[] = 'setting_' . $item;
+	$showCommentBlockToggleDt = [];
+	foreach ($showCommentBlockToggle as $item) {
+		$showCommentBlockToggleDt[] = 'setting_' . $item;
 	}
 
 	echo '
 	<script>
 		function toggleShowCommentBlock() {
-			let change_mode = $("#lp_show_comment_block").val() != "none";
+			let change_mode = $("#lp_show_comment_block").val() !== "none";
 
-			$("#', implode(', #', $show_comment_block_toggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $show_comment_block_toggle_dt), '").closest("dt").toggle(change_mode);
+			$("#', implode(', #', $showCommentBlockToggle), '").closest("dd").toggle(change_mode);
+			$("#', implode(', #', $showCommentBlockToggleDt), '").closest("dt").toggle(change_mode);
 
 			if (change_mode && $("#lp_show_comment_block").val() != "default") {
 				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
@@ -209,13 +193,6 @@ function template_lp_extra_settings_below()
 	</script>';
 }
 
-/**
- * Callback template for selecting allowed tags in comments
- *
- * Callback-шаблон для выбора допустимых тегов в комментариях
- *
- * @return void
- */
 function template_callback_disabled_bbc_in_comments()
 {
 	global $txt, $scripturl, $context;
@@ -237,7 +214,7 @@ function template_callback_disabled_bbc_in_comments()
 	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
 		foreach ($bbcColumn as $bbcTag) {
 			echo '
-				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', !in_array($bbcTag, $context['bbc_sections']['disabled']) ? ' selected' : '', '>
+				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', in_array($bbcTag, $context['bbc_sections']['disabled']) ? '' : ' selected', '>
 					', $bbcTag, '
 				</option>';
 		}
@@ -262,7 +239,6 @@ function template_callback_disabled_bbc_in_comments()
 					if (elem.checked) {
 						let allTags = document.querySelectorAll("#lp_disabled_bbc_in_comments option");
 						lpDisabledBbc.set(Array.from(allTags).map(el => el.value));
-
 						return;
 					}
 
@@ -273,13 +249,6 @@ function template_callback_disabled_bbc_in_comments()
 	</dd>';
 }
 
-/**
- * Callback template for selecting categories-sources of articles
- *
- * Callback-шаблон для выбора рубрик-источников статей
- *
- * @return void
- */
 function template_callback_frontpage_categories()
 {
 	global $txt, $context;
@@ -316,13 +285,6 @@ function template_callback_frontpage_categories()
 	</dd>';
 }
 
-/**
- * Template for the category management page
- *
- * Шаблон страницы управления рубриками
- *
- * @return void
- */
 function template_lp_category_settings()
 {
 	global $txt, $context;
@@ -390,32 +352,23 @@ function template_lp_category_settings()
 	</script>';
 }
 
-/**
- * Single category template
- *
- * Шаблон одиночной рубрики
- *
- * @param int $id
- * @param array $cat
- * @return void
- */
 function show_single_category(int $id, array $cat)
 {
-	global $txt;
+	global $txt, $context;
 
 	echo '
 	<tr class="windowbg" data-id="', $id, '" x-data>
-		<td class="centertext handle"><i class="fas fa-arrows-alt"></i></td>
+		<td class="centertext handle">', $context['lp_icon_set']['arrows'], '</td>
 		<td>
 			<span class="floatright">
-				<span @click="category.remove($el)" title="', $txt['remove'], '" class="error">&times;</span>
+				<span @click="category.remove($root)" title="', $txt['remove'], '" class="error">&times;</span>
 			</span>
 			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], ' #', $id, '</label>
 			<input
 				type="text"
 				value="', $cat['name'], '"
 				maxlength="255"
-				@change="category.updateName($el, $event.target)"
+				@change="category.updateName($root, $event.target)"
 			>
 			<br>
 			<textarea
@@ -423,19 +376,12 @@ function show_single_category(int $id, array $cat)
 				rows="2"
 				placeholder="', $txt['lp_page_description'], '"
 				maxlength="255"
-				@change="category.updateDescription($el, $event.target.value)"
+				@change="category.updateDescription($root, $event.target.value)"
 			>', $cat['desc'], '</textarea>
 		</td>
 	</tr>';
 }
 
-/**
- * Callback template to configure panel layouts
- *
- * Callback-шаблон для настройки макета панелей
- *
- * @return void
- */
 function template_callback_panel_layout()
 {
 	global $txt, $modSettings, $context;
@@ -445,7 +391,7 @@ function template_callback_panel_layout()
 	</div>
 	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
 	<div class="generic_list_wrapper">
-		<div class="centertext', !empty($modSettings['lp_swap_header_footer']) ? ' column-reverse' : '', '">
+		<div class="centertext', empty($modSettings['lp_swap_header_footer']) ? '' : ' column-reverse', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
@@ -467,7 +413,7 @@ function template_callback_panel_layout()
 					</div>
 				</div>
 			</div>
-			<div class="row', !empty($modSettings['lp_swap_left_right']) ? ' reverse' : '', '">
+			<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">
 				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
@@ -521,11 +467,11 @@ function template_callback_panel_layout()
 						</ul>
 						<hr>
 						<label for="lp_left_panel_sticky">', $txt['lp_left_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', !empty($modSettings['lp_left_panel_sticky']) ? ' checked="checked"' : '', '>
+						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', empty($modSettings['lp_left_panel_sticky']) ? '' : ' checked="checked"', '>
 					</div>
 				</div>
 				<div class="col-xs">
-					<div class="windowbg', !empty($modSettings['lp_swap_top_bottom']) ? ' column-reverse' : '', '">
+					<div class="windowbg', empty($modSettings['lp_swap_top_bottom']) ? '' : ' column-reverse', '">
 						<strong>col-xs (auto)</strong>
 						<div class="row">
 							<div class="col-xs">
@@ -540,7 +486,7 @@ function template_callback_panel_layout()
 						<div class="row">
 							<div class="col-xs">
 								<div class="descbox alternative">
-									<strong><i class="far fa-newspaper fa-2x"></i></i></strong>
+									<strong>', $context['lp_icon_set']['content'], '</strong>
 									<div>', $txt['lp_content'], '</div>
 									col-xs (auto)
 								</div>
@@ -611,7 +557,7 @@ function template_callback_panel_layout()
 						</ul>
 						<hr>
 						<label for="lp_right_panel_sticky">', $txt['lp_right_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', !empty($modSettings['lp_right_panel_sticky']) ? ' checked="checked"' : '', '>
+						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', empty($modSettings['lp_right_panel_sticky']) ? '' : ' checked="checked"', '>
 					</div>
 				</div>
 			</div>
@@ -641,13 +587,6 @@ function template_callback_panel_layout()
 	<br>';
 }
 
-/**
- * Callback template for selecting the direction of blocks inside panels
- *
- * Callback-шаблон для выбора направления блоков внутри панелей
- *
- * @return void
- */
 function template_callback_panel_direction()
 {
 	global $txt, $context;
@@ -687,15 +626,6 @@ function template_callback_panel_direction()
 	<dl class="settings">';
 }
 
-/**
- * Display settings on multiple tabs
- *
- * Вывод настроек на нескольких вкладках
- *
- * @param array $fields
- * @param string $tab
- * @return void
- */
 function template_post_tab(array $fields, string $tab = 'content')
 {
 	global $context;

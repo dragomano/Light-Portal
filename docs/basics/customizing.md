@@ -19,7 +19,6 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", and "Selected board".
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
-* Time format in the article cards — you can change the time format.
 * Show the article summary
 * Show the article author
 * Show the number of views and comments
@@ -27,6 +26,8 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
 * Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/ru/layouts/create_new)_.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
+* Show the pagination — specify where the page pagination should be displayed.
+* Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
 
 > If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
@@ -39,6 +40,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 ### Permissions
 
+* Prohibit all except administrators from creating PHP pages and PHP blocks.
 * Who can view the portal elements — by "elements" we mean blocks and pages.
 * Who can manage own pages — you can choose user groups who can create, edit and delete pages.
 * Who can post the portal pages without approval — you can choose user groups who will be able to post portal pages without moderation.
@@ -46,11 +48,10 @@ In this section, you can fully customize the portal frontpage, enable standalone
 ## Pages and blocks
 In this section, you can change the general settings of pages and blocks used both when creating them and when displaying them.
 
-* Show information about the page permissions — if you need a reminder about who can see the page you are viewing.
 * Show keywords at the top of the page — if keywords are specified for a page, they will appear at the top of the page
 * Use an image from the page content — select an image for a sharing in social networks
-* Show related pages block — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
-* Show comments block — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
+* Show related pages — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
+* Show page comments — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
 * Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
@@ -59,11 +60,14 @@ In this section, you can change the general settings of pages and blocks used bo
 * Permissions for pages and blocks by default — if you constantly create pages and blocks with the same permissions, you can set these permissions as default.
 * Hide active blocks in the admin area — if blocks bother you in the admin panel, you can hide them.
 
+### Using the FontAwesome icons
+* Source for the FontAwesome library — select how the stylesheet should be loaded to display the FA icons.
+
 ## Categories
 In this section, you can manage categories for categorizing portal pages. If you need it, of course.
 
 ## Panels
-In this section, you can change some of the settings for existing portal panels and customize the display (direction) of blocks in these panels.
+In this section, you can change some of the settings for existing portal panels and customize the direction of blocks in these panels.
 
 ![](panels.png)
 
@@ -79,6 +83,10 @@ In this section, you can change various auxiliary settings of the portal, which 
 
 * Show the loading time and number of the portal queries — useful information for administrators and plugin creators.
 * The cache update interval - after a specified amount of time (in seconds), the cache of each portal item will be cleared.
+
+### Compatibility mode
 * The value of the **action** parameter of the portal - you can change this setting to use the Light Portal in conjunction with other similar modifications. Then the home page will open at the specified address.
 * The **page** parameter for portal pages - see above. Similarly, for portal pages - change the parameter and they will open with different URls.
+
+### Maintenance
 * Weekly optimization of portal tables - enable this option so that once a week the rows with empty values in the portal tables in the database will be deleted and the tables will be optimized.

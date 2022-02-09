@@ -15,13 +15,13 @@
 * Check if the develop branch exists. If it exist use it to pull your request into.
 * If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. `Fix page permissions`).
 * If you want to send a new feature, use `Add` word in the title of your PR (i.e `Add a new frontpage template`).
+
 In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update HelloPortal addon`, etc.)
 
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use [PHP 7.3+](https://smknstd.github.io/modern-php-cheatsheet/)
-* Use [DocBlock](https://make.wordpress.org/core/handbook/best-practices/inline-documentation-standards/php/#docblock-formatting) comments for your functions
+* Use [PHP 7.4+](https://smknstd.github.io/modern-php-cheatsheet/)
 
 ```php
 /**
@@ -88,7 +88,7 @@ $test = isset($variable) ? $variable : 'default_value';
 ```
 
 ### JavaScript Styleguide
-* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) (2.x) instead of jQuery.
+* Use native JavaScript or [Alpine.js](https://github.com/alpinejs/alpine) (3.x) instead of jQuery.
 * Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts.
 * Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
@@ -123,5 +123,5 @@ console.log('Sorted array: ', arr.bubbleSort())
 // Sorted array:  (7) [1, 2, 3, 4, 5, 6, 7]
 ```
 
-### Do. Or do not. There is no try
-Anyway, you can use [SMF Coding Guidelines](https://wiki.simplemachines.org/smf/Coding_Guidelines) and that will be enough.
+### Semantic Versioning
+We try using [Major.Minor.Patch](https://medium.com/fiverr-engineering/major-minor-patch-a5298e2e1798) for releases.
