@@ -151,9 +151,7 @@ function show_comment_block()
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
 				<div class="centertext">
-					<div class="pagesection">
-						<div class="pagelinks">', $context['page_index'], '</div>
-					</div>
+					<div class="pagesection">', $context['page_index'], '</div>
 				</div>';
 
 	$i = 0;
@@ -171,9 +169,7 @@ function show_comment_block()
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
 				<div class="centertext">
-					<div class="pagesection">
-						<div class="pagelinks">', $context['page_index'], '</div>
-					</div>
+					<div class="pagesection">', $context['page_index'], '</div>
 				</div>';
 
 	if ($context['user']['is_logged']) {
