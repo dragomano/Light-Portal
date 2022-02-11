@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.01.22
+ * @version 10.02.22
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -61,7 +61,7 @@ class CodeMirror extends Plugin
 
 		loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/fullscreen.min.css', ['external' => true]);
 		loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.css', ['external' => true]);
-		addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5} .CodeMirror-line {z-index: auto !important}');
+		addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5}');
 
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js', ['external' => true]);
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.min.js', ['external' => true]);
