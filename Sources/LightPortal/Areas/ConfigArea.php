@@ -754,6 +754,8 @@ final class ConfigArea
 
 	private function showDocsLink()
 	{
+		if (empty($this->request('area'))) return;
+
 		if (! empty($this->context['template_layers']) && strpos($this->request('area'), 'lp_') !== false) {
 			loadTemplate('LightPortal/ViewDebug');
 
