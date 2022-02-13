@@ -62,8 +62,8 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.0 beta');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-02-09');
+		defined('LP_VERSION') || define('LP_VERSION', '2.0rc1');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-02-13');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -97,7 +97,6 @@ final class Integration extends AbstractMain
 		$this->loadCssFiles();
 
 		(new Addon)->prepareAssets()->run();
-		(new Block)->show();
 	}
 
 	public function redirect(string &$setLocation)
@@ -183,6 +182,8 @@ final class Integration extends AbstractMain
 	{
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
+
+		(new Block)->show();
 
 		// Display "Portal settings" in Main Menu => Admin
 		if ($this->context['user']['is_admin']) {
