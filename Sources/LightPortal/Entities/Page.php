@@ -290,6 +290,8 @@ final class Page
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
+		$this->addLazyLoadingForImages();
+
 		$this->context['sub_template']      = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
 		$this->context['template_layers'][] = 'sorting';
 

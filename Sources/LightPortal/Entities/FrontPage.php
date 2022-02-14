@@ -220,11 +220,4 @@ final class FrontPage
 
 		$start = (int) abs($start);
 	}
-
-	private function addLazyLoadingForImages()
-	{
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js', ['external' => true]);
-		addInlineJavaScript('
-		new LazyLoad();', true);
-	}
 }
