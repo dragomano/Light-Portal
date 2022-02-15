@@ -76,7 +76,7 @@ abstract class AbstractMain
 	{
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn') {
 			loadCSSFile(
-				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css',
+				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css',
 				['external' => true, 'seed' => false],
 				'portal_fontawesome'
 			);

@@ -97,12 +97,12 @@ final class CreditArea
 			],
 			[
 				'title' => 'Font Awesome Free',
-				'link' => 'https://fontawesome.com/cheatsheet/free',
+				'link' => 'https://fontawesome.com',
 				'author' => 'Fonticons, Inc.',
-				'license' => [
-					'name' => 'the Font Awesome Free License',
+				'license' => array(
+					'name' => 'the Font Awesome Free License (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
-				]
+				)
 			],
 			[
 				'title' => 'Alpine.js',

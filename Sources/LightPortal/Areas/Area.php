@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Lists\IconList;
+
 use function addJavaScriptVar;
 use function smf_json_decode;
 use function create_control_richedit;
@@ -137,18 +139,7 @@ trait Area
 	public function getFaIcons(): array
 	{
 		if (($icons = $this->cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
-			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
-			$json = smf_json_decode($content);
-
-			if (empty($json))
-				return [];
-
-			$icons = [];
-			foreach ($json as $icon => $value) {
-				foreach ($value->styles as $style) {
-					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
-				}
-			}
+			$icons = (new IconList)->getList();
 
 			$this->cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
 		}
