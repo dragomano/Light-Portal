@@ -187,6 +187,7 @@ $txt['lp_block_areas_values'] = array(
 );
 
 $txt['lp_block_select_icon'] = 'Select icon';
+$txt['lp_block_icon_style_cheatsheet'] = 'FontAwesome Style Cheatsheet';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';

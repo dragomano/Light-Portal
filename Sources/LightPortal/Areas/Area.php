@@ -48,6 +48,10 @@ trait Area
 	public function preparePostFields(string $defaultTab = 'tuning')
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
+			if ($item === 'icon') {
+				$data['input']['after'] = '<a class="bbc_link" target="_blank" rel="noopener" href="https://fontawesome.com/v6/docs/web/style/style-cheatsheet">' . $this->txt['lp_block_icon_style_cheatsheet'] . '</a>';
+			}
+
 			if (isset($data['input']['after'])) {
 				$tag = 'div';
 
@@ -58,7 +62,7 @@ trait Area
 			}
 
 			// Fancy checkbox
-			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
 				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($this->context['posting_fields'][$item]['input']['after'] ?? '');
 				$this->context['posting_fields'][$item] = $data;
