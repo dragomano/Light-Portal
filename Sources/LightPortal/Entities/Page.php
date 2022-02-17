@@ -288,6 +288,9 @@ final class Page
 		$this->context['lp_frontpage_articles']    = $articles;
 		$this->context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
 
+		// Mod authors can define their own template
+		$this->hook('frontCustomTemplate');
+
 		loadTemplate('LightPortal/ViewFrontPage');
 
 		$this->addLazyLoadingForImages();
