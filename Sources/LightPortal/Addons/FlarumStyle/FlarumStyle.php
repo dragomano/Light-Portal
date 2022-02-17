@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 17.02.22
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -24,12 +24,24 @@ class FlarumStyle extends Plugin
 {
 	public string $type = 'frontpage';
 
+	public function changeIconSet(array &$set)
+	{
+		$set['comments']      = 'fas fa-comments fa-fw';
+		$set['tags']          = 'fas fa-tags fa-fw';
+		$set['chevron_right'] = 'fas fa-circle-chevron-right';
+		$set['circle']        = 'far fa-circle';
+		$set['circle_dot']    = 'far fa-circle-dot';
+		$set['big_image']     = 'far fa-image fa-5x';
+	}
+
 	public function frontCustomTemplate()
 	{
 		if (! in_array($this->modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
 			return;
 
 		$this->context['is_portal'] = in_array($this->modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
+
+		$this->context['request_id'] = $this->request()->has('sa') && $this->request('sa') === 'categories' ? $this->request('id', 0) : 0;
 
 		$this->context['lp_all_categories'] = $this->getCategories();
 

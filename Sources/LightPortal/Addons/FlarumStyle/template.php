@@ -11,10 +11,10 @@ function show_ffs_sidebar()
 				<div class="roundframe">
 					<ul>
 						<li>
-							<i class="far fa-comments"></i> <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style']['all_boards'], '</a>
+							', $context['lp_icon_set']['comments'], ' <a href="', $scripturl, '?action=forum">', $context['is_portal'] ? $txt['lp_forum'] : $txt['lp_flarum_style']['all_boards'], '</a>
 						</li>
 						<li>
-							<i class="fas fa-th-large"></i> <a href="', $scripturl, $context['is_portal'] ? '?action=' . LP_ACTION . ';sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style']['tags'], '</a>
+							', $context['lp_icon_set']['tags'], ' <a href="', $scripturl, $context['is_portal'] ? '?action=' . LP_ACTION . ';sa=tags' : '?action=keywords', '">', $txt['lp_flarum_style']['tags'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -38,12 +38,12 @@ function show_ffs_sidebar()
 					echo '
 							<ul>
 								<li style="margin-left: 1em">
-									<i class="fas fa-chevron-circle-right"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>
+									', $context['lp_icon_set']['chevron_right'], ' <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>
 								</li>
 							</ul>';
 				} else {
 					echo '
-							<i class="far fa-circle"></i> <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
+							', $context['lp_icon_set']['circle' . ($context['request_id'] == $board['id'] ? '_dot' : '')], ' <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
 				}
 
 				echo '
@@ -86,7 +86,7 @@ function template_show_articles_as_flarum_style()
 			if (empty($article['image'])) {
 				echo '
 				<div class="floatleft" style="width: 64px">
-					<i class="far fa-image fa-5x"></i>
+					', $context['lp_icon_set']['big_image'], '
 				</div>';
 			} else {
 				echo '
@@ -103,10 +103,8 @@ function template_show_articles_as_flarum_style()
 					</h3>
 					<div class="smalltext">';
 
-			if (! empty($article['replies']['num'])) {
-				echo '
-						<i class="fas fa-reply"></i>';
-			}
+			if (! empty($article['replies']['num']))
+				echo $context['lp_icon_set']['reply'];
 
 			if (! empty($article['author']['id'])) {
 				echo '
@@ -138,15 +136,13 @@ function template_show_articles_as_flarum_style()
 
 			echo '
 					<div class="righttext">
-						<i class="fas fa-eye" title="', $article['views']['title'], '"></i> ', $article['views']['num'];
+						', str_replace(' class=', ' title="' . $article['views']['title'] . '" class=', $context['lp_icon_set']['views']), $article['views']['num'];
 
 			if (! empty($article['views']['after']))
 				echo $article['views']['after'];
 
-			if (! empty($article['replies']['num'])) {
-				echo '
-						<i class="fas fa-comment" title="', $article['replies']['title'], '"></i> ', $article['replies']['num'];
-			}
+			if (! empty($article['replies']['num']))
+				echo ' ' . str_replace(' class=', ' title="' . $article['replies']['title'] . '" class=', $context['lp_icon_set']['replies']), $article['replies']['num'];
 
 			if (! empty($article['replies']['after']))
 				echo $article['replies']['after'];
