@@ -56,11 +56,12 @@ final class CreditArea
 		isAllowedTo('light_portal_view');
 
 		$this->context['portal_translations'] = [
-			'Polish'    => ['Adrek', 'jsqx'],
-			'Spanish'   => ['Rock Lee', 'Diego Andrés'],
-			'French'    => ['Papoune57'],
-			'Turkish'   => ['gevv'],
-			'Ukrainian' => ['valciriya1986']
+			'🇵🇱 Polish'    => ['Adrek', 'jsqx'],
+			'🇪🇸 🇲🇽 Spanish'   => ['Rock Lee', 'Diego Andrés'],
+			'🇫🇷 French'    => ['Papoune57'],
+			'🇹🇷 Turkish'   => ['gevv'],
+			'🇺🇦 Ukrainian' => ['valciriya1986'],
+			'🇩🇪 German'    => ['trucker2006']
 		];
 
 		$this->context['testers'] = [

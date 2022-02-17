@@ -7,7 +7,8 @@
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 7.4.27 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
-* **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian
+* **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian, German
+* **Demo:** [Link](https://demo.dragomano.ru)
 
 ## Description
 This modification will transform your forum into a portal that includes:
