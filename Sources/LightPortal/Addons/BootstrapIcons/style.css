@@ -1,6 +1,14 @@
+i.bi {
+	font-size: 1.2em;
+}
+
 .bi-toggle-on,
 .bi-toggle-off {
-	font-size: 3em;
+	font-size: 3em !important;
+}
+
+.big_image {
+	font-size: 5em !important;
 }
 
 .gear.bi-gear-fill,
@@ -9,5 +17,5 @@
 .bi-download,
 .bi-newspaper,
 .bi-currency-dollar {
-	font-size: 2em;
+	font-size: 2em !important;
 }

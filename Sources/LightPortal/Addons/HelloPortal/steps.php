@@ -87,7 +87,7 @@ return [
 			position: "right"
 		},
 		{
-			element: document.querySelector(".infobox + .cat_bar"),
+			element: document.querySelector(".noticebox + .cat_bar"),
 			intro: "' . $this->txt['lp_hello_portal']['blocks_tour'][1] . '"
 		},
 		{

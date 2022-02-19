@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.02.22
+ * @version 19.02.22
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -23,16 +23,6 @@ if (! defined('LP_NAME'))
 class FlarumStyle extends Plugin
 {
 	public string $type = 'frontpage';
-
-	public function changeIconSet(array &$set)
-	{
-		$set['comments']      = 'fas fa-comments fa-fw';
-		$set['tags']          = 'fas fa-tags fa-fw';
-		$set['chevron_right'] = 'fas fa-circle-chevron-right';
-		$set['circle']        = 'far fa-circle';
-		$set['circle_dot']    = 'far fa-circle-dot';
-		$set['big_image']     = 'far fa-image fa-5x';
-	}
 
 	public function frontCustomTemplate()
 	{
