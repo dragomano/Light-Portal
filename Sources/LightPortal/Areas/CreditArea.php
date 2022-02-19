@@ -62,7 +62,7 @@ final class CreditArea
 			'🇹🇷 Turkish' => ['gevv'],
 			'🇺🇦 Ukrainian' => ['valciriya1986'],
 			'🇩🇪 German' => ['trucker2006'],
-			'🇮🇹 Italian' => ['Darkniko']
+			'🇮🇹 Italian' => ['Darknico']
 		];
 
 		$this->context['testers'] = [
