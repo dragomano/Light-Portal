@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.01.22
+ * @version 19.02.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -53,7 +53,7 @@ class AdsBlock extends Plugin
 			'included_boards' => '',
 			'included_topics' => '',
 			'end_date'        => '',
-			'end_time'        => $this->getDateTime()->format('H:i')
+			'end_time'        => '',//$this->getDateTime()->format('H:i')
 		];
 	}
 
@@ -232,13 +232,13 @@ class AdsBlock extends Plugin
 		if ($this->context['lp_ads_blocks'])
 			$this->context['lp_blocks'] = array_merge($this->context['lp_blocks'], $this->context['lp_ads_blocks']);
 
-		if (isset($this->context['lp_blocks']['ads'])) {
+		if (! empty($this->context['lp_blocks']['ads'])) {
 			foreach ($this->context['lp_blocks']['ads'] as $block) {
-				if ($block['parameters'] && isset($block['parameters']['loader_code'])) {
+				if ($block['parameters'] && ! empty($block['parameters']['loader_code'])) {
 					$this->context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
 				}
 
-				if ($block['parameters'] && isset($block['parameters']['end_date'])) {
+				if ($block['parameters'] && ! empty($block['parameters']['end_date'])) {
 					if ($this->getEndTime($block['parameters']) <= time()) {
 						$this->disableBlock($block['id']);
 					}
@@ -405,15 +405,15 @@ class AdsBlock extends Plugin
 			return [];
 
 		return array_filter($this->context['lp_blocks']['ads'], function ($block) use ($position) {
-			if (isset($block['parameters']['ads_boards'])) {
-				$boards = array_flip(explode(',', $block['parameters']['ads_boards']));
+			if (! empty($block['parameters']['included_boards'])) {
+				$boards = array_flip(explode(',', $block['parameters']['included_boards']));
 
 				if (! array_key_exists($this->context['current_board'], $boards))
 					return false;
 			}
 
-			if (isset($block['parameters']['ads_topics']) && isset($this->context['current_topic'])) {
-				$topics = array_flip(explode(',', $block['parameters']['ads_topics']));
+			if (! empty($block['parameters']['included_topics']) && ! empty($this->context['current_topic'])) {
+				$topics = array_flip(explode(',', $block['parameters']['included_topics']));
 
 				if (! array_key_exists($this->context['current_topic'], $topics))
 					return false;
