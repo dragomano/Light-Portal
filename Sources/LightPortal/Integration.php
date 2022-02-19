@@ -63,7 +63,7 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0rc1');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-02-13');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-02-19');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -84,6 +84,9 @@ final class Integration extends AbstractMain
 
 		if (! empty($this->context['portal_next_page']))
 			echo "\n\t" . '<link rel="prerender" href="' . $this->context['portal_next_page'] . '">';
+
+		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn')
+			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 	}
 
 	public function loadTheme()
