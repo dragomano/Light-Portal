@@ -269,11 +269,6 @@
   position: -webkit-sticky;
   top: 5px;
 }
-#lp_layout aside {
-  /* 		div + div {
-			margin: 1px;
-		} */
-}
 #lp_layout aside > div {
   margin: 0;
 }
@@ -281,6 +276,10 @@
 #lp_layout aside > div > h4 {
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+#lp_layout aside > div > h3 i,
+#lp_layout aside > div > h4 i {
+  margin-right: 0.5em;
 }
 #lp_layout aside .progress_bar {
   max-width: initial;
