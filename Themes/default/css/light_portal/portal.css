@@ -1368,3 +1368,13 @@ section #display_head span {
 .ss-main .ss-disabled {
   color: inherit !important;
 }
+/* TomSelect */
+.ts-wrapper .ts-control .item div {
+  margin: 0 !important;
+}
+.ts-wrapper .ts-dropdown {
+  position: initial !important;
+}
+.ts-wrapper .ts-dropdown .ts-dropdown-content .option div {
+  margin: 0 !important;
+}

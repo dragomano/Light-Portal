@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.22
+ * @version 20.02.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -119,29 +119,6 @@ class AdsBlock extends Plugin
 			'tab' => 'content'
 		];
 
-		if (! is_array($this->context['lp_block']['options']['parameters']['ads_placement'])) {
-			$this->context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $this->context['lp_block']['options']['parameters']['ads_placement']);
-		}
-
-		$data = [];
-
-		$placement_set = $this->getPlacements();
-		foreach ($placement_set as $position => $title) {
-			$data[] = "\t\t\t\t" . '{text: "' . $title . '", value: "' . $position . '", selected: ' . (in_array($position, $this->context['lp_block']['options']['parameters']['ads_placement']) ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#ads_placement",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			placeholder: "' . $this->txt['lp_ads_block']['select_placement'] . '",
-			searchHighlight: true,
-			closeOnSelect: false
-		});', true);
-
 		$this->context['posting_fields']['ads_placement']['label']['text'] = $this->txt['lp_block_placement'];
 		$this->context['posting_fields']['ads_placement']['input'] = [
 			'type' => 'select',
@@ -183,6 +160,10 @@ class AdsBlock extends Plugin
 		$this->context['posting_fields']['end_time']['input']['html'] = '
 			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">
 			<input type="time" name="end_time" value="' . $this->context['lp_block']['options']['parameters']['end_time'] . '">';
+
+		$this->context['ads_placements'] = $this->getPlacements();
+
+		$this->loadTemplate()->withLayer('ads_block');
 	}
 
 	/**
@@ -222,7 +203,7 @@ class AdsBlock extends Plugin
 		$this->context['lp_block_placements']['ads'] = $this->txt['lp_ads_block']['ads_type'];
 
 		if ($this->request()->is('admin') && $this->request()->has('area') && $this->request('area') === 'lp_blocks')
-			$this->loadTemplate()->withLayer('ads_block');
+			$this->loadTemplate()->withLayer('ads_block_form');
 
 		if (empty($this->context['current_board']) || $this->request()->is('xml'))
 			return;

@@ -91,6 +91,7 @@ $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edi
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The type of page editor by default';
+$txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
 $txt['lp_permissions_default'] = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';

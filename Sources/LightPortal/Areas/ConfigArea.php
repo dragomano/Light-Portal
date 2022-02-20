@@ -52,6 +52,9 @@ final class ConfigArea
 		loadCSSFile('light_portal/slimselect.min.css');
 		loadJavaScriptFile('light_portal/slimselect.min.js');
 
+		loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
+
 		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
 		loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
@@ -369,6 +372,8 @@ final class ConfigArea
 		$add_settings = [];
 		if (! isset($this->modSettings['lp_num_comments_per_page']))
 			$add_settings['lp_num_comments_per_page'] = 10;
+		if (! isset($this->modSettings['lp_page_maximum_keywords']))
+			$add_settings['lp_page_maximum_keywords'] = 10;
 		if ($add_settings)
 			updateSettings($add_settings);
 
@@ -379,10 +384,11 @@ final class ConfigArea
 			['select', 'lp_show_comment_block', $this->txt['lp_show_comment_block_set']],
 			['callback', 'disabled_bbc_in_comments'],
 			['int', 'lp_time_to_change_comments', 'postinput' => $this->txt['manageposts_minutes']],
-			['int', 'lp_num_comments_per_page'],
+			['int', 'lp_num_comments_per_page', 'min' => 1],
 			'',
 			['check', 'lp_show_items_as_articles'],
 			['select', 'lp_page_editor_type_default', $this->context['lp_content_types']],
+			['int', 'lp_page_maximum_keywords', 'min' => 1],
 			['select', 'lp_permissions_default', $this->txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_admin_section'],
 			['title', 'lp_fa_source_title'],

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 21.02.22
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -63,29 +63,6 @@ class HidingBlocks extends Plugin
 
 	public function prepareBlockFields()
 	{
-		// Prepare the breakpoints list
-		$current_breakpoints = $this->context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
-		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
-
-		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], $this->txt['lp_hiding_blocks']['hidden_breakpoints_set']);
-
-		$data = [];
-		foreach ($breakpoints as $bp => $name) {
-			$data[] = "\t\t\t\t" . '{text: "' . $name . '", value: "' . $bp . '", selected: ' . (in_array($bp, $current_breakpoints) ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#hidden_breakpoints",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			placeholder: "' . $this->txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
-			searchHighlight: true,
-			closeOnSelect: false
-		});', true);
-
 		$this->context['posting_fields']['hidden_breakpoints']['label']['text'] = $this->txt['lp_hiding_blocks']['hidden_breakpoints'];
 		$this->context['posting_fields']['hidden_breakpoints']['input'] = [
 			'type' => 'select',
@@ -97,5 +74,7 @@ class HidingBlocks extends Plugin
 			'options' => [],
 			'tab' => 'access_placement'
 		];
+
+		$this->loadTemplate()->withLayer('hiding_blocks');
 	}
 }

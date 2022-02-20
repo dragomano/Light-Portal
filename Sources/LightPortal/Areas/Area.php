@@ -129,7 +129,7 @@ trait Area
 		foreach ($all_icons as $icon) {
 			$results[] = [
 				'innerHTML' => sprintf($template, $icon),
-				'text'      => $icon
+				'value'     => $icon
 			];
 		}
 

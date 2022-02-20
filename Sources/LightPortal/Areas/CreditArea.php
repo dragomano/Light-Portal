@@ -151,6 +151,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Tom Select',
+				'link' => 'https://tom-select.js.org/',
+				'author' => 'Brian Reavis and contributors',
+				'license' => [
+					'name' => 'the Apache License 2.0',
+					'link' => 'https://github.com/orchidjs/tom-select/blob/master/LICENSE'
+				]
+			],
+			[
 				'title' => 'jscolor Color Picker',
 				'link' => 'https://jscolor.com',
 				'author' => 'Jan Odvárko – East Desire',
