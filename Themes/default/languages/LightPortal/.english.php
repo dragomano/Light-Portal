@@ -174,7 +174,7 @@ $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values'] = array(
 	'everywhere',
-	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: %1$s)',
 	'on all portal pages',
 	'on page <em>index.php?page</em>=<strong>alias</strong>',
 	'in all boards',
