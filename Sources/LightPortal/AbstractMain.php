@@ -74,20 +74,16 @@ abstract class AbstractMain
 
 	protected function loadCssFiles()
 	{
-		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn') {
-			loadCSSFile(
-				'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css',
-				['external' => true, 'seed' => false],
-				'portal_fontawesome'
-			);
-		} elseif ($this->modSettings['lp_fa_source'] === 'css_local') {
-			loadCSSFile('all.min.css', [], 'portal_fontawesome');
-		} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
-			loadCSSFile(
-				$this->modSettings['lp_fa_custom'],
-				['external' => true, 'seed' => false],
-				'portal_fontawesome'
-			);
+		if (! empty($this->modSettings['lp_fa_source'])) {
+			if ($this->modSettings['lp_fa_source'] === 'css_local') {
+				loadCSSFile('all.min.css', [], 'portal_fontawesome');
+			} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
+				loadCSSFile(
+					$this->modSettings['lp_fa_custom'],
+					['external' => true, 'seed' => false],
+					'portal_fontawesome'
+				);
+			}
 		}
 
 		loadCSSFile('light_portal/flexboxgrid.css');

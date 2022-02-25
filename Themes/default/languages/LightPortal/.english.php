@@ -91,6 +91,7 @@ $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edi
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The type of page editor by default';
+$txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
 $txt['lp_permissions_default'] = 'Permissions for pages and blocks by default';
 $txt['lp_hide_blocks_in_admin_section'] = 'Hide active blocks in the admin area';
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
@@ -173,7 +174,7 @@ $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values'] = array(
 	'everywhere',
-	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: portal,forum,search)',
+	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: %1$s)',
 	'on all portal pages',
 	'on page <em>index.php?page</em>=<strong>alias</strong>',
 	'in all boards',
@@ -187,6 +188,7 @@ $txt['lp_block_areas_values'] = array(
 );
 
 $txt['lp_block_select_icon'] = 'Select icon';
+$txt['lp_block_icon_style_cheatsheet'] = 'FontAwesome Style Cheatsheet';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';

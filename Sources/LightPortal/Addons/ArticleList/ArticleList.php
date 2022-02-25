@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 20.02.22
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -51,21 +51,6 @@ class ArticleList extends Plugin
 	{
 		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
-
-		$data = [];
-		foreach ($this->context['lp_all_content_classes'] as $key => $template) {
-			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $this->txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $this->context['lp_block']['options']['parameters']['body_class'] ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#body_class",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			closeOnSelect: true
-		});', true);
 
 		$this->context['posting_fields']['body_class']['label']['text'] = $this->txt['lp_article_list']['body_class'];
 		$this->context['posting_fields']['body_class']['input'] = [
@@ -114,6 +99,8 @@ class ArticleList extends Plugin
 				'checked' => (bool) $this->context['lp_block']['options']['parameters']['seek_images']
 			]
 		];
+
+		$this->loadTemplate()->withLayer('article_list');
 	}
 
 	public function getTopics(array $parameters): array

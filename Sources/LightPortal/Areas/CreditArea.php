@@ -56,11 +56,13 @@ final class CreditArea
 		isAllowedTo('light_portal_view');
 
 		$this->context['portal_translations'] = [
-			'Polish'    => ['Adrek', 'jsqx'],
-			'Spanish'   => ['Rock Lee', 'Diego Andrés'],
-			'French'    => ['Papoune57'],
-			'Turkish'   => ['gevv'],
-			'Ukrainian' => ['valciriya1986']
+			'🇵🇱 Polish' => ['Adrek', 'jsqx'],
+			'🇪🇸 🇲🇽 Spanish' => ['Rock Lee', 'Diego Andrés'],
+			'🇫🇷 French' => ['Papoune57'],
+			'🇹🇷 Turkish' => ['gevv'],
+			'🇺🇦 Ukrainian' => ['valciriya1986'],
+			'🇩🇪 German' => ['trucker2006'],
+			'🇮🇹 Italian' => ['Darknico']
 		];
 
 		$this->context['testers'] = [
@@ -97,12 +99,12 @@ final class CreditArea
 			],
 			[
 				'title' => 'Font Awesome Free',
-				'link' => 'https://fontawesome.com/cheatsheet/free',
+				'link' => 'https://fontawesome.com',
 				'author' => 'Fonticons, Inc.',
-				'license' => [
-					'name' => 'the Font Awesome Free License',
+				'license' => array(
+					'name' => 'the Font Awesome Free License (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
-				]
+				)
 			],
 			[
 				'title' => 'Alpine.js',
@@ -146,6 +148,15 @@ final class CreditArea
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => 'Tom Select',
+				'link' => 'https://tom-select.js.org/',
+				'author' => 'Brian Reavis and contributors',
+				'license' => [
+					'name' => 'the Apache License 2.0',
+					'link' => 'https://github.com/orchidjs/tom-select/blob/master/LICENSE'
 				]
 			],
 			[

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 19.02.22
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -61,59 +61,69 @@ class BootstrapIcons extends Plugin
 		if (empty($this->modSettings['lp_bootstrap_icons_addon_replace_ui_icons']))
 			return;
 
-		$set['home']        = 'house-door';
-		$set['cog_spin']    = 'gear';
-		$set['pager']       = 'inboxes';
-		$set['sections']    = 'folder';
-		$set['panels']      = 'columns-gap';
-		$set['tools']       = 'tools';
-		$set['info']        = 'exclamation-circle';
-		$set['arrows']      = 'arrows-move';
-		$set['content']     = 'newspaper';
-		$set['spider']      = 'robot';
-		$set['access']      = 'key';
-		$set['design']      = 'fan';
-		$set['main']        = 'card-list';
-		$set['sort']        = 'sort-numeric-down';
-		$set['plus']        = 'plus';
-		$set['export']      = 'file-arrow-down';
-		$set['import']      = 'file-arrow-up';
-		$set['simple']      = 'list';
-		$set['tile']        = 'layout-split';
-		$set['save_exit']   = 'check-square';
-		$set['save']        = 'check-circle';
-		$set['preview']     = 'check-all';
-		$set['reply']       = 'reply';
-		$set['edit']        = 'pencil-square';
-		$set['undo']        = 'backspace';
-		$set['remove']      = 'trash';
-		$set['close']       = 'x-lg';
-		$set['submit']      = 'send';
-		$set['bold']        = 'type-bold';
-		$set['italic']      = 'type-italic';
-		$set['youtube']     = 'youtube';
-		$set['image']       = 'image';
-		$set['link']        = 'link';
-		$set['code']        = 'code';
-		$set['quote']       = 'quote';
-		$set['category']    = 'tablet-landscape';
-		$set['date']        = 'clock';
-		$set['user']        = 'person-fill';
-		$set['views']       = 'eye';
-		$set['replies']     = 'chat-text';
-		$set['tag']         = 'tag';
-		$set['users']       = 'people-fill';
-		$set['copyright']   = 'at';
-		$set['redirect']    = 'arrow-return-right';
-		$set['calendar']    = 'calendar-plus';
-		$set['map_signs']   = 'map';
-		$set['arrow_right'] = 'arrow-right';
-		$set['arrow_left']  = 'arrow-left';
-		$set['donate']      = 'currency-dollar';
-		$set['download']    = 'download';
-		$set['search']      = 'search';
-		$set['toggle']      = 'toggle-';
-		$set['gear']        = 'gear-fill';
+		$set['access']        = 'key';
+		$set['arrow_left']    = 'arrow-left';
+		$set['arrow_right']   = 'arrow-right';
+		$set['arrows']        = 'arrows-move';
+		$set['big_image']     = 'image big_image';
+		$set['bold']          = 'type-bold';
+		$set['calendar']      = 'calendar-plus';
+		$set['category']      = 'tablet-landscape';
+		$set['chevron_right'] = 'arrow-right-circle-fill';
+		$set['circle_dot']    = 'record-circle-fill';
+		$set['circle']        = 'circle-fill';
+		$set['close']         = 'x-lg';
+		$set['code']          = 'code';
+		$set['cog_spin']      = 'gear';
+		$set['comments']      = 'chat-fill';
+		$set['content']       = 'newspaper';
+		$set['copyright']     = 'at';
+		$set['date']          = 'clock';
+		$set['design']        = 'fan';
+		$set['donate']        = 'currency-dollar';
+		$set['download']      = 'download';
+		$set['edit']          = 'pencil-square';
+		$set['export']        = 'file-arrow-down';
+		$set['gear']          = 'gear-fill';
+		$set['home']          = 'house-door';
+		$set['image']         = 'image';
+		$set['import']        = 'file-arrow-up';
+		$set['info']          = 'exclamation-circle';
+		$set['italic']        = 'type-italic';
+		$set['link']          = 'link';
+		$set['main']          = 'card-list';
+		$set['map_signs']     = 'map';
+		$set['pager']         = 'inboxes';
+		$set['panels']        = 'columns-gap';
+		$set['plus_circle']   = 'plus-circle-fill';
+		$set['plus']          = 'plus';
+		$set['preview']       = 'check-all';
+		$set['quote']         = 'quote';
+		$set['redirect']      = 'arrow-return-right';
+		$set['remove']        = 'trash';
+		$set['replies']       = 'chat-text-fill';
+		$set['reply']         = 'reply';
+		$set['save_exit']     = 'check-square';
+		$set['save']          = 'check-circle';
+		$set['search']        = 'search';
+		$set['sections']      = 'folder';
+		$set['sign_in_alt']   = 'box-arrow-in-right';
+		$set['sign_out_alt']  = 'box-arrow-right';
+		$set['simple']        = 'list';
+		$set['sort']          = 'sort-numeric-down';
+		$set['spider']        = 'robot';
+		$set['submit']        = 'send';
+		$set['tag']           = 'tag-fill';
+		$set['tags']          = 'tags-fill';
+		$set['tile']          = 'layout-split';
+		$set['toggle']        = 'toggle-';
+		$set['tools']         = 'tools';
+		$set['undo']          = 'backspace';
+		$set['user_plus']     = 'person-plus-fill';
+		$set['user']          = 'person-fill';
+		$set['users']         = 'people-fill';
+		$set['views']         = 'eye-fill';
+		$set['youtube']       = 'youtube';
 
 		$set = array_map(fn($icon): string => $this->prefix . $icon, $set);
 	}

@@ -725,8 +725,6 @@ function show_pagination(string $position = 'top')
 	if (! empty($context['page_index']) && ($show_on_top || $show_on_bottom))
 		echo '
 		<div class="col-xs-12 centertext">
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>
+			<div class="pagesection">', $context['page_index'], '</div>
 		</div>';
 }

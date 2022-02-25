@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 21.02.22
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -56,27 +56,6 @@ class LanguageAccess extends Plugin
 
 	public function prepareBlockFields()
 	{
-		// Prepare the language list
-		$current_languages = $this->context['lp_block']['options']['parameters']['allowed_languages'] ?? [];
-		$current_languages = is_array($current_languages) ? $current_languages : explode(',', $current_languages);
-
-		$data = [];
-		foreach ($this->context['languages'] as $lang) {
-			$data[] = "\t\t\t\t" . '{text: "' . $lang['filename'] . '", selected: ' . (in_array($lang['filename'], $current_languages) ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#allowed_languages",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			placeholder: "' . $this->txt['lp_language_access']['allowed_languages_subtext'] . '",
-			searchHighlight: true,
-			closeOnSelect: false
-		});', true);
-
 		$this->context['posting_fields']['allowed_languages']['label']['text'] = $this->txt['lp_language_access']['allowed_languages'];
 		$this->context['posting_fields']['allowed_languages']['input'] = [
 			'type' => 'select',
@@ -88,5 +67,7 @@ class LanguageAccess extends Plugin
 			'options' => [],
 			'tab' => 'access_placement'
 		];
+
+		$this->loadTemplate()->withLayer('language_access');
 	}
 }

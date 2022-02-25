@@ -57,6 +57,7 @@ function template_show_page()
 					', $context['lp_icon_set']['user'], '<span itemprop="name">', $context['lp_page']['author'], '</span>
 					<meta itemprop="url" content="', $scripturl, '?action=profile;u=', $context['lp_page']['author_id'], '">
 				</span>
+				', $context['lp_page']['post_author'] ?? '', '
 				<time class="floatright" datetime="', date('c', $context['lp_page']['created_at']), '" itemprop="datePublished">
 					', $context['lp_icon_set']['date'], $context['lp_page']['created'], empty($context['lp_page']['updated_at']) ? '' : (' / ' . $context['lp_page']['updated'] . ' <meta itemprop="dateModified" content="' . date('c', $context['lp_page']['updated_at']) . '">'), '
 				</time>
@@ -94,8 +95,7 @@ function template_show_page()
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
 
 	// Extend with addons
-	if (! empty($context['lp_page']['addons']))
-		echo $context['lp_page']['addons'];
+	echo $context['lp_page']['post_content'] ?? '';
 
 	echo '
 		</article>';
@@ -151,9 +151,7 @@ function show_comment_block()
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
 				<div class="centertext">
-					<div class="pagesection">
-						<div class="pagelinks">', $context['page_index'], '</div>
-					</div>
+					<div class="pagesection">', $context['page_index'], '</div>
 				</div>';
 
 	$i = 0;
@@ -171,9 +169,7 @@ function show_comment_block()
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
 				<div class="centertext">
-					<div class="pagesection">
-						<div class="pagelinks">', $context['page_index'], '</div>
-					</div>
+					<div class="pagesection">', $context['page_index'], '</div>
 				</div>';
 
 	if ($context['user']['is_logged']) {

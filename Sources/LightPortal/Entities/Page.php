@@ -288,7 +288,12 @@ final class Page
 		$this->context['lp_frontpage_articles']    = $articles;
 		$this->context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
 
+		// Mod authors can define their own template
+		$this->hook('frontCustomTemplate');
+
 		loadTemplate('LightPortal/ViewFrontPage');
+
+		$this->addLazyLoadingForImages();
 
 		$this->context['sub_template']      = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
 		$this->context['template_layers'][] = 'sorting';
@@ -467,8 +472,6 @@ final class Page
 
 		if (! empty($data['options']['keywords']))
 			$data['tags'] = $this->getTags($data['options']['keywords']);
-
-		$data['addons'] = '';
 
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}

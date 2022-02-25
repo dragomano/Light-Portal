@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Lists\IconList;
+
 use function addJavaScriptVar;
 use function smf_json_decode;
 use function create_control_richedit;
@@ -48,6 +50,10 @@ trait Area
 	public function preparePostFields(string $defaultTab = 'tuning')
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
+			if ($item === 'icon') {
+				$data['input']['after'] = '<a class="bbc_link" target="_blank" rel="noopener" href="https://fontawesome.com/v6/docs/web/style/style-cheatsheet">' . $this->txt['lp_block_icon_style_cheatsheet'] . '</a>';
+			}
+
 			if (isset($data['input']['after'])) {
 				$tag = 'div';
 
@@ -58,7 +64,7 @@ trait Area
 			}
 
 			// Fancy checkbox
-			if (isset($data['input']['type']) && $data['input']['type'] == 'checkbox') {
+			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
 				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($this->context['posting_fields'][$item]['input']['after'] ?? '');
 				$this->context['posting_fields'][$item] = $data;
@@ -123,7 +129,7 @@ trait Area
 		foreach ($all_icons as $icon) {
 			$results[] = [
 				'innerHTML' => sprintf($template, $icon),
-				'text'      => $icon
+				'value'     => $icon
 			];
 		}
 
@@ -133,18 +139,7 @@ trait Area
 	public function getFaIcons(): array
 	{
 		if (($icons = $this->cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
-			$content = file_get_contents('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/metadata/icons.json');
-			$json = smf_json_decode($content);
-
-			if (empty($json))
-				return [];
-
-			$icons = [];
-			foreach ($json as $icon => $value) {
-				foreach ($value->styles as $style) {
-					$icons[] = 'fa' . substr($style, 0, 1) . ' fa-' . $icon;
-				}
-			}
+			$icons = (new IconList)->getList();
 
 			$this->cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
 		}

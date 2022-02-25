@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.01.22
+ * @version 21.02.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -52,28 +52,6 @@ class PageList extends Plugin
 		if ($this->context['lp_block']['type'] !== 'page_list')
 			return;
 
-		// Prepare the category list
-		$all_categories     = $this->getAllCategories();
-		$current_categories = $this->context['lp_block']['options']['parameters']['categories'] ?? [];
-		$current_categories = is_array($current_categories) ? $current_categories : explode(',', $current_categories);
-
-		$data = [];
-		foreach ($all_categories as $id => $category) {
-			$data[] = "\t\t\t\t" . '{text: "' . $category['name'] . '", value: "' . $id . '", selected: ' . (in_array($id, $current_categories) ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#categories",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			placeholder: "' . $this->txt['lp_page_list']['categories_subtext'] . '",
-			searchHighlight: true,
-			closeOnSelect: false
-		});', true);
-
 		$this->context['posting_fields']['categories']['label']['text'] = $this->txt['lp_categories'];
 		$this->context['posting_fields']['categories']['input'] = [
 			'type' => 'select',
@@ -114,6 +92,10 @@ class PageList extends Plugin
 				'value' => $this->context['lp_block']['options']['parameters']['num_pages']
 			]
 		];
+
+		$this->context['all_categories'] = $this->getAllCategories();
+
+		$this->loadTemplate()->withLayer('page_list');
 	}
 
 	public function getData(array $parameters): array

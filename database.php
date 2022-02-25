@@ -497,7 +497,7 @@ $smcFunc['db_query']('', '
 
 $add_settings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
-	$add_settings['lp_enabled_plugins'] = 'Trumbowyg,UserInfo,ThemeSwitcher';
+	$add_settings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
 if (! isset($modSettings['lp_show_comment_block']))
 	$add_settings['lp_show_comment_block'] = 'default';
 if (! isset($modSettings['lp_fa_source']))

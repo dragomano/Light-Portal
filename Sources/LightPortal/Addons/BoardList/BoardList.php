@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 21.02.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -48,21 +48,6 @@ class BoardList extends Plugin
 		if ($this->context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$data = [];
-		foreach ($this->getCategoryClasses() as $key => $template) {
-			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $this->txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $this->context['lp_block']['options']['parameters']['category_class'] ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#category_class",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			closeOnSelect: true
-		});', true);
-
 		$this->context['posting_fields']['category_class']['label']['text'] = $this->txt['lp_board_list']['category_class'];
 		$this->context['posting_fields']['category_class']['input'] = [
 			'type' => 'select',
@@ -73,21 +58,6 @@ class BoardList extends Plugin
 			'tab' => 'appearance'
 		];
 
-		$data = [];
-		foreach ($this->context['lp_all_content_classes'] as $key => $template) {
-			$data[] = "\t\t\t\t" . '{innerHTML: `' . sprintf($template, empty($key) ? $this->txt['no'] : $key, '') . '`, text: "' . $key . '", selected: ' . ($key == $this->context['lp_block']['options']['parameters']['board_class'] ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#board_class",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			closeOnSelect: true
-		});', true);
-
 		$this->context['posting_fields']['board_class']['label']['text'] = $this->txt['lp_board_list']['board_class'];
 		$this->context['posting_fields']['board_class']['input'] = [
 			'type' => 'select',
@@ -97,6 +67,10 @@ class BoardList extends Plugin
 			'options' => [],
 			'tab' => 'appearance'
 		];
+
+		$this->context['category_classes'] = $this->getCategoryClasses();
+
+		$this->loadTemplate()->withLayer('board_list');
 	}
 
 	public function getData(): array

@@ -656,6 +656,7 @@ final class BlockArea extends AbstractArea
 			'topic=id3|id7',
 		];
 
+		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'home,portal,forum,search');
 		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 
 		ob_start();

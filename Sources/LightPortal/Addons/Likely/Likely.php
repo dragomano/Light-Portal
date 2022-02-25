@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 21.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -88,23 +88,6 @@ class Likely extends Plugin
 			$this->context['lp_block']['options']['parameters']['buttons'] = explode(',', $this->context['lp_block']['options']['parameters']['buttons']);
 		}
 
-		$data = [];
-		foreach ($this->buttons as $button) {
-			$data[] = "\t\t\t\t" . '{text: "' . $button . '", selected: ' . (in_array($button, $this->context['lp_block']['options']['parameters']['buttons']) ? 'true' : 'false') . '}';
-		}
-
-		addInlineJavaScript('
-		new SlimSelect({
-			select: "#buttons",
-			data: [' . "\n" . implode(",\n", $data) . '
-			],
-			hideSelectedOption: true,
-			showSearch: false,
-			placeholder: "' . $this->txt['lp_likely']['select_buttons'] . '",
-			searchHighlight: true,
-			closeOnSelect: false
-		});', true);
-
 		$this->context['posting_fields']['buttons']['label']['text'] = $this->txt['lp_likely']['buttons'];
 		$this->context['posting_fields']['buttons']['input'] = [
 			'type' => 'select',
@@ -117,6 +100,10 @@ class Likely extends Plugin
 			'options' => [],
 			'tab' => 'content'
 		];
+
+		$this->context['likely_buttons'] = $this->buttons;
+
+		$this->loadTemplate()->withLayer('likely');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)

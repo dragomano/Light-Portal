@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 19.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -27,9 +27,19 @@ class Uicons extends Plugin
 {
 	public string $type = 'icons';
 
+	private string $prefix = 'fi fi-';
+
 	public function init()
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css', ['external' => true, 'seed' => false]);
+		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
+	}
+
+	public function preCssOutput()
+	{
+		if (SMF === 'BACKGROUND')
+			return;
+
+		echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 	}
 
 	public function addSettings(array &$config_vars)
@@ -56,7 +66,7 @@ class Uicons extends Plugin
 
 			$icons = [];
 			foreach ($list as $icon) {
-				$icons[] = 'fi fi-' . $weight . $corner . '-' . $icon;
+				$icons[] = $this->prefix . $weight . $corner . '-' . $icon;
 			}
 
 			$this->cache()->put('all_uicons', $icons, LP_CACHE_TIME * 7);

@@ -309,139 +309,15 @@ function template_block_post()
 			</div>
 		</div>
 	</form>
-
 	<script>
 		const block = new Block();
-		const placementSelect = document.getElementById("placement");
-
-		if (placementSelect.style.display !== "none") {
-			new SlimSelect({
-				select: placementSelect,
-				showSearch: false,
-				hideSelectedOption: true,
-				closeOnSelect: true,
-				showContent: "down"
-			});
-		}';
-
-	if ($context['user']['is_admin']) {
-		echo '
-		new SlimSelect({
-			select: "#permissions",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});';
-	}
-
-	echo '
-		let iconSelect = new SlimSelect({
-			select: "#icon",
-			allowDeselect: true,
-			deselectLabel: "<span class=\"red\">✖</span>",
-			limit: 30,
-			ajax: function (search, callback) {
-				if (search.length < 3) {
-					callback("', sprintf($txt['lp_min_search_length'], 3), '")
-					return
-				}
-
-				fetch("', $context['canonical_url'], ';icons", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json; charset=utf-8"
-					},
-					body: JSON.stringify({
-						search,
-						add_block: "', $context['lp_block']['type'], '"
-					})
-				})
-				.then(response => response.json())
-				.then(function (json) {
-					let data = [];
-					for (let i = 0; i < json.length; i++) {
-						data.push({innerHTML: json[i].innerHTML, text: json[i].text})
-					}
-
-					callback(data)
-				})
-				.catch(function (error) {
-					callback(false)
-				})
-			},
-			hideSelectedOption: true,
-			placeholder: "', $txt['lp_block_select_icon'], '",
-			searchingText: "', $txt['search'], '...",
-			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "cheese",
-			searchHighlight: true,
-			closeOnSelect: false,
-			showContent: "down",
-			addable: function (value) {
-				return {
-					text: value.toLowerCase(),
-					value: value.toLowerCase()
-				}
-			}
-		});';
-
-	if (! empty($context['lp_block']['icon'])) {
-		echo '
-		iconSelect.setData([{innerHTML: `', $context['lp_block']['icon_template'], '`, text: "', $context['lp_block']['icon'], '"}]);
-		iconSelect.set(', JavaScriptEscape($context['lp_block']['icon']), ');';
-	}
-
-	if (! empty($context['lp_all_title_classes'])) {
-		echo '
-		new SlimSelect({
-			select: "#title_class",
-			data: [';
-
-		foreach ($context['lp_all_title_classes'] as $key => $template) {
-			echo '
-				{
-					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key) . '`,
-					text: "' . $key . '",
-					selected: ' . ($key == $context['lp_block']['title_class'] ? 'true' : 'false') . '
-				},';
-		}
-
-		echo '
-			],
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});';
-	}
-
-	if (empty($context['lp_block']['options']['no_content_class'])) {
-		echo '
-		new SlimSelect({
-			select: "#content_class",
-			data: [';
-
-		foreach ($context['lp_all_content_classes'] as $key => $template) {
-			echo '
-				{
-					innerHTML: `' . sprintf($template, empty($key) ? $txt['no'] : $key, '') . '`,
-					text: "' . $key . '",
-					selected: ' . ($key == $context['lp_block']['content_class'] ? 'true' : 'false') . '
-				},';
-		}
-
-		echo '
-			],
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});';
-	}
-
-	echo '
 	</script>';
+
+	require_once __DIR__ . '/partials/placement.php';
+	require_once __DIR__ . '/partials/permissions.php';
+	require_once __DIR__ . '/partials/icon.php';
+	require_once __DIR__ . '/partials/title_class.php';
+	require_once __DIR__ . '/partials/content_class.php';
 }
 
 function template_show_areas_info()

@@ -20,9 +20,9 @@ function template_ads_placement_topic_below()
 	lp_show_blocks('topic_bottom');
 }
 
-function template_ads_block_above() {}
+function template_ads_block_form_above() {}
 
-function template_ads_block_below()
+function template_ads_block_form_below()
 {
 	global $scripturl, $context;
 
@@ -37,5 +37,50 @@ function template_ads_block_below()
 			addButton.removeAttribute("href");
 			addButton.addEventListener("click", () => document.forms.ads_block_form.submit());
 		}
+	</script>';
+}
+
+function template_ads_block_above() {}
+
+function template_ads_block_below()
+{
+	global $context, $txt;
+
+	if (! is_array($context['lp_block']['options']['parameters']['ads_placement'])) {
+		$context['lp_block']['options']['parameters']['ads_placement'] = explode(',', $context['lp_block']['options']['parameters']['ads_placement']);
+	}
+
+	$data = $items = [];
+
+	foreach ($context['ads_placements'] as $position => $title) {
+		$data[] = '{text: "' . $title . '", value: "' . $position . '"}';
+
+		if (in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])) {
+			$items[] = JavaScriptEscape($position);
+		}
+	}
+
+	echo '
+	<script>
+		new TomSelect("#ads_placement", {
+			plugins: {
+				remove_button:{
+					title: "', $txt['remove'], '",
+				}
+			},
+			options: [', implode(',', $data), '],
+			items: [', implode(',', $items), '],
+			hideSelected: true,
+			placeholder: "', $txt['lp_ads_block']['select_placement'], '",
+			closeAfterSelect: false,
+			render: {
+				no_results: function() {
+					return `<div class="no-results">', $txt['no_matches'], '</div>`;
+				},
+				not_loading: function(data, escape) {
+					return `<div class="optgroup-header">', sprintf($txt['lp_min_search_length'], 3), '</div>`;
+				}
+			}
+		});
 	</script>';
 }

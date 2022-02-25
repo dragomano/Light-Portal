@@ -155,6 +155,9 @@ final class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
+			if ($area === LP_ACTION && isset($block['areas']['home']) && empty($this->context['lp_page']) && empty($this->context['current_action']))
+				return true;
+
 			if (isset($this->context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']])))
 				return true;
 

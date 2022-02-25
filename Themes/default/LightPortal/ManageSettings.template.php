@@ -4,8 +4,6 @@ function template_lp_basic_settings_above() {}
 
 function template_lp_basic_settings_below()
 {
-	global $txt, $scripturl, $modSettings;
-
 	// Frontpage mode toggle
 	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
 
@@ -100,59 +98,10 @@ function template_lp_basic_settings_below()
 
 		$("#lp_standalone_mode").on("click", function () {
 			toggleStandaloneMode()
-		});';
-
-	// Alias select
-	echo '
-		let frontpageAlias = document.getElementById("lp_frontpage_alias");
-		if (frontpageAlias) {
-			let aliasSelect = new SlimSelect({
-				select: frontpageAlias,
-				ajax: function (search, callback) {
-					if (search.length < 3) {
-						callback("', sprintf($txt['lp_min_search_length'], 3), '")
-						return
-					}
-
-					fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json; charset=utf-8"
-						},
-						body: JSON.stringify({
-							search
-						})
-					})
-					.then(response => response.json())
-					.then(function (json) {
-						let data = [];
-						for (let i = 0; i < json.length; i++) {
-							data.push({text: json[i].value})
-						}
-
-						callback(data)
-					})
-					.catch(function (error) {
-						callback(false)
-					})
-				},
-				hideSelectedOption: true,
-				searchingText: "', $txt['search'], '...",
-				searchText: "', $txt['no_matches'], '",
-				searchPlaceholder: "home",
-				searchHighlight: true,
-				showContent: "down"
-			});';
-
-	if (! empty($modSettings['lp_frontpage_alias'])) {
-		echo '
-			aliasSelect.setData([{value: "', $modSettings['lp_frontpage_alias'], '", text: "', $modSettings['lp_frontpage_alias'], '"}]);
-			aliasSelect.set(', JavaScriptEscape($modSettings['lp_frontpage_alias']), ');';
-	}
-
-	echo '
-		}
+		});
 	</script>';
+
+	require_once __DIR__ . '/partials/alias_select.php';
 }
 
 function template_lp_extra_settings_above() {}
@@ -222,29 +171,11 @@ function template_callback_disabled_bbc_in_comments()
 
 	echo '
 			</select>
-			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="selectAllBbc($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
-			<script>
-				const lpDisabledBbc = new SlimSelect({
-					select: "#lp_disabled_bbc_in_comments",
-					hideSelectedOption: true,
-					placeholder: "', $txt['enabled_bbc_select'], '",
-					searchText: "', $txt['no_matches'], '",
-					searchPlaceholder: "', $txt['search'], '",
-					searchHighlight: true,
-					closeOnSelect: false,
-					showContent: "down"
-				});
+			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="selectAllBbc($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>';
 
-				function selectAllBbc(elem) {
-					if (elem.checked) {
-						let allTags = document.querySelectorAll("#lp_disabled_bbc_in_comments option");
-						lpDisabledBbc.set(Array.from(allTags).map(el => el.value));
-						return;
-					}
+	require_once __DIR__ . '/partials/bbc_comments.php';
 
-					lpDisabledBbc.set([]);
-				}
-			</script>
+	echo '
 		</fieldset>
 	</dd>';
 }
