@@ -473,8 +473,6 @@ final class Page
 		if (! empty($data['options']['keywords']))
 			$data['tags'] = $this->getTags($data['options']['keywords']);
 
-		$data['addons'] = '';
-
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
