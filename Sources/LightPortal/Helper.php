@@ -200,6 +200,11 @@ trait Helper
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
+		// Additional layouts
+		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
+
+		array_map(fn($layout) => basename($layout) !== 'index.php' ? require_once $layout : false, $defaultLayouts);
+
 		// Support of custom templates
 		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			require_once $customTemplates;
