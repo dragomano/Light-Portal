@@ -559,16 +559,8 @@ trait Helper
 
 	public function addLazyLoadingForImages()
 	{
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js', ['external' => true, 'async' => true]);
-
-		addInlineJavaScript('
-		window.lazyLoadOptions = {};
-		window.addEventListener(
-			"LazyLoad::Initialized",
-			function (event) {
-				window.lazyLoadInstance = event.detail.instance;
-			},
-			false
-		);');
+		$this->context['insert_after_template'] .= '
+		<script>window.lazyLoadOptions = {};</script>
+		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
 	}
 }
