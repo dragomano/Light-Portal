@@ -63,6 +63,23 @@ function template_portal_credits()
 				</li>';
 	}
 
+		echo '
+		</ul>
+		<br>
+		<div class="title_bar">
+			<h4 class="titlebg">', $txt['lp_supporters'], '</h4>
+		</div>
+		<ul>
+			<li class="windowbg">';
+
+		foreach ($context['supporters'] as $supporter) {
+			echo '
+				<a class="button" href="', $supporter['link'], '" target="_blank" rel="nofollow noopener">', $supporter['name'], '</a>';
+		}
+
+		echo '
+			</li>';
+
 	echo '
 		</ul>
 	</div>';

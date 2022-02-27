@@ -6,7 +6,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
-* **Tested on:** PHP 7.4.27 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
+* **Tested on:** PHP 7.4.28 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
 * **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian, German, Italian
 * **Demo:** [Link](https://demo.dragomano.ru)
 
@@ -56,11 +56,10 @@ The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via
 
 ## Supported by
 
-[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PhpStorm.svg" alt="PhpStorm logo" width="250">](https://www.jetbrains.com/?from=LightPortal)
-[<img src="https://support.crowdin.com/assets/badges/localization-at-white-rounded@1x.svg" alt="Crowdin logo" width="250">](https://crowdin.com/project/light-portal)
-[<img src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/61e11ddcc39341db4958c5cc_Supportbutton.png" alt="Ko-fi logo" width="250">](https://ko-fi.com/dragomano)
+* [JetBrains](https://www.jetbrains.com/?from=LightPortal) - Licenses for Open Source Development
+* [Crowdin](https://crowdin.com/project/light-portal) - Crowdin is completely free of charge for open-source projects
+* [Ko-fi](https://ko-fi.com/dragomano) - Donation service
 
-### Supporting Light Portal
 Light Portal is completely free to use. It is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY.
 
 It was made for your convenience, and if you like the project, support the developer. Or give a star ⭐️ to this project.
