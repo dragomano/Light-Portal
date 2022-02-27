@@ -1,0 +1,34 @@
+# .github/workflows/crowdin.yml
+
+name: Crowdin Action
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+  CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+jobs:
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      if: env.CROWDIN_API_TOKEN != null
+      uses: actions/checkout@v2
+
+    - name: crowdin action
+      if: env.CROWDIN_API_TOKEN != null
+      uses: crowdin/github-action@1.4.7
+      with:
+        debug_mode: true
+        upload_sources: true
+        upload_translations: false
+        download_translations: false
+        crowdin_branch_name: 'main'
+        config: '.github/crowdin.yml'
