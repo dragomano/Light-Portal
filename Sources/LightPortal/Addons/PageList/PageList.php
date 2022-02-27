@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -43,7 +43,7 @@ class PageList extends Plugin
 			'filter' => FILTER_VALIDATE_INT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		];
-		$parameters['sort']       = FILTER_SANITIZE_STRING;
+		$parameters['sort']       = FILTER_DEFAULT;
 		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
 

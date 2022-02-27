@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -39,7 +39,7 @@ class TopBoards extends Plugin
 			return;
 
 		$parameters['num_boards']        = FILTER_VALIDATE_INT;
-		$parameters['entity_type']       = FILTER_SANITIZE_STRING;
+		$parameters['entity_type']       = FILTER_DEFAULT;
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 

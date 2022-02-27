@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -71,13 +71,13 @@ class AdsBlock extends Plugin
 		$parameters['loader_code'] = FILTER_UNSAFE_RAW;
 		$parameters['ads_placement'] = [
 			'name'   => 'ads_placement',
-			'filter' => FILTER_SANITIZE_STRING,
+			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		];
-		$parameters['included_boards'] = FILTER_SANITIZE_STRING;
-		$parameters['included_topics'] = FILTER_SANITIZE_STRING;
-		$parameters['end_date']        = FILTER_SANITIZE_STRING;
-		$parameters['end_time']        = FILTER_SANITIZE_STRING;
+		$parameters['included_boards'] = FILTER_DEFAULT;
+		$parameters['included_topics'] = FILTER_DEFAULT;
+		$parameters['end_date']        = FILTER_DEFAULT;
+		$parameters['end_time']        = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()

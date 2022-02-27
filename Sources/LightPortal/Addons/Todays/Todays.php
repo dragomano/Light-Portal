@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -56,7 +56,7 @@ class Todays extends Plugin
 		if ($type !== 'todays')
 			return;
 
-		$parameters['widget_type'] = FILTER_SANITIZE_STRING;
+		$parameters['widget_type'] = FILTER_DEFAULT;
 		$parameters['max_items']   = FILTER_VALIDATE_INT;
 	}
 

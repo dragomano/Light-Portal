@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -46,11 +46,11 @@ class RecentPosts extends Plugin
 			return;
 
 		$parameters['num_posts']       = FILTER_VALIDATE_INT;
-		$parameters['link_type']       = FILTER_SANITIZE_STRING;
-		$parameters['exclude_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['include_boards']  = FILTER_SANITIZE_STRING;
-		$parameters['exclude_topics']  = FILTER_SANITIZE_STRING;
-		$parameters['include_topics']  = FILTER_SANITIZE_STRING;
+		$parameters['link_type']       = FILTER_DEFAULT;
+		$parameters['exclude_boards']  = FILTER_DEFAULT;
+		$parameters['include_boards']  = FILTER_DEFAULT;
+		$parameters['exclude_topics']  = FILTER_DEFAULT;
+		$parameters['include_topics']  = FILTER_DEFAULT;
 		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}

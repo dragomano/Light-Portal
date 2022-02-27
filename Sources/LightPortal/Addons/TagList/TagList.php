@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -35,8 +35,8 @@ class TagList extends Plugin
 		if ($type !== 'tag_list')
 			return;
 
-		$parameters['source']  = FILTER_SANITIZE_STRING;
-		$parameters['sorting'] = FILTER_SANITIZE_STRING;
+		$parameters['source']  = FILTER_DEFAULT;
+		$parameters['sorting'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()

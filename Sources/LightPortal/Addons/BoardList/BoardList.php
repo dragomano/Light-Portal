@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -39,8 +39,8 @@ class BoardList extends Plugin
 		if ($type !== 'board_list')
 			return;
 
-		$parameters['category_class'] = FILTER_SANITIZE_STRING;
-		$parameters['board_class']    = FILTER_SANITIZE_STRING;
+		$parameters['category_class'] = FILTER_DEFAULT;
+		$parameters['board_class']    = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()

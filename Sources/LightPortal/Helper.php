@@ -380,7 +380,7 @@ trait Helper
 
 		switch ($type) {
 			case 'string':
-				$filter = FILTER_SANITIZE_STRING;
+				$filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 				break;
 			case 'int':
 				$filter = FILTER_VALIDATE_INT;

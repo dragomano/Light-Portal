@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -41,9 +41,9 @@ class ArticleList extends Plugin
 		if ($type !== 'article_list')
 			return;
 
-		$parameters['body_class']   = FILTER_SANITIZE_STRING;
+		$parameters['body_class']   = FILTER_DEFAULT;
 		$parameters['display_type'] = FILTER_VALIDATE_INT;
-		$parameters['ids']          = FILTER_SANITIZE_STRING;
+		$parameters['ids']          = FILTER_DEFAULT;
 		$parameters['seek_images']  = FILTER_VALIDATE_BOOLEAN;
 	}
 
