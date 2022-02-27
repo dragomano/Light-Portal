@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -52,8 +52,8 @@ class Uicons extends Plugin
 		if ($addSettings)
 			updateSettings($addSettings);
 
-		$config_vars['uicons'][] = ['select', 'weight', ['r' => 'Regular', 'b' => 'Bold', 's' => 'Solid']];
-		$config_vars['uicons'][] = ['select', 'corner', ['r' => 'Rounded', 's' => 'Straight']];
+		$config_vars['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], $this->txt['lp_uicons']['weight_set'])];
+		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], $this->txt['lp_uicons']['corner_set'])];
 	}
 
 	public function prepareIconList(array &$all_icons)
