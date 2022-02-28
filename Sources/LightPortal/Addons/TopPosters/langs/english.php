@@ -6,4 +6,5 @@ return [
 	'show_avatars' => 'Display user avatars',
 	'num_posters' => 'Number of posters to display',
 	'show_numbers_only' => 'Display numbers only',
+	'posts' => '{posts, plural, one {# post} other {# posts}}'
 ];

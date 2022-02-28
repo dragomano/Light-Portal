@@ -61,7 +61,7 @@ final class CreditArea
 			'🇫🇷 French' => ['Papoune57'],
 			'🇹🇷 Turkish' => ['gevv'],
 			'🇺🇦 Ukrainian' => ['valciriya1986'],
-			'🇩🇪 German' => ['trucker2006'],
+			'🇩🇪 German' => ['trucker2006', 'm4z'],
 			'🇮🇹 Italian' => ['Darknico']
 		];
 
@@ -74,16 +74,23 @@ final class CreditArea
 
 		$this->context['sponsors'] = [
 			[
+				'name' => 'vbgamer45',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
+			],
+		];
+
+		$this->context['supporters'] = [
+			[
 				'name' => 'JetBrains',
 				'link' => 'https://www.jetbrains.com/?from=LightPortal'
 			],
 			[
-				'name' => 'vbgamer45',
-				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
-			],
-			[
 				'name' => 'Crowdin',
 				'link' => 'https://crowdin.com/project/light-portal'
+			],
+			[
+				'name' => 'Ko-fi',
+				'link' => 'https://ko-fi.com/dragomano'
 			],
 		];
 

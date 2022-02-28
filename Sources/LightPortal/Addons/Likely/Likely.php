@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.02.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -38,11 +38,11 @@ class Likely extends Plugin
 		if ($type !== 'likely')
 			return;
 
-		$parameters['size']    = FILTER_SANITIZE_STRING;
-		$parameters['skin']    = FILTER_SANITIZE_STRING;
+		$parameters['size']    = FILTER_DEFAULT;
+		$parameters['skin']    = FILTER_DEFAULT;
 		$parameters['buttons'] = [
 			'name'   => 'buttons',
-			'filter' => FILTER_SANITIZE_STRING,
+			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		];
 	}

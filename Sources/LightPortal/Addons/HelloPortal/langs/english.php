@@ -50,7 +50,7 @@ return [
 		'This is the control room of all portal pages.',
 		'Each line in this table represents a corresponding page.',
 		'Date - generalized field for the date of page creation and the date of page updating.',
-		'You want to know how many times this or that page has been viewed, do not you?',
+		'You want to know how many times this or that page has been viewed, don\'t you?',
 		'Page alias is a part of page after %s in address bar',
 		'Status is status! Turn pages on or off with a single tap.',
 		'In the additional actions, editing and deleting pages are hidden.',

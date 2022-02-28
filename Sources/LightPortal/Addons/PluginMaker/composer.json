@@ -1,0 +1,14 @@
+{
+    "name": "light-portal/plugin-maker",
+    "description": "PluginMaker addon for the Light Portal mod",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Bugo",
+            "email": "bugo@dragomano.ru"
+        }
+    ],
+    "require": {
+        "nette/php-generator": "3.6"
+    }
+}

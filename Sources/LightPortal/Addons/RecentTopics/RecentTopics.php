@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -48,8 +48,8 @@ class RecentTopics extends Plugin
 		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
 		$parameters['show_icons']       = FILTER_VALIDATE_BOOLEAN;
 		$parameters['num_topics']       = FILTER_VALIDATE_INT;
-		$parameters['exclude_boards']   = FILTER_SANITIZE_STRING;
-		$parameters['include_boards']   = FILTER_SANITIZE_STRING;
+		$parameters['exclude_boards']   = FILTER_DEFAULT;
+		$parameters['include_boards']   = FILTER_DEFAULT;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 

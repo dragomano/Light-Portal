@@ -165,8 +165,8 @@ final class Comment
 		$counter     = filter_var($data['counter'], FILTER_VALIDATE_INT);
 		$level       = filter_var($data['level'], FILTER_VALIDATE_INT);
 		$page_id     = filter_var($data['page_id'], FILTER_VALIDATE_INT);
-		$page_url    = filter_var($data['page_url'], FILTER_SANITIZE_STRING);
-		$message     = $this->smcFunc['htmlspecialchars']($data['message'], ENT_QUOTES);
+		$page_url    = filter_var($data['page_url'], FILTER_VALIDATE_URL);
+		$message     = filter_var($data['message'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$start       = filter_var($data['start'], FILTER_VALIDATE_INT);
 		$commentator = filter_var($data['commentator'], FILTER_VALIDATE_INT);
 

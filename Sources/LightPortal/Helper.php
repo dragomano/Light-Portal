@@ -200,6 +200,11 @@ trait Helper
 
 		loadTemplate('LightPortal/ViewFrontPage');
 
+		// Additional layouts
+		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
+
+		array_map(fn($layout) => basename($layout) !== 'index.php' ? require_once $layout : false, $defaultLayouts);
+
 		// Support of custom templates
 		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
 			require_once $customTemplates;
@@ -375,7 +380,7 @@ trait Helper
 
 		switch ($type) {
 			case 'string':
-				$filter = FILTER_SANITIZE_STRING;
+				$filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 				break;
 			case 'int':
 				$filter = FILTER_VALIDATE_INT;
@@ -559,16 +564,8 @@ trait Helper
 
 	public function addLazyLoadingForImages()
 	{
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js', ['external' => true, 'async' => true]);
-
-		addInlineJavaScript('
-		window.lazyLoadOptions = {};
-		window.addEventListener(
-			"LazyLoad::Initialized",
-			function (event) {
-				window.lazyLoadInstance = event.detail.instance;
-			},
-			false
-		);');
+		$this->context['insert_after_template'] .= '
+		<script>window.lazyLoadOptions = {};</script>
+		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
 	}
 }

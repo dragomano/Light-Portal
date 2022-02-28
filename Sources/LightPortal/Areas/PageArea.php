@@ -559,22 +559,22 @@ final class PageArea extends AbstractArea
 			$args = [
 				'category'    => FILTER_VALIDATE_INT,
 				'page_author' => FILTER_VALIDATE_INT,
-				'alias'       => FILTER_SANITIZE_STRING,
-				'description' => FILTER_SANITIZE_STRING,
+				'alias'       => FILTER_DEFAULT,
+				'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 				'keywords'    => [
 					'name'   => 'keywords',
-					'filter' => FILTER_SANITIZE_STRING,
+					'filter' => FILTER_DEFAULT,
 					'flags'  => FILTER_REQUIRE_ARRAY,
 				],
-				'type'        => FILTER_SANITIZE_STRING,
+				'type'        => FILTER_DEFAULT,
 				'permissions' => FILTER_VALIDATE_INT,
-				'date'        => FILTER_SANITIZE_STRING,
-				'time'        => FILTER_SANITIZE_STRING,
+				'date'        => FILTER_DEFAULT,
+				'time'        => FILTER_DEFAULT,
 				'content'     => FILTER_UNSAFE_RAW,
 			];
 
 			foreach ($this->context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
 			$parameters = [];
@@ -630,7 +630,7 @@ final class PageArea extends AbstractArea
 
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
-				if ($parameters[$option] === FILTER_SANITIZE_STRING)
+				if ($parameters[$option] === FILTER_DEFAULT)
 					$post_data[$option] = '';
 
 				if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)

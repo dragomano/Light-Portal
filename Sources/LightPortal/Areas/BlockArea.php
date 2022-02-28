@@ -376,22 +376,22 @@ final class BlockArea extends AbstractArea
 		if ($this->post()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'block_id'      => FILTER_VALIDATE_INT,
-				'icon'          => FILTER_SANITIZE_STRING,
-				'type'          => FILTER_SANITIZE_STRING,
-				'note'          => FILTER_SANITIZE_STRING,
+				'icon'          => FILTER_DEFAULT,
+				'type'          => FILTER_DEFAULT,
+				'note'          => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 				'content'       => FILTER_UNSAFE_RAW,
-				'placement'     => FILTER_SANITIZE_STRING,
+				'placement'     => FILTER_DEFAULT,
 				'priority'      => FILTER_VALIDATE_INT,
 				'permissions'   => FILTER_VALIDATE_INT,
-				'areas'         => FILTER_SANITIZE_STRING,
-				'title_class'   => FILTER_SANITIZE_STRING,
-				'title_style'   => FILTER_SANITIZE_STRING,
-				'content_class' => FILTER_SANITIZE_STRING,
-				'content_style' => FILTER_SANITIZE_STRING,
+				'areas'         => FILTER_DEFAULT,
+				'title_class'   => FILTER_DEFAULT,
+				'title_style'   => FILTER_DEFAULT,
+				'content_class' => FILTER_DEFAULT,
+				'content_style' => FILTER_DEFAULT,
 			];
 
 			foreach ($this->context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_STRING;
+				$args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
 			$post_data = filter_input_array(INPUT_POST, $args);
@@ -447,7 +447,7 @@ final class BlockArea extends AbstractArea
 		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
 				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-					if ($parameters[$option] === FILTER_SANITIZE_STRING)
+					if ($parameters[$option] === FILTER_DEFAULT)
 						$post_data[$option] = '';
 
 					if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)

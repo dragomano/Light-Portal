@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -40,8 +40,8 @@ class Translator extends Plugin
 		if ($type !== 'translator')
 			return;
 
-		$parameters['engine']       = FILTER_SANITIZE_STRING;
-		$parameters['widget_theme'] = FILTER_SANITIZE_STRING;
+		$parameters['engine']       = FILTER_DEFAULT;
+		$parameters['widget_theme'] = FILTER_DEFAULT;
 		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 

@@ -1,0 +1,19 @@
+{
+    "name": "light-portal/pug",
+    "description": "Pug addon for the Light Portal mod",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bugo",
+            "email": "bugo@dragomano.ru"
+        }
+    ],
+    "require": {
+        "pug-php/pug": "^3.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "nodejs-php-fallback/nodejs-php-fallback": false
+        }
+    }
+}

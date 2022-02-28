@@ -1,0 +1,14 @@
+.page_markdown .bbc_code,
+.block_markdown .bbc_code {
+	overflow: auto !important;
+	white-space: pre;
+}
+
+.page_markdown blockquote {
+	width: 100% !important;
+}
+
+.task_list_item {
+	list-style: none;
+	margin-left: -20px;
+}

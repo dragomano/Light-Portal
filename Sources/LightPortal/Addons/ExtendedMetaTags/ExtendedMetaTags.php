@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -58,8 +58,8 @@ class ExtendedMetaTags extends Plugin
 	public function validatePageData(array &$parameters)
 	{
 		$parameters += [
-			'meta_robots' => FILTER_SANITIZE_STRING,
-			'meta_rating' => FILTER_SANITIZE_STRING,
+			'meta_robots' => FILTER_DEFAULT,
+			'meta_rating' => FILTER_DEFAULT,
 		];
 	}
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
@@ -38,7 +38,7 @@ class TopTopics extends Plugin
 		if ($type !== 'top_topics')
 			return;
 
-		$parameters['popularity_type']   = FILTER_SANITIZE_STRING;
+		$parameters['popularity_type']   = FILTER_DEFAULT;
 		$parameters['num_topics']        = FILTER_VALIDATE_INT;
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}

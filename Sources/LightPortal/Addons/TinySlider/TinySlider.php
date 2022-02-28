@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -75,7 +75,7 @@ class TinySlider extends Plugin
 		}
 
 		$parameters['use_cdn']            = FILTER_VALIDATE_BOOLEAN;
-		$parameters['axis']               = FILTER_SANITIZE_STRING;
+		$parameters['axis']               = FILTER_DEFAULT;
 		$parameters['num_items']          = FILTER_VALIDATE_INT;
 		$parameters['gutter']             = FILTER_VALIDATE_INT;
 		$parameters['edge_padding']       = FILTER_VALIDATE_INT;
@@ -87,8 +87,8 @@ class TinySlider extends Plugin
 		$parameters['slide_by']           = FILTER_VALIDATE_INT;
 		$parameters['speed']              = FILTER_VALIDATE_INT;
 		$parameters['autoplay']           = FILTER_VALIDATE_BOOLEAN;
-		$parameters['autoplay_timeout']   = FILTER_SANITIZE_STRING;
-		$parameters['autoplay_direction'] = FILTER_SANITIZE_STRING;
+		$parameters['autoplay_timeout']   = FILTER_DEFAULT;
+		$parameters['autoplay_direction'] = FILTER_DEFAULT;
 		$parameters['loop']               = FILTER_VALIDATE_BOOLEAN;
 		$parameters['rewind']             = FILTER_VALIDATE_BOOLEAN;
 		$parameters['lazyload']           = FILTER_VALIDATE_BOOLEAN;

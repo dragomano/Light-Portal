@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 27.02.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -39,8 +39,8 @@ class RecentAttachments extends Plugin
 			return;
 
 		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
-		$parameters['extensions']      = FILTER_SANITIZE_STRING;
-		$parameters['direction']       = FILTER_SANITIZE_STRING;
+		$parameters['extensions']      = FILTER_DEFAULT;
+		$parameters['direction']       = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
