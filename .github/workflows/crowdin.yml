@@ -26,7 +26,6 @@ jobs:
       if: env.CROWDIN_API_TOKEN != null
       uses: crowdin/github-action@1.4.7
       with:
-        debug_mode: true
         upload_sources: true
         upload_translations: false
         download_translations: false
