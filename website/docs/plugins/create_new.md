@@ -5,7 +5,11 @@ sidebar_position: 2
 # Add plugin
 Plugins, or addons - add-ons that expand the capabilities of the Light Portal. To create your own addon, just follow the instructions below.
 
-!> Since version 1.9, the functionality for creating plugins has been moved to a separate plugin — **PluginMaker**. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
+:::info
+
+Since version 1.9, the functionality for creating plugins has been moved to a separate plugin — **PluginMaker**. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
+
+:::
 
 ## Choosing the type of addon
 Currently, the following types of addons are available:
@@ -70,6 +74,4 @@ class HelloWorld extends Plugin
 ```
 
 ## Using Composer
-Your plugin can use third-party libraries installed through Composer.
-Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. The `src` directory may contain key files of the scripts you use.
-Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
+Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
