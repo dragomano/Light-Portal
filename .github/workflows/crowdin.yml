@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'Themes/default/languages/**'
+      - 'Sources/LightPortal/Addons/**'
 
 env:
   CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
@@ -22,9 +25,9 @@ jobs:
       if: env.CROWDIN_API_TOKEN != null
       uses: actions/checkout@v2
 
-    - name: crowdin action
+    - name: Crowdin Action
       if: env.CROWDIN_API_TOKEN != null
-      uses: crowdin/github-action@1.4.7
+      uses: crowdin/github-action@1.0.19
       with:
         upload_sources: true
         upload_translations: false
