@@ -27,10 +27,10 @@ jobs:
 
     - name: Crowdin Action
       if: env.CROWDIN_API_TOKEN != null
-      uses: crowdin/github-action@1.0.19
+      uses: crowdin/github-action@1.4.7
       with:
         upload_sources: true
         upload_translations: false
         download_translations: false
-        crowdin_branch_name: 'main'
+        crowdin_branch_name: 'next'
         config: '.github/crowdin.yml'
