@@ -294,7 +294,7 @@ trait Helper
 
 	public function getSnakeName(string $value): string
 	{
-		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+		return $this->smcFunc['strtolower'](preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	public function getCamelName(string $value): string
