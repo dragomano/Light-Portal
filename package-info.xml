@@ -17,12 +17,21 @@
 
 	<uninstall for="2.1.*">
 		<hook hook="integrate_pre_include" file="$sourcedir/LightPortal/app.php" reverse="true" />
-		<remove-file name="$boarddir/portal.php" />
 		<remove-dir name="$themedir/LightPortal" />
 		<remove-dir name="$themedir/css/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
 		<remove-dir name="$sourcedir/LightPortal" />
-		<remove-dir name="$languagedir/LightPortal" />
+		<remove-file name="$boarddir/portal.php" />
+		<remove-file name="$languagedir/LightPortal.english.php" />
+		<remove-file name="$languagedir/LightPortal.french.php" />
+		<remove-file name="$languagedir/LightPortal.german.php" />
+		<remove-file name="$languagedir/LightPortal.italian.php" />
+		<remove-file name="$languagedir/LightPortal.polish.php" />
+		<remove-file name="$languagedir/LightPortal.russian.php" />
+		<remove-file name="$languagedir/LightPortal.spanish_es.php" />
+		<remove-file name="$languagedir/LightPortal.spanish_latin.php" />
+		<remove-file name="$languagedir/LightPortal.turkish.php" />
+		<remove-file name="$languagedir/LightPortal.ukrainian.php" />
 	</uninstall>
 
 </package-info>
