@@ -174,7 +174,8 @@ final class FrontPage
 
 			if ($item['date']) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
-				$item['date'] = $this->getFriendlyTime((int) $item['date']);
+				$item['raw_date'] = $item['date'];
+				$item['date']     = $this->getFriendlyTime((int) $item['date']);
 			}
 
 			$item['msg_link'] ??= $item['link'];
