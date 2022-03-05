@@ -5,7 +5,7 @@ return [
 	'description' => 'Displays custom HTML code in boards and topics.',
 	'min_replies' => 'Do not display ads in topics that have less than the specified number of replies',
 	'loader_code' => 'Loader code (between &lt;head&gt; and &lt;/head&gt; tags)',
-	'end_time' => 'End time (the block will turn off automatically)',
+	'end_date' => 'End date (the block will turn off automatically)',
 	'ads_type' => 'Boards and topics',
 	'included_boards' => 'Boards',
 	'included_boards_subtext' => 'Enter boards IDs to display ads only there. Otherwise, the block will be displayed in all boards.',

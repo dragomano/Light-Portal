@@ -65,7 +65,7 @@ class BoardNews extends Plugin
 		$this->context['posting_fields']['board_id']['input'] = [
 			'type' => 'select',
 			'attributes' => [
-				'id' => 'board_id'
+				'id' => 'board_id',
 			],
 			'options' => []
 		];

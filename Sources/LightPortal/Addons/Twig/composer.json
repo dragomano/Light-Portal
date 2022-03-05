@@ -1,14 +1,5 @@
 {
-    "name": "light-portal/twig",
-    "description": "Twig addon for the Light Portal mod",
-    "license": "BSD-3",
-    "authors": [
-        {
-            "name": "Bugo",
-            "email": "bugo@dragomano.ru"
-        }
-    ],
     "require": {
-        "twig/twig": "3.3.8"
+        "twig/twig": "^3.3.8"
     }
 }

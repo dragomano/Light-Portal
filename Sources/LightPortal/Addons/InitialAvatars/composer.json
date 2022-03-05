@@ -1,13 +1,4 @@
 {
-    "name": "light-portal/initial-avatars",
-    "description": "InitialAvatars addon for the Light Portal mod",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Bugo",
-            "email": "bugo@dragomano.ru"
-        }
-    ],
     "require": {
         "lasserafn/php-initial-avatar-generator": "^4.2"
     }

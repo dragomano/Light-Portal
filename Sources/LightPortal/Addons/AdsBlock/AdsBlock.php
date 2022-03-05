@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 3.03.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -40,7 +40,7 @@ class AdsBlock extends Plugin
 	{
 		unset($this->context['lp_block_placements']['ads']);
 
-		$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());
+		$this->context['lp_block_placements'] = [...$this->context['lp_block_placements'], ...$this->getPlacements()];
 	}
 
 	public function blockOptions(array &$options)
@@ -53,7 +53,6 @@ class AdsBlock extends Plugin
 			'included_boards' => '',
 			'included_topics' => '',
 			'end_date'        => '',
-			'end_time'        => '',//$this->getDateTime()->format('H:i')
 		];
 	}
 
@@ -77,7 +76,6 @@ class AdsBlock extends Plugin
 		$parameters['included_boards'] = FILTER_DEFAULT;
 		$parameters['included_topics'] = FILTER_DEFAULT;
 		$parameters['end_date']        = FILTER_DEFAULT;
-		$parameters['end_time']        = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
@@ -156,10 +154,9 @@ class AdsBlock extends Plugin
 			'tab' => 'access_placement'
 		];
 
-		$this->context['posting_fields']['end_time']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_time'] . '</label>';
-		$this->context['posting_fields']['end_time']['input']['html'] = '
-			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">
-			<input type="time" name="end_time" value="' . $this->context['lp_block']['options']['parameters']['end_time'] . '">';
+		$this->context['posting_fields']['end_date']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_date'] . '</label>';
+		$this->context['posting_fields']['end_date']['input']['html'] = '
+			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">';
 
 		$this->context['ads_placements'] = $this->getPlacements();
 
@@ -437,9 +434,6 @@ class AdsBlock extends Plugin
 
 		if ($params['end_date'])
 			$end_time = strtotime($params['end_date']);
-
-		if ($params['end_time'])
-			$end_time = strtotime(date('Y-m-d', $end_time) . ' ' . $params['end_time']);
 
 		return $end_time;
 	}
