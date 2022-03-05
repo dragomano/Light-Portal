@@ -635,7 +635,6 @@ section #display_head span {
   transition: transform 0.2s;
 }
 .article_alt3_view .card .details {
-  padding: 0;
   list-style: none;
   position: absolute;
   top: 0;

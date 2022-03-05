@@ -145,7 +145,7 @@ final class Block
 		if (isset($this->context['current_board']) || isset($this->context['lp_page']))
 			$area = '';
 
-		if (isset($this->context['lp_page']) && $this->isFrontpage($this->context['lp_page']['alias']))
+		if (! empty($this->context['lp_page']['alias']) && $this->isFrontpage($this->context['lp_page']['alias']))
 			$area = LP_ACTION;
 
 		return array_filter($this->context['lp_active_blocks'], function ($block) use ($area) {

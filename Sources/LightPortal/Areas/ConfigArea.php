@@ -811,7 +811,7 @@ final class ConfigArea
 	private function prepareTagsInComments()
 	{
 		$disabledBbc = empty($this->modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_disabled_bbc_in_comments']);
-		$disabledBbc = isset($this->modSettings['disabledBBC']) ? array_merge($disabledBbc, explode(',', $this->modSettings['disabledBBC'])) : $disabledBbc;
+		$disabledBbc = isset($this->modSettings['disabledBBC']) ? [...$disabledBbc, ...explode(',', $this->modSettings['disabledBBC'])] : $disabledBbc;
 
 		$temp = parse_bbc(false);
 		$bbcTags = [];
