@@ -94,7 +94,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		loadLanguage('LightPortal/');
+		loadLanguage('LightPortal');
 
 		$this->defineVars();
 		$this->loadCssFiles();
