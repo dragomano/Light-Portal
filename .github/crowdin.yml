@@ -6,6 +6,10 @@ preserve_hierarchy: true
 
 files: [
   {
+    source: "Themes/default/languages/LightPortal.english.php",
+    translation: "%original_path%/LightPortal.%language%.php",
+  },
+  {
     source: "Sources/LightPortal/Addons/**/langs/english.php",
     translation: "%original_path%/%language%.php",
   }
