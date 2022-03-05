@@ -7,7 +7,7 @@
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 7.4.28 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
-* **Languages:** English, Russian, Polish, Spanish, French, Turkish, Ukrainian, German, Italian
+* **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish
 * **Demo:** [Link](https://demo.dragomano.ru)
 
 ## Description
@@ -58,7 +58,6 @@ The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via
 
 * [JetBrains](https://www.jetbrains.com/?from=LightPortal) - Licenses for Open Source Development
 * [Crowdin](https://crowdin.com/project/light-portal) - Crowdin is completely free of charge for open-source projects
-* [Ko-fi](https://ko-fi.com/dragomano) - Donation service
 
 Light Portal is completely free to use. It is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY.
 

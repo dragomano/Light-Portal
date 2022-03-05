@@ -88,10 +88,6 @@ final class CreditArea
 				'name' => 'Crowdin',
 				'link' => 'https://crowdin.com/project/light-portal'
 			],
-			[
-				'name' => 'Ko-fi',
-				'link' => 'https://ko-fi.com/dragomano'
-			],
 		];
 
 		$links = [
