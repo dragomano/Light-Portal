@@ -28,6 +28,7 @@ final class BlockImport extends AbstractImport
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_import'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
+		$this->context['page_area_info']  = $this->txt['lp_blocks_import_info'];
 		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
@@ -38,6 +39,8 @@ final class BlockImport extends AbstractImport
 		$this->context['sub_template'] = 'manage_import';
 
 		$this->run();
+
+		$this->runPresetImport();
 	}
 
 	protected function run()
@@ -104,6 +107,7 @@ final class BlockImport extends AbstractImport
 
 		if ($items) {
 			$this->context['import_successful'] = count($items);
+
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
@@ -139,6 +143,122 @@ final class BlockImport extends AbstractImport
 		$this->replaceTitles($titles, $results);
 
 		$this->replaceParams($params, $results);
+
+		$this->finish($results);
+	}
+
+	protected function runPresetImport()
+	{
+		if (empty($xml = $this->getXmlFile('import_preset')))
+			return;
+
+		if (empty($xml->blocks->item))
+			fatal_lang_error('lp_wrong_import_file', false);
+
+		$items = $titles = $params = [];
+
+		foreach ($xml as $element) {
+			$id = 0;
+			foreach ($element->item as $item) {
+				$items[] = [
+					'block_id'      => $block_id = ++$id,
+					'user_id'       => 0,
+					'icon'          => $item->icon ?? '',
+					'type'          => $item->type,
+					'note'          => $item->note ?? '',
+					'content'       => $item->content ?? '',
+					'placement'     => $item->placement ?? '',
+					'priority'      => intval($item['priority']),
+					'permissions'   => intval($item['permissions']),
+					'status'        => intval($item['status']),
+					'areas'         => $item->areas,
+					'title_class'   => $item->title_class ?? '',
+					'title_style'   => $item->title_style ?? '',
+					'content_class' => $item->content_class ?? '',
+					'content_style' => $item->content_style ?? ''
+				];
+
+				if ($item->titles) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'lang'    => $k,
+								'title'   => $v
+							];
+						}
+					}
+				}
+
+				if ($item->params) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $block_id,
+								'type'    => 'block',
+								'name'    => $k,
+								'value'   => $v
+							];
+						}
+					}
+				}
+			}
+		}
+
+		$this->smcFunc['db_transaction']('begin');
+
+		$results = [];
+
+		if ($items) {
+			$this->context['import_successful'] = count($items);
+
+			foreach ($items as $item) {
+				$block_id = $item['block_id'];
+				unset($item['block_id']);
+
+				$id = $this->smcFunc['db_insert']('',
+					'{db_prefix}lp_blocks',
+					[
+						'user_id'       => 'int',
+						'icon'          => 'string',
+						'type'          => 'string',
+						'note'          => 'string',
+						'content'       => 'string-65534',
+						'placement'     => 'string-10',
+						'priority'      => 'int',
+						'permissions'   => 'int',
+						'status'        => 'int',
+						'areas'         => 'string',
+						'title_class'   => 'string',
+						'title_style'   => 'string',
+						'content_class' => 'string',
+						'content_style' => 'string'
+					],
+					$item,
+					['block_id'],
+					1
+				);
+
+				$this->context['lp_num_queries']++;
+
+				$results = ['dump'];
+
+				$this->replaceTitles(array_map(function ($item) use ($block_id, $id) {
+					if ($item['item_id'] === $block_id)
+						$item['item_id'] = $id;
+
+					return $item;
+				}, $titles), $results);
+
+				$this->replaceParams(array_map(function ($item) use ($block_id, $id) {
+					if ($item['item_id'] === $block_id)
+						$item['item_id'] = $id;
+
+					return $item;
+				}, $params), $results);
+			}
+		}
 
 		$this->finish($results);
 	}

@@ -96,6 +96,15 @@ final class BlockExport extends AbstractExport
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
+		$items = array_map(fn($item) => array_filter($item), $items);
+
+		if ($this->post()->has('export_preset') !== false) {
+			return array_map(function ($item) {
+				unset($item['block_id']);
+				return $item;
+			}, $items);
+		}
+
 		return $items;
 	}
 
