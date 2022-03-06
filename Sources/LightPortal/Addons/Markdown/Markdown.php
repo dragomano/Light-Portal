@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 27.02.22
+ * @version 06.03.22
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -41,7 +41,7 @@ class Markdown extends Plugin
 
 	public function autoload(array &$classMap)
 	{
-		$classMap['Bugo\\LightPortal\\Addons\\Markdown\\Smf\\']  = 'LightPortal/addons/Markdown/smf/';
+		$classMap['Bugo\\LightPortal\\Addons\\Markdown\\Smf\\']  = 'LightPortal/Addons/Markdown/smf/';
 	}
 
 	public function parseContent(string &$content, string $type)

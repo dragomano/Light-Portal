@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.01.22
+ * @version 06.03.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -104,7 +104,7 @@ class BoardNews extends Plugin
 			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, null, 'array');
 
 		if (empty($board_news))
-			return;
+			echo $this->txt['lp_board_news']['no_posts'];
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . __('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
