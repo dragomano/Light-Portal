@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 3.03.22
+ * @version 07.03.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -40,7 +40,7 @@ class AdsBlock extends Plugin
 	{
 		unset($this->context['lp_block_placements']['ads']);
 
-		$this->context['lp_block_placements'] = [...$this->context['lp_block_placements'], ...$this->getPlacements()];
+		$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());
 	}
 
 	public function blockOptions(array &$options)
