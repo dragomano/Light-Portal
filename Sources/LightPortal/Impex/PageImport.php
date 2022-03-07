@@ -28,6 +28,7 @@ final class PageImport extends AbstractImport
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_import'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
+		$this->context['page_area_info']  = $this->txt['lp_pages_import_info'];
 		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
