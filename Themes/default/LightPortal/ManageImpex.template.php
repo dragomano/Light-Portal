@@ -78,7 +78,7 @@ function template_manage_export_blocks()
 		<div class="additional_row">
 			<input type="hidden">
 			<input type="submit" name="export_preset" value="', $txt['lp_export_preset'], '" class="button">
-			<input type="submit" name="export_selection" value="', $txt['lp_export_run'], '" class="button">
+			<input type="submit" name="export_selection" value="', $txt['lp_export_selection'], '" class="button">
 			<input type="submit" name="export_all" value="', $txt['lp_export_all'], '" class="button">
 		</div>
 	</form>';

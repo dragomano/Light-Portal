@@ -118,7 +118,7 @@ final class PageExport extends AbstractExport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . $this->txt['lp_export_run'] . '" class="button">
+						<input type="submit" name="export_selection" value="' . $this->txt['lp_export_selection'] . '" class="button">
 						<input type="submit" name="export_all" value="' . $this->txt['lp_export_all'] . '" class="button">'
 				]
 			]

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 07.03.22
  */
 
 namespace Bugo\LightPortal\Addons\EhPortal;
@@ -107,8 +107,8 @@ class Import extends AbstractOtherPageImport
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $this->txt['lp_eh_portal']['button_run'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $this->txt['lp_eh_portal']['button_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . $this->txt['lp_import_selection'] . '" class="button">
+						<input type="submit" name="import_all" value="' . $this->txt['lp_import_all'] . '" class="button">'
 				]
 			]
 		];
