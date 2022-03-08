@@ -17,6 +17,7 @@
 
 	<uninstall for="2.1.*">
 		<hook hook="integrate_pre_include" file="$sourcedir/LightPortal/app.php" reverse="true" />
+		<code>uninstall.php</code>
 		<remove-dir name="$themedir/LightPortal" />
 		<remove-dir name="$themedir/css/light_portal" />
 		<remove-dir name="$themedir/scripts/light_portal" />
