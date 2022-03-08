@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 # Add plugin
-Plugins, or addons - add-ons that expand the capabilities of the Light Portal. To create your own addon, just follow the instructions below.
+Plugins are the extensions that expand the capabilities of the Light Portal. To create your own plugin, just follow the instructions below.
 
 :::info
 
@@ -11,23 +11,23 @@ Since version 1.9, the functionality for creating plugins has been moved to a se
 
 :::
 
-## Choosing the type of addon
-Currently, the following types of addons are available:
+## Choosing the type of plugin
+Currently, the following types of plugins are available:
 
-* 'block' — addons that add a new type of blocks for the portal
-* 'editor' — addons that add a third-party editor for different types of content
-* 'comment' — addons that add a third-party comment widget instead of the built-in
-* 'parser' — addons that implement the parser for the content of pages and blocks
-* 'article' — addons for processing the content of article cards on the main page
-* 'frontpage' — addons for changing the main page of the portal
-* 'impex' — addons for importing and exporting various portal elements
-* 'block_options' and 'page_options' — addons that add additional parameters for the corresponding entity (block or page)
-* 'icons' — addons that add new icon libraries to replace interface elements or for use in block headers
-* 'seo' — addons that somehow affect the visibility of the forum on the network
-* 'other' — addons that are not related to any of the categories above
+* 'block' — plugins that add a new type of blocks for the portal
+* 'editor' — plugins that add a third-party editor for different types of content
+* 'comment' — plugins that add a third-party comment widget instead of the built-in
+* 'parser' — plugins that implement the parser for the content of pages and blocks
+* 'article' — plugins for processing the content of article cards on the main page
+* 'frontpage' — plugins for changing the main page of the portal
+* 'impex' — plugins for importing and exporting various portal elements
+* 'block_options' and 'page_options' — plugins that add additional parameters for the corresponding entity (block or page)
+* 'icons' — plugins that add new icon libraries to replace interface elements or for use in block headers
+* 'seo' — plugins that somehow affect the visibility of the forum on the network
+* 'other' — plugins that are not related to any of the categories above
 
-## Creating an addon directory
-Create a separate folder for your addon files, inside `/Sources/LightPortal/Addons`. For example, if your addon is called `HelloWorld`, the folder structure should look like this:
+## Creating a plugin directory
+Create a separate folder for your plugin files, inside `/Sources/LightPortal/Addons`. For example, if your plugin is called `HelloWorld`, the folder structure should look like this:
 
 ```
     ...(Addons)
@@ -39,7 +39,7 @@ Create a separate folder for your addon files, inside `/Sources/LightPortal/Addo
             HelloWorld.php
 ```
 
-File `index.php` can be copied from folders of other addons. The file `HelloWorld.php` contains addon logic:
+File `index.php` can be copied from folders of other plugins. The file `HelloWorld.php` contains the plugin logic:
 
 ```php
 <?php
@@ -47,14 +47,14 @@ File `index.php` can be copied from folders of other addons. The file `HelloWorl
 /**
  * HelloWorld.php (Name of the current file)
  *
- * @package HelloWorld (Light Portal) (name of the addon and name of the portal)
- * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your addon, if it is not included with the portal)
+ * @package HelloWorld (Light Portal) (name of the plugin and name of the portal)
+ * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your plugin, if it is not included with the portal)
  * @author Your nickname and email address
- * @copyright Year of creation of the addon and your nickname (again)
- * @license Link to the license under which your addon is distributed and the name of the license
+ * @copyright Year of creation of the plugin and your nickname (again)
+ * @license Link to the license under which your plugin is distributed and the name of the license
  *
  * @category addon
- * @version 08.01.22 (date when the source code of the addon was created or last updated, in the format dd.mm.yy)
+ * @version 08.01.22 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;

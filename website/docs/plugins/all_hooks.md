@@ -20,7 +20,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### prepareContent
 (`&$content, $type, $block_id, $type`)
-> adding custom content of your addon
+> adding custom content of your plugin
 
 ### credits
 (`&$links`)
@@ -91,7 +91,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### addSettings
 (`&$config_vars`)
-> adding custom settings of your addon
+> adding custom settings of your plugin
 
 ### saveSettings
 (`&$plugin_options`)
