@@ -251,7 +251,7 @@ $txt['lp_import_all'] = 'Import all';
 $txt['lp_import_success'] = 'Imported: %1$s';
 $txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
-$txt['lp_blocks_preset_import_info'] = 'Presets are saved block configurations without identifiers. In other words, when you import a preset, the blocks will be added as new others.';
+$txt['lp_blocks_preset_import_info'] = 'Presets are saved block configurations without identifiers. In other words, when you import a preset, the blocks will be added as new.';
 $txt['lp_export_preset'] = 'Export selection as a preset';
 $txt['lp_preset_import'] = 'Preset import';
 
@@ -381,9 +381,9 @@ $txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
 $txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
 
 // Packages
-$txt['lp_addon_package'] = 'Light Portal addons';
-$txt['install_lp_addon'] = 'Install addon';
-$txt['uninstall_lp_addon'] = 'Uninstall addon';
+$txt['lp_addon_package'] = 'Light Portal plugins';
+$txt['install_lp_addon'] = 'Install plugin';
+$txt['uninstall_lp_addon'] = 'Uninstall plugin';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
