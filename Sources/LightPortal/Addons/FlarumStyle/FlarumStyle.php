@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.22
+ * @version 11.03.22
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -30,8 +30,6 @@ class FlarumStyle extends Plugin
 			return;
 
 		$this->context['is_portal'] = in_array($this->modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
-
-		$this->context['request_id'] = $this->request()->has('sa') && $this->request('sa') === 'categories' ? $this->request('id', 0) : 0;
 
 		$this->context['lp_all_categories'] = $this->getCategories();
 
@@ -69,12 +67,14 @@ class FlarumStyle extends Plugin
 				]
 			];
 
+			$current_id = $this->request()->has('sa') && $this->request('sa') === 'categories' ? (int) $this->request('id', 0) : false;
+
 			foreach ($all_categories as $id => $cat) {
 				$categories[0]['boards'][] = [
 					'id'          => $id,
 					'name'        => $cat['name'],
 					'child_level' => 0,
-					'selected'    => false
+					'selected'    => $current_id >= 0 ? $current_id === $id : false
 				];
 			}
 
