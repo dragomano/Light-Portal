@@ -43,7 +43,7 @@ function show_ffs_sidebar()
 							</ul>';
 				} else {
 					echo '
-							', $context['lp_icon_set']['circle' . ($context['request_id'] == $board['id'] ? '_dot' : '')], ' <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
+							', $context['lp_icon_set']['circle' . ($board['selected'] ? '_dot' : '')], ' <a href="', $scripturl, $context['is_portal'] ? ('?action=' . LP_ACTION . ';sa=categories;id=' . $board['id']) : ('?board=' . $board['id'] . '.0'), '">', $board['name'], '</a>';
 				}
 
 				echo '
