@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.03.22
+ * @version 15.03.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -103,8 +103,12 @@ class BoardNews extends Plugin
 			->setLifeTime($cache_time)
 			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, null, 'array');
 
-		if (empty($board_news))
+		if (empty($board_news)) {
 			echo $this->txt['lp_board_news']['no_posts'];
+			return;
+		}
+
+		loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . __('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
@@ -119,13 +123,14 @@ class BoardNews extends Plugin
 				<div class="news_body" style="padding: 2ex 0">', $news['body'], '</div>
 				', $news['link'], ($news['locked'] ? '' : ' | ' . $news['comment_link']), '';
 
-			if (! empty($this->modSettings['enable_likes'])) {
+			if (! empty($news['likes'])) {
 				echo '
-					<ul>';
+				<br class="clear">
+				<ul>';
 
 				if ($news['likes']['can_like']) {
 					echo '
-						<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $this->scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $this->context['session_var'], '=', $this->context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $this->txt['unlike'] : $this->txt['like']), '</a></li>';
+					<li class="smflikebutton" id="msg_', $news['message_id'], '_likes"><a href="', $this->scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', $this->context['session_var'], '=', $this->context['session_id'], '" class="msg_like"><span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? $this->txt['unlike'] : $this->txt['like']), '</a></li>';
 				}
 
 				if ($news['likes']['count'] > 0) {
@@ -139,11 +144,11 @@ class BoardNews extends Plugin
 					$base .= (isset($this->txt[$base . $count])) ? $count : 'n';
 
 					echo '
-						<li class="like_count smalltext">', sprintf($this->txt[$base], $this->scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $this->context['session_var'] . '=' . $this->context['session_id'], comma_format($count)), '</li>';
+					<li class="like_count smalltext">', sprintf($this->txt[$base], $this->scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $this->context['session_var'] . '=' . $this->context['session_id'], comma_format($count)), '</li>';
 				}
 
 				echo '
-					</ul>';
+				</ul>';
 			}
 
 			echo '
@@ -151,7 +156,7 @@ class BoardNews extends Plugin
 
 			if (! $news['is_last'])
 				echo '
-			<hr>';
+			<hr class="clear">';
 		}
 	}
 }
