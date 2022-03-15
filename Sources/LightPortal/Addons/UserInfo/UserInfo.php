@@ -95,7 +95,7 @@ class UserInfo extends Plugin
 			echo '
 			<ul class="centertext">
 				<li>', $this->txt['hello_member'], ' ', $this->txt['guest'], '</li>
-				<li><img alt="*" src="', $this->modSettings['avatar_url'], '/default.png', '"></li>
+				<li><img alt="*" src="', $this->modSettings['avatar_url'], '/default.png" width="100" height="100"></li>
 				<li>';
 
 			if ($this->context['can_register']) {
