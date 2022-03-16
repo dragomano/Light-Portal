@@ -52,22 +52,7 @@ final class FrontPage
 			'extra_after' => '(' . __('lp_articles_set', ['articles' => $this->context['total_articles']]) . ')'
 		];
 
-		if (empty($this->context['lp_frontpage_articles'])) {
-			$this->context['sub_template'] = 'empty';
-		} else {
-			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
-		}
-
-		// Mod authors can define their own template
-		$this->hook('frontCustomTemplate');
-
-		loadTemplate('LightPortal/ViewFrontPage');
-
-		$this->addLazyLoadingForImages();
-
-		// Also, theme makers can load their own layouts from the special template file
-		if (is_file($this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
-			loadTemplate('CustomFrontPage');
+		$this->prepareTemplates();
 
 		return false;
 	}
@@ -105,6 +90,28 @@ final class FrontPage
 		$this->context['lp_frontpage_articles'] = $articles;
 
 		$this->hook('frontAssets');
+	}
+
+	public function prepareTemplates()
+	{
+		if (empty($this->context['lp_frontpage_articles'])) {
+			$this->context['sub_template'] = 'empty';
+		} else {
+			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
+		}
+
+		// Mod authors can define their own templates
+		$this->hook('frontCustomTemplate');
+
+		loadTemplate('LightPortal/ViewFrontPage');
+
+		// Also, theme makers can load their own layouts from the special template file
+		if (is_file($this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
+			loadTemplate('CustomFrontPage');
+
+		$this->context['insert_after_template'] .= '
+		<script>window.lazyLoadOptions = {};</script>
+		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
 	}
 
 	/**
@@ -161,6 +168,16 @@ final class FrontPage
 		return $sorting_types[$this->context['current_sorting']];
 	}
 
+	public function updateStart(int $total, int &$start, int $limit)
+	{
+		if ($start >= $total) {
+			send_http_status(404);
+			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
+		}
+
+		$start = (int) abs($start);
+	}
+
 	/**
 	 * Post processing for articles
 	 *
@@ -210,15 +227,5 @@ final class FrontPage
 			$paginate .= '<a class="button" href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . ' ' . $this->context['lp_icon_set']['arrow_right'] . '</a>';
 
 		return $paginate;
-	}
-
-	private function updateStart(int $total, int &$start, int $limit)
-	{
-		if ($start >= $total) {
-			send_http_status(404);
-			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
-		}
-
-		$start = (int) abs($start);
 	}
 }

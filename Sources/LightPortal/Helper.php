@@ -560,11 +560,4 @@ trait Helper
 
 		return $value['src'] ??= '';
 	}
-
-	public function addLazyLoadingForImages()
-	{
-		$this->context['insert_after_template'] .= '
-		<script>window.lazyLoadOptions = {};</script>
-		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
-	}
 }
