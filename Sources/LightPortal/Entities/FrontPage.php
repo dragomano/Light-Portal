@@ -37,6 +37,8 @@ final class FrontPage
 	{
 		isAllowedTo('light_portal_view');
 
+		$this->hook('frontModes', [&$this->modes]);
+
 		if (array_key_exists($this->modSettings['lp_frontpage_mode'], $this->modes))
 			$this->prepare(new $this->modes[$this->modSettings['lp_frontpage_mode']]);
 		elseif ($this->modSettings['lp_frontpage_mode'] === 'chosen_page')
