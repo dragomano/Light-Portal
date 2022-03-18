@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.01.22
+ * @version 18.03.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -61,7 +61,7 @@ abstract class Lorem
 
 				while (true) {
 					$num_words = random_int(3, 15);
-					$words = self::random_values($num_words);
+					$words = self::randomValues($num_words);
 					$frags[] = implode(' ', $words);
 
 					if ((random_int(0, PHP_INT_MAX - 1) / PHP_INT_MAX) >= $comma_chance) {
@@ -80,7 +80,7 @@ abstract class Lorem
 		return implode(PHP_EOL . PHP_EOL, $paragraphs);
 	}
 
-	private static function random_values(int $count): array
+	private static function randomValues(int $count): array
 	{
 		$keys = array_rand(self::WORDS, $count);
 		if ($count === 1) {

@@ -24,7 +24,7 @@ class GalleryFrontPage extends Plugin
 {
 	public string $type = 'frontpage';
 
-	private string $mode = 'smf_gallery_items';
+	private string $mode = 'gallery_front_page_addon_mode';
 
 	public function addSettings(array &$config_vars)
 	{

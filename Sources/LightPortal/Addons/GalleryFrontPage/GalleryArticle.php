@@ -41,8 +41,6 @@ class GalleryArticle extends AbstractArticle
 			'p.date',
 			'p.date DESC'
 		];
-
-		$this->hook('frontGalleries', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -109,8 +107,6 @@ class GalleryArticle extends AbstractArticle
 				$images[$row['id_picture']]['teaser'] = $this->getTeaser($row['description']);
 
 			$images[$row['id_picture']]['msg_link'] = $images[$row['id_picture']]['link'];
-
-			$this->hook('frontGalleriesOutput', [&$images, $row]);
 		}
 
 		$this->smcFunc['db_free_result']($request);
