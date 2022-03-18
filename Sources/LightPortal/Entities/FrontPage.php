@@ -191,7 +191,7 @@ final class FrontPage
 			if ($this->context['user']['is_guest'])
 				$item['is_new'] = false;
 
-			if ($item['date']) {
+			if (isset($item['date'])) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
 				$item['raw_date'] = $item['date'];
 				$item['date']     = $this->getFriendlyTime((int) $item['date']);
