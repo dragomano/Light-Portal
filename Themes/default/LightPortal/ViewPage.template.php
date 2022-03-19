@@ -100,12 +100,73 @@ function template_show_page()
 	echo '
 		</article>';
 
+	show_prev_next_links();
+
 	show_related_pages();
 
 	show_comment_block();
 
 	echo '
 	</section>';
+}
+
+function show_prev_next_links()
+{
+	global $context, $txt;
+
+	if (empty($context['lp_page']['prev']) && empty($context['lp_page']['next']))
+		return;
+
+	echo '
+	<div class="generic_list_wrapper">';
+
+	if (!empty($context['lp_page']['prev']))
+		echo '
+		<a class="floatleft" href="', $context['lp_page']['prev']['link'], '">', $context['lp_icon_set']['arrow_left'], ' ', $context['lp_page']['prev']['title'], '</a>';
+
+	if (!empty($context['lp_page']['next']))
+		echo '
+		<a class="floatright" href="', $context['lp_page']['next']['link'], '">', $context['lp_page']['next']['title'], ' ', $context['lp_icon_set']['arrow_right'], '</a>';
+
+	echo '
+	</div>';
+}
+
+function show_related_pages()
+{
+	global $context, $txt;
+
+	if (empty($context['lp_page']['related_pages']))
+		return;
+
+	echo '
+		<div class="related_pages">
+			<div class="cat_bar">
+				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
+			</div>
+			<div class="list">';
+
+	foreach ($context['lp_page']['related_pages'] as $page) {
+		echo '
+				<div class="windowbg">';
+
+		if (! empty($page['image'])) {
+			echo '
+					<a href="', $page['link'], '">
+						<div class="article_image">
+							<img alt="', $page['title'], '" src="', $page['image'], '">
+						</div>
+					</a>';
+		}
+
+		echo '
+					<a href="', $page['link'], '">', $page['title'], '</a>
+				</div>';
+	}
+
+	echo '
+			</div>
+		</div>';
 }
 
 function show_comment_block()
@@ -342,43 +403,6 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 	</li>';
-}
-
-function show_related_pages()
-{
-	global $context, $txt;
-
-	if (empty($context['lp_page']['related_pages']))
-		return;
-
-	echo '
-		<div class="related_pages">
-			<div class="cat_bar">
-				<h3 class="catbg">', $txt['lp_related_pages'], '</h3>
-			</div>
-			<div class="list">';
-
-	foreach ($context['lp_page']['related_pages'] as $page) {
-		echo '
-				<div class="windowbg">';
-
-		if (! empty($page['image'])) {
-			echo '
-					<a href="', $page['link'], '">
-						<div class="article_image">
-							<img alt="', $page['title'], '" src="', $page['image'], '">
-						</div>
-					</a>';
-		}
-
-		echo '
-					<a href="', $page['link'], '">', $page['title'], '</a>
-				</div>';
-	}
-
-	echo '
-			</div>
-		</div>';
 }
 
 function show_toolbar()
