@@ -103,6 +103,7 @@ final class Page
 
 		$this->promote();
 		$this->setMeta();
+		$this->preparePrevNextLinks();
 		$this->prepareRelatedPages();
 		$this->prepareComments();
 		$this->updateNumViews();
@@ -111,67 +112,6 @@ final class Page
 			loadJavaScriptFile('https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2/dist/alpine.min.js', ['external' => true, 'defer' => true]);
 			loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
 		}
-	}
-
-	public function getRelatedPages(): array
-	{
-		if (empty($item = $this->context['lp_page']))
-			return [];
-
-		$title_words = explode(' ', $this->getTranslatedTitle($item['title']));
-		$alias_words = explode('_', $item['alias']);
-
-		$search_formula = '';
-		foreach ($title_words as $key => $word) {
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
-		}
-
-		foreach ($alias_words as $key => $word) {
-			$search_formula .= ' + CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($alias_words) - $key) . ' ELSE 0 END';
-		}
-
-		$request = $this->smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE (' . $search_formula . ') > 0
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}
-			ORDER BY related DESC
-			LIMIT 4',
-			[
-				'current_lang' => $this->context['user']['language'],
-				'status'       => 1,
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'current_page' => $item['id']
-			]
-		);
-
-		$related_pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			if ($this->isFrontpage($row['alias']))
-				continue;
-
-			$row['content'] = parse_content($row['content'], $row['type']);
-
-			$image = $this->getImageFromText($row['content']);
-
-			$related_pages[$row['page_id']] = [
-				'id'    => $row['page_id'],
-				'title' => $row['title'],
-				'alias' => $row['alias'],
-				'link'  => LP_PAGE_URL . $row['alias'],
-				'image' => $image ?: ($this->modSettings['lp_image_placeholder'] ?? '')
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $related_pages;
 	}
 
 	public function getData(array $params): array
@@ -431,12 +371,126 @@ final class Page
 			$this->settings['og_image'] = $this->context['lp_page']['image'];
 	}
 
-	private function prepareRelatedPages()
+
+	private function preparePrevNextLinks()
 	{
-		if (empty($this->context['lp_page']['options']['show_related_pages']) || empty($this->modSettings['lp_show_related_pages']))
+		if (empty($this->context['lp_page']) || empty($this->modSettings['lp_show_prev_next_links']))
 			return;
 
-		$this->context['lp_page']['related_pages'] = $this->getRelatedPages();
+		$request = $this->smcFunc['db_query']('', '
+			(
+				SELECT p.alias, t.title
+				FROM {db_prefix}lp_pages AS p
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+				WHERE p.category_id = {int:category_id}
+					AND p.created_at < {int:created_at}
+					AND p.created_at <= {int:current_time}
+					AND p.status = {int:status}
+					AND p.permissions IN ({array_int:permissions})
+				ORDER BY created_at DESC
+				LIMIT 1
+			)
+			UNION ALL
+			(
+				SELECT p.alias, t.title
+				FROM {db_prefix}lp_pages AS p
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+				WHERE p.category_id = {int:category_id}
+					AND p.created_at > {int:created_at}
+					AND p.created_at <= {int:current_time}
+					AND p.status = {int:status}
+					AND p.permissions IN ({array_int:permissions})
+				ORDER BY created_at DESC
+				LIMIT 1
+			)',
+			[
+				'current_lang' => $this->context['user']['language'],
+				'category_id'  => $this->context['lp_page']['category_id'],
+				'created_at'   => $this->context['lp_page']['created_at'],
+				'current_time' => time(),
+				'status'       => 1,
+				'permissions'  => $this->getPermissions()
+			]
+		);
+
+		[$prev_alias, $prev_title] = $this->smcFunc['db_fetch_row']($request);
+		[$next_alias, $next_title] = $this->smcFunc['db_fetch_row']($request);
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		if (!empty($prev_alias)) {
+			$this->context['lp_page']['prev'] = [
+				'link'  => LP_PAGE_URL . $prev_alias,
+				'title' => $prev_title
+			];
+		}
+
+		if (!empty($next_alias)) {
+			$this->context['lp_page']['next'] = [
+				'link'  => LP_PAGE_URL . $next_alias,
+				'title' => $next_title
+			];
+		}
+	}
+
+	private function prepareRelatedPages()
+	{
+		if (empty($item = $this->context['lp_page']) || empty($this->modSettings['lp_show_related_pages']) || empty($this->context['lp_page']['options']['show_related_pages']))
+			return;
+
+		$title_words = explode(' ', $this->getTranslatedTitle($item['title']));
+		$alias_words = explode('_', $item['alias']);
+
+		$search_formula = '';
+		foreach ($title_words as $key => $word) {
+			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
+		}
+
+		foreach ($alias_words as $key => $word) {
+			$search_formula .= ' + CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($alias_words) - $key) . ' ELSE 0 END';
+		}
+
+		$request = $this->smcFunc['db_query']('', '
+			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+			WHERE (' . $search_formula . ') > 0
+				AND p.status = {int:status}
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+				AND p.page_id != {int:current_page}
+			ORDER BY related DESC
+			LIMIT 4',
+			[
+				'current_lang' => $this->context['user']['language'],
+				'status'       => 1,
+				'current_time' => time(),
+				'permissions'  => $this->getPermissions(),
+				'current_page' => $item['id']
+			]
+		);
+
+		$this->context['lp_page']['related_pages'] = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			if ($this->isFrontpage($row['alias']))
+				continue;
+
+			$row['content'] = parse_content($row['content'], $row['type']);
+
+			$image = $this->getImageFromText($row['content']);
+
+			$this->context['lp_page']['related_pages'][$row['page_id']] = [
+				'id'    => $row['page_id'],
+				'title' => $row['title'],
+				'alias' => $row['alias'],
+				'link'  => LP_PAGE_URL . $row['alias'],
+				'image' => $image ?: ($this->modSettings['lp_image_placeholder'] ?? '')
+			];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 	}
 
 	private function prepareData(?array &$data)

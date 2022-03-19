@@ -380,6 +380,7 @@ final class ConfigArea
 		$config_vars = [
 			['check', 'lp_show_tags_on_page'],
 			['select', 'lp_page_og_image', $this->txt['lp_page_og_image_set']],
+			['check', 'lp_show_prev_next_links'],
 			['check', 'lp_show_related_pages'],
 			['select', 'lp_show_comment_block', $this->txt['lp_show_comment_block_set']],
 			['callback', 'disabled_bbc_in_comments'],

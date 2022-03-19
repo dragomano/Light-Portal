@@ -82,6 +82,7 @@ $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks
 $txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
 $txt['lp_page_og_image'] = 'Use an image from the page content';
 $txt['lp_page_og_image_set'] = array('None', 'First found', 'Last found');
+$txt['lp_show_prev_next_links'] = 'Show links to the previous and next pages';
 $txt['lp_show_related_pages'] = 'Show related pages';
 $txt['lp_show_comment_block'] = 'Show page comments';
 $txt['lp_disabled_bbc_in_comments'] = 'Allowed BBCode in comments';

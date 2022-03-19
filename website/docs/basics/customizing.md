@@ -59,6 +59,7 @@ In this section, you can change the general settings of pages and blocks used bo
 
 * Show keywords at the top of the page — if keywords are specified for a page, they will appear at the top of the page
 * Use an image from the page content — select an image for a sharing in social networks
+* Show links to the previous and next pages — enable if you want to see links to pages created before and after the current page.
 * Show related pages — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
 * Show page comments — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
 * Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
