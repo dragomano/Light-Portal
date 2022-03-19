@@ -73,6 +73,8 @@ final class PluginArea
 
 			updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect($this->context['lp_enabled_plugins'], $this->context['lp_plugins'])))]);
 
+			$this->cache()->flush();
+
 			exit;
 		}
 
@@ -121,6 +123,8 @@ final class PluginArea
 
 			if ($plugin_options)
 				updateSettings($plugin_options);
+
+			$this->cache()->flush();
 
 			exit;
 		}

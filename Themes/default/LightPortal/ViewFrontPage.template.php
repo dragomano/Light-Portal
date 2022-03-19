@@ -184,7 +184,7 @@ function template_sorting_above()
 
 		echo '
 		<div class="floatright">
-			<form action="', $context['canonical_url'], '" method="post">
+			<form method="post">
 				<label for="sort">', $txt['lp_sorting_label'], '</label>
 				<select id="sort" name="sort" onchange="this.form.submit()">
 					<option value="title;desc"', $context['current_sorting'] == 'title;desc' ? ' selected' : '', '>', $txt['lp_sort_by_title_desc'], '</option>

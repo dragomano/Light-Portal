@@ -266,37 +266,26 @@ final class Page
 
 	public function showAsCards(PageListInterface $entity)
 	{
-		$start = $this->request('start');
+		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
 
 		$total_items = $entity->getTotalCountPages();
 
-		if ($start >= $total_items) {
-			send_http_status(404);
-			$start = (floor(($total_items - 1) / $limit) + 1) * $limit - $limit;
-		}
+		$front = new FrontPage;
+		$front->updateStart($total_items, $start, $limit);
 
-		$start = abs($start);
-
-		$sort = (new FrontPage)->getOrderBy();
-
+		$sort     = $front->getOrderBy();
 		$articles = $entity->getPages($start, $limit, $sort);
 
 		$this->context['page_index'] = constructPageIndex($this->context['canonical_url'], $this->request()->get('start'), $total_items, $limit);
 		$this->context['start']      = $this->request()->get('start');
 
 		$this->context['lp_frontpage_articles']    = $articles;
-		$this->context['lp_frontpage_num_columns'] = (new FrontPage)->getNumColumns();
+		$this->context['lp_frontpage_num_columns'] = $front->getNumColumns();
 
-		// Mod authors can define their own template
-		$this->hook('frontCustomTemplate');
-
-		loadTemplate('LightPortal/ViewFrontPage');
-
-		$this->addLazyLoadingForImages();
-
-		$this->context['sub_template']      = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
 		$this->context['template_layers'][] = 'sorting';
+
+		$front->prepareTemplates();
 
 		obExit();
 	}

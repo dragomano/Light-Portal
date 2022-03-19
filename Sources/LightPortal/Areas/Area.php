@@ -138,10 +138,10 @@ trait Area
 
 	public function getFaIcons(): array
 	{
-		if (($icons = $this->cache()->get('all_icons', LP_CACHE_TIME * 7)) === null) {
+		if (($icons = $this->cache()->get('all_icons', 30 * 24 * 60 * 60)) === null) {
 			$icons = (new IconList)->getList();
 
-			$this->cache()->put('all_icons', $icons, LP_CACHE_TIME * 7);
+			$this->cache()->put('all_icons', $icons, 30 * 24 * 60 * 60);
 		}
 
 		return $icons;

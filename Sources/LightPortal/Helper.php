@@ -175,11 +175,10 @@ trait Helper
 		if (empty($this->memberContext[$userId]))
 			return '';
 
-		if (isset($this->memberContext[$userId]['avatar']) && isset($this->memberContext[$userId]['avatar']['image'])) {
+		if (isset($this->memberContext[$userId]['avatar']) && isset($this->memberContext[$userId]['avatar']['image']))
 			return $this->memberContext[$userId]['avatar']['image'];
-		}
 
-		return '<img class="avatar" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
+		return '<img class="avatar" width="100" height="100" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
@@ -560,12 +559,5 @@ trait Helper
 		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
 		return $value['src'] ??= '';
-	}
-
-	public function addLazyLoadingForImages()
-	{
-		$this->context['insert_after_template'] .= '
-		<script>window.lazyLoadOptions = {};</script>
-		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
 	}
 }

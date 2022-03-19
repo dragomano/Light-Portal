@@ -145,7 +145,7 @@ abstract class AbstractMain
 
 		$old_url = explode('#', $this->context['linktree'][1]['url']);
 
-		if ($old_url[1])
+		if (! empty($old_url[1]))
 			$this->context['linktree'][1]['url'] = $this->scripturl . '?action=forum#' . $old_url[1];
 	}
 
