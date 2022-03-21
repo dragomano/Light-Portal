@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.22
+ * @version 21.03.22
  */
 
 namespace Bugo\LightPortal\Addons\GalleryFrontPage;
@@ -28,7 +28,10 @@ class GalleryFrontPage extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$config_vars['gallery_front_page'][] = ['multicheck', 'gallery_categories', $this->getGalleryCategories()];
+		if (empty($categories = $this->getGalleryCategories()))
+			return;
+
+		$config_vars['gallery_front_page'][] = ['multicheck', 'gallery_categories', $categories];
 	}
 
 	public function frontModes(array &$modes)
@@ -40,6 +43,11 @@ class GalleryFrontPage extends Plugin
 
 	private function getGalleryCategories(): array
 	{
+		db_extend();
+
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'gallery_cat')))
+			return [];
+
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
 			$result = $this->smcFunc['db_query']('', '
 				SELECT id_cat, title
