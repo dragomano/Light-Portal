@@ -75,7 +75,7 @@ final class Addon
 
 		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
 
-		if (empty($addons))
+		if (empty($addons) || isset($this->context['uninstalling']))
 			return;
 
 		foreach ($addons as $addon) {
