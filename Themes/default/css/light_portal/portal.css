@@ -1216,6 +1216,9 @@ section #display_head span {
 .new_posts.lp_type_other {
   background: #414141;
 }
+.new_posts.lp_type_ssi {
+  background: #5f2c8c;
+}
 .handle {
   cursor: grab;
 }

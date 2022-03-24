@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 24.03.22
  */
 
 namespace Bugo\LightPortal\Addons\News;
@@ -22,6 +22,8 @@ if (! defined('LP_NAME'))
 
 class News extends Plugin
 {
+	public string $type = 'block ssi';
+
 	public string $icon = 'far fa-newspaper';
 
 	public function blockOptions(array &$options)

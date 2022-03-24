@@ -285,7 +285,7 @@ abstract class AbstractMain
 	private function getPluginTypes(): array
 	{
 		return array_combine(
-			['block', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
+			['block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
 			$this->txt['lp_plugins_types']
 		);
 	}
