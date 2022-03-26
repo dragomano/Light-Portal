@@ -284,7 +284,7 @@ final class PluginArea
 					labels: ["' . implode('", "', $this->context['lp_plugin_types']) . '"],
 					datasets: [{
 						data: [' . implode(', ', $typeCount) . '],
-						backgroundColor: ["#667d99", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#2361ad", "#ac7bd6", "#a39d47", "#2a7750", "#c61a12", "#414141"]
+						backgroundColor: ["#667d99", "#5f2c8c", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#2361ad", "#ac7bd6", "#a39d47", "#2a7750", "#c61a12", "#414141"]
 					}]
 				},
 				options: {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 24.03.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -22,6 +22,8 @@ if (! defined('LP_NAME'))
 
 class RecentTopics extends Plugin
 {
+	public string $type = 'block ssi';
+
 	public string $icon = 'fas fa-book-open';
 
 	public function blockOptions(array &$options)

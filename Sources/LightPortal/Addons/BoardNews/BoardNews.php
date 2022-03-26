@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.03.22
+ * @version 24.03.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -22,6 +22,8 @@ if (! defined('LP_NAME'))
 
 class BoardNews extends Plugin
 {
+	public string $type = 'block ssi';
+
 	public string $icon = 'fas fa-newspaper';
 
 	public function blockOptions(array &$options)

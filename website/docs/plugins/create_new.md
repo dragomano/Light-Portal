@@ -15,6 +15,7 @@ Since version 1.9, the functionality for creating plugins has been moved to a se
 Currently, the following types of plugins are available:
 
 * 'block' — plugins that add a new type of blocks for the portal
+* 'ssi' — plugins (usually blocks) that use SSI functions to retrieve data
 * 'editor' — plugins that add a third-party editor for different types of content
 * 'comment' — plugins that add a third-party comment widget instead of the built-in
 * 'parser' — plugins that implement the parser for the content of pages and blocks
@@ -72,6 +73,21 @@ class HelloWorld extends Plugin
 }
 
 ```
+
+## Using SSI
+If the plugin needs to retrieve any data using SSI functions, use the built-in `getFromSsi(string $function, ...$params)` method. As parameter `$function` you must pass the name of one of the functions contained in file **SSI.php**, without prefix `ssi_`. For example:
+
+```php
+<?php
+
+    $data = $this->getFromSsi('topTopics', 'views', 10, 'array'); // See ssi_topTopics function in the SSI.php file
+```
+
+:::caution
+
+Without SSI.php file, the above method will not work.
+
+:::
 
 ## Using Composer
 Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
