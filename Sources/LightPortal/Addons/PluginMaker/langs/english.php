@@ -19,6 +19,7 @@ return [
 	'license_name' => 'The license name',
 	'license_link' => 'The license link',
 	'use_smf_hooks' => 'Will you use SMF hooks?',
+	'use_smf_ssi' => 'Will you use SSI functions?',
 	'use_components' => 'Will you use third-party scripts with licenses?',
 	'requires_placeholder' => 'If your plugin depends on others, select them',
 	'disables_placeholder' => 'If your plugin replaces others, select them',

@@ -1,5 +1,5 @@
 {
     "require": {
-        "nette/php-generator": "3.6"
+        "nette/php-generator": "^3.6"
     }
 }
