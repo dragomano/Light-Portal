@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Areas\BlockArea;
+use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
 
@@ -41,7 +41,7 @@ final class BlockExport extends AbstractExport
 
 		$this->run();
 
-		$this->context['lp_current_blocks'] = (new BlockArea)->getAll(true);
+		$this->context['lp_current_blocks'] = (new BlockRepository)->getAll(true);
 		$this->context['lp_current_blocks'] = array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $this->context['lp_current_blocks']);
 
 		$this->context['sub_template'] = 'manage_export_blocks';

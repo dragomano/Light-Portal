@@ -17,7 +17,6 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\LightPortal\Lists\IconList;
 
 use function addJavaScriptVar;
-use function smf_json_decode;
 use function create_control_richedit;
 use function loadTemplate;
 use function preparsecode;
@@ -92,18 +91,6 @@ trait Area
 		);
 
 		$this->context['lp_num_queries']++;
-	}
-
-	public function prepareBbcContent(array &$entity)
-	{
-		if ($entity['type'] !== 'bbc')
-			return;
-
-		$entity['content'] = $this->smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
-
-		$this->require('Subs-Post');
-
-		preparsecode($entity['content']);
 	}
 
 	public function prepareIconList()

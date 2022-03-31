@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use Bugo\LightPortal\Areas\PageArea;
+use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Lists\Category;
 use DomDocument;
 use DOMException;
@@ -27,6 +27,11 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
+	public function __construct()
+	{
+		$this->repository = new PageRepository;
+	}
+
 	public function main()
 	{
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_export'];
@@ -40,20 +45,18 @@ final class PageExport extends AbstractExport
 
 		$this->run();
 
-		$pages = new PageArea();
-
 		$listOptions = [
 			'id' => 'lp_pages',
-			'items_per_page' => PageArea::NUM_PAGES,
+			'items_per_page' => 20,
 			'title' => $this->txt['lp_pages_export'],
 			'no_items_label' => $this->txt['lp_no_items'],
 			'base_href' => $this->scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$pages, 'getAll']
+				'function' => [$this->repository, 'getAll']
 			],
 			'get_count' => [
-				'function' => [$pages, 'getTotalCount']
+				'function' => [$this->repository, 'getTotalCount']
 			],
 			'columns' => [
 				'id' => [

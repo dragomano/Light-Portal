@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractArea.php
+ * AbstractRepository.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,16 +12,28 @@
  * @version 2.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace Bugo\LightPortal\Repositories;
 
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractArea
+abstract class AbstractRepository
 {
-	use Helper, Area;
+	use Helper;
+
+	protected function prepareBbcContent(array &$entity)
+	{
+		if ($entity['type'] !== 'bbc')
+			return;
+
+		$entity['content'] = $this->smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+
+		$this->require('Subs-Post');
+
+		preparsecode($entity['content']);
+	}
 
 	protected function saveTitles(int $item, string $method = '')
 	{
