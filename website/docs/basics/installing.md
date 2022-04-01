@@ -16,4 +16,4 @@ If your hosting is too "smart" with permissions and the portal files were not un
 
 Also you need to unpack the file `database.php` from modification archive to the root of your forum, set execution rights for it (`666`) and access it through the browser (you must be logged in as a forum administrator). This file contains instructions for creating the tables used by the portal. The message `Database changes are complete! Please wait...` will confirm the successful execution of the script.
 
-If, after completing all the above steps, you still do not see the section with the portal settings in the admin panel, check for the line `$sourcedir/LightPortal/app.php` (variable `integrate_pre_include`) in the table `settings` of your database. To do this, use the built-in search of the phpMyAdmin or another similar utility.
+If, after completing all the above steps, you still do not see the section with the portal settings in the admin panel, check for the line `$sourcedir/LightPortal/app.php` (variable `integrate_pre_include`) in the table `<your_prefix>settings` of your database. To do this, use the built-in search of the phpMyAdmin or another similar utility.

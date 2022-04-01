@@ -31,13 +31,13 @@ Currently, the following types of plugins are available:
 Create a separate folder for your plugin files, inside `/Sources/LightPortal/Addons`. For example, if your plugin is called `HelloWorld`, the folder structure should look like this:
 
 ```
-    ...(Addons)
-        HelloWorld\
-            langs\
-                 english.php
-                 index.php
-            index.php
-            HelloWorld.php
+...(Addons)
+└── HelloWorld/
+    ├── langs/
+    │   ├── english.php
+    │   └── index.php
+    ├── index.php
+    └── HelloWorld.php
 ```
 
 File `index.php` can be copied from folders of other plugins. The file `HelloWorld.php` contains the plugin logic:

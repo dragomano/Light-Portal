@@ -5,6 +5,8 @@ sidebar_position: 2
 # Add page
 In this section, you can create a portal page with the content you need. Required fields are highlighted with a colored frame.
 
+![Here we add a new page](new_page.png)
+
 ## Content tab
 Here you can configure:
 * title

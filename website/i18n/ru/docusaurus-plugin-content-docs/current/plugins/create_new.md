@@ -31,14 +31,14 @@ sidebar_position: 2
 Создайте отдельную папку для файлов вашего дополнения, внутри `/Sources/LightPortal/Addons`. Например, если ваш плагин называется `HelloWorld`, структура папки должна выглядеть так:
 
 ```
-    ...(Addons)
-        HelloWorld\
-            langs\
-                 english.php
-                 index.php
-                 russian.php
-            index.php
-            HelloWorld.php
+...(Addons)
+└── HelloWorld/
+    ├── langs/
+    │   ├── english.php
+    │   ├── index.php
+    │   └── russian.php
+    ├── index.php
+    └── HelloWorld.php
 ```
 
 Файл `index.php` можно скопировать из папок других дополнений. В файле `HelloWorld.php` содержится логика плагина:
