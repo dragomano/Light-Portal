@@ -264,10 +264,16 @@ trait Helper
 			$this->context['languages'][$this->language] = $default_lang;
 		}
 
-		// Move default lang to the top
-		$default_lang = $this->context['languages'][$this->language];
-		unset($this->context['languages'][$this->language]);
-		array_unshift($this->context['languages'], $default_lang);
+		$temp = $this->context['languages'];
+
+		$this->context['languages'] = array_merge(
+			[
+				'english'              => $temp['english'],
+				$this->user_info['language'] => $temp[$this->user_info['language']],
+				$this->language              => $temp[$this->language]
+			],
+			$this->context['languages']
+		);
 	}
 
 	public function getIcon(?string $icon = ''): string
