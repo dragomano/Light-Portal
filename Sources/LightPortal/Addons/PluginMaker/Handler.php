@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.22
+ * @version 31.03.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -42,7 +42,7 @@ class Handler extends Plugin
 		$this->txt['lp_plugin_maker']['add_info'] = sprintf($this->txt['lp_plugin_maker']['add_info'], $addonDir);
 
 		if (! is_writable(LP_ADDON_DIR))
-			$this->context['lp_addon_dir_not_writable'] = sprintf($this->txt['lp_plugin_maker']['addon_dir_not_writable'], LP_ADDON_DIR);
+			$this->context['lp_addon_dir_is_not_writable'] = sprintf($this->txt['lp_plugin_maker']['addon_dir_not_writable'], LP_ADDON_DIR);
 
 		$this->prepareForumLanguages();
 		$this->validateData();
