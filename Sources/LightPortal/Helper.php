@@ -258,17 +258,18 @@ trait Helper
 	{
 		getLanguages();
 
-		if (empty($this->modSettings['userLanguage'])) {
-			$default_lang = $this->context['languages'][$this->language];
-			$this->context['languages'] = [];
-			$this->context['languages'][$this->language] = $default_lang;
-		}
-
 		$temp = $this->context['languages'];
+
+		if (empty($this->modSettings['userLanguage'])) {
+			$this->context['languages'] = [];
+			$this->context['languages'][$this->language] = $temp[$this->language];
+
+			return;
+		}
 
 		$this->context['languages'] = array_merge(
 			[
-				'english'              => $temp['english'],
+				'english'                    => $temp['english'],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
 				$this->language              => $temp[$this->language]
 			],

@@ -37,6 +37,10 @@
 #lp_blocks .item {
   cursor: pointer;
   height: 96%;
+  transition: all 0.2s;
+}
+#lp_blocks .item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 #block_icon i {
   vertical-align: middle;

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 1.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Search;
