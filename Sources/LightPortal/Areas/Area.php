@@ -46,7 +46,7 @@ trait Area
 		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $this->context['post_box_name'], true);
 	}
 
-	public function preparePostFields(string $defaultTab = 'tuning')
+	public function preparePostFields()
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
 			if ($item === 'icon') {
@@ -70,7 +70,7 @@ trait Area
 			}
 
 			if (empty($data['input']['tab']))
-				$this->context['posting_fields'][$item]['input']['tab'] = $defaultTab;
+				$this->context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
 		loadTemplate('LightPortal/ManageSettings');
