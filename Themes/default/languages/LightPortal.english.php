@@ -228,6 +228,10 @@ $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
 $txt['lp_page_options'] = array('Show the title', 'Show the author and creation date', 'Show related pages', 'Allow comments');
 
+// Modlog
+$txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';
+$txt['modlog_ac_remove_lp_page'] = 'Removed page "{page}"';
+
 // Tabs
 $txt['lp_tab_content'] = 'Content';
 $txt['lp_tab_seo'] = 'SEO';

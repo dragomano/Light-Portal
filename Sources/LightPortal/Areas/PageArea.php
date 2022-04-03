@@ -336,6 +336,8 @@ final class PageArea
 				break;
 		}
 
+		$this->cache()->flush();
+
 		redirectexit($redirect);
 	}
 
@@ -391,7 +393,14 @@ final class PageArea
 		$this->prepareForumLanguages();
 
 		if ($this->post()->has('remove')) {
+			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id'])
+				logAction('remove_lp_page', [
+					'page' => $this->context['lp_current_page']['title'][$this->user_info['language']]
+				]);
+
 			$this->remove([$item]);
+
+			$this->cache()->forget('page_' . $this->context['lp_current_page']['alias']);
 
 			redirectexit('action=admin;area=lp_pages;sa=main');
 		}
