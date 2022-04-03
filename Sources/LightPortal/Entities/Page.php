@@ -309,7 +309,7 @@ final class Page
 
 		if ($this->txt['back'] === $this->txt['lp_portal']) {
 			$this->txt['back'] = $this->txt['lp_forum'];
-			$this->context['error_link'] .= '">' . $this->txt['lp_portal'] . '</a><a class="button floatnone" href="' . $this->scripturl . '?action=forum';
+			$this->context['error_link'] .= '">' . $this->txt['lp_portal'] . '</a> <a class="button floatnone" href="' . $this->scripturl . '?action=forum';
 		}
 	}
 
