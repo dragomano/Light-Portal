@@ -206,6 +206,11 @@ final class PageRepository extends AbstractRepository
 		$this->saveTags();
 		$this->saveOptions($item, 'replace');
 
+		if ($this->context['lp_page']['page_author'] !== $this->user_info['id'])
+			logAction('update_lp_page', [
+				'page' => '<a href="' . LP_PAGE_URL . $this->context['lp_page']['alias'] . '">' . $this->context['lp_page']['title'][$this->user_info['language']] . '</a>'
+			]);
+
 		$this->smcFunc['db_transaction']('commit');
 	}
 
