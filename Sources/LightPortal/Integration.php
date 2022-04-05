@@ -63,7 +63,7 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.0rc2');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-03-14');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-04-05');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -94,7 +94,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		loadLanguage('LightPortal');
+		loadLanguage('LightPortal\LightPortal');
 
 		$this->defineVars();
 		$this->loadCssFiles();
