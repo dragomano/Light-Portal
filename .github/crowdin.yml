@@ -1,12 +1,12 @@
 project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_API_TOKEN
-base_path : ".."
-base_url : "https://api.crowdin.com"
+base_path: ".."
+base_url: "https://api.crowdin.com"
 preserve_hierarchy: true
 
 files: [
   {
-    source: "Themes/default/languages/LightPortal.english.php",
+    source: "Themes/default/languages/LightPortal/LightPortal.english.php",
     translation: "%original_path%/LightPortal.%language%.php",
   },
   {
