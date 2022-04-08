@@ -80,10 +80,12 @@ function template_plugin_post()
 														</button>
 													</td>
 												</tr>
-												<tr class="windowbg">
-													<td><strong>', $txt['lp_plugin_maker']['option_type'], '</strong></td>
+												<tr class="windowbg" x-data="{ type_id: $id(\'option-type\'), default_id: $id(\'option-default\') }">
 													<td>
-														<select x-model="option.type" name="option_type[]">';
+														<label :for="type_id"><strong>', $txt['lp_plugin_maker']['option_type'], '</strong></label>
+													</td>
+													<td>
+														<select x-model="option.type" name="option_type[]" :id="type_id">';
 
 	foreach ($context['lp_plugin_option_types'] as $type => $name) {
 		echo '
@@ -93,31 +95,33 @@ function template_plugin_post()
 	echo '
 														</select>
 													</td>
-													<td><strong>', $txt['lp_plugin_maker']['option_default_value'], '</strong></td>
+													<td>
+														<label :for="default_id"><strong>', $txt['lp_plugin_maker']['option_default_value'], '</strong></label>
+													</td>
 													<td>
 														<template x-if="option.type == \'text\'">
-															<input x-model="option.default" name="option_defaults[]">
+															<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'url\'">
-															<input type="url" x-model="option.default" name="option_defaults[]">
+															<input type="url" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'color\'">
-															<input type="color" x-model="option.default" name="option_defaults[]">
+															<input type="color" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'int\'">
-															<input type="number" min="0" step="1" x-model="option.default" name="option_defaults[]">
+															<input type="number" min="0" step="1" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'float\'">
-															<input type="number" min="0" step="0.1" x-model="option.default" name="option_defaults[]">
+															<input type="number" min="0" step="0.1" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'check\'">
-															<input type="checkbox" x-model="option.default" name="option_defaults[]">
+															<input type="checkbox" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'multicheck\'">
-															<input x-model="option.default" name="option_defaults[]">
+															<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 														<template x-if="option.type == \'select\'">
-															<input x-model="option.default" name="option_defaults[]">
+															<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 														</template>
 													</td>
 												</tr>

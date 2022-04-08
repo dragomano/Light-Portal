@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.03.22
+ * @version 08.04.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -49,6 +49,29 @@ class Handler extends Plugin
 		$this->prepareFormFields();
 		$this->setData();
 		$this->loadTemplate('plugin_post');
+	}
+
+	public function prepareForumLanguages()
+	{
+		getLanguages();
+
+		$temp = $this->context['languages'];
+
+		if (empty($this->modSettings['userLanguage'])) {
+			$this->context['languages'] = ['english' => $temp['english']];
+
+			if ($this->language !== 'english')
+				$this->context['languages'][$this->language] = $temp[$this->language];
+		}
+
+		$this->context['languages'] = array_merge(
+			[
+				'english'                    => $temp['english'],
+				$this->user_info['language'] => $temp[$this->user_info['language']],
+				$this->language              => $temp[$this->language]
+			],
+			$this->context['languages']
+		);
 	}
 
 	private function validateData()
@@ -97,9 +120,7 @@ class Handler extends Plugin
 				$args['description_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$parameters = [];
-
-			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
+			$post_data = filter_input_array(INPUT_POST, $args);
 
 			$this->findErrors($post_data);
 		}
@@ -110,7 +131,7 @@ class Handler extends Plugin
 			'icon'       => $post_data['icon'] ?? $this->context['lp_plugin']['icon'] ?? '',
 			'author'     => $post_data['author'] ?? $this->context['lp_plugin']['author'] ?? $this->user_info['name'],
 			'email'      => $post_data['email'] ?? $this->context['lp_plugin']['email'] ?? $this->user_info['email'],
-			'site'       => $post_data['site'] ?? $this->context['lp_plugin']['site'] ?? 'https://custom.simplemachines.org/index.php?mod=4244',
+			'site'       => $post_data['site'] ?? $this->context['lp_plugin']['site'] ?? '',
 			'license'    => $post_data['license'] ?? $this->context['lp_plugin']['license'] ?? 'gpl',
 			'smf_hooks'  => $post_data['smf_hooks'] ?? $this->context['lp_plugin']['smf_hooks'] ?? false,
 			'smf_ssi'    => $post_data['smf_ssi'] ?? $this->context['lp_plugin']['smf_ssi'] ?? false,
@@ -128,16 +149,10 @@ class Handler extends Plugin
 				if (empty($option))
 					continue;
 
-				if ($post_data['option_type'][$id] === 'check') {
-					$default = isset($post_data['option_defaults'][$id]) ? 'on' : false;
-				} else {
-					$default = $post_data['option_defaults'][$id] ?? '';
-				}
-
 				$this->context['lp_plugin']['options'][$id] = [
 					'name'         => $option,
 					'type'         => $post_data['option_type'][$id],
-					'default'      => $default,
+					'default'      => $post_data['option_type'][$id] === 'check' ? isset($post_data['option_defaults'][$id]) : ($post_data['option_defaults'][$id] ?? ''),
 					'variants'     => $post_data['option_variants'][$id] ?? '',
 					'translations' => []
 				];
@@ -300,9 +315,10 @@ class Handler extends Plugin
 			'type' => 'url',
 			'after' => $this->txt['lp_plugin_maker']['site_subtext'],
 			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['site'],
-				'style'     => 'width: 100%'
+				'maxlength'   => 255,
+				'value'       => $this->context['lp_plugin']['site'],
+				'style'       => 'width: 100%',
+				'placeholder' => 'https://custom.simplemachines.org/index.php?mod=4244'
 			],
 			'tab' => 'copyrights'
 		];
@@ -666,16 +682,12 @@ class Handler extends Plugin
 	private function getDefaultValue(array $option): string
 	{
 		switch ($option['type']) {
-			case 'int';
+			case 'int':
 				$default = (int) $option['default'];
 				break;
 
-			case 'float';
+			case 'float':
 				$default = (float) $option['default'];
-				break;
-
-			case 'check';
-				$default = $option['default'] === 'on';
 				break;
 
 			default:
