@@ -67,7 +67,7 @@ final class Addon
 	}
 
 	/**
-	 * @see https://dragomano.github.io/Light-Portal/#/plugins/all_hooks
+	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
 	 */
 	public function run(string $hook = '', array $vars = [], array $plugins = [])
 	{
@@ -97,7 +97,8 @@ final class Addon
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$this->loadLanguage($path, $snakeName);
-				$this->loadAssets($path, $snakeName);
+				$this->loadCss($path, $snakeName);
+				$this->loadJs($path, $snakeName);
 			}
 
 			// Hook init should run only once
@@ -131,7 +132,7 @@ final class Addon
 			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private function loadAssets(string $path, string $snakeName)
+	private function loadCss(string $path, string $snakeName)
 	{
 		if (! is_file($style = $path . 'style.css'))
 			return;
@@ -146,5 +147,22 @@ final class Addon
 			return;
 
 		loadCSSFile('light_portal/addon_' . $snakeName . '.css');
+	}
+
+	private function loadJs(string $path, string $snakeName)
+	{
+		if (! is_file($script = $path . 'script.js'))
+			return;
+
+		$addonJs = $this->settings['default_theme_dir'] . '/scripts/light_portal/addon_' . $snakeName . '.js';
+
+		$isFileExists = true;
+		if (! is_file($addonJs) || filemtime($script) > filemtime($addonJs))
+			$isFileExists = @copy($script, $addonJs);
+
+		if (! @is_writable($this->settings['default_theme_dir'] . '/scripts/light_portal') || ! $isFileExists)
+			return;
+
+		loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
 	}
 }
