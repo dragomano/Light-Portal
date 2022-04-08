@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\{Addon, Helper};
+use Bugo\LightPortal\Helper;
 use ReflectionClass;
 use ReflectionException;
 

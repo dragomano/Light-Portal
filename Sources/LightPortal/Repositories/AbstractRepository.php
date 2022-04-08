@@ -23,6 +23,8 @@ abstract class AbstractRepository
 {
 	use Helper;
 
+	protected string $entity;
+
 	protected function prepareBbcContent(array &$entity)
 	{
 		if ($entity['type'] !== 'bbc')

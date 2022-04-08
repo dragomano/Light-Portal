@@ -70,6 +70,7 @@ final class Integration extends AbstractMain
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
+		defined('LP_NEED_TRANSLATION') || define('LP_NEED_TRANSLATION', '<span class="amt">Please, update translation</span>');
 	}
 
 	/**
@@ -130,7 +131,7 @@ final class Integration extends AbstractMain
 		if (! empty($this->modSettings['lp_standalone_mode'])) {
 			$this->unsetDisabledActions($actions);
 
-			if ($this->context['current_action'] && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
+			if (! empty($this->context['current_action']) && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
 				redirectexit();
 		}
 	}

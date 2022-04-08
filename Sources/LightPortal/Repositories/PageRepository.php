@@ -26,6 +26,8 @@ if (! defined('SMF'))
 
 final class PageRepository extends AbstractRepository
 {
+	protected string $entity = 'page';
+
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		$request = $this->smcFunc['db_query']('', '

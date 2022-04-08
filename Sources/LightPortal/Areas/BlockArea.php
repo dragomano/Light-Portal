@@ -33,7 +33,7 @@ final class BlockArea
 {
 	use Area, Helper;
 
-	protected string $entity = 'block';
+	private BlockRepository $repository;
 
 	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
 
@@ -568,7 +568,10 @@ final class BlockArea
 		];
 
 		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'home,portal,forum,search');
-		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
+		$this->context['lp_possible_areas'] = array_combine(
+			$example_areas,
+			array_pad($this->txt['lp_block_areas_values'], 12, LP_NEED_TRANSLATION)
+		);
 
 		ob_start();
 

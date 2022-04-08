@@ -20,7 +20,8 @@ use Bugo\LightPortal\{
 	Impex\BlockImport,
 	Impex\PageExport,
 	Impex\PageImport,
-	Lists\Category
+	Lists\Category,
+	Repositories\PageRepository
 };
 
 use function addInlineCss;
@@ -254,7 +255,7 @@ final class ConfigArea
 				'lp_frontpage_mode',
 				array_combine(
 					[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-					$this->txt['lp_frontpage_mode_set']
+					array_pad($this->txt['lp_frontpage_mode_set'], 7, LP_NEED_TRANSLATION)
 				)
 			],
 			['text', 'lp_frontpage_title', '80" placeholder="' . $this->context['forum_name'] . ' - ' . $this->txt['lp_portal']],
@@ -800,7 +801,7 @@ final class ConfigArea
 		if (empty($search = $data['search']))
 			return;
 
-		$results = (new PageArea)->getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
+		$results = (new PageRepository)->getAll(0, 30, 'alias', 'INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
 		$results = array_column($results, 'alias');
 		array_walk($results, function (&$item) {
 			$item = ['value' => $item];

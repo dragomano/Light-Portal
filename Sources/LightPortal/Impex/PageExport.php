@@ -27,6 +27,8 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
+	private PageRepository $repository;
+
 	public function __construct()
 	{
 		$this->repository = new PageRepository;

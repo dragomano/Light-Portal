@@ -47,7 +47,7 @@ $tables[] = array(
 		)
 	),
 	'indexes' => array(
-			array(
+		array(
 			'type'    => 'primary',
 			'columns' => array('category_id')
 		)
@@ -506,6 +506,8 @@ if (! empty($add_settings))
 	updateSettings($add_settings);
 
 if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
+	smf_chmod($css_dir, 0755);
+if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/scripts/light_portal'))
 	smf_chmod($css_dir, 0755);
 
 if (SMF === 'SSI')

@@ -37,7 +37,7 @@ final class PageArea
 {
 	use Area, Helper;
 
-	protected string $entity = 'page';
+	private PageRepository $repository;
 
 	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 

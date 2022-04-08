@@ -24,6 +24,8 @@ if (! defined('SMF'))
 
 final class BlockRepository extends AbstractRepository
 {
+	protected string $entity = 'block';
+
 	public function getAll(bool $with_customs = false): array
 	{
 		$request = $this->smcFunc['db_query']('', '
