@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -23,6 +23,8 @@ if (! defined('LP_NAME'))
 class PageList extends Plugin
 {
 	public string $icon = 'far fa-file-alt';
+
+	private const SORTING_SET = ['page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'];
 
 	public function blockOptions(array &$options)
 	{
@@ -38,11 +40,7 @@ class PageList extends Plugin
 		if ($type !== 'page_list')
 			return;
 
-		$parameters['categories'] = [
-			'name'   => 'categories',
-			'filter' => FILTER_VALIDATE_INT,
-			'flags'  => FILTER_REQUIRE_ARRAY
-		];
+		$parameters['categories'] = FILTER_DEFAULT;
 		$parameters['sort']       = FILTER_DEFAULT;
 		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
@@ -52,16 +50,8 @@ class PageList extends Plugin
 		if ($this->context['lp_block']['type'] !== 'page_list')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['text'] = $this->txt['lp_categories'];
-		$this->context['posting_fields']['categories']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id'       => 'categories',
-				'name'     => 'categories[]',
-				'multiple' => true
-			],
-			'options' => []
-		];
+		$this->context['posting_fields']['categories']['label']['html'] = '<label for="categories">' . $this->txt['lp_categories'] . '</label>';
+		$this->context['posting_fields']['categories']['input']['html'] = '<div id="categories" name="categories"></div>';
 
 		$this->context['posting_fields']['sort']['label']['text'] = $this->txt['lp_page_list']['sort'];
 		$this->context['posting_fields']['sort']['input'] = [
@@ -72,7 +62,7 @@ class PageList extends Plugin
 			'options' => []
 		];
 
-		$sort_set = array_combine(['page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'], $this->txt['lp_page_list']['sort_set']);
+		$sort_set = array_combine(self::SORTING_SET, $this->txt['lp_page_list']['sort_set']);
 
 		foreach ($sort_set as $key => $value) {
 			$this->context['posting_fields']['sort']['input']['options'][$value] = [

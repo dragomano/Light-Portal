@@ -249,22 +249,6 @@ function template_plugin_post()
 		}
 
 		const plugin = new PluginMaker();
-
-		new SlimSelect({
-			select: "#type",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});
-
-		new SlimSelect({
-			select: "#license",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});
 	</script>';
 
 	$context['lp_block']['icon'] = $context['lp_plugin']['icon'];

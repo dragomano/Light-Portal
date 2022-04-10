@@ -11,3 +11,7 @@
 	text-align: center;
 	margin: 0 !important;
 }
+
+#body_class {
+	max-width: 100%;
+}

@@ -12,7 +12,7 @@ function template_page_list_below()
 
 	$data = $items = [];
 	foreach ($context['all_categories'] as $id => $category) {
-		$data[] = '{text: "' . $category['name'] . '", value: "' . $id . '"}';
+		$data[] = '{label: "' . $category['name'] . '", value: "' . $id . '"}';
 
 		if (in_array($id, $current_categories)) {
 			$items[] = JavaScriptEscape($id);
@@ -21,25 +21,27 @@ function template_page_list_below()
 
 	echo '
 	<script>
-		new TomSelect("#categories", {
-			plugins: {
-				remove_button:{
-					title: "', $txt['remove'], '",
-				}
-			},
-			options: [', implode(',', $data), '],
-			items: [', implode(',', $items), '],
-			hideSelected: true,
+		VirtualSelect.init({
+			ele: "#categories",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			multiple: true,
+			search: true,
+			markSearchResults: true,
+			showValueAsTags: true,
+			showSelectedOptionsFirst: true,
 			placeholder: "', $txt['lp_page_list']['categories_subtext'], '",
-			closeAfterSelect: false,
-			render: {
-				no_results: function() {
-					return `<div class="no-results">', $txt['no_matches'], '</div>`;
-				},
-				not_loading: function(data, escape) {
-					return `<div class="optgroup-header">', sprintf($txt['lp_min_search_length'], 3), '</div>`;
-				}
-			}
+			noSearchResultsText: "', $txt['no_matches'], '",
+			searchPlaceholderText: "', $txt['search'], '",
+			clearButtonText: "', $txt['remove'], '",
+			options: [', implode(',', $data), '],
+			selectedValue: [', implode(',', $items), '],
+		});
+		VirtualSelect.init({
+			ele: "#sort",
+			hideClearButton: true,' . ($context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
 		});
 	</script>';
 }

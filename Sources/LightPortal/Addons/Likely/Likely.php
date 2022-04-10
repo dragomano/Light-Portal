@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -40,11 +40,7 @@ class Likely extends Plugin
 
 		$parameters['size']    = FILTER_DEFAULT;
 		$parameters['skin']    = FILTER_DEFAULT;
-		$parameters['buttons'] = [
-			'name'   => 'buttons',
-			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
-		];
+		$parameters['buttons'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
@@ -88,18 +84,9 @@ class Likely extends Plugin
 			$this->context['lp_block']['options']['parameters']['buttons'] = explode(',', $this->context['lp_block']['options']['parameters']['buttons']);
 		}
 
-		$this->context['posting_fields']['buttons']['label']['text'] = $this->txt['lp_likely']['buttons'];
-		$this->context['posting_fields']['buttons']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id'       => 'buttons',
-				'name'     => 'buttons[]',
-				'multiple' => true,
-				'style'    => 'height: auto'
-			],
-			'options' => [],
-			'tab' => 'content'
-		];
+		$this->context['posting_fields']['buttons']['label']['html'] = '<label for="buttons">' . $this->txt['lp_likely']['buttons'] . '</label>';
+		$this->context['posting_fields']['buttons']['input']['html'] = '<div id="buttons" name="buttons"></div>';
+		$this->context['posting_fields']['buttons']['input']['tab']  = 'content';
 
 		$this->context['likely_buttons'] = $this->buttons;
 
