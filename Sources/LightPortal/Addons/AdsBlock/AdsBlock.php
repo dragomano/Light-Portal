@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.03.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -67,12 +67,8 @@ class AdsBlock extends Plugin
 		if ($type !== 'ads_block')
 			return;
 
-		$parameters['loader_code'] = FILTER_UNSAFE_RAW;
-		$parameters['ads_placement'] = [
-			'name'   => 'ads_placement',
-			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
-		];
+		$parameters['loader_code']     = FILTER_UNSAFE_RAW;
+		$parameters['ads_placement']   = FILTER_DEFAULT;
 		$parameters['included_boards'] = FILTER_DEFAULT;
 		$parameters['included_topics'] = FILTER_DEFAULT;
 		$parameters['end_date']        = FILTER_DEFAULT;
@@ -117,18 +113,9 @@ class AdsBlock extends Plugin
 			'tab' => 'content'
 		];
 
-		$this->context['posting_fields']['ads_placement']['label']['text'] = $this->txt['lp_block_placement'];
-		$this->context['posting_fields']['ads_placement']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id'       => 'ads_placement',
-				'name'     => 'ads_placement[]',
-				'multiple' => true,
-				'style'    => 'height: auto'
-			],
-			'options' => [],
-			'tab' => 'access_placement'
-		];
+		$this->context['posting_fields']['ads_placement']['label']['html'] = '<label for="ads_placement">' . $this->txt['lp_block_placement'] . '</label>';
+		$this->context['posting_fields']['ads_placement']['input']['html'] = '<div id="ads_placement" name="ads_placement"></div>';
+		$this->context['posting_fields']['ads_placement']['input']['tab']  = 'access_placement';
 
 		$this->context['posting_fields']['included_boards']['label']['text'] = $this->txt['lp_ads_block']['included_boards'];
 		$this->context['posting_fields']['included_boards']['input'] = [
@@ -424,7 +411,7 @@ class AdsBlock extends Plugin
 				'after_every_last_post',
 				'after_last_post'
 			],
-			$this->txt['lp_ads_block']['placement_set']
+			array_pad($this->txt['lp_ads_block']['placement_set'], 12, LP_NEED_TRANSLATION)
 		);
 	}
 

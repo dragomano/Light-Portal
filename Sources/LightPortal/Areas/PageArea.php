@@ -72,63 +72,63 @@ final class PageArea
 		];
 
 		$listOptions = [
-			'id'               => 'lp_pages',
-			'items_per_page'   => 20,
-			'title'            => $this->txt['lp_pages_extra'],
-			'no_items_label'   => $this->txt['lp_no_items'],
-			'base_href'        => $this->scripturl . '?action=admin;area=lp_pages' . (empty($this->context['search_params']) ? '' : ';params=' . $this->context['search_params']),
+			'id' => 'lp_pages',
+			'items_per_page' => 20,
+			'title' => $this->txt['lp_pages_extra'],
+			'no_items_label' => $this->txt['lp_no_items'],
+			'base_href' => $this->scripturl . '?action=admin;area=lp_pages' . (empty($this->context['search_params']) ? '' : ';params=' . $this->context['search_params']),
 			'default_sort_col' => 'date',
-			'get_items'        => [
+			'get_items' => [
 				'function' => [$this->repository, 'getAll'],
-				'params'   => [
+				'params' => [
 					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
 					['quick_search_string' => $this->smcFunc['strtolower']($search_params['string'])],
 				],
 			],
-			'get_count'        => [
+			'get_count' => [
 				'function' => [$this->repository, 'getTotalCount'],
-				'params'   => [
+				'params' => [
 					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
 					['quick_search_string' => $this->smcFunc['strtolower']($search_params['string'])],
 				],
 			],
-			'columns'          => [
-				'id'           => [
+			'columns' => [
+				'id' => [
 					'header' => [
 						'value' => '#',
 						'style' => 'width: 5%',
 					],
-					'data'   => [
-						'db'    => 'id',
+					'data' => [
+						'db' => 'id',
 						'class' => 'centertext',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'p.page_id',
 						'reverse' => 'p.page_id DESC',
 					],
 				],
-				'date'         => [
+				'date' => [
 					'header' => [
 						'value' => $this->txt['date'],
 					],
-					'data'   => [
-						'db'    => 'created_at',
+					'data' => [
+						'db' => 'created_at',
 						'class' => 'centertext',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'date DESC',
 						'reverse' => 'date',
 					],
 				],
-				'num_views'    => [
+				'num_views' => [
 					'header' => [
 						'value' => str_replace(' class=', ' title="' . $this->txt['lp_views'] . '" class=', $this->context['lp_icon_set']['views'])
 					],
-					'data'   => [
-						'db'    => 'num_views',
+					'data' => [
+						'db' => 'num_views',
 						'class' => 'centertext',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'p.num_views DESC',
 						'reverse' => 'p.num_views',
 					],
@@ -137,68 +137,68 @@ final class PageArea
 					'header' => [
 						'value' => str_replace(' class=', '  title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
 					],
-					'data'   => [
-						'db'    => 'num_comments',
+					'data' => [
+						'db' => 'num_comments',
 						'class' => 'centertext',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'p.num_comments DESC',
 						'reverse' => 'p.num_comments',
 					],
 				],
-				'alias'        => [
+				'alias' => [
 					'header' => [
 						'value' => $this->txt['lp_page_alias'],
 					],
-					'data'   => [
-						'db'    => 'alias',
+					'data' => [
+						'db' => 'alias',
 						'class' => 'centertext word_break',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'p.alias DESC',
 						'reverse' => 'p.alias',
 					],
 				],
-				'title'        => [
+				'title' => [
 					'header' => [
 						'value' => $this->txt['lp_title'],
 					],
-					'data'   => [
+					'data' => [
 						'function' => fn($entry) => '<i class="' . ($this->context['lp_loaded_addons'][$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
 							) . '">' . $entry['title'] . '</a>',
-						'class'    => 'word_break',
+						'class' => 'word_break',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 't.title DESC',
 						'reverse' => 't.title',
 					],
 				],
-				'status'       => [
+				'status' => [
 					'header' => [
 						'value' => $this->txt['status'],
 					],
-					'data'   => [
+					'data' => [
 						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>' : '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
 							</div>',
-						'class'    => 'centertext',
+						'class' => 'centertext',
 					],
-					'sort'   => [
+					'sort' => [
 						'default' => 'p.status DESC',
 						'reverse' => 'p.status',
 					],
 				],
-				'actions'      => [
+				'actions' => [
 					'header' => [
 						'value' => $this->txt['lp_actions'],
 						'style' => 'width: 8%',
 					],
-					'data'   => [
+					'data' => [
 						'function' => fn($entry) => '
 						<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
 							<div class="context_menu" @click.outside="showContextMenu = false">
@@ -217,34 +217,34 @@ final class PageArea
 								</div>
 							</div>
 						</div>',
-						'class'    => 'centertext',
+						'class' => 'centertext',
 					],
 				],
-				'mass'         => [
+				'mass' => [
 					'header' => [
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
 					],
-					'data'   => [
+					'data' => [
 						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
-						'class'    => 'centertext',
+						'class' => 'centertext',
 					],
 				],
 			],
-			'form'             => [
-				'name'          => 'manage_pages',
-				'href'          => $this->scripturl . '?action=admin;area=lp_pages',
-				'include_sort'  => true,
+			'form' => [
+				'name' => 'manage_pages',
+				'href' => $this->scripturl . '?action=admin;area=lp_pages',
+				'include_sort' => true,
 				'include_start' => true,
 				'hidden_fields' => [
 					$this->context['session_var'] => $this->context['session_id'],
-					'params'                      => $this->context['search_params'],
+					'params' => $this->context['search_params'],
 				],
 			],
-			'javascript'       => 'const page = new Page();',
-			'additional_rows'  => [
+			'javascript' => 'const page = new Page();',
+			'additional_rows' => [
 				[
 					'position' => 'after_title',
-					'value'    => '
+					'value' => '
 						<div class="row">
 							<div class="col-lg-10">
 								<input type="search" name="search" value="' . $this->context['search']['string'] . '" placeholder="' . $this->txt['lp_pages_search'] . '" style="width: 100%">
@@ -258,7 +258,7 @@ final class PageArea
 				],
 				[
 					'position' => 'below_table_data',
-					'value'    => '
+					'value' => '
 						<select name="page_actions">
 							<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] ? '
 							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
@@ -266,7 +266,7 @@ final class PageArea
 							<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
 						</select>
 						<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
-					'class'    => 'floatright',
+					'class' => 'floatright',
 				],
 			],
 		];
@@ -509,11 +509,12 @@ final class PageArea
 				'page_author' => FILTER_VALIDATE_INT,
 				'alias'       => FILTER_DEFAULT,
 				'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				'keywords'    => [
+				'keywords'    => FILTER_DEFAULT,
+/* 				'keywords'    => [
 					'name'   => 'keywords',
 					'filter' => FILTER_DEFAULT,
 					'flags'  => FILTER_REQUIRE_ARRAY,
-				],
+				], */
 				'type'        => FILTER_DEFAULT,
 				'permissions' => FILTER_VALIDATE_INT,
 				'date'        => FILTER_DEFAULT,
@@ -541,10 +542,7 @@ final class PageArea
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
 			$post_data['id'] = $this->request('id', 0);
-
-			if (is_null($post_data['keywords'])) {
-				$post_data['keywords'] = [];
-			}
+			$post_data['keywords'] = empty($post_data['keywords']) ? [] : explode(',', $post_data['keywords']);
 
 			$this->findErrors($post_data);
 		}
@@ -558,7 +556,7 @@ final class PageArea
 			'id'          => (int) ($post_data['id'] ?? $this->context['lp_current_page']['id'] ?? 0),
 			'title'       => $this->context['lp_current_page']['title'] ?? [],
 			'category'    => $post_data['category'] ?? $this->context['lp_current_page']['category_id'] ?? 0,
-			'page_author' => $post_data['page_author'] ?? $this->context['lp_current_page']['author_id'] ?? $this->user_info['id'],
+			'page_author' => (int) ($post_data['page_author'] ?? $this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
 			'alias'       => $post_data['alias'] ?? $this->context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $this->context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
@@ -643,6 +641,7 @@ final class PageArea
 			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
 				'type'       => 'text',
+				'tab'        => 'content',
 				'attributes' => [
 					'maxlength' => 255,
 					'value'     => $this->context['lp_page']['title'][$lang['filename']] ?? '',
@@ -650,19 +649,18 @@ final class PageArea
 					'style'     => 'width: 100%',
 					'x-ref'     => 'title_' . $i++,
 				],
-				'tab'        => 'content',
 			];
 		}
 
 		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_page_type'];
 		$this->context['posting_fields']['type']['input'] = [
 			'type'       => 'select',
+			'tab'        => 'content',
 			'attributes' => [
 				'disabled' => empty($this->context['lp_page']['title'][$this->context['user']['language']]) && empty($this->context['lp_page']['alias']),
-				'x-ref'    => 'type',
 				'@change'  => 'page.toggleType($root)',
+				'x-ref'    => 'type',
 			],
-			'tab'        => 'content',
 		];
 
 		foreach ($this->context['lp_content_types'] as $value => $text) {
@@ -673,15 +671,17 @@ final class PageArea
 		}
 
 		$this->context['posting_fields']['content']['label']['html'] = ' ';
+		$this->context['posting_fields']['content']['input']['tab'] = 'content';
+
 		if ($this->context['lp_page']['type'] !== 'bbc') {
 			$this->context['posting_fields']['content']['input'] = [
 				'type'       => 'textarea',
+				'tab'        => 'content',
 				'attributes' => [
 					'value'    => $this->context['lp_page']['content'],
 					'required' => true,
 					'style'    => 'height: 300px',
 				],
-				'tab'        => 'content',
 			];
 		} else {
 			$this->createBbcEditor($this->context['lp_page']['content']);
@@ -697,6 +697,7 @@ final class PageArea
 		$this->context['posting_fields']['alias']['input'] = [
 			'type'       => 'text',
 			'after'      => $this->txt['lp_page_alias_subtext'],
+			'tab'        => 'seo',
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_page']['alias'],
@@ -705,28 +706,27 @@ final class PageArea
 				'style'     => 'width: 100%',
 				'x-ref'     => 'alias',
 			],
-			'tab'        => 'seo',
 		];
 
 		$this->context['posting_fields']['description']['label']['text'] = $this->txt['lp_page_description'];
 		$this->context['posting_fields']['description']['input'] = [
 			'type'       => 'textarea',
+			'tab'        => 'seo',
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_page']['description'],
 			],
-			'tab'        => 'seo',
 		];
 
 		$this->context['posting_fields']['keywords']['label']['text'] = $this->txt['lp_page_keywords'];
 		$this->context['posting_fields']['keywords']['input'] = [
 			'type'       => 'select',
+			'tab'        => 'seo',
+			'options'    => [],
 			'attributes' => [
-				'name'     => 'keywords[]',
+				'name'     => 'keywords',
 				'multiple' => true,
 			],
-			'options'    => [],
-			'tab'        => 'seo',
 		];
 
 		$this->context['lp_tags'] = $this->getAllTags();
@@ -780,11 +780,9 @@ final class PageArea
 		if ($this->context['user']['is_admin']) {
 			$this->prepareMemberList();
 
-			$this->context['posting_fields']['page_author']['label']['text'] = $this->txt['lp_page_author'];
-			$this->context['posting_fields']['page_author']['input'] = [
-				'type'    => 'select',
-				'options' => [],
-			];
+			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
+			$this->context['posting_fields']['page_author']['input']['html']  = '<div id="page_author" name="page_author"></div>';
+			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
 		}
 
 		$this->context['posting_fields']['show_title']['label']['text'] = $this->context['lp_page_options']['show_title'];

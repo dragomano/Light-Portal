@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 09.04.22
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -82,12 +82,11 @@ class ExtendedMetaTags extends Plugin
 		}
 
 		addInlineJavaScript('
-		new SlimSelect({
-			select: "#meta_robots",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
+		VirtualSelect.init({
+			ele: "#meta_robots",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
 		});', true);
 
 		// Meta rating
@@ -107,12 +106,11 @@ class ExtendedMetaTags extends Plugin
 		}
 
 		addInlineJavaScript('
-		new SlimSelect({
-			select: "#meta_rating",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
+		VirtualSelect.init({
+			ele: "#meta_rating",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
 		});', true);
 	}
 }

@@ -53,7 +53,7 @@ function template_ads_block_below()
 	$data = $items = [];
 
 	foreach ($context['ads_placements'] as $position => $title) {
-		$data[] = '{text: "' . $title . '", value: "' . $position . '"}';
+		$data[] = '{label: "' . $title . '", value: "' . $position . '"}';
 
 		if (in_array($position, $context['lp_block']['options']['parameters']['ads_placement'])) {
 			$items[] = JavaScriptEscape($position);
@@ -62,25 +62,18 @@ function template_ads_block_below()
 
 	echo '
 	<script>
-		new TomSelect("#ads_placement", {
-			plugins: {
-				remove_button:{
-					title: "', $txt['remove'], '",
-				}
-			},
-			options: [', implode(',', $data), '],
-			items: [', implode(',', $items), '],
-			hideSelected: true,
+		VirtualSelect.init({
+			ele: "#ads_placement",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			showValueAsTags: true,
+			search: false,
+			multiple: true,
 			placeholder: "', $txt['lp_ads_block']['select_placement'], '",
-			closeAfterSelect: false,
-			render: {
-				no_results: function() {
-					return `<div class="no-results">', $txt['no_matches'], '</div>`;
-				},
-				not_loading: function(data, escape) {
-					return `<div class="optgroup-header">', sprintf($txt['lp_min_search_length'], 3), '</div>`;
-				}
-			}
+			clearButtonText: "', $txt['remove'], '",
+			selectAllText: "', $txt['check_all'], '",
+			options: [', implode(',', $data), '],
+			selectedValue: [', implode(',', $items), ']
 		});
 	</script>';
 }

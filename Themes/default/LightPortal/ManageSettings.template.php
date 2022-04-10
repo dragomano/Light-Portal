@@ -158,7 +158,7 @@ function template_callback_disabled_bbc_in_comments()
 	</dt>
 	<dd>
 		<fieldset x-data>
-			<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags[]" multiple>';
+			<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags" multiple>';
 
 	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
 		foreach ($bbcColumn as $bbcTag) {
@@ -171,7 +171,7 @@ function template_callback_disabled_bbc_in_comments()
 
 	echo '
 			</select>
-			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="selectAllBbc($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>';
+			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="toggleSelectAll()"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>';
 
 	require_once __DIR__ . '/partials/bbc_comments.php';
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -54,27 +54,43 @@ class HidingBlocks extends Plugin
 
 	public function validateBlockData(array &$parameters)
 	{
-		$parameters['hidden_breakpoints'] = [
-			'name'   => 'hidden_breakpoints',
-			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
-		];
+		$parameters['hidden_breakpoints'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
 	{
-		$this->context['posting_fields']['hidden_breakpoints']['label']['text'] = $this->txt['lp_hiding_blocks']['hidden_breakpoints'];
-		$this->context['posting_fields']['hidden_breakpoints']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id'       => 'hidden_breakpoints',
-				'name'     => 'hidden_breakpoints[]',
-				'multiple' => true
-			],
-			'options' => [],
-			'tab' => 'access_placement'
-		];
+		$this->context['posting_fields']['hidden_breakpoints']['label']['html'] = '<label for="hidden_breakpoints">' . $this->txt['lp_hiding_blocks']['hidden_breakpoints'] . '</label>';
+		$this->context['posting_fields']['hidden_breakpoints']['input']['html'] = '<div id="hidden_breakpoints" name="hidden_breakpoints"></div>';
+		$this->context['posting_fields']['hidden_breakpoints']['input']['tab']  = 'access_placement';
 
-		$this->loadTemplate()->withLayer('hiding_blocks');
+		$current_breakpoints = $this->context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
+		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
+
+		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], $this->txt['lp_hiding_blocks']['hidden_breakpoints_set']);
+
+		$data = $items = [];
+
+		foreach ($breakpoints as $bp => $name) {
+			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
+
+			if (in_array($bp, $current_breakpoints)) {
+				$items[] = JavaScriptEscape($bp);
+			}
+		}
+
+		addInlineJavaScript('
+		VirtualSelect.init({
+			ele: "#hidden_breakpoints",' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body",
+			showValueAsTags: true,
+			placeholder: "' . $this->txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
+			clearButtonText: "' . $this->txt['remove'] . '",
+			selectAllText: "' . $this->txt['check_all'] . '",
+			multiple: true,
+			search: false,
+			options: [' . implode(',', $data) . '],
+			selectedValue: [' . implode(',', $items) . ']
+		});', true);
 	}
 }

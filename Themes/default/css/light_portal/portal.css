@@ -1354,33 +1354,31 @@ section #display_head span {
     opacity: 1;
   }
 }
-/* SlimSelect */
-.ss-main {
-  overflow: hidden !important;
+/* Virtual Select */
+.vscomp-value-tag {
+  background: #f2f2f2;
+  border: 0 solid #d0d0d0;
+  color: #303030;
+  cursor: pointer;
+  margin: 0 3px 3px 0;
+  padding: 2px 6px;
+  border-radius: 0;
 }
-.ss-main .ss-single-selected {
+.vscomp-value {
   height: auto !important;
 }
-.ss-main .ss-single-selected .placeholder > div {
+.vscomp-value div {
   margin: 0 !important;
 }
-.ss-main .ss-single-selected .placeholder i,
-.ss-main .ss-single-selected .placeholder span {
-  margin-right: 0.4em;
-}
-.ss-main .ss-open {
-  position: initial !important;
-}
-.ss-main .ss-disabled {
-  color: inherit !important;
-}
-/* TomSelect */
-.ts-wrapper .ts-control .item div {
+.vscomp-option-text div {
   margin: 0 !important;
 }
-.ts-wrapper .ts-dropdown {
-  position: initial !important;
+#lp_disabled_bbc_in_comments {
+  max-width: 100%;
 }
-.ts-wrapper .ts-dropdown .ts-dropdown-content .option div {
-  margin: 0 !important;
+#post_header #title_class,
+#post_header #content_class,
+#post_header #icon,
+#post_header #keywords {
+  max-width: 100%;
 }

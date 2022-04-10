@@ -1,32 +1,23 @@
 <?php
 
-global $txt;
+global $context, $txt;
 
 echo '
 	<script>
-		const lpDisabledBbc = new TomSelect("#lp_disabled_bbc_in_comments", {
-			plugins: {
-				remove_button: {
-					title: "', $txt['remove'], '",
-				},
-				clear_button: {
-					title: "', $txt['remove_all'], '",
-				},
-				checkbox_options: {}
-			},
-			hideSelected: true,
+		const lpDisabledBbc = VirtualSelect.init({
+			ele: "#lp_disabled_bbc_in_comments",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			search: true,
+			showValueAsTags: true,
+			showSelectedOptionsFirst: true,
+			placeholder: "', $txt['no'], '",
+			noSearchResultsText: "', $txt['no_matches'], '",
+			searchPlaceholderText: "', $txt['search'], '",
+			clearButtonText: "', $txt['remove'], '"
 		});
 
-		function selectAllBbc(elem) {
-			if (elem.checked) {
-				let allTags = document.querySelectorAll("#lp_disabled_bbc_in_comments option");
-				lpDisabledBbc.addOptions(Array.from(allTags).map(el => el.value));
-				allTags.forEach(function (item) {
-					lpDisabledBbc.addItem(item.value, true);
-				});
-				return;
-			}
-
-			lpDisabledBbc.clear();
+		function toggleSelectAll() {
+			document.querySelector("#lp_disabled_bbc_in_comments").toggleSelectAll();
 		}
 	</script>';

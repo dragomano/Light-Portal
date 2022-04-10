@@ -7,3 +7,7 @@
 	opacity: 1 !important;
 	filter: grayscale(0%);
 }
+
+#lp_post #buttons {
+	max-width: 100%;
+}

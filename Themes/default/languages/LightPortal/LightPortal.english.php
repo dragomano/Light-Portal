@@ -21,6 +21,7 @@ $txt['lp_default'] = 'Default';
 $txt['lp_can_donate'] = 'For sponsors';
 $txt['lp_can_download'] = 'Can download';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';
+$txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
 

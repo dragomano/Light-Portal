@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -52,15 +52,9 @@ class ArticleList extends Plugin
 		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
 
-		$this->context['posting_fields']['body_class']['label']['text'] = $this->txt['lp_article_list']['body_class'];
-		$this->context['posting_fields']['body_class']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'body_class'
-			],
-			'options' => [],
-			'tab' => 'appearance'
-		];
+		$this->context['posting_fields']['body_class']['label']['html'] = '<label for="body_class">' . $this->txt['lp_article_list']['body_class'] . '</label>';
+		$this->context['posting_fields']['body_class']['input']['html'] = '<div id="body_class" name="body_class"></div>';
+		$this->context['posting_fields']['body_class']['input']['tab']  = 'appearance';
 
 		$this->context['posting_fields']['display_type']['label']['text'] = $this->txt['lp_article_list']['display_type'];
 		$this->context['posting_fields']['display_type']['input'] = [

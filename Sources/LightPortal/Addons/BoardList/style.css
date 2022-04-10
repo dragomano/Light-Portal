@@ -1,3 +1,8 @@
 .block_board_list ul {
 	padding-left: 10px;
 }
+
+#category_class,
+#board_class {
+	max-width: 100%;
+}

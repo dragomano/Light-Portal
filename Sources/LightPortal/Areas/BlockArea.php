@@ -411,32 +411,29 @@ final class BlockArea
 			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
 			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
 				'type'       => 'text',
+				'tab'        => 'content',
 				'attributes' => [
 					'maxlength' => 255,
 					'value'     => $this->context['lp_block']['title'][$lang['filename']] ?? '',
 					'style'     => 'width: 100%',
 				],
-				'tab'        => 'content',
 			];
 		}
 
 		$this->context['posting_fields']['note']['label']['text'] = $this->txt['lp_block_note'];
 		$this->context['posting_fields']['note']['input'] = [
 			'type'       => 'text',
+			'tab'        => 'content',
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['note'] ?? '',
 				'style'     => 'width: 100%',
 			],
-			'tab'        => 'content',
 		];
 
-		$this->context['posting_fields']['icon']['label']['text'] = $this->txt['current_icon'];
-		$this->context['posting_fields']['icon']['input'] = [
-			'type'    => 'select',
-			'options' => [],
-			'tab'     => 'appearance',
-		];
+		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['input']['html'] = '<div id="icon" name="icon"></div>';
+		$this->context['posting_fields']['icon']['input']['tab']  = 'appearance';
 
 		$this->context['posting_fields']['placement']['label']['text'] = $this->txt['lp_block_placement'];
 		$this->context['posting_fields']['placement']['input'] = [
@@ -473,6 +470,7 @@ final class BlockArea
 		$this->context['posting_fields']['areas']['input'] = [
 			'type'       => 'text',
 			'after'      => $this->getAreasInfo(),
+			'tab'        => 'access_placement',
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['areas'],
@@ -480,44 +478,37 @@ final class BlockArea
 				'pattern'   => self::AREAS_PATTERN,
 				'style'     => 'width: 100%',
 			],
-			'tab'        => 'access_placement',
 		];
 
-		$this->context['posting_fields']['title_class']['label']['text'] = $this->txt['lp_block_title_class'];
-		$this->context['posting_fields']['title_class']['input'] = [
-			'type'    => 'select',
-			'options' => [],
-			'tab'     => 'appearance',
-		];
+		$this->context['posting_fields']['title_class']['label']['html'] = '<label for="title_class">' . $this->txt['lp_block_title_class'] . '</label>';
+		$this->context['posting_fields']['title_class']['input']['html'] = '<div id="title_class" name="title_class"></div>';
+		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
 
 		$this->context['posting_fields']['title_style']['label']['text'] = $this->txt['lp_block_title_style'];
 		$this->context['posting_fields']['title_style']['input'] = [
 			'type'       => 'textarea',
+			'tab'        => 'appearance',
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['title_style'],
 				'style'     => 'width: 100%',
 			],
-			'tab'        => 'appearance',
 		];
 
 		if (empty($this->context['lp_block']['options']['no_content_class'])) {
-			$this->context['posting_fields']['content_class']['label']['text'] = $this->txt['lp_block_content_class'];
-			$this->context['posting_fields']['content_class']['input'] = [
-				'type'    => 'select',
-				'options' => [],
-				'tab'     => 'appearance',
-			];
+			$this->context['posting_fields']['content_class']['label']['html'] = '<label for="content_class">' . $this->txt['lp_block_content_class'] . '</label>';
+			$this->context['posting_fields']['content_class']['input']['html'] = '<div id="content_class" name="content_class"></div>';
+			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
 
 			$this->context['posting_fields']['content_style']['label']['text'] = $this->txt['lp_block_content_style'];
 			$this->context['posting_fields']['content_style']['input'] = [
 				'type'       => 'textarea',
+				'tab'        => 'appearance',
 				'attributes' => [
 					'maxlength' => 255,
 					'value'     => $this->context['lp_block']['content_style'],
 					'style'     => 'width: 100%',
 				],
-				'tab'        => 'appearance',
 			];
 		}
 
@@ -527,10 +518,10 @@ final class BlockArea
 			if ($this->context['lp_block']['type'] !== 'bbc') {
 				$this->context['posting_fields']['content']['input'] = [
 					'type'       => 'textarea',
+					'tab'        => 'content',
 					'attributes' => [
 						'value' => $this->context['lp_block']['content'],
 					],
-					'tab'        => 'content',
 				];
 			} else {
 				$this->createBbcEditor($this->context['lp_block']['content']);

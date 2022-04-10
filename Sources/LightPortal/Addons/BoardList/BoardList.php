@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.04.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -48,25 +48,13 @@ class BoardList extends Plugin
 		if ($this->context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$this->context['posting_fields']['category_class']['label']['text'] = $this->txt['lp_board_list']['category_class'];
-		$this->context['posting_fields']['category_class']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'category_class'
-			],
-			'options' => [],
-			'tab' => 'appearance'
-		];
+		$this->context['posting_fields']['category_class']['label']['html'] = '<label for="category_class">' . $this->txt['lp_board_list']['category_class'] . '</label>';
+		$this->context['posting_fields']['category_class']['input']['html'] = '<div id="category_class" name="category_class"></div>';
+		$this->context['posting_fields']['category_class']['input']['tab']  = 'appearance';
 
-		$this->context['posting_fields']['board_class']['label']['text'] = $this->txt['lp_board_list']['board_class'];
-		$this->context['posting_fields']['board_class']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'board_class'
-			],
-			'options' => [],
-			'tab' => 'appearance'
-		];
+		$this->context['posting_fields']['board_class']['label']['html'] = '<label for="board_class">' . $this->txt['lp_board_list']['board_class'] . '</label>';
+		$this->context['posting_fields']['board_class']['input']['html'] = '<div id="board_class" name="board_class"></div>';
+		$this->context['posting_fields']['board_class']['input']['tab']  = 'appearance';
 
 		$this->context['category_classes'] = $this->getCategoryClasses();
 

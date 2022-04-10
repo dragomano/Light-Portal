@@ -1,33 +1,23 @@
 <?php
 
-global $txt, $modSettings;
+global $context, $txt, $modSettings;
 
 echo '
 	<script>
-		new TomSelect("#keywords", {
-			plugins: {
-				remove_button:{
-					title: "', $txt['remove'], '",
-				}
-			},
-			maxItems: ', $modSettings['lp_page_maximum_tags'] ?? 10, ',
-			hideSelected: true,
+		VirtualSelect.init({
+			ele: "#keywords",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			multiple: true,
+			search: true,
+			markSearchResults: true,
+			showValueAsTags: true,
+			allowNewOption: true,
+			showSelectedOptionsFirst: true,
 			placeholder: "', $txt['lp_page_keywords_placeholder'], '",
-			allowEmptyOption: true,
-			closeAfterSelect: false,
-			render: {
-				option_create: function(data, escape) {
-					return `<div class="create">', $txt['ban_add'], ' <strong>` + escape(data.input) + `</strong>&hellip;</div>`;
-				},
-				no_results: function() {
-					return `<div class="no-results">', $txt['no_matches'], '</div>`;
-				},
-				not_loading: function(data, escape) {
-					return `<div class="optgroup-header">', sprintf($txt['lp_min_search_length'], 3), '</div>`;
-				}
-			},
-			create: function(input) {
-				return {value: input, text: input}
-			}
+			noSearchResultsText: "', $txt['no_matches'], '",
+			searchPlaceholderText: "', $txt['search'], '",
+			clearButtonText: "', $txt['remove'], '",
+			maxValues: ', $modSettings['lp_page_maximum_tags'] ?? 10, '
 		});
 	</script>';

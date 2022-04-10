@@ -145,21 +145,12 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Slim Select',
-				'link' => 'https://slimselectjs.com',
-				'author' => 'Brian Voelker',
+				'title' => 'Virtual Select',
+				'link' => 'https://sa-si-dev.github.io/virtual-select/',
+				'author' => 'Sa Si Dev',
 				'license' => [
 					'name' => 'the MIT License',
-					'link' => 'https://github.com/brianvoe/slim-select/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'Tom Select',
-				'link' => 'https://tom-select.js.org/',
-				'author' => 'Brian Reavis and contributors',
-				'license' => [
-					'name' => 'the Apache License 2.0',
-					'link' => 'https://github.com/orchidjs/tom-select/blob/master/LICENSE'
+					'link' => 'https://github.com/sa-si-dev/virtual-select/blob/master/LICENSE'
 				]
 			],
 			[
