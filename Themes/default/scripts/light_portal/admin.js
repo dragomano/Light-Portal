@@ -149,11 +149,9 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		pageType.disable();
+		refs.type.disabled = ! document.querySelector(".pf_content textarea").value;
 
-		if (refs.title_0.value) pageType.enable();
-
-		// Create a page alias on page type changing
+		// Create a page alias if it does not exist
 		if (refs.alias.value === '' && typeof (slugify) === 'function') {
 			refs.alias.value = slugify(refs.title_0.value, {
 				separator: '_',

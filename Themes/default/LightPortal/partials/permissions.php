@@ -2,15 +2,13 @@
 
 global $context;
 
-if ($context['user']['is_admin']) {
-	echo '
-	<script>
-		new SlimSelect({
-			select: "#permissions",
-			showSearch: false,
-			hideSelectedOption: true,
-			closeOnSelect: true,
-			showContent: "down"
-		});
-	</script>';
-}
+if (empty($context['user']['is_admin']))
+	return;
+
+addInlineJavaScript('
+	VirtualSelect.init({
+		ele: "#permissions",
+		hideClearButton: true,' . ($context['right_to_left'] ? '
+		textDirection: "rtl",' : '') . '
+		dropboxWrapper: "body"
+	});', true);

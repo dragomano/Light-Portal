@@ -1741,50 +1741,36 @@ section {
 	}
 }
 
-/* SlimSelect */
-.ss-main {
-	overflow: hidden !important;
+/* Virtual Select */
+.vscomp-value-tag {
+	background: #f2f2f2;
+	border: 0 solid #d0d0d0;
+	color: #303030;
+	cursor: pointer;
+	margin: 0 3px 3px 0;
+	padding: 2px 6px;
+	.bradius(0);
+}
+.vscomp-value {
+	height: auto !important;
 
-	.ss-single-selected {
-		height: auto !important;
-
-		.placeholder {
-			& > div {
-				margin: 0 !important;
-			}
-			i,
-			span {
-				margin-right: .4em;
-			}
-		}
-	}
-	.ss-open {
-		position: initial !important;
-	}
-	.ss-disabled {
-		color: inherit !important;
+	div {
+		margin: 0 !important;
 	}
 }
-
-/* TomSelect */
-.ts-wrapper {
-	.ts-control {
-		.item {
-			div {
-				margin: 0 !important;
-			}
-		}
+.vscomp-option-text {
+	div {
+		margin: 0 !important;
 	}
-
-	.ts-dropdown {
-		position: initial !important;
-
-		.ts-dropdown-content {
-			.option {
-				div {
-					margin: 0 !important;
-				}
-			}
-		}
+}
+#lp_disabled_bbc_in_comments {
+	max-width: 100%;
+}
+#post_header {
+	#title_class,
+	#content_class,
+	#icon,
+	#keywords {
+		max-width: 100%;
 	}
 }

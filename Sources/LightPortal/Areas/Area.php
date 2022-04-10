@@ -19,7 +19,6 @@ use Bugo\LightPortal\Lists\IconList;
 use function addJavaScriptVar;
 use function create_control_richedit;
 use function loadTemplate;
-use function preparsecode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -49,10 +48,6 @@ trait Area
 	public function preparePostFields()
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
-			if ($item === 'icon') {
-				$data['input']['after'] = '<a class="bbc_link" target="_blank" rel="noopener" href="https://fontawesome.com/v6/docs/web/style/style-cheatsheet">' . $this->txt['lp_block_icon_style_cheatsheet'] . '</a>';
-			}
-
 			if (isset($data['input']['after'])) {
 				$tag = 'div';
 
@@ -106,7 +101,7 @@ trait Area
 		$search = trim($this->smcFunc['strtolower']($search));
 
 		$all_icons = $this->getFaIcons();
-		$template = '<i class="%1$s" aria-hidden="true"></i>&nbsp;%1$s';
+		$template = '<i class="%1$s fa-fw" aria-hidden="true"></i>&nbsp;%1$s';
 
 		$this->hook('prepareIconList', [&$all_icons, &$template]);
 

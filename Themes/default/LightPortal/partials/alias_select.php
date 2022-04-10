@@ -1,18 +1,22 @@
 <?php
 
-global $txt, $scripturl, $modSettings;
+global $context, $txt, $modSettings, $scripturl;
 
 echo '
 	<script>
 		let frontpageAlias = document.getElementById("lp_frontpage_alias");
 		if (frontpageAlias) {
-			let aliasSelect = new TomSelect(frontpageAlias, {
-				hideSelected: true,
-				searchField: ["value"],
-				shouldLoad: function (search) {
-					return search.length >= 3;
-				},
-				load: function (search, callback) {
+			VirtualSelect.init({
+				ele: frontpageAlias,', ($context['right_to_left'] ? '
+				textDirection: "rtl",' : ''), '
+				dropboxWrapper: "body",
+				search: true,
+				placeholder: "', $txt['no'], '",
+				noSearchResultsText: "' . $txt['no_matches'] . '",
+				searchPlaceholderText: "' . $txt['search'] . '",';
+
+echo '
+				onServerSearch: async function (search, virtualSelect) {
 					fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
 						method: "POST",
 						headers: {
@@ -26,31 +30,25 @@ echo '
 					.then(function (json) {
 						let data = [];
 						for (let i = 0; i < json.length; i++) {
-							data.push({text: json[i].value, value: json[i].value})
+							data.push({label: json[i].value, value: json[i].value})
 						}
 
-						callback(data)
+						virtualSelect.setServerOptions(data)
 					})
 					.catch(function (error) {
-						callback(false)
+						virtualSelect.setServerOptions(false)
 					})
-				},
-				render: {
-					no_results: function(data, escape) {
-						return `<div class="no-results">', $txt['no_matches'], '</div>`;
-					},
-					not_loading: function(data, escape) {
-						return `<div class="optgroup-header">', sprintf($txt['lp_min_search_length'], 3), '</div>`;
-					}
-				},
+				},';
+
+echo '
 			});';
 
 if (! empty($modSettings['lp_frontpage_alias'])) {
 	$alias = JavaScriptEscape($modSettings['lp_frontpage_alias']);
 
 	echo '
-			aliasSelect.addOption({value: ', $alias, ', text: ', $alias, '});
-			aliasSelect.addItem(', $alias, ', true);';
+			document.getElementById("lp_frontpage_alias").setOptions([{label: ', $alias, ', value: ', $alias, '}]);
+			document.getElementById("lp_frontpage_alias").setValue(', $alias, ');';
 }
 
 echo '

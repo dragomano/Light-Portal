@@ -2,19 +2,21 @@
 
 global $context, $txt;
 
-if ($context['user']['is_admin']) {
-	echo '
-	<script>
-		new SlimSelect({
-			select: "#page_author",
-			allowDeselect: true,
-			deselectLabel: "<span class=\"red\">✖</span>",
-			ajax: async function (search, callback) {
-				if (search.length < 3) {
-					callback("', sprintf($txt['lp_min_search_length'], 3), '");
-					return
-				}
+if (empty($context['user']['is_admin']))
+	return;
 
+echo '
+	<script>
+		VirtualSelect.init({
+			ele: "#page_author",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			search: true,
+			markSearchResults: true,
+			placeholder: "', $txt['search'], '",
+			noSearchResultsText: "', $txt['lp_no_such_members'], '",
+			searchPlaceholderText: "', $txt['search'], '",
+			onServerSearch: async function (search, virtualSelect) {
 				let response = await fetch("', $context['canonical_url'], ';members", {
 					method: "POST",
 					headers: {
@@ -30,20 +32,13 @@ if ($context['user']['is_admin']) {
 
 					let data = [];
 					for (let i = 0; i < json.length; i++) {
-						data.push({text: json[i].text, value: json[i].value})
+						data.push({label: json[i].text, value: json[i].value})
 					}
-
-					callback(data)
+					console.log(response);
+					virtualSelect.setServerOptions(data)
 				} else {
-					callback(false)
+					virtualSelect.setServerOptions(false)
 				}
 			},
-			hideSelectedOption: true,
-			placeholder: "', $txt['lp_page_author_placeholder'], '",
-			searchingText: "', $txt['search'], '...",
-			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "', $txt['search'], '",
-			searchHighlight: true
 		});
 	</script>';
-}

@@ -37,7 +37,14 @@ function template_page_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form
+		id="lp_post"
+		action="', $context['canonical_url'], '"
+		method="post"
+		accept-charset="', $context['character_set'], '"
+		onsubmit="submitonce(this);"
+		x-data
+	>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
@@ -87,7 +94,6 @@ function template_page_post()
 		const page = new Page();
 	</script>';
 
-	require_once __DIR__ . '/partials/page_type.php';
 	require_once __DIR__ . '/partials/keywords.php';
 	require_once __DIR__ . '/partials/permissions.php';
 	require_once __DIR__ . '/partials/category.php';

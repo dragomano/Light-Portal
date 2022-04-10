@@ -1,14 +1,17 @@
 <?php
 
-global $txt;
+global $context, $txt;
 
 echo '
 	<script>
-		new SlimSelect({
-			select: "#category",
-			hideSelectedOption: true,
-			searchText: "', $txt['no_matches'], '",
-			searchPlaceholder: "', $txt['search'], '",
-			searchHighlight: true
+		VirtualSelect.init({
+			ele: "#category",
+			hideClearButton: true,', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			search: true,
+			markSearchResults: true,
+			noSearchResultsText: "', $txt['no_matches'], '",
+			searchPlaceholderText: "', $txt['search'], '"
 		});
 	</script>';

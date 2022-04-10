@@ -50,13 +50,13 @@ final class ConfigArea
 
 	public function adminAreas(array &$admin_areas)
 	{
-		loadCSSFile('light_portal/slimselect.min.css');
-		loadJavaScriptFile('light_portal/slimselect.min.js');
+		//loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.css', ['external' => true]);
+		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.js', ['external' => true]);
+		loadCSSFile('light_portal/virtual_select.css');
+		loadJavaScriptFile('light_portal/virtual_select.js');
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
-
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+		loadJavaScriptFile('light_portal/alpine.js', ['defer' => true]);
 		loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		loadLanguage('ManageSettings');
@@ -432,17 +432,17 @@ final class ConfigArea
 				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
-			$parse_tags = parse_bbc(false);
+			$parse_tags = (array) parse_bbc(false);
 			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
 			if ($this->post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', []);
+				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', '');
 			} elseif (! is_array($this->post('lp_disabled_bbc_in_comments_enabledTags'))) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', [$this->post('lp_disabled_bbc_in_comments_enabledTags')]);
+				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', $this->post('lp_disabled_bbc_in_comments_enabledTags'));
 			}
 
-			$this->post()->put('lp_enabled_bbc_in_comments', implode(',', $this->post('lp_disabled_bbc_in_comments_enabledTags')));
-			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, $this->post('lp_disabled_bbc_in_comments_enabledTags'))));
+			$this->post()->put('lp_enabled_bbc_in_comments', $this->post('lp_disabled_bbc_in_comments_enabledTags'));
+			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->post('lp_disabled_bbc_in_comments_enabledTags')))));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
