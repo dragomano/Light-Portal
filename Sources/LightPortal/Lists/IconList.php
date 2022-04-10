@@ -105,7 +105,6 @@ final class IconList
 	public function getList(): array
 	{
 		return [
-			'fas fa-0',
 			'fas fa-1',
 			'fas fa-2',
 			'fas fa-3',
@@ -113,6 +112,7 @@ final class IconList
 			'fas fa-5',
 			'fas fa-6',
 			'fas fa-7',
+			'fas fa-0',
 			'fas fa-8',
 			'fas fa-9',
 			'fab fa-42-group',
@@ -465,6 +465,8 @@ final class IconList
 			'fas fa-chevron-right',
 			'fas fa-chevron-up',
 			'fas fa-child',
+			'fas fa-child-dress',
+			'fas fa-child-reaching',
 			'fas fa-child-rifle',
 			'fas fa-children',
 			'fab fa-chrome',
@@ -2111,7 +2113,7 @@ final class IconList
 			'fab fa-youtube',
 			'fab fa-youtube-square',
 			'fas fa-z',
-			'fab fa-zhihu'
+			'fab fa-zhihu',
 		];
 	}
 }
