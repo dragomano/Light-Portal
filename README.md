@@ -8,7 +8,7 @@
 
 * **Tested on:** PHP 7.4.28 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
 * **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish
-* **Demo:** [Link](https://demo.dragomano.ru)
+* [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 
 ## Description
 This modification will transform your forum into a portal that includes:
