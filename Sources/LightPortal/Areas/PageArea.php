@@ -510,11 +510,6 @@ final class PageArea
 				'alias'       => FILTER_DEFAULT,
 				'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 				'keywords'    => FILTER_DEFAULT,
-/* 				'keywords'    => [
-					'name'   => 'keywords',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY,
-				], */
 				'type'        => FILTER_DEFAULT,
 				'permissions' => FILTER_VALIDATE_INT,
 				'date'        => FILTER_DEFAULT,

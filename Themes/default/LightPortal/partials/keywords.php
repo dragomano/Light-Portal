@@ -18,6 +18,6 @@ echo '
 			noSearchResultsText: "', $txt['no_matches'], '",
 			searchPlaceholderText: "', $txt['search'], '",
 			clearButtonText: "', $txt['remove'], '",
-			maxValues: ', $modSettings['lp_page_maximum_tags'] ?? 10, '
+			maxValues: ', $modSettings['lp_page_maximum_keywords'] ?? 10, '
 		});
 	</script>';

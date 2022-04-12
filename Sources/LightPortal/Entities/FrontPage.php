@@ -212,6 +212,30 @@ final class FrontPage
 		}, $articles);
 	}
 
+	/**
+	 * Get a number in friendly format ("1K" instead "1000", etc)
+	 *
+	 * Получаем число в приятном глазу формате (для чисел более 10к)
+	 */
+	private function getFriendlyNumber(int $value = 0): string
+	{
+		if ($value < 10000)
+			return (string) $value;
+
+		$k   = pow(10, 3);
+		$mil = pow(10, 6);
+		$bil = pow(10, 9);
+
+		if ($value >= $bil)
+			return number_format($value / $bil, 1) . 'B';
+		else if ($value >= $mil)
+			return number_format($value / $mil, 1) . 'M';
+		else if ($value >= $k)
+			return number_format($value / $k, 1) . 'K';
+
+		return (string) $value;
+	}
+
 	private function simplePaginate(string $url, int $total, int $limit): string
 	{
 		$max_pages = (($total - 1) / $limit) * $limit;
