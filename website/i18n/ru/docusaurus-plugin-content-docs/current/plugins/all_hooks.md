@@ -99,22 +99,6 @@ Light Portal замечательно расширяется благодаря 
 
 ## Настройки портала
 
-### addBasicSettings / addBasicSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> добавление и сохранение настроек на вкладке «Общие настройки»
-
-### addExtraSettings / addExtraSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> добавление и сохранение настроек на вкладке «Страницы и блоки»
-
-### addPanelsSettings / addPanelsSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> добавление и сохранение настроек на вкладке «Панели»
-
-### addMiscSettings / addMiscSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> добавление и сохранение настроек на вкладке «Дополнительно»
-
 ### addBlockAreas
 (`&$subActions`)
 > добавление дополнительных вкладок в области «Блоки»

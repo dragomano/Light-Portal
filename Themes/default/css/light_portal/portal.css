@@ -1373,6 +1373,8 @@ section #display_head span {
 .vscomp-option-text div {
   margin: 0 !important;
 }
+#lp_frontpage_categories,
+#lp_frontpage_boards,
 #lp_disabled_bbc_in_comments {
   max-width: 100%;
 }

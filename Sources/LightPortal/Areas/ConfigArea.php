@@ -141,8 +141,6 @@ final class ConfigArea
 	 */
 	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
 	{
-		$settings_search[] = [[$this, 'basic'], 'area=lp_settings;sa=basic'];
-		$settings_search[] = [[$this, 'extra'], 'area=lp_settings;sa=extra'];
 		$settings_search[] = [[$this, 'panels'], 'area=lp_settings;sa=panels'];
 		$settings_search[] = [[$this, 'misc'], 'area=lp_settings;sa=misc'];
 	}
@@ -210,10 +208,8 @@ final class ConfigArea
 	 * Output general settings
 	 *
 	 * Выводим общие настройки
-	 *
-	 * @return array|void
 	 */
-	public function basic(bool $return_config = false)
+	public function basic()
 	{
 		$this->prepareAliasList();
 
@@ -224,73 +220,40 @@ final class ConfigArea
 		$this->context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
-		$this->context['lp_all_categories']       = $this->getAllCategories();
-		$this->context['lp_frontpage_categories'] = empty($this->modSettings['lp_frontpage_categories']) ? [0] : explode(',', $this->modSettings['lp_frontpage_categories']);
-		$this->context['lp_frontpage_layout']     = $this->getFrontPageLayouts();
-
-		$this->txt['select_boards_from_list'] = $this->txt['lp_select_boards_from_list'];
+		$this->context['lp_all_categories']   = $this->getAllCategories();
+		$this->context['lp_frontpage_layout'] = $this->getFrontPageLayouts();
 
 		// Initial settings
-		$add_settings = [];
+		$addSettings = [];
 		if (! isset($this->modSettings['lp_frontpage_title']))
-			$add_settings['lp_frontpage_title'] = $this->context['forum_name'];
+			$addSettings['lp_frontpage_title'] = $this->context['forum_name'];
 		if (! isset($this->modSettings['lp_frontpage_alias']))
-			$add_settings['lp_frontpage_alias'] = 'home';
+			$addSettings['lp_frontpage_alias'] = 'home';
 		if (! isset($this->modSettings['lp_show_num_views_and_comments']))
-			$add_settings['lp_show_num_views_and_comments'] = 1;
+			$addSettings['lp_show_num_views_and_comments'] = 1;
 		if (! isset($this->modSettings['lp_frontpage_article_sorting']))
-			$add_settings['lp_frontpage_article_sorting'] = 1;
+			$addSettings['lp_frontpage_article_sorting'] = 1;
 		if (! isset($this->modSettings['lp_num_items_per_page']))
-			$add_settings['lp_num_items_per_page'] = 10;
+			$addSettings['lp_num_items_per_page'] = 10;
 		if (! isset($this->modSettings['lp_standalone_url']))
-			$add_settings['lp_standalone_url'] = $this->boardurl . '/portal.php';
+			$addSettings['lp_standalone_url'] = $this->boardurl . '/portal.php';
 		if (! isset($this->modSettings['lp_prohibit_php']))
-			$add_settings['lp_prohibit_php'] = 1;
-		if ($add_settings)
-			updateSettings($add_settings);
+			$addSettings['lp_prohibit_php'] = 1;
+		if ($addSettings)
+			updateSettings($addSettings);
+
+		$this->context['lp_frontpage_modes'] = array_combine(
+			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
+			array_pad($this->txt['lp_frontpage_mode_set'], 7, LP_NEED_TRANSLATION)
+		);
+
+		$this->require('Subs-MessageIndex');
+		$this->context['board_list'] = getBoardList();
 
 		$config_vars = [
-			[
-				'select',
-				'lp_frontpage_mode',
-				array_combine(
-					[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-					array_pad($this->txt['lp_frontpage_mode_set'], 7, LP_NEED_TRANSLATION)
-				)
-			],
-			['text', 'lp_frontpage_title', '80" placeholder="' . $this->context['forum_name'] . ' - ' . $this->txt['lp_portal']],
-			['select', 'lp_frontpage_alias', [], 'subtext' => $this->txt['lp_frontpage_alias_subtext']],
-			['callback', 'frontpage_categories'],
-			['boards', 'lp_frontpage_boards'],
-			['large_text', 'lp_frontpage_pages', 'subtext' => $this->txt['lp_frontpage_pages_subtext']],
-			['large_text', 'lp_frontpage_topics', 'subtext' => $this->txt['lp_frontpage_topics_subtext']],
-			['check', 'lp_show_images_in_articles', 'help' => 'lp_show_images_in_articles_help'],
-			['text', 'lp_image_placeholder', '80" placeholder="' . $this->txt['lp_example'] . $this->settings['default_images_url'] . '/smflogo.svg'],
-			['check', 'lp_show_teaser'],
-			['check', 'lp_show_author', 'help' => 'lp_show_author_help'],
-			['check', 'lp_show_num_views_and_comments'],
-			['check', 'lp_frontpage_order_by_num_replies'],
-			['select', 'lp_frontpage_article_sorting', $this->txt['lp_frontpage_article_sorting_set'], 'help' => 'lp_frontpage_article_sorting_help'],
-			['select', 'lp_frontpage_layout', $this->context['lp_frontpage_layout']],
-			['select', 'lp_frontpage_num_columns', $this->txt['lp_frontpage_num_columns_set']],
-			['select', 'lp_show_pagination', $this->txt['lp_show_pagination_set']],
-			['check', 'lp_use_simple_pagination'],
-			['int', 'lp_num_items_per_page', 'min' => 1],
+			['callback', 'frontpage_mode_settings'],
 			['title', 'lp_standalone_mode_title'],
-			['check', 'lp_standalone_mode', 'label' => $this->txt['lp_action_on']],
-			[
-				'text',
-				'lp_standalone_url',
-				'80" placeholder="' . $this->txt['lp_example'] . $this->boardurl . '/portal.php',
-				'help' => 'lp_standalone_url_help'
-			],
-			[
-				'text',
-				'lp_standalone_mode_disabled_actions',
-				'80" placeholder="' . $this->txt['lp_example'] . 'mlist,calendar',
-				'subtext' => $this->txt['lp_standalone_mode_disabled_actions_subtext'],
-				'help' => 'lp_standalone_mode_disabled_actions_help'
-			],
+			['callback', 'standalone_mode_settings'],
 			['title', 'edit_permissions'],
 			['check', 'lp_prohibit_php', 'invalid' => true],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
@@ -299,23 +262,13 @@ final class ConfigArea
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
 		];
 
-		$this->hook('addBasicSettings', [&$config_vars]);
-
-		if ($return_config)
-			return $config_vars;
-
 		$this->checkNewVersion();
 
 		loadTemplate('LightPortal/ManageSettings');
 
-		$this->context['template_layers'][] = 'lp_basic_settings';
-
 		// Save
 		if ($this->request()->has('save')) {
 			checkSession();
-
-			if ($this->post()->isEmpty('lp_frontpage_mode'))
-				$this->post()->put('lp_standalone_url', 0);
 
 			if ($this->post()->isNotEmpty('lp_image_placeholder'))
 				$this->post()->put('lp_image_placeholder', $this->validate($this->post('lp_image_placeholder'), 'url'));
@@ -323,20 +276,29 @@ final class ConfigArea
 			if ($this->post()->isNotEmpty('lp_standalone_url'))
 				$this->post()->put('lp_standalone_url', $this->validate($this->post('lp_standalone_url'), 'url'));
 
-			$frontpage_categories = [];
-			if ($this->post()->isNotEmpty('lp_frontpage_categories')) {
-				foreach ($this->post('lp_frontpage_categories') as $id => $dummy)
-					if (isset($this->context['lp_all_categories'][$id]))
-						$frontpage_categories[] = $id;
-			}
-
-			$this->post()->put('lp_frontpage_categories', $frontpage_categories ? implode(',', $frontpage_categories) : '');
-
 			$save_vars = $config_vars;
-			$save_vars[] = ['text', 'lp_frontpage_categories'];
+			$save_vars[] = ['text', 'lp_frontpage_mode'];
+			$save_vars[] = ['text', 'lp_frontpage_title'];
 			$save_vars[] = ['text', 'lp_frontpage_alias'];
-
-			$this->hook('addBasicSaveSettings', [&$save_vars]);
+			$save_vars[] = ['text', 'lp_frontpage_categories'];
+			$save_vars[] = ['text', 'lp_frontpage_boards'];
+			$save_vars[] = ['text', 'lp_frontpage_pages'];
+			$save_vars[] = ['text', 'lp_frontpage_topics'];
+			$save_vars[] = ['check', 'lp_show_images_in_articles'];
+			$save_vars[] = ['text', 'lp_image_placeholder'];
+			$save_vars[] = ['check', 'lp_show_teaser'];
+			$save_vars[] = ['check', 'lp_show_author'];
+			$save_vars[] = ['check', 'lp_show_num_views_and_comments'];
+			$save_vars[] = ['check', 'lp_frontpage_order_by_num_replies'];
+			$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
+			$save_vars[] = ['text', 'lp_frontpage_layout'];
+			$save_vars[] = ['int', 'lp_frontpage_num_columns'];
+			$save_vars[] = ['int', 'lp_show_pagination'];
+			$save_vars[] = ['check', 'lp_use_simple_pagination'];
+			$save_vars[] = ['int', 'lp_num_items_per_page'];
+			$save_vars[] = ['check', 'lp_standalone_mode'];
+			$save_vars[] = ['text', 'lp_standalone_url'];
+			$save_vars[] = ['text', 'lp_standalone_mode_disabled_actions'];
 
 			saveDBSettings($save_vars);
 
@@ -353,10 +315,8 @@ final class ConfigArea
 	 * Output page and block settings
 	 *
 	 * Выводим настройки страниц и блоков
-	 *
-	 * @return array|void
 	 */
-	public function extra(bool $return_config = false)
+	public function extra()
 	{
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_extra'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=extra;save';
@@ -370,23 +330,21 @@ final class ConfigArea
 		$this->txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
 
 		// Initial settings
-		$add_settings = [];
+		$addSettings = [];
 		if (! isset($this->modSettings['lp_num_comments_per_page']))
-			$add_settings['lp_num_comments_per_page'] = 10;
+			$addSettings['lp_num_comments_per_page'] = 10;
 		if (! isset($this->modSettings['lp_page_maximum_keywords']))
-			$add_settings['lp_page_maximum_keywords'] = 10;
-		if ($add_settings)
-			updateSettings($add_settings);
+			$addSettings['lp_page_maximum_keywords'] = 10;
+		if (! empty($addSettings))
+			updateSettings($addSettings);
 
 		$config_vars = [
 			['check', 'lp_show_tags_on_page'],
 			['select', 'lp_page_og_image', $this->txt['lp_page_og_image_set']],
 			['check', 'lp_show_prev_next_links'],
 			['check', 'lp_show_related_pages'],
-			['select', 'lp_show_comment_block', $this->txt['lp_show_comment_block_set']],
-			['callback', 'disabled_bbc_in_comments'],
-			['int', 'lp_time_to_change_comments', 'postinput' => $this->txt['manageposts_minutes']],
-			['int', 'lp_num_comments_per_page', 'min' => 1],
+			'',
+			['callback', 'comment_settings'],
 			'',
 			['check', 'lp_show_items_as_articles'],
 			['select', 'lp_page_editor_type_default', $this->context['lp_content_types']],
@@ -413,23 +371,13 @@ final class ConfigArea
 			],
 		];
 
-		$this->hook('addExtraSettings', [&$config_vars]);
-
-		if ($return_config)
-			return $config_vars;
-
 		loadTemplate('LightPortal/ManageSettings');
-
-		$this->context['template_layers'][] = 'lp_extra_settings';
 
 		$this->prepareTagsInComments();
 
 		// Save
 		if ($this->request()->has('save')) {
 			checkSession();
-
-			if ($this->post()->isNotEmpty('lp_fa_custom'))
-				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
 
 			// Clean up the tags
 			$parse_tags = (array) parse_bbc(false);
@@ -444,11 +392,15 @@ final class ConfigArea
 			$this->post()->put('lp_enabled_bbc_in_comments', $this->post('lp_disabled_bbc_in_comments_enabledTags'));
 			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->post('lp_disabled_bbc_in_comments_enabledTags')))));
 
+			if ($this->post()->isNotEmpty('lp_fa_custom'))
+				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
+
 			$save_vars = $config_vars;
+			$save_vars[] = ['text', 'lp_show_comment_block'];
 			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
 			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
-
-			$this->hook('addExtraSaveSettings', [&$save_vars]);
+			$save_vars[] = ['int', 'lp_time_to_change_comments'];
+			$save_vars[] = ['int', 'lp_num_comments_per_page'];
 
 			saveDBSettings($save_vars);
 
@@ -520,23 +472,23 @@ final class ConfigArea
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		// Initial settings | Первоначальные настройки
-		$add_settings = [];
+		$addSettings = [];
 		if (! isset($this->modSettings['lp_swap_left_right']))
-			$add_settings['lp_swap_left_right'] = (bool) $this->txt['lang_rtl'];
+			$addSettings['lp_swap_left_right'] = (bool) $this->txt['lang_rtl'];
 		if (! isset($this->modSettings['lp_header_panel_width']))
-			$add_settings['lp_header_panel_width'] = 12;
+			$addSettings['lp_header_panel_width'] = 12;
 		if (! isset($this->modSettings['lp_left_panel_width']))
-			$add_settings['lp_left_panel_width'] = json_encode($this->context['lp_left_panel_width']);
+			$addSettings['lp_left_panel_width'] = json_encode($this->context['lp_left_panel_width']);
 		if (! isset($this->modSettings['lp_right_panel_width']))
-			$add_settings['lp_right_panel_width'] = json_encode($this->context['lp_right_panel_width']);
+			$addSettings['lp_right_panel_width'] = json_encode($this->context['lp_right_panel_width']);
 		if (! isset($this->modSettings['lp_footer_panel_width']))
-			$add_settings['lp_footer_panel_width'] = 12;
+			$addSettings['lp_footer_panel_width'] = 12;
 		if (! isset($this->modSettings['lp_left_panel_sticky']))
-			$add_settings['lp_left_panel_sticky'] = 1;
+			$addSettings['lp_left_panel_sticky'] = 1;
 		if (! isset($this->modSettings['lp_right_panel_sticky']))
-			$add_settings['lp_right_panel_sticky'] = 1;
-		if ($add_settings)
-			updateSettings($add_settings);
+			$addSettings['lp_right_panel_sticky'] = 1;
+		if (! empty($addSettings))
+			updateSettings($addSettings);
 
 		$this->context['lp_left_right_width_values']    = [2, 3, 4];
 		$this->context['lp_header_footer_width_values'] = [6, 8, 10, 12];
@@ -548,8 +500,6 @@ final class ConfigArea
 			['callback', 'panel_layout'],
 			['callback', 'panel_direction']
 		];
-
-		$this->hook('addPanelsSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -572,8 +522,6 @@ final class ConfigArea
 			$save_vars[] = ['check', 'lp_left_panel_sticky'];
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
-
-			$this->hook('addPanelsSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 
@@ -598,15 +546,15 @@ final class ConfigArea
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		// Initial settings
-		$add_settings = [];
+		$addSettings = [];
 		if (! isset($this->modSettings['lp_cache_update_interval']))
-			$add_settings['lp_cache_update_interval'] = LP_CACHE_TIME;
+			$addSettings['lp_cache_update_interval'] = LP_CACHE_TIME;
 		if (! isset($this->modSettings['lp_portal_action']))
-			$add_settings['lp_portal_action'] = LP_ACTION;
+			$addSettings['lp_portal_action'] = LP_ACTION;
 		if (! isset($this->modSettings['lp_page_param']))
-			$add_settings['lp_page_param'] = LP_PAGE_PARAM;
-		if ($add_settings)
-			updateSettings($add_settings);
+			$addSettings['lp_page_param'] = LP_PAGE_PARAM;
+		if (! empty($addSettings))
+			updateSettings($addSettings);
 
 		$config_vars = [
 			['title', 'lp_debug_and_caching'],
@@ -618,8 +566,6 @@ final class ConfigArea
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']
 		];
-
-		$this->hook('addMiscSettings', [&$config_vars]);
 
 		if ($return_config)
 			return $config_vars;
@@ -647,8 +593,6 @@ final class ConfigArea
 			}
 
 			$save_vars = $config_vars;
-
-			$this->hook('addMiscSaveSettings', [&$save_vars]);
 
 			saveDBSettings($save_vars);
 

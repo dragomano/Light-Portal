@@ -99,22 +99,6 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ## Portal settings
 
-### addBasicSettings and addBasicSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> adding and saving custom settings on the "General" tab
-
-### addExtraSettings and addExtraSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> adding and saving custom settings on the "Pages and blocks" tab
-
-### addPanelsSettings and addPanelsSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> adding and saving custom settings on the "Panels" tab
-
-### addMiscSettings and addMiscSaveSettings
-(`&$config_vars`) / (`&$save_vars`)
-> adding and saving custom settings on the "Misc" tab
-
 ### addBlockAreas
 (`&$subActions`)
 > adding custom tabs into Block area settings

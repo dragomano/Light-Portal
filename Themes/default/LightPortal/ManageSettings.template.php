@@ -1,219 +1,552 @@
 <?php
 
-function template_lp_basic_settings_above() {}
-
-function template_lp_basic_settings_below()
+function template_callback_frontpage_mode_settings()
 {
-	// Frontpage mode toggle
-	$fpModeToggle = array('lp_frontpage_title', 'lp_frontpage_alias', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments', 'lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_num_items_per_page');
-
-	$fpModeToggleDt = [];
-	foreach ($fpModeToggle as $item) {
-		$fpModeToggleDt[] = 'setting_' . $item;
-	}
-
-	$fpAliasToggle = array('lp_frontpage_title', 'lp_frontpage_categories', 'lp_frontpage_boards', 'lp_frontpage_pages', 'lp_frontpage_topics', 'lp_show_images_in_articles', 'lp_image_placeholder', 'lp_show_teaser', 'lp_show_author', 'lp_show_num_views_and_comments','lp_frontpage_order_by_num_replies', 'lp_frontpage_article_sorting', 'lp_frontpage_layout', 'lp_frontpage_num_columns', 'lp_show_pagination', 'lp_use_simple_pagination', 'lp_num_items_per_page');
-
-	$fpAliasToggleDt = [];
-	foreach ($fpAliasToggle as $item) {
-		$fpAliasToggleDt[] = 'setting_' . $item;
-	}
+	global $modSettings, $txt, $context, $scripturl, $settings;
 
 	echo '
-	<script>
-		function toggleFrontpageMode() {
-			let front_mode = $("#lp_frontpage_mode").val();
-			let change_mode = front_mode > 0;
-			let board_selector = $(".board_selector").parent("dd");
+	</dl>
+	<dl class="settings" style="margin-top: -2em" x-data="{ frontpage_mode: \'', $modSettings['lp_frontpage_mode'] ?? 0, '\' }">
+		<dt>
+			<a id="setting_lp_frontpage_mode"></a> <span><label for="lp_frontpage_mode">', $txt['lp_frontpage_mode'], '</label></span>
+		</dt>
+		<dd>
+			<select
+				name="lp_frontpage_mode"
+				id="lp_frontpage_mode"
+				@change="frontpage_mode = $event.target.value; $dispatch(\'change-mode\', {front: frontpage_mode})"
+			>';
 
-			$("#lp_standalone_mode").attr("disabled", front_mode === 0);
-
-			if (front_mode === 0) {
-				$("#lp_standalone_mode").prop("checked", false);
-			}
-
-			$("#', implode(', #', $fpModeToggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $fpModeToggleDt), '").closest("dt").toggle(change_mode);
-			board_selector.toggle(change_mode);
-
-			let allow_change_title = !["0", "chosen_page"].includes(front_mode);
-
-			$("#', implode(', #', $fpAliasToggle), '").closest("dd").toggle(allow_change_title);
-			$("#', implode(', #', $fpAliasToggleDt), '").closest("dt").toggle(allow_change_title);
-			board_selector.toggle(allow_change_title);
-
-			let allow_change_alias = front_mode == "chosen_page";
-
-			$("#lp_frontpage_alias").closest("dd").toggle(allow_change_alias);
-			$("#setting_lp_frontpage_alias").closest("dt").toggle(allow_change_alias);
-
-			let allow_change_chosen_topics = front_mode == "chosen_topics";
-
-			$("#lp_frontpage_topics").closest("dd").toggle(allow_change_chosen_topics);
-			$("#setting_lp_frontpage_topics").closest("dt").toggle(allow_change_chosen_topics);
-
-			let allow_change_chosen_pages = front_mode == "chosen_pages";
-
-			$("#lp_frontpage_pages").closest("dd").toggle(allow_change_chosen_pages);
-			$("#setting_lp_frontpage_pages").closest("dt").toggle(allow_change_chosen_pages);
-
-			if (["chosen_topics", "all_pages", "chosen_pages"].includes(front_mode)) {
-				let boards = $("#setting_lp_frontpage_boards").closest("dt");
-
-				boards.hide();
-				boards.next("dd").hide();
-			}
-
-			if (["all_topics", "chosen_topics", "chosen_boards", "chosen_pages"].includes(front_mode)) {
-				let categories = $("#setting_lp_frontpage_categories").closest("dt");
-
-				categories.hide();
-				categories.next("dd").hide();
-			}
-		};
-
-		toggleFrontpageMode();
-
-		$("#lp_frontpage_mode").on("change", function () {
-			toggleFrontpageMode();
-		});';
-
-	// Standalone mode toggle
-	$standaloneModeToggle = array('lp_standalone_url', 'lp_standalone_mode_disabled_actions');
-
-	$standaloneModeToggleDt = [];
-	foreach ($standaloneModeToggle as $item) {
-		$standaloneModeToggleDt[] = 'setting_' . $item;
-	}
-
-	echo '
-		function toggleStandaloneMode() {
-			let change_mode = $("#lp_standalone_mode").prop("checked");
-
-			$("#', implode(', #', $standaloneModeToggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $standaloneModeToggleDt), '").closest("dt").toggle(change_mode);
-		};
-
-		toggleStandaloneMode();
-
-		$("#lp_standalone_mode").on("click", function () {
-			toggleStandaloneMode()
-		});
-	</script>';
-
-	require_once __DIR__ . '/partials/alias_select.php';
-}
-
-function template_lp_extra_settings_above() {}
-
-function template_lp_extra_settings_below()
-{
-	// Show comment block toggle
-	$showCommentBlockToggle = array('lp_disabled_bbc_in_comments', 'lp_time_to_change_comments', 'lp_num_comments_per_page');
-
-	$showCommentBlockToggleDt = [];
-	foreach ($showCommentBlockToggle as $item) {
-		$showCommentBlockToggleDt[] = 'setting_' . $item;
-	}
-
-	echo '
-	<script>
-		function toggleShowCommentBlock() {
-			let change_mode = $("#lp_show_comment_block").val() !== "none";
-
-			$("#', implode(', #', $showCommentBlockToggle), '").closest("dd").toggle(change_mode);
-			$("#', implode(', #', $showCommentBlockToggleDt), '").closest("dt").toggle(change_mode);
-
-			if (change_mode && $("#lp_show_comment_block").val() != "default") {
-				$("#lp_disabled_bbc_in_comments").closest("dd").hide();
-				$("#setting_lp_disabled_bbc_in_comments").closest("dt").hide();
-				$("#lp_time_to_change_comments").closest("dd").hide();
-				$("#setting_lp_time_to_change_comments").closest("dt").hide();
-				$("#lp_num_comments_per_page").closest("dd").hide();
-				$("#setting_lp_num_comments_per_page").closest("dt").hide();
-			}
-		};
-
-		toggleShowCommentBlock();
-
-		$("#lp_show_comment_block").on("click", function () {
-			toggleShowCommentBlock()
-		});
-	</script>';
-}
-
-function template_callback_disabled_bbc_in_comments()
-{
-	global $txt, $scripturl, $context;
-
-	echo '
-	<dt>
-		<a id="setting_lp_disabled_bbc_in_comments"></a>
-		<span>
-			<label for="lp_disabled_bbc_in_comments">', $txt['lp_disabled_bbc_in_comments'], '</label>
-		</span>
-		<div class="smalltext">
-			', sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC'), '
-		</div>
-	</dt>
-	<dd>
-		<fieldset x-data>
-			<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags" multiple>';
-
-	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
-		foreach ($bbcColumn as $bbcTag) {
-			echo '
-				<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', in_array($bbcTag, $context['bbc_sections']['disabled']) ? '' : ' selected', '>
-					', $bbcTag, '
-				</option>';
-		}
+	foreach ($context['lp_frontpage_modes'] as $mode => $label) {
+		echo '
+				<option value="', (string) $mode, '"', $mode === $modSettings['lp_frontpage_mode'] ? ' selected' : '', '>', $label, '</option>';
 	}
 
 	echo '
 			</select>
-			<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="toggleSelectAll()"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>';
+		</dd>
 
-	require_once __DIR__ . '/partials/bbc_comments.php';
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_title"></a> <span><label for="lp_frontpage_title">', $txt['lp_frontpage_title'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input
+					type="text"
+					name="lp_frontpage_title"
+					id="lp_frontpage_title"
+					value="', $modSettings['lp_frontpage_title'] ?? '', '"
+					size="80"
+					placeholder="',  $context['forum_name'], ' - ', $txt['lp_portal'], '"
+				>
+			</dd>
+		</template>
 
-	echo '
-		</fieldset>
-	</dd>';
-}
+		<template x-if="frontpage_mode === \'chosen_page\'">
+			<dt>
+				<a id="setting_lp_frontpage_alias"></a> <span><label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label><br><span class="smalltext">', $txt['lp_frontpage_alias_subtext'], '</span></span>
+			</dt>
+		</template>
+		<template x-if="frontpage_mode === \'chosen_page\'">
+			<dd>
+				<select id="lp_frontpage_alias" name="lp_frontpage_alias">';
 
-function template_callback_frontpage_categories()
-{
-	global $txt, $context;
-
-	echo '
-	<dt>
-		<a id="setting_lp_frontpage_categories"></a>
-		<span><label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label></span>
-	</dt>
-	<dd>
-		<a href="#" class="board_selector">[ ', $txt['lp_select_categories_from_list'], ' ]</a>
-		<fieldset>
-			<legend class="board_selector">
-				<a href="#">', $txt['lp_select_categories_from_list'], '</a>
-			</legend>
-			<ul>';
-
-	foreach ($context['lp_all_categories'] as $id => $cat) {
+	if (! empty($alias = $modSettings['lp_frontpage_alias'])) {
 		echo '
-				<li>
-					<label>
-						<input type="checkbox" name="lp_frontpage_categories[', $id, ']" value="1"', in_array($id, $context['lp_frontpage_categories']) ? ' checked' : '', '> ', $cat['name'], '
-					</label>
-				</li>';
+					<option value="', $alias, '">', $alias, '</option>';
 	}
 
 	echo '
-				<li>
-					<input type="checkbox" onclick="invertAll(this, this.form, \'lp_frontpage_categories[\');">
-					<span>', $txt['check_all'], '</span>
-				</li>
-			</ul>
-		</fieldset>
-	</dd>';
+				</select>
+				<script>
+					VirtualSelect.init({
+						ele: "#lp_frontpage_alias",', ($context['right_to_left'] ? '
+						textDirection: "rtl",' : ''), '
+						dropboxWrapper: "body",
+						search: true,
+						placeholder: "', $txt['no'], '",
+						noSearchResultsText: "' . $txt['no_matches'] . '",
+						searchPlaceholderText: "' . $txt['search'] . '",
+						onServerSearch: async function (search, virtualSelect) {
+							fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json; charset=utf-8"
+								},
+								body: JSON.stringify({
+									search
+								})
+							})
+							.then(response => response.json())
+							.then(function (json) {
+								let data = [];
+								for (let i = 0; i < json.length; i++) {
+									data.push({label: json[i].value, value: json[i].value})
+								}
+
+								virtualSelect.setServerOptions(data)
+							})
+							.catch(function (error) {
+								virtualSelect.setServerOptions(false)
+							})
+						}
+					});
+				</script>
+			</dd>
+		</template>
+
+		<template x-if="frontpage_mode === \'all_pages\'">
+			<dt>
+				<a id="setting_lp_frontpage_categories"></a>
+				<span><label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="frontpage_mode === \'all_pages\'">
+			<dd>
+				<div id="lp_frontpage_categories" name="lp_frontpage_categories"></div>
+				<script>
+					VirtualSelect.init({
+						ele: "#lp_frontpage_categories",', ($context['right_to_left'] ? '
+						textDirection: "rtl",' : ''), '
+						dropboxWrapper: "body",
+						multiple: true,
+						search: true,
+						markSearchResults: true,
+						placeholder: "', $txt['lp_select_categories_from_list'], '",
+						noSearchResultsText: "', $txt['no_matches'], '",
+						searchPlaceholderText: "', $txt['search'], '",
+						allOptionsSelectedText: "', $txt['all'], '",
+						showValueAsTags: true,
+						options: [';
+
+	foreach ($context['lp_all_categories'] as $id => $cat) {
+		echo '
+							{label: "', $cat['name'], '", value: "', $id, '"},';
+	}
+
+	echo '
+						],
+						selectedValue: [', $modSettings['lp_frontpage_categories'] ?? '', ']
+					});
+				</script>
+			</dd>
+		</template>
+
+		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_boards"></a>
+				<span><label for="lp_frontpage_boards">', $txt['lp_frontpage_boards'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
+			<dd>
+				<div id="lp_frontpage_boards" name="lp_frontpage_boards"></div>
+				<script>
+					VirtualSelect.init({
+						ele: "#lp_frontpage_boards",', ($context['right_to_left'] ? '
+						textDirection: "rtl",' : ''), '
+						dropboxWrapper: "body",
+						multiple: true,
+						search: true,
+						markSearchResults: true,
+						placeholder: "', $txt['lp_select_boards_from_list'], '",
+						noSearchResultsText: "', $txt['no_matches'], '",
+						searchPlaceholderText: "', $txt['search'], '",
+						allOptionsSelectedText: "', $txt['all'], '",
+						showValueAsTags: true,
+						options: [';
+
+	foreach ($context['board_list'] as $cat) {
+		echo '
+							{
+								label: "', $cat['name'], '",
+								options: [';
+
+		foreach ($cat['boards'] as $id_board => $board) {
+			echo '
+									{label: "', $board['name'], '", value: "', $id_board, '"},';
+		}
+
+		echo '
+								]
+							},';
+	}
+
+	echo '
+						],
+						selectedValue: [', $modSettings['lp_frontpage_boards'] ?? '', ']
+					});
+				</script>
+			</dd>
+		</template>
+
+		<template x-if="frontpage_mode === \'chosen_pages\'">
+			<dt>
+				<a id="setting_lp_frontpage_pages"></a> <span><label for="lp_frontpage_pages">', $txt['lp_frontpage_pages'], '</label>
+				<br><span class="smalltext">', $txt['lp_frontpage_pages_subtext'], '</span></span>
+			</dt>
+		</template>
+		<template x-if="frontpage_mode === \'chosen_pages\'">
+			<dd>
+				<textarea rows="4" cols="30" name="lp_frontpage_pages" id="lp_frontpage_pages">', $modSettings['lp_frontpage_pages'] ?? '', '</textarea>
+			</dd>
+		</template>
+
+		<template x-if="frontpage_mode === \'chosen_topics\'">
+			<dt>
+				<a id="setting_lp_frontpage_topics"></a> <span><label for="lp_frontpage_topics">', $txt['lp_frontpage_topics'], '</label>
+				<br><span class="smalltext">', $txt['lp_frontpage_topics_subtext'], '</span></span>
+			</dt>
+		</template>
+		<template x-if="frontpage_mode === \'chosen_topics\'">
+			<dd>
+				<textarea rows="4" cols="30" name="lp_frontpage_topics" id="lp_frontpage_topics">', $modSettings['lp_frontpage_topics'] ?? '', '</textarea>
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_show_images_in_articles_help" href="', $scripturl, '?action=helpadmin;help=lp_show_images_in_articles_help" onclick="return reqOverlayDiv(this.href);">
+					<span class="main_icons help" title="', $txt['help'], '"></span>
+				</a>
+				<a id="setting_lp_show_images_in_articles"></a> <span><label for="lp_show_images_in_articles">', $txt['lp_show_images_in_articles'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_show_images_in_articles" id="lp_show_images_in_articles"', empty($modSettings['lp_show_images_in_articles']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_image_placeholder"></a> <span><label for="lp_image_placeholder">', $txt['lp_image_placeholder'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="text" name="lp_image_placeholder" id="lp_image_placeholder" value="', $modSettings['lp_image_placeholder'] ?? '', '" size="80" placeholder="', $txt['lp_example'], $settings['default_images_url'], '/smflogo.svg">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_show_teaser"></a> <span><label for="lp_show_teaser">', $txt['lp_show_teaser'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_show_teaser" id="lp_show_teaser"', empty($modSettings['lp_show_teaser']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_show_author_help" href="', $scripturl, '?action=helpadmin;help=lp_show_author_help" onclick="return reqOverlayDiv(this.href);">
+					<span class="main_icons help" title="', $txt['help'], '"></span>
+				</a>
+				<a id="setting_lp_show_author"></a> <span><label for="lp_show_author">', $txt['lp_show_author'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_show_author" id="lp_show_author"', empty($modSettings['lp_show_author']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_show_num_views_and_comments"></a> <span><label for="lp_show_num_views_and_comments">', $txt['lp_show_num_views_and_comments'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_show_num_views_and_comments" id="lp_show_num_views_and_comments"', empty($modSettings['lp_show_num_views_and_comments']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_order_by_num_replies"></a> <span><label for="lp_frontpage_order_by_num_replies">', $txt['lp_frontpage_order_by_num_replies'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_frontpage_order_by_num_replies" id="lp_frontpage_order_by_num_replies"', empty($modSettings['lp_frontpage_order_by_num_replies']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_article_sorting_help" href="', $scripturl, '?action=helpadmin;help=lp_frontpage_article_sorting_help" onclick="return reqOverlayDiv(this.href);">
+					<span class="main_icons help" title="', $txt['help'], '"></span>
+				</a>
+				<a id="setting_lp_frontpage_article_sorting"></a> <span><label for="lp_frontpage_article_sorting">', $txt['lp_frontpage_article_sorting'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<select name="lp_frontpage_article_sorting" id="lp_frontpage_article_sorting">';
+
+	foreach ($txt['lp_frontpage_article_sorting_set'] as $value => $label) {
+		echo '
+					<option value="', $value, '"', ! empty($modSettings['lp_frontpage_article_sorting']) && $modSettings['lp_frontpage_article_sorting'] == $value ? ' selected' : '', '>', $label, '</option>';
+	}
+
+	echo '
+				</select>
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_layout"></a> <span><label for="lp_frontpage_layout">', $txt['lp_frontpage_layout'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<select name="lp_frontpage_layout" id="lp_frontpage_layout">';
+
+	foreach ($context['lp_frontpage_layout'] as $value => $label) {
+		echo '
+					<option value="', $value, '"', ! empty($modSettings['lp_frontpage_layout']) && $modSettings['lp_frontpage_layout'] === $value ? ' selected' : '', '>', $label, '</option>';
+	}
+
+	echo '
+				</select>
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_frontpage_num_columns"></a> <span><label for="lp_frontpage_num_columns">', $txt['lp_frontpage_num_columns'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<select name="lp_frontpage_num_columns" id="lp_frontpage_num_columns">';
+
+	foreach ($txt['lp_frontpage_num_columns_set'] as $value => $label) {
+		echo '
+					<option value="', $value, '"', ! empty($modSettings['lp_frontpage_num_columns']) && $modSettings['lp_frontpage_num_columns'] == $value ? ' selected' : '', '>
+						', $label, '
+					</option>';
+	}
+
+	echo '
+				</select>
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_show_pagination"></a> <span><label for="lp_show_pagination">', $txt['lp_show_pagination'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<select name="lp_show_pagination" id="lp_show_pagination">';
+
+	foreach ($txt['lp_show_pagination_set'] as $value => $label) {
+		echo '
+					<option value="', $value, '"', ! empty($modSettings['lp_show_pagination']) && $modSettings['lp_show_pagination'] == $value ? ' selected' : '', '>', $label, '</option>';
+	}
+
+	echo '
+				</select>
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_use_simple_pagination"></a> <span><label for="lp_use_simple_pagination">', $txt['lp_use_simple_pagination'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_use_simple_pagination" id="lp_use_simple_pagination"', empty($modSettings['lp_use_simple_pagination']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_num_items_per_page"></a> <span><label for="lp_num_items_per_page">', $txt['lp_num_items_per_page'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="number" name="lp_num_items_per_page" id="lp_num_items_per_page" value="', $modSettings['lp_num_items_per_page'] ?? 10, '" size="6" min="1">
+			</dd>
+		</template>';
+}
+
+function template_callback_standalone_mode_settings()
+{
+	global $modSettings, $txt, $scripturl, $boardurl;
+
+	echo '
+	</dl>
+	<dl
+		class="settings"
+		style="margin-top: -2em"
+		x-data="{ standalone_mode: ', empty($modSettings['lp_standalone_mode']) ? 'false' : 'true', ', frontpage_mode: ', JavaScriptEscape($modSettings['lp_frontpage_mode']) ?? 0, ' }"
+		@change-mode.window="frontpage_mode = $event.detail.front"
+	>
+		<dt>
+			<a id="setting_lp_standalone_mode"></a> <span><label for="lp_standalone_mode">', $txt['lp_action_on'], '</label></span>
+		</dt>
+		<dd>
+			<input
+				type="checkbox"
+				name="lp_standalone_mode"
+				id="lp_standalone_mode"
+				value="1"', empty($modSettings['lp_standalone_mode']) ? '' : ' checked', '
+				@change="standalone_mode = ! standalone_mode"
+				:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
+			>
+		</dd>
+
+		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a id="setting_lp_standalone_url_help" href="', $scripturl, '?action=helpadmin;help=lp_standalone_url_help" onclick="return reqOverlayDiv(this.href);">
+					<span class="main_icons help" title="', $txt['help'], '"></span>
+				</a>
+				<a id="setting_lp_standalone_url"></a> <span><label for="lp_standalone_url">', $txt['lp_standalone_url'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input
+					type="text"
+					name="lp_standalone_url"
+					id="lp_standalone_url"
+					value="', $modSettings['lp_standalone_url'] ?? '', '"
+					size="80"
+					placeholder="', $txt['lp_example'], $boardurl, '/portal.php"
+				>
+			</dd>
+		</template>
+
+		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
+				<a
+					id="setting_lp_standalone_mode_disabled_actions_help"
+					href="', $scripturl, '?action=helpadmin;help=lp_standalone_mode_disabled_actions_help"
+					onclick="return reqOverlayDiv(this.href);"
+				>
+					<span class="main_icons help" title="', $txt['help'], '"></span>
+				</a>
+				<a id="setting_lp_standalone_mode_disabled_actions"></a> <span><label for="lp_standalone_mode_disabled_actions">', $txt['lp_standalone_mode_disabled_actions'], '</label><br><span class="smalltext">', $txt['lp_standalone_mode_disabled_actions_subtext'], '</span></span>
+			</dt>
+		</template>
+		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input
+					type="text"
+					name="lp_standalone_mode_disabled_actions"
+					id="lp_standalone_mode_disabled_actions"
+					value="', $modSettings['lp_standalone_mode_disabled_actions'] ?? '', '"
+					size="80"
+					placeholder="', $txt['lp_example'], 'mlist,calendar"
+				>
+			</dd>
+		</template>';
+}
+
+function template_callback_comment_settings()
+{
+	global $modSettings, $txt, $scripturl, $context;
+
+	echo '
+	</dl>
+	<dl class="settings" style="margin-top: -1em" x-data="{ comment_block: \'', $modSettings['lp_show_comment_block'] ?? 'none', '\' }">
+		<dt>
+			<a id="setting_lp_show_comment_block"></a> <span><label for="lp_show_comment_block">', $txt['lp_show_comment_block'], '</label></span>
+		</dt>
+		<dd>
+			<select name="lp_show_comment_block" id="lp_show_comment_block" @change="comment_block = $event.target.value">';
+
+	foreach ($txt['lp_show_comment_block_set'] as $value => $label) {
+		echo '
+				<option value="', $value, '"', ! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === $value ? ' selected' : '', '>', $label, '</option>';
+	}
+
+	echo '
+			</select>
+		</dd>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_disabled_bbc_in_comments"></a>
+				<span>
+					<label for="lp_disabled_bbc_in_comments">', $txt['lp_disabled_bbc_in_comments'], '</label>
+				</span>
+				<div class="smalltext">
+					', sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC'), '
+				</div>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<fieldset>
+					<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags" multiple>';
+
+	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
+		foreach ($bbcColumn as $bbcTag) {
+			echo '
+						<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', in_array($bbcTag, $context['bbc_sections']['disabled']) ? '' : ' selected', '>
+							', $bbcTag, '
+						</option>';
+		}
+	}
+
+	echo '
+					</select>
+					<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="toggleSelectAll($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
+					<script>
+						VirtualSelect.init({
+							ele: "#lp_disabled_bbc_in_comments",', ($context['right_to_left'] ? '
+							textDirection: "rtl",' : ''), '
+							dropboxWrapper: "body",
+							search: true,
+							showValueAsTags: true,
+							showSelectedOptionsFirst: true,
+							placeholder: "', $txt['no'], '",
+							noSearchResultsText: "', $txt['no_matches'], '",
+							searchPlaceholderText: "', $txt['search'], '",
+							clearButtonText: "', $txt['remove'], '"
+						});
+						function toggleSelectAll(target) {
+							document.querySelector("#lp_disabled_bbc_in_comments").toggleSelectAll(target.checked);
+						}
+					</script>
+				</fieldset>
+			</dd>
+		</template>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_time_to_change_comments"></a> <span><label for="lp_time_to_change_comments">', $txt['lp_time_to_change_comments'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<input type="number" name="lp_time_to_change_comments" id="lp_time_to_change_comments" value="', $modSettings['lp_time_to_change_comments'] ?? 0, '" size="6" min="0"> ', $txt['manageposts_minutes'], '
+			</dd>
+		</template>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_num_comments_per_page"></a> <span><label for="lp_num_comments_per_page">', $txt['lp_num_comments_per_page'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<input type="number" name="lp_num_comments_per_page" id="lp_num_comments_per_page" value="', $modSettings['lp_num_comments_per_pages'] ?? 10, '" size="6" min="1">
+			</dd>
+		</template>';
 }
 
 function template_lp_category_settings()
