@@ -231,22 +231,19 @@ trait Helper
 		return $this->user_info['is_admin'] || empty($this->modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
 	}
 
-	public function getForumThemes(): array
+	public function getForumThemes(bool $only_available = false): array
 	{
 		if (($themes = $this->cache()->get('forum_themes')) === null) {
-			$result = $this->smcFunc['db_query']('', '
-				SELECT id_theme, value
-				FROM {db_prefix}themes
-				WHERE variable = {literal:name}',
-				[]
-			);
+			$this->require('Subs-Themes');
 
-			$themes = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result))
-				$themes[$row['id_theme']] = $row['value'];
+			get_installed_themes();
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			$themes = $this->context['themes'];
+
+			if ($only_available)
+				$themes = array_filter($themes, fn ($theme) => $theme['known'] && $theme['enable']);
+
+			$themes = array_map(fn ($theme) => $theme = $theme['name'], $themes);
 
 			$this->cache()->put('forum_themes', $themes);
 		}
