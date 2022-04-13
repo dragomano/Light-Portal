@@ -103,13 +103,7 @@ final class FrontPage
 		}
 
 		// Mod authors can define their own templates
-		$this->hook('frontCustomTemplate');
-
-		loadTemplate('LightPortal/ViewFrontPage');
-
-		// Also, theme makers can load their own layouts from the special template file
-		if (is_file($this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
-			loadTemplate('CustomFrontPage');
+		$this->hook('frontCustomTemplate', [$this->getFrontPageLayouts()]);
 
 		$this->context['insert_after_template'] .= '
 		<script>window.lazyLoadOptions = {};</script>

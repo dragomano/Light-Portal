@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.22
+ * @version 13.04.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -42,12 +42,12 @@ class DevTools extends Plugin
 		$this->modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	public function frontCustomTemplate()
+	public function frontCustomTemplate(array $layouts)
 	{
 		if (empty($this->modSettings['lp_dev_tools_addon_show_template_switcher']))
 			return;
 
-		$this->context['frontpage_layouts'] = $this->getFrontPageLayouts();
+		$this->context['frontpage_layouts'] = $layouts;
 
 		$this->context['current_layout'] = $this->post('layout', $this->modSettings['lp_frontpage_layout'] ?? 'articles');
 

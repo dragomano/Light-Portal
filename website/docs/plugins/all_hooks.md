@@ -114,6 +114,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom modes for the frontpage
 
 ### frontCustomTemplate
+(`$layouts`)
 > adding custom templates for the frontpage
 
 ### frontAssets

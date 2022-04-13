@@ -309,7 +309,7 @@ function template_callback_frontpage_mode_settings()
 			<dd>
 				<select name="lp_frontpage_layout" id="lp_frontpage_layout">';
 
-	foreach ($context['lp_frontpage_layout'] as $value => $label) {
+	foreach ($context['lp_frontpage_layouts'] as $value => $label) {
 		echo '
 					<option value="', $value, '"', ! empty($modSettings['lp_frontpage_layout']) && $modSettings['lp_frontpage_layout'] === $value ? ' selected' : '', '>', $label, '</option>';
 	}

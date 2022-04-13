@@ -495,20 +495,24 @@ $smcFunc['db_query']('', '
 	]
 );
 
-$add_settings = ['lp_weekly_cleaning' => '0'];
+$addSettings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
-	$add_settings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
+	$addSettings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
 if (! isset($modSettings['lp_show_comment_block']))
-	$add_settings['lp_show_comment_block'] = 'default';
+	$addSettings['lp_show_comment_block'] = 'default';
 if (! isset($modSettings['lp_fa_source']))
-	$add_settings['lp_fa_source'] = 'css_cdn';
-if (! empty($add_settings))
-	updateSettings($add_settings);
+	$addSettings['lp_fa_source'] = 'css_cdn';
+if (! empty($addSettings))
+	updateSettings($addSettings);
 
+if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))
+	smf_chmod($layouts, 0775);
+if (! @is_writable($langs = $settings['default_theme_dir'] . '/languages/LightPortal'))
+	smf_chmod($langs, 0775);
 if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
-	smf_chmod($css_dir, 0755);
-if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/scripts/light_portal'))
-	smf_chmod($css_dir, 0755);
+	smf_chmod($css_dir, 0775);
+if (! @is_writable($scripts = $settings['default_theme_dir'] . '/scripts/light_portal'))
+	smf_chmod($scripts, 0775);
 
 if (SMF === 'SSI')
 	echo 'Database changes are complete! Please wait...';

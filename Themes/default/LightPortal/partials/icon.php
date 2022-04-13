@@ -32,9 +32,7 @@ echo '
 
 					virtualSelect.setServerOptions(data)
 				})
-				.catch(function (error) {
-					virtualSelect.setServerOptions(false)
-				})
+				.catch((error) => console.error(error))
 			},';
 
 if (! empty($context['lp_block']['icon'])) {

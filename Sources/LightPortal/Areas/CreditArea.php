@@ -56,13 +56,13 @@ final class CreditArea
 		isAllowedTo('light_portal_view');
 
 		$this->context['portal_translations'] = [
-			'🇵🇱 Polish' => ['Adrek', 'jsqx'],
-			'🇪🇸 🇲🇽 Spanish' => ['Rock Lee', 'Diego Andrés'],
-			'🇫🇷 French' => ['Papoune57'],
-			'🇹🇷 Turkish' => ['gevv'],
-			'🇺🇦 Ukrainian' => ['valciriya1986'],
-			'🇩🇪 German' => ['trucker2006', 'm4z'],
-			'🇮🇹 Italian' => ['Darknico']
+			'Polish'    => ['Adrek', 'jsqx'],
+			'Spanish'   => ['Rock Lee', 'Diego Andrés'],
+			'French'    => ['Papoune57'],
+			'Turkish'   => ['gevv'],
+			'Ukrainian' => ['valciriya1986'],
+			'German'    => ['trucker2006', 'm4z'],
+			'Italian'   => ['Darknico']
 		];
 
 		$this->context['testers'] = [
@@ -104,10 +104,10 @@ final class CreditArea
 				'title' => 'Font Awesome Free',
 				'link' => 'https://fontawesome.com',
 				'author' => 'Fonticons, Inc.',
-				'license' => array(
+				'license' => [
 					'name' => 'the Font Awesome Free License (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
-				)
+				]
 			],
 			[
 				'title' => 'Alpine.js',

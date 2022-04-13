@@ -220,8 +220,8 @@ final class ConfigArea
 		$this->context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
-		$this->context['lp_all_categories']   = $this->getAllCategories();
-		$this->context['lp_frontpage_layout'] = $this->getFrontPageLayouts();
+		$this->context['lp_all_categories']    = $this->getAllCategories();
+		$this->context['lp_frontpage_layouts'] = $this->getFrontPageLayouts();
 
 		// Initial settings
 		$addSettings = [];

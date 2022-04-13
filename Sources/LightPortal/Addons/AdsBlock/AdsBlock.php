@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.04.22
+ * @version 11.04.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -27,20 +27,6 @@ class AdsBlock extends Plugin
 	public function addSettings(array &$config_vars)
 	{
 		$config_vars['ads_block'][] = ['int', 'min_replies'];
-	}
-
-	/**
-	 * Add advertising areas to panel settings
-	 *
-	 * Добавляем рекламные области в настройки панелей
-	 *
-	 * @hook
-	 */
-	public function addPanelsSettings()
-	{
-		unset($this->context['lp_block_placements']['ads']);
-
-		$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());
 	}
 
 	public function blockOptions(array &$options)
@@ -170,6 +156,7 @@ class AdsBlock extends Plugin
 			loadTemplate('LightPortal/ViewBlock');
 
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
 		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
 		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
 		add_integration_function('integrate_prepare_display_context', __CLASS__ . '::prepareDisplayContext#', false, __FILE__);
@@ -185,9 +172,6 @@ class AdsBlock extends Plugin
 	public function menuButtons()
 	{
 		$this->context['lp_block_placements']['ads'] = $this->txt['lp_ads_block']['ads_type'];
-
-		if ($this->request()->is('admin') && $this->request()->has('area') && $this->request('area') === 'lp_blocks')
-			$this->loadTemplate()->withLayer('ads_block_form');
 
 		if (empty($this->context['current_board']) || $this->request()->is('xml'))
 			return;
@@ -209,6 +193,18 @@ class AdsBlock extends Plugin
 					}
 				}
 			}
+		}
+	}
+
+	public function adminAreas()
+	{
+		if ($this->request()->has('area') && $this->request('area') === 'lp_blocks')
+			$this->loadTemplate()->withLayer('ads_block_form');
+
+		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && $this->request()->has('sa') && $this->request('sa') === 'panels') {
+			unset($this->context['lp_block_placements']['ads']);
+
+			$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());
 		}
 	}
 
