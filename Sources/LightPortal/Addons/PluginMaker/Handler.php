@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.22
+ * @version 14.04.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -247,8 +247,8 @@ class Handler extends Plugin
 		$this->context['posting_fields']['icon']['label']['text'] = $this->txt['current_icon'];
 		$this->context['posting_fields']['icon']['input'] = [
 			'type'    => 'select',
+			'tab'     => 'content',
 			'options' => [],
-			'tab'     => 'content'
 		];
 
 		foreach ($this->context['languages'] as $lang) {

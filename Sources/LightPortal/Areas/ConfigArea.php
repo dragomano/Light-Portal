@@ -50,13 +50,13 @@ final class ConfigArea
 
 	public function adminAreas(array &$admin_areas)
 	{
-		//loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.css', ['external' => true]);
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.js', ['external' => true]);
-		loadCSSFile('light_portal/virtual_select.css');
-		loadJavaScriptFile('light_portal/virtual_select.js');
+		loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.css', ['external' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin@1/dist/virtual-select.min.js', ['external' => true]);
 
-		//loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
-		loadJavaScriptFile('light_portal/alpine.js', ['defer' => true]);
+		loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
+
+		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
 		loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		loadLanguage('ManageSettings');

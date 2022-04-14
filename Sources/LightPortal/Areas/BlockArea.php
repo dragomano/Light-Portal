@@ -431,10 +431,6 @@ final class BlockArea
 			],
 		];
 
-		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
-		$this->context['posting_fields']['icon']['input']['html'] = '<div id="icon" name="icon"></div>';
-		$this->context['posting_fields']['icon']['input']['tab']  = 'appearance';
-
 		$this->context['posting_fields']['placement']['label']['text'] = $this->txt['lp_block_placement'];
 		$this->context['posting_fields']['placement']['input'] = [
 			'type' => 'select',
@@ -478,6 +474,13 @@ final class BlockArea
 				'pattern'   => self::AREAS_PATTERN,
 				'style'     => 'width: 100%',
 			],
+		];
+
+		$this->context['posting_fields']['icon']['label']['text'] = $this->txt['current_icon'];
+		$this->context['posting_fields']['icon']['input'] = [
+			'type'    => 'select',
+			'tab'     => 'appearance',
+			'options' => [],
 		];
 
 		$this->context['posting_fields']['title_class']['label']['html'] = '<label for="title_class">' . $this->txt['lp_block_title_class'] . '</label>';
