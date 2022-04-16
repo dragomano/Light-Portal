@@ -203,6 +203,6 @@ final class Block
 
 	private function isHideBlocksInAdmin(): bool
 	{
-		return ! empty($this->modSettings['lp_hide_blocks_in_admin_section']) && $this->request()->is('admin');
+		return ! empty($this->modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
 	}
 }

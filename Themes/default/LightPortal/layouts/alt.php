@@ -30,7 +30,7 @@ function template_show_articles_alt()
 					</div>
 					<div>';
 
-		if (! empty($modSettings['lp_show_num_views_and_comments'])) {
+		if (! empty($modSettings['lp_show_views_and_comments'])) {
 			echo '
 						<span class="floatleft">';
 

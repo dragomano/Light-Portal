@@ -51,7 +51,7 @@ abstract class AbstractPageList implements PageListInterface
 				$image = $first_post_image ? array_pop($value) : null;
 			}
 
-			if (empty($image) && $this->modSettings['lp_image_placeholder'])
+			if (empty($image) && ! empty($this->modSettings['lp_image_placeholder']))
 				$image = $this->modSettings['lp_image_placeholder'];
 
 			$items[$row['page_id']] = [

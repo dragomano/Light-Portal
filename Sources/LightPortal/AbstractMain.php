@@ -98,7 +98,7 @@ abstract class AbstractMain
 	 */
 	protected function unsetDisabledActions(array &$data)
 	{
-		$disabled_actions = empty($this->modSettings['lp_standalone_mode_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_standalone_mode_disabled_actions']);
+		$disabled_actions = empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']);
 		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 

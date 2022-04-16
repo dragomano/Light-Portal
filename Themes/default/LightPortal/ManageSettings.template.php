@@ -19,7 +19,7 @@ function template_callback_frontpage_mode_settings()
 
 	foreach ($context['lp_frontpage_modes'] as $mode => $label) {
 		echo '
-				<option value="', (string) $mode, '"', $mode === $modSettings['lp_frontpage_mode'] ? ' selected' : '', '>', $label, '</option>';
+				<option value="', $mode, '"', ! empty($modSettings['lp_frontpage_mode']) && $mode === $modSettings['lp_frontpage_mode'] ? ' selected' : '', '>', $label, '</option>';
 	}
 
 	echo '
@@ -258,23 +258,23 @@ function template_callback_frontpage_mode_settings()
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
-				<a id="setting_lp_show_num_views_and_comments"></a> <span><label for="lp_show_num_views_and_comments">', $txt['lp_show_num_views_and_comments'], '</label></span>
+				<a id="setting_lp_show_views_and_comments"></a> <span><label for="lp_show_views_and_comments">', $txt['lp_show_views_and_comments'], '</label></span>
 			</dt>
 		</template>
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dd>
-				<input type="checkbox" name="lp_show_num_views_and_comments" id="lp_show_num_views_and_comments"', empty($modSettings['lp_show_num_views_and_comments']) ? '' : ' checked', ' value="1">
+				<input type="checkbox" name="lp_show_views_and_comments" id="lp_show_views_and_comments"', empty($modSettings['lp_show_views_and_comments']) ? '' : ' checked', ' value="1">
 			</dd>
 		</template>
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
-				<a id="setting_lp_frontpage_order_by_num_replies"></a> <span><label for="lp_frontpage_order_by_num_replies">', $txt['lp_frontpage_order_by_num_replies'], '</label></span>
+				<a id="setting_lp_frontpage_order_by_replies"></a> <span><label for="lp_frontpage_order_by_replies">', $txt['lp_frontpage_order_by_replies'], '</label></span>
 			</dt>
 		</template>
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dd>
-				<input type="checkbox" name="lp_frontpage_order_by_num_replies" id="lp_frontpage_order_by_num_replies"', empty($modSettings['lp_frontpage_order_by_num_replies']) ? '' : ' checked', ' value="1">
+				<input type="checkbox" name="lp_frontpage_order_by_replies" id="lp_frontpage_order_by_replies"', empty($modSettings['lp_frontpage_order_by_replies']) ? '' : ' checked', ' value="1">
 			</dd>
 		</template>
 
@@ -391,7 +391,7 @@ function template_callback_standalone_mode_settings()
 	<dl
 		class="settings"
 		style="margin-top: -2em"
-		x-data="{ standalone_mode: ', empty($modSettings['lp_standalone_mode']) ? 'false' : 'true', ', frontpage_mode: ', JavaScriptEscape($modSettings['lp_frontpage_mode']) ?? 0, ' }"
+		x-data="{ standalone_mode: ', empty($modSettings['lp_standalone_mode']) ? 'false' : 'true', ', frontpage_mode: \'', $modSettings['lp_frontpage_mode'] ?? 0, '\' }"
 		@change-mode.window="frontpage_mode = $event.detail.front"
 	>
 		<dt>
@@ -432,22 +432,22 @@ function template_callback_standalone_mode_settings()
 		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
 				<a
-					id="setting_lp_standalone_mode_disabled_actions_help"
-					href="', $scripturl, '?action=helpadmin;help=lp_standalone_mode_disabled_actions_help"
+					id="setting_lp_disabled_actions_help"
+					href="', $scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
 					onclick="return reqOverlayDiv(this.href);"
 				>
 					<span class="main_icons help" title="', $txt['help'], '"></span>
 				</a>
-				<a id="setting_lp_standalone_mode_disabled_actions"></a> <span><label for="lp_standalone_mode_disabled_actions">', $txt['lp_standalone_mode_disabled_actions'], '</label><br><span class="smalltext">', $txt['lp_standalone_mode_disabled_actions_subtext'], '</span></span>
+				<a id="setting_lp_disabled_actions"></a> <span><label for="lp_disabled_actions">', $txt['lp_disabled_actions'], '</label><br><span class="smalltext">', $txt['lp_disabled_actions_subtext'], '</span></span>
 			</dt>
 		</template>
 		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dd>
 				<input
 					type="text"
-					name="lp_standalone_mode_disabled_actions"
-					id="lp_standalone_mode_disabled_actions"
-					value="', $modSettings['lp_standalone_mode_disabled_actions'] ?? '', '"
+					name="lp_disabled_actions"
+					id="lp_disabled_actions"
+					value="', $modSettings['lp_disabled_actions'] ?? '', '"
 					size="80"
 					placeholder="', $txt['lp_example'], 'mlist,calendar"
 				>

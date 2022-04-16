@@ -116,7 +116,7 @@ function template_show_articles()
 			}
 		}
 
-		if (! empty($modSettings['lp_show_num_views_and_comments'])) {
+		if (! empty($modSettings['lp_show_views_and_comments'])) {
 			echo '
 						<span class="floatright">';
 

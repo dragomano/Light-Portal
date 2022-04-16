@@ -11,7 +11,7 @@ if (version_compare(PHP_VERSION, '7.4', '<'))
 if (! extension_loaded('intl'))
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
 
-global $user_info, $mbname, $modSettings, $settings, $db_type;
+global $user_info, $mbname, $modSettings, $settings;
 
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
@@ -21,8 +21,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'category_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'tinyint',
+			'size'     => 3,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -59,8 +59,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'block_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'tinyint',
+			'size'     => 3,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -180,8 +180,8 @@ $tables[] = array(
 		),
 		array(
 			'name'     => 'page_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true
 		),
 		array(
@@ -206,7 +206,7 @@ $tables[] = array(
 	'indexes' => array(
 		array(
 			'type'    => 'primary',
-			'columns' => array('id', 'page_id')
+			'columns' => array('id')
 		)
 	)
 );
@@ -216,8 +216,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'page_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -336,8 +336,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'item_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true
 		),
 		array(
@@ -384,8 +384,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'tag_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		),
@@ -409,8 +409,8 @@ $tables[] = array(
 	'columns' => array(
 		array(
 			'name'     => 'item_id',
-			'type'     => 'int',
-			'size'     => 10,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true
 		),
 		array(
@@ -479,14 +479,6 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 }
 
-if ($db_type !== 'postgresql') {
-	$smcFunc['db_remove_index']('{db_prefix}settings', 'primary');
-	$smcFunc['db_add_index']('{db_prefix}settings', array(
-		'columns' => array('variable(60)'),
-		'type' => 'primary'
-	));
-}
-
 $smcFunc['db_query']('', '
 	DELETE FROM {db_prefix}background_tasks
 	WHERE task_file LIKE {string:task_file}',
@@ -506,13 +498,13 @@ if (! empty($addSettings))
 	updateSettings($addSettings);
 
 if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))
-	smf_chmod($layouts, 0775);
+	smf_chmod($layouts);
 if (! @is_writable($langs = $settings['default_theme_dir'] . '/languages/LightPortal'))
-	smf_chmod($langs, 0775);
+	smf_chmod($langs);
 if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_portal'))
-	smf_chmod($css_dir, 0775);
+	smf_chmod($css_dir);
 if (! @is_writable($scripts = $settings['default_theme_dir'] . '/scripts/light_portal'))
-	smf_chmod($scripts, 0775);
+	smf_chmod($scripts);
 
 if (SMF === 'SSI')
 	echo 'Database changes are complete! Please wait...';

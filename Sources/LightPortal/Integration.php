@@ -62,8 +62,8 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.0rc2');
-		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-04-05');
+		defined('LP_VERSION') || define('LP_VERSION', '2.0rc3');
+		defined('LP_RELEASE_DATE') || define('LP_RELEASE_DATE', '2022-04-20');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 7200));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -95,7 +95,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		loadLanguage('LightPortal\LightPortal');
+		loadLanguage('LightPortal/LightPortal');
 
 		$this->defineVars();
 		$this->loadCssFiles();
@@ -175,7 +175,7 @@ final class Integration extends AbstractMain
 			$current_action = empty($this->modSettings['lp_standalone_mode']) && $this->request()->is('forum') ? 'home' : $this->context['current_action'];
 		}
 
-		$disabled_actions = empty($this->modSettings['lp_standalone_mode_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_standalone_mode_disabled_actions']);
+		$disabled_actions = empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']);
 		$disabled_actions[] = 'home';
 
 		if (isset($this->context['current_board']) || $this->request()->is('keywords'))

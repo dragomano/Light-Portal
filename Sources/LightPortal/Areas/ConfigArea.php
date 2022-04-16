@@ -229,8 +229,8 @@ final class ConfigArea
 			$addSettings['lp_frontpage_title'] = $this->context['forum_name'];
 		if (! isset($this->modSettings['lp_frontpage_alias']))
 			$addSettings['lp_frontpage_alias'] = 'home';
-		if (! isset($this->modSettings['lp_show_num_views_and_comments']))
-			$addSettings['lp_show_num_views_and_comments'] = 1;
+		if (! isset($this->modSettings['lp_show_views_and_comments']))
+			$addSettings['lp_show_views_and_comments'] = 1;
 		if (! isset($this->modSettings['lp_frontpage_article_sorting']))
 			$addSettings['lp_frontpage_article_sorting'] = 1;
 		if (! isset($this->modSettings['lp_num_items_per_page']))
@@ -288,8 +288,8 @@ final class ConfigArea
 			$save_vars[] = ['text', 'lp_image_placeholder'];
 			$save_vars[] = ['check', 'lp_show_teaser'];
 			$save_vars[] = ['check', 'lp_show_author'];
-			$save_vars[] = ['check', 'lp_show_num_views_and_comments'];
-			$save_vars[] = ['check', 'lp_frontpage_order_by_num_replies'];
+			$save_vars[] = ['check', 'lp_show_views_and_comments'];
+			$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
 			$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
 			$save_vars[] = ['text', 'lp_frontpage_layout'];
 			$save_vars[] = ['int', 'lp_frontpage_num_columns'];
@@ -298,7 +298,7 @@ final class ConfigArea
 			$save_vars[] = ['int', 'lp_num_items_per_page'];
 			$save_vars[] = ['check', 'lp_standalone_mode'];
 			$save_vars[] = ['text', 'lp_standalone_url'];
-			$save_vars[] = ['text', 'lp_standalone_mode_disabled_actions'];
+			$save_vars[] = ['text', 'lp_disabled_actions'];
 
 			saveDBSettings($save_vars);
 
@@ -350,7 +350,7 @@ final class ConfigArea
 			['select', 'lp_page_editor_type_default', $this->context['lp_content_types']],
 			['int', 'lp_page_maximum_keywords', 'min' => 1],
 			['select', 'lp_permissions_default', $this->txt['lp_permissions']],
-			['check', 'lp_hide_blocks_in_admin_section'],
+			['check', 'lp_hide_blocks_in_acp'],
 			['title', 'lp_fa_source_title'],
 			[
 				'select',
