@@ -6,7 +6,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
-* **Tested on:** PHP 7.4.28 / MySQL 5.7.33 / MariaDB 10.6.5 / PostgreSQL 11.12
+* **Tested on:** PHP 7.4.29 / MariaDB 10.3.32, 10.6.5
 * **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 
