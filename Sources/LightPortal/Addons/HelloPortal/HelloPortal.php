@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.22
+ * @version 17.04.22
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -46,8 +46,8 @@ class HelloPortal extends Plugin
 
 		loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', ['external' => true]);
 
-		if (! empty($this->modSettings['lp_hello_portal_addon_theme']))
-			loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->modSettings['lp_hello_portal_addon_theme'] . '.css', ['external' => true]);
+		if (! empty($this->context['lp_hello_portal_plugin']['theme']))
+			loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css', ['external' => true]);
 
 		if ($this->context['right_to_left'])
 			loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', ['external' => true]);
@@ -62,12 +62,12 @@ class HelloPortal extends Plugin
 				prevLabel: ' . JavaScriptEscape($this->txt['previous_next_back']) . ',
 				doneLabel: ' . JavaScriptEscape($this->txt['announce_done']) . ',
 				steps: [' . $steps . '],
-				showProgress: ' . (empty($this->modSettings['lp_hello_portal_addon_show_progress']) ? 'false' : 'true') . ',
-				showButtons: ' . (empty($this->modSettings['lp_hello_portal_addon_show_buttons']) ? 'false' : 'true') . ',
+				showProgress: ' . (empty($this->context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
+				showButtons: ' . (empty($this->context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',
 				showBullets: false,
-				exitOnOverlayClick: ' . (empty($this->modSettings['lp_hello_portal_addon_exit_on_overlay_click']) ? 'false' : 'true') . ',
-				keyboardNavigation: ' . (empty($this->modSettings['lp_hello_portal_addon_keyboard_navigation']) ? 'false' : 'true') . ',
-				disableInteraction: ' . (empty($this->modSettings['lp_hello_portal_addon_disable_interaction']) ? 'false' : 'true') . ',
+				exitOnOverlayClick: ' . (empty($this->context['lp_hello_portal_plugin']['exit_on_overlay_click']) ? 'false' : 'true') . ',
+				keyboardNavigation: ' . (empty($this->context['lp_hello_portal_plugin']['keyboard_navigation']) ? 'false' : 'true') . ',
+				disableInteraction: ' . (empty($this->context['lp_hello_portal_plugin']['disable_interaction']) ? 'false' : 'true') . ',
 				scrollToElement: true,
 				scrollTo: "tooltip"
 			}).start();
@@ -76,15 +76,11 @@ class HelloPortal extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_hello_portal_addon_show_progress']))
-			$addSettings['lp_hello_portal_addon_show_progress'] = 1;
-		if (! isset($this->modSettings['lp_hello_portal_addon_show_buttons']))
-			$addSettings['lp_hello_portal_addon_show_buttons'] = 1;
-		if (! isset($this->modSettings['lp_hello_portal_addon_keyboard_navigation']))
-			$addSettings['lp_hello_portal_addon_keyboard_navigation'] = 1;
-		if ($addSettings)
-			updateSettings($addSettings);
+		$this->addDefaultValues([
+			'show_progress'       => 1,
+			'show_buttons'        => 1,
+			'keyboard_navigation' => 1,
+		]);
 
 		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, $this->txt['lp_hello_portal']['theme_set'])];
 		$config_vars['hello_portal'][] = ['check', 'show_progress'];
@@ -109,7 +105,10 @@ class HelloPortal extends Plugin
 
 	private function getStepData(): string
 	{
-		$steps = require_once __DIR__ . DIRECTORY_SEPARATOR . 'steps.php';
+		if (! is_file($path = __DIR__ . DIRECTORY_SEPARATOR . 'steps.php'))
+			return '';
+
+		$steps = require_once $path;
 
 		if ($this->isCurrentArea('lp_settings', 'basic'))
 			return $steps['basic_settings'];

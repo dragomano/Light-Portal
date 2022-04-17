@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.02.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -35,8 +35,8 @@ class Trumbowyg extends Plugin
 		if ($object['type'] !== 'html' && (empty($object['options']['content']) || $object['options']['content'] !== 'html'))
 			return;
 
-		$dark_themes = smf_json_decode($this->modSettings['lp_trumbowyg_addon_dark_themes'] ?? '', true);
-		$auto_grow = empty($this->modSettings['lp_trumbowyg_addon_auto_grow']) ? 0 : (int) $this->modSettings['lp_trumbowyg_addon_auto_grow'];
+		$dark_themes = smf_json_decode($this->context['lp_trumbowyg_plugin']['dark_themes'] ?? '', true);
+		$auto_grow = empty($this->context['lp_trumbowyg_plugin']['auto_grow']) ? 0 : (int) $this->context['lp_trumbowyg_plugin']['auto_grow'];
 
 		loadLanguage('Editor');
 

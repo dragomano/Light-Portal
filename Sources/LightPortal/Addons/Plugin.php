@@ -71,4 +71,37 @@ abstract class Plugin
 
 		return false;
 	}
+
+	public function addDefaultValues(array $values)
+	{
+		$snake_name = $this->getSnakeName($this->getName());
+
+		$params = [];
+		foreach ($values as $option_name => $value) {
+			if (! isset($this->context['lp_' . $snake_name . '_plugin'][$option_name])) {
+				$params[] = [
+					'name'   => $snake_name,
+					'option' => $option_name,
+					'value'  => $value,
+				];
+
+				$this->context['lp_' . $snake_name . '_plugin'][$option_name] = $value;
+			}
+		}
+
+		$this->smcFunc['db_insert']('replace',
+			'{db_prefix}lp_plugins',
+			[
+				'name'   => 'string',
+				'option' => 'string',
+				'value'  => 'string',
+			],
+			$params,
+			['name', 'option']
+		);
+
+		$this->context['lp_num_queries']++;
+
+		$this->cache()->forget('plugin_settings');
+	}
 }

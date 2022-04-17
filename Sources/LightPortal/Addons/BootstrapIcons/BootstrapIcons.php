@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -58,7 +58,7 @@ class BootstrapIcons extends Plugin
 
 	public function changeIconSet(array &$set)
 	{
-		if (empty($this->modSettings['lp_bootstrap_icons_addon_replace_ui_icons']))
+		if (empty($this->context['lp_bootstrap_icons_plugin']['replace_ui_icons']))
 			return;
 
 		$set['access']        = 'key';

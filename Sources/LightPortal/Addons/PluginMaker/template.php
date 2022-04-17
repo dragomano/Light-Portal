@@ -72,7 +72,15 @@ function template_plugin_post()
 												<tr class="windowbg">
 													<td x-text="index + 1"></td>
 													<td colspan="2">
-														<input type="text" x-model="option.name" name="option_name[]" pattern="^[a-z][a-z_]+$" maxlength="255" placeholder="option_name">
+														<input
+															type="text"
+															x-model="option.name"
+															name="option_name[]"
+															pattern="^[a-z][a-z_]+$"
+															maxlength="100"
+															placeholder="option_name"
+															required
+														>
 													</td>
 													<td>
 														<button type="button" class="button" @click="removeOption(index)" style="width: 100%">

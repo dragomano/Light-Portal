@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.04.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -438,7 +438,7 @@ class AdsBlock extends Plugin
 
 	private function isTopicNumRepliesLesserThanMinReplies(): bool
 	{
-		return isset($this->modSettings['lp_ads_block_addon_min_replies'])
-			&& $this->context['topicinfo']['num_replies'] < (int) $this->modSettings['lp_ads_block_addon_min_replies'];
+		return isset($this->context['lp_ads_block_plugin']['min_replies'])
+			&& $this->context['topicinfo']['num_replies'] < (int) $this->context['lp_ads_block_plugin']['min_replies'];
 	}
 }

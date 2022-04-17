@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -33,7 +33,7 @@ class Todays extends Plugin
 
 	public function menuButtons(array &$buttons)
 	{
-		$buttons['calendar']['show'] = $this->context['allow_calendar'] && empty($this->modSettings['lp_todays_addon_hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = $this->context['allow_calendar'] && empty($this->context['lp_todays_plugin']['hide_calendar_in_menu']);
 	}
 
 	public function addSettings(array &$config_vars)

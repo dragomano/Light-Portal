@@ -21,7 +21,8 @@ return [
 	],
 	'extra_settings_tour' => [
 		'Here you can change the general settings of the portal pages and blocks.',
-		'And here - configure the loading of the FontAwesome icon library.',
+		'If you need comments, configure them too.',
+		'And here you can choose how to connect the FontAwesome icon library.',
 	],
 	'categories_tour' => [
 		'If you cannot live without categories, add them here.',

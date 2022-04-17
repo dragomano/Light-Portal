@@ -121,7 +121,7 @@ function template_manage_plugins()
 
 function show_plugin_settings(array $plugin)
 {
-	global $context, $txt, $modSettings;
+	global $context, $txt;
 
 	if (empty($plugin['settings']))
 		return;
@@ -139,7 +139,6 @@ function show_plugin_settings(array $plugin)
 
 	foreach ($plugin['settings'] as $value) {
 		$label = $txt['lp_' . $plugin['snake_name']][$value[1]] ?? '';
-		$value[1] = 'lp_' . $plugin['snake_name'] . '_addon_' . $value[1];
 
 		echo '
 				<div>';
@@ -151,26 +150,26 @@ function show_plugin_settings(array $plugin)
 
 		if ($value[0] === 'text') {
 			echo '
-					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), '>';
+					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), '>';
 		} elseif ($value[0] === 'large_text') {
 			echo '
-					<br><textarea name="', $value[1], '" id="', $value[1], '">', $modSettings[$value[1]] ?? '', '</textarea>';
+					<br><textarea name="', $value[1], '" id="', $value[1], '">', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '</textarea>';
 		} elseif ($value[0] === 'url') {
 			echo '
-					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? '', '">';
+					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '">';
 		} elseif ($value[0] === 'color') {
 			echo '
-					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $modSettings[$value[1]] ?? '', '">';
+					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '">';
 		} elseif (in_array($value[0], ['float', 'int'])) {
 			$min = ' min="' . ($value['min'] ?? 0) . '"';
 			$max = isset($value['max']) ? ' max="' . $value['max'] . '"' : '';
 			$step = ' step="' . ($value['step'] ?? ($value[0] === 'int' ? 1 : 0.01)) . '"';
 
 			echo '
-					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $modSettings[$value[1]] ?? 0, '">';
+					<br><input type="number"', $min, $max, $step, ' name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? 0, '">';
 		} elseif ($value[0] === 'check') {
 			echo '
-					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', empty($modSettings[$value[1]]) ? '' : ' checked', ' value="1" class="checkbox">
+					<input type="checkbox" name="', $value[1], '" id="', $value[1], '"', empty($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) ? '' : ' checked', ' value="1" class="checkbox">
 					<label class="label" for="', $value[1], '">', $label, '</label>';
 		} elseif ($value[0] === 'callback' && ! empty($value[2])) {
 			if (isset($value[2][0]) && isset($value[2][1]) && method_exists($value[2][0], $value[2][1])) {
@@ -187,7 +186,7 @@ function show_plugin_settings(array $plugin)
 					<fieldset>
 						<ul>';
 
-			$temp[$value[1] . '_options'] = empty($modSettings[$value[1]]) ? [] : json_decode($modSettings[$value[1]], true);
+			$temp[$value[1] . '_options'] = empty($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) ? [] : json_decode($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]], true);
 			foreach ($value[2] as $key => $option_label) {
 				echo '
 							<li>
@@ -208,12 +207,12 @@ function show_plugin_settings(array $plugin)
 					<select name="', $value[1], empty($multiple) ? '' : '[]', '" id="', $value[1], '"', empty($multiple) ? '' : ' multiple style="height: auto"', '>';
 
 			if (! empty($multiple)) {
-				if (! empty($modSettings[$value[1]])) {
-					$modSettings[$value[1]] = json_decode($modSettings[$value[1]], true);
+				if (! empty($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]])) {
+					$context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] = json_decode($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]], true);
 
 					foreach ($value[2] as $option => $option_title) {
 						echo '
-						<option value="', $option, '"', ! empty($modSettings[$value[1]]) && is_array($modSettings[$value[1]]) && in_array($option, $modSettings[$value[1]]) ? ' selected' : '', '>', $option_title, '</option>';
+						<option value="', $option, '"', ! empty($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) && is_array($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) && in_array($option, $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) ? ' selected' : '', '>', $option_title, '</option>';
 					}
 				} else {
 					foreach ($value[2] as $option => $option_title) {
@@ -224,7 +223,7 @@ function show_plugin_settings(array $plugin)
 			} else {
 				foreach ($value[2] as $option => $option_title) {
 					echo '
-						<option value="', $option, '"', ! empty($modSettings[$value[1]]) && $modSettings[$value[1]] == $option ? ' selected' : '', '>', $option_title, '</option>';
+						<option value="', $option, '"', ! empty($context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]]) && $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] == $option ? ' selected' : '', '>', $option_title, '</option>';
 				}
 			}
 

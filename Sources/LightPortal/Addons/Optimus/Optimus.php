@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Optimus;
@@ -32,7 +32,7 @@ class Optimus extends Plugin
 
 	public function frontTopics(array &$custom_columns)
 	{
-		if (empty($this->modSettings['lp_optimus_addon_use_topic_descriptions']) || ! class_exists('\Bugo\Optimus\Integration'))
+		if (empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) || ! class_exists('\Bugo\Optimus\Integration'))
 			return;
 
 		$custom_columns[] = 't.optimus_description';
@@ -43,10 +43,10 @@ class Optimus extends Plugin
 		if (! class_exists('\Bugo\Optimus\Integration'))
 			return;
 
-		if (! empty($this->modSettings['lp_optimus_addon_show_topic_keywords']))
+		if (! empty($this->context['lp_optimus_plugin']['show_topic_keywords']))
 			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', (int) $row['id_topic']);
 
-		if (! empty($this->modSettings['lp_optimus_addon_use_topic_descriptions']) && ! empty($row['optimus_description']) && ! empty($topics[$row['id_topic']]['teaser']))
+		if (! empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) && ! empty($row['optimus_description']) && ! empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
 	}
 

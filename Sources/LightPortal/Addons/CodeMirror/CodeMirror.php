@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -37,7 +37,7 @@ class CodeMirror extends Plugin
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		if (empty($modes = smf_json_decode($this->modSettings['lp_code_mirror_addon_modes'] ?? '', true)))
+		if (empty($modes = smf_json_decode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
 			return;
 
 		if (($object['type'] === 'html' || (isset($object['options']['content']) && $object['options']['content'] === 'html')) && $modes['html'] === 1) {

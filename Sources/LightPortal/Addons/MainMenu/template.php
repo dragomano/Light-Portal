@@ -52,7 +52,7 @@ function callback_main_menu_table()
 		</tbody>
 	</table>
 
-	<input type="hidden" name="lp_main_menu_addon_items">
+	<input type="hidden" name="items">
 
 	<table class="main_menu_list centertext" x-data="handleItems()">
 		<caption class="title_bar">', $txt['lp_main_menu']['additional_items'], '</caption>
