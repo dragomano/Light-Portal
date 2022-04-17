@@ -66,6 +66,7 @@ function template_ads_block_below()
 			ele: "#ads_placement",', ($context['right_to_left'] ? '
 			textDirection: "rtl",' : ''), '
 			dropboxWrapper: "body",
+			maxWidth: "100%",
 			showValueAsTags: true,
 			search: false,
 			multiple: true,

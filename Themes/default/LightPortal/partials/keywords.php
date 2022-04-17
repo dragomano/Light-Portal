@@ -8,6 +8,7 @@ echo '
 			ele: "#keywords",', ($context['right_to_left'] ? '
 			textDirection: "rtl",' : ''), '
 			dropboxWrapper: "body",
+			maxWidth: "100%",
 			multiple: true,
 			search: true,
 			markSearchResults: true,

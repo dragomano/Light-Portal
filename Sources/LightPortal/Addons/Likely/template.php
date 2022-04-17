@@ -21,6 +21,7 @@ function template_likely_below()
 			ele: "#buttons",', ($context['right_to_left'] ? '
 			textDirection: "rtl",' : ''), '
 			dropboxWrapper: "body",
+			maxWidth: "100%",
 			multiple: true,
 			search: true,
 			markSearchResults: true,

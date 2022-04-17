@@ -25,6 +25,7 @@ function template_page_list_below()
 			ele: "#categories",', ($context['right_to_left'] ? '
 			textDirection: "rtl",' : ''), '
 			dropboxWrapper: "body",
+			maxWidth: "100%",
 			multiple: true,
 			search: true,
 			markSearchResults: true,
