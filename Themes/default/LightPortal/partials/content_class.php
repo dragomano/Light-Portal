@@ -14,6 +14,7 @@ echo '
 			showSelectedOptionsFirst: true,
 			optionHeight: "60px",
 			placeholder: "', $txt['no'], '",
+			maxWidth: "100%",
 			options: [';
 
 foreach ($context['lp_all_content_classes'] as $key => $template) {

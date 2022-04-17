@@ -119,6 +119,7 @@ function template_callback_frontpage_mode_settings()
 						searchPlaceholderText: "', $txt['search'], '",
 						allOptionsSelectedText: "', $txt['all'], '",
 						showValueAsTags: true,
+						maxWidth: "100%",
 						options: [';
 
 	foreach ($context['lp_all_categories'] as $id => $cat) {
@@ -156,6 +157,7 @@ function template_callback_frontpage_mode_settings()
 						searchPlaceholderText: "', $txt['search'], '",
 						allOptionsSelectedText: "', $txt['all'], '",
 						showValueAsTags: true,
+						maxWidth: "100%",
 						options: [';
 
 	foreach ($context['board_list'] as $cat) {
@@ -510,6 +512,7 @@ function template_callback_comment_settings()
 							ele: "#lp_disabled_bbc_in_comments",', ($context['right_to_left'] ? '
 							textDirection: "rtl",' : ''), '
 							dropboxWrapper: "body",
+							maxWidth: "100%",
 							search: true,
 							showValueAsTags: true,
 							showSelectedOptionsFirst: true,

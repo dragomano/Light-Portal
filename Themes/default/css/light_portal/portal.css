@@ -1359,9 +1359,9 @@ section #display_head span {
   background: #f2f2f2;
   border: 0 solid #d0d0d0;
   color: #303030;
-  cursor: pointer;
   margin: 0 3px 3px 0;
   padding: 2px 6px;
+  cursor: pointer;
   border-radius: 0;
 }
 .vscomp-value {
@@ -1372,15 +1372,4 @@ section #display_head span {
 }
 .vscomp-option-text div {
   margin: 0 !important;
-}
-#lp_frontpage_categories,
-#lp_frontpage_boards,
-#lp_disabled_bbc_in_comments {
-  max-width: 100%;
-}
-#post_header #title_class,
-#post_header #content_class,
-#post_header #icon,
-#post_header #keywords {
-  max-width: 100%;
 }

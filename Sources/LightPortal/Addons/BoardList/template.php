@@ -15,6 +15,7 @@ function template_board_list_below()
 				showSelectedOptionsFirst: true,
 				optionHeight: "60px",
 				placeholder: "', $txt['no'], '",
+				maxWidth: "100%",
 				options: [';
 
 	foreach ($context['category_classes'] as $key => $template) {
@@ -42,6 +43,7 @@ function template_board_list_below()
 				showSelectedOptionsFirst: true,
 				optionHeight: "60px",
 				placeholder: "', $txt['no'], '",
+				maxWidth: "100%",
 				options: [';
 
 	foreach ($context['lp_all_content_classes'] as $key => $template) {
