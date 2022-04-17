@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\GalleryFrontPage;
@@ -28,7 +28,7 @@ class GalleryArticle extends AbstractArticle
 	{
 		isAllowedTo('smfgallery_view');
 
-		$this->selected_categories = smf_json_decode($this->modSettings['lp_gallery_front_page_addon_gallery_categories'] ?? '', true);
+		$this->selected_categories = smf_json_decode($this->context['lp_gallery_front_page_plugin']['gallery_categories'] ?? '', true);
 
 		$this->params = [
 			'approved'            => 1,
@@ -66,7 +66,7 @@ class GalleryArticle extends AbstractArticle
 			WHERE p.id_cat IN ({array_int:selected_categories})
 				AND p.approved = {int:approved}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_num_replies']) ? '' : 'num_comments DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);

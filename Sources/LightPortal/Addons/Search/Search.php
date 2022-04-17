@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 1.04.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -31,11 +31,9 @@ class Search extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_search_addon_min_chars']))
-			$addSettings['lp_search_addon_min_chars'] = 3;
-		if (! empty($addSettings))
-			updateSettings($addSettings);
+		$this->addDefaultValues([
+			'min_chars' => 3,
+		]);
 
 		$config_vars['search'][] = ['int', 'min_chars'];
 	}
@@ -155,8 +153,8 @@ class Search extends Plugin
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",' . (empty($this->modSettings['lp_search_addon_min_chars']) ? '' : '
-				minChars: ' . $this->modSettings['lp_search_addon_min_chars'] . ',') . '
+				selector: ".search_addon input",' . (empty($this->context['lp_search_plugin']['min_chars']) ? '' : '
+				minChars: ' . $this->context['lp_search_plugin']['min_chars'] . ',') . '
 				source: async function(term, response) {
 					const results = await fetch("', LP_BASE_URL, ';sa=qsearch", {
 						method: "POST",

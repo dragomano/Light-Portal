@@ -71,12 +71,15 @@ final class Addon
 	 */
 	public function run(string $hook = '', array $vars = [], array $plugins = [])
 	{
-		static $results = [];
+		static $results = [], $settings = [];
 
 		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
 
 		if (empty($addons) || isset($this->context['uninstalling']))
 			return;
+
+		if (empty($settings))
+			$settings = $this->getSettings();
 
 		foreach ($addons as $addon) {
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
@@ -96,9 +99,12 @@ final class Addon
 				];
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
+
 				$this->loadLanguage($path, $snakeName);
 				$this->loadCss($path, $snakeName);
 				$this->loadJs($path, $snakeName);
+
+				$this->context['lp_' . $snakeName . '_plugin'] = $settings[$snakeName] ?? [];
 			}
 
 			// Hook init should run only once
@@ -164,5 +170,27 @@ final class Addon
 			return;
 
 		loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
+	}
+
+	private function getSettings(): array
+	{
+		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
+			$request = $this->smcFunc['db_query']('', '
+				SELECT name, option, value
+				FROM {db_prefix}lp_plugins',
+				[]
+			);
+
+			$settings = [];
+			while ($row = $this->smcFunc['db_fetch_assoc']($request))
+				$settings[$row['name']][$row['option']] = $row['value'];
+
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
+
+			$this->cache()->put('plugin_settings', $settings, 259200);
+		}
+
+		return $settings;
 	}
 }

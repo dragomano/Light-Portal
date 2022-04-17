@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.04.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -515,17 +515,18 @@ class Handler extends Plugin
 			$method->addParameter('config_vars')
 				->setReference()
 				->setType('array');
-			$method->setBody("\$addSettings = [];" . PHP_EOL);
+
+			if (! empty($this->context['lp_plugin']['options']))
+				$method->setBody("\$this->addDefaultValues([" . PHP_EOL);
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (! empty($option['default'])) {
-					$method->addBody("if (! isset(\$this->modSettings['lp_{$plugin_name}_addon_{$option['name']}']))");
-					$method->addBody("\t\$addSettings['lp_{$plugin_name}_addon_{$option['name']}'] = {$this->getDefaultValue($option)};");
+					$method->addBody("\t'{$option['name']}' => {$this->getDefaultValue($option)},");
 				}
 			}
 
-			$method->addBody("if (\$addSettings)");
-			$method->addBody("\tupdateSettings(\$addSettings);" . PHP_EOL);
+			if (! empty($this->context['lp_plugin']['options']))
+				$method->setBody("]);" . PHP_EOL);
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multicheck', 'select'])) {

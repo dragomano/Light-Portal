@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -117,7 +117,7 @@ class MainMenu extends Plugin
 
 	public function saveSettings(array &$plugin_options)
 	{
-		if (! isset($plugin_options['lp_main_menu_addon_items']))
+		if (! isset($plugin_options['items']))
 			return;
 
 		$portal_langs = $forum_langs = [];
@@ -136,8 +136,8 @@ class MainMenu extends Plugin
 			}
 		}
 
-		$plugin_options['lp_main_menu_addon_portal_langs'] = json_encode($portal_langs, JSON_UNESCAPED_UNICODE);
-		$plugin_options['lp_main_menu_addon_forum_langs'] = json_encode($forum_langs, JSON_UNESCAPED_UNICODE);
+		$plugin_options['portal_langs'] = json_encode($portal_langs, JSON_UNESCAPED_UNICODE);
+		$plugin_options['forum_langs']  = json_encode($forum_langs, JSON_UNESCAPED_UNICODE);
 
 		$items = $langs = [];
 
@@ -157,13 +157,13 @@ class MainMenu extends Plugin
 			}
 		}
 
-		$plugin_options['lp_main_menu_addon_items'] = json_encode($items, JSON_UNESCAPED_UNICODE);
+		$plugin_options['items'] = json_encode($items, JSON_UNESCAPED_UNICODE);
 	}
 
 	private function prepareVariables()
 	{
-		$this->context['lp_main_menu_addon_portal_langs'] = smf_json_decode($this->modSettings['lp_main_menu_addon_portal_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_forum_langs'] = smf_json_decode($this->modSettings['lp_main_menu_addon_forum_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_items'] = smf_json_decode($this->modSettings['lp_main_menu_addon_items'] ?? '', true);
+		$this->context['lp_main_menu_addon_portal_langs'] = smf_json_decode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
+		$this->context['lp_main_menu_addon_forum_langs']  = smf_json_decode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
+		$this->context['lp_main_menu_addon_items']        = smf_json_decode($this->context['lp_main_menu_plugin']['items'] ?? '', true);
 	}
 }

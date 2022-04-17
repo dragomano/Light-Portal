@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.04.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -34,7 +34,7 @@ class DevTools extends Plugin
 
 	public function frontModes(array &$modes)
 	{
-		if (empty($this->modSettings['lp_dev_tools_addon_fake_cards']))
+		if (empty($this->context['lp_dev_tools_plugin']['fake_cards']))
 			return;
 
 		$modes[$this->mode] = DemoArticle::class;
@@ -44,7 +44,7 @@ class DevTools extends Plugin
 
 	public function frontCustomTemplate(array $layouts)
 	{
-		if (empty($this->modSettings['lp_dev_tools_addon_show_template_switcher']))
+		if (empty($this->context['lp_dev_tools_plugin']['show_template_switcher']))
 			return;
 
 		$this->context['frontpage_layouts'] = $layouts;

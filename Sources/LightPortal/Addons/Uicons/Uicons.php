@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -44,13 +44,10 @@ class Uicons extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_uicons_addon_weight']))
-			$addSettings['lp_uicons_addon_weight'] = 'r';
-		if (! isset($this->modSettings['lp_uicons_addon_corner']))
-			$addSettings['lp_uicons_addon_corner'] = 'r';
-		if ($addSettings)
-			updateSettings($addSettings);
+		$this->addDefaultValues([
+			'weight' => 'r',
+			'corner' => 'r',
+		]);
 
 		$config_vars['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], $this->txt['lp_uicons']['weight_set'])];
 		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], $this->txt['lp_uicons']['corner_set'])];
@@ -59,8 +56,8 @@ class Uicons extends Plugin
 	public function prepareIconList(array &$all_icons)
 	{
 		if (($icons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
-			$weight = empty($this->modSettings['lp_uicons_addon_weight']) ? 'r' : $this->modSettings['lp_uicons_addon_weight'];
-			$corner = empty($this->modSettings['lp_uicons_addon_corner']) ? 'r' : $this->modSettings['lp_uicons_addon_corner'];
+			$weight = empty($this->context['lp_uicons_plugin']['weight']) ? 'r' : $this->context['lp_uicons_plugin']['weight'];
+			$corner = empty($this->context['lp_uicons_plugin']['corner']) ? 'r' : $this->context['lp_uicons_plugin']['corner'];
 
 			$list = $this->getIconList();
 

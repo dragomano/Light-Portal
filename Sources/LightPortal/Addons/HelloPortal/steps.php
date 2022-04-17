@@ -12,7 +12,7 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][1] . '"
 		},' . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] !== 'chosen_page' ? ('
 		{
-			element: document.getElementById("lp_frontpage_order_by_num_replies"),
+			element: document.getElementById("lp_frontpage_order_by_replies"),
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][2] . '"
 		},') : '') . '
 		{
@@ -24,7 +24,7 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][4] . '"
 		},
 		{
-			element: document.querySelector(".fa-info-circle"),
+			element: document.querySelector(".fa-circle-info"),
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][5] . '"
 		},
 		{
@@ -36,10 +36,14 @@ return [
 			element: document.getElementById("setting_lp_show_tags_on_page").parentNode.parentNode,
 			intro: "' . $this->txt['lp_hello_portal']['extra_settings_tour'][0] . '",
 			position: "right"
-		},
+		},' . (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default' ? ('
+		{
+			element: document.getElementById("setting_lp_show_comment_block").parentNode.parentNode,
+			intro: "' . $this->txt['lp_hello_portal']['extra_settings_tour'][1] . '"
+		},') : '') . '
 		{
 			element: document.getElementById("setting_lp_fa_source").parentNode.parentNode,
-			intro: "' . $this->txt['lp_hello_portal']['extra_settings_tour'][1] . '"
+			intro: "' . $this->txt['lp_hello_portal']['extra_settings_tour'][2] . '"
 		},',
 	'categories' => '
 		{

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -36,7 +36,7 @@ class Disqus extends Plugin
 
 	public function comments()
 	{
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->modSettings['lp_disqus_addon_shortname'])) {
+		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['lp_disqus_plugin']['shortname'])) {
 			$this->context['lp_disqus_comment_block'] = '
 				<div id="disqus_thread" class="windowbg"></div>
 				<script>
@@ -46,7 +46,7 @@ class Disqus extends Plugin
 					};
 					(function () {
 						let d = document, s = d.createElement("script");
-						s.src = "https://' . $this->modSettings['lp_disqus_addon_shortname'] . '.disqus.com/embed.js";
+						s.src = "https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/embed.js";
 						s.setAttribute("data-timestamp", +new Date());
 						(d.head || d.body).appendChild(s);
 					})();
@@ -59,11 +59,11 @@ class Disqus extends Plugin
 		if (empty($this->context['lp_frontpage_articles']))
 			return;
 
-		if (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] !== 'disqus' || empty($this->modSettings['lp_disqus_addon_shortname']))
+		if (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] !== 'disqus' || empty($this->context['lp_disqus_plugin']['shortname']))
 			return;
 
 		loadJavaScriptFile(
-			'https://' . $this->modSettings['lp_disqus_addon_shortname'] . '.disqus.com/count.js',
+			'https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
 			[
 				'external' => true,
 				'async' => true,

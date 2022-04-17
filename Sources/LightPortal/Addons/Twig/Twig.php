@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 27.02.22
+ * @version 16.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Twig;
@@ -50,7 +50,7 @@ class Twig extends Plugin
 
 		try {
 			$loader  = new \Twig\Loader\ArrayLoader(['content' => $text]);
-			$twig    = new \Twig\Environment($loader, ['debug' => ! empty($this->modSettings['lp_twig_addon_debug_mode'])]);
+			$twig    = new \Twig\Environment($loader, ['debug' => ! empty($this->context['lp_twig_plugin']['debug_mode'])]);
 			$content = $twig->render('content', [
 				'txt'         => $this->txt,
 				'context'     => $this->context,
