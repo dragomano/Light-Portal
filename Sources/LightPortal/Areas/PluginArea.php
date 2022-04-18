@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Addons\Ini;
 use ReflectionClass;
 use ReflectionException;
 
@@ -93,7 +94,8 @@ final class PluginArea
 			foreach ($config_vars[$plugin_name] as $var) {
 				if ($this->post()->has($var[1])) {
 					if ($var[0] === 'check') {
-						$plugin_options[$var[1]] = (int) $this->validate($this->post($var[1]), 'bool');
+						//$plugin_options[$var[1]] = (int) $this->validate($this->post($var[1]), 'bool');
+						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'bool');
 					} elseif ($var[0] === 'int') {
 						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'int');
 					} elseif ($var[0] === 'float') {
@@ -299,48 +301,10 @@ final class PluginArea
 		if (empty($options))
 			return;
 
-		$params = [];
-		foreach ($options as $option_name => $value) {
-			if (empty($value))
-				$should_remove[] = $option_name;
-
-			if ($value) {
-				$params[] = [
-					'name'   => $plugin_name,
-					'option' => $option_name,
-					'value'  => $value,
-				];
-			}
-		}
-
-		if (! empty($should_remove)) {
-			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_plugins
-				WHERE option IN ({array_string:options})',
-				[
-					'options' => $should_remove,
-				]
-			);
-
-			$this->context['lp_num_queries']++;
-		}
-
-		if (empty($params))
-			return;
-
-		$this->smcFunc['db_insert']('replace',
-			'{db_prefix}lp_plugins',
-			[
-				'name'   => 'string',
-				'option' => 'string',
-				'value'  => 'string',
-			],
-			$params,
-			['name', 'option']
-		);
-
-		$this->context['lp_num_queries']++;
-
-		$this->cache()->forget('plugin_settings');
+		$settings = new Ini(dirname(__DIR__) . '/Addons/settings.ini');
+		$settings->removeSection($plugin_name);
+		$settings->addSection($plugin_name);
+		$settings->addValues($plugin_name, $options);
+		$settings->write();
 	}
 }

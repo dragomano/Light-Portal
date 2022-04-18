@@ -380,35 +380,6 @@ $tables[] = array(
 );
 
 $tables[] = array(
-	'name' => 'lp_plugins',
-	'columns' => array(
-		array(
-			'name' => 'name',
-			'type' => 'varchar',
-			'size' => 100,
-			'null' => false
-		),
-		array(
-			'name' => 'option',
-			'type' => 'varchar',
-			'size' => 100,
-			'null' => false
-		),
-		array(
-			'name' => 'value',
-			'type' => 'text',
-			'null' => true
-		)
-	),
-	'indexes' => array(
-		array(
-			'type'    => 'primary',
-			'columns' => array('name', 'option')
-		)
-	)
-);
-
-$tables[] = array(
 	'name' => 'lp_tags',
 	'columns' => array(
 		array(

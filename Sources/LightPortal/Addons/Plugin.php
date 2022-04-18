@@ -79,29 +79,18 @@ abstract class Plugin
 		$params = [];
 		foreach ($values as $option_name => $value) {
 			if (! isset($this->context['lp_' . $snake_name . '_plugin'][$option_name])) {
-				$params[] = [
-					'name'   => $snake_name,
-					'option' => $option_name,
-					'value'  => $value,
-				];
+				$params[$option_name] = $value;
 
 				$this->context['lp_' . $snake_name . '_plugin'][$option_name] = $value;
 			}
 		}
 
-		$this->smcFunc['db_insert']('replace',
-			'{db_prefix}lp_plugins',
-			[
-				'name'   => 'string',
-				'option' => 'string',
-				'value'  => 'string',
-			],
-			$params,
-			['name', 'option']
-		);
+		if (empty($params))
+			return;
 
-		$this->context['lp_num_queries']++;
-
-		$this->cache()->forget('plugin_settings');
+		$settings = new Ini(__DIR__ . '/settings.ini');
+		$settings->addSection($snake_name);
+		$settings->addValues($snake_name, $params);
+		$settings->write();
 	}
 }

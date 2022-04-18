@@ -96,6 +96,7 @@ final class Addon
 					'name' => $addon,
 					'icon' => $class->icon,
 					'type' => $class->type,
+					//'settings' => $settings[$snakeName] ?? [],
 				];
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
@@ -174,23 +175,6 @@ final class Addon
 
 	private function getSettings(): array
 	{
-		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
-			$request = $this->smcFunc['db_query']('', '
-				SELECT name, option, value
-				FROM {db_prefix}lp_plugins',
-				[]
-			);
-
-			$settings = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request))
-				$settings[$row['name']][$row['option']] = $row['value'];
-
-			$this->smcFunc['db_free_result']($request);
-			$this->context['lp_num_queries']++;
-
-			$this->cache()->put('plugin_settings', $settings, 259200);
-		}
-
-		return $settings;
+		return (new Addons\Ini(__DIR__ . '/Addons/settings.ini'))->getStructure();
 	}
 }
