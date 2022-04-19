@@ -18,7 +18,6 @@ use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
 
 use function isAllowedTo;
-use function loadTemplate;
 use function send_http_status;
 
 final class FrontPage

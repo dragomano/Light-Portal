@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Addon.php
+ * AddonHandler.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,17 +14,26 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Repositories\PluginRepository;
+
 use function fetch_web_data;
 use function loadCSSFile;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Addon
+final class AddonHandler
 {
 	use Helper;
 
+	private PluginRepository $repository;
+
 	private array $chest = [];
+
+	public function __construct()
+	{
+		$this->repository = new PluginRepository();
+	}
 
 	public function getAll(): array
 	{
@@ -34,7 +43,7 @@ final class Addon
 		return array_map(fn($item): string => basename($item), $dirs);
 	}
 
-	public function prepareAssets(): Addon
+	public function prepareAssets(): AddonHandler
 	{
 		$assets = [];
 
@@ -79,7 +88,7 @@ final class Addon
 			return;
 
 		if (empty($settings))
-			$settings = $this->getSettings();
+			$settings = $this->repository->getSettings();
 
 		foreach ($addons as $addon) {
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
@@ -170,27 +179,5 @@ final class Addon
 			return;
 
 		loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
-	}
-
-	private function getSettings(): array
-	{
-		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
-			$request = $this->smcFunc['db_query']('', '
-				SELECT name, option, value
-				FROM {db_prefix}lp_plugins',
-				[]
-			);
-
-			$settings = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request))
-				$settings[$row['name']][$row['option']] = $row['value'];
-
-			$this->smcFunc['db_free_result']($request);
-			$this->context['lp_num_queries']++;
-
-			$this->cache()->put('plugin_settings', $settings, 259200);
-		}
-
-		return $settings;
 	}
 }

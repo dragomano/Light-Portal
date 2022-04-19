@@ -2,7 +2,7 @@
 
 function template_docs_above()
 {
-	global $context, $txt;
+	global $txt;
 
 	echo '
 	<div class="noticebox"><a class="bbc_link" href="https://dragomano.github.io/Light-Portal/" target="_blank" rel="noopener">', $txt['admin_search_type_online'], '</a></div>';

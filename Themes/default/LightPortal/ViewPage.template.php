@@ -112,7 +112,7 @@ function template_show_page()
 
 function show_prev_next_links()
 {
-	global $context, $txt;
+	global $context;
 
 	if (empty($context['lp_page']['prev']) && empty($context['lp_page']['next']))
 		return;

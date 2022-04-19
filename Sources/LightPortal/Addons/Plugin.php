@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Addons;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 
 if (! defined('SMF'))
@@ -89,19 +90,6 @@ abstract class Plugin
 			}
 		}
 
-		$this->smcFunc['db_insert']('replace',
-			'{db_prefix}lp_plugins',
-			[
-				'name'   => 'string',
-				'option' => 'string',
-				'value'  => 'string',
-			],
-			$params,
-			['name', 'option']
-		);
-
-		$this->context['lp_num_queries']++;
-
-		$this->cache()->forget('plugin_settings');
+		(new PluginRepository)->addSettings($params);
 	}
 }

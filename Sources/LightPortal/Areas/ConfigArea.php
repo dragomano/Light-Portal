@@ -818,7 +818,7 @@ final class ConfigArea
 
 		$result['error'] = true;
 
-		$item = $this->smcFunc['db_insert']('',
+		$item = (int) $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_categories',
 			[
 				'name'        => 'string',

@@ -15,9 +15,6 @@
 namespace Bugo\LightPortal\Front;
 
 use Bugo\LightPortal\Helper;
-use function loadMemberData;
-use function loadMemberContext;
-use function log_error;
 
 if (! defined('SMF'))
 	die('No direct access...');
