@@ -18,3 +18,12 @@ Themes/**/*.french.php
 Themes/**/*.ukrainian.php
 Themes/**/*.german.php
 Themes/**/*.italian.php
+**/Addons/AvatarGenerator
+**/Addons/ExtUpload
+**/Addons/GoogleAmp
+**/Addons/ImageUpload
+**/Addons/IndexNow
+**/Addons/Jodit
+**/Addons/PageScroll
+**/Addons/SiteList
+**/Addons/YandexTurbo
