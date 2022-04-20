@@ -100,7 +100,7 @@ final class Integration extends AbstractMain
 		$this->defineVars();
 		$this->loadCssFiles();
 
-		(new Addon)->prepareAssets()->run();
+		(new AddonHandler)->prepareAssets()->run();
 	}
 
 	public function redirect(string &$setLocation)

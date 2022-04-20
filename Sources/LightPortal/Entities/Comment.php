@@ -69,7 +69,7 @@ final class Comment
 
 		$this->txt['lp_comments'] = __('lp_comments_set', ['comments' => sizeof($comments)]);
 
-		$limit = (int) $this->modSettings['lp_num_comments_per_page'] ?? 10;
+		$limit = (int) ($this->modSettings['lp_num_comments_per_page'] ?? 10);
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 
@@ -307,8 +307,9 @@ final class Comment
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE WHEN CAST(num_comments AS SIGNED) - {int:num_items} > 0 THEN CAST(num_comments AS SIGNED) - {int:num_items} ELSE 0 END
-			WHERE alias = {string:alias}',
+			SET num_comments = num_comments - {int:num_items}
+			WHERE alias = {string:alias}
+				AND num_comments - {int:num_items} >= 0',
 			[
 				'num_items' => count($items),
 				'alias'     => $this->alias

@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Repositories\PageRepository;
-
 use function checkSubmitOnce;
 use function redirectexit;
 

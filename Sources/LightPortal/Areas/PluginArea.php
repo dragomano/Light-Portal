@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
 
@@ -93,7 +94,7 @@ final class PluginArea
 			foreach ($config_vars[$plugin_name] as $var) {
 				if ($this->post()->has($var[1])) {
 					if ($var[0] === 'check') {
-						$plugin_options[$var[1]] = (int) $this->validate($this->post($var[1]), 'bool');
+						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'bool');
 					} elseif ($var[0] === 'int') {
 						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'int');
 					} elseif ($var[0] === 'float') {
@@ -325,22 +326,6 @@ final class PluginArea
 			$this->context['lp_num_queries']++;
 		}
 
-		if (empty($params))
-			return;
-
-		$this->smcFunc['db_insert']('replace',
-			'{db_prefix}lp_plugins',
-			[
-				'name'   => 'string',
-				'option' => 'string',
-				'value'  => 'string',
-			],
-			$params,
-			['name', 'option']
-		);
-
-		$this->context['lp_num_queries']++;
-
-		$this->cache()->forget('plugin_settings');
+		(new PluginRepository)->addSettings($params);
 	}
 }

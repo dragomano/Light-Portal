@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 18.04.22
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -85,10 +85,10 @@ class Trumbowyg extends Plugin
 			autogrow: true' : '') . ($auto_grow === 2 ? ',
 			autogrowOnEnter: true' : '') . '
 		}).on("tbwopenfullscreen", function() {
-			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
+			$("#adm_submenus,#main_menu,#genericmenu,.noticebox,#gtb_pos").hide();
 			$(".sticky_sidebar").css("position", "initial");
 		}).on("tbwclosefullscreen", function() {
-			$("#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
+			$("#adm_submenus,#main_menu,#genericmenu,.noticebox,#gtb_pos").show();
 			$(".sticky_sidebar").css("position", "sticky");
 		});' . ($dark_themes && ! empty($dark_themes[$this->settings['theme_id']]) ? '
 		$(".pf_content").addClass("trumbowyg-dark");' : ''), true);

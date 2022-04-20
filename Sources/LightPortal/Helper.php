@@ -97,7 +97,7 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = [])
 	{
-		(new Addon)->run($hook, $vars, $plugins);
+		(new AddonHandler)->run($hook, $vars, $plugins);
 	}
 
 	public function require(string $filename)
@@ -153,7 +153,7 @@ trait Helper
 
 	public function getAllAddons(): array
 	{
-		return (new Addon)->getAll();
+		return (new AddonHandler)->getAll();
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
@@ -243,7 +243,7 @@ trait Helper
 			if ($only_available)
 				$themes = array_filter($themes, fn ($theme) => $theme['known'] && $theme['enable']);
 
-			$themes = array_map(fn ($theme) => $theme = $theme['name'], $themes);
+			$themes = array_column($themes, 'name', 'id');
 
 			$this->cache()->put('forum_themes', $themes);
 		}
