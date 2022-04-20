@@ -301,14 +301,14 @@ final class PluginArea
 			return;
 
 		$params = [];
-		foreach ($options as $option_name => $value) {
+		foreach ($options as $config => $value) {
 			if (empty($value))
-				$should_remove[] = $option_name;
+				$should_remove[] = $config;
 
 			if ($value) {
 				$params[] = [
 					'name'   => $plugin_name,
-					'option' => $option_name,
+					'config' => $config,
 					'value'  => $value,
 				];
 			}
@@ -317,7 +317,7 @@ final class PluginArea
 		if (! empty($should_remove)) {
 			$this->smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_plugins
-				WHERE option IN ({array_string:options})',
+				WHERE config IN ({array_string:options})',
 				[
 					'options' => $should_remove,
 				]

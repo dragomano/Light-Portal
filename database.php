@@ -389,7 +389,7 @@ $tables[] = array(
 			'null' => false
 		),
 		array(
-			'name' => 'option',
+			'name' => 'config',
 			'type' => 'varchar',
 			'size' => 100,
 			'null' => false
@@ -403,7 +403,7 @@ $tables[] = array(
 	'indexes' => array(
 		array(
 			'type'    => 'primary',
-			'columns' => array('name', 'option')
+			'columns' => array('name', 'config')
 		)
 	)
 );

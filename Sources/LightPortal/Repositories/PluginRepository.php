@@ -32,11 +32,11 @@ final class PluginRepository
 			'{db_prefix}lp_plugins',
 			[
 				'name'   => 'string',
-				'option' => 'string',
+				'config' => 'string',
 				'value'  => 'string',
 			],
 			$params,
-			['name', 'option']
+			['name', 'config']
 		);
 
 		$this->context['lp_num_queries']++;
@@ -48,14 +48,14 @@ final class PluginRepository
 	{
 		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
 			$request = $this->smcFunc['db_query']('', /** @lang text */ '
-				SELECT name, option, value
+				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 				[]
 			);
 
 			$settings = [];
 			while ($row = $this->smcFunc['db_fetch_assoc']($request))
-				$settings[$row['name']][$row['option']] = $row['value'];
+				$settings[$row['name']][$row['config']] = $row['value'];
 
 			$this->smcFunc['db_free_result']($request);
 			$this->context['lp_num_queries']++;
