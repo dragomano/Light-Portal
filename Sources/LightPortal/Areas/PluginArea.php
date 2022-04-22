@@ -36,6 +36,13 @@ final class PluginArea
 {
 	use Helper;
 
+	private PluginRepository $repository;
+
+	public function __construct()
+	{
+		$this->repository = new PluginRepository();
+	}
+
 	public function main()
 	{
 		loadLanguage('ManageMaintenance');
@@ -295,18 +302,18 @@ final class PluginArea
 		</script>';
 	}
 
-	private function updateSettings(string $plugin_name, array $options = [])
+	private function updateSettings(string $plugin_name, array $settings = [])
 	{
-		if (empty($options))
+		if (empty($settings))
 			return;
 
-		$params = [];
-		foreach ($options as $config => $value) {
+		$new_settings = $old_settings = [];
+		foreach ($settings as $config => $value) {
 			if (empty($value))
-				$should_remove[] = $config;
+				$old_settings[] = $config;
 
 			if ($value) {
-				$params[] = [
+				$new_settings[] = [
 					'name'   => $plugin_name,
 					'config' => $config,
 					'value'  => $value,
@@ -314,18 +321,8 @@ final class PluginArea
 			}
 		}
 
-		if (! empty($should_remove)) {
-			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_plugins
-				WHERE config IN ({array_string:options})',
-				[
-					'options' => $should_remove,
-				]
-			);
+		$this->repository->removeSettings($plugin_name, $old_settings);
 
-			$this->context['lp_num_queries']++;
-		}
-
-		(new PluginRepository)->addSettings($params);
+		$this->repository->addSettings($new_settings);
 	}
 }
