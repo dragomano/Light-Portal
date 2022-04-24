@@ -56,7 +56,6 @@ final class BlockArea
 		$this->doActions();
 
 		$this->context['lp_current_blocks'] = $this->repository->getAll();
-		$this->context['lp_current_blocks'] = array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $this->context['lp_current_blocks']);
 
 		$this->context['sub_template'] = 'manage_blocks';
 	}
