@@ -29,10 +29,6 @@ abstract class Plugin
 
 	public string $icon = 'fas fa-puzzle-piece';
 
-	public string $author = '';
-
-	public string $link = '';
-
 	public function getCalledClass(): ReflectionClass
 	{
 		return new ReflectionClass(get_called_class());
@@ -77,10 +73,10 @@ abstract class Plugin
 	{
 		$snake_name = $this->getSnakeName($this->getName());
 
-		$params = [];
+		$settings = [];
 		foreach ($values as $option_name => $value) {
 			if (! isset($this->context['lp_' . $snake_name . '_plugin'][$option_name])) {
-				$params[] = [
+				$settings[] = [
 					'name'   => $snake_name,
 					'option' => $option_name,
 					'value'  => $value,
@@ -90,6 +86,6 @@ abstract class Plugin
 			}
 		}
 
-		(new PluginRepository)->addSettings($params);
+		(new PluginRepository)->addSettings($settings);
 	}
 }

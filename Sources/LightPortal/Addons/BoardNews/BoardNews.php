@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 24.04.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -51,7 +51,7 @@ class BoardNews extends Plugin
 			'ignore_boards'   => false,
 			'use_permissions' => true,
 			'not_redirection' => true,
-			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int)$this->modSettings['recycle_board']],
+			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
 			'selected_board'  => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
 		];
 
