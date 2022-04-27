@@ -345,6 +345,9 @@ final class BlockArea
 		if ($this->context['lp_block']['icon'] === 'undefined')
 			$this->context['lp_block']['icon'] = '';
 
+		if (empty($this->context['lp_block']['block_id']) && empty($this->context['lp_block']['icon']))
+			$this->context['lp_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['lp_block']['type']]['icon'];
+
 		$this->context['lp_block']['icon_template'] = $this->getIcon($this->context['lp_block']['icon']) . $this->context['lp_block']['icon'];
 
 		$this->context['lp_block']['priority'] = empty($this->context['lp_block']['id']) ? $this->getPriority() : $this->context['lp_block']['priority'];
