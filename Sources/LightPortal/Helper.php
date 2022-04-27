@@ -97,7 +97,7 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = [])
 	{
-		(new AddonHandler)->run($hook, $vars, $plugins);
+		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
 	public function require(string $filename)
@@ -153,7 +153,7 @@ trait Helper
 
 	public function getAllAddons(): array
 	{
-		return (new AddonHandler)->getAll();
+		return AddonHandler::getInstance()->getAll();
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
