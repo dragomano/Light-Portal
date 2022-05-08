@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 08.05.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -212,7 +212,7 @@ class RecentPosts extends Plugin
 
 			if ($parameters['show_avatars'] && $post['poster']['avatar'])
 				echo '
-				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+				<div class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</div>';
 
 			if ($post['is_new'])
 				echo '
