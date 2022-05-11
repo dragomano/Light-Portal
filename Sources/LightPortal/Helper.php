@@ -35,7 +35,6 @@ if (! defined('SMF'))
  * @property array $modSettings
  * @property array $txt
  * @property array $db_cache
- * @property array $db_temp_cache
  * @property-read array $smcFunc
  * @property-read array $user_info
  * @property-read array $user_profile
@@ -44,6 +43,7 @@ if (! defined('SMF'))
  * @property-read array $settings
  * @property-read array $options
  * @property-read string $db_type
+ * @property-read string $db_prefix
  * @property-read string $language
  * @property-read string $scripturl
  * @property-read string $boardurl
@@ -52,12 +52,17 @@ if (! defined('SMF'))
  */
 trait Helper
 {
+	private array $smfGlobals = ['context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings', 'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir'];
+
 	/**
 	 * @return mixed
 	 */
 	public function &__get(string $name)
 	{
-		return $GLOBALS[$name];
+		if (in_array($name, $this->smfGlobals))
+			return $GLOBALS[$name];
+
+		log_error('[LP] unsupported property: ' . $name, 'user');
 	}
 
 	/**

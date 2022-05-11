@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -247,7 +247,9 @@ class AdsBlock extends Plugin
 		if (empty($this->context['lp_ads_blocks']) || ($this->isTopicNumRepliesLesserThanMinReplies()))
 			return;
 
-		$current_counter = empty($this->options['view_newest_first']) ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
+		$showOldestFirst = empty($this->options['view_newest_first']);
+
+		$current_counter = $showOldestFirst ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
 
 		/**
 		 * Display ads before the first message
@@ -273,7 +275,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после первого сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_first_post'] && ($counter == (empty($this->options['view_newest_first']) ? 2 : $this->context['total_visible_posts'] - 2))) {
+		if ($this->context['lp_ads_blocks']['after_first_post'] && ($counter == ($showOldestFirst ? 2 : $this->context['total_visible_posts'] - 2))) {
 			lp_show_blocks('after_first_post');
 		}
 
@@ -282,7 +284,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы после каждого первого сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_every_first_post'] && ($output['counter'] == (empty($this->options['view_newest_first']) ? $this->context['start'] + 1 : $current_counter - 1))) {
+		if ($this->context['lp_ads_blocks']['after_every_first_post'] && ($output['counter'] == ($showOldestFirst ? $this->context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
 		}
 
@@ -291,7 +293,7 @@ class AdsBlock extends Plugin
 		 *
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
-		$before_every_last_post = empty($this->options['view_newest_first'])
+		$before_every_last_post = $showOldestFirst
 			? $counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0
 			: ($output['id'] == $this->context['topic_first_message'] || ($this->context['total_visible_posts'] - $counter) % $this->context['messages_per_page'] == 0);
 		if ($this->context['lp_ads_blocks']['before_every_last_post'] && $before_every_last_post) {
@@ -304,7 +306,7 @@ class AdsBlock extends Plugin
 		 * Вывод рекламы перед последним сообщением
 		 */
 		if ($this->context['lp_ads_blocks']['before_last_post'] &&
-			$output['id'] == (empty($this->options['view_newest_first']) ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
+			$output['id'] == ($showOldestFirst ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
 			lp_show_blocks('before_last_post');
 		}
 
@@ -332,7 +334,7 @@ class AdsBlock extends Plugin
 		 * Вывод рекламы после последнего сообщения
 		 */
 		if ($this->context['lp_ads_blocks']['after_last_post'] &&
-			$output['id'] == (empty($this->options['view_newest_first']) ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
+			$output['id'] == ($showOldestFirst ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
 			ob_start();
 
 			lp_show_blocks('after_last_post');

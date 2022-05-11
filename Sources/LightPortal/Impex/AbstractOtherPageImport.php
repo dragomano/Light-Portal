@@ -24,6 +24,8 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 {
 	use Helper;
 
+	protected array $tempCache = [];
+
 	abstract protected function getItems(array $pages): array;
 
 	protected function run()
@@ -35,7 +37,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$this->db_temp_cache = $this->db_cache;
+		$this->tempCache = $this->db_cache;
 		$this->db_cache = [];
 
 		$pages = $this->post('pages') && $this->post()->has('import_all') === false ? $this->post('pages') : [];
@@ -155,7 +157,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		}
 
 		// Restore the cache
-		$this->db_cache = $this->db_temp_cache;
+		$this->db_cache = $this->tempCache;
 
 		$this->cache()->flush();
 	}

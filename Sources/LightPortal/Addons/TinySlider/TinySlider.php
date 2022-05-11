@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -24,7 +24,7 @@ class TinySlider extends Plugin
 {
 	public string $icon = 'far fa-images';
 
-	private array $options = [
+	private array $params = [
 		'use_cdn'            => true,
 		'axis'               => 'horizontal',
 		'num_items'          => 1,
@@ -49,7 +49,7 @@ class TinySlider extends Plugin
 
 	public function blockOptions(array &$options)
 	{
-		$options['tiny_slider']['parameters'] = $this->options;
+		$options['tiny_slider']['parameters'] = $this->params;
 	}
 
 	public function validateBlockData(array &$parameters, string $type)
@@ -417,12 +417,12 @@ class TinySlider extends Plugin
 		addInlineJavaScript('
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
-				axis: "' . (empty($parameters['axis']) ? $this->options['axis'] : $parameters['axis']) . '",
-				items: ' . (empty($parameters['num_items']) ? $this->options['num_items'] : $parameters['num_items']) . ',
-				gutter: ' . (empty($parameters['gutter']) ? $this->options['gutter'] : $parameters['gutter']) . ',
-				edgePadding: ' . (empty($parameters['edge_padding']) ? $this->options['edge_padding'] : $parameters['edge_padding']) . ',
-				fixedWidth: ' . (empty($parameters['fixed_width']) ? $this->options['fixed_width'] : $parameters['fixed_width']) . ',
-				slideBy: ' . (empty($parameters['slide_by']) ? $this->options['slide_by'] : $parameters['slide_by']) . ',
+				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",
+				items: ' . (empty($parameters['num_items']) ? $this->params['num_items'] : $parameters['num_items']) . ',
+				gutter: ' . (empty($parameters['gutter']) ? $this->params['gutter'] : $parameters['gutter']) . ',
+				edgePadding: ' . (empty($parameters['edge_padding']) ? $this->params['edge_padding'] : $parameters['edge_padding']) . ',
+				fixedWidth: ' . (empty($parameters['fixed_width']) ? $this->params['fixed_width'] : $parameters['fixed_width']) . ',
+				slideBy: ' . (empty($parameters['slide_by']) ? $this->params['slide_by'] : $parameters['slide_by']) . ',
 				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . ',
 				controlsContainer: ".customize-controls",
 				nav: ' . (empty($parameters['nav']) ? 'false' : 'true') . ',
@@ -430,10 +430,10 @@ class TinySlider extends Plugin
 				navContainer: ".customize-thumbnails",' : '') . '
 				navAsThumbnails: ' . (empty($parameters['nav_as_thumbnails']) ? 'false' : 'true') . ',
 				arrowKeys: ' . (empty($parameters['arrow_keys']) ? 'false' : 'true') . ',
-				speed: ' . (empty($parameters['speed']) ? $this->options['speed'] : $parameters['speed']) . ',
+				speed: ' . (empty($parameters['speed']) ? $this->params['speed'] : $parameters['speed']) . ',
 				autoplay: ' . (empty($parameters['autoplay']) ? 'false' : 'true') . ',
-				autoplayTimeout: ' . (empty($parameters['autoplay_timeout']) ? $this->options['autoplay_timeout'] : $parameters['autoplay_timeout']) . ',
-				autoplayDirection: "' . (empty($parameters['autoplay_direction']) ? $this->options['autoplay_direction'] : $parameters['autoplay_direction']) . '",
+				autoplayTimeout: ' . (empty($parameters['autoplay_timeout']) ? $this->params['autoplay_timeout'] : $parameters['autoplay_timeout']) . ',
+				autoplayDirection: "' . (empty($parameters['autoplay_direction']) ? $this->params['autoplay_direction'] : $parameters['autoplay_direction']) . '",
 				autoplayHoverPause: true,
 				autoplayButtonOutput: false,
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',

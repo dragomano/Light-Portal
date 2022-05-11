@@ -16,12 +16,16 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Helper;
 use SimpleXMLElement;
 
+use function fatal_lang_error;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractImport implements ImportInterface
 {
 	use Helper;
+
+	protected array $tempCache = [];
 
 	abstract protected function run();
 
@@ -37,7 +41,7 @@ abstract class AbstractImport implements ImportInterface
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$this->db_temp_cache = $this->db_cache;
+		$this->tempCache = $this->db_cache;
 		$this->db_cache = [];
 
 		if ($file['type'] !== 'text/xml')
@@ -110,7 +114,7 @@ abstract class AbstractImport implements ImportInterface
 		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], __('lp_' . $type . '_set', [$type => $this->context['import_successful']]));
 
 		// Restore the cache
-		$this->db_cache = $this->db_temp_cache;
+		$this->db_cache = $this->tempCache;
 
 		$this->cache()->flush();
 	}

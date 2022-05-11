@@ -170,11 +170,11 @@ abstract class AbstractMain
 			return;
 		}
 
-		$this->context['template_layers'] = [
-			...array_slice($this->context['template_layers'], 0, $key, true),
-			...['debug'],
-			...array_slice($this->context['template_layers'], $key, null, true)
-		];
+		$this->context['template_layers'] = array_merge(
+			array_slice($this->context['template_layers'], 0, $key, true),
+			['debug'],
+			array_slice($this->context['template_layers'], $key, null, true)
+		);
 	}
 
 	protected function promoteTopic()
