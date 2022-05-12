@@ -14,9 +14,6 @@
 
 namespace Bugo\LightPortal\Front;
 
-use function censorText;
-use function parse_bbc;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -95,13 +92,13 @@ class TopicArticle extends AbstractArticle
 			if (! isset($topics[$row['id_topic']])) {
 				$this->cleanBbcode($row['subject']);
 
-				censorText($row['subject']);
+				$this->censorText($row['subject']);
 
 				$body = $last_body = '';
 
 				if (! empty($this->modSettings['lp_show_teaser'])) {
-					censorText($row['body']);
-					censorText($row['last_body']);
+					$this->censorText($row['body']);
+					$this->censorText($row['last_body']);
 
 					$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', '', $row['body']);
 					$body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $body);
@@ -113,11 +110,11 @@ class TopicArticle extends AbstractArticle
 					$last_body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $last_body);
 					$last_body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $last_body);
 
-					$body      = parse_bbc($body, $row['smileys_enabled'], $row['id_first_msg']);
-					$last_body = parse_bbc($last_body, $row['smileys_enabled'], $row['id_msg']);
+					$body      = $this->parseBbc($body, $row['smileys_enabled'], $row['id_first_msg']);
+					$last_body = $this->parseBbc($last_body, $row['smileys_enabled'], $row['id_msg']);
 				}
 
-				$image = empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(parse_bbc($row['body'], false));
+				$image = empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($this->parseBbc($row['body'], false));
 
 				if (! empty($row['id_attach']) && empty($image)) {
 					$image = $this->scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';

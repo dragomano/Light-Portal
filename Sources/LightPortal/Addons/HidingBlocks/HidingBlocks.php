@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.04.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -78,7 +78,7 @@ class HidingBlocks extends Plugin
 			}
 		}
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 		VirtualSelect.init({
 			ele: "#hidden_breakpoints",' . ($this->context['right_to_left'] ? '
 			textDirection: "rtl",' : '') . '

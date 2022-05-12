@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\GalleryFrontPage;
@@ -43,7 +43,7 @@ class GalleryFrontPage extends Plugin
 
 	private function getGalleryCategories(): array
 	{
-		db_extend();
+		$this->dbExtend();
 
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'gallery_cat')))
 			return [];

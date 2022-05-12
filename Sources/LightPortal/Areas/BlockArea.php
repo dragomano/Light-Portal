@@ -19,13 +19,6 @@ use Bugo\LightPortal\Repositories\BlockRepository;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
-use function censorText;
-use function checkSubmitOnce;
-use function fatal_lang_error;
-use function loadTemplate;
-use function redirectexit;
-use function template_control_richedit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -44,7 +37,7 @@ final class BlockArea
 
 	public function main()
 	{
-		loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_manage'];
 
@@ -85,7 +78,7 @@ final class BlockArea
 
 	public function add()
 	{
-		loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title']    = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_add_title'];
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_blocks;sa=add';
@@ -126,9 +119,9 @@ final class BlockArea
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
 		if (empty($item))
-			fatal_lang_error('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', false, null, 404);
 
-		loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_edit_title'];
 
@@ -143,12 +136,12 @@ final class BlockArea
 		$this->context['current_block'] = $this->repository->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			fatal_lang_error('lp_block_not_editable', false);
+			$this->fatalLangError('lp_block_not_editable', false);
 
 		if ($this->post()->has('remove')) {
 			$this->remove([$item]);
 
-			redirectexit('action=admin;area=lp_blocks;sa=main');
+			$this->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
@@ -204,6 +197,7 @@ final class BlockArea
 			return;
 
 		$this->post()->put('clone', true);
+
 		$result['success'] = false;
 
 		$this->context['lp_block']       = $this->repository->getData($item);
@@ -405,12 +399,13 @@ final class BlockArea
 
 	private function prepareFormFields()
 	{
-		checkSubmitOnce('register');
+		$this->checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
 			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
 				'type'       => 'text',
 				'tab'        => 'content',
@@ -530,12 +525,6 @@ final class BlockArea
 				];
 			} else {
 				$this->createBbcEditor($this->context['lp_block']['content']);
-
-				ob_start();
-				template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
-				$this->context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean() . '</div>';
-
-				$this->context['posting_fields']['content']['input']['tab'] = 'content';
 			}
 		}
 
@@ -606,14 +595,14 @@ final class BlockArea
 		if ($this->post()->has('preview') === false)
 			return;
 
-		checkSubmitOnce('free');
+		$this->checkSubmitOnce('free');
 
 		$this->context['preview_title']   = $this->context['lp_block']['title'][$this->context['user']['language']] ?? '';
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_block']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);
-		censorText($this->context['preview_title']);
-		censorText($this->context['preview_content']);
+		$this->censorText($this->context['preview_title']);
+		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
 			? prepare_content($this->context['lp_block']['type'])

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -58,7 +58,7 @@ class MainMenu extends Plugin
 				'show'  => $this->canViewItem($item['access'])
 			];
 
-			addInlineCss('
+			$this->addInlineCss('
 			.fa-portal_' . $alias . '::before {
 				content: "\\' . $item['unicode'] . '";
 			}');
@@ -110,7 +110,7 @@ class MainMenu extends Plugin
 
 		$this->prepareVariables();
 
-		$this->loadTemplate();
+		$this->setTemplate();
 
 		callback_main_menu_table();
 	}
@@ -162,8 +162,8 @@ class MainMenu extends Plugin
 
 	private function prepareVariables()
 	{
-		$this->context['lp_main_menu_addon_portal_langs'] = smf_json_decode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_forum_langs']  = smf_json_decode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_items']        = smf_json_decode($this->context['lp_main_menu_plugin']['items'] ?? '', true);
+		$this->context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
+		$this->context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
+		$this->context['lp_main_menu_addon_items']        = $this->jsonDecode($this->context['lp_main_menu_plugin']['items'] ?? '', true);
 	}
 }

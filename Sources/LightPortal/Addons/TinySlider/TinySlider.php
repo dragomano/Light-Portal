@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -300,9 +300,9 @@ class TinySlider extends Plugin
 			]
 		];
 
-		$this->loadTemplate();
+		$this->setTemplate();
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 		function handleImages() {
 			return {
 				images: ' . ($this->context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
@@ -331,7 +331,7 @@ class TinySlider extends Plugin
 		$html = '
 		<div id="tiny_slider' . $block_id . '">';
 
-		$images = smf_json_decode($parameters['images'], true);
+		$images = $this->jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
@@ -407,14 +407,14 @@ class TinySlider extends Plugin
 			return;
 
 		if ($parameters['use_cdn']) {
-			loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', ['external' => true]);
+			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', ['external' => true]);
 		} else {
-			loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-			loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
+			$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
+			$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
 		}
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 			let slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.04.22
+ * @version 13.05.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -43,21 +43,6 @@ class BoardNews extends Plugin
 		$parameters['num_posts'] = FILTER_VALIDATE_INT;
 	}
 
-	private function getBoardList(): array
-	{
-		$this->require('Subs-MessageIndex');
-
-		$boardListOptions = [
-			'ignore_boards'   => false,
-			'use_permissions' => true,
-			'not_redirection' => true,
-			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
-			'selected_board'  => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
-		];
-
-		return getBoardList($boardListOptions);
-	}
-
 	public function prepareBlockFields()
 	{
 		if ($this->context['lp_block']['type'] !== 'board_news')
@@ -72,7 +57,14 @@ class BoardNews extends Plugin
 			'options' => []
 		];
 
-		$board_list = $this->getBoardList();
+		$board_list = $this->getBoardList([
+			'ignore_boards'   => false,
+			'use_permissions' => true,
+			'not_redirection' => true,
+			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
+			'selected_board'  => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
+		]);
+
 		foreach ($board_list as $category) {
 			$this->context['posting_fields']['board_id']['input']['options'][$category['name']] = ['options' => []];
 
@@ -110,7 +102,7 @@ class BoardNews extends Plugin
 			return;
 		}
 
-		loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		$this->loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . __('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
@@ -146,7 +138,7 @@ class BoardNews extends Plugin
 					$base .= (isset($this->txt[$base . $count])) ? $count : 'n';
 
 					echo '
-					<li class="like_count smalltext">', sprintf($this->txt[$base], $this->scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $this->context['session_var'] . '=' . $this->context['session_id'], comma_format($count)), '</li>';
+					<li class="like_count smalltext">', sprintf($this->txt[$base], $this->scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . $this->context['session_var'] . '=' . $this->context['session_id'], $this->commaFormat($count)), '</li>';
 				}
 
 				echo '

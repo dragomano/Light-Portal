@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -51,7 +51,7 @@ class DevTools extends Plugin
 
 		$this->context['current_layout'] = $this->post('layout', $this->modSettings['lp_frontpage_layout'] ?? 'articles');
 
-		$this->loadTemplate('show_' . $this->context['current_layout'])->withLayer('layout_switcher');
+		$this->setTemplate('show_' . $this->context['current_layout'])->withLayer('layout_switcher');
 	}
 
 	public function credits(array &$links)

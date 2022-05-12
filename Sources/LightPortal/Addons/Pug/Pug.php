@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\Pug;
@@ -46,7 +46,7 @@ class Pug extends Plugin
 		]);
 
 		try {
-			return $pug->render(un_htmlspecialchars($text));
+			return $pug->render($this->unHtmlSpecialChars($text));
 		} catch (\Exception $e) {
 			return $e->getMessage();
 		}

@@ -17,18 +17,6 @@ namespace Bugo\LightPortal\Entities;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Lists\PageListInterface;
 
-use function censorText;
-use function fatal_lang_error;
-use function isAllowedTo;
-use function loadJavaScriptFile;
-use function loadLanguage;
-use function loadTemplate;
-use function obExit;
-use function redirectexit;
-use function send_http_status;
-use function un_preparsecode;
-use function updateSettings;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -38,7 +26,7 @@ final class Page
 
 	public function show()
 	{
-		isAllowedTo('light_portal_view');
+		$this->middleware('light_portal_view');
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
@@ -48,28 +36,28 @@ final class Page
 			$alias = explode(';', $alias)[0];
 
 			if ($this->isFrontpage($alias))
-				redirectexit('action=' . LP_ACTION);
+				$this->redirect('action=' . LP_ACTION);
 
 			$this->context['lp_page'] = $this->getDataByAlias($alias);
 		}
 
 		if (empty($this->context['lp_page'])) {
 			$this->changeErrorPage();
-			fatal_lang_error('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', false, null, 404);
 		}
 
 		if (empty($this->context['lp_page']['can_view'])) {
 			$this->changeErrorPage();
-			fatal_lang_error('cannot_light_portal_view_page', false);
+			$this->fatalLangError('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($this->context['lp_page']['status']) && empty($this->context['lp_page']['can_edit'])) {
 			$this->changeErrorPage();
-			fatal_lang_error('lp_page_not_activated', false);
+			$this->fatalLangError('lp_page_not_activated', false);
 		}
 
 		if ($this->context['lp_page']['created_at'] > time())
-			send_http_status(404);
+			$this->sendStatus(404);
 
 		$this->context['lp_page']['errors'] = [];
 		if (empty($this->context['lp_page']['status']) && $this->context['lp_page']['can_edit'])
@@ -97,7 +85,7 @@ final class Page
 			];
 		}
 
-		loadTemplate('LightPortal/ViewPage');
+		$this->loadTemplate('LightPortal/ViewPage');
 
 		$this->context['sub_template'] = 'show_page';
 
@@ -109,8 +97,8 @@ final class Page
 		$this->updateNumViews();
 
 		if ($this->context['user']['is_logged']) {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
-			loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+			$this->loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
 		}
 	}
 
@@ -137,7 +125,7 @@ final class Page
 		);
 
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			censorText($row['content']);
+			$this->censorText($row['content']);
 
 			$og_image = null;
 			if (! empty($this->modSettings['lp_page_og_image'])) {
@@ -227,7 +215,7 @@ final class Page
 
 		$front->prepareTemplates();
 
-		obExit();
+		$this->obExit();
 	}
 
 	public function getList(): array
@@ -326,9 +314,9 @@ final class Page
 			$this->context['lp_frontpage_pages'][] = $page;
 		}
 
-		updateSettings(['lp_frontpage_pages' => implode(',', $this->context['lp_frontpage_pages'])]);
+		$this->updateSettings(['lp_frontpage_pages' => implode(',', $this->context['lp_frontpage_pages'])]);
 
-		redirectexit($this->context['canonical_url']);
+		$this->redirect($this->context['canonical_url']);
 	}
 
 	private function setMeta()
@@ -506,8 +494,7 @@ final class Page
 		$data['can_edit'] = $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
 
 		if ($data['type'] === 'bbc') {
-			$this->require('Subs-Post');
-			$data['content'] = un_preparsecode($data['content']);
+			$data['content'] = $this->unPreparseCode($data['content']);
 		}
 
 		if (! empty($data['category_id']))
@@ -527,7 +514,7 @@ final class Page
 		if ($this->modSettings['lp_show_comment_block'] === 'none')
 			return;
 
-		loadLanguage('Editor');
+		$this->loadLanguage('Editor');
 
 		$this->hook('comments');
 

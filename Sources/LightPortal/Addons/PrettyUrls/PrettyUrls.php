@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.01.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
@@ -53,7 +53,7 @@ class PrettyUrls extends Plugin
 			'title' => '<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">Light Portal</a> pages',
 		];
 
-		updateSettings(['pretty_filters' => serialize($prettyFilters)]);
+		$this->updateSettings(['pretty_filters' => serialize($prettyFilters)]);
 
 		if (function_exists('pretty_update_filters'))
 			pretty_update_filters();

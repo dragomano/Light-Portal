@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -38,7 +38,7 @@ class Builder
 		$dir_ready = mkdir($this->path);
 
 		if (! $dir_ready) {
-			fatal_error($this->txt['lp_plugin_maker']['addon_dir_not_created'], false);
+			$this->fatalError($this->txt['lp_plugin_maker']['addon_dir_not_created']);
 		}
 
 		copy(LP_ADDON_DIR . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'index.php');
@@ -55,7 +55,7 @@ class Builder
 		$dir_ready = mkdir($this->path . DIRECTORY_SEPARATOR . 'langs');
 
 		if (! $dir_ready) {
-			fatal_error($this->txt['lp_plugin_maker']['lang_dir_not_created'], false);
+			$this->fatalError($this->txt['lp_plugin_maker']['lang_dir_not_created']);
 		}
 
 		copy($this->path . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'langs' . DIRECTORY_SEPARATOR . 'index.php');

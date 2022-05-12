@@ -14,13 +14,6 @@
 
 namespace Bugo\LightPortal;
 
-use function allowedTo;
-use function smf_json_decode;
-use function loadCSSFile;
-use function loadTemplate;
-use function updateSettings;
-use function redirectexit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -42,10 +35,10 @@ abstract class AbstractMain
 
 	protected function defineVars()
 	{
-		$this->context['allow_light_portal_view']              = allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_own_blocks'] = allowedTo('light_portal_manage_own_blocks');
-		$this->context['allow_light_portal_manage_own_pages']  = allowedTo('light_portal_manage_own_pages');
-		$this->context['allow_light_portal_approve_pages']     = allowedTo('light_portal_approve_pages');
+		$this->context['allow_light_portal_view']              = $this->allowedTo('light_portal_view');
+		$this->context['allow_light_portal_manage_own_blocks'] = $this->allowedTo('light_portal_manage_own_blocks');
+		$this->context['allow_light_portal_manage_own_pages']  = $this->allowedTo('light_portal_manage_own_pages');
+		$this->context['allow_light_portal_approve_pages']     = $this->allowedTo('light_portal_approve_pages');
 
 		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages']] = $this->getNumActiveEntities();
 
@@ -63,24 +56,24 @@ abstract class AbstractMain
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
 		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: smf_json_decode($this->modSettings['lp_left_panel_width'], true, false);
+			: $this->jsonDecode($this->modSettings['lp_left_panel_width'], true, false);
 		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])
 			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: smf_json_decode($this->modSettings['lp_right_panel_width'], true, false);
+			: $this->jsonDecode($this->modSettings['lp_right_panel_width'], true, false);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
-		$this->context['lp_panel_direction'] = smf_json_decode($this->modSettings['lp_panel_direction'] ?? '', true, false);
+		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);
 		$this->context['lp_active_blocks']   = (new Entities\Block)->getActive();
 		$this->context['lp_icon_set']        = (new Lists\IconList)->getAll();
 	}
 
-	protected function loadCssFiles()
+	protected function loadAssets()
 	{
 		if (! empty($this->modSettings['lp_fa_source'])) {
 			if ($this->modSettings['lp_fa_source'] === 'css_local') {
-				loadCSSFile('all.min.css', [], 'portal_fontawesome');
+				$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
 			} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
-				loadCSSFile(
+				$this->loadCSSFile(
 					$this->modSettings['lp_fa_custom'],
 					['external' => true, 'seed' => false],
 					'portal_fontawesome'
@@ -88,9 +81,9 @@ abstract class AbstractMain
 			}
 		}
 
-		loadCSSFile('light_portal/flexboxgrid.css');
-		loadCSSFile('light_portal/portal.css');
-		loadCSSFile('custom_frontpage.css');
+		$this->loadCSSFile('light_portal/flexboxgrid.css');
+		$this->loadCSSFile('light_portal/portal.css');
+		$this->loadCSSFile('custom_frontpage.css');
 	}
 
 	/**
@@ -163,7 +156,7 @@ abstract class AbstractMain
 
 		$this->context['lp_load_page_stats'] = sprintf($this->txt['lp_load_page_stats'], round(microtime(true) - $this->context['lp_load_time'], 3), $this->context['lp_num_queries']);
 
-		loadTemplate('LightPortal/ViewDebug');
+		$this->loadTemplate('LightPortal/ViewDebug');
 
 		if (empty($key = array_search('lp_portal', $this->context['template_layers']))) {
 			$this->context['template_layers'][] = 'debug';
@@ -190,9 +183,9 @@ abstract class AbstractMain
 			$this->context['lp_frontpage_topics'][] = $topic;
 		}
 
-		updateSettings(['lp_frontpage_topics' => implode(',', $this->context['lp_frontpage_topics'])]);
+		$this->updateSettings(['lp_frontpage_topics' => implode(',', $this->context['lp_frontpage_topics'])]);
 
-		redirectexit('topic=' . $topic);
+		$this->redirect('topic=' . $topic);
 	}
 
 	private function getNumActiveEntities(): array
@@ -228,50 +221,6 @@ abstract class AbstractMain
 		}
 
 		return array_values($num_entities);
-	}
-
-	/**
-	 * Get a list of all used classes for blocks with a header
-	 *
-	 * Получаем список всех используемых классов для блоков с заголовком
-	 */
-	private function getTitleClasses(): array
-	{
-		return [
-			'cat_bar'              => '<div class="cat_bar"><h3 class="catbg">%1$s</h3></div>',
-			'title_bar'            => '<div class="title_bar"><h3 class="titlebg">%1$s</h3></div>',
-			'sub_bar'              => '<div class="sub_bar"><h3 class="subbg">%1$s</h3></div>',
-			'noticebox'            => '<div class="noticebox"><h3>%1$s</h3></div>',
-			'infobox'              => '<div class="infobox"><h3>%1$s</h3></div>',
-			'descbox'              => '<div class="descbox"><h3>%1$s</h3></div>',
-			'generic_list_wrapper' => '<div class="generic_list_wrapper"><h3>%1$s</h3></div>',
-			'progress_bar'         => '<div class="progress_bar"><h3>%1$s</h3></div>',
-			'popup_content'        => '<div class="popup_content"><h3>%1$s</h3></div>',
-			''                     => '<div>%1$s</div>',
-		];
-	}
-
-	/**
-	 * Get a list of all used classes for blocks with content
-	 *
-	 * Получаем список всех используемых классов для блоков с контентом
-	 */
-	private function getContentClasses(): array
-	{
-		return [
-			'roundframe'           => '<div class="roundframe noup" %2$s>%1$s</div>',
-			'roundframe2'          => '<div class="roundframe" %2$s>%1$s</div>',
-			'windowbg'             => '<div class="windowbg noup" %2$s>%1$s</div>',
-			'windowbg2'            => '<div class="windowbg" %2$s>%1$s</div>',
-			'information'          => '<div class="information" %2$s>%1$s</div>',
-			'errorbox'             => '<div class="errorbox" %2$s>%1$s</div>',
-			'noticebox'            => '<div class="noticebox" %2$s>%1$s</div>',
-			'infobox'              => '<div class="infobox" %2$s>%1$s</div>',
-			'descbox'              => '<div class="descbox" %2$s>%1$s</div>',
-			'bbc_code'             => '<div class="bbc_code" %2$s>%1$s</div>',
-			'generic_list_wrapper' => '<div class="generic_list_wrapper" %2$s>%1$s</div>',
-			''                     => '<div%2$s>%1$s</div>',
-		];
 	}
 
 	private function getBlockPlacements(): array

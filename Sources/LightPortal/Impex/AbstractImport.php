@@ -16,8 +16,6 @@ namespace Bugo\LightPortal\Impex;
 use Bugo\LightPortal\Helper;
 use SimpleXMLElement;
 
-use function fatal_lang_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -106,7 +104,7 @@ abstract class AbstractImport implements ImportInterface
 	{
 		if (empty($results)) {
 			$this->smcFunc['db_transaction']('rollback');
-			fatal_lang_error('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed', false);
 		}
 
 		$this->smcFunc['db_transaction']('commit');

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -133,7 +133,7 @@ class AdsBlock extends Plugin
 
 		$this->context['ads_placements'] = $this->getPlacements();
 
-		$this->loadTemplate()->withLayer('ads_block');
+		$this->setTemplate()->withLayer('ads_block');
 	}
 
 	/**
@@ -153,7 +153,7 @@ class AdsBlock extends Plugin
 	public function init()
 	{
 		if (! function_exists('lp_show_blocks'))
-			loadTemplate('LightPortal/ViewBlock');
+			$this->loadTemplate('LightPortal/ViewBlock');
 
 		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
 		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
@@ -199,7 +199,7 @@ class AdsBlock extends Plugin
 	public function adminAreas()
 	{
 		if ($this->request()->has('area') && $this->request('area') === 'lp_blocks')
-			$this->loadTemplate()->withLayer('ads_block_form');
+			$this->setTemplate()->withLayer('ads_block_form');
 
 		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && $this->request()->has('sa') && $this->request('sa') === 'panels') {
 			unset($this->context['lp_block_placements']['ads']);
@@ -217,7 +217,7 @@ class AdsBlock extends Plugin
 	 */
 	public function messageindexButtons()
 	{
-		$this->loadTemplate()->withLayer('ads_placement_board');
+		$this->setTemplate()->withLayer('ads_placement_board');
 	}
 
 	/**
@@ -232,7 +232,7 @@ class AdsBlock extends Plugin
 		if ($this->isTopicNumRepliesLesserThanMinReplies())
 			return;
 
-		$this->loadTemplate()->withLayer('ads_placement_topic');
+		$this->setTemplate()->withLayer('ads_placement_topic');
 	}
 
 	/**
@@ -322,7 +322,7 @@ class AdsBlock extends Plugin
 
 			$after_every_last_post = ob_get_clean();
 
-			addInlineJavaScript('
+			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
 			$(' . JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
@@ -341,7 +341,7 @@ class AdsBlock extends Plugin
 
 			$after_last_post = ob_get_clean();
 
-			addInlineJavaScript('
+			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
 			$("#quickModForm").append(' . JavaScriptEscape($after_last_post) . ');
 		});', true);

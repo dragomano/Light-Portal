@@ -66,6 +66,30 @@ final class PluginRepository
 		return $settings;
 	}
 
+	public function updateSettings(string $plugin_name, array $settings = [])
+	{
+		if (empty($settings))
+			return;
+
+		$new_settings = $old_settings = [];
+		foreach ($settings as $config => $value) {
+			if (empty($value))
+				$old_settings[] = $config;
+
+			if ($value) {
+				$new_settings[] = [
+					'name'   => $plugin_name,
+					'config' => $config,
+					'value'  => $value,
+				];
+			}
+		}
+
+		$this->removeSettings($plugin_name, $old_settings);
+
+		$this->addSettings($new_settings);
+	}
+
 	public function removeSettings(string $plugin_name, array $settings = [])
 	{
 		if (empty($settings))

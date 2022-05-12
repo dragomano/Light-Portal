@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\GalleryFrontPage;
@@ -26,9 +26,9 @@ class GalleryArticle extends AbstractArticle
 
 	public function init()
 	{
-		isAllowedTo('smfgallery_view');
+		$this->middleware('smfgallery_view');
 
-		$this->selected_categories = smf_json_decode($this->context['lp_gallery_front_page_plugin']['gallery_categories'] ?? '', true);
+		$this->selected_categories = $this->jsonDecode($this->context['lp_gallery_front_page_plugin']['gallery_categories'] ?? '', true);
 
 		$this->params = [
 			'approved'            => 1,
@@ -99,7 +99,7 @@ class GalleryArticle extends AbstractArticle
 					'after' => ''
 				],
 				'image'     => $this->modSettings['gallery_url'] ?? ($this->boardurl . '/gallery/') . $row['filename'],
-				'can_edit'  => $this->user_info['is_admin'] || allowedTo('smfgallery_manage') || (allowedTo('smfgallery_edit') && $row['id_member'] == $this->user_info['id']),
+				'can_edit'  => $this->user_info['is_admin'] || $this->allowedTo('smfgallery_manage') || ($this->allowedTo('smfgallery_edit') && $row['id_member'] == $this->user_info['id']),
 				'edit_link' => $this->scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 

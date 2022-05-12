@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.03.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -113,16 +113,12 @@ class PageImport extends AbstractOtherPageImport
 			]
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
-
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_pages';
+		$this->createList($listOptions);
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
-		db_extend();
+		$this->dbExtend();
 
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return [];
@@ -161,7 +157,7 @@ class PageImport extends AbstractOtherPageImport
 
 	public function getTotalCount(): int
 	{
-		db_extend();
+		$this->dbExtend();
 
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return 0;
@@ -212,7 +208,7 @@ class PageImport extends AbstractOtherPageImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags(parse_bbc($row['intro'])),
+				'description'  => strip_tags($this->parseBbc($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,

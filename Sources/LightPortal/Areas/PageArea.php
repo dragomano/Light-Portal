@@ -20,16 +20,6 @@ use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
 use Bugo\LightPortal\Repositories\PageRepository;
 
-use function censorText;
-use function checkSubmitOnce;
-use function createList;
-use function fatal_lang_error;
-use function loadLanguage;
-use function loadTemplate;
-use function updateSettings;
-use function redirectexit;
-use function template_control_richedit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -48,8 +38,8 @@ final class PageArea
 
 	public function main()
 	{
-		loadLanguage('Packages');
-		loadTemplate('LightPortal/ManagePages');
+		$this->loadLanguage('Packages');
+		$this->loadTemplate('LightPortal/ManagePages');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_manage'];
 
@@ -282,12 +272,9 @@ final class PageArea
 			unset($listOptions['columns']['num_comments']);
 		}
 
-		$this->require('Subs-List');
-		createList($listOptions);
+		$this->createList($listOptions);
 
 		$this->context['lp_pages']['title'] .= ' (' . $this->context['lp_pages']['total_num_items'] . ')';
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_pages';
 	}
 
 	/**
@@ -338,12 +325,12 @@ final class PageArea
 
 		$this->cache()->flush();
 
-		redirectexit($redirect);
+		$this->redirect($redirect);
 	}
 
 	public function add()
 	{
-		loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_add_title'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_add_title'];
@@ -370,10 +357,10 @@ final class PageArea
 		$item = (int) $this->request('id');
 
 		if (empty($item)) {
-			fatal_lang_error('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', false, null, 404);
 		}
 
-		loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_edit_title'];
 
@@ -385,10 +372,10 @@ final class PageArea
 		$this->context['lp_current_page'] = (new Page)->getDataByItem($item);
 
 		if (empty($this->context['lp_current_page']))
-			fatal_lang_error('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', false, null, 404);
 
 		if ($this->context['lp_current_page']['can_edit'] === false)
-			fatal_lang_error('lp_page_not_editable', false);
+			$this->fatalLangError('lp_page_not_editable', false);
 
 		$this->prepareForumLanguages();
 
@@ -402,7 +389,7 @@ final class PageArea
 
 			$this->cache()->forget('page_' . $this->context['lp_current_page']['alias']);
 
-			redirectexit('action=admin;area=lp_pages;sa=main');
+			$this->redirect('action=admin;area=lp_pages;sa=main');
 		}
 
 		$this->validateData();
@@ -484,7 +471,7 @@ final class PageArea
 			$items = array_merge(array_diff($items, $this->context['lp_frontpage_pages']), $this->context['lp_frontpage_pages']);
 		}
 
-		updateSettings(['lp_frontpage_pages' => implode(',', $items)]);
+		$this->updateSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
 	private function getOptions(): array
@@ -625,7 +612,7 @@ final class PageArea
 
 	private function prepareFormFields()
 	{
-		checkSubmitOnce('register');
+		$this->checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
@@ -633,7 +620,8 @@ final class PageArea
 
 		$i = 0;
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
+			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
 			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
 				'type'       => 'text',
 				'tab'        => 'content',
@@ -680,12 +668,6 @@ final class PageArea
 			];
 		} else {
 			$this->createBbcEditor($this->context['lp_page']['content']);
-
-			ob_start();
-			template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
-			$this->context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean() . '</div>';
-
-			$this->context['posting_fields']['content']['input']['tab'] = 'content';
 		}
 
 		$this->context['posting_fields']['alias']['label']['text'] = $this->txt['lp_page_alias'];
@@ -874,14 +856,14 @@ final class PageArea
 		if ($this->post()->has('preview') === false)
 			return;
 
-		checkSubmitOnce('free');
+		$this->checkSubmitOnce('free');
 
 		$this->context['preview_title'] = $this->context['lp_page']['title'][$this->context['user']['language']];
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_page']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);
-		censorText($this->context['preview_title']);
-		censorText($this->context['preview_content']);
+		$this->censorText($this->context['preview_title']);
+		$this->censorText($this->context['preview_content']);
 
 		if ($this->context['preview_content'])
 			$this->context['preview_content'] = parse_content($this->context['preview_content'], $this->context['lp_page']['type']);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 13.05.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -154,7 +154,7 @@ class BoardStats extends Plugin
 		}
 
 		if ($parameters['show_basic_info'] && $board_stats['basic_info']) {
-			$stats_title = allowedTo('view_stats') ? '<a href="' . $this->scripturl . '?action=stats">' . $this->txt['forum_stats'] . '</a>' : $this->txt['forum_stats'];
+			$stats_title = $this->allowedTo('view_stats') ? '<a href="' . $this->scripturl . '?action=stats">' . $this->txt['forum_stats'] . '</a>' : $this->txt['forum_stats'];
 
 			echo '
 				<div>
@@ -165,7 +165,7 @@ class BoardStats extends Plugin
 			echo '
 					<ul class="bbc_list">';
 
-			if (allowedTo('view_stats')) {
+			if ($this->allowedTo('view_stats')) {
 				echo '
 						<li>', $this->txt['members'], ': ', $board_stats['basic_info']['members'], '</li>
 						<li>', $this->txt['posts'], ': ', $board_stats['basic_info']['posts'], '</li>
@@ -180,7 +180,7 @@ class BoardStats extends Plugin
 		}
 
 		if ($parameters['show_whos_online'] && $board_stats['whos_online']) {
-			$online_title = allowedTo('who_view') ? '<a href="' . $this->scripturl . '?action=who">' . $this->txt['online_users'] . '</a>' : $this->txt['online_users'];
+			$online_title = $this->allowedTo('who_view') ? '<a href="' . $this->scripturl . '?action=who">' . $this->txt['online_users'] . '</a>' : $this->txt['online_users'];
 
 			echo '
 				<div>

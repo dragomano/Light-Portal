@@ -16,9 +16,6 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 
-use function censorText;
-use function loadTemplate;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -59,7 +56,7 @@ final class Block
 			$this->context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
-		loadTemplate('LightPortal/ViewBlock');
+		$this->loadTemplate('LightPortal/ViewBlock');
 
 		$counter = 0;
 		foreach ($this->context['template_layers'] as $layer) {
@@ -98,7 +95,7 @@ final class Block
 
 			$active_blocks = [];
 			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-				censorText($row['content']);
+				$this->censorText($row['content']);
 
 				$active_blocks[$row['block_id']] ??= [
 					'id'            => (int) $row['block_id'],

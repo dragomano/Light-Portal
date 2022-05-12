@@ -31,7 +31,7 @@ final class Category extends AbstractPageList
 		if (array_key_exists($this->context['lp_category'], $this->getAllCategories()) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
 			$this->txt['back'] = $this->txt['lp_all_categories'];
-			fatal_lang_error('lp_category_not_found', false, null, 404);
+			$this->fatalLangError('lp_category_not_found', false, null, 404);
 		}
 
 		if (empty($this->context['lp_category'])) {
@@ -77,13 +77,9 @@ final class Category extends AbstractPageList
 			];
 		}
 
-		$this->require('Subs-List');
-		createList($listOptions);
+		$this->createList($listOptions);
 
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_categories';
-
-		obExit();
+		$this->obExit();
 	}
 
 	public function getPages(int $start, int $items_per_page, string $sort): array
@@ -203,13 +199,9 @@ final class Category extends AbstractPageList
 			]
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
+		$this->createList($listOptions);
 
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'categories';
-
-		obExit();
+		$this->obExit();
 	}
 
 	public function getList(): array
@@ -262,7 +254,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			if ($row['description'] && strpos($row['description'], ']') !== false) {
-				$row['description'] = parse_bbc($row['description']);
+				$row['description'] = $this->parseBbc($row['description']);
 			}
 
 			$items[$row['category_id']] = [

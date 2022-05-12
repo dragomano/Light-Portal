@@ -14,56 +14,19 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session};
+use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session, SMFTrait};
 
 use DateTime;
 use DateTimeZone;
 use Exception;
 use IntlDateFormatter;
 
-use function getLanguages;
-use function loadMemberContext;
-use function loadTemplate;
-use function log_error;
-use function shorten_subject;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * @property array $context
- * @property array $modSettings
- * @property array $txt
- * @property array $db_cache
- * @property-read array $smcFunc
- * @property-read array $user_info
- * @property-read array $user_profile
- * @property-read array $user_settings
- * @property-read array $memberContext
- * @property-read array $settings
- * @property-read array $options
- * @property-read string $db_type
- * @property-read string $db_prefix
- * @property-read string $language
- * @property-read string $scripturl
- * @property-read string $boardurl
- * @property-read string $boarddir
- * @property-read string $sourcedir
- */
 trait Helper
 {
-	private array $smfGlobals = ['context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings', 'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir'];
-
-	/**
-	 * @return mixed
-	 */
-	public function &__get(string $name)
-	{
-		if (in_array($name, $this->smfGlobals))
-			return $GLOBALS[$name];
-
-		log_error('[LP] unsupported property: ' . $name, 'user');
-	}
+	use SMFTrait;
 
 	/**
 	 * @param string|null $key
@@ -167,13 +130,13 @@ trait Helper
 			return '';
 
 		if (empty($userData))
-			$userData = loadMemberData($userId);
+			$userData = $this->loadMemberData($userId);
 
 		if (! isset($this->memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
-				loadMemberContext($userId, true);
+				$this->loadMemberContext($userId, true);
 			} catch (Exception $e) {
-				log_error('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
+				$this->logError('[LP] getUserAvatar helper: ' . $e->getMessage());
 			}
 		}
 
@@ -188,7 +151,7 @@ trait Helper
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
 	{
-		$userData = loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+		$userData = $this->loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
@@ -202,7 +165,7 @@ trait Helper
 
 		$allFunctions = get_defined_functions()['user'];
 
-		loadTemplate('LightPortal/ViewFrontPage');
+		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		// Additional layouts
 		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
@@ -239,9 +202,7 @@ trait Helper
 	public function getForumThemes(bool $only_available = false): array
 	{
 		if (($themes = $this->cache()->get('forum_themes')) === null) {
-			$this->require('Subs-Themes');
-
-			get_installed_themes();
+			$this->prepareInstalledThemes();
 
 			$themes = $this->context['themes'];
 
@@ -258,7 +219,7 @@ trait Helper
 
 	public function prepareForumLanguages()
 	{
-		getLanguages();
+		$this->getLanguages();
 
 		$temp = $this->context['languages'];
 
@@ -312,7 +273,7 @@ trait Helper
 
 	public function getTeaser(string $text, int $length = 150): string
 	{
-		return shorten_subject(strip_tags($text), $length) ?: '...';
+		return $this->getShortenText(strip_tags($text), $length) ?: '...';
 	}
 
 	/**
@@ -509,7 +470,7 @@ trait Helper
 			return (new IntlDateFormatter($this->txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType)))->format($timestamp);
 		}
 
-		log_error('[LP] getLocalDate helper: enable intl extension', 'critical');
+		$this->logError('[LP] getLocalDate helper: enable intl extension', 'critical');
 
 		return '';
 	}

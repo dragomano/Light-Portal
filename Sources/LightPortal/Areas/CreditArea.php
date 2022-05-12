@@ -16,10 +16,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 
-use function isAllowedTo;
-use function loadTemplate;
-use function obExit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -34,13 +30,13 @@ final class CreditArea
 		if ($this->context['current_subaction'] && $this->context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
-			loadTemplate('LightPortal/ViewCredits');
+			$this->loadTemplate('LightPortal/ViewCredits');
 
 			$this->context['sub_template']   = 'portal_credits';
 			$this->context['robot_no_index'] = true;
 			$this->context['page_title']     = LP_NAME . ' - ' . $this->txt['lp_used_components'];
 
-			obExit();
+			$this->obExit();
 		}
 	}
 
@@ -53,7 +49,7 @@ final class CreditArea
 
 	public function prepareComponents()
 	{
-		isAllowedTo('light_portal_view');
+		$this->middleware('light_portal_view');
 
 		$this->context['portal_translations'] = [
 			'Polish'    => ['Adrek', 'jsqx'],

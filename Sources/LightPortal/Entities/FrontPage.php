@@ -17,9 +17,6 @@ namespace Bugo\LightPortal\Entities;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
 
-use function isAllowedTo;
-use function send_http_status;
-
 final class FrontPage
 {
 	use Helper;
@@ -34,7 +31,7 @@ final class FrontPage
 
 	public function show()
 	{
-		isAllowedTo('light_portal_view');
+		$this->middleware('light_portal_view');
 
 		$this->hook('frontModes', [&$this->modes]);
 
@@ -166,7 +163,7 @@ final class FrontPage
 	public function updateStart(int $total, int &$start, int $limit)
 	{
 		if ($start >= $total) {
-			send_http_status(404);
+			$this->sendStatus(404);
 			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
 		}
 

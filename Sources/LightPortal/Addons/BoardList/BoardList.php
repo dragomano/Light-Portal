@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -58,20 +58,16 @@ class BoardList extends Plugin
 
 		$this->context['category_classes'] = $this->getCategoryClasses();
 
-		$this->loadTemplate()->withLayer('board_list');
+		$this->setTemplate()->withLayer('board_list');
 	}
 
 	public function getData(): array
 	{
-		$this->require('Subs-MessageIndex');
-
-		$boardListOptions = [
+		return $this->getBoardList([
 			'ignore_boards'   => true,
 			'use_permissions' => true,
 			'not_redirection' => true,
-		];
-
-		return getBoardList($boardListOptions);
+		]);
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)

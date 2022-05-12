@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.01.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -62,9 +62,9 @@ class SimpleMenu extends Plugin
 		if ($this->context['lp_block']['type'] !== 'simple_menu')
 			return;
 
-		$this->loadTemplate();
+		$this->setTemplate();
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 		function handleItems() {
 			return {
 				items: ' . ($this->context['lp_block']['options']['parameters']['items'] ?: '[]') . ',
@@ -93,7 +93,7 @@ class SimpleMenu extends Plugin
 		$html = '
 		<ul class="dropmenu">';
 
-		$items = smf_json_decode($items, true, false);
+		$items = $this->jsonDecode($items, true, false);
 
 		foreach ($items as $item) {
 			[$title, $link] = [$item['name'], $item['link']];

@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
 
-use function fatal_lang_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -78,7 +76,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		}
 
 		if (empty($results))
-			fatal_lang_error('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed', false);
 
 		if ($titles) {
 			$titles = array_chunk($titles, 100);

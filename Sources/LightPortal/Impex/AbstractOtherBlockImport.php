@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
 
-use function fatal_lang_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -111,7 +109,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		}
 
 		if (empty($results))
-			fatal_lang_error('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed', false);
 
 		// Restore the cache
 		$this->db_cache = $this->tempCache;

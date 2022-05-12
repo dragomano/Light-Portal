@@ -150,7 +150,7 @@ final class Maintainer extends SMF_BackgroundTask
 			'lp_titles'
 		];
 
-		db_extend();
+		$this->dbExtend();
 
 		foreach ($tables as $table)
 			$this->smcFunc['db_optimize_table']('{db_prefix}' . $table);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -58,9 +58,9 @@ class Search extends Plugin
 
 		$this->context['search_results'] = $this->getResults();
 
-		$this->loadTemplate('show_results');
+		$this->setTemplate('show_results');
 
-		obExit();
+		$this->obExit();
 	}
 
 	private function prepareQuickResults()
@@ -144,8 +144,8 @@ class Search extends Plugin
 		if ($type !== 'search')
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', ['external' => true]);
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">

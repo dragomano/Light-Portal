@@ -17,10 +17,6 @@ namespace Bugo\LightPortal;
 use SplObjectStorage;
 use Bugo\LightPortal\Repositories\PluginRepository;
 
-use function fetch_web_data;
-use function loadCSSFile;
-use function loadJavaScriptFile;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -99,9 +95,9 @@ final class AddonHandler
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
-				$this->loadLanguage($path, $snakeName);
-				$this->loadCss($path, $snakeName);
-				$this->loadJs($path, $snakeName);
+				$this->loadLang($path, $snakeName);
+				$this->loadCSS($path, $snakeName);
+				$this->loadJS($path, $snakeName);
 
 				$this->context['lp_' . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
 				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
@@ -137,13 +133,13 @@ final class AddonHandler
 					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename($link)))
 						continue;
 
-					file_put_contents($filename, fetch_web_data($link), LOCK_EX);
+					file_put_contents($filename, $this->fetchWebData($link), LOCK_EX);
 				}
 			}
 		}
 	}
 
-	private function loadLanguage(string $path, string $snakeName)
+	private function loadLang(string $path, string $snakeName)
 	{
 		if (isset($this->txt['lp_' . $snakeName]))
 			return;
@@ -160,7 +156,7 @@ final class AddonHandler
 			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private function loadCss(string $path, string $snakeName)
+	private function loadCSS(string $path, string $snakeName)
 	{
 		if (! is_file($style = $path . 'style.css'))
 			return;
@@ -174,10 +170,10 @@ final class AddonHandler
 		if (! @is_writable($this->settings['default_theme_dir'] . '/css/light_portal') || ! $isFileExists)
 			return;
 
-		loadCSSFile('light_portal/addon_' . $snakeName . '.css');
+		$this->loadCSSFile('light_portal/addon_' . $snakeName . '.css');
 	}
 
-	private function loadJs(string $path, string $snakeName)
+	private function loadJS(string $path, string $snakeName)
 	{
 		if (! is_file($script = $path . 'script.js'))
 			return;
@@ -191,6 +187,6 @@ final class AddonHandler
 		if (! @is_writable($this->settings['default_theme_dir'] . '/scripts/light_portal') || ! $isFileExists)
 			return;
 
-		loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
+		$this->loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
 	}
 }

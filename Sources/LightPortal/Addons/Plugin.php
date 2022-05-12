@@ -39,7 +39,7 @@ abstract class Plugin
 		return $this->getCalledClass()->getShortName();
 	}
 
-	public function loadTemplate(string $sub_template = ''): Plugin
+	public function setTemplate(string $sub_template = ''): Plugin
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . 'template.php';
 

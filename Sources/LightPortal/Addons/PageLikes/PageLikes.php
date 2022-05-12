@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
@@ -61,7 +61,7 @@ class PageLikes extends Plugin
 			'type'        => $type,
 			'flush_cache' => 'lp_likes_page_' . $content . '_' . $this->user_info['id'],
 			'redirect'    => LP_PAGE_PARAM . '=' . $alias,
-			'can_like'    => $this->user_info['id'] == $author_id ? 'cannot_like_content' : (allowedTo('likes_like') ? true : 'cannot_like_content')
+			'can_like'    => $this->user_info['id'] == $author_id ? 'cannot_like_content' : ($this->allowedTo('likes_like') ? true : 'cannot_like_content')
 		];
 	}
 
@@ -78,19 +78,19 @@ class PageLikes extends Plugin
 		if (empty($this->modSettings['enable_likes']))
 			return;
 
-		loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		$this->loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		$user_likes = $this->user_info['is_guest'] ? [] : $this->prepareLikesContext($data['id']);
 
 		$data['likes'] = [
 			'count'    => $this->getLikesCount($data['id']),
 			'you'      => in_array($data['id'], $user_likes),
-			'can_like' => ! $this->user_info['is_guest'] && ! $is_author && allowedTo('likes_like')
+			'can_like' => ! $this->user_info['is_guest'] && ! $is_author && $this->allowedTo('likes_like')
 		];
 
 		ob_start();
 
-		$this->loadTemplate();
+		$this->setTemplate();
 
 		show_likes_block($data);
 

@@ -18,8 +18,6 @@ use Bugo\LightPortal\Entities\{Block, Page, FrontPage};
 use Bugo\LightPortal\Lists\{Category, Tag};
 
 use function add_integration_function;
-use function loadLanguage;
-use function redirectexit;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,7 +32,7 @@ final class Integration extends AbstractMain
 		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
 		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
 		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
-		add_integration_function('integrate_redirect', __CLASS__ . '::redirect#', false, __FILE__);
+		add_integration_function('integrate_redirect', __CLASS__ . '::changeRedirect#', false, __FILE__);
 		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
 		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
 		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
@@ -95,15 +93,14 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		loadLanguage('LightPortal/LightPortal');
-
+		$this->loadLanguage('LightPortal/LightPortal');
 		$this->defineVars();
-		$this->loadCssFiles();
+		$this->loadAssets();
 
 		AddonHandler::getInstance()->run();
 	}
 
-	public function redirect(string &$setLocation)
+	public function changeRedirect(string &$setLocation)
 	{
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
 			return;
@@ -132,7 +129,7 @@ final class Integration extends AbstractMain
 			$this->unsetDisabledActions($actions);
 
 			if (! empty($this->context['current_action']) && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
-				redirectexit();
+				$this->redirect();
 		}
 	}
 
