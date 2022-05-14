@@ -243,8 +243,6 @@ final class ConfigArea
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
 		];
 
-		$this->checkNewVersion();
-
 		$this->loadTemplate('LightPortal/ManageSettings');
 
 		// Save
@@ -633,31 +631,6 @@ final class ConfigArea
 		$this->hook('addPluginAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
-	}
-
-	private function getLastVersion(): string
-	{
-		$data = $this->fetchWebData('https://api.github.com/repos/dragomano/light-portal/releases/latest');
-
-		if (empty($data))
-			return LP_VERSION;
-
-		$data = $this->jsonDecode($data, true);
-
-		if (LP_RELEASE_DATE < $data['published_at'])
-			return str_replace('v', '', $data['tag_name']);
-
-		return LP_VERSION;
-	}
-
-	private function checkNewVersion()
-	{
-		if (version_compare(LP_VERSION, $new_version = $this->getLastVersion(), '<')) {
-			$this->context['settings_insert_above'] = '
-			<div class="noticebox">
-				' . $this->txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
-			</div>';
-		}
 	}
 
 	/**
