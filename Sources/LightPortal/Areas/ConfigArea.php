@@ -176,16 +176,6 @@ final class ConfigArea
 		];
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
-
-		if ($this->request()->has('getDebugInfo'))
-			$this->generateDumpFile();
-
-		if (! isset($this->context['settings_title']))
-			return;
-
-		$this->context['settings_title'] .= '<span class="floatright" x-data>
-			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $this->txt['lp_debug_info'] . '">' . $this->context['lp_icon_set']['info'] . '</a>
-		</span>';
 	}
 
 	/**
@@ -665,26 +655,6 @@ final class ConfigArea
 
 			$this->context['template_layers'][] = 'docs';
 		}
-	}
-
-	private function generateDumpFile()
-	{
-		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $this->context['lp_enabled_plugins']) . "'" . PHP_EOL;
-		foreach ($this->modSettings as $key => $value) {
-			if (strpos((string) $key, 'lp_') === 0 && isset($this->txt[$key]) && $value) {
-				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
-			}
-		}
-
-		if (ob_get_level())
-			ob_end_clean();
-
-		header('Content-disposition: attachment; filename=portal_settings.txt');
-		header('Content-type: text/plain');
-
-		echo $portal_settings;
-
-		exit;
 	}
 
 	private function prepareAliasList()

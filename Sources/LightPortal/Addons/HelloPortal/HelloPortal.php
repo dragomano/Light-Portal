@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.05.22
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;

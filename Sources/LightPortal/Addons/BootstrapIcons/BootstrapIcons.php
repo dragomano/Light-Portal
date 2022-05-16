@@ -88,7 +88,6 @@ class BootstrapIcons extends Plugin
 		$set['home']          = 'house-door';
 		$set['image']         = 'image';
 		$set['import']        = 'file-arrow-up';
-		$set['info']          = 'exclamation-circle';
 		$set['italic']        = 'type-italic';
 		$set['link']          = 'link';
 		$set['main']          = 'card-list';

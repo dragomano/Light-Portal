@@ -16,7 +16,6 @@ return [
 		'Let the most popular articles be displayed first!',
 		'Or maybe you want to direct the front page to a custom CMS?',
 		'Do not forget to configure permissions.',
-		'Use this button to get a list of all portal settings stored in the database.',
 		'Do not forget to ask questions or at least thank the developer.',
 	],
 	'extra_settings_tour' => [
