@@ -59,7 +59,35 @@ class PageArticle extends AbstractArticle
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at,
 				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name,
-				(SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_date, (SELECT lp_com.author_id FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_id, (SELECT real_name FROM {db_prefix}lp_comments AS lp_com LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member) WHERE lp_com.page_id = p.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_author_name, (SELECT lp_com.message FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id ORDER BY lp_com.created_at DESC LIMIT 1) AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
+				(
+					SELECT lp_com.created_at
+					FROM {db_prefix}lp_comments AS lp_com
+					WHERE p.page_id = lp_com.page_id
+					ORDER BY lp_com.created_at DESC
+					LIMIT 1
+				) AS comment_date,
+				(
+					SELECT lp_com.author_id
+					FROM {db_prefix}lp_comments AS lp_com
+					WHERE p.page_id = lp_com.page_id
+					ORDER BY lp_com.created_at DESC
+					LIMIT 1
+				) AS comment_author_id,
+				(
+					SELECT real_name
+					FROM {db_prefix}lp_comments AS lp_com
+					LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member)
+					WHERE lp_com.page_id = p.page_id
+					ORDER BY lp_com.created_at DESC
+					LIMIT 1
+				) AS comment_author_name,
+				(
+					SELECT lp_com.message
+					FROM {db_prefix}lp_comments AS lp_com
+					WHERE p.page_id = lp_com.page_id
+					ORDER BY lp_com.created_at DESC
+					LIMIT 1
+				) AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '

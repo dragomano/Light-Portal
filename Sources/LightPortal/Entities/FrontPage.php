@@ -99,11 +99,44 @@ final class FrontPage
 		}
 
 		// Mod authors can define their own templates
-		$this->hook('frontCustomTemplate', [$this->getFrontPageLayouts()]);
+		$this->hook('frontCustomTemplate', [$this->getLayouts()]);
 
 		$this->context['insert_after_template'] .= '
 		<script>window.lazyLoadOptions = {};</script>
 		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
+	}
+
+	public function getLayouts(): array
+	{
+		$layouts = $values = [];
+
+		$allFunctions = get_defined_functions()['user'];
+
+		$this->loadTemplate('LightPortal/ViewFrontPage');
+
+		// Additional layouts
+		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
+
+		array_map(fn($layout) => basename($layout) !== 'index.php' ? require_once $layout : false, $defaultLayouts);
+
+		// Support of custom templates
+		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
+			require_once $customTemplates;
+
+		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
+
+		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
+
+		if ($matches[1]) {
+			foreach ($matches[1] as $k => $v) {
+				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
+				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
+			}
+
+			$layouts = array_combine($layouts, $values);
+		}
+
+		return $layouts;
 	}
 
 	/**

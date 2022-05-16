@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\{
 	Helper,
+	Entities\FrontPage,
 	Impex\BlockExport,
 	Impex\BlockImport,
 	Impex\PageExport,
@@ -204,7 +205,7 @@ final class ConfigArea
 		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
 		$this->context['lp_all_categories']    = $this->getAllCategories();
-		$this->context['lp_frontpage_layouts'] = $this->getFrontPageLayouts();
+		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
 		// Initial settings
 		$addSettings = [];

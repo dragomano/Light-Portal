@@ -159,39 +159,6 @@ trait Helper
 		}, $items);
 	}
 
-	public function getFrontPageLayouts(): array
-	{
-		$layouts = $values = [];
-
-		$allFunctions = get_defined_functions()['user'];
-
-		$this->loadTemplate('LightPortal/ViewFrontPage');
-
-		// Additional layouts
-		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
-
-		array_map(fn($layout) => basename($layout) !== 'index.php' ? require_once $layout : false, $defaultLayouts);
-
-		// Support of custom templates
-		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
-			require_once $customTemplates;
-
-		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
-
-		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
-
-		if ($matches[1]) {
-			foreach ($matches[1] as $k => $v) {
-				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
-				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
-			}
-
-			$layouts = array_combine($layouts, $values);
-		}
-
-		return $layouts;
-	}
-
 	public function getContentTypes(): array
 	{
 		$types = array_combine(['bbc', 'html', 'php'], $this->txt['lp_page_types']);
