@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -517,7 +517,7 @@ class Handler extends Plugin
 				->setType('array');
 
 			if (! empty($this->context['lp_plugin']['options']))
-				$method->setBody("\$this->addDefaultValues([" . PHP_EOL);
+				$method->addBody("\$this->addDefaultValues([");
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (! empty($option['default'])) {
@@ -526,7 +526,7 @@ class Handler extends Plugin
 			}
 
 			if (! empty($this->context['lp_plugin']['options']))
-				$method->setBody("]);" . PHP_EOL);
+				$method->addBody("]);" . PHP_EOL);
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multicheck', 'select'])) {

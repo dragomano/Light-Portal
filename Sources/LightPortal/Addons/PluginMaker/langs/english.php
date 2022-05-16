@@ -25,6 +25,7 @@ return [
 	'component_link' => 'Link to component site',
 	'component_author' => 'Component author',
 	'option_name' => 'Option name (Latin)',
+	'option_desc' => 'Use the "block_option_name" template to add block parameters, or "option_name" - to add plugin parameters.',
 	'option_type' => 'Option type',
 	'option_type_set' => array('Text field', 'Web address', 'Input color', 'Input number (int)', 'Input number (float)', 'Checkbox', 'Multiple select', 'Select'),
 	'option_default_value' => 'Default value',
