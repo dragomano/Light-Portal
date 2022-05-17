@@ -36,7 +36,7 @@ class PageArticle extends AbstractArticle
 		];
 
 		$this->orders = [
-			'CASE WHEN (SELECT lp_com.created_at FROM {db_prefix}lp_comments AS lp_com WHERE p.page_id = lp_com.page_id LIMIT 1) > 0 THEN 0 ELSE 1 END, comment_date DESC',
+			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
 			'p.created_at DESC',
 			'p.created_at',
 			'date DESC'
@@ -48,7 +48,6 @@ class PageArticle extends AbstractArticle
 	public function getData(int $start, int $limit): array
 	{
 		$titles = $this->getAllTitles();
-		$categories = $this->getAllCategories();
 
 		$this->params += [
 			'start' => $start,
@@ -57,46 +56,23 @@ class PageArticle extends AbstractArticle
 
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views, p.num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name,
-				(
-					SELECT lp_com.created_at
-					FROM {db_prefix}lp_comments AS lp_com
-					WHERE p.page_id = lp_com.page_id
-					ORDER BY lp_com.created_at DESC
-					LIMIT 1
-				) AS comment_date,
-				(
-					SELECT lp_com.author_id
-					FROM {db_prefix}lp_comments AS lp_com
-					WHERE p.page_id = lp_com.page_id
-					ORDER BY lp_com.created_at DESC
-					LIMIT 1
-				) AS comment_author_id,
-				(
-					SELECT real_name
-					FROM {db_prefix}lp_comments AS lp_com
-					LEFT JOIN {db_prefix}members ON (lp_com.author_id = id_member)
-					WHERE lp_com.page_id = p.page_id
-					ORDER BY lp_com.created_at DESC
-					LIMIT 1
-				) AS comment_author_name,
-				(
-					SELECT lp_com.message
-					FROM {db_prefix}lp_comments AS lp_com
-					WHERE p.page_id = lp_com.page_id
-					ORDER BY lp_com.created_at DESC
-					LIMIT 1
-				) AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
+				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
+				IF (par.value > 0, p.num_comments, 0) AS num_comments, p.created_at,
+				GREATEST(p.created_at, p.updated_at) AS date, cat.name AS category_name, mem.real_name AS author_name,
+				com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name, com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)' . (empty($this->tables) ? '' : '
+				LEFT JOIN {db_prefix}lp_categories AS cat ON (cat.category_id = p.category_id)
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
+				LEFT JOIN {db_prefix}members AS mem2 ON (com.author_id = mem2.id_member)
+				LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selected_categories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_num_replies']) ? '' : 'num_comments DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);
@@ -109,7 +85,7 @@ class PageArticle extends AbstractArticle
 				$pages[$row['page_id']] = [
 					'id' => $row['page_id'],
 					'section' => [
-						'name' => empty($row['category_id']) ? '' : $categories[$row['category_id']]['name'],
+						'name' => empty($row['category_id']) ? '' : $row['category_name'],
 						'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id'])
 					],
 					'author' => [

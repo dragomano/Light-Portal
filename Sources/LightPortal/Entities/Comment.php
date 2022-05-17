@@ -192,10 +192,11 @@ final class Comment
 		if ($item) {
 			$this->smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET num_comments = num_comments + 1
-				WHERE page_id = {int:item}',
+				SET num_comments = num_comments + 1, last_comment_id = {int:item}
+				WHERE page_id = {int:page_id}',
 				[
-					'item' => $page_id
+					'item'    => $item,
+					'page_id' => $page_id
 				]
 			);
 
@@ -315,7 +316,21 @@ final class Comment
 			]
 		);
 
-		$this->context['lp_num_queries'] += 3;
+		$this->smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_pages
+			SET last_comment_id = (
+				SELECT COALESCE(MAX(com.id), 0)
+				FROM {db_prefix}lp_comments AS com
+					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
+				WHERE p.alias = {string:alias}
+			)
+			WHERE alias = {string:alias}',
+			[
+				'alias' => $this->alias
+			]
+		);
+
+		$this->context['lp_num_queries'] += 4;
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 

@@ -30,6 +30,7 @@ final class Maintainer extends SMF_BackgroundTask
 
 		$this->removeRedundantValues();
 		$this->updateNumComments();
+		$this->updateLastCommentIds();
 		$this->optimizeTables();
 
 		return (bool) $this->smcFunc['db_insert']('insert',
@@ -105,12 +106,10 @@ final class Maintainer extends SMF_BackgroundTask
 		$request = $this->smcFunc['db_query']('', '
 			SELECT p.page_id, COUNT(c.id) AS amount
 			FROM {db_prefix}lp_pages p
-				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id AND p.status = {int:status})
+				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
 			GROUP BY p.page_id
 			ORDER BY p.page_id',
-			[
-				'status' => 1
-			]
+			[]
 		);
 
 		$pages = [];
@@ -130,6 +129,42 @@ final class Maintainer extends SMF_BackgroundTask
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE ' . $line . '
 				ELSE num_comments
+				END
+			WHERE page_id IN ({array_int:pages})',
+			[
+				'pages' => array_keys($pages)
+			]
+		);
+	}
+
+	private function updateLastCommentIds()
+	{
+		$request = $this->smcFunc['db_query']('', '
+			SELECT p.page_id, MAX(c.id) AS last_comment_id
+			FROM {db_prefix}lp_pages p
+				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
+			GROUP BY p.page_id
+			ORDER BY p.page_id',
+			[]
+		);
+
+		$pages = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request))
+			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
+
+		$this->smcFunc['db_free_result']($request);
+
+		if (empty($pages))
+			return;
+
+		$line = '';
+		foreach ($pages as $page_id => $last_comment_id)
+			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $last_comment_id;
+
+		$this->smcFunc['db_query']('', /** @lang text */ '
+			UPDATE {db_prefix}lp_pages
+			SET last_comment_id = CASE ' . $line . '
+				ELSE last_comment_id
 				END
 			WHERE page_id IN ({array_int:pages})',
 			[

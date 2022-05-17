@@ -300,6 +300,13 @@ $tables[] = array(
 			'size'     => 10,
 			'unsigned' => true,
 			'default'  => 0
+		),
+		array(
+			'name'     => 'last_comment_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
 		)
 	),
 	'indexes' => array(
@@ -497,7 +504,7 @@ foreach ($tables as $table) {
 
 	if ($table['name'] === 'lp_pages') {
 		foreach ($table['columns'] as $column) {
-			if ($column['name'] === 'category_id') {
+			if ($column['name'] === 'category_id' || $column['name'] === 'last_comment_id') {
 				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
 				break;
 			}
