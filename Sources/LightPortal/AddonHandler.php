@@ -80,7 +80,7 @@ final class AddonHandler
 		foreach ($addons as $addon) {
 			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
 
-			if (! class_exists($className) || basename(get_parent_class($className)) !== 'Plugin')
+			if (! class_exists($className))
 				continue;
 
 			$class = new $className;
