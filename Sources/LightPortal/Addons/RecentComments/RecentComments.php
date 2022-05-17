@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.05.22
+ * @version 17.05.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -77,15 +77,15 @@ class RecentComments extends Plugin
 				) AS latest_comments ON (com.page_id = latest_comments.page_id AND com.created_at = latest_comments.created_at)
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)
-				LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments} AND par.value = {int:comments})
+				LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
+				AND par.value > 0
 			ORDER BY com.created_at DESC
 			LIMIT {int:limit}',
 			array(
 				'guest'        => $this->txt['guest_title'],
-				'comments'     => 1,
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -95,7 +95,7 @@ class RecentComments extends Plugin
 
 		$comments = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			censorText($row['message']);
+			$this->censorText($row['message']);
 
 			$comments[$row['id']] = array(
 				'link'        => LP_PAGE_URL . $row['alias'],
