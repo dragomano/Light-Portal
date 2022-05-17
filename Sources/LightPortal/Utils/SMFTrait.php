@@ -23,6 +23,7 @@ if (! defined('SMF'))
  * @property array $txt
  * @property array $db_cache
  * @property-read array $smcFunc
+ * @property-read array $editortxt
  * @property-read array $user_info
  * @property-read array $user_profile
  * @property-read array $user_settings
@@ -40,7 +41,7 @@ if (! defined('SMF'))
 trait SMFTrait
 {
 	private array $smfGlobals = [
-		'context', 'modSettings', 'txt', 'db_cache', 'smcFunc',
+		'context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'editortxt',
 		'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings',
 		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir'
 	];
