@@ -65,7 +65,7 @@ class BoardArticle extends AbstractArticle
 			WHERE b.id_board IN ({array_int:selected_boards})
 				AND {query_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_num_replies']) ? '' : 'b.num_posts DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'b.num_posts DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);

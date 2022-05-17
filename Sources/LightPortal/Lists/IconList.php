@@ -54,7 +54,6 @@ final class IconList
 			'home'          => 'house',
 			'image'         => 'image',
 			'import'        => 'file-import',
-			'info'          => 'circle-info fa-beat-fade',
 			'italic'        => 'italic',
 			'link'          => 'link',
 			'main'          => 'table-list',
