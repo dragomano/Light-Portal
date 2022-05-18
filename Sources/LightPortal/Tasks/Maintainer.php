@@ -96,7 +96,7 @@ final class Maintainer extends SMF_BackgroundTask
 		$this->smcFunc['db_query']('', /** @lang text */ '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
-				AND parent_id NOT IN (SELECT id FROM {db_prefix}lp_comments)',
+				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 			[]
 		);
 	}
