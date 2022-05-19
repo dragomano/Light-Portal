@@ -492,24 +492,7 @@ $tables[] = array(
 db_extend('packages');
 
 foreach ($tables as $table) {
-	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-
-	if ($table['name'] === 'lp_blocks') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] === 'user_id' || $column['name'] === 'note') {
-				$smcFunc['db_add_column']('{db_prefix}lp_blocks', $column, [], 'ignore');
-			}
-		}
-	}
-
-	if ($table['name'] === 'lp_pages') {
-		foreach ($table['columns'] as $column) {
-			if ($column['name'] === 'category_id' || $column['name'] === 'last_comment_id') {
-				$smcFunc['db_add_column']('{db_prefix}lp_pages', $column, [], 'ignore');
-				break;
-			}
-		}
-	}
+	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], [], 'update');
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
@@ -526,12 +509,13 @@ $smcFunc['db_query']('', '
 $addSettings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
+if (! isset($modSettings['lp_frontpage_layout']))
+	$addSettings['lp_frontpage_layout'] = 'articles';
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'default';
 if (! isset($modSettings['lp_fa_source']))
 	$addSettings['lp_fa_source'] = 'css_cdn';
-if (! empty($addSettings))
-	updateSettings($addSettings);
+updateSettings($addSettings);
 
 if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))
 	smf_chmod($layouts);
