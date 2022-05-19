@@ -248,24 +248,30 @@ final class ConfigArea
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_mode'];
-			$save_vars[] = ['text', 'lp_frontpage_title'];
-			$save_vars[] = ['text', 'lp_frontpage_alias'];
-			$save_vars[] = ['text', 'lp_frontpage_categories'];
-			$save_vars[] = ['text', 'lp_frontpage_boards'];
-			$save_vars[] = ['text', 'lp_frontpage_pages'];
-			$save_vars[] = ['text', 'lp_frontpage_topics'];
-			$save_vars[] = ['check', 'lp_show_images_in_articles'];
-			$save_vars[] = ['text', 'lp_image_placeholder'];
-			$save_vars[] = ['check', 'lp_show_teaser'];
-			$save_vars[] = ['check', 'lp_show_author'];
-			$save_vars[] = ['check', 'lp_show_views_and_comments'];
-			$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
-			$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
-			$save_vars[] = ['text', 'lp_frontpage_layout'];
-			$save_vars[] = ['int', 'lp_frontpage_num_columns'];
-			$save_vars[] = ['int', 'lp_show_pagination'];
-			$save_vars[] = ['check', 'lp_use_simple_pagination'];
-			$save_vars[] = ['int', 'lp_num_items_per_page'];
+
+			if ($this->post()->has('lp_frontpage_alias'))
+				$save_vars[] = ['text', 'lp_frontpage_alias'];
+
+			if ($this->post()->isNotEmpty('lp_frontpage_mode') && $this->post()->has('lp_frontpage_alias') === false) {
+				$save_vars[] = ['text', 'lp_frontpage_title'];
+				$save_vars[] = ['text', 'lp_frontpage_categories'];
+				$save_vars[] = ['text', 'lp_frontpage_boards'];
+				$save_vars[] = ['text', 'lp_frontpage_pages'];
+				$save_vars[] = ['text', 'lp_frontpage_topics'];
+				$save_vars[] = ['check', 'lp_show_images_in_articles'];
+				$save_vars[] = ['text', 'lp_image_placeholder'];
+				$save_vars[] = ['check', 'lp_show_teaser'];
+				$save_vars[] = ['check', 'lp_show_author'];
+				$save_vars[] = ['check', 'lp_show_views_and_comments'];
+				$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
+				$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
+				$save_vars[] = ['text', 'lp_frontpage_layout'];
+				$save_vars[] = ['int', 'lp_frontpage_num_columns'];
+				$save_vars[] = ['int', 'lp_show_pagination'];
+				$save_vars[] = ['check', 'lp_use_simple_pagination'];
+				$save_vars[] = ['int', 'lp_num_items_per_page'];
+			}
+
 			$save_vars[] = ['check', 'lp_standalone_mode'];
 			$save_vars[] = ['text', 'lp_standalone_url'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
