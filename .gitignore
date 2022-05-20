@@ -1,6 +1,8 @@
 **/.idea/
 **/.vscode/
 **/vendor/
+**/composer.lock
+**/package-lock.json
 **/Addons/**/*.less
 **/Addons/**/russian.php
 **/Addons/**/polish.php
