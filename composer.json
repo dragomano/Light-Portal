@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "phing/phing": "2.*"
+    },
+    "scripts": {
+        "build": "vendor/bin/phing"
     }
 }
