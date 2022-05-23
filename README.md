@@ -6,7 +6,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
-* **Tested on:** PHP 7.4.29 / MySQL 8.0.28 / MariaDB 10.3.32, 10.6.5, 10.7.3
+* **Tested on:** PHP 8.1.5 / MariaDB 10.6.7
 * **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 
@@ -64,4 +64,4 @@ Light Portal is completely free to use. It is distributed in the hope that it wi
 It was made for your convenience, and if you like the project, support the developer. Or give a star ⭐️ to this project.
 
 ## About plugins
-Some custom addons may have their own licenses.
+Some custom addons have their own licenses.
