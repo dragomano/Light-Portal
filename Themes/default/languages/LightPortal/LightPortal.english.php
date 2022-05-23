@@ -7,8 +7,6 @@
 $txt['lp_portal'] = 'Portal';
 $txt['lp_forum'] = 'Forum';
 
-$txt['lp_new_version_is_available'] = 'A new version is available!';
-
 $txt['lp_article'] = 'Article';
 $txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example'] = 'Example: ';
@@ -29,7 +27,6 @@ $txt['lp_remove_from_fp'] = 'Remove from frontpage';
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
 $txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
-$txt['lp_debug_info'] = 'Information for debugging';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
 $txt['lp_frontpage_mode'] = 'The portal frontpage';
@@ -257,9 +254,6 @@ $txt['lp_import_all'] = 'Import all';
 $txt['lp_import_success'] = 'Imported: %1$s';
 $txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
-$txt['lp_blocks_preset_import_info'] = 'Presets are saved block configurations without identifiers. In other words, when you import a preset, the blocks will be added as new.';
-$txt['lp_export_preset'] = 'Export selection as a preset';
-$txt['lp_preset_import'] = 'Preset import';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';

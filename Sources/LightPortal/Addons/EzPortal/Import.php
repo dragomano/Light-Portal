@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.03.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\EzPortal;
@@ -109,16 +109,12 @@ class Import extends AbstractOtherPageImport
 			]
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
-
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_pages';
+		$this->createList($listOptions);
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
-		db_extend();
+		$this->dbExtend();
 
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return [];
@@ -157,7 +153,7 @@ class Import extends AbstractOtherPageImport
 
 	public function getTotalCount(): int
 	{
-		db_extend();
+		$this->dbExtend();
 
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return 0;

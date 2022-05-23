@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 13.05.22
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -29,8 +29,9 @@ class BoardNews extends Plugin
 	public function blockOptions(array &$options)
 	{
 		$options['board_news']['parameters'] = [
-			'board_id'  => 0,
-			'num_posts' => 5,
+			'board_id'      => 0,
+			'num_posts'     => 5,
+			'teaser_length' => 255,
 		];
 	}
 
@@ -39,23 +40,9 @@ class BoardNews extends Plugin
 		if ($type !== 'board_news')
 			return;
 
-		$parameters['board_id']  = FILTER_VALIDATE_INT;
-		$parameters['num_posts'] = FILTER_VALIDATE_INT;
-	}
-
-	private function getBoardList(): array
-	{
-		$this->require('Subs-MessageIndex');
-
-		$boardListOptions = [
-			'ignore_boards'   => false,
-			'use_permissions' => true,
-			'not_redirection' => true,
-			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int)$this->modSettings['recycle_board']],
-			'selected_board'  => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
-		];
-
-		return getBoardList($boardListOptions);
+		$parameters['board_id']      = FILTER_VALIDATE_INT;
+		$parameters['num_posts']     = FILTER_VALIDATE_INT;
+		$parameters['teaser_length'] = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields()
@@ -72,7 +59,14 @@ class BoardNews extends Plugin
 			'options' => []
 		];
 
-		$board_list = $this->getBoardList();
+		$board_list = $this->getBoardList([
+			'ignore_boards'   => false,
+			'use_permissions' => true,
+			'not_redirection' => true,
+			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
+			'selected_board'  => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
+		]);
+
 		foreach ($board_list as $category) {
 			$this->context['posting_fields']['board_id']['input']['options'][$category['name']] = ['options' => []];
 
@@ -94,6 +88,15 @@ class BoardNews extends Plugin
 				'value' => $this->context['lp_block']['options']['parameters']['num_posts']
 			]
 		];
+
+		$this->context['posting_fields']['teaser_length']['label']['text'] = $this->txt['lp_board_news']['teaser_length'];
+		$this->context['posting_fields']['teaser_length']['input'] = [
+			'type' => 'number',
+			'attributes' => [
+				'id'    => 'teaser_length',
+				'value' => $this->context['lp_block']['options']['parameters']['teaser_length']
+			]
+		];
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -101,16 +104,18 @@ class BoardNews extends Plugin
 		if ($type !== 'board_news')
 			return;
 
+		$teaser_length = empty($parameters['teaser_length']) ? null : $parameters['teaser_length'];
+
 		$board_news = $this->cache('board_news_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, null, 'array');
+			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, $teaser_length, 'array');
 
 		if (empty($board_news)) {
 			echo $this->txt['lp_board_news']['no_posts'];
 			return;
 		}
 
-		loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		$this->loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . __('lp_comments_set', ['comments' => $news['replies']]) . '</a>';

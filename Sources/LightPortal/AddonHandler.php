@@ -14,25 +14,49 @@
 
 namespace Bugo\LightPortal;
 
+use SplObjectStorage;
 use Bugo\LightPortal\Repositories\PluginRepository;
-
-use function fetch_web_data;
-use function loadCSSFile;
 
 if (! defined('SMF'))
 	die('No direct access...');
+
+class PluginStorage extends SplObjectStorage
+{
+	public function getHash($object): string
+	{
+		return get_class($object);
+	}
+}
 
 final class AddonHandler
 {
 	use Helper;
 
-	private PluginRepository $repository;
+	private array $pluginSettings;
 
-	private array $chest = [];
+	private PluginStorage $plugins;
 
-	public function __construct()
+	private static self $instance;
+
+	private function __construct()
 	{
-		$this->repository = new PluginRepository();
+		$this->pluginSettings = (new PluginRepository())->getSettings();
+		$this->plugins = new PluginStorage();
+
+		$this->prepareAssets();
+	}
+
+	private function __clone() {}
+
+	public function __wakeup() {}
+
+	public static function getInstance(): self
+	{
+		if (empty(self::$instance)) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	public function getAll(): array
@@ -43,14 +67,56 @@ final class AddonHandler
 		return array_map(fn($item): string => basename($item), $dirs);
 	}
 
-	public function prepareAssets(): AddonHandler
+	/**
+	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
+	 */
+	public function run(string $hook = 'init', array $vars = [], array $plugins = [])
+	{
+		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
+
+		if (empty($addons) || isset($this->context['uninstalling']))
+			return;
+
+		foreach ($addons as $addon) {
+			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
+
+			if (! class_exists($className))
+				continue;
+
+			$class = new $className;
+
+			if (! $this->plugins->contains($class)) {
+				$this->plugins->attach($class, [
+					'name' => $addon,
+					'icon' => $class->icon,
+					'type' => $class->type,
+				]);
+
+				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
+				$snakeName = $this->getSnakeName($addon);
+
+				$this->loadLang($path, $snakeName);
+				$this->loadCSS($path, $snakeName);
+				$this->loadJS($path, $snakeName);
+
+				$this->context['lp_' . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
+				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
+			}
+
+			if (method_exists($class, $hook)) {
+				$hook === 'init' && in_array($addon, $this->context['lp_enabled_plugins']) ? $class->init() : $class->$hook(...$vars);
+			}
+		}
+	}
+
+	private function prepareAssets()
 	{
 		$assets = [];
 
 		$this->run('prepareAssets', [&$assets]);
 
 		if (empty($assets))
-			return $this;
+			return;
 
 		foreach (['css', 'scripts'] as $type) {
 			if (! isset($assets[$type]))
@@ -67,70 +133,13 @@ final class AddonHandler
 					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename($link)))
 						continue;
 
-					file_put_contents($filename, fetch_web_data($link), LOCK_EX);
+					file_put_contents($filename, $this->fetchWebData($link), LOCK_EX);
 				}
 			}
 		}
-
-		return $this;
 	}
 
-	/**
-	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
-	 */
-	public function run(string $hook = '', array $vars = [], array $plugins = [])
-	{
-		static $results = [], $settings = [];
-
-		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
-
-		if (empty($addons) || isset($this->context['uninstalling']))
-			return;
-
-		if (empty($settings))
-			$settings = $this->repository->getSettings();
-
-		foreach ($addons as $addon) {
-			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
-
-			if (! class_exists($className))
-				continue;
-
-			$class = new $className;
-
-			$snakeName = $this->getSnakeName($addon);
-
-			if (empty($this->chest[$snakeName])) {
-				$this->chest[$snakeName] = [
-					'name' => $addon,
-					'icon' => $class->icon,
-					'type' => $class->type,
-				];
-
-				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
-
-				$this->loadLanguage($path, $snakeName);
-				$this->loadCss($path, $snakeName);
-				$this->loadJs($path, $snakeName);
-
-				$this->context['lp_' . $snakeName . '_plugin'] = $settings[$snakeName] ?? [];
-			}
-
-			// Hook init should run only once
-			if (empty($results[$addon]) && method_exists($class, 'init') && in_array($addon, $this->context['lp_enabled_plugins'])) {
-				$class->init();
-				$results[$addon] = true;
-			}
-
-			if (method_exists($class, $hook)) {
-				$class->$hook(...$vars);
-			}
-		}
-
-		$this->context['lp_loaded_addons'] = $this->chest;
-	}
-
-	private function loadLanguage(string $path, string $snakeName)
+	private function loadLang(string $path, string $snakeName)
 	{
 		if (isset($this->txt['lp_' . $snakeName]))
 			return;
@@ -147,7 +156,7 @@ final class AddonHandler
 			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private function loadCss(string $path, string $snakeName)
+	private function loadCSS(string $path, string $snakeName)
 	{
 		if (! is_file($style = $path . 'style.css'))
 			return;
@@ -161,10 +170,10 @@ final class AddonHandler
 		if (! @is_writable($this->settings['default_theme_dir'] . '/css/light_portal') || ! $isFileExists)
 			return;
 
-		loadCSSFile('light_portal/addon_' . $snakeName . '.css');
+		$this->loadCSSFile('light_portal/addon_' . $snakeName . '.css');
 	}
 
-	private function loadJs(string $path, string $snakeName)
+	private function loadJS(string $path, string $snakeName)
 	{
 		if (! is_file($script = $path . 'script.js'))
 			return;
@@ -178,6 +187,6 @@ final class AddonHandler
 		if (! @is_writable($this->settings['default_theme_dir'] . '/scripts/light_portal') || ! $isFileExists)
 			return;
 
-		loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
+		$this->loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
 	}
 }

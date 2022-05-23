@@ -15,14 +15,14 @@ namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Helper;
 
-use function fatal_lang_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractOtherPageImport implements ImportInterface, OtherImportInterface
 {
 	use Helper;
+
+	protected array $tempCache = [];
 
 	abstract protected function getItems(array $pages): array;
 
@@ -35,7 +35,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$this->db_temp_cache = $this->db_cache;
+		$this->tempCache = $this->db_cache;
 		$this->db_cache = [];
 
 		$pages = $this->post('pages') && $this->post()->has('import_all') === false ? $this->post('pages') : [];
@@ -76,7 +76,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		}
 
 		if (empty($results))
-			fatal_lang_error('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed', false);
 
 		if ($titles) {
 			$titles = array_chunk($titles, 100);
@@ -155,7 +155,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		}
 
 		// Restore the cache
-		$this->db_cache = $this->db_temp_cache;
+		$this->db_cache = $this->tempCache;
 
 		$this->cache()->flush();
 	}

@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\{
 	Helper,
+	Entities\FrontPage,
 	Impex\BlockExport,
 	Impex\BlockImport,
 	Impex\PageExport,
@@ -23,23 +24,6 @@ use Bugo\LightPortal\{
 	Lists\Category,
 	Repositories\PageRepository
 };
-
-use function addInlineCss;
-use function call_helper;
-use function checkSession;
-use function db_extend;
-use function fetch_web_data;
-use function isAllowedTo;
-use function loadCSSFile;
-use function loadJavaScriptFile;
-use function loadLanguage;
-use function loadTemplate;
-use function parse_bbc;
-use function smf_json_decode;
-use function prepareDBSettingContext;
-use function redirectexit;
-use function saveDBSettings;
-use function updateSettings;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -50,16 +34,16 @@ final class ConfigArea
 
 	public function adminAreas(array &$admin_areas)
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js', ['external' => true]);
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
-		loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
-		loadLanguage('ManageSettings');
+		$this->loadLanguage('ManageSettings');
 
 		$counter = array_search('layout', array_keys($admin_areas)) + 1;
 
@@ -157,7 +141,7 @@ final class ConfigArea
 	 */
 	public function settingAreas()
 	{
-		isAllowedTo('admin_forum');
+		$this->middleware('admin_forum');
 
 		$subActions = [
 			'basic'      => [$this, 'basic'],
@@ -167,7 +151,7 @@ final class ConfigArea
 			'misc'       => [$this, 'misc']
 		];
 
-		db_extend();
+		$this->dbExtend();
 
 		// Tabs
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
@@ -192,16 +176,6 @@ final class ConfigArea
 		];
 
 		$this->loadGeneralSettingParameters($subActions, 'basic');
-
-		if ($this->request()->has('getDebugInfo'))
-			$this->generateDumpFile();
-
-		if (! isset($this->context['settings_title']))
-			return;
-
-		$this->context['settings_title'] .= '<span class="floatright" x-data>
-			<a @mouseover="$event.target.style.color = \'yellow\'" @mouseout="$event.target.style.color = \'white\'" @click="location.href = location.href + \';getDebugInfo\'" title="' . $this->txt['lp_debug_info'] . '">' . $this->context['lp_icon_set']['info'] . '</a>
-		</span>';
 	}
 
 	/**
@@ -221,7 +195,7 @@ final class ConfigArea
 		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
 
 		$this->context['lp_all_categories']    = $this->getAllCategories();
-		$this->context['lp_frontpage_layouts'] = $this->getFrontPageLayouts();
+		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
 		// Initial settings
 		$addSettings = [];
@@ -239,16 +213,14 @@ final class ConfigArea
 			$addSettings['lp_standalone_url'] = $this->boardurl . '/portal.php';
 		if (! isset($this->modSettings['lp_prohibit_php']))
 			$addSettings['lp_prohibit_php'] = 1;
-		if ($addSettings)
-			updateSettings($addSettings);
+		$this->updateSettings($addSettings);
 
 		$this->context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
 			array_pad($this->txt['lp_frontpage_mode_set'], 7, LP_NEED_TRANSLATION)
 		);
 
-		$this->require('Subs-MessageIndex');
-		$this->context['board_list'] = getBoardList();
+		$this->context['board_list'] = $this->getBoardList();
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
@@ -262,13 +234,11 @@ final class ConfigArea
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
 		];
 
-		$this->checkNewVersion();
-
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 
 		// Save
 		if ($this->request()->has('save')) {
-			checkSession();
+			$this->checkSession();
 
 			if ($this->post()->isNotEmpty('lp_image_placeholder'))
 				$this->post()->put('lp_image_placeholder', $this->validate($this->post('lp_image_placeholder'), 'url'));
@@ -278,37 +248,43 @@ final class ConfigArea
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_mode'];
-			$save_vars[] = ['text', 'lp_frontpage_title'];
-			$save_vars[] = ['text', 'lp_frontpage_alias'];
-			$save_vars[] = ['text', 'lp_frontpage_categories'];
-			$save_vars[] = ['text', 'lp_frontpage_boards'];
-			$save_vars[] = ['text', 'lp_frontpage_pages'];
-			$save_vars[] = ['text', 'lp_frontpage_topics'];
-			$save_vars[] = ['check', 'lp_show_images_in_articles'];
-			$save_vars[] = ['text', 'lp_image_placeholder'];
-			$save_vars[] = ['check', 'lp_show_teaser'];
-			$save_vars[] = ['check', 'lp_show_author'];
-			$save_vars[] = ['check', 'lp_show_views_and_comments'];
-			$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
-			$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
-			$save_vars[] = ['text', 'lp_frontpage_layout'];
-			$save_vars[] = ['int', 'lp_frontpage_num_columns'];
-			$save_vars[] = ['int', 'lp_show_pagination'];
-			$save_vars[] = ['check', 'lp_use_simple_pagination'];
-			$save_vars[] = ['int', 'lp_num_items_per_page'];
+
+			if ($this->post()->has('lp_frontpage_alias'))
+				$save_vars[] = ['text', 'lp_frontpage_alias'];
+
+			if ($this->post()->isNotEmpty('lp_frontpage_mode') && $this->post()->has('lp_frontpage_alias') === false) {
+				$save_vars[] = ['text', 'lp_frontpage_title'];
+				$save_vars[] = ['text', 'lp_frontpage_categories'];
+				$save_vars[] = ['text', 'lp_frontpage_boards'];
+				$save_vars[] = ['text', 'lp_frontpage_pages'];
+				$save_vars[] = ['text', 'lp_frontpage_topics'];
+				$save_vars[] = ['check', 'lp_show_images_in_articles'];
+				$save_vars[] = ['text', 'lp_image_placeholder'];
+				$save_vars[] = ['check', 'lp_show_teaser'];
+				$save_vars[] = ['check', 'lp_show_author'];
+				$save_vars[] = ['check', 'lp_show_views_and_comments'];
+				$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
+				$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
+				$save_vars[] = ['text', 'lp_frontpage_layout'];
+				$save_vars[] = ['int', 'lp_frontpage_num_columns'];
+				$save_vars[] = ['int', 'lp_show_pagination'];
+				$save_vars[] = ['check', 'lp_use_simple_pagination'];
+				$save_vars[] = ['int', 'lp_num_items_per_page'];
+			}
+
 			$save_vars[] = ['check', 'lp_standalone_mode'];
 			$save_vars[] = ['text', 'lp_standalone_url'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
-			saveDBSettings($save_vars);
+			$this->saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			redirectexit('action=admin;area=lp_settings;sa=basic');
+			$this->redirect('action=admin;area=lp_settings;sa=basic');
 		}
 
-		prepareDBSettingContext($config_vars);
+		$this->prepareDBSettingContext($config_vars);
 	}
 
 	/**
@@ -335,8 +311,7 @@ final class ConfigArea
 			$addSettings['lp_num_comments_per_page'] = 10;
 		if (! isset($this->modSettings['lp_page_maximum_keywords']))
 			$addSettings['lp_page_maximum_keywords'] = 10;
-		if (! empty($addSettings))
-			updateSettings($addSettings);
+		$this->updateSettings($addSettings);
 
 		$config_vars = [
 			['check', 'lp_show_tags_on_page'],
@@ -371,16 +346,16 @@ final class ConfigArea
 			],
 		];
 
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 
 		$this->prepareTagsInComments();
 
 		// Save
 		if ($this->request()->has('save')) {
-			checkSession();
+			$this->checkSession();
 
 			// Clean up the tags
-			$parse_tags = (array) parse_bbc(false);
+			$parse_tags = (array) $this->parseBbc(false);
 			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
 			if ($this->post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
@@ -402,15 +377,15 @@ final class ConfigArea
 			$save_vars[] = ['int', 'lp_time_to_change_comments'];
 			$save_vars[] = ['int', 'lp_num_comments_per_page'];
 
-			saveDBSettings($save_vars);
+			$this->saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			redirectexit('action=admin;area=lp_settings;sa=extra');
+			$this->redirect('action=admin;area=lp_settings;sa=extra');
 		}
 
-		prepareDBSettingContext($config_vars);
+		$this->prepareDBSettingContext($config_vars);
 	}
 
 	/**
@@ -420,7 +395,7 @@ final class ConfigArea
 	 */
 	public function categories()
 	{
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
@@ -461,9 +436,9 @@ final class ConfigArea
 	 */
 	public function panels(bool $return_config = false)
 	{
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 
-		addInlineCss('
+		$this->addInlineCss('
 		dl.settings {
 			overflow: hidden;
 		}');
@@ -487,8 +462,7 @@ final class ConfigArea
 			$addSettings['lp_left_panel_sticky'] = 1;
 		if (! isset($this->modSettings['lp_right_panel_sticky']))
 			$addSettings['lp_right_panel_sticky'] = 1;
-		if (! empty($addSettings))
-			updateSettings($addSettings);
+		$this->updateSettings($addSettings);
 
 		$this->context['lp_left_right_width_values']    = [2, 3, 4];
 		$this->context['lp_header_footer_width_values'] = [6, 8, 10, 12];
@@ -507,7 +481,7 @@ final class ConfigArea
 		$this->context['sub_template'] = 'show_settings';
 
 		if ($this->request()->has('save')) {
-			checkSession();
+			$this->checkSession();
 
 			$this->post()->put('lp_left_panel_width', json_encode($this->post('lp_left_panel_width')));
 			$this->post()->put('lp_right_panel_width', json_encode($this->post('lp_right_panel_width')));
@@ -523,14 +497,14 @@ final class ConfigArea
 			$save_vars[] = ['check', 'lp_right_panel_sticky'];
 			$save_vars[] = ['text', 'lp_panel_direction'];
 
-			saveDBSettings($save_vars);
+			$this->saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);
 
-			redirectexit('action=admin;area=lp_settings;sa=panels');
+			$this->redirect('action=admin;area=lp_settings;sa=panels');
 		}
 
-		prepareDBSettingContext($config_vars);
+		$this->prepareDBSettingContext($config_vars);
 	}
 
 	/**
@@ -553,8 +527,7 @@ final class ConfigArea
 			$addSettings['lp_portal_action'] = LP_ACTION;
 		if (! isset($this->modSettings['lp_page_param']))
 			$addSettings['lp_page_param'] = LP_PAGE_PARAM;
-		if (! empty($addSettings))
-			updateSettings($addSettings);
+		$this->updateSettings($addSettings);
 
 		$config_vars = [
 			['title', 'lp_debug_and_caching'],
@@ -573,7 +546,7 @@ final class ConfigArea
 		$this->context['sub_template'] = 'show_settings';
 
 		if ($this->request()->has('save')) {
-			checkSession();
+			$this->checkSession();
 
 			$this->smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}background_tasks
@@ -594,19 +567,19 @@ final class ConfigArea
 
 			$save_vars = $config_vars;
 
-			saveDBSettings($save_vars);
+			$this->saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);
 
-			redirectexit('action=admin;area=lp_settings;sa=misc');
+			$this->redirect('action=admin;area=lp_settings;sa=misc');
 		}
 
-		prepareDBSettingContext($config_vars);
+		$this->prepareDBSettingContext($config_vars);
 	}
 
 	public function blockAreas()
 	{
-		isAllowedTo('light_portal_manage_own_blocks');
+		$this->middleware('light_portal_manage_own_blocks');
 
 		$subActions = [
 			'main' => [new BlockArea, 'main'],
@@ -626,7 +599,7 @@ final class ConfigArea
 
 	public function pageAreas()
 	{
-		isAllowedTo('light_portal_manage_own_pages');
+		$this->middleware('light_portal_manage_own_pages');
 
 		$subActions = [
 			'main' => [new PageArea, 'main'],
@@ -646,7 +619,7 @@ final class ConfigArea
 
 	public function pluginAreas()
 	{
-		isAllowedTo('admin_forum');
+		$this->middleware('admin_forum');
 
 		$subActions = [
 			'main' => [new PluginArea, 'main']
@@ -655,31 +628,6 @@ final class ConfigArea
 		$this->hook('addPluginAreas', [&$subActions]);
 
 		$this->loadGeneralSettingParameters($subActions, 'main');
-	}
-
-	private function getLastVersion(): string
-	{
-		$data = fetch_web_data('https://api.github.com/repos/dragomano/light-portal/releases/latest');
-
-		if (empty($data))
-			return LP_VERSION;
-
-		$data = smf_json_decode($data, true);
-
-		if (LP_RELEASE_DATE < $data['published_at'])
-			return str_replace('v', '', $data['tag_name']);
-
-		return LP_VERSION;
-	}
-
-	private function checkNewVersion()
-	{
-		if (version_compare(LP_VERSION, $new_version = $this->getLastVersion(), '<')) {
-			$this->context['settings_insert_above'] = '
-			<div class="noticebox">
-				' . $this->txt['lp_new_version_is_available'] . ' (<a class="bbc_link" href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">' . $new_version . '</a>)
-			</div>';
-		}
 	}
 
 	/**
@@ -701,7 +649,7 @@ final class ConfigArea
 
 		$this->context['sub_action'] = $subAction;
 
-		call_helper($subActions[$subAction]);
+		$this->callHelper($subActions[$subAction]);
 	}
 
 	private function showDocsLink()
@@ -709,30 +657,10 @@ final class ConfigArea
 		if (empty($this->request('area'))) return;
 
 		if (! empty($this->context['template_layers']) && strpos($this->request('area'), 'lp_') !== false) {
-			loadTemplate('LightPortal/ViewDebug');
+			$this->loadTemplate('LightPortal/ViewDebug');
 
 			$this->context['template_layers'][] = 'docs';
 		}
-	}
-
-	private function generateDumpFile()
-	{
-		$portal_settings = "lp_enabled_plugins = '" . implode(', ', $this->context['lp_enabled_plugins']) . "'" . PHP_EOL;
-		foreach ($this->modSettings as $key => $value) {
-			if (strpos((string) $key, 'lp_') === 0 && isset($this->txt[$key]) && $value) {
-				$portal_settings .= $key . ' = ' . var_export($value, true) . PHP_EOL;
-			}
-		}
-
-		if (ob_get_level())
-			ob_end_clean();
-
-		header('Content-disposition: attachment; filename=portal_settings.txt');
-		header('Content-type: text/plain');
-
-		echo $portal_settings;
-
-		exit;
 	}
 
 	private function prepareAliasList()
@@ -759,7 +687,7 @@ final class ConfigArea
 		$disabledBbc = empty($this->modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_disabled_bbc_in_comments']);
 		$disabledBbc = isset($this->modSettings['disabledBBC']) ? [...$disabledBbc, ...explode(',', $this->modSettings['disabledBBC'])] : $disabledBbc;
 
-		$temp = parse_bbc(false);
+		$temp = $this->parseBbc(false);
 		$bbcTags = [];
 		foreach ($temp as $tag) {
 			if (! isset($tag['require_parents']))
@@ -814,7 +742,7 @@ final class ConfigArea
 		if (empty($name))
 			return;
 
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 
 		$result['error'] = true;
 

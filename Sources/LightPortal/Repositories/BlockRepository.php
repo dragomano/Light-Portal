@@ -14,11 +14,6 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use function censorText;
-use function fatal_lang_error;
-use function checkSubmitOnce;
-use function redirectexit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -61,7 +56,7 @@ final class BlockRepository extends AbstractRepository
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $currentBlocks;
+		return array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $currentBlocks);
 	}
 
 	public function getData(int $item): array
@@ -84,17 +79,15 @@ final class BlockRepository extends AbstractRepository
 		if (empty($this->smcFunc['db_num_rows']($request))) {
 			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
 
-			fatal_lang_error('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', false, null, 404);
 		}
 
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			if ($row['type'] === 'bbc') {
-				$this->require('Subs-Post');
-
-				$row['content'] = un_preparsecode($row['content']);
+				$row['content'] = $this->unPreparseCode($row['content']);
 			}
 
-			censorText($row['content']);
+			$this->censorText($row['content']);
 
 			$data ??= [
 				'id'            => (int) $row['block_id'],
@@ -140,7 +133,7 @@ final class BlockRepository extends AbstractRepository
 		)
 			return 0;
 
-		checkSubmitOnce('check');
+		$this->checkSubmitOnce('check');
 
 		$this->prepareBbcContent($this->context['lp_block']);
 
@@ -158,10 +151,10 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		if ($this->post()->has('save_exit'))
-			redirectexit('action=admin;area=lp_blocks;sa=main');
+			$this->redirect('action=admin;area=lp_blocks;sa=main');
 
 		if ($this->post()->has('save'))
-			redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+			$this->redirect('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int
@@ -262,7 +255,7 @@ final class BlockRepository extends AbstractRepository
 	}
 
 	/**
-	 * Form a list of addons that not installed
+	 * Prepare plugins list that not installed
 	 *
 	 * Формируем список неустановленных плагинов
 	 */
@@ -272,7 +265,9 @@ final class BlockRepository extends AbstractRepository
 			return;
 
 		$addon = $this->getCamelName($type);
+
 		$message = in_array($addon, $this->getAllAddons()) ? $this->txt['lp_addon_not_activated'] : $this->txt['lp_addon_not_installed'];
+
 		$this->context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
 	}
 }

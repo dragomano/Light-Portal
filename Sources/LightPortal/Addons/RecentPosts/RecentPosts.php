@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -205,14 +205,14 @@ class RecentPosts extends Plugin
 		<ul class="recent_posts noup">';
 
 		foreach ($recent_posts as $post) {
-			$post['preview'] = '<a href="' . $post['href'] . '">' . shorten_subject($post['preview'], 20) . '</a>';
+			$post['preview'] = '<a href="' . $post['href'] . '">' . $this->getShortenText($post['preview'], 20) . '</a>';
 
 			echo '
 			<li class="windowbg">';
 
 			if ($parameters['show_avatars'] && $post['poster']['avatar'])
 				echo '
-				<span class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</span>';
+				<div class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</div>';
 
 			if ($post['is_new'])
 				echo '

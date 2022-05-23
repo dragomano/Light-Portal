@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
@@ -26,11 +26,11 @@ class UserInfo extends Plugin
 
 	public function getData(): array
 	{
-		if (! isset($this->memberContext[$this->user_info['id']]) && in_array($this->user_info['id'], loadMemberData($this->user_info['id']))) {
+		if (! isset($this->memberContext[$this->user_info['id']]) && in_array($this->user_info['id'], $this->loadMemberData($this->user_info['id']))) {
 			try {
-				loadMemberContext($this->user_info['id']);
+				$this->loadMemberContext($this->user_info['id']);
 			} catch (\Exception $e) {
-				log_error('[LP] UserInfo addon: ' . $e->getMessage(), 'user');
+				$this->logError('[LP] UserInfo addon: ' . $e->getMessage());
 			}
 		}
 
@@ -42,7 +42,7 @@ class UserInfo extends Plugin
 		if ($type !== 'user_info')
 			return;
 
-		$this->loadTemplate();
+		$this->setTemplate();
 
 		if (! $this->context['user']['is_logged'])
 			return show_user_info_for_guests();

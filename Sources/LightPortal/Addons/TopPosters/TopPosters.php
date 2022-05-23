@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.01.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -96,21 +96,23 @@ class TopPosters extends Plugin
 		if (empty($result))
 			return [];
 
-		$loadedUserIds = loadMemberData(array_column($result, 'id_member'));
+		$loadedUserIds = $this->loadMemberData(array_column($result, 'id_member'));
 
 		$posters = [];
 		foreach ($result as $row) {
 			if (! isset($this->memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
 				try {
-					loadMemberContext($row['id_member']);
+					$this->loadMemberContext($row['id_member']);
 				} catch (\Exception $e) {
-					log_error('[LP] TopPosters addon: ' . $e->getMessage(), 'user');
+					$this->logError('[LP] TopPosters addon: ' . $e->getMessage());
 				}
 			}
 
 			$posters[] = [
 				'name'   => $row['real_name'],
-				'link'   => allowedTo('profile_view') ? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>' : $row['real_name'],
+				'link'   => $this->allowedTo('profile_view')
+					? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
+					: $row['real_name'],
 				'avatar' => $parameters['show_avatars'] ? $this->memberContext[$row['id_member']]['avatar']['image'] : '',
 				'posts'  => $row['posts']
 			];

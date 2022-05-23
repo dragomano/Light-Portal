@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 16.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -48,12 +48,12 @@ class Handler extends Plugin
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
-		$this->loadTemplate('plugin_post');
+		$this->setTemplate('plugin_post');
 	}
 
 	public function prepareForumLanguages()
 	{
-		getLanguages();
+		$this->getLanguages();
 
 		$temp = $this->context['languages'];
 
@@ -206,7 +206,7 @@ class Handler extends Plugin
 
 	private function prepareFormFields()
 	{
-		checkSubmitOnce('register');
+		$this->checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
@@ -375,7 +375,7 @@ class Handler extends Plugin
 		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->post()->has('save') === false)
 			return;
 
-		checkSubmitOnce('check');
+		$this->checkSubmitOnce('check');
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
@@ -517,7 +517,7 @@ class Handler extends Plugin
 				->setType('array');
 
 			if (! empty($this->context['lp_plugin']['options']))
-				$method->setBody("\$this->addDefaultValues([" . PHP_EOL);
+				$method->addBody("\$this->addDefaultValues([");
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (! empty($option['default'])) {
@@ -526,7 +526,7 @@ class Handler extends Plugin
 			}
 
 			if (! empty($this->context['lp_plugin']['options']))
-				$method->setBody("]);" . PHP_EOL);
+				$method->addBody("]);" . PHP_EOL);
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multicheck', 'select'])) {
@@ -663,7 +663,7 @@ class Handler extends Plugin
 			$plugin->createLangs($languages);
 		}
 
-		redirectexit('action=admin;area=lp_plugins;sa=main');
+		$this->redirect('action=admin;area=lp_plugins;sa=main');
 	}
 
 	private function getSpecialParams(string $type = 'block'): array

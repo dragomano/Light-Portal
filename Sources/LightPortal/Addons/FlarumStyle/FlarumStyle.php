@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.03.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -35,7 +35,7 @@ class FlarumStyle extends Plugin
 
 		$this->context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
-		$this->loadTemplate('show_articles_as_flarum_style');
+		$this->setTemplate('show_articles_as_flarum_style');
 
 		$this->prepareFantomBLock();
 	}
@@ -81,16 +81,14 @@ class FlarumStyle extends Plugin
 			return $categories;
 		}
 
-		$this->require('Subs-MessageIndex');
-
-		$boardListOptions = [
+		$options = [
 			'ignore_boards'   => true,
 			'use_permissions' => true,
 			'not_redirection' => true,
 			'included_boards' => empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards'])
 		];
 
-		return getBoardList($boardListOptions);
+		return $this->getBoardList($options);
 	}
 
 	/**

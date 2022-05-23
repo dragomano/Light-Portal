@@ -65,16 +65,16 @@ class BoardArticle extends AbstractArticle
 			WHERE b.id_board IN ({array_int:selected_boards})
 				AND {query_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_num_replies']) ? '' : 'b.num_posts DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'b.num_posts DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);
 
 		$boards = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$board_name  = parse_bbc($row['name'], false, '', $this->context['description_allowed_tags']);
-			$description = parse_bbc($row['description'], false, '', $this->context['description_allowed_tags']);
-			$cat_name    = parse_bbc($row['cat_name'], false, '', $this->context['description_allowed_tags']);
+			$board_name  = $this->parseBbc($row['name'], false, '', $this->context['description_allowed_tags']);
+			$description = $this->parseBbc($row['description'], false, '', $this->context['description_allowed_tags']);
+			$cat_name    = $this->parseBbc($row['cat_name'], false, '', $this->context['description_allowed_tags']);
 
 			if (! empty($this->modSettings['lp_show_images_in_articles'])) {
 				$image = $this->getImageFromText($description);
@@ -96,7 +96,7 @@ class BoardArticle extends AbstractArticle
 				'is_new'      => empty($row['is_read']),
 				'replies'     => ['num' => $row['num_posts'], 'title' => $this->txt['lp_replies'], 'after' => ''],
 				'image'       => $image ?? '',
-				'can_edit'    => $this->user_info['is_admin'] || allowedTo('manage_boards'),
+				'can_edit'    => $this->user_info['is_admin'] || $this->allowedTo('manage_boards'),
 				'edit_link'   => $this->scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
 				'category'    => $cat_name,
 				'is_redirect' => $row['is_redirect']

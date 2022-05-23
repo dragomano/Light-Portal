@@ -16,9 +16,6 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use function checkSubmitOnce;
-use function redirectexit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -104,7 +101,7 @@ final class PageRepository extends AbstractRepository
 		)
 			return;
 
-		checkSubmitOnce('check');
+		$this->checkSubmitOnce('check');
 
 		$this->prepareDescription();
 		$this->prepareKeywords();
@@ -120,10 +117,10 @@ final class PageRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		if ($this->post()->has('save_exit'))
-			redirectexit('action=admin;area=lp_pages;sa=main');
+			$this->redirect('action=admin;area=lp_pages;sa=main');
 
 		if ($this->post()->has('save'))
-			redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
+			$this->redirect('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int

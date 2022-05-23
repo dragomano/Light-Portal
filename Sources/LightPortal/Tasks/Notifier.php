@@ -17,11 +17,6 @@ namespace Bugo\LightPortal\Tasks;
 use Bugo\LightPortal\Helper;
 use SMF_BackgroundTask;
 
-use function getNotifyPrefs;
-use function loadMemberData;
-use function membersAllowedTo;
-use function updateMemberData;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -36,8 +31,7 @@ final class Notifier extends SMF_BackgroundTask
 	 */
 	public function execute(): bool
 	{
-		$this->require('Subs-Members');
-		$members = membersAllowedTo('light_portal_view');
+		$members = $this->membersAllowedTo('light_portal_view');
 
 		$this->_details['content_type'] === 'new_comment'
 			? $members = array_intersect($members, [$this->_details['author_id']])
@@ -47,11 +41,10 @@ final class Notifier extends SMF_BackgroundTask
 		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
 
-		$this->require('Subs-Notify');
-		$prefs = getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply', true);
+		$prefs = $this->getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply');
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			loadMemberData($this->_details['sender_id'], false, 'minimal');
+			$this->loadMemberData($this->_details['sender_id'], false, 'minimal');
 
 			empty($this->user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_id'] = 0
@@ -65,7 +58,7 @@ final class Notifier extends SMF_BackgroundTask
 		$notifies = [];
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
-				if ($this->_details['content_type'] == 'new_comment') {
+				if ($this->_details['content_type'] === 'new_comment') {
 					if ($pref_option['page_comment'] & $bitvalue) {
 						$notifies[$type][] = $member;
 					}
@@ -109,7 +102,7 @@ final class Notifier extends SMF_BackgroundTask
 					['id_alert']
 				);
 
-				updateMemberData($notifies['alert'], ['alerts' => '+']);
+				$this->updateMemberData($notifies['alert'], ['alerts' => '+']);
 			}
 		}
 

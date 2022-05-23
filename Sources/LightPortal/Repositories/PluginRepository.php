@@ -23,9 +23,9 @@ final class PluginRepository
 {
 	use Helper;
 
-	public function addSettings(array $params = [])
+	public function addSettings(array $settings = [])
 	{
-		if (empty($params))
+		if (empty($settings))
 			return;
 
 		$this->smcFunc['db_insert']('replace',
@@ -35,7 +35,7 @@ final class PluginRepository
 				'config' => 'string',
 				'value'  => 'string',
 			],
-			$params,
+			$settings,
 			['name', 'config']
 		);
 
@@ -64,5 +64,47 @@ final class PluginRepository
 		}
 
 		return $settings;
+	}
+
+	public function updateSettings(string $plugin_name, array $settings = [])
+	{
+		if (empty($settings))
+			return;
+
+		$new_settings = $old_settings = [];
+		foreach ($settings as $config => $value) {
+			if (empty($value))
+				$old_settings[] = $config;
+
+			if ($value) {
+				$new_settings[] = [
+					'name'   => $plugin_name,
+					'config' => $config,
+					'value'  => $value,
+				];
+			}
+		}
+
+		$this->removeSettings($plugin_name, $old_settings);
+
+		$this->addSettings($new_settings);
+	}
+
+	public function removeSettings(string $plugin_name, array $settings = [])
+	{
+		if (empty($settings))
+			return;
+
+		$this->smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_plugins
+			WHERE name = {string:name}
+				AND config IN ({array_string:settings})',
+			[
+				'name'     => $plugin_name,
+				'settings' => $settings,
+			]
+		);
+
+		$this->context['lp_num_queries']++;
 	}
 }

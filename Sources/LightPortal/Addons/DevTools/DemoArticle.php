@@ -10,16 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
 
 use Bugo\LightPortal\Front\AbstractArticle;
 use DateTime;
-
-use function fetch_web_data;
-use function smf_json_decode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -54,7 +51,7 @@ class DemoArticle extends AbstractArticle
 					'avatar' => '<img class="avatar" src="' . $users[$id]['avatar'] . '" alt="' . $users[$id]['id'] . '">'
 				],
 				'date'      => $this->smcFunc['random_int']((new DateTime('-2 years'))->getTimestamp(), time()),
-				'title'     => shorten_subject(Lorem::ipsum(1), 40),
+				'title'     => $this->getShortenText(Lorem::ipsum(1), 40),
 				'link'      => $link = $this->scripturl . '?topic=' . $article['id'] . '.0',
 				'is_new'    => rand(0, 1),
 				'views'     => [
@@ -96,15 +93,15 @@ class DemoArticle extends AbstractArticle
 
 	public function getProducts(): array
 	{
-		$products = fetch_web_data('https://reqres.in/api/products');
+		$products = $this->fetchWebData('https://reqres.in/api/products');
 
-		return smf_json_decode($products, true)['data'] ?? [];
+		return $this->jsonDecode($products, true)['data'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
-		$users = fetch_web_data('https://reqres.in/api/users');
+		$users = $this->fetchWebData('https://reqres.in/api/users');
 
-		return smf_json_decode($users, true)['data'] ?? [];
+		return $this->jsonDecode($users, true)['data'] ?? [];
 	}
 }

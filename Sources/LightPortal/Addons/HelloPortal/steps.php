@@ -24,12 +24,8 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][4] . '"
 		},
 		{
-			element: document.querySelector(".fa-circle-info"),
-			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][5] . '"
-		},
-		{
 			element: document.querySelector(".information"),
-			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][6] . '"
+			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][5] . '"
 		}',
 	'extra_settings' => '
 		{

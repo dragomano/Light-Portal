@@ -35,9 +35,9 @@ abstract class AbstractExport implements ExportInterface
 		@set_time_limit(600);
 
 		if (file_exists($file)) {
-			if (ob_get_level())
-				ob_end_clean();
+			ob_end_clean();
 
+			header_remove('content-encoding');
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
 			header('Content-Disposition: attachment; filename=' . basename($file));

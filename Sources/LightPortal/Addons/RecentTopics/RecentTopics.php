@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 08.05.22
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -190,7 +190,7 @@ class RecentTopics extends Plugin
 
 				if ($parameters['show_avatars'] && $topic['poster']['avatar'])
 					echo '
-				<span class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</span>';
+				<div class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</div>';
 
 				if ($topic['is_new'])
 					echo '

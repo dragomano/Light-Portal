@@ -30,7 +30,7 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 
 	ob_start();
 
-	(new AddonHandler)->run('prepareContent', [$type, $block_id, $cache_time, $parameters]);
+	AddonHandler::getInstance()->run('prepareContent', [$type, $block_id, $cache_time, $parameters]);
 
 	return ob_get_clean();
 }
@@ -62,7 +62,7 @@ function parse_content(string $content, string $type = 'bbc'): string
 		return ob_get_clean();
 	}
 
-	(new AddonHandler)->run('parseContent', [&$content, $type]);
+	AddonHandler::getInstance()->run('parseContent', [&$content, $type]);
 
 	return $content;
 }

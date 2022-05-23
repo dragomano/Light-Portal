@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -110,7 +110,7 @@ class WhosOnline extends Plugin
 				if ($group['hidden'] != 0 || $group['id'] == 3)
 					continue;
 
-				if (allowedTo('view_mlist')) {
+				if ($this->allowedTo('view_mlist')) {
 					$groups[] = '<a href="' . $this->scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</a>';
 				} else {
 					$groups[] = '<span' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</span>';

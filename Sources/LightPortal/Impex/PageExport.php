@@ -19,9 +19,6 @@ use Bugo\LightPortal\Lists\Category;
 use DomDocument;
 use DOMException;
 
-use function createList;
-use function log_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -129,11 +126,7 @@ final class PageExport extends AbstractExport
 			]
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
-
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_pages';
+		$this->createList($listOptions);
 	}
 
 	protected function getData(): array
@@ -275,7 +268,7 @@ final class PageExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			log_error('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
+			$this->logError('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

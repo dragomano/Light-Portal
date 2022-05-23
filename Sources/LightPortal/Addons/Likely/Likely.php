@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -90,7 +90,7 @@ class Likely extends Plugin
 
 		$this->context['likely_buttons'] = $this->buttons;
 
-		$this->loadTemplate()->withLayer('likely');
+		$this->setTemplate()->withLayer('likely');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
@@ -101,8 +101,8 @@ class Likely extends Plugin
 		if (empty($parameters['buttons']))
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', ['external' => true]);
 
 		echo '
 			<div class="centertext likely_links">

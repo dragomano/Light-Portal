@@ -16,10 +16,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
 
-use function addJavaScriptVar;
-use function create_control_richedit;
-use function loadTemplate;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -36,13 +32,7 @@ trait Area
 			'required'     => true
 		];
 
-		$this->require('Subs-Editor');
-		create_control_richedit($editorOptions);
-
-		$this->context['post_box_name'] = $editorOptions['id'];
-
-		addJavaScriptVar('oEditorID', $this->context['post_box_name'], true);
-		addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $this->context['post_box_name'], true);
+		$this->createControlRichedit($editorOptions);
 	}
 
 	public function preparePostFields()
@@ -68,7 +58,7 @@ trait Area
 				$this->context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
-		loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings');
 	}
 
 	public function toggleStatus(array $items = [], string $type = 'block')

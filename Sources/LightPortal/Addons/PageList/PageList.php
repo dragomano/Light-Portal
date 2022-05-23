@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -85,7 +85,7 @@ class PageList extends Plugin
 
 		$this->context['all_categories'] = $this->getAllCategories();
 
-		$this->loadTemplate()->withLayer('page_list');
+		$this->setTemplate()->withLayer('page_list');
 	}
 
 	public function getData(array $parameters): array

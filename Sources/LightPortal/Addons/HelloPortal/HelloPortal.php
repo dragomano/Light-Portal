@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.04.22
+ * @version 16.05.22
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -39,22 +39,22 @@ class HelloPortal extends Plugin
 		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
 			return;
 
-		loadLanguage('Post');
+		$this->loadLanguage('Post');
 
 		if (! empty($this->context['admin_menu_name']) && ! empty($this->context[$this->context['admin_menu_name']]) && ! empty($this->context[$this->context['admin_menu_name']]['tab_data']['title']))
 			$this->context[$this->context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . $this->txt['lp_hello_portal']['tour_button'] . '</button>';
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', ['external' => true]);
 
 		if (! empty($this->context['lp_hello_portal_plugin']['theme']))
-			loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css', ['external' => true]);
+			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css', ['external' => true]);
 
 		if ($this->context['right_to_left'])
-			loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', ['external' => true]);
+			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', ['external' => true]);
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', ['external' => true]);
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",

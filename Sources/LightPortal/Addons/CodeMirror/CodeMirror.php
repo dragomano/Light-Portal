@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -37,7 +37,7 @@ class CodeMirror extends Plugin
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		if (empty($modes = smf_json_decode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
+		if (empty($modes = $this->jsonDecode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
 			return;
 
 		if (($object['type'] === 'html' || (isset($object['options']['content']) && $object['options']['content'] === 'html')) && $modes['html'] === 1) {
@@ -55,41 +55,41 @@ class CodeMirror extends Plugin
 		if (empty($current_mode))
 			return;
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.css', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.css', ['external' => true]);
 
 		$this->context['html_headers'] .= "\n\t" . '<link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/codemirror@5/theme/3024-day.min.css,npm/codemirror@5/theme/3024-night.min.css,npm/codemirror@5/theme/abcdef.min.css,npm/codemirror@5/theme/ambiance.min.css,npm/codemirror@5/theme/ayu-dark.min.css,npm/codemirror@5/theme/ayu-mirage.min.css,npm/codemirror@5/theme/base16-dark.min.css,npm/codemirror@5/theme/base16-light.min.css,npm/codemirror@5/theme/bespin.min.css,npm/codemirror@5/theme/blackboard.min.css,npm/codemirror@5/theme/cobalt.min.css,npm/codemirror@5/theme/colorforth.min.css,npm/codemirror@5/theme/darcula.min.css,npm/codemirror@5/theme/dracula.min.css,npm/codemirror@5/theme/duotone-dark.min.css,npm/codemirror@5/theme/duotone-light.min.css,npm/codemirror@5/theme/eclipse.min.css,npm/codemirror@5/theme/elegant.min.css,npm/codemirror@5/theme/erlang-dark.min.css,npm/codemirror@5/theme/gruvbox-dark.min.css,npm/codemirror@5/theme/hopscotch.min.css,npm/codemirror@5/theme/icecoder.min.css,npm/codemirror@5/theme/idea.min.css,npm/codemirror@5/theme/isotope.min.css,npm/codemirror@5/theme/lesser-dark.min.css,npm/codemirror@5/theme/liquibyte.min.css,npm/codemirror@5/theme/lucario.min.css,npm/codemirror@5/theme/material.min.css,npm/codemirror@5/theme/material-darker.min.css,npm/codemirror@5/theme/material-ocean.min.css,npm/codemirror@5/theme/material-palenight.min.css,npm/codemirror@5/theme/mbo.min.css,npm/codemirror@5/theme/mdn-like.min.css,npm/codemirror@5/theme/midnight.min.css,npm/codemirror@5/theme/monokai.min.css,npm/codemirror@5/theme/moxer.min.css,npm/codemirror@5/theme/neat.min.css,npm/codemirror@5/theme/neo.min.css,npm/codemirror@5/theme/night.min.css,npm/codemirror@5/theme/nord.min.css,npm/codemirror@5/theme/oceanic-next.min.css,npm/codemirror@5/theme/panda-syntax.min.css,npm/codemirror@5/theme/paraiso-dark.min.css,npm/codemirror@5/theme/paraiso-light.min.css,npm/codemirror@5/theme/pastel-on-dark.min.css,npm/codemirror@5/theme/railscasts.min.css,npm/codemirror@5/theme/rubyblue.min.css,npm/codemirror@5/theme/seti.min.css,npm/codemirror@5/theme/shadowfox.min.css,npm/codemirror@5/theme/solarized.min.css,npm/codemirror@5/theme/ssms.min.css,npm/codemirror@5/theme/the-matrix.min.css,npm/codemirror@5/theme/tomorrow-night-bright.min.css,npm/codemirror@5/theme/tomorrow-night-eighties.min.css,npm/codemirror@5/theme/ttcn.min.css,npm/codemirror@5/theme/twilight.min.css,npm/codemirror@5/theme/vibrant-ink.min.css,npm/codemirror@5/theme/xq-dark.min.css,npm/codemirror@5/theme/xq-light.min.css,npm/codemirror@5/theme/yeti.min.css,npm/codemirror@5/theme/yonce.min.css,npm/codemirror@5/theme/zenburn.min.css">';
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/fullscreen.min.css', ['external' => true]);
-		loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.css', ['external' => true]);
-		addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5}');
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/fullscreen.min.css', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.css', ['external' => true]);
+		$this->addInlineCss('.CodeMirror {font-size: 1.4em; border: 1px solid #C5C5C5}');
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.min.js', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/javascript/javascript.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/lib/codemirror.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/xml/xml.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/javascript/javascript.min.js', ['external' => true]);
 
 		if ($current_mode === 'html') {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/xml-hint.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/html-hint.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/javascript-hint.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/show-hint.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/xml-hint.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/html-hint.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/hint/javascript-hint.min.js', ['external' => true]);
 		} elseif ($current_mode === 'php') {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/clike/clike.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/php/php.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/css/css.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/htmlmixed/htmlmixed.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/clike/clike.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/php/php.min.js', ['external' => true]);
 		} elseif ($current_mode === 'pug') {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/pug/pug.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/pug/pug.min.js', ['external' => true]);
 		} elseif ($current_mode === 'twig') {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/twig/twig.min.js', ['external' => true]);
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/mode/multiplex.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/twig/twig.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/mode/multiplex.min.js', ['external' => true]);
 		} else {
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/markdown/markdown.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/mode/markdown/markdown.min.js', ['external' => true]);
 		}
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js', ['external' => true]);
 
 		switch ($current_mode) {
 			case 'markdown':
@@ -108,7 +108,7 @@ class CodeMirror extends Plugin
 				$mode = '"text/html"';
 		}
 
-		addInlineJavaScript('
+		$this->addInlineJavaScript('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {
 			lineNumbers: true,
 			mode: '. $mode . ',

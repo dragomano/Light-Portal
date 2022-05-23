@@ -77,7 +77,6 @@ function template_manage_export_blocks()
 		</table>
 		<div class="additional_row">
 			<input type="hidden">
-			<input type="submit" name="export_preset" value="', $txt['lp_export_preset'], '" class="button">
 			<input type="submit" name="export_selection" value="', $txt['lp_export_selection'], '" class="button">
 			<input type="submit" name="export_all" value="', $txt['lp_export_all'], '" class="button">
 		</div>
@@ -88,10 +87,9 @@ function template_manage_import()
 {
 	global $context, $txt;
 
-	if (! empty($context['import_successful'])) {
+	if (! empty($context['import_successful']))
 		echo '
 	<div class="infobox">', $context['import_successful'], '</div>';
-	}
 
 	echo '
 	<div class="cat_bar">
@@ -102,21 +100,6 @@ function template_manage_import()
 		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
 				<input name="import_file" type="file" accept="text/xml">
-				<button class="button floatnone" type="submit">', $txt['lp_import_run'], '</button>
-			</div>
-		</form>
-	</div>';
-
-	if ($context['page_area_title'] === $txt['lp_blocks_import'])
-		echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_preset_import'], '</h3>
-	</div>
-	<div class="information">', $txt['lp_blocks_preset_import_info'], '</div>
-	<div class="descbox">
-		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
-			<div class="centertext">
-				<input name="import_preset" type="file" accept="text/xml">
 				<button class="button floatnone" type="submit">', $txt['lp_import_run'], '</button>
 			</div>
 		</form>

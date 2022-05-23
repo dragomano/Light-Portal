@@ -70,6 +70,11 @@ function template_plugin_post()
 											</thead>
 											<tbody>
 												<tr class="windowbg">
+													<td colspan="4">
+														<div class="infobox">', $txt['lp_plugin_maker']['option_desc'], '</div>
+													</td>
+												</tr>
+												<tr class="windowbg">
 													<td x-text="index + 1"></td>
 													<td colspan="2">
 														<input

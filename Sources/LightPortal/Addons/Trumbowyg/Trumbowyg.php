@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.04.22
+ * @version 12.05.22
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -35,23 +35,24 @@ class Trumbowyg extends Plugin
 		if ($object['type'] !== 'html' && (empty($object['options']['content']) || $object['options']['content'] !== 'html'))
 			return;
 
-		$dark_themes = smf_json_decode($this->context['lp_trumbowyg_plugin']['dark_themes'] ?? '', true);
+		$dark_themes = $this->jsonDecode($this->context['lp_trumbowyg_plugin']['dark_themes'] ?? '', true);
 		$auto_grow = empty($this->context['lp_trumbowyg_plugin']['auto_grow']) ? 0 : (int) $this->context['lp_trumbowyg_plugin']['auto_grow'];
 
-		loadLanguage('Editor');
+		$this->loadLanguage('Editor');
 
-		loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js', ['external' => true]);
 
 		if ($this->txt['lang_dictionary'] !== 'en')
-			loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $this->txt['lang_dictionary'] . '.min.js', ['external' => true]);
+			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $this->txt['lang_dictionary'] . '.min.js', ['external' => true]);
 
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js', ['external' => true]);
-		loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css', ['external' => true]);
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js', ['external' => true]);
-		addInlineJavaScript('
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js', ['external' => true]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css', ['external' => true]);
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js', ['external' => true]);
+
+		$this->addInlineJavaScript('
 		$("#content").trumbowyg({
 			lang: "' . $this->txt['lang_dictionary'] . '",
 			btnsDef: {

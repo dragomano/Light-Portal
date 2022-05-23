@@ -31,7 +31,7 @@ final class Tag extends AbstractPageList
 		if (array_key_exists($this->context['lp_tag'], $this->getAllTags()) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
 			$this->txt['back'] = $this->txt['lp_all_page_tags'];
-			fatal_lang_error('lp_tag_not_found', false, null, 404);
+			$this->fatalLangError('lp_tag_not_found', false, null, 404);
 		}
 
 		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getAllTags()[$this->context['lp_tag']]);
@@ -59,13 +59,9 @@ final class Tag extends AbstractPageList
 			'function' => [$this, 'getTotalCountPages']
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
+		$this->createList($listOptions);
 
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'lp_tags';
-
-		obExit();
+		$this->obExit();
 	}
 
 	public function getPages(int $start, int $items_per_page, string $sort): array
@@ -187,13 +183,9 @@ final class Tag extends AbstractPageList
 			]
 		];
 
-		$this->require('Subs-List');
-		createList($listOptions);
+		$this->createList($listOptions);
 
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = 'tags';
-
-		obExit();
+		$this->obExit();
 	}
 
 	public function getList(): array

@@ -21,14 +21,6 @@ use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
 
-use function checkSession;
-use function fetch_web_data;
-use function smf_json_decode;
-use function loadJavaScriptFile;
-use function loadLanguage;
-use function loadTemplate;
-use function updateSettings;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -36,12 +28,18 @@ final class PluginArea
 {
 	use Helper;
 
+	private PluginRepository $repository;
+
+	public function __construct()
+	{
+		$this->repository = new PluginRepository();
+	}
+
 	public function main()
 	{
-		loadLanguage('ManageMaintenance');
-		loadTemplate('LightPortal/ManagePlugins');
-
-		loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', ['external' => true]);
+		$this->loadLanguage('ManageMaintenance');
+		$this->loadTemplate('LightPortal/ManagePlugins');
+		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', ['external' => true]);
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];
 		$this->context['post_url'] = $this->scripturl . '?action=admin;area=lp_plugins;save';
@@ -62,6 +60,7 @@ final class PluginArea
 		// Toggle ON/OFF for plugins
 		if ($this->request()->has('toggle')) {
 			$data = $this->request()->json();
+
 			$plugin_id = (int) $data['plugin'];
 
 			if ($data['status'] === 'on') {
@@ -72,7 +71,7 @@ final class PluginArea
 
 			sort($this->context['lp_enabled_plugins']);
 
-			updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect($this->context['lp_enabled_plugins'], $this->context['lp_plugins'])))]);
+			$this->updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect($this->context['lp_enabled_plugins'], $this->context['lp_plugins'])))]);
 
 			$this->cache()->flush();
 
@@ -86,7 +85,7 @@ final class PluginArea
 
 		// Saving of plugin settings
 		if ($this->request()->has('save')) {
-			checkSession();
+			$this->checkSession();
 
 			$plugin_name = $this->post('plugin_name');
 
@@ -120,7 +119,7 @@ final class PluginArea
 			// You can do additional actions after settings saving
 			$this->hook('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
 
-			$this->updateSettings($plugin_name, $plugin_options);
+			$this->repository->updateSettings($plugin_name, $plugin_options);
 
 			exit;
 		}
@@ -191,12 +190,12 @@ final class PluginArea
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
 			$link = 'https://dragomano.ru/addons.json';
 
-			$addon_list = fetch_web_data($link);
+			$addon_list = $this->fetchWebData($link);
 
 			if (empty($addon_list))
 				return;
 
-			$xml = smf_json_decode($addon_list, true);
+			$xml = $this->jsonDecode($addon_list, true);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}
@@ -293,39 +292,5 @@ final class PluginArea
 				}
 			});
 		</script>';
-	}
-
-	private function updateSettings(string $plugin_name, array $options = [])
-	{
-		if (empty($options))
-			return;
-
-		$params = [];
-		foreach ($options as $config => $value) {
-			if (empty($value))
-				$should_remove[] = $config;
-
-			if ($value) {
-				$params[] = [
-					'name'   => $plugin_name,
-					'config' => $config,
-					'value'  => $value,
-				];
-			}
-		}
-
-		if (! empty($should_remove)) {
-			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_plugins
-				WHERE config IN ({array_string:options})',
-				[
-					'options' => $should_remove,
-				]
-			);
-
-			$this->context['lp_num_queries']++;
-		}
-
-		(new PluginRepository)->addSettings($params);
 	}
 }

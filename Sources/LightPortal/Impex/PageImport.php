@@ -14,9 +14,6 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use function fatal_lang_error;
-use function loadTemplate;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -24,7 +21,7 @@ final class PageImport extends AbstractImport
 {
 	public function main()
 	{
-		loadTemplate('LightPortal/ManageImpex');
+		$this->loadTemplate('LightPortal/ManageImpex');
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_import'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
@@ -47,7 +44,7 @@ final class PageImport extends AbstractImport
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))
-			fatal_lang_error('lp_wrong_import_file', false);
+			$this->fatalLangError('lp_wrong_import_file', false);
 
 		$categories = $tags = $items = $titles = $params = $comments = [];
 

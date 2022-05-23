@@ -16,12 +16,6 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 
-use function addInlineJavaScript;
-use function censorText;
-use function un_preparsecode;
-use function preparsecode;
-use function send_http_status;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -83,12 +77,12 @@ final class Comment
 		];
 
 		if ($this->context['current_start'] > $totalParentComments)
-			send_http_status(404);
+			$this->sendStatus(404);
 
 		$this->context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
 
 		if ($this->context['user']['is_logged']) {
-			addInlineJavaScript('
+			$this->addInlineJavaScript('
 		const comment = new Comment({
 			pageUrl: "' . $this->context['canonical_url'] . ($this->request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
 			start: ' . $start . ',
@@ -102,8 +96,6 @@ final class Comment
 
 	public function getAll(int $page_id = 0): array
 	{
-		$this->require('Subs-Post');
-
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
 			FROM {db_prefix}lp_comments AS com
@@ -116,7 +108,7 @@ final class Comment
 
 		$comments = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			censorText($row['message']);
+			$this->censorText($row['message']);
 
 			$comments[$row['id']] = [
 				'id'          => (int) $row['id'],
@@ -126,8 +118,8 @@ final class Comment
 					'id'   => (int) $row['author_id'],
 					'name' => $row['author_name']
 				],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : parse_bbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
-				'raw_message' => un_preparsecode($row['message']),
+				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
+				'raw_message' => $this->unPreparseCode($row['message']),
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at'])
 			];
@@ -173,9 +165,7 @@ final class Comment
 		if (empty($page_id) || empty($message))
 			exit(json_encode($result));
 
-		$this->require('Subs-Post');
-
-		preparsecode($message);
+		$this->preparseCode($message);
 
 		$item = $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_comments',
@@ -202,10 +192,11 @@ final class Comment
 		if ($item) {
 			$this->smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
-				SET num_comments = num_comments + 1
-				WHERE page_id = {int:item}',
+				SET num_comments = num_comments + 1, last_comment_id = {int:item}
+				WHERE page_id = {int:page_id}',
 				[
-					'item' => $page_id
+					'item'    => $item,
+					'page_id' => $page_id
 				]
 			);
 
@@ -222,10 +213,10 @@ final class Comment
 					'name'   => $this->user_info['name'],
 					'avatar' => $this->getUserAvatar($this->user_info['id']),
 				],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
+				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => $this->getFriendlyTime($time),
-				'raw_message' => un_preparsecode($message),
+				'raw_message' => $this->unPreparseCode($message),
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
@@ -266,8 +257,7 @@ final class Comment
 		if (empty($item) || empty($message))
 			exit;
 
-		$this->require('Subs-Post');
-		preparsecode($message);
+		$this->preparseCode($message);
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_comments
@@ -275,7 +265,7 @@ final class Comment
 			WHERE id = {int:id}
 				AND author_id = {int:user}',
 			[
-				'message' => shorten_subject($message, 65531),
+				'message' => $this->getShortenText($message, 65531),
 				'id'      => $item,
 				'user'    => $this->context['user']['id']
 			]
@@ -283,7 +273,7 @@ final class Comment
 
 		$this->context['lp_num_queries']++;
 
-		$message = empty($this->context['lp_allowed_bbc']) ? $message : parse_bbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']);
+		$message = empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
@@ -326,7 +316,21 @@ final class Comment
 			]
 		);
 
-		$this->context['lp_num_queries'] += 3;
+		$this->smcFunc['db_query']('', '
+			UPDATE {db_prefix}lp_pages
+			SET last_comment_id = (
+				SELECT COALESCE(MAX(com.id), 0)
+				FROM {db_prefix}lp_comments AS com
+					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
+				WHERE p.alias = {string:alias}
+			)
+			WHERE alias = {string:alias}',
+			[
+				'alias' => $this->alias
+			]
+		);
+
+		$this->context['lp_num_queries'] += 4;
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 

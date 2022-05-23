@@ -18,9 +18,6 @@ use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
 
-use function loadTemplate;
-use function log_error;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -35,7 +32,7 @@ final class BlockExport extends AbstractExport
 
 	public function main()
 	{
-		loadTemplate('LightPortal/ManageImpex');
+		$this->loadTemplate('LightPortal/ManageImpex');
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_export'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_export'];
@@ -49,7 +46,6 @@ final class BlockExport extends AbstractExport
 		$this->run();
 
 		$this->context['lp_current_blocks'] = $this->repository->getAll(true);
-		$this->context['lp_current_blocks'] = array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $this->context['lp_current_blocks']);
 
 		$this->context['sub_template'] = 'manage_export_blocks';
 	}
@@ -105,13 +101,6 @@ final class BlockExport extends AbstractExport
 
 		$items = array_map(fn($item) => array_filter($item), $items);
 
-		if ($this->post()->has('export_preset') !== false) {
-			return array_map(function ($item) {
-				unset($item['block_id']);
-				return $item;
-			}, $items);
-		}
-
 		return $items;
 	}
 
@@ -148,7 +137,7 @@ final class BlockExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			log_error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
+			$this->error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

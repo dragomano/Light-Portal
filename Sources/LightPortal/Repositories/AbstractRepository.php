@@ -32,9 +32,7 @@ abstract class AbstractRepository
 
 		$entity['content'] = $this->smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
 
-		$this->require('Subs-Post');
-
-		preparsecode($entity['content']);
+		$this->preparseCode($entity['content']);
 	}
 
 	protected function saveTitles(int $item, string $method = '')

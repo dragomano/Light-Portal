@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project name="Light Portal" default="build">
+    <target name="build">
+        <fileset dir="." id="files">
+            <include name="Themes/**" />
+            <exclude name="Themes/default/css/light_portal/portal.less" />
+            <include name="Sources/**" />
+            <exclude name="Sources/LightPortal/Addons/AvatarGenerator/**" />
+            <exclude name="Sources/LightPortal/Addons/ExtUpload/**" />
+            <exclude name="Sources/LightPortal/Addons/GoogleAmp/**" />
+            <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
+            <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
+            <exclude name="Sources/LightPortal/Addons/Jodit/**" />
+            <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
+            <exclude name="Sources/LightPortal/Addons/SiteList/**" />
+            <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+            <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
+            <exclude name="Sources/LightPortal/Addons/Disqus/**" />
+            <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
+            <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
+            <exclude name="Sources/LightPortal/Addons/GalleryFrontPage/**" />
+            <exclude name="Sources/LightPortal/Addons/KarmaPostRating/**" />
+            <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
+            <exclude name="Sources/LightPortal/Addons/Markdown/**" />
+            <exclude name="Sources/LightPortal/Addons/Optimus/**" />
+            <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
+            <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
+            <exclude name="Sources/LightPortal/Addons/Pug/**" />
+            <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
+            <exclude name="Sources/LightPortal/Addons/Twig/**" />
+            <exclude name="Sources/LightPortal/Addons/Uicons/**" />
+            <exclude name="Sources/LightPortal/Addons/VkComments/**" />
+            <include name="database.php" />
+            <include name="LICENSE" />
+            <include name="package-info.xml" />
+            <include name="portal.php" />
+            <include name="uninstall.php" />
+            <include name="uninstall-optional.php" />
+        </fileset>
+        <delete file="light_portal.zip" quiet="true" />
+        <zip destfile="light_portal.zip">
+            <fileset refid="files" />
+        </zip>
+    </target>
+</project>

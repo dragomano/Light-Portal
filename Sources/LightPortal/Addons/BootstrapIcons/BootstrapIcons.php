@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 11.05.22
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -31,7 +31,7 @@ class BootstrapIcons extends Plugin
 
 	public function init()
 	{
-		loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['external' => true, 'seed' => false]);
+		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['external' => true, 'seed' => false]);
 	}
 
 	public function addSettings(array &$config_vars)
@@ -43,7 +43,7 @@ class BootstrapIcons extends Plugin
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/twbs/icons/main/font/bootstrap-icons.json');
-			$json = array_flip(smf_json_decode($content, true));
+			$json = array_flip($this->jsonDecode($content, true));
 
 			$icons = [];
 			foreach ($json as $icon) {
@@ -88,7 +88,6 @@ class BootstrapIcons extends Plugin
 		$set['home']          = 'house-door';
 		$set['image']         = 'image';
 		$set['import']        = 'file-arrow-up';
-		$set['info']          = 'exclamation-circle';
 		$set['italic']        = 'type-italic';
 		$set['link']          = 'link';
 		$set['main']          = 'card-list';
