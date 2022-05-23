@@ -217,7 +217,7 @@ final class ConfigArea
 
 		$this->context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-			array_pad($this->txt['lp_frontpage_mode_set'], 7, LP_NEED_TRANSLATION)
+			$this->txt['lp_frontpage_mode_set']
 		);
 
 		$this->context['board_list'] = $this->getBoardList();

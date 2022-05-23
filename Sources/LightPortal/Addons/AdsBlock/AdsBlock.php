@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 23.05.22
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -409,7 +409,7 @@ class AdsBlock extends Plugin
 				'after_every_last_post',
 				'after_last_post'
 			],
-			array_pad($this->txt['lp_ads_block']['placement_set'], 12, LP_NEED_TRANSLATION)
+			$this->txt['lp_ads_block']['placement_set']
 		);
 	}
 

@@ -553,10 +553,7 @@ final class BlockArea
 		];
 
 		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'home,portal,forum,search');
-		$this->context['lp_possible_areas'] = array_combine(
-			$example_areas,
-			array_pad($this->txt['lp_block_areas_values'], 12, LP_NEED_TRANSLATION)
-		);
+		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 
 		ob_start();
 
