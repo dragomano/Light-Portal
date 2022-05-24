@@ -230,17 +230,14 @@ abstract class AbstractMain
 
 	private function getPageOptions(): array
 	{
-		return array_combine(
-			['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'],
-			array_pad($this->txt['lp_page_options'], 4, LP_NEED_TRANSLATION)
-		);
+		return array_combine(['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'], $this->txt['lp_page_options']);
 	}
 
 	private function getPluginTypes(): array
 	{
 		return array_combine(
 			['block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
-			array_pad($this->txt['lp_plugins_types'], 13, LP_NEED_TRANSLATION)
+			$this->txt['lp_plugins_types']
 		);
 	}
 }
