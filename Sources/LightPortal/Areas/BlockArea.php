@@ -316,6 +316,9 @@ final class BlockArea
 
 		$block_options = $this->context['current_block']['options'] ?? $options[$this->context['current_block']['type']];
 
+		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']))
+			$this->context['current_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['current_block']['type']]['icon'];
+
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
 			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_own_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
@@ -338,9 +341,6 @@ final class BlockArea
 
 		if ($this->context['lp_block']['icon'] === 'undefined')
 			$this->context['lp_block']['icon'] = '';
-
-		if (empty($this->context['lp_block']['block_id']) && empty($this->context['lp_block']['icon']))
-			$this->context['lp_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['lp_block']['type']]['icon'];
 
 		$this->context['lp_block']['icon_template'] = $this->getIcon($this->context['lp_block']['icon']) . $this->context['lp_block']['icon'];
 
