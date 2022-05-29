@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 29.05.22
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
@@ -94,7 +94,7 @@ class PageLikes extends Plugin
 
 		show_likes_block($data);
 
-		$data['addons'] .= ob_get_clean();
+		$data['post_content'] .= ob_get_clean();
 	}
 
 	private function prepareLikesContext(int $page): array

@@ -497,6 +497,8 @@ final class Page
 			$data['content'] = $this->unPreparseCode($data['content']);
 		}
 
+		$data['post_content'] = '';
+
 		if (! empty($data['category_id']))
 			$data['category'] = $this->getAllCategories()[$data['category_id']]['name'];
 
