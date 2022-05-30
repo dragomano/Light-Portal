@@ -74,7 +74,7 @@ class WhosOnline extends Plugin
 		if ($type !== 'whos_online')
 			return;
 
-		if ($this->post()->has('preview'))
+		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
 		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])

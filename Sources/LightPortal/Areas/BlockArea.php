@@ -95,7 +95,7 @@ final class BlockArea
 		$this->context['sub_template'] = 'block_add';
 
 		$json = $this->request()->json();
-		$type = $json['add_block'] ?? $this->post('add_block', '') ?? '';
+		$type = $json['add_block'] ?? $this->request('add_block', '') ?? '';
 
 		if (empty($type))
 			return;
@@ -138,7 +138,7 @@ final class BlockArea
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
 			$this->fatalLangError('lp_block_not_editable', false);
 
-		if ($this->post()->has('remove')) {
+		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
 
 			$this->redirect('action=admin;area=lp_blocks;sa=main');
@@ -196,7 +196,7 @@ final class BlockArea
 		if (empty($item))
 			return;
 
-		$this->post()->put('clone', true);
+		$this->request()->put('clone', true);
 
 		$result['success'] = false;
 
@@ -277,7 +277,7 @@ final class BlockArea
 
 	private function validateData()
 	{
-		if ($this->post()->only(['save', 'save_exit', 'preview'])) {
+		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'block_id'      => FILTER_VALIDATE_INT,
 				'icon'          => FILTER_DEFAULT,
@@ -304,7 +304,7 @@ final class BlockArea
 
 			$this->hook('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
 
-			$post_data['parameters'] = filter_var_array($this->post()->only(array_keys($parameters)), $parameters);
+			$post_data['parameters'] = filter_var_array($this->request()->only(array_keys($parameters)), $parameters);
 
 			$this->findErrors($post_data);
 		}
@@ -389,7 +389,7 @@ final class BlockArea
 		$this->hook('findBlockErrors', [$data, &$post_errors]);
 
 		if ($post_errors) {
-			$this->post()->put('preview', true);
+			$this->request()->put('preview', true);
 			$this->context['post_errors'] = [];
 
 			foreach ($post_errors as $error)
@@ -589,7 +589,7 @@ final class BlockArea
 
 	private function preparePreview()
 	{
-		if ($this->post()->has('preview') === false)
+		if ($this->request()->has('preview') === false)
 			return;
 
 		$this->checkSubmitOnce('free');

@@ -49,7 +49,7 @@ class DevTools extends Plugin
 
 		$this->context['frontpage_layouts'] = $layouts;
 
-		$this->context['current_layout'] = $this->post('layout', $this->modSettings['lp_frontpage_layout'] ?? 'articles');
+		$this->context['current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'articles');
 
 		$this->setTemplate('show_' . $this->context['current_layout'])->withLayer('layout_switcher');
 	}

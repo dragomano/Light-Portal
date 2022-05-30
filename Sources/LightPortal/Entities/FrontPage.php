@@ -188,7 +188,7 @@ final class FrontPage
 			'num_views'        => 'p.num_views'
 		];
 
-		$this->context['current_sorting'] = $this->post('sort', 'created;desc');
+		$this->context['current_sorting'] = $this->request('sort', 'created;desc');
 
 		return $sorting_types[$this->context['current_sorting']];
 	}

@@ -131,10 +131,10 @@ final class PageExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->post()->isEmpty('pages') && $this->post()->has('export_all') === false)
+		if ($this->request()->isEmpty('pages') && $this->request()->has('export_all') === false)
 			return [];
 
-		$pages = $this->post('pages') && $this->post()->has('export_all') === false ? $this->post('pages') : null;
+		$pages = $this->request('pages') && $this->request()->has('export_all') === false ? $this->request('pages') : null;
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT

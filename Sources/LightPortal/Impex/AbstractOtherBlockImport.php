@@ -28,7 +28,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 
 	protected function run()
 	{
-		if ($this->post()->isEmpty('blocks') && $this->post()->has('import_all') === false)
+		if ($this->request()->isEmpty('blocks') && $this->request()->has('import_all') === false)
 			return;
 
 		// Might take some time.
@@ -38,7 +38,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		$this->tempCache = $this->db_cache;
 		$this->db_cache = [];
 
-		$blocks = $this->post('blocks') && $this->post()->has('import_all') === false ? $this->post('blocks') : [];
+		$blocks = $this->request('blocks') && $this->request()->has('import_all') === false ? $this->request('blocks') : [];
 
 		$results = $titles = [];
 		$items = $this->getItems($blocks);

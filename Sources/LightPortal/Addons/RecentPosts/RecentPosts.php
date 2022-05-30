@@ -191,7 +191,7 @@ class RecentPosts extends Plugin
 		if ($type !== 'recent_posts')
 			return;
 
-		if ($this->post()->has('preview'))
+		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
 		$recent_posts = $this->cache('recent_posts_addon_b' . $block_id . '_u' . $this->user_info['id'])

@@ -155,7 +155,7 @@ class RecentTopics extends Plugin
 		if ($type !== 'recent_topics')
 			return;
 
-		if ($this->post()->has('preview'))
+		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
 		$recent_topics = $this->cache('recent_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])

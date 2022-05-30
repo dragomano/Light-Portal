@@ -96,8 +96,8 @@ final class PageRepository extends AbstractRepository
 	public function setData(int $item = 0)
 	{
 		if (isset($this->context['post_errors']) || (
-			$this->post()->has('save') === false &&
-			$this->post()->has('save_exit') === false)
+			$this->request()->has('save') === false &&
+			$this->request()->has('save_exit') === false)
 		)
 			return;
 
@@ -116,10 +116,10 @@ final class PageRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
-		if ($this->post()->has('save_exit'))
+		if ($this->request()->has('save_exit'))
 			$this->redirect('action=admin;area=lp_pages;sa=main');
 
-		if ($this->post()->has('save'))
+		if ($this->request()->has('save'))
 			$this->redirect('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
