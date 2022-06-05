@@ -167,7 +167,7 @@ $txt['lp_block_priority'] = 'Priority';
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer');
 
-$txt['lp_block_areas'] = 'Actions';
+$txt['lp_block_areas'] = 'Areas';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:';
 $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
@@ -187,7 +187,6 @@ $txt['lp_block_areas_values'] = array(
 );
 
 $txt['lp_block_select_icon'] = 'Select icon';
-$txt['lp_block_icon_style_cheatsheet'] = 'FontAwesome Style Cheatsheet';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
@@ -197,7 +196,7 @@ $txt['lp_block_content_style'] = 'CSS content style';
 $txt['lp_bbc']['title'] = 'Custom BBCode';
 $txt['lp_html']['title'] = 'Custom HTML';
 $txt['lp_php']['title'] = 'Custom PHP';
-$txt['lp_bbc']['description'] = 'In this block, any BBCode tags of the forum can be used as content.';
+$txt['lp_bbc']['description'] = 'In this block, you can use any allowed BBCode tags as content.';
 $txt['lp_html']['description'] = 'In this block, you can use any HTML tags as content.';
 $txt['lp_php']['description'] = 'In this block, you can use any PHP code as content.';
 
