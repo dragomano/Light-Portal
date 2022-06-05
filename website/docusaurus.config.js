@@ -80,15 +80,22 @@ const config = {
       locales: ['en', 'ru'],
     },
 
-/*     plugins: [
+    plugins: [
       [
+        'docusaurus-plugin-yandex-metrica', {
+          counterID: '89104842',
+          webvisor: true,
+          trackHash: true
+        },
+      ],
+/*       [
         require.resolve("@cmfcmf/docusaurus-search-local"),
         {
           language: ['en', 'ru'],
           indexBlog: false,
         },
-      ],
-    ], */
+      ], */
+    ],
 };
 
 module.exports = config;
