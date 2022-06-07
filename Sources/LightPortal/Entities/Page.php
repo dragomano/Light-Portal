@@ -205,7 +205,7 @@ final class Page
 		$sort     = $front->getOrderBy();
 		$articles = $entity->getPages($start, $limit, $sort);
 
-		$this->context['page_index'] = constructPageIndex($this->context['canonical_url'], $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = $this->constructPageIndex($this->context['canonical_url'], $this->request()->get('start'), $total_items, $limit);
 		$this->context['start']      = $this->request()->get('start');
 
 		$this->context['lp_frontpage_articles']    = $articles;

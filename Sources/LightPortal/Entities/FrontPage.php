@@ -78,7 +78,7 @@ final class FrontPage
 
 		$articles = $this->postProcess($article, $articles);
 
-		$this->context['page_index'] = constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
 		if (! empty($this->modSettings['lp_use_simple_pagination']))

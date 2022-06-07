@@ -288,6 +288,11 @@ trait SMFTrait
 		updateMemberData($members, $data);
 	}
 
+	protected function constructPageIndex(string $base_url, &$start, int $max_value, int $num_per_page): string
+	{
+		return constructPageIndex($base_url, $start, $max_value, $num_per_page);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *
