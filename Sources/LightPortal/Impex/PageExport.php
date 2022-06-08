@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Lists\Category;
+use ArrayIterator;
 use DomDocument;
 use DOMException;
 
@@ -90,12 +91,12 @@ final class PageExport extends AbstractExport
 						'value' => $this->txt['lp_title']
 					],
 					'data' => [
-                        'function' => fn($entry) => '<a class="bbc_link' . (
-                            $entry['is_front']
-                                ? ' new_posts" href="' . $this->scripturl
-                                : '" href="' . LP_PAGE_URL . $entry['alias']
-                            ) . '">' . $entry['title'] . '</a>',
-                        'class' => 'word_break'
+						'function' => fn($entry) => '<a class="bbc_link' . (
+							$entry['is_front']
+								? ' new_posts" href="' . $this->scripturl
+								: '" href="' . LP_PAGE_URL . $entry['alias']
+							) . '">' . $entry['title'] . '</a>',
+						'class' => 'word_break'
 					],
 					'sort' => [
 						'default' => 't.title DESC',
@@ -214,7 +215,9 @@ final class PageExport extends AbstractExport
 
 			if ($categories = $this->getCategories()) {
 				$xmlElements = $root->appendChild($xml->createElement('categories'));
-				foreach ($categories as $category) {
+
+				$categories = fn() => new ArrayIterator($categories);
+				foreach ($categories() as $category) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 					foreach ($category as $key => $val) {
 						$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
@@ -225,7 +228,9 @@ final class PageExport extends AbstractExport
 
 			if ($tags = $this->getAllTags()) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
-				foreach ($tags as $key => $val) {
+
+				$tags = fn() => new ArrayIterator($tags);
+				foreach ($tags() as $key => $val) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 					$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
 					$xmlName->appendChild($xml->createTextNode((string) $key));
@@ -235,7 +240,9 @@ final class PageExport extends AbstractExport
 			}
 
 			$xmlElements = $root->appendChild($xml->createElement('pages'));
-			foreach ($items as $item) {
+			$items = fn() => new ArrayIterator($items);
+
+			foreach ($items() as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
 					$xmlName = $xmlElement->appendChild(
