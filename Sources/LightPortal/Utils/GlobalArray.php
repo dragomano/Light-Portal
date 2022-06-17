@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractStorage.php
+ * GlobalArray.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractStorage
+abstract class GlobalArray
 {
 	protected array $storage = [];
 

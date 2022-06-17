@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Session extends AbstractStorage
+final class Session extends GlobalArray
 {
 	public function __construct()
 	{

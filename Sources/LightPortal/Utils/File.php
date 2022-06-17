@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class File extends AbstractStorage
+final class File extends GlobalArray
 {
 	public function __construct()
 	{
