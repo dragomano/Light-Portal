@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 23.06.22
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -84,18 +84,18 @@ class WhosOnline extends Plugin
 		if (empty($whos_online))
 			return;
 
-		echo __('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . __('lp_users_set', ['users' => $whos_online['num_users_online']]);
+		echo $this->translate('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . $this->translate('lp_users_set', ['users' => $whos_online['num_users_online']]);
 
 		$online_list = [];
 
 		if ($this->user_info['buddies'] && $whos_online['num_buddies'])
-			$online_list[] = __('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
+			$online_list[] = $this->translate('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
 
 		if ($whos_online['num_spiders'])
-			$online_list[] = __('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
+			$online_list[] = $this->translate('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
 
 		if ($whos_online['num_users_hidden'])
-			$online_list[] = __('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
+			$online_list[] = $this->translate('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
 		if ($online_list)
 			echo ' (' . sentence_list($online_list) . ')';
