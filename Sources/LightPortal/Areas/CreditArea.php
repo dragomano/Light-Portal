@@ -52,13 +52,14 @@ final class CreditArea
 		$this->middleware('light_portal_view');
 
 		$this->context['portal_translations'] = [
-			'Polish'    => ['Adrek', 'jsqx'],
-			'Spanish'   => ['Rock Lee', 'Diego Andrés'],
-			'French'    => ['Papoune57'],
-			'Turkish'   => ['gevv'],
-			'Ukrainian' => ['valciriya1986'],
-			'German'    => ['trucker2006', 'm4z'],
-			'Italian'   => ['Darknico']
+			'Polish'     => ['Adrek', 'jsqx'],
+			'Spanish'    => ['Rock Lee', 'Diego Andrés'],
+			'French'     => ['Papoune57'],
+			'Turkish'    => ['gevv'],
+			'Ukrainian'  => ['valciriya1986'],
+			'German'     => ['trucker2006', 'm4z'],
+			'Italian'    => ['Darknico'],
+			'Portuguese' => ['Costa'],
 		];
 
 		$this->context['testers'] = [

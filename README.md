@@ -7,7 +7,7 @@
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 8.1.5 / MariaDB 10.6.7
-* **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish
+* **Languages:** Spanish, Ukrainian, Polish, English, Russian, German, Italian, French, Turkish, Portuguese
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 
 ## Description
