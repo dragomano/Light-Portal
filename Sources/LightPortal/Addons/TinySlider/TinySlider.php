@@ -57,7 +57,7 @@ class TinySlider extends Plugin
 		if ($type !== 'tiny_slider')
 			return;
 
-		$data = $this->post()->only(['image_title', 'image_link']);
+		$data = $this->request()->only(['image_title', 'image_link']);
 
 		$images = [];
 		if ($data && isset($data['image_title']) && isset($data['image_link'])) {
@@ -71,7 +71,7 @@ class TinySlider extends Plugin
 				];
 			}
 
-			$this->post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
+			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
 		$parameters['use_cdn']            = FILTER_VALIDATE_BOOLEAN;

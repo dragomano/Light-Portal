@@ -37,7 +37,7 @@ class SimpleMenu extends Plugin
 		if ($type !== 'simple_menu')
 			return;
 
-		$data = $this->post()->only(['item_name', 'item_link']);
+		$data = $this->request()->only(['item_name', 'item_link']);
 
 		$items = [];
 		if ($data && isset($data['item_name']) && isset($data['item_link'])) {
@@ -51,7 +51,7 @@ class SimpleMenu extends Plugin
 				];
 			}
 
-			$this->post()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
+			$this->request()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
 		}
 
 		$parameters['items'] = FILTER_DEFAULT;

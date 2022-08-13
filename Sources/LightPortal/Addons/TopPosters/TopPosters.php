@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 23.06.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -148,7 +148,7 @@ class TopPosters extends Plugin
 			<dt>', $poster['avatar'], ' ', $poster['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : __($this->txt['lp_top_posters']['posts'], ['posts' => $poster['posts']])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : $this->translate($this->txt['lp_top_posters']['posts'], ['posts' => $poster['posts']])), '</span>
 			</dd>';
 		}
 

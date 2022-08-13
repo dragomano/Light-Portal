@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session, SMFTrait};
+use Bugo\LightPortal\Utils\{Cache, File, Request, Session, SMFTrait};
 
+use MessageFormatter;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -29,13 +30,22 @@ trait Helper
 	use SMFTrait;
 
 	/**
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
+	 * @see https://symfony.com/doc/current/translation/message_format.html
+	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
+	 * @see https://www.php.net/manual/en/class.messageformatter.php
+	 * @see https://intl.rmcreative.ru
 	 */
-	public function request(?string $key = null, $default = null)
+	public function translate(string $pattern, array $values = []): string
 	{
-		return $key ? ((new Request())->get($key) ?? $default) : new Request();
+		if (empty($this->txt['lang_locale']))
+			return '';
+
+		if (extension_loaded('intl'))
+			return MessageFormatter::formatMessage($this->txt['lang_locale'], $this->txt[$pattern] ?? $pattern, $values) ?? '';
+
+		$this->logError('[LP] translate helper: enable intl extension', 'critical');
+
+		return '';
 	}
 
 	/**
@@ -43,9 +53,9 @@ trait Helper
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function post(?string $key = null, $default = null)
+	public function request(?string $key = null, $default = null)
 	{
-		return $key ? ((new Post())->get($key) ?? $default) : new Post();
+		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
 	public function cache(?string $key = null): Cache
@@ -378,7 +388,7 @@ trait Helper
 			$days = floor(($timestamp - $now) / 60 / 60 / 24);
 			if ($days > 1) {
 				if ($days < 7)
-					return sprintf($this->txt['lp_time_label_in'], __('lp_days_set', compact('days')));
+					return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_days_set', compact('days')));
 
 				// Future date in current month
 				if ($m === date('m', $now) && $y === date('Y', $now))
@@ -394,15 +404,15 @@ trait Helper
 			// like "In n hours"
 			$hours = ($timestamp - $now) / 60 / 60;
 			if ($hours >= 1)
-				return sprintf($this->txt['lp_time_label_in'], __('lp_hours_set', ['hours' => ceil($hours)]));
+				return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_hours_set', ['hours' => ceil($hours)]));
 
 			// like "In n minutes"
 			$minutes = ($timestamp - $now) / 60;
 			if ($minutes >= 1)
-				return sprintf($this->txt['lp_time_label_in'], __('lp_minutes_set', ['minutes' => ceil($minutes)]));
+				return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_minutes_set', ['minutes' => ceil($minutes)]));
 
 			// like "In n seconds"
-			return sprintf($this->txt['lp_time_label_in'], __('lp_seconds_set', ['seconds' => abs($timeDifference)]));
+			return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_seconds_set', ['seconds' => abs($timeDifference)]));
 		}
 
 		// Less than an hour
@@ -410,10 +420,10 @@ trait Helper
 
 		// like "n seconds ago"
 		if ($timeDifference < 60)
-			return $this->smcFunc['ucfirst'](__('lp_seconds_set', ['seconds' => $timeDifference])) . $this->txt['lp_time_label_ago'];
+			return $this->smcFunc['ucfirst']($this->translate('lp_seconds_set', ['seconds' => $timeDifference])) . $this->txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($lastMinutes < 60)
-			return $this->smcFunc['ucfirst'](__('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $this->txt['lp_time_label_ago'];
+			return $this->smcFunc['ucfirst']($this->translate('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $this->txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y === date('jmY', $now))
 			return $this->txt['today'] . $t;

@@ -12,6 +12,7 @@
 **/Addons/**/ukrainian.php
 **/Addons/**/german.php
 **/Addons/**/italian.php
+**/Addons/**/portuguese*.php
 Themes/**/*.russian.php
 Themes/**/*.polish.php
 Themes/**/*.spanish*.php
@@ -20,6 +21,7 @@ Themes/**/*.french.php
 Themes/**/*.ukrainian.php
 Themes/**/*.german.php
 Themes/**/*.italian.php
+Themes/**/*.portuguese*.php
 **/Addons/AvatarGenerator
 **/Addons/ExtUpload
 **/Addons/GoogleAmp

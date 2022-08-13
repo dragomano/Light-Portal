@@ -240,19 +240,19 @@ final class ConfigArea
 		if ($this->request()->has('save')) {
 			$this->checkSession();
 
-			if ($this->post()->isNotEmpty('lp_image_placeholder'))
-				$this->post()->put('lp_image_placeholder', $this->validate($this->post('lp_image_placeholder'), 'url'));
+			if ($this->request()->isNotEmpty('lp_image_placeholder'))
+				$this->request()->put('lp_image_placeholder', $this->validate($this->request('lp_image_placeholder'), 'url'));
 
-			if ($this->post()->isNotEmpty('lp_standalone_url'))
-				$this->post()->put('lp_standalone_url', $this->validate($this->post('lp_standalone_url'), 'url'));
+			if ($this->request()->isNotEmpty('lp_standalone_url'))
+				$this->request()->put('lp_standalone_url', $this->validate($this->request('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_mode'];
 
-			if ($this->post()->has('lp_frontpage_alias'))
+			if ($this->request()->has('lp_frontpage_alias'))
 				$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			if ($this->post()->isNotEmpty('lp_frontpage_mode') && $this->post()->has('lp_frontpage_alias') === false) {
+			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->has('lp_frontpage_alias') === false) {
 				$save_vars[] = ['text', 'lp_frontpage_title'];
 				$save_vars[] = ['text', 'lp_frontpage_categories'];
 				$save_vars[] = ['text', 'lp_frontpage_boards'];
@@ -358,17 +358,17 @@ final class ConfigArea
 			$parse_tags = (array) $this->parseBbc(false);
 			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
-			if ($this->post()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', '');
-			} elseif (! is_array($this->post('lp_disabled_bbc_in_comments_enabledTags'))) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', $this->post('lp_disabled_bbc_in_comments_enabledTags'));
+			if ($this->request()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
+				$this->request()->put('lp_disabled_bbc_in_comments_enabledTags', '');
+			} elseif (! is_array($this->request('lp_disabled_bbc_in_comments_enabledTags'))) {
+				$this->request()->put('lp_disabled_bbc_in_comments_enabledTags', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
 			}
 
-			$this->post()->put('lp_enabled_bbc_in_comments', $this->post('lp_disabled_bbc_in_comments_enabledTags'));
-			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->post('lp_disabled_bbc_in_comments_enabledTags')))));
+			$this->request()->put('lp_enabled_bbc_in_comments', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
+			$this->request()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->request('lp_disabled_bbc_in_comments_enabledTags')))));
 
-			if ($this->post()->isNotEmpty('lp_fa_custom'))
-				$this->post()->put('lp_fa_custom', $this->validate($this->post('lp_fa_custom'), 'url'));
+			if ($this->request()->isNotEmpty('lp_fa_custom'))
+				$this->request()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_show_comment_block'];
@@ -483,9 +483,9 @@ final class ConfigArea
 		if ($this->request()->has('save')) {
 			$this->checkSession();
 
-			$this->post()->put('lp_left_panel_width', json_encode($this->post('lp_left_panel_width')));
-			$this->post()->put('lp_right_panel_width', json_encode($this->post('lp_right_panel_width')));
-			$this->post()->put('lp_panel_direction', json_encode($this->post('lp_panel_direction')));
+			$this->request()->put('lp_left_panel_width', json_encode($this->request('lp_left_panel_width')));
+			$this->request()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
+			$this->request()->put('lp_panel_direction', json_encode($this->request('lp_panel_direction')));
 
 			$save_vars = $config_vars;
 
@@ -556,7 +556,7 @@ final class ConfigArea
 				]
 			);
 
-			if ($this->post()->has('lp_weekly_cleaning')) {
+			if ($this->request()->has('lp_weekly_cleaning')) {
 				$this->smcFunc['db_insert']('insert',
 					'{db_prefix}background_tasks',
 					['task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'],

@@ -109,7 +109,7 @@ abstract class AbstractImport implements ImportInterface
 
 		$this->smcFunc['db_transaction']('commit');
 
-		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], __('lp_' . $type . '_set', [$type => $this->context['import_successful']]));
+		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => $this->context['import_successful']]));
 
 		// Restore the cache
 		$this->db_cache = $this->tempCache;

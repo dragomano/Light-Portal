@@ -302,12 +302,12 @@ final class PageArea
 
 	public function massActions()
 	{
-		if ($this->post()->has('mass_actions') === false || $this->post()->isEmpty('items'))
+		if ($this->request()->has('mass_actions') === false || $this->request()->isEmpty('items'))
 			return;
 
 		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, ['options' => ['default' => 'action=admin;area=lp_pages']]);
 
-		$items = $this->post('items');
+		$items = $this->request('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				$this->remove($items);
@@ -379,7 +379,7 @@ final class PageArea
 
 		$this->prepareForumLanguages();
 
-		if ($this->post()->has('remove')) {
+		if ($this->request()->has('remove')) {
 			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id'])
 				logAction('remove_lp_page', [
 					'page' => $this->context['lp_current_page']['title'][$this->user_info['language']]
@@ -490,7 +490,7 @@ final class PageArea
 
 	private function validateData()
 	{
-		if ($this->post()->only(['save', 'save_exit', 'preview'])) {
+		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'category'    => FILTER_VALIDATE_INT,
 				'page_author' => FILTER_VALIDATE_INT,
@@ -602,7 +602,7 @@ final class PageArea
 		$this->hook('findPageErrors', [$data, &$post_errors]);
 
 		if ($post_errors) {
-			$this->post()->put('preview', true);
+			$this->request()->put('preview', true);
 			$this->context['post_errors'] = [];
 
 			foreach ($post_errors as $error)
@@ -853,7 +853,7 @@ final class PageArea
 
 	private function preparePreview()
 	{
-		if ($this->post()->has('preview') === false)
+		if ($this->request()->has('preview') === false)
 			return;
 
 		$this->checkSubmitOnce('free');

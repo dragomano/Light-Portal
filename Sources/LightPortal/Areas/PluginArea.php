@@ -87,31 +87,31 @@ final class PluginArea
 		if ($this->request()->has('save')) {
 			$this->checkSession();
 
-			$plugin_name = $this->post('plugin_name');
+			$plugin_name = $this->request('plugin_name');
 
 			$plugin_options = [];
 			foreach ($config_vars[$plugin_name] as $var) {
-				if ($this->post()->has($var[1])) {
+				if ($this->request()->has($var[1])) {
 					if ($var[0] === 'check') {
-						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'bool');
+						$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'bool');
 					} elseif ($var[0] === 'int') {
-						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'int');
+						$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'int');
 					} elseif ($var[0] === 'float') {
-						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'float');
+						$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'float');
 					} elseif ($var[0] === 'multicheck') {
 						$plugin_options[$var[1]] = [];
 
-						foreach ($this->post($var[1]) as $key => $value) {
+						foreach ($this->request($var[1]) as $key => $value) {
 							$plugin_options[$var[1]][$key] = (int) $this->validate($value, 'bool');
 						}
 
 						$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 					} elseif ($var[0] === 'url') {
-						$plugin_options[$var[1]] = $this->validate($this->post($var[1]), 'url');
+						$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'url');
 					} elseif ($var[0] === 'select' && ! empty($var['multiple'])) {
-						$plugin_options[$var[1]] = json_encode($this->post($var[1]));
+						$plugin_options[$var[1]] = json_encode($this->request($var[1]));
 					} else {
-						$plugin_options[$var[1]] = $this->post($var[1]);
+						$plugin_options[$var[1]] = $this->request($var[1]);
 					}
 				}
 			}
@@ -169,10 +169,10 @@ final class PluginArea
 		$this->prepareAddonChart();
 
 		// Sort plugin list
-		$this->context['current_filter'] = $this->post('filter', 'all');
+		$this->context['current_filter'] = $this->request('filter', 'all');
 
-		if ($this->post()->has('filter')) {
-			$filter = $this->post('filter');
+		if ($this->request()->has('filter')) {
+			$filter = $this->request('filter');
 			$this->context['all_lp_plugins'] = array_filter(
 				$this->context['all_lp_plugins'],
 				fn($item) => ! in_array($filter, array_keys($this->context['lp_plugin_types'])) || in_array($this->context['lp_plugin_types'][$filter], array_keys($item['types']))

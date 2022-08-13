@@ -128,7 +128,7 @@ class BoardStats extends Plugin
 		if ($type !== 'board_stats')
 			return;
 
-		if ($this->post()->has('preview'))
+		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
 		$board_stats = $this->cache('board_stats_addon_b' . $block_id . '_u' . $this->user_info['id'])

@@ -47,7 +47,7 @@ final class FrontPage
 		$this->context['page_title'] = $this->modSettings['lp_frontpage_title'] ?: ($this->context['forum_name'] . ' - ' . $this->txt['lp_portal']);
 		$this->context['linktree'][] = [
 			'name'        => $this->txt['lp_portal'],
-			'extra_after' => '(' . __('lp_articles_set', ['articles' => $this->context['total_articles']]) . ')'
+			'extra_after' => '(' . $this->translate('lp_articles_set', ['articles' => $this->context['total_articles']]) . ')'
 		];
 
 		$this->prepareTemplates();
@@ -78,7 +78,7 @@ final class FrontPage
 
 		$articles = $this->postProcess($article, $articles);
 
-		$this->context['page_index'] = constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
 		if (! empty($this->modSettings['lp_use_simple_pagination']))
@@ -188,7 +188,7 @@ final class FrontPage
 			'num_views'        => 'p.num_views'
 		];
 
-		$this->context['current_sorting'] = $this->post('sort', 'created;desc');
+		$this->context['current_sorting'] = $this->request('sort', 'created;desc');
 
 		return $sorting_types[$this->context['current_sorting']];
 	}

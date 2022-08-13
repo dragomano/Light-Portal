@@ -61,14 +61,14 @@ final class Comment
 			return $comment;
 		}, $comments);
 
-		$this->txt['lp_comments'] = __('lp_comments_set', ['comments' => sizeof($comments)]);
+		$this->txt['lp_comments'] = $this->translate('lp_comments_set', ['comments' => sizeof($comments)]);
 
 		$limit = (int) ($this->modSettings['lp_num_comments_per_page'] ?? 10);
 		$commentTree = $this->getTree($comments);
 		$totalParentComments = sizeof($commentTree);
 
 		$this->context['current_start'] = $this->request('start');
-		$this->context['page_index'] = constructPageIndex($this->getPageIndexUrl(), $this->request()->get('start'), $totalParentComments, $limit);
+		$this->context['page_index'] = $this->constructPageIndex($this->getPageIndexUrl(), $this->request()->get('start'), $totalParentComments, $limit);
 		$start = $this->request('start');
 
 		$this->context['page_info'] = [

@@ -122,15 +122,15 @@ class MainMenu extends Plugin
 
 		$portal_langs = $forum_langs = [];
 
-		if ($this->post()->has('portal_item_langs')) {
-			foreach ($this->post('portal_item_langs') as $lang => $val) {
+		if ($this->request()->has('portal_item_langs')) {
+			foreach ($this->request('portal_item_langs') as $lang => $val) {
 				if (! empty($val))
 					$portal_langs[$lang] = $val;
 			}
 		}
 
-		if ($this->post()->has('forum_item_langs')) {
-			foreach ($this->post('forum_item_langs') as $lang => $val) {
+		if ($this->request()->has('forum_item_langs')) {
+			foreach ($this->request('forum_item_langs') as $lang => $val) {
 				if (! empty($val))
 					$forum_langs[$lang] = $val;
 			}
@@ -141,18 +141,18 @@ class MainMenu extends Plugin
 
 		$items = $langs = [];
 
-		if ($this->post()->has('url')) {
-			foreach ($this->post('url') as $key => $value) {
-				foreach ($this->post('langs') as $lang => $val) {
+		if ($this->request()->has('url')) {
+			foreach ($this->request('url') as $key => $value) {
+				foreach ($this->request('langs') as $lang => $val) {
 					if (! empty($val[$key]))
 						$langs[$key][$lang] = $val[$key];
 				}
 
 				$items[] = [
 					'url'     => $this->validate($value, 'url'),
-					'unicode' => $this->validate($this->post('unicode')[$key]),
+					'unicode' => $this->validate($this->request('unicode')[$key]),
 					'langs'   => $langs[$key],
-					'access'  => $this->validate($this->post('access')[$key], 'int')
+					'access'  => $this->validate($this->request('access')[$key], 'int')
 				];
 			}
 		}

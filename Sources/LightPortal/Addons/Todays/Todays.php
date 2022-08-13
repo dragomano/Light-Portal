@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 23.06.22
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -143,7 +143,7 @@ class Todays extends Plugin
 					echo $this->txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', __($this->txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
+				<span>', $this->translate($this->txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

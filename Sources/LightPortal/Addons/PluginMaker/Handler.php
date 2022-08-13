@@ -76,7 +76,7 @@ class Handler extends Plugin
 
 	private function validateData()
 	{
-		if ($this->post()->has('save')) {
+		if ($this->request()->has('save')) {
 			$args = [
 				'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 				'type'    => FILTER_DEFAULT,
@@ -372,7 +372,7 @@ class Handler extends Plugin
 
 	private function setData()
 	{
-		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->post()->has('save') === false)
+		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->request()->has('save') === false)
 			return;
 
 		$this->checkSubmitOnce('check');

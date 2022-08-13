@@ -67,27 +67,6 @@ function parse_content(string $content, string $type = 'bbc'): string
 	return $content;
 }
 
-/**
- * @see https://symfony.com/doc/current/translation/message_format.html
- * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
- * @see https://www.php.net/manual/en/class.messageformatter.php
- * @see https://intl.rmcreative.ru
- */
-function __(string $pattern, array $values = []): string
-{
-	$txt = $GLOBALS['txt'];
-
-	if (empty($txt['lang_locale']))
-		return '';
-
-	if (extension_loaded('intl'))
-		return MessageFormatter::formatMessage($txt['lang_locale'], $txt[$pattern] ?? $pattern, $values) ?? '';
-
-	log_error('[LP] __ helper: enable intl extension', 'critical');
-
-	return '';
-}
-
 // Run portal
 $portal = new Integration();
 $portal->hooks();

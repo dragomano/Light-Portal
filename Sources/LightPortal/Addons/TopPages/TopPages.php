@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 23.06.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -155,7 +155,7 @@ class TopPages extends Plugin
 			</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($page['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : __('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $page['num_' . $parameters['popularity_type']]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $page['num_' . $parameters['popularity_type']] : $this->translate('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $page['num_' . $parameters['popularity_type']]])), '</span>
 			</dd>';
 				}
 

@@ -127,9 +127,9 @@ final class BlockRepository extends AbstractRepository
 	public function setData(int $item = 0)
 	{
 		if (isset($this->context['post_errors']) || (
-			$this->post()->has('save') === false &&
-			$this->post()->has('save_exit') === false &&
-			$this->post()->has('clone') === false)
+			$this->request()->has('save') === false &&
+			$this->request()->has('save_exit') === false &&
+			$this->request()->has('clone') === false)
 		)
 			return 0;
 
@@ -145,15 +145,15 @@ final class BlockRepository extends AbstractRepository
 			$this->updateData($item);
 		}
 
-		if ($this->post()->isNotEmpty('clone'))
+		if ($this->request()->isNotEmpty('clone'))
 			return $item;
 
 		$this->cache()->flush();
 
-		if ($this->post()->has('save_exit'))
+		if ($this->request()->has('save_exit'))
 			$this->redirect('action=admin;area=lp_blocks;sa=main');
 
-		if ($this->post()->has('save'))
+		if ($this->request()->has('save'))
 			$this->redirect('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
