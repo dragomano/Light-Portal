@@ -241,10 +241,10 @@ final class ConfigArea
 			$this->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder'))
-				$this->request()->put('lp_image_placeholder', $this->validate($this->request('lp_image_placeholder'), 'url'));
+				$this->post()->put('lp_image_placeholder', $this->validate($this->request('lp_image_placeholder'), 'url'));
 
 			if ($this->request()->isNotEmpty('lp_standalone_url'))
-				$this->request()->put('lp_standalone_url', $this->validate($this->request('lp_standalone_url'), 'url'));
+				$this->post()->put('lp_standalone_url', $this->validate($this->request('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_mode'];
@@ -359,16 +359,16 @@ final class ConfigArea
 			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
 			if ($this->request()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
-				$this->request()->put('lp_disabled_bbc_in_comments_enabledTags', '');
+				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', '');
 			} elseif (! is_array($this->request('lp_disabled_bbc_in_comments_enabledTags'))) {
-				$this->request()->put('lp_disabled_bbc_in_comments_enabledTags', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
+				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
 			}
 
-			$this->request()->put('lp_enabled_bbc_in_comments', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
-			$this->request()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->request('lp_disabled_bbc_in_comments_enabledTags')))));
+			$this->post()->put('lp_enabled_bbc_in_comments', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
+			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->request('lp_disabled_bbc_in_comments_enabledTags')))));
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
-				$this->request()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
+				$this->post()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_show_comment_block'];
@@ -483,9 +483,9 @@ final class ConfigArea
 		if ($this->request()->has('save')) {
 			$this->checkSession();
 
-			$this->request()->put('lp_left_panel_width', json_encode($this->request('lp_left_panel_width')));
-			$this->request()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
-			$this->request()->put('lp_panel_direction', json_encode($this->request('lp_panel_direction')));
+			$this->post()->put('lp_left_panel_width', json_encode($this->request('lp_left_panel_width')));
+			$this->post()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
+			$this->post()->put('lp_panel_direction', json_encode($this->request('lp_panel_direction')));
 
 			$save_vars = $config_vars;
 

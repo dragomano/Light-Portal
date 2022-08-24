@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, File, Request, Session, SMFTrait};
+use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session, SMFTrait};
 
 use MessageFormatter;
 use DateTime;
@@ -56,6 +56,16 @@ trait Helper
 	public function request(?string $key = null, $default = null)
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
+	}
+
+	/**
+	 * @param string|null $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function post(?string $key = null, $default = null)
+	{
+		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
 	public function cache(?string $key = null): Cache
