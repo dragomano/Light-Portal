@@ -538,7 +538,7 @@ final class PageArea
 			'id'          => (int) ($post_data['id'] ?? $this->context['lp_current_page']['id'] ?? 0),
 			'title'       => $this->context['lp_current_page']['title'] ?? [],
 			'category'    => $post_data['category'] ?? $this->context['lp_current_page']['category_id'] ?? 0,
-			'page_author' => (int) ($post_data['page_author'] ?? $this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
+			'page_author' => (int) ($this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
 			'alias'       => $post_data['alias'] ?? $this->context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $this->context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
@@ -551,6 +551,8 @@ final class PageArea
 			'content'     => $post_data['content'] ?? $this->context['lp_current_page']['content'] ?? '',
 			'options'     => $options,
 		];
+
+		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
 
 		if (! (empty($this->modSettings['lp_prohibit_php']) || $this->user_info['is_admin']) && $this->context['lp_page']['type'] === 'php') {
 			$this->context['lp_page']['type'] = 'bbc';
