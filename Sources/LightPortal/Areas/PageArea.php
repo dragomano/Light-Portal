@@ -36,7 +36,7 @@ final class PageArea
 		$this->repository = new PageRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadLanguage('Packages');
 		$this->loadTemplate('LightPortal/ManagePages');
@@ -282,7 +282,7 @@ final class PageArea
 	 *
 	 * Возможные действия со страницами
 	 */
-	public function doActions()
+	public function doActions(): void
 	{
 		if ($this->request()->has('actions') === false)
 			return;
@@ -300,7 +300,7 @@ final class PageArea
 		exit;
 	}
 
-	public function massActions()
+	public function massActions(): void
 	{
 		if ($this->request()->has('mass_actions') === false || $this->request()->isEmpty('items'))
 			return;
@@ -328,7 +328,7 @@ final class PageArea
 		$this->redirect($redirect);
 	}
 
-	public function add()
+	public function add(): void
 	{
 		$this->loadTemplate('LightPortal/ManagePages');
 
@@ -352,7 +352,7 @@ final class PageArea
 		$this->context['sub_template'] = 'page_post';
 	}
 
-	public function edit()
+	public function edit(): void
 	{
 		$item = (int) $this->request('id');
 
@@ -407,7 +407,7 @@ final class PageArea
 		$this->context['sub_template'] = 'page_post';
 	}
 
-	private function remove(array $items)
+	private function remove(array $items): void
 	{
 		if (empty($items))
 			return;
@@ -460,7 +460,7 @@ final class PageArea
 		$this->hook('onPageRemoving', [$items]);
 	}
 
-	private function promote(array $items, string $type = 'up')
+	private function promote(array $items, string $type = 'up'): void
 	{
 		if (empty($items))
 			return;
@@ -488,7 +488,7 @@ final class PageArea
 		return $options;
 	}
 
-	private function validateData()
+	private function validateData(): void
 	{
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
@@ -580,7 +580,7 @@ final class PageArea
 		$this->cleanBbcode($this->context['lp_page']['title']);
 	}
 
-	private function findErrors(array $data)
+	private function findErrors(array $data): void
 	{
 		$post_errors = [];
 
@@ -612,7 +612,7 @@ final class PageArea
 		}
 	}
 
-	private function prepareFormFields()
+	private function prepareFormFields(): void
 	{
 		$this->checkSubmitOnce('register');
 
@@ -807,7 +807,7 @@ final class PageArea
 		$this->preparePostFields();
 	}
 
-	private function prepareMemberList()
+	private function prepareMemberList(): void
 	{
 		if ($this->request()->has('members') === false)
 			return;
@@ -848,12 +848,12 @@ final class PageArea
 		exit(json_encode($members));
 	}
 
-	private function prepareEditor()
+	private function prepareEditor(): void
 	{
 		$this->hook('prepareEditor', [$this->context['lp_page']]);
 	}
 
-	private function preparePreview()
+	private function preparePreview(): void
 	{
 		if ($this->request()->has('preview') === false)
 			return;

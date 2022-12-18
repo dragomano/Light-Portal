@@ -98,6 +98,9 @@ final class Integration extends AbstractMain
 		AddonHandler::getInstance()->run();
 	}
 
+	/**
+	 * @hook integrate_redirect
+	 */
 	public function changeRedirect(string &$setLocation)
 	{
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))

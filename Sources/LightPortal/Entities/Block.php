@@ -23,7 +23,7 @@ final class Block
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
 		if ($this->isHideBlocksInAdmin())
 			return;
@@ -185,7 +185,7 @@ final class Block
 
 		$items = explode('|', $entity);
 		foreach ($items as $item) {
-			if (strpos($item, '-') !== false) {
+			if (str_contains($item, '-')) {
 				$range = explode('-', $item);
 				for ($i = $range[0]; $i <= $range[1]; $i++) {
 					$ids[] = $i;

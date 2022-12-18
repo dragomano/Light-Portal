@@ -50,20 +50,20 @@ trait Helper
 
 	/**
 	 * @param string|null $key
-	 * @param mixed $default
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public function request(?string $key = null, $default = null)
+	public function request(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
 	/**
 	 * @param string|null $key
-	 * @param mixed $default
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public function post(?string $key = null, $default = null)
+	public function post(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
@@ -83,12 +83,12 @@ trait Helper
 		return new Session;
 	}
 
-	public function hook(string $hook, array $vars = [], array $plugins = [])
+	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
 		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
-	public function require(string $filename)
+	public function require(string $filename): void
 	{
 		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
 			require_once $path;
@@ -126,7 +126,7 @@ trait Helper
 	/**
 	 * @return mixed
 	 */
-	public function getAllCategories()
+	public function getAllCategories(): mixed
 	{
 		return $this->cache('all_categories')->setFallback(Lists\Category::class, 'getList');
 	}
@@ -134,7 +134,7 @@ trait Helper
 	/**
 	 * @return mixed
 	 */
-	public function getAllTags()
+	public function getAllTags(): mixed
 	{
 		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
 	}
@@ -204,7 +204,7 @@ trait Helper
 		return $themes;
 	}
 
-	public function prepareForumLanguages()
+	public function prepareForumLanguages(): void
 	{
 		$this->getLanguages();
 
@@ -243,7 +243,7 @@ trait Helper
 	 * @param array|string $data
 	 * @return void
 	 */
-	public function cleanBbcode(&$data)
+	public function cleanBbcode(array|string &$data): void
 	{
 		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
@@ -270,22 +270,13 @@ trait Helper
 	 */
 	public function canViewItem(int $permissions, int $check_id = 0): bool
 	{
-		switch ($permissions) {
-			case 0:
-				return $this->user_info['is_admin'];
-				// no break
-			case 1:
-				return $this->user_info['is_guest'];
-				// no break
-			case 2:
-				return $this->user_info['id'] > 0;
-				// no break
-			case 4:
-				return $this->user_info['id'] === $check_id;
-				// no break
-			default:
-				return true;
-		}
+		return match ($permissions) {
+			0 => $this->user_info['is_admin'],
+			1 => $this->user_info['is_guest'],
+			2 => $this->user_info['id'] > 0,
+			4 => $this->user_info['id'] === $check_id,
+			default => true,
+		};
 	}
 
 	/**
@@ -325,34 +316,23 @@ trait Helper
 	 * Получаем отфильтрованное значение $obj[$key]
 	 *
 	 * @param string $key
-	 * @param string|array $type
+	 * @param array|string $type
 	 * @return mixed
 	 */
-	public function validate(string $key, $type = 'string')
+	public function validate(string $key, array|string $type = 'string'): mixed
 	{
 		if (is_array($type)) {
 			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
 		}
 
-		switch ($type) {
-			case 'string':
-				$filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-				break;
-			case 'int':
-				$filter = FILTER_VALIDATE_INT;
-				break;
-			case 'float':
-				$filter = FILTER_VALIDATE_FLOAT;
-				break;
-			case 'bool':
-				$filter = FILTER_VALIDATE_BOOLEAN;
-				break;
-			case 'url':
-				$filter = FILTER_VALIDATE_URL;
-				break;
-			default:
-				$filter = FILTER_DEFAULT;
-		}
+		$filter = match ($type) {
+			'string' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'int' => FILTER_VALIDATE_INT,
+			'float' => FILTER_VALIDATE_FLOAT,
+			'bool' => FILTER_VALIDATE_BOOLEAN,
+			'url' => FILTER_VALIDATE_URL,
+			default => FILTER_DEFAULT,
+		};
 
 		return filter_var($key, $filter);
 	}
@@ -447,7 +427,7 @@ trait Helper
 		elseif ($y === date('Y', $now))
 			return $this->getLocalDate($timestamp);
 
-		// like "20 February 2019" (last year)
+		// like "20 February 2019" (past year)
 		return $this->getLocalDate($timestamp, 'long', 'none');
 	}
 
@@ -467,21 +447,12 @@ trait Helper
 	 */
 	public function getPredefinedConstant(string $type): int
 	{
-		switch ($type) {
-			case 'full':
-				$const = IntlDateFormatter::FULL;
-				break;
-			case 'long':
-				$const = IntlDateFormatter::LONG;
-				break;
-			case 'medium':
-				$const = IntlDateFormatter::MEDIUM;
-				break;
-			default:
-				$const = IntlDateFormatter::NONE;
-		}
-
-		return $const;
+		return match ($type) {
+			'full' => IntlDateFormatter::FULL,
+			'long' => IntlDateFormatter::LONG,
+			'medium' => IntlDateFormatter::MEDIUM,
+			default => IntlDateFormatter::NONE,
+		};
 	}
 
 	public function getImageFromText(string $text): string

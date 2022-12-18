@@ -23,7 +23,7 @@ final class CreditArea
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
 		$this->context['credits_modifications'][] = $this->getLink();
 
@@ -47,7 +47,7 @@ final class CreditArea
 		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;2022</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
-	public function prepareComponents()
+	public function prepareComponents(): void
 	{
 		$this->middleware('light_portal_view');
 

@@ -30,7 +30,7 @@ abstract class AbstractImport implements ImportInterface
 	/**
 	 * @return false|SimpleXMLElement
 	 */
-	protected function getXmlFile(string $name = 'import_file')
+	protected function getXmlFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
 		if (empty($file = $this->files($name)))
 			return false;

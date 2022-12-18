@@ -35,7 +35,7 @@ final class BlockArea
 		$this->repository = new BlockRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -53,7 +53,7 @@ final class BlockArea
 		$this->context['sub_template'] = 'manage_blocks';
 	}
 
-	public function doActions()
+	public function doActions(): void
 	{
 		if ($this->request()->has('actions') === false)
 			return;
@@ -76,7 +76,7 @@ final class BlockArea
 		exit;
 	}
 
-	public function add()
+	public function add(): void
 	{
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -114,7 +114,7 @@ final class BlockArea
 		$this->repository->setData();
 	}
 
-	public function edit()
+	public function edit(): void
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
@@ -155,7 +155,7 @@ final class BlockArea
 		$this->repository->setData((int) $this->context['lp_block']['id']);
 	}
 
-	private function remove(array $items)
+	private function remove(array $items): void
 	{
 		if (empty($items))
 			return;
@@ -191,7 +191,7 @@ final class BlockArea
 		$this->hook('onBlockRemoving', [$items]);
 	}
 
-	private function makeCopy(int $item)
+	private function makeCopy(int $item): void
 	{
 		if (empty($item))
 			return;
@@ -215,7 +215,7 @@ final class BlockArea
 		exit(json_encode($result));
 	}
 
-	private function updatePriority()
+	private function updatePriority(): void
 	{
 		$data = $this->request()->json();
 
@@ -275,7 +275,7 @@ final class BlockArea
 		return $options;
 	}
 
-	private function validateData()
+	private function validateData(): void
 	{
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
@@ -375,7 +375,7 @@ final class BlockArea
 		$this->cleanBbcode($this->context['lp_block']['title']);
 	}
 
-	private function findErrors(array $data)
+	private function findErrors(array $data): void
 	{
 		$post_errors = [];
 
@@ -397,7 +397,7 @@ final class BlockArea
 		}
 	}
 
-	private function prepareFormFields()
+	private function prepareFormFields(): void
 	{
 		$this->checkSubmitOnce('register');
 
@@ -582,12 +582,12 @@ final class BlockArea
 		return in_array($check_value, $result);
 	}
 
-	private function prepareEditor()
+	private function prepareEditor(): void
 	{
 		$this->hook('prepareEditor', [$this->context['lp_block']]);
 	}
 
-	private function preparePreview()
+	private function preparePreview(): void
 	{
 		if ($this->request()->has('preview') === false)
 			return;
@@ -631,7 +631,7 @@ final class BlockArea
 		return (int) $priority;
 	}
 
-	private function prepareBlockList()
+	private function prepareBlockList(): void
 	{
 		$plugins = array_merge($this->context['lp_enabled_plugins'], array_keys($this->getContentTypes()));
 

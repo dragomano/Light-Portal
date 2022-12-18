@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -162,7 +162,7 @@ class PageImport extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_articles',
 			[]

@@ -52,7 +52,7 @@ abstract class Plugin
 		return $this;
 	}
 
-	public function withLayer(string $layer)
+	public function withLayer(string $layer): void
 	{
 		$this->context['template_layers'][] = $layer;
 	}
@@ -69,7 +69,7 @@ abstract class Plugin
 		return false;
 	}
 
-	public function addDefaultValues(array $values)
+	public function addDefaultValues(array $values): void
 	{
 		$snake_name = $this->getSnakeName($this->getName());
 

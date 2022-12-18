@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\EzPortal;
@@ -158,7 +158,7 @@ class Import extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_page',
 			[]
@@ -174,7 +174,7 @@ class Import extends AbstractOtherPageImport
 
 	protected function getItems(array $pages): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_page, date, title, content, views, permissions
 			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),

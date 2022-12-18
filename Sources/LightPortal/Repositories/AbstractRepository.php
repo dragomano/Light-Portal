@@ -25,7 +25,7 @@ abstract class AbstractRepository
 
 	protected string $entity;
 
-	protected function prepareBbcContent(array &$entity)
+	protected function prepareBbcContent(array &$entity): void
 	{
 		if ($entity['type'] !== 'bbc')
 			return;
@@ -35,7 +35,7 @@ abstract class AbstractRepository
 		$this->preparseCode($entity['content']);
 	}
 
-	protected function saveTitles(int $item, string $method = '')
+	protected function saveTitles(int $item, string $method = ''): void
 	{
 		if (empty($this->context['lp_' . $this->entity]['title']))
 			return;
@@ -68,7 +68,7 @@ abstract class AbstractRepository
 		$this->context['lp_num_queries']++;
 	}
 
-	protected function saveOptions(int $item, string $method = '')
+	protected function saveOptions(int $item, string $method = ''): void
 	{
 		if (empty($this->context['lp_' . $this->entity]['options']))
 			return;

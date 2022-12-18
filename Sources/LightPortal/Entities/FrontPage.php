@@ -55,7 +55,7 @@ final class FrontPage
 		return false;
 	}
 
-	public function prepare(ArticleInterface $article)
+	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
@@ -90,7 +90,7 @@ final class FrontPage
 		$this->hook('frontAssets');
 	}
 
-	public function prepareTemplates()
+	public function prepareTemplates(): void
 	{
 		if (empty($this->context['lp_frontpage_articles'])) {
 			$this->context['sub_template'] = 'empty';
@@ -130,7 +130,7 @@ final class FrontPage
 		if ($matches[1]) {
 			foreach ($matches[1] as $k => $v) {
 				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
-				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
+				$values[]  = ! str_contains($name, '_') ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
 			}
 
 			$layouts = array_combine($layouts, $values);
@@ -151,19 +151,12 @@ final class FrontPage
 		if (empty($this->modSettings['lp_frontpage_num_columns']))
 			return $num_columns;
 
-		switch ($this->modSettings['lp_frontpage_num_columns']) {
-			case '1':
-				$num_columns /= 2;
-				break;
-			case '2':
-				$num_columns /= 3;
-				break;
-			case '3':
-				$num_columns /= 4;
-				break;
-			default:
-				$num_columns /= 6;
-		}
+		$num_columns /= match ($this->modSettings['lp_frontpage_num_columns']) {
+			'1' => 2,
+			'2' => 3,
+			'3' => 4,
+			default => 6,
+		};
 
 		return $num_columns;
 	}
@@ -193,7 +186,7 @@ final class FrontPage
 		return $sorting_types[$this->context['current_sorting']];
 	}
 
-	public function updateStart(int $total, int &$start, int $limit)
+	public function updateStart(int $total, int &$start, int $limit): void
 	{
 		if ($start >= $total) {
 			$this->sendStatus(404);

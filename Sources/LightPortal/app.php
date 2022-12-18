@@ -7,7 +7,7 @@ if (! defined('SMF'))
 
 // Register autoloader
 spl_autoload_register(function ($classname) {
-	if (strpos($classname, 'Bugo\LightPortal') === false)
+	if (! str_contains($classname, 'Bugo\LightPortal'))
 		return false;
 
 	$classname = str_replace('\\', '/', str_replace('Bugo\LightPortal\\', '', $classname));
@@ -48,8 +48,8 @@ function parse_content(string $content, string $type = 'bbc'): string
 		return un_htmlspecialchars($content);
 	} elseif ($type === 'php') {
 		$content = trim(un_htmlspecialchars($content));
-		$content = trim($content, '<?php');
-		$content = trim($content, '?>');
+		$content = str_replace('<?php', '', $content);
+		$content = str_replace('?>', '', $content);
 
 		ob_start();
 

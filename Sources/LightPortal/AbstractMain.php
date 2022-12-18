@@ -33,7 +33,7 @@ abstract class AbstractMain
 		return true;
 	}
 
-	protected function defineVars()
+	protected function defineVars(): void
 	{
 		$this->context['allow_light_portal_view']              = $this->allowedTo('light_portal_view');
 		$this->context['allow_light_portal_manage_own_blocks'] = $this->allowedTo('light_portal_manage_own_blocks');
@@ -67,7 +67,7 @@ abstract class AbstractMain
 		$this->context['lp_icon_set']        = (new Lists\IconList)->getAll();
 	}
 
-	protected function loadAssets()
+	protected function loadAssets(): void
 	{
 		if (! empty($this->modSettings['lp_fa_source'])) {
 			if ($this->modSettings['lp_fa_source'] === 'css_local') {
@@ -91,7 +91,7 @@ abstract class AbstractMain
 	 *
 	 * Удаляем ненужные в автономном режиме области
 	 */
-	protected function unsetDisabledActions(array &$data)
+	protected function unsetDisabledActions(array &$data): void
 	{
 		$disabled_actions = empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']);
 		$disabled_actions[] = 'home';
@@ -122,7 +122,7 @@ abstract class AbstractMain
 	 *
 	 * Исправляем канонический адрес для области forum
 	 */
-	protected function fixCanonicalUrl()
+	protected function fixCanonicalUrl(): void
 	{
 		if ($this->request()->is('forum'))
 			$this->context['canonical_url'] = $this->scripturl . '?action=forum';
@@ -133,7 +133,7 @@ abstract class AbstractMain
 	 *
 	 * Меняем дерево ссылок
 	 */
-	protected function fixLinktree()
+	protected function fixLinktree(): void
 	{
 		if (empty($this->context['current_board']) && $this->request()->has('c') === false || empty($this->context['linktree'][1]))
 			return;
@@ -149,7 +149,7 @@ abstract class AbstractMain
 	 *
 	 * Отображаем время выполнения скрипта и количество запросов к базе
 	 */
-	protected function showDebugInfo()
+	protected function showDebugInfo(): void
 	{
 		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']))
 			return;
@@ -170,7 +170,7 @@ abstract class AbstractMain
 		);
 	}
 
-	protected function promoteTopic()
+	protected function promoteTopic(): void
 	{
 		if (empty($this->user_info['is_admin']) || empty($this->request()->has('t')))
 			return;

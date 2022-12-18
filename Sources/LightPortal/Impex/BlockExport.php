@@ -99,9 +99,7 @@ final class BlockExport extends AbstractExport
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		$items = array_map(fn($item) => array_filter($item), $items);
-
-		return $items;
+		return array_map(fn($item) => array_filter($item), $items);
 	}
 
 	protected function getXmlFile(): string
@@ -137,7 +135,7 @@ final class BlockExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			$this->error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage());
+			$this->logError('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

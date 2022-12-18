@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+use JetBrains\PhpStorm\NoReturn;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,7 +31,7 @@ final class Comment
 		$this->alias = $alias;
 	}
 
-	public function prepare()
+	public function prepare(): void
 	{
 		if (empty($this->alias))
 			return;
@@ -43,10 +44,8 @@ final class Comment
 			switch ($this->request('sa')) {
 				case 'add_comment':
 					$this->add();
-					break;
 				case 'edit_comment':
 					$this->edit();
-					break;
 				case 'del_comment':
 					$this->remove();
 					break;
@@ -141,7 +140,7 @@ final class Comment
 		return $time_to_change && time() - $date <= $time_to_change * 60;
 	}
 
-	private function add()
+	#[NoReturn] private function add(): void
 	{
 		$result['error'] = true;
 
@@ -244,7 +243,7 @@ final class Comment
 		exit(json_encode($result));
 	}
 
-	private function edit()
+	#[NoReturn] private function edit(): void
 	{
 		$data = $this->request()->json();
 
@@ -280,7 +279,7 @@ final class Comment
 		exit(json_encode($message));
 	}
 
-	private function remove()
+	private function remove(): void
 	{
 		$items = $this->request()->json('items');
 
@@ -342,7 +341,7 @@ final class Comment
 	 *
 	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
 	 */
-	private function makeNotify(string $type, string $action, array $options = [])
+	private function makeNotify(string $type, string $action, array $options = []): void
 	{
 		if (empty($options))
 			return;

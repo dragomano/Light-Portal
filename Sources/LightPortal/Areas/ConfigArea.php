@@ -32,7 +32,7 @@ final class ConfigArea
 {
 	use Helper;
 
-	public function adminAreas(array &$admin_areas)
+	public function adminAreas(array &$admin_areas): void
 	{
 		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css', ['external' => true]);
 		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js', ['external' => true]);
@@ -123,13 +123,13 @@ final class ConfigArea
 	/**
 	 * @hook integrate_admin_search
 	 */
-	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search)
+	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search): void
 	{
 		$settings_search[] = [[$this, 'panels'], 'area=lp_settings;sa=panels'];
 		$settings_search[] = [[$this, 'misc'], 'area=lp_settings;sa=misc'];
 	}
 
-	public function helpadmin()
+	public function helpadmin(): void
 	{
 		$this->txt['lp_standalone_url_help'] = sprintf($this->txt['lp_standalone_url_help'], $this->boardurl . '/portal.php', $this->scripturl);
 	}
@@ -139,7 +139,7 @@ final class ConfigArea
 	 *
 	 * Список вкладок с настройками
 	 */
-	public function settingAreas()
+	public function settingAreas(): void
 	{
 		$this->middleware('admin_forum');
 
@@ -183,7 +183,7 @@ final class ConfigArea
 	 *
 	 * Выводим общие настройки
 	 */
-	public function basic()
+	public function basic(): void
 	{
 		$this->prepareAliasList();
 
@@ -292,7 +292,7 @@ final class ConfigArea
 	 *
 	 * Выводим настройки страниц и блоков
 	 */
-	public function extra()
+	public function extra(): void
 	{
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_extra'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=extra;save';
@@ -393,7 +393,7 @@ final class ConfigArea
 	 *
 	 * Выводим настройки рубрик
 	 */
-	public function categories()
+	public function categories(): void
 	{
 		$this->loadTemplate('LightPortal/ManageSettings');
 
@@ -577,7 +577,7 @@ final class ConfigArea
 		$this->prepareDBSettingContext($config_vars);
 	}
 
-	public function blockAreas()
+	public function blockAreas(): void
 	{
 		$this->middleware('light_portal_manage_own_blocks');
 
@@ -597,7 +597,7 @@ final class ConfigArea
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
-	public function pageAreas()
+	public function pageAreas(): void
 	{
 		$this->middleware('light_portal_manage_own_pages');
 
@@ -617,7 +617,7 @@ final class ConfigArea
 		$this->loadGeneralSettingParameters($subActions, 'main');
 	}
 
-	public function pluginAreas()
+	public function pluginAreas(): void
 	{
 		$this->middleware('admin_forum');
 
@@ -635,7 +635,7 @@ final class ConfigArea
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], ?string $defaultAction = null)
+	private function loadGeneralSettingParameters(array $subActions = [], ?string $defaultAction = null): void
 	{
 		$this->showDocsLink();
 
@@ -652,18 +652,18 @@ final class ConfigArea
 		$this->callHelper($subActions[$subAction]);
 	}
 
-	private function showDocsLink()
+	private function showDocsLink(): void
 	{
 		if (empty($this->request('area'))) return;
 
-		if (! empty($this->context['template_layers']) && strpos($this->request('area'), 'lp_') !== false) {
+		if (! empty($this->context['template_layers']) && str_contains($this->request('area'), 'lp_')) {
 			$this->loadTemplate('LightPortal/ViewDebug');
 
 			$this->context['template_layers'][] = 'docs';
 		}
 	}
 
-	private function prepareAliasList()
+	private function prepareAliasList(): void
 	{
 		if ($this->request()->has('alias_list') === false)
 			return;
@@ -682,7 +682,7 @@ final class ConfigArea
 		exit(json_encode($results));
 	}
 
-	private function prepareTagsInComments()
+	private function prepareTagsInComments(): void
 	{
 		$disabledBbc = empty($this->modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_disabled_bbc_in_comments']);
 		$disabledBbc = isset($this->modSettings['disabledBBC']) ? [...$disabledBbc, ...explode(',', $this->modSettings['disabledBBC'])] : $disabledBbc;
@@ -712,7 +712,7 @@ final class ConfigArea
 		}
 	}
 
-	private function updatePriority(array $categories)
+	private function updatePriority(array $categories): void
 	{
 		if (empty($categories))
 			return;
@@ -737,7 +737,7 @@ final class ConfigArea
 		$this->context['lp_num_queries']++;
 	}
 
-	private function add(string $name, string $desc = '')
+	private function add(string $name, string $desc = ''): void
 	{
 		if (empty($name))
 			return;
@@ -783,7 +783,7 @@ final class ConfigArea
 		exit(json_encode($result));
 	}
 
-	private function updateName(int $item, string $value)
+	private function updateName(int $item, string $value): void
 	{
 		if (empty($item))
 			return;
@@ -801,7 +801,7 @@ final class ConfigArea
 		$this->context['lp_num_queries']++;
 	}
 
-	private function updateDescription(int $item, string $value)
+	private function updateDescription(int $item, string $value): void
 	{
 		if (empty($item))
 			return;
@@ -819,7 +819,7 @@ final class ConfigArea
 		$this->context['lp_num_queries']++;
 	}
 
-	private function remove(array $items)
+	private function remove(array $items): void
 	{
 		if (empty($items))
 			return;

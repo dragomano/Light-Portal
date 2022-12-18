@@ -44,7 +44,7 @@ final class Notifier extends SMF_BackgroundTask
 		$prefs = $this->getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply');
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			$this->loadMemberData($this->_details['sender_id'], false, 'minimal');
+			$this->loadMemberData($this->_details['sender_id'], set: 'minimal');
 
 			empty($this->user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_id'] = 0

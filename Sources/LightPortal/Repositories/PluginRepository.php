@@ -23,7 +23,7 @@ final class PluginRepository
 {
 	use Helper;
 
-	public function addSettings(array $settings = [])
+	public function addSettings(array $settings = []): void
 	{
 		if (empty($settings))
 			return;
@@ -66,7 +66,7 @@ final class PluginRepository
 		return $settings;
 	}
 
-	public function updateSettings(string $plugin_name, array $settings = [])
+	public function updateSettings(string $plugin_name, array $settings = []): void
 	{
 		if (empty($settings))
 			return;
@@ -90,7 +90,7 @@ final class PluginRepository
 		$this->addSettings($new_settings);
 	}
 
-	public function removeSettings(string $plugin_name, array $settings = [])
+	public function removeSettings(string $plugin_name, array $settings = []): void
 	{
 		if (empty($settings))
 			return;

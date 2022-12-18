@@ -25,7 +25,7 @@ abstract class GlobalArray
 	 * @param string $key
 	 * @return mixed
 	 */
-	public function &get(string $key)
+	public function &get(string $key): mixed
 	{
 		return $this->storage[$key];
 	}
@@ -35,7 +35,7 @@ abstract class GlobalArray
 	 * @param mixed $value
 	 * @return void
 	 */
-	public function put(string $key, $value)
+	public function put(string $key, mixed $value): void
 	{
 		$this->storage[$key] = &$value;
 	}
@@ -61,10 +61,10 @@ abstract class GlobalArray
 	}
 
 	/**
-	 * @param string|array $keys
+	 * @param array|string $keys
 	 * @return bool
 	 */
-	public function has($keys): bool
+	public function has(array|string $keys): bool
 	{
 		if (is_array($keys)) {
 			foreach ($keys as $key) {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -69,7 +69,7 @@ class Builder
 		return $this;
 	}
 
-	private function addSecurityCheck(string &$content)
+	private function addSecurityCheck(string &$content): void
 	{
 		$message = <<<XXX
 	if (! defined('LP_NAME'))

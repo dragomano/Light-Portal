@@ -21,7 +21,7 @@ if (! defined('SMF'))
 
 trait Area
 {
-	public function createBbcEditor(string $content = '')
+	public function createBbcEditor(string $content = ''): void
 	{
 		$editorOptions = [
 			'id'           => 'content',
@@ -35,7 +35,7 @@ trait Area
 		$this->createControlRichedit($editorOptions);
 	}
 
-	public function preparePostFields()
+	public function preparePostFields(): void
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
 			if (isset($data['input']['after'])) {
@@ -61,7 +61,7 @@ trait Area
 		$this->loadTemplate('LightPortal/ManageSettings');
 	}
 
-	public function toggleStatus(array $items = [], string $type = 'block')
+	public function toggleStatus(array $items = [], string $type = 'block'): void
 	{
 		if (empty($items))
 			return;
@@ -78,7 +78,7 @@ trait Area
 		$this->context['lp_num_queries']++;
 	}
 
-	public function prepareIconList()
+	public function prepareIconList(): void
 	{
 		if ($this->request()->has('icons') === false)
 			return;
@@ -95,7 +95,7 @@ trait Area
 
 		$this->hook('prepareIconList', [&$all_icons, &$template]);
 
-		$all_icons = array_filter($all_icons, fn($item) => strpos($item, $search) !== false);
+		$all_icons = array_filter($all_icons, fn($item) => str_contains($item, $search));
 
 		$results = [];
 		foreach ($all_icons as $icon) {

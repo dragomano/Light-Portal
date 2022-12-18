@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 12.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -90,7 +90,7 @@ class Markdown extends Plugin
 
 		$converter = new MarkdownConverter($environment);
 
-		return $converter->convertToHtml($this->unHtmlSpecialChars($text));
+		return $converter->convert($this->unHtmlSpecialChars($text));
 	}
 
 	public function credits(array &$links)

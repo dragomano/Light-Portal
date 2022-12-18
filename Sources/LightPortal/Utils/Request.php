@@ -38,11 +38,9 @@ final class Request extends GlobalArray
 			$patterns = $patterns[0];
 		}
 
-		foreach ($patterns as $pattern) {
-			if ($this->storage['action'] === $pattern) {
-				return true;
-			}
-		}
+	    if (in_array($this->storage['action'], $patterns, true)) {
+		    return true;
+	    }
 
 		return false;
 	}
@@ -58,10 +56,10 @@ final class Request extends GlobalArray
 
 	/**
 	 * @param string|null $key
-	 * @param mixed $default
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public function json(?string $key = null, $default = null)
+	public function json(?string $key = null, mixed $default = null): mixed
 	{
 		$data = json_decode(file_get_contents('php://input'), true) ?? [];
 

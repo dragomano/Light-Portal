@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -51,7 +51,7 @@ class Handler extends Plugin
 		$this->setTemplate('plugin_post');
 	}
 
-	public function prepareForumLanguages()
+	public function prepareForumLanguages(): void
 	{
 		$this->getLanguages();
 
@@ -670,7 +670,7 @@ class Handler extends Plugin
 	{
 		$params = [];
 		foreach ($this->context['lp_plugin']['options'] as $id => $option) {
-			if (strpos($option['name'], $type . '_') !== false) {
+			if (str_contains($option['name'], $type . '_')) {
 				$option['name'] = str_replace($type . '_', '', $option['name']);
 				$params[] = $option;
 				unset($this->context['lp_plugin']['options'][$id]);
@@ -682,54 +682,29 @@ class Handler extends Plugin
 
 	private function getDefaultValue(array $option): string
 	{
-		switch ($option['type']) {
-			case 'int':
-				$default = (int) $option['default'];
-				break;
-
-			case 'float':
-				$default = (float) $option['default'];
-				break;
-
-			default:
-				$default = $option['default'];
-		}
+		$default = match ($option['type']) {
+			'int' => (int) $option['default'],
+			'float' => (float) $option['default'],
+			default => $option['default'],
+		};
 
 		return var_export($default, true);
 	}
 
 	private function getFilter(array $param): string
 	{
-		switch ($param['type']) {
-			case 'url':
-				$filter = 'FILTER_VALIDATE_URL';
-				break;
-
-			case 'int':
-				$filter = 'FILTER_VALIDATE_INT';
-				break;
-
-			case 'float':
-				$filter = 'FILTER_VALIDATE_FLOAT';
-				break;
-
-			case 'check':
-				$filter = 'FILTER_VALIDATE_BOOLEAN';
-				break;
-
-			case 'multicheck':
-				$filter = "[
+		return match ($param['type']) {
+			'url' => 'FILTER_VALIDATE_URL',
+			'int' => 'FILTER_VALIDATE_INT',
+			'float' => 'FILTER_VALIDATE_FLOAT',
+			'check' => 'FILTER_VALIDATE_BOOLEAN',
+			'multicheck' => "[
 	'name'   => '{$param['name']}',
 	'filter' => FILTER_DEFAULT,
 	'flags'  => FILTER_REQUIRE_ARRAY
-]";
-				break;
-
-			default:
-				$filter = 'FILTER_DEFAULT';
-		}
-
-		return $filter;
+]",
+			default => 'FILTER_DEFAULT',
+		};
 	}
 
 	/**

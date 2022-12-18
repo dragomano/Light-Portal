@@ -5,7 +5,7 @@
 * Send a pull request to us.
 
 ### Recommended soft
-* [Visual Studio Code](https://code.visualstudio.com) (all OS)
+* [Visual Studio Code](https://code.visualstudio.com) (all OS), or [PHPStorm](https://www.jetbrains.com/phpstorm/) (all OS)
 * [SmartGit](https://www.syntevo.com/smartgit/download/) (all OS), or [Git Extensions](https://github.com/gitextensions/gitextensions/releases) (Windows), or [GitHub Desktop](https://desktop.github.com) (macOS, Windows)
 
 ## How to submit an issue
@@ -21,7 +21,7 @@ In any case, the title of each of your commits should continue such a phrase —
 ## Styleguides with examples
 
 ### PHP Styleguide
-* Use [PHP 7.4+](https://smknstd.github.io/modern-php-cheatsheet/)
+* Use [PHP 8.0+](https://smknstd.github.io/modern-php-cheatsheet/)
 
 ```php
 /**
@@ -30,7 +30,7 @@ In any case, the title of each of your commits should continue such a phrase —
  * @param array $array
  * @return array
  */
-function getBubbleSortedArray($array)
+function getBubbleSortedArray(array $array): array
 {
     $count = count($array);
     for ($j = 0; $j < $count - 1; $j++) {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\Optimus;
@@ -55,7 +55,7 @@ class Optimus extends Plugin
 		if (empty($topic))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT ok.id, ok.name, olk.topic_id
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)

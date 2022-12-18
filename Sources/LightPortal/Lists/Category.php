@@ -253,7 +253,7 @@ final class Category extends AbstractPageList
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			if ($row['description'] && strpos($row['description'], ']') !== false) {
+			if ($row['description'] && str_contains($row['description'], ']')) {
 				$row['description'] = $this->parseBbc($row['description']);
 			}
 

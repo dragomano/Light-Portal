@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Exception;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -47,7 +49,7 @@ trait SMFTrait
 	];
 
 	/**
-	 * @return mixed
+	 * @return mixed|void
 	 */
 	public function &__get(string $name)
 	{
@@ -62,47 +64,47 @@ trait SMFTrait
 		return un_htmlspecialchars($string);
 	}
 
-	protected function middleware(string $permission)
+	protected function middleware(string $permission): void
 	{
 		isAllowedTo($permission);
 	}
 
-	protected function allowedTo(string $permission)
+	protected function allowedTo(string $permission): bool|int
 	{
 		return allowedTo($permission);
 	}
 
-	protected function redirect(string $url = '')
+	protected function redirect(string $url = ''): void
 	{
 		redirectexit($url);
 	}
 
-	protected function loadTemplate(string $template)
+	protected function loadTemplate(string $template): void
 	{
 		loadTemplate($template);
 	}
 
-	protected function loadLanguage(string $language)
+	protected function loadLanguage(string $language): void
 	{
 		loadLanguage($language);
 	}
 
-	protected function fatalLangError(string $error, $log = 'general',  $sprintf = [], $status = 403)
+	protected function fatalLangError(string $error, $log = 'general', $sprintf = [], $status = 403): void
 	{
 		fatal_lang_error($error, $log, $sprintf, $status);
 	}
 
-	protected function fatalError(string $message)
+	protected function fatalError(string $message): void
 	{
 		fatal_error($message, false);
 	}
 
-	protected function logError(string $message, string $level = 'user')
+	protected function logError(string $message, string $level = 'user'): void
 	{
 		log_error($message, $level);
 	}
 
-	protected function getLanguages()
+	protected function getLanguages(): void
 	{
 		getLanguages();
 	}
@@ -112,24 +114,27 @@ trait SMFTrait
 		return shorten_subject($text, $length);
 	}
 
-	protected function loadMemberData($users): array
+	protected function loadMemberData(array|string $users, bool $is_name = false, string $set = 'normal'): array
 	{
-		return loadMemberData($users);
+		return loadMemberData($users, $is_name, $set);
 	}
 
-	protected function loadMemberContext($user, bool $display_custom_fields = false)
+	/**
+	 * @throws Exception
+	 */
+	protected function loadMemberContext($user, bool $display_custom_fields = false): bool|array
 	{
 		return loadMemberContext($user, $display_custom_fields);
 	}
 
-	protected function prepareInstalledThemes()
+	protected function prepareInstalledThemes(): void
 	{
 		require_once $this->sourcedir . '/Subs-Themes.php';
 
 		get_installed_themes();
 	}
 
-	protected function createControlRichedit(array $editorOptions)
+	protected function createControlRichedit(array $editorOptions): void
 	{
 		require_once $this->sourcedir . '/Subs-Editor.php';
 
@@ -148,57 +153,57 @@ trait SMFTrait
 		$this->context['posting_fields']['content']['input']['tab'] = 'content';
 	}
 
-	protected function updateSettings(array $settings)
+	protected function updateSettings(array $settings): void
 	{
 		updateSettings($settings);
 	}
 
-	protected function loadCSSFile(string $fileName, array $params = [], string $id = '')
+	protected function loadCSSFile(string $fileName, array $params = [], string $id = ''): void
 	{
 		loadCSSFile($fileName, $params, $id);
 	}
 
-	protected function loadJavaScriptFile(string $fileName, array $params = [], string $id = '')
+	protected function loadJavaScriptFile(string $fileName, array $params = [], string $id = ''): void
 	{
 		loadJavaScriptFile($fileName, $params, $id);
 	}
 
-	protected function addInlineCss(string $css)
+	protected function addInlineCss(string $css): void
 	{
 		addInlineCss($css);
 	}
 
-	protected function addJavaScriptVar(string $key, $value, $escape = false)
+	protected function addJavaScriptVar(string $key, $value, $escape = false): void
 	{
 		addJavaScriptVar($key, $value, $escape);
 	}
 
-	protected function addInlineJavaScript(string $javascript, $defer = false)
+	protected function addInlineJavaScript(string $javascript, $defer = false): void
 	{
 		addInlineJavaScript($javascript, $defer);
 	}
 
-	protected function jsonDecode($json, $returnAsArray = false, $logIt = true)
+	protected function jsonDecode($json, $returnAsArray = false, $logIt = true): array
 	{
 		return smf_json_decode($json, $returnAsArray, $logIt);
 	}
 
-	protected function checkSession()
+	protected function checkSession(): void
 	{
 		checkSession();
 	}
 
-	protected function fetchWebData(string $url)
+	protected function fetchWebData(string $url): bool|string
 	{
 		return fetch_web_data($url);
 	}
 
-	protected function censorText(string &$text)
+	protected function censorText(string &$text): void
 	{
 		censorText($text);
 	}
 
-	protected function createList(array $listOptions)
+	protected function createList(array $listOptions): void
 	{
 		require_once $this->sourcedir . '/Subs-List.php';
 
@@ -208,56 +213,56 @@ trait SMFTrait
 		$this->context['default_list'] = $listOptions['id'];
 	}
 
-	protected function obExit($header = null)
+	protected function obExit($header = null): void
 	{
 		obExit($header);
 	}
 
-	protected function checkSubmitOnce(string $action)
+	protected function checkSubmitOnce(string $action): void
 	{
 		checkSubmitOnce($action);
 	}
 
-	protected function preparseCode(string &$message)
+	protected function preparseCode(string &$message): void
 	{
 		require_once $this->sourcedir . '/Subs-Post.php';
 
 		preparsecode($message);
 	}
 
-	protected function unPreparseCode(string $message)
+	protected function unPreparseCode(string $message): array|string|null
 	{
 		require_once $this->sourcedir . '/Subs-Post.php';
 
 		return un_preparsecode($message);
 	}
 
-	protected function saveDBSettings(array $save_vars)
+	protected function saveDBSettings(array $save_vars): void
 	{
 		saveDBSettings($save_vars);
 	}
 
-	protected function prepareDBSettingContext(array $config_vars)
+	protected function prepareDBSettingContext(array $config_vars): void
 	{
 		prepareDBSettingContext($config_vars);
 	}
 
-	protected function callHelper($action)
+	protected function callHelper($action): void
 	{
 		call_helper($action);
 	}
 
-	protected function dbExtend(string $type = 'extra')
+	protected function dbExtend(string $type = 'extra'): void
 	{
 		db_extend($type);
 	}
 
-	protected function parseBbc($message, $smileys = true, $cache_id = '', $parse_tags = [])
+	protected function parseBbc($message, $smileys = true, $cache_id = '', $parse_tags = []): array|string
 	{
 		return parse_bbc($message, $smileys, $cache_id, $parse_tags);
 	}
 
-	protected function sendStatus($code)
+	protected function sendStatus($code): void
 	{
 		send_http_status($code);
 	}
@@ -283,7 +288,7 @@ trait SMFTrait
 		return getNotifyPrefs($members, $prefs, true);
 	}
 
-	protected function updateMemberData(array $members, array $data)
+	protected function updateMemberData(array $members, array $data): void
 	{
 		updateMemberData($members, $data);
 	}

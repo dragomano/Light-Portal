@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -91,22 +91,13 @@ class CodeMirror extends Plugin
 		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js', ['external' => true]);
 		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js', ['external' => true]);
 
-		switch ($current_mode) {
-			case 'markdown':
-				$mode = '"text/x-markdown"';
-				break;
-			case 'php':
-				$mode = '"text/x-php"';
-				break;
-			case 'pug':
-				$mode = '"text/x-pug"';
-				break;
-			case 'twig':
-				$mode = '{name: "twig", base: "text/html"}';
-				break;
-			default:
-				$mode = '"text/html"';
-		}
+		$mode = match ($current_mode) {
+			'markdown' => '"text/x-markdown"',
+			'php' => '"text/x-php"',
+			'pug' => '"text/x-pug"',
+			'twig' => '{name: "twig", base: "text/html"}',
+			default => '"text/html"',
+		};
 
 		$this->addInlineJavaScript('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {

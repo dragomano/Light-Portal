@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\GalleryFrontPage;
@@ -53,7 +53,7 @@ class GalleryArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
 				p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name,

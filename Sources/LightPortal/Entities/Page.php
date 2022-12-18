@@ -24,7 +24,7 @@ final class Page
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
 		$this->middleware('light_portal_view');
 
@@ -192,7 +192,7 @@ final class Page
 		return $data;
 	}
 
-	public function showAsCards(PageListInterface $entity)
+	public function showAsCards(PageListInterface $entity): void
 	{
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
@@ -290,7 +290,7 @@ final class Page
 		];
 	}
 
-	private function changeErrorPage()
+	private function changeErrorPage(): void
 	{
 		$this->context['error_link'] = $this->scripturl;
 		$this->txt['back'] = empty($this->modSettings['lp_frontpage_mode']) ? $this->txt['lp_forum'] : $this->txt['lp_portal'];
@@ -301,7 +301,7 @@ final class Page
 		}
 	}
 
-	private function promote()
+	private function promote(): void
 	{
 		if (empty($this->user_info['is_admin']) || empty($this->request()->has('promote')))
 			return;
@@ -319,7 +319,7 @@ final class Page
 		$this->redirect($this->context['canonical_url']);
 	}
 
-	private function setMeta()
+	private function setMeta(): void
 	{
 		if (empty($this->context['lp_page']))
 			return;
@@ -360,7 +360,7 @@ final class Page
 	}
 
 
-	private function preparePrevNextLinks()
+	private function preparePrevNextLinks(): void
 	{
 		if (empty($this->context['lp_page']) || empty($this->modSettings['lp_show_prev_next_links']))
 			return;
@@ -422,7 +422,7 @@ final class Page
 		}
 	}
 
-	private function prepareRelatedPages()
+	private function prepareRelatedPages(): void
 	{
 		if (empty($item = $this->context['lp_page']) || empty($this->modSettings['lp_show_related_pages']) || empty($this->context['lp_page']['options']['show_related_pages']))
 			return;
@@ -481,7 +481,7 @@ final class Page
 		$this->context['lp_num_queries']++;
 	}
 
-	private function prepareData(?array &$data)
+	private function prepareData(?array &$data): void
 	{
 		if (empty($data))
 			return;
@@ -508,7 +508,7 @@ final class Page
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
-	private function prepareComments()
+	private function prepareComments(): void
 	{
 		if (empty($this->modSettings['lp_show_comment_block']) || empty($this->context['lp_page']['options']['allow_comments']))
 			return;
@@ -552,7 +552,7 @@ final class Page
 		return $items;
 	}
 
-	private function updateNumViews()
+	private function updateNumViews(): void
 	{
 		if (empty($this->context['lp_page']['id']) || $this->user_info['possibly_robot'])
 			return;
