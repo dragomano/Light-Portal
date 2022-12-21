@@ -158,7 +158,7 @@ $txt['lp_blocks_manage_description'] = 'All created portal blocks are listed her
 $txt['lp_blocks_add'] = 'Add block';
 $txt['lp_blocks_add_title'] = 'Adding a block';
 $txt['lp_blocks_add_description'] = 'Blocks can contain any content, depending on their type.';
-$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it.';
+$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it. If the block you need is not on the list, check if the <a class="bbc_link" href="%1$s">corresponding plugin</a> is enabled.';
 $txt['lp_blocks_edit_title'] = 'Editing block';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
 $txt['lp_block_type'] = 'Block type';

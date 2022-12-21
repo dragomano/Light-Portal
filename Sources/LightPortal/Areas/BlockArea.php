@@ -88,6 +88,8 @@ final class BlockArea
 			'description' => $this->txt['lp_blocks_add_description']
 		];
 
+		$this->txt['lp_blocks_add_instruction'] = sprintf($this->txt['lp_blocks_add_instruction'], $this->scripturl . '?action=admin;area=lp_plugins');
+
 		$this->context['current_block']['placement'] = $this->request('placement', '');
 
 		$this->prepareBlockList();
