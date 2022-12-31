@@ -64,7 +64,7 @@ trait SMFTrait
 		return un_htmlspecialchars($string);
 	}
 
-	protected function middleware(string $permission): void
+	protected function middleware(string|array $permission): void
 	{
 		isAllowedTo($permission);
 	}

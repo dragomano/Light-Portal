@@ -193,6 +193,7 @@ final class ConfigArea
 		$this->context['permissions_excluded']['light_portal_manage_own_blocks'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
+		$this->context['permissions_excluded']['light_portal_moderate_pages']    = [-1, 0];
 
 		$this->context['lp_all_categories']    = $this->getAllCategories();
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
@@ -231,7 +232,8 @@ final class ConfigArea
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
 			['permissions', 'light_portal_manage_own_blocks', 'help' => 'permissionhelp_light_portal_manage_own_blocks'],
 			['permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'],
-			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages']
+			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],
+			['permissions', 'light_portal_moderate_pages', 'help' => 'permissionhelp_light_portal_moderate_pages'],
 		];
 
 		$this->loadTemplate('LightPortal/ManageSettings');
@@ -599,7 +601,7 @@ final class ConfigArea
 
 	public function pageAreas(): void
 	{
-		$this->middleware('light_portal_manage_own_pages');
+		$this->middleware(['light_portal_manage_own_pages', 'light_portal_moderate_pages']);
 
 		$subActions = [
 			'main' => [new PageArea, 'main'],

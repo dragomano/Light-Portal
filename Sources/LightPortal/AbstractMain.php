@@ -39,6 +39,7 @@ abstract class AbstractMain
 		$this->context['allow_light_portal_manage_own_blocks'] = $this->allowedTo('light_portal_manage_own_blocks');
 		$this->context['allow_light_portal_manage_own_pages']  = $this->allowedTo('light_portal_manage_own_pages');
 		$this->context['allow_light_portal_approve_pages']     = $this->allowedTo('light_portal_approve_pages');
+		$this->context['allow_light_portal_moderate_pages']    = $this->allowedTo('light_portal_moderate_pages');
 
 		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages']] = $this->getNumActiveEntities();
 

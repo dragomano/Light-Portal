@@ -71,6 +71,7 @@ $txt['groups_light_portal_view'] = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
+$txt['groups_light_portal_moderate_pages'] = 'Who can manage any pages (<span class="error">Portal page editor</span>)';
 $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 
 // Pages and blocks
@@ -345,14 +346,17 @@ $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_v
 $txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Manage own blocks';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
+$txt['permissionname_light_portal_moderate_pages'] = $txt['group_perms_name_light_portal_moderate_pages'] = 'Moderate any pages';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
 $txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
+$txt['permissionhelp_light_portal_moderate_pages'] = 'Ability to manage any pages.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
+$txt['cannot_light_portal_moderate_pages'] = 'Sorry, you are not allowed to moderate portal pages!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units

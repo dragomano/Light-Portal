@@ -125,7 +125,7 @@ final class PageArea
 				],
 				'num_comments' => [
 					'header' => [
-						'value' => str_replace(' class=', '  title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
+						'value' => str_replace(' class=', ' title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
 					],
 					'data' => [
 						'db' => 'num_comments',
@@ -171,7 +171,7 @@ final class PageArea
 						'value' => $this->txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>' : '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
@@ -250,7 +250,7 @@ final class PageArea
 					'position' => 'below_table_data',
 					'value' => '
 						<select name="page_actions">
-							<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] ? '
+							<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '
 							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
 							<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
 							<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
@@ -544,7 +544,7 @@ final class PageArea
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? $this->modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $this->context['lp_current_page']['status'] ?? (int) $this->context['allow_light_portal_approve_pages'],
+			'status'      => $this->context['lp_current_page']['status'] ?? (int) $this->context['allow_light_portal_approve_pages'] ?? (int) $this->context['allow_light_portal_moderate_pages'],
 			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $dateTime->format('Y-m-d'),
 			'time'        => $post_data['time'] ?? $dateTime->format('H:i'),

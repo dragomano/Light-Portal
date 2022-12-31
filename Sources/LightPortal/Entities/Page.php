@@ -491,7 +491,7 @@ final class Page
 		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
 		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
 		$data['can_view'] = $this->canViewItem($data['permissions']) || $this->user_info['is_admin'] || $is_author;
-		$data['can_edit'] = $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
+		$data['can_edit'] = $this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
 
 		if ($data['type'] === 'bbc') {
 			$data['content'] = $this->unPreparseCode($data['content']);
