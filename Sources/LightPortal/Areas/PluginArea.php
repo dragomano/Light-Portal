@@ -188,7 +188,7 @@ final class PluginArea
 		$this->context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$link = 'https://dragomano.ru/addons.json';
+			$link = 'https://gist.githubusercontent.com/dragomano/5ed96dfb2061e3de86ef13450f913842/raw/2694a767be8b5f844e7300d3a4ce69fb3634e806/addons.json';
 
 			$addon_list = $this->fetchWebData($link);
 
