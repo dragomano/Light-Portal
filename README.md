@@ -3,7 +3,6 @@
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![Hooks only: Yes](https://img.shields.io/badge/Hooks%20only-YES-blue)
 ![PHP](https://img.shields.io/badge/PHP-^8.0-blue.svg?style=flat)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/417e4cab3c63460dbb5e06ac126f8ebf)](https://www.codacy.com/gh/dragomano/Light-Portal/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dragomano/Light-Portal&amp;utm_campaign=Badge_Grade)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 8.0.24 / MariaDB 10.6.7
