@@ -44,7 +44,7 @@ final class CreditArea
 	{
 		$link = $this->user_info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;2022</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
 	public function prepareComponents(): void
@@ -65,7 +65,7 @@ final class CreditArea
 		$this->context['testers'] = [
 			[
 				'name' => 'Wylek',
-				'link' => 'https://wylek.ru/'
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=608635'
 			],
 		];
 
