@@ -83,7 +83,7 @@ final class ConfigArea
 							'function' => [$this, 'pageAreas'],
 							'icon' => 'reports',
 							'amt' => $this->context['lp_num_active_pages'],
-							'permission' => ['admin_forum', 'light_portal_manage_own_pages'],
+							'permission' => ['admin_forum', 'light_portal_moderate_pages', 'light_portal_manage_own_pages'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_pages_manage']],
 								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_pages_add']]

@@ -444,12 +444,12 @@ final class Integration extends AbstractMain
 		];
 
 		$profile_areas['info']['areas']['lp_my_pages'] = [
-			'label'      => $this->txt['lp_my_pages'],
+			'label'      => $this->context['allow_light_portal_moderate_pages'] ? $this->txt['lp_all_pages'] : $this->txt['lp_my_pages'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
 			'permission' => [
-				'own' => ['light_portal_manage_own_pages'],
+				'own' => $this->context['allow_light_portal_moderate_pages'] ? ['light_portal_manage_own_pages', 'light_portal_moderate_pages'] : ['light_portal_manage_own_pages'],
 				'any' => []
 			]
 		];
@@ -482,7 +482,7 @@ final class Integration extends AbstractMain
 				'area' => 'lp_my_blocks'
 			];
 
-		if ($this->context['allow_light_portal_manage_own_pages'])
+		if ($this->context['allow_light_portal_manage_own_pages'] || $this->context['allow_light_portal_moderate_pages'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_pages'

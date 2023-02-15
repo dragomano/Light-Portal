@@ -13,6 +13,7 @@ $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
 $txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
+$txt['lp_all_pages'] = 'All pages';
 $txt['lp_views'] = 'Views';
 $txt['lp_replies'] = 'Replies';
 $txt['lp_default'] = 'Default';

@@ -31,7 +31,7 @@ final class PageRepository extends AbstractRepository
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . ($this->user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . ($this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (empty($query_string) ? '' : '
 				AND ' . $query_string) . '
@@ -75,7 +75,7 @@ final class PageRepository extends AbstractRepository
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($this->user_info['is_admin'] ? '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] ? '
 			WHERE 1=1' : '
 			WHERE p.author_id = {int:user_id}') . (empty($query_string) ? '' : '
 				AND ' . $query_string),
