@@ -596,7 +596,7 @@ final class ConfigArea
 
 		$this->hook('addBlockAreas', [&$subActions]);
 
-		$this->loadGeneralSettingParameters($subActions, 'main');
+		$this->loadGeneralSettingParameters($subActions);
 	}
 
 	public function pageAreas(): void
@@ -616,7 +616,7 @@ final class ConfigArea
 
 		$this->hook('addPageAreas', [&$subActions]);
 
-		$this->loadGeneralSettingParameters($subActions, 'main');
+		$this->loadGeneralSettingParameters($subActions);
 	}
 
 	public function pluginAreas(): void
@@ -629,7 +629,7 @@ final class ConfigArea
 
 		$this->hook('addPluginAreas', [&$subActions]);
 
-		$this->loadGeneralSettingParameters($subActions, 'main');
+		$this->loadGeneralSettingParameters($subActions);
 	}
 
 	/**
@@ -637,7 +637,7 @@ final class ConfigArea
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], ?string $defaultAction = null): void
+	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();
 
@@ -645,13 +645,9 @@ final class ConfigArea
 
 		$this->context['sub_template'] = 'show_settings';
 
-		$defaultAction = $defaultAction ?: key($subActions);
+		$this->context['sub_action'] = $this->request()->has('sa') && isset($subActions[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
 
-		$subAction = $this->request()->has('sa') && isset($subActions[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
-
-		$this->context['sub_action'] = $subAction;
-
-		$this->callHelper($subActions[$subAction]);
+		$this->callHelper($subActions[$this->context['sub_action']]);
 	}
 
 	private function showDocsLink(): void
