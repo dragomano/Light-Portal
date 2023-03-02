@@ -46,6 +46,8 @@ final class Comment
 					$this->add();
 				case 'edit_comment':
 					$this->edit();
+				case 'like_comment':
+					$this->like();
 				case 'del_comment':
 					$this->remove();
 					break;
@@ -96,12 +98,15 @@ final class Comment
 	public function getAll(int $page_id = 0): array
 	{
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
+			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name,
+				(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating,
+				(SELECT COUNT(r.id) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id AND r.user_id = {int:user}) AS is_rated
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
 			WHERE com.page_id = {int:id}' : ''),
 			[
-				'id' => $page_id
+				'id'   => $page_id,
+				'user' => $this->context['user']['id']
 			]
 		);
 
@@ -110,17 +115,20 @@ final class Comment
 			$this->censorText($row['message']);
 
 			$comments[$row['id']] = [
-				'id'          => (int) $row['id'],
-				'page_id'     => (int) $row['page_id'],
-				'parent_id'   => (int) $row['parent_id'],
-				'poster'      => [
+				'id'           => (int) $row['id'],
+				'page_id'      => (int) $row['page_id'],
+				'parent_id'    => (int) $row['parent_id'],
+				'poster'       => [
 					'id'   => (int) $row['author_id'],
 					'name' => $row['author_name']
 				],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
-				'raw_message' => $this->unPreparseCode($row['message']),
-				'created_at'  => (int) $row['created_at'],
-				'can_edit'    => $this->isCanEdit((int) $row['created_at'])
+				'message'      => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
+				'raw_message'  => $this->unPreparseCode($row['message']),
+				'created_at'   => (int) $row['created_at'],
+				'rating'       => (int) $row['rating'],
+				'is_rated'     => (bool) $row['is_rated'],
+				'rating_class' => empty($this->modSettings['lp_allow_comment_ratings']) ? '' : ($row['rating'] && $row['rating'] <= -10 ? 'negative' : ($row['rating'] >= 10 ? 'positive' : '')),
+				'can_edit'     => $this->isCanEdit((int) $row['created_at'])
 			];
 		}
 
@@ -277,6 +285,56 @@ final class Comment
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
+	}
+
+	private function like(): void
+	{
+		if (empty($this->modSettings['lp_allow_comment_ratings']))
+			return;
+
+		$data = $this->request()->json();
+
+		if (empty($data) || $this->context['user']['is_guest'])
+			exit;
+
+		$item    = $data['comment_id'];
+		$operand = $data['operand'];
+
+		if (empty($item) || empty($operand))
+			exit;
+
+		if ($operand === '!') {
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_ratings
+				WHERE content_id = {int:item}
+					AND user_id = {int:user}',
+				[
+					'item' => $item,
+					'user' => $this->user_info['id']
+				]
+			);
+		} else {
+			$this->smcFunc['db_insert']('',
+				'{db_prefix}lp_ratings',
+				[
+					'value'      => 'int',
+					'content_id' => 'int',
+					'user_id'    => 'int'
+				],
+				[
+					$operand === '+' ? 1 : -1,
+					$item,
+					$this->user_info['id']
+				],
+				['id']
+			);
+		}
+
+		$this->context['lp_num_queries']++;
+
+		$this->cache()->forget('page_' . $this->alias . '_comments');
+
+		exit;
 	}
 
 	private function remove(): void

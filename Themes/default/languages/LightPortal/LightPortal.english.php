@@ -90,6 +90,7 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bb
 $txt['lp_show_comment_block_set'] = array('None', 'Integrated');
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
+$txt['lp_allow_comment_ratings'] = 'Allow voting for comments';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The default type of the page editor';
 $txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
@@ -292,6 +293,8 @@ $txt['lp_related_pages'] = 'Related pages';
 // Comments
 $txt['lp_comments'] = 'Comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
+$txt['lp_like_button'] = 'Like';
+$txt['lp_dislike_button'] = 'Dislike';
 
 // Comment alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';

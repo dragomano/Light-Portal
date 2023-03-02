@@ -1051,6 +1051,12 @@ section #display_head span {
   border-radius: 7px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+.comment_list li .comment_wrapper .entry.positive {
+  background: #bcf5bc;
+}
+.comment_list li .comment_wrapper .entry.negative {
+  opacity: 0.4 !important;
+}
 .comment_list li .comment_wrapper .entry .title {
   display: block;
   font-size: 0.7rem;
@@ -1098,6 +1104,7 @@ section #display_head span {
   overflow: hidden !important;
 }
 .comment_list li .comment_wrapper .entry .reply_button,
+.comment_list li .comment_wrapper .entry .like_button,
 .comment_list li .comment_wrapper .entry .modify_button,
 .comment_list li .comment_wrapper .entry .update_button,
 .comment_list li .comment_wrapper .entry .cancel_button,
@@ -1106,6 +1113,7 @@ section #display_head span {
   margin-right: 5px;
 }
 .comment_list li .comment_wrapper .entry .reply_button:hover,
+.comment_list li .comment_wrapper .entry .like_button:hover,
 .comment_list li .comment_wrapper .entry .modify_button:hover,
 .comment_list li .comment_wrapper .entry .update_button:hover,
 .comment_list li .comment_wrapper .entry .cancel_button:hover,

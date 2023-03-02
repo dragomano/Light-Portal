@@ -549,6 +549,17 @@ function template_callback_comment_settings()
 			<dd>
 				<input type="number" name="lp_num_comments_per_page" id="lp_num_comments_per_page" value="', $modSettings['lp_num_comments_per_pages'] ?? 10, '" size="6" min="1">
 			</dd>
+		</template>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_allow_comment_ratings"></a> <span><label for="lp_allow_comment_ratings">', $txt['lp_allow_comment_ratings'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<input type="checkbox" name="lp_allow_comment_ratings" id="lp_allow_comment_ratings"', empty($modSettings['lp_allow_comment_ratings']) ? '' : ' checked', ' value="1">
+			</dd>
 		</template>';
 }
 

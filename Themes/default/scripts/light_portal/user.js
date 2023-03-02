@@ -164,6 +164,29 @@ class Comment {
 		this.selectContent(commentContent)
 	}
 
+	async like(target, operand = '+') {
+		const item = target.dataset.id;
+
+		let response = await fetch(this.pageUrl + 'sa=like_comment', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8'
+			},
+			body: JSON.stringify({
+				comment_id: item,
+				operand: operand
+			})
+		})
+
+		if (! response.ok) return console.error(response);
+
+		const likeButtons = document.querySelectorAll('#comment' + item + ' .like_button');
+
+		likeButtons.forEach(function (el) {
+			el.style.display = 'none'
+		})
+	}
+
 	focusEditor(item, comment, rawContent) {
 		comment.innerText = this.currentCommentText[item] ?? rawContent.innerText;
 		comment.setAttribute('contenteditable', true);

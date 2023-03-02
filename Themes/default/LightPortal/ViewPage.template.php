@@ -176,7 +176,7 @@ function show_comment_block()
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
 
-	if ($modSettings['lp_show_comment_block'] == 'none')
+	if ($modSettings['lp_show_comment_block'] === 'none')
 		return;
 
 	if (! empty($context['lp_' . $modSettings['lp_show_comment_block'] . '_comment_block'])) {
@@ -278,7 +278,7 @@ function show_comment_block()
 
 function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
-	global $context, $txt;
+	global $context, $txt, $modSettings;
 
 	if (empty($comment['poster']['id']))
 		return;
@@ -308,7 +308,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 		<div class="comment_wrapper"', $context['right_to_left'] ? ' style="padding: 0 55px 0 0"' : '', '>
-			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', '">
+			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', ' ', $comment['rating_class'], '">
 				<div class="title">
 					<span
 						class="bg ', $i % 2 == 0 ? 'even' : 'odd', '"
@@ -338,16 +338,28 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 					<span class="reply_button" data-id="', $comment['id'], '" @click.self="replyForm = true; $nextTick(() => $refs.reply_message.focus())">', $context['lp_icon_set']['reply'], $txt['reply'], '</span>';
 		}
 
+		// Authors cannot vote their own comments
+		if (! empty($modSettings['lp_allow_comment_ratings']) && $comment['poster']['id'] !== $context['user']['id']) {
+			if (empty($comment['is_rated'])) {
+				echo '
+					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target)">', $context['lp_icon_set']['like'], $txt['lp_like_button'], '</span>
+					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'-\')">', $context['lp_icon_set']['dislike'], $txt['lp_dislike_button'], '</span>';
+			} else {
+				echo '
+					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'!\')">', $context['lp_icon_set']['unlike'], $txt['poll_change_vote'], '</span>';
+			}
+		}
+
 		// Only comment author can edit comments
-		if ($comment['can_edit'] && empty($comment['children']) && $comment['poster']['id'] == $context['user']['id']) {
+		if ($comment['can_edit'] && empty($comment['children']) && $comment['poster']['id'] === $context['user']['id']) {
 			echo '
-				<span class="modify_button" data-id="', $comment['id'], '" @click.self="comment.modify($event.target)">', $context['lp_icon_set']['edit'], $txt['modify'], '</span>
-				<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)">', $context['lp_icon_set']['save'], $txt['save'], '</span>
-				<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)">', $context['lp_icon_set']['undo'], $txt['modify_cancel'], '</span>';
+					<span class="modify_button" data-id="', $comment['id'], '" @click.self="comment.modify($event.target)">', $context['lp_icon_set']['edit'], $txt['modify'], '</span>
+					<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)">', $context['lp_icon_set']['save'], $txt['save'], '</span>
+					<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)">', $context['lp_icon_set']['undo'], $txt['modify_cancel'], '</span>';
 		}
 
 		// Only comment author or admin can remove comments
-		if ($comment['poster']['id'] == $context['user']['id'] || $context['user']['is_admin']) {
+		if ($comment['poster']['id'] === $context['user']['id'] || $context['user']['is_admin']) {
 			echo '
 					<span class="remove_button floatright" data-id="', $comment['id'], '" data-level="', $level, '" @click.once="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')">', $context['lp_icon_set']['remove'], $txt['remove'], '</span>';
 		}

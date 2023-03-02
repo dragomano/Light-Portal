@@ -17,44 +17,6 @@ if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
 
 $tables[] = array(
-	'name' => 'lp_categories',
-	'columns' => array(
-		array(
-			'name'     => 'category_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
-			'unsigned' => true,
-			'auto'     => true
-		),
-		array(
-			'name' => 'name',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		),
-		array(
-			'name' => 'description',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		),
-		array(
-			'name'     => 'priority',
-			'type'     => 'tinyint',
-			'size'     => 1,
-			'unsigned' => true,
-			'default'  => 0
-		)
-	),
-	'indexes' => array(
-		array(
-			'type'    => 'primary',
-			'columns' => array('category_id')
-		)
-	)
-);
-
-$tables[] = array(
 	'name' => 'lp_blocks',
 	'columns' => array(
 		array(
@@ -157,6 +119,44 @@ $tables[] = array(
 		array(
 			'type'    => 'primary',
 			'columns' => array('block_id')
+		)
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_categories',
+	'columns' => array(
+		array(
+			'name'     => 'category_id',
+			'type'     => 'tinyint',
+			'size'     => 3,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'name',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		),
+		array(
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
+			'name'     => 'priority',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 0
+		)
+	),
+	'indexes' => array(
+		array(
+			'type'    => 'primary',
+			'columns' => array('category_id')
 		)
 	)
 );
@@ -411,6 +411,49 @@ $tables[] = array(
 		array(
 			'type'    => 'primary',
 			'columns' => array('name', 'config')
+		)
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_ratings',
+	'columns' => array(
+		array(
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'value',
+			'type' => 'int',
+			'size' => 11
+		),
+		array(
+			'name'    => 'content_type',
+			'type'    => 'varchar',
+			'size'    => 20,
+			'default' => 'comment',
+			'null'    => false
+		),
+		array(
+			'name'     => 'content_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		),
+		array(
+			'name'     => 'user_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true
+		),
+	),
+	'indexes' => array(
+		array(
+			'type'    => 'primary',
+			'columns' => array('id')
 		)
 	)
 );

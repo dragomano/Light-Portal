@@ -1321,6 +1321,7 @@ section {
 }
 
 .comment_list {
+	@comment_bg_color: lightgreen;
 	list-style: none;
 
 	li {
@@ -1347,6 +1348,14 @@ section {
 				border: 1px solid @color-light-gray;
 				.bradius(7px);
 				box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+
+				&.positive {
+					background: lighten(@comment_bg_color, 10%);
+				}
+
+				&.negative {
+					opacity: .4 !important;
+				}
 
 				.title {
 					display: block;
@@ -1396,6 +1405,7 @@ section {
 				}
 
 				.reply_button,
+				.like_button,
 				.modify_button,
 				.update_button,
 				.cancel_button,
