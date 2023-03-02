@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 25.08.22
+ * @version 3.02.23
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedBlockOptions;
@@ -58,7 +58,7 @@ class ExtendedBlockOptions extends Plugin
 			'type' => 'checkbox',
 			'attributes' => [
 				'id'      => 'hide_header',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['hide_header']
+				'checked' => (bool) ($this->context['lp_block']['options']['parameters']['hide_header'] ?? false)
 			]
 		];
 	}
