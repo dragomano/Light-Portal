@@ -308,7 +308,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 		<div class="comment_wrapper"', $context['right_to_left'] ? ' style="padding: 0 55px 0 0"' : '', '>
-			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', ' ', $comment['rating_class'], '">
+			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', ' ', $comment['rating_class'] ?? '', '">
 				<div class="title">
 					<span
 						class="bg ', $i % 2 == 0 ? 'even' : 'odd', '"
