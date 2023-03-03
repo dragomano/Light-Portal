@@ -103,7 +103,8 @@ final class Comment
 				(SELECT COUNT(r.id) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id AND r.user_id = {int:user}) AS is_rated
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
-			WHERE com.page_id = {int:id}' : ''),
+			WHERE com.page_id = {int:id}' : '') . (empty($this->modSettings['lp_comment_sorting']) ? '' : '
+			ORDER BY com.created_at DESC'),
 			[
 				'id'   => $page_id,
 				'user' => $this->context['user']['id']
