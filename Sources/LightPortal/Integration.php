@@ -245,6 +245,13 @@ final class Integration extends AbstractMain
 				'show'        => true,
 				'action_hook' => true,
 				'is_last'     => $this->context['right_to_left'],
+				'sub_buttons' => [
+					'pages'   => [
+						'title' => $this->txt['lp_page_moderation'],
+						'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+						'show'  => $this->context['allow_light_portal_moderate_pages']
+					]
+				]
 			],
 		], $buttons);
 
@@ -269,6 +276,13 @@ final class Integration extends AbstractMain
 						'icon'        => 'im_on',
 						'show'        => true,
 						'action_hook' => true,
+						'sub_buttons' => [
+							'pages'   => [
+								'title' => $this->txt['lp_page_moderation'],
+								'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+								'show'  => $this->context['allow_light_portal_moderate_pages']
+							]
+						]
 					],
 				],
 				array_slice($buttons, 2, null, true)
@@ -437,21 +451,15 @@ final class Integration extends AbstractMain
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
 			'icon'       => 'modifications',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => [
-				'own' => ['light_portal_manage_own_blocks'],
-				'any' => []
-			]
+			'permission' => 'light_portal_manage_own_blocks',
 		];
 
 		$profile_areas['info']['areas']['lp_my_pages'] = [
-			'label'      => $this->context['allow_light_portal_moderate_pages'] ? $this->txt['lp_all_pages'] : $this->txt['lp_my_pages'],
+			'label'      => $this->txt['lp_my_pages'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => [
-				'own' => $this->context['allow_light_portal_moderate_pages'] ? ['light_portal_manage_own_pages', 'light_portal_moderate_pages'] : ['light_portal_manage_own_pages'],
-				'any' => []
-			]
+			'permission' => 'light_portal_manage_own_pages',
 		];
 	}
 
@@ -482,7 +490,7 @@ final class Integration extends AbstractMain
 				'area' => 'lp_my_blocks'
 			];
 
-		if ($this->context['allow_light_portal_manage_own_pages'] || $this->context['allow_light_portal_moderate_pages'])
+		if ($this->context['allow_light_portal_manage_own_pages'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_pages'
