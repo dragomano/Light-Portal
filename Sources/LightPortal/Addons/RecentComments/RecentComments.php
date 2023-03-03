@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.05.22
+ * @version 3.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -33,6 +33,7 @@ class RecentComments extends Plugin
 
 		$options['recent_comments']['parameters'] = [
 			'num_comments' => 10,
+			'show_rating'  => false,
 		];
 	}
 
@@ -42,7 +43,8 @@ class RecentComments extends Plugin
 			return;
 
 		$parameters = array(
-			'num_comments' => FILTER_VALIDATE_INT
+			'num_comments' => FILTER_VALIDATE_INT,
+			'show_rating'  => FILTER_VALIDATE_BOOLEAN,
 		);
 	}
 
@@ -60,6 +62,15 @@ class RecentComments extends Plugin
 				'value' => $this->context['lp_block']['options']['parameters']['num_comments']
 			]
 		];
+
+		$this->context['posting_fields']['show_rating']['label']['text'] = $this->txt['lp_recent_comments']['show_rating'];
+		$this->context['posting_fields']['show_rating']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'show_rating',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_rating']
+			]
+		];
 	}
 
 	public function getData(int $num_comments): array
@@ -68,7 +79,8 @@ class RecentComments extends Plugin
 			return [];
 
 		$request = $this->smcFunc['db_query']('', '
-			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name
+			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
+			(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN (
 					SELECT lt.page_id AS page_id, MAX(lt.created_at) AS created_at
@@ -101,11 +113,13 @@ class RecentComments extends Plugin
 				'link'        => LP_PAGE_URL . $row['alias'],
 				'message'     => $this->getShortenText($this->parseBbc($row['message']), 20),
 				'created_at'  => (int) $row['created_at'],
-				'author_name' => $row['author_name']
+				'author_name' => $row['author_name'],
+				'rating'      => (int) $row['rating'],
 			);
 		}
 
 		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $comments;
 	}
@@ -128,11 +142,11 @@ class RecentComments extends Plugin
 		foreach ($comments as $comment) {
 			echo '
 			<li class="windowbg">
-				<a href="', $comment['link'], '">', $comment['message'], '</a>
+				<a href="', $comment['link'], '">', $comment['message'], '</a>', empty($parameters['show_rating']) ? '' : (empty($comment['rating']) ? '' : ' <span class="amt floatright">' . $comment['rating'] . '</span>'), '
 				<br><span class="smalltext">', $this->txt['by'], ' ', $comment['author_name'], '</span>
 				<br><span class="smalltext">', $this->getFriendlyTime($comment['created_at']), '</span>
 			</li>';
-			}
+		}
 
 		echo '
 		</ul>';
