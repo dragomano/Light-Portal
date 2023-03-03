@@ -114,7 +114,7 @@ trait SMFTrait
 		return shorten_subject($text, $length);
 	}
 
-	protected function loadMemberData(array|string $users, bool $is_name = false, string $set = 'normal'): array
+	protected function loadMemberData(array|string|int $users, bool $is_name = false, string $set = 'normal'): array
 	{
 		return loadMemberData($users, $is_name, $set);
 	}
