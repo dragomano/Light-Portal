@@ -65,6 +65,7 @@ In this section, you can change the general settings of pages and blocks used bo
 * Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
+* Sorting comments by default — select the desired sorting type for comments on portal pages.
 * Allow voting for comments — "Like" and "Dislike" buttons will appear under each comment. The background of comments will change depending on the number of positive or negative ratings.
 * Show items on tag/category pages as cards — you can display items as a table, or as cards.
 * The type of page editor by default — if you constantly create pages of the same type, you can set this type as default.
