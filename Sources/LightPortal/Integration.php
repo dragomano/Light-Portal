@@ -43,7 +43,7 @@ final class Integration extends AbstractMain
 		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
 		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
 		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
-		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_areas', __CLASS__ . '::profileAreas#', false, __FILE__);
 		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
 		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
 		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
@@ -427,7 +427,7 @@ final class Integration extends AbstractMain
 	 *
 	 * Добавляем пункт «Мои страницы» в попап-окне профиля
 	 */
-	public function preProfileAreas(array &$profile_areas)
+	public function profileAreas(array &$profile_areas)
 	{
 		if ($this->context['user']['is_admin'])
 			return;
