@@ -247,6 +247,7 @@ final class IconList
 			'fas fa-ban-smoking',
 			'fas fa-bandage',
 			'fab fa-bandcamp',
+			'fas fa-bangladeshi-taka-sign',
 			'fas fa-barcode',
 			'fas fa-bars',
 			'fas fa-bars-progress',
@@ -468,9 +469,9 @@ final class IconList
 			'fas fa-chevron-right',
 			'fas fa-chevron-up',
 			'fas fa-child',
+			'fas fa-child-combatant',
 			'fas fa-child-dress',
 			'fas fa-child-reaching',
-			'fas fa-child-rifle',
 			'fas fa-children',
 			'fab fa-chrome',
 			'fab fa-chromecast',
@@ -1367,6 +1368,7 @@ final class IconList
 			'fab fa-node',
 			'fab fa-node-js',
 			'fas fa-not-equal',
+			'fas fa-notdef',
 			'fas fa-note-sticky',
 			'far fa-note-sticky',
 			'fas fa-notes-medical',
@@ -1380,6 +1382,7 @@ final class IconList
 			'far fa-object-ungroup',
 			'fab fa-octopus-deploy',
 			'fab fa-odnoklassniki',
+			'fab fa-odysee',
 			'fas fa-oil-can',
 			'fas fa-oil-well',
 			'fab fa-old-republic',
@@ -1821,6 +1824,7 @@ final class IconList
 			'fab fa-stripe',
 			'fab fa-stripe-s',
 			'fas fa-stroopwafel',
+			'fab fa-stubber',
 			'fab fa-studiovinari',
 			'fab fa-stumbleupon',
 			'fab fa-stumbleupon-circle',
@@ -2122,7 +2126,7 @@ final class IconList
 			'fab fa-yoast',
 			'fab fa-youtube',
 			'fas fa-z',
-			'fab fa-zhihu',
+			'fab fa-zhihu'
 		];
 	}
 }
