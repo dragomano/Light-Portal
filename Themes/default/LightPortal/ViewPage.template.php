@@ -348,6 +348,11 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 				echo '
 					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'!\')">', $context['lp_icon_set']['unlike'], $txt['poll_change_vote'], '</span>';
 			}
+
+			if (! empty($comment['rating'])) {
+				echo '
+					<span class="amt">', $comment['rating'], '</span>&nbsp;';
+			}
 		}
 
 		// Only comment author can edit comments
