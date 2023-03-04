@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 3.04.23
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -80,6 +80,7 @@ class BootstrapIcons extends Plugin
 		$set['copyright']     = 'at';
 		$set['date']          = 'clock';
 		$set['design']        = 'fan';
+		$set['dislike']       = 'hand-thumbs-down';
 		$set['donate']        = 'currency-dollar';
 		$set['download']      = 'download';
 		$set['edit']          = 'pencil-square';
@@ -89,6 +90,7 @@ class BootstrapIcons extends Plugin
 		$set['image']         = 'image';
 		$set['import']        = 'file-arrow-up';
 		$set['italic']        = 'type-italic';
+		$set['like']          = 'hand-thumbs-up';
 		$set['link']          = 'link';
 		$set['main']          = 'card-list';
 		$set['map_signs']     = 'map';
@@ -118,6 +120,7 @@ class BootstrapIcons extends Plugin
 		$set['toggle']        = 'toggle-';
 		$set['tools']         = 'tools';
 		$set['undo']          = 'backspace';
+		$set['unlike']        = 'heartbreak';
 		$set['user_plus']     = 'person-plus-fill';
 		$set['user']          = 'person-fill';
 		$set['users']         = 'people-fill';
