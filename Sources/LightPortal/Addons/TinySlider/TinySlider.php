@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -407,8 +407,8 @@ class TinySlider extends Plugin
 			return;
 
 		if ($parameters['use_cdn']) {
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', ['external' => true]);
-			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
+			$this->loadExtJS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
 		} else {
 			$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
 			$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);

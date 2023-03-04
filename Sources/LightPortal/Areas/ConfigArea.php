@@ -34,13 +34,13 @@ final class ConfigArea
 
 	public function adminAreas(array &$admin_areas): void
 	{
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js');
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js');
 
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['defer' => true]);
 		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		$this->loadLanguage('ManageSettings');

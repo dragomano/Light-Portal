@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -31,7 +31,7 @@ class EasyMarkdownEditor extends Plugin
 
 		$this->loadLanguage('Editor');
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
 
 		$this->addInlineCss('
 		.editor-toolbar button {
@@ -46,7 +46,7 @@ class EasyMarkdownEditor extends Plugin
 		.CodeMirror pre {
 			max-height: none;
 		}');
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
 		$this->addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),

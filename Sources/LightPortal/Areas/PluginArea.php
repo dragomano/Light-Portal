@@ -39,7 +39,7 @@ final class PluginArea
 	{
 		$this->loadLanguage('ManageMaintenance');
 		$this->loadTemplate('LightPortal/ManagePlugins');
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];
 		$this->context['post_url'] = $this->scripturl . '?action=admin;area=lp_plugins;save';

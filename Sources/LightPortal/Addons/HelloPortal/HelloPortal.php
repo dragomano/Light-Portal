@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -44,15 +44,15 @@ class HelloPortal extends Plugin
 		if (! empty($this->context['admin_menu_name']) && ! empty($this->context[$this->context['admin_menu_name']]) && ! empty($this->context[$this->context['admin_menu_name']]['tab_data']['title']))
 			$this->context[$this->context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . $this->txt['lp_hello_portal']['tour_button'] . '</button>';
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
 		if (! empty($this->context['lp_hello_portal_plugin']['theme']))
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css');
 
 		if ($this->context['right_to_left'])
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
 		$this->addInlineJavaScript('
 		function runTour() {

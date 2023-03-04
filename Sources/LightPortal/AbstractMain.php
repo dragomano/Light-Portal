@@ -74,9 +74,9 @@ abstract class AbstractMain
 			if ($this->modSettings['lp_fa_source'] === 'css_local') {
 				$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
 			} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
-				$this->loadCSSFile(
+				$this->loadExtCSS(
 					$this->modSettings['lp_fa_custom'],
-					['external' => true, 'seed' => false],
+					['seed' => false],
 					'portal_fontawesome'
 				);
 			}

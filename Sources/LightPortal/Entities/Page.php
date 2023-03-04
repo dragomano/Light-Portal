@@ -97,7 +97,7 @@ final class Page
 		$this->updateNumViews();
 
 		if ($this->context['user']['is_logged']) {
-			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+			$this->loadExtJS('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['defer' => true]);
 			$this->loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
 		}
 	}

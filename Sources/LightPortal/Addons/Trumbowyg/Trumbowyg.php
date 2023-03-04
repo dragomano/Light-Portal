@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -40,17 +40,17 @@ class Trumbowyg extends Plugin
 
 		$this->loadLanguage('Editor');
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js');
 
 		if ($this->txt['lang_dictionary'] !== 'en')
-			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $this->txt['lang_dictionary'] . '.min.js', ['external' => true]);
+			$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/langs/' . $this->txt['lang_dictionary'] . '.min.js');
 
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js', ['external' => true]);
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js');
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js');
 
 		$this->addInlineJavaScript('
 		$("#content").trumbowyg({
