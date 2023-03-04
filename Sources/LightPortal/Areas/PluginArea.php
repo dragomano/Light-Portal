@@ -35,7 +35,7 @@ final class PluginArea
 		$this->repository = new PluginRepository();
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadLanguage('ManageMaintenance');
 		$this->loadTemplate('LightPortal/ManagePlugins');
@@ -119,7 +119,7 @@ final class PluginArea
 			// You can do additional actions after settings saving
 			$this->hook('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
 
-			$this->repository->updateSettings($plugin_name, $plugin_options);
+			$this->repository->changeSettings($plugin_name, $plugin_options);
 
 			exit;
 		}
@@ -140,7 +140,7 @@ final class PluginArea
 					$link = $addonClass->getProperty('link')->getValue(new $className);
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
-			} catch (ReflectionException $e) {
+			} catch (ReflectionException) {
 				if (isset($this->context['lp_can_donate'][$item])) {
 					$this->context['lp_loaded_addons'][$snake_name]['type'] = $this->context['lp_can_donate'][$item]['type'] ?? 'other';
 					$special = $this->txt['lp_can_donate'];
@@ -182,7 +182,7 @@ final class PluginArea
 		$this->context['sub_template'] = 'manage_plugins';
 	}
 
-	private function extendPluginList()
+	private function extendPluginList(): void
 	{
 		$this->context['lp_can_donate'] = [];
 		$this->context['lp_can_download'] = [];
@@ -243,7 +243,7 @@ final class PluginArea
 		return ' lp_type_' . $type;
 	}
 
-	private function prepareAddonChart()
+	private function prepareAddonChart(): void
 	{
 		if ($this->request()->has('chart') === false)
 			return;

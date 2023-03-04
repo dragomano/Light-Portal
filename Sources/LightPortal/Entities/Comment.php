@@ -48,6 +48,7 @@ final class Comment
 					$this->edit();
 				case 'like_comment':
 					$this->like();
+					break;
 				case 'del_comment':
 					$this->remove();
 					break;

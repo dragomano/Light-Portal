@@ -66,7 +66,7 @@ final class PluginRepository
 		return $settings;
 	}
 
-	public function updateSettings(string $plugin_name, array $settings = []): void
+	public function changeSettings(string $plugin_name, array $settings = []): void
 	{
 		if (empty($settings))
 			return;
