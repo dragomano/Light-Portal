@@ -72,7 +72,7 @@ $txt['groups_light_portal_view'] = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
-$txt['groups_light_portal_moderate_pages'] = 'Who can manage any pages (<span class="error">Portal page editor</span>)';
+$txt['groups_light_portal_moderate_pages'] = 'Who can manage any pages (<span class="error">Page Moderator</span>)';
 $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 
 // Pages and blocks
@@ -356,7 +356,7 @@ $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blo
 $txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
-$txt['permissionhelp_light_portal_moderate_pages'] = 'Ability to manage any pages. The <strong>Page editor</strong> has access to all portal pages via the menu <em>Portal - Page moderation</em>.';
+$txt['permissionhelp_light_portal_moderate_pages'] = 'Ability to manage any pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Portal - Page moderation</em>.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
