@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -30,6 +30,7 @@ class WhosOnline extends Plugin
 	{
 		$options['whos_online']['parameters'] = [
 			'show_group_key'  => false,
+			'show_avatars'    => false,
 			'update_interval' => 600,
 		];
 	}
@@ -40,6 +41,7 @@ class WhosOnline extends Plugin
 			return;
 
 		$parameters['show_group_key']  = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
@@ -54,8 +56,16 @@ class WhosOnline extends Plugin
 			'attributes' => [
 				'id'      => 'show_group_key',
 				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_group_key']
-			],
-			'tab' => 'content'
+			]
+		];
+
+		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_whos_online']['show_avatars'];
+		$this->context['posting_fields']['show_avatars']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'show_avatars',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
+			]
 		];
 
 		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_whos_online']['update_interval'];
@@ -99,6 +109,16 @@ class WhosOnline extends Plugin
 
 		if ($online_list)
 			echo ' (' . sentence_list($online_list) . ')';
+
+		// With avatars
+		if ($parameters['show_avatars']) {
+			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whos_online['users_online']);
+
+			$whos_online['list_users_online'] = [];
+			foreach ($whos_online['users_online'] as $key => $user) {
+				$whos_online['list_users_online'][] = '<a href="' . $this->scripturl . '?action=profile;u=' . $user['id'] . '" title="' . $user['name'] . '">' . $users[$key] . '</a>';
+			}
+		}
 
 		echo '
 			<br>' . implode(', ', $whos_online['list_users_online']);
