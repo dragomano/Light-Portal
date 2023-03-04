@@ -80,7 +80,7 @@ class BootstrapIcons extends Plugin
 		$set['copyright']     = 'at';
 		$set['date']          = 'clock';
 		$set['design']        = 'fan';
-		$set['dislike']       = 'hand-thumbs-down';
+		$set['dislike']       = 'arrow-down';
 		$set['donate']        = 'currency-dollar';
 		$set['download']      = 'download';
 		$set['edit']          = 'pencil-square';
@@ -90,7 +90,7 @@ class BootstrapIcons extends Plugin
 		$set['image']         = 'image';
 		$set['import']        = 'file-arrow-up';
 		$set['italic']        = 'type-italic';
-		$set['like']          = 'hand-thumbs-up';
+		$set['like']          = 'arrow-up';
 		$set['link']          = 'link';
 		$set['main']          = 'card-list';
 		$set['map_signs']     = 'map';
