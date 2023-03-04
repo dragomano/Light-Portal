@@ -430,14 +430,6 @@ final class PageArea
 		);
 
 		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
@@ -455,7 +447,43 @@ final class PageArea
 			]
 		);
 
-		$this->context['lp_num_queries'] += 5;
+		$request = $this->smcFunc['db_query']('', '
+			SELECT id FROM {db_prefix}lp_comments
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$comments = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$comments[] = $row['id'];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries'] += 6;
+
+		if ($comments) {
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_ratings
+				WHERE content_type = {string:type}
+					AND content_id IN ({array_int:items})',
+				[
+					'type'  => 'comment',
+					'items' => $comments
+				]
+			);
+
+			$this->context['lp_num_queries'] += 2;
+		}
 
 		$this->hook('onPageRemoving', [$items]);
 	}

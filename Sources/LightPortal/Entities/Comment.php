@@ -354,6 +354,16 @@ final class Comment
 		);
 
 		$this->smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_ratings
+			WHERE content_type = {string:type}
+				AND content_id IN ({array_int:items})',
+			[
+				'type'  => 'comment',
+				'items' => $items
+			]
+		);
+
+		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}
@@ -388,7 +398,7 @@ final class Comment
 			]
 		);
 
-		$this->context['lp_num_queries'] += 4;
+		$this->context['lp_num_queries'] += 5;
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 

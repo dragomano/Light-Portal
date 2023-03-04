@@ -93,12 +93,39 @@ final class Maintainer extends SMF_BackgroundTask
 			]
 		);
 
-		$this->smcFunc['db_query']('', /** @lang text */ '
-			DELETE FROM {db_prefix}lp_comments
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 			[]
 		);
+
+		$comments = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$comments[] = $row['id'];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+
+		if ($comments) {
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_ratings
+				WHERE content_type = {string:type}
+					AND content_id IN ({array_int:items})',
+				[
+					'type'  => 'comment',
+					'items' => $comments
+				]
+			);
+		}
 	}
 
 	private function updateNumComments()
