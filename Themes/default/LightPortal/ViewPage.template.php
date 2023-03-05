@@ -338,23 +338,6 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 					<span class="reply_button" data-id="', $comment['id'], '" @click.self="replyForm = true; $nextTick(() => $refs.reply_message.focus())">', $context['lp_icon_set']['reply'], $txt['reply'], '</span>';
 		}
 
-		// Authors cannot vote their own comments
-		if (! empty($modSettings['lp_allow_comment_ratings']) && $comment['poster']['id'] !== $context['user']['id']) {
-			if (empty($comment['is_rated'])) {
-				echo '
-					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target)">', $context['lp_icon_set']['like'], $txt['lp_like_button'], '</span>
-					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'-\')">', $context['lp_icon_set']['dislike'], $txt['lp_dislike_button'], '</span>';
-			} else {
-				echo '
-					<span class="like_button" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'!\')">', $context['lp_icon_set']['unlike'], $txt['poll_change_vote'], '</span>';
-			}
-
-			if (! empty($comment['rating'])) {
-				echo '
-					<span class="amt">', $comment['rating'], '</span>&nbsp;';
-			}
-		}
-
 		// Only comment author can edit comments
 		if ($comment['can_edit'] && empty($comment['children']) && $comment['poster']['id'] === $context['user']['id']) {
 			echo '
@@ -367,6 +350,21 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 		if ($comment['poster']['id'] === $context['user']['id'] || $context['user']['is_admin']) {
 			echo '
 					<span class="remove_button floatright" data-id="', $comment['id'], '" data-level="', $level, '" @click.once="comment.remove($event.target)" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')">', $context['lp_icon_set']['remove'], $txt['remove'], '</span>';
+		}
+
+		// Authors cannot vote their own comments
+		if (! empty($modSettings['lp_allow_comment_ratings']) && $comment['poster']['id'] !== $context['user']['id']) {
+			if (empty($comment['is_rated'])) {
+				echo '
+					<span class="like_button floatright" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'-\')">', $context['lp_icon_set']['dislike'], $txt['lp_dislike_button'], '</span>
+					<span class="like_button floatright" data-id="', $comment['id'], '" @click.self="comment.like($event.target)" @mouseover="$event.target.classList.toggle(\'success\')" @mouseout="$event.target.classList.toggle(\'success\')">', $context['lp_icon_set']['like'], $txt['lp_like_button'], '</span>';
+			} else {
+				echo '
+					<span class="like_button floatright" data-id="', $comment['id'], '" @click.self="comment.like($event.target, \'!\')">', $context['lp_icon_set']['unlike'], $txt['poll_change_vote'], '</span>';
+			}
+
+			echo '
+					<strong class="amt floatright" style="margin-right: 1em">', $comment['rating'], '</strong>';
 		}
 
 		echo '
