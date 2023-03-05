@@ -24,11 +24,8 @@ final class Comment
 {
 	use Helper;
 
-	private string $alias;
-
-	public function __construct(string $alias = '')
+	public function __construct(private string $alias = '')
 	{
-		$this->alias = $alias;
 	}
 
 	public function prepare(): void
