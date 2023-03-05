@@ -111,7 +111,7 @@ class RecentComments extends Plugin
 
 			$comments[$row['id']] = array(
 				'link'        => LP_PAGE_URL . $row['alias'],
-				'message'     => $this->getShortenText($this->parseBbc($row['message']), 20),
+				'message'     => $this->getTeaser($this->parseBbc($row['message']), 20),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
 				'rating'      => (int) $row['rating'],
