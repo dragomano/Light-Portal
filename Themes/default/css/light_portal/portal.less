@@ -1382,6 +1382,26 @@ section {
 						padding: 6px 11px;
 					}
 
+					.rating_area {
+						border: 1px solid @color-light-gray;
+						.bradius(0, 0, 7px, 7px);
+						display: inline-block;
+						.valign(top);
+						padding: 6px 11px;
+						opacity: .8;
+
+						.rating_span {
+							float: right;
+							margin: 0 1.2em 0 1em;
+						}
+					}
+
+					@media screen and (max-width: 468px) {
+						.rating_area {
+							display: none;
+						}
+					}
+
 					.comment_date {
 						border: 1px solid @color-light-gray;
 						.bradius(0, 7px, 0, 7px);

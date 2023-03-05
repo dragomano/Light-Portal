@@ -164,8 +164,23 @@ class Comment {
 		this.selectContent(commentContent)
 	}
 
-	async like(target, operand = '+') {
+	async like(target) {
+		if (target.tagName !== 'I') return;
+
 		const item = target.dataset.id;
+		const action = target.dataset.action;
+		let operand;
+
+		switch (action) {
+			case 'like':
+				operand = '+';
+				break;
+			case 'dislike':
+				operand = '-';
+				break;
+			default:
+				operand = '!';
+		}
 
 		let response = await fetch(this.pageUrl + 'sa=like_comment', {
 			method: 'POST',
@@ -180,7 +195,7 @@ class Comment {
 
 		if (! response.ok) return console.error(response);
 
-		const likeButtons = document.querySelectorAll('#comment' + item + ' .like_button');
+		const likeButtons = target.parentNode.parentNode.querySelectorAll('.like_button');
 
 		likeButtons.forEach(function (el) {
 			el.style.display = 'none'
