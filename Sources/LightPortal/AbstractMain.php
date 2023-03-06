@@ -152,7 +152,7 @@ abstract class AbstractMain
 	 */
 	protected function showDebugInfo(): void
 	{
-		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']))
+		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']) || $this->request()->is('devtools'))
 			return;
 
 		$this->context['lp_load_page_stats'] = sprintf($this->txt['lp_load_page_stats'], round(microtime(true) - $this->context['lp_load_time'], 3), $this->context['lp_num_queries']);

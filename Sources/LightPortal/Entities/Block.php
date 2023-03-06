@@ -25,7 +25,7 @@ final class Block
 
 	public function show(): void
 	{
-		if ($this->isHideBlocksInAdmin())
+		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools'))
 			return;
 
 		if (empty($this->context['allow_light_portal_view']) || empty($this->context['template_layers']) || empty($this->context['lp_active_blocks']))
