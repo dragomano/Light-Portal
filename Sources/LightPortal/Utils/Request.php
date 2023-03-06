@@ -38,9 +38,9 @@ final class Request extends GlobalArray
 			$patterns = $patterns[0];
 		}
 
-	    if (in_array($this->storage['action'], $patterns, true)) {
-		    return true;
-	    }
+		if (in_array($this->storage['action'], $patterns, true)) {
+			return true;
+		}
 
 		return false;
 	}
