@@ -244,14 +244,7 @@ final class Integration extends AbstractMain
 				'icon'        => 'home',
 				'show'        => true,
 				'action_hook' => true,
-				'is_last'     => $this->context['right_to_left'],
-				'sub_buttons' => [
-					'pages'   => [
-						'title' => $this->txt['lp_page_moderation'],
-						'href'  => $this->scripturl . '?action=admin;area=lp_pages',
-						'show'  => $this->context['allow_light_portal_moderate_pages']
-					]
-				]
+				'is_last'     => $this->context['right_to_left']
 			],
 		], $buttons);
 
@@ -275,14 +268,7 @@ final class Integration extends AbstractMain
 						'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
 						'icon'        => 'im_on',
 						'show'        => true,
-						'action_hook' => true,
-						'sub_buttons' => [
-							'pages'   => [
-								'title' => $this->txt['lp_page_moderation'],
-								'href'  => $this->scripturl . '?action=admin;area=lp_pages',
-								'show'  => $this->context['allow_light_portal_moderate_pages']
-							]
-						]
+						'action_hook' => true
 					],
 				],
 				array_slice($buttons, 2, null, true)
