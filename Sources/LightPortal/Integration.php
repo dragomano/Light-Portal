@@ -231,6 +231,18 @@ final class Integration extends AbstractMain
 			);
 		}
 
+		if ($this->context['allow_light_portal_moderate_pages']) {
+			$buttons['moderate']['show'] = true;
+
+			$buttons['moderate']['sub_buttons'] = [
+				'lp_pages' => array(
+					'title' => $this->txt['lp_pages_manage'],
+					'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+					'show'  => true,
+				),
+			] + $buttons['moderate']['sub_buttons'];
+		}
+
 		$this->showDebugInfo();
 
 		if (empty($this->modSettings['lp_frontpage_mode']))
