@@ -646,24 +646,41 @@ final class PageArea
 
 		$this->prepareIconList();
 
-		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : [$this->context['user']['language'], $this->language];
+		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
+
+		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
+		$this->context['posting_fields']['title']['input']['tab']  = 'content';
+		$this->context['posting_fields']['title']['input']['html'] = '
+			<div>';
+
+		if (count($this->context['languages']) > 1) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
+
+			foreach ($this->context['languages'] as $lang) {
+				$this->context['posting_fields']['title']['input']['html'] .= '
+					<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
+			}
+
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				</nav>';
+		}
 
 		$i = 0;
 		foreach ($this->context['languages'] as $lang) {
-			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type'       => 'text',
-				'tab'        => 'content',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $i++,
-				],
-			];
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<div x-show="tab === \'' . $lang['filename'] . '\'">
+					<input
+						type="text"
+						name="title_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_page']['title'][$lang['filename']] ?? '') . '"
+						x-ref="title_' . $i++ . '"' . (in_array($lang['filename'], $languages) ? ' required' : '') . '
+					>
+				</div>';
 		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</div>';
 
 		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_page_type'];
 		$this->context['posting_fields']['type']['input'] = [
@@ -710,7 +727,6 @@ final class PageArea
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'style'     => 'width: 100%',
 				'x-ref'     => 'alias',
 			],
 		];

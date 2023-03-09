@@ -405,19 +405,37 @@ final class BlockArea
 
 		$this->prepareIconList();
 
-		foreach ($this->context['languages'] as $lang) {
-			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type'       => 'text',
-				'tab'        => 'content',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_block']['title'][$lang['filename']] ?? '',
-					'style'     => 'width: 100%',
-				],
-			];
+		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
+		$this->context['posting_fields']['title']['input']['tab']  = 'content';
+		$this->context['posting_fields']['title']['input']['html'] = '
+			<div>';
+
+		if (count($this->context['languages']) > 1) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
+
+			foreach ($this->context['languages'] as $lang) {
+				$this->context['posting_fields']['title']['input']['html'] .= '
+					<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
+			}
+
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				</nav>';
 		}
+
+		foreach ($this->context['languages'] as $lang) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<div x-show="tab === \'' . $lang['filename'] . '\'">
+					<input
+						type="text"
+						name="title_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_block']['title'][$lang['filename']] ?? '') . '"
+					>
+				</div>';
+		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</div>';
 
 		$this->context['posting_fields']['note']['label']['text'] = $this->txt['lp_block_note'];
 		$this->context['posting_fields']['note']['input'] = [
@@ -426,7 +444,6 @@ final class BlockArea
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['note'] ?? '',
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -471,7 +488,6 @@ final class BlockArea
 				'value'     => $this->context['lp_block']['areas'],
 				'required'  => true,
 				'pattern'   => self::AREAS_PATTERN,
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -493,7 +509,6 @@ final class BlockArea
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['title_style'],
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -509,7 +524,6 @@ final class BlockArea
 				'attributes' => [
 					'maxlength' => 255,
 					'value'     => $this->context['lp_block']['content_style'],
-					'style'     => 'width: 100%',
 				],
 			];
 		}
