@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 9.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -251,41 +251,43 @@ class Handler extends Plugin
 			'options' => [],
 		];
 
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'];
+		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'] . '</label>';
+		$this->context['posting_fields']['title']['input']['tab']  = 'content';
+		$this->context['posting_fields']['title']['input']['html'] = '
+			<div>';
 
-			if (count($this->context['languages']) > 1)
-				$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] .= ' [' . $lang['name'] . ']';
-
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type' => 'text',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_plugin']['title'][$lang['filename']] ?? '',
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $lang['filename']
-				],
-				'tab' => 'content'
-			];
-		}
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $this->txt['lp_page_description'];
-
-			if (count($this->context['languages']) > 1)
-				$this->context['posting_fields']['description_' . $lang['filename']]['label']['text'] .= ' [' . $lang['name'] . ']';
-
-			$this->context['posting_fields']['description_' . $lang['filename']]['input'] = [
-				'type' => 'text',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_plugin']['description'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%'
-				],
-				'tab' => 'content'
-			];
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
 		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</nav>';
+
+		foreach ($this->context['languages'] as $lang) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<div x-show="tab === \'' . $lang['filename'] . '\'">
+					<input
+						type="text"
+						name="title_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_plugin']['title'][$lang['filename']] ?? '') . '"
+						placeholder="' . $this->txt['lp_title'] . '"
+						x-ref="title_' . $lang['filename'] . '"
+					>
+					<input
+						type="text"
+						name="description_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"' . (in_array($lang['filename'], $languages) ? ' required' : '') . '
+						placeholder="' . $this->txt['lp_page_description'] . '"
+					>
+				</div>';
+		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</div>';
 
 		$this->context['posting_fields']['author']['label']['text'] = $this->txt['author'];
 		$this->context['posting_fields']['author']['input'] = [
@@ -294,7 +296,6 @@ class Handler extends Plugin
 				'maxlength' => 255,
 				'value'     => $this->context['lp_plugin']['author'],
 				'required'  => true,
-				'style'     => 'width: 100%'
 			],
 			'tab' => 'copyrights'
 		];

@@ -2,7 +2,7 @@
 
 function template_plugin_post()
 {
-	global $context, $txt, $settings;
+	global $context, $language, $txt, $settings;
 
 	if (! empty($context['lp_addon_dir_is_not_writable'])) {
 		echo '
@@ -32,7 +32,7 @@ function template_plugin_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }">
 		<div class="roundframe noup">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
