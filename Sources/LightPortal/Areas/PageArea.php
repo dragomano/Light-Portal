@@ -210,15 +210,6 @@ final class PageArea
 						'class' => 'centertext',
 					],
 				],
-				'mass' => [
-					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
-					],
-					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
-						'class' => 'centertext',
-					],
-				],
 			],
 			'form' => [
 				'name' => 'manage_pages',
@@ -246,20 +237,33 @@ final class PageArea
 							</div>
 						</div>',
 				],
-				[
-					'position' => 'below_table_data',
-					'value' => '
-						<select name="page_actions">
-							<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '
-							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
-							<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
-							<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
-						</select>
-						<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
-					'class' => 'floatright',
-				],
 			],
 		];
+
+		if ($this->context['user']['is_admin']) {
+			$listOptions['columns']['mass'] = [
+				'header' => [
+					'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
+				],
+				'data' => [
+					'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
+					'class' => 'centertext',
+				],
+			];
+
+			$listOptions['additional_rows'][] = [
+				'position' => 'below_table_data',
+				'value' => '
+					<select name="page_actions">
+						<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '
+						<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
+						<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
+						<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
+					</select>
+					<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
+				'class' => 'floatright',
+			];
+		}
 
 		$listOptions['title'] = '
 			<span class="floatright">
