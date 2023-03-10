@@ -45,7 +45,7 @@ final class PageArea
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_manage_' . ($this->context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
+			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_moderate_pages'] && $this->request()->has('u') === false ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
 
 		$this->doActions();
