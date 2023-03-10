@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -58,9 +58,9 @@ class HelloPortal extends Plugin
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . JavaScriptEscape($this->txt['previous_next_forward']) . ',
-				prevLabel: ' . JavaScriptEscape($this->txt['previous_next_back']) . ',
-				doneLabel: ' . JavaScriptEscape($this->txt['announce_done']) . ',
+				nextLabel: ' . $this->jsEscape($this->txt['previous_next_forward']) . ',
+				prevLabel: ' . $this->jsEscape($this->txt['previous_next_back']) . ',
+				doneLabel: ' . $this->jsEscape($this->txt['announce_done']) . ',
 				steps: [' . $steps . '],
 				showProgress: ' . (empty($this->context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
 				showButtons: ' . (empty($this->context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',

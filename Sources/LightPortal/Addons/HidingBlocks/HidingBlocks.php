@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -74,7 +74,7 @@ class HidingBlocks extends Plugin
 			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
 
 			if (in_array($bp, $current_breakpoints)) {
-				$items[] = JavaScriptEscape($bp);
+				$items[] = $this->jsEscape($bp);
 			}
 		}
 

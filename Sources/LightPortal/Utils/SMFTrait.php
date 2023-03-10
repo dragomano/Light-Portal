@@ -313,6 +313,11 @@ trait SMFTrait
 		return (int) logAction($action, $extra);
 	}
 
+	protected function jsEscape(string $string, bool $as_json = false): string
+	{
+		return JavaScriptEscape($string, $as_json);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *

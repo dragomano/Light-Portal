@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -65,7 +65,7 @@ class LanguageAccess extends Plugin
 			$data[] = '{label: "' . $lang['name'] . '", value: "' . $lang['filename'] . '"}';
 
 			if (in_array($lang['filename'], $current_languages)) {
-				$items[] = JavaScriptEscape($lang['filename']);
+				$items[] = $this->jsEscape($lang['filename']);
 			}
 		}
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -324,7 +324,7 @@ class AdsBlock extends Plugin
 
 			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
-			$(' . JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
+			$(' . $this->jsEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
 		}
 
@@ -343,7 +343,7 @@ class AdsBlock extends Plugin
 
 			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
-			$("#quickModForm").append(' . JavaScriptEscape($after_last_post) . ');
+			$("#quickModForm").append(' . $this->jsEscape($after_last_post) . ');
 		});', true);
 		}
 	}
