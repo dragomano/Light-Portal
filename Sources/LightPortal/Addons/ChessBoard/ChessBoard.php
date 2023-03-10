@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 9.03.23
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\ChessBoard;

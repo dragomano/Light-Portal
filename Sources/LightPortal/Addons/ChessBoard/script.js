@@ -12,18 +12,22 @@ class ChessboardMaker {
 		this.makeBestMove     = this.makeBestMove.bind(this)
 		this.getBestMove      = this.getBestMove.bind(this)
 		this.onDragStart      = this.onDragStart.bind(this)
+		this.onTouchSquare    = this.onTouchSquare.bind(this)
 		this.onDrop           = this.onDrop.bind(this)
 		this.onSnapEnd        = this.onSnapEnd.bind(this)
 
 		this.config = {
-			draggable  : true,
-			position   : 'start',
-			onDragStart: this.onDragStart,
-			onDrop     : this.onDrop,
-			onSnapEnd  : this.onSnapEnd
+			draggable    : true,
+			position     : 'start',
+			onDragStart  : this.onDragStart,
+			onTouchSquare: this.onTouchSquare,
+			onDrop       : this.onDrop,
+			onSnapEnd    : this.onSnapEnd
 		}
 
 		this.board = Chessboard2('chessBoard' + block_id, this.config)
+
+		this.pendingMove = null
 	}
 
 	minimaxRoot(depth, isMaximisingPlayer) {
@@ -214,6 +218,38 @@ class ChessboardMaker {
 		}
 	}
 
+	onTouchSquare(square, piece) {
+		const legalMoves = this.game.moves({ square, verbose: true })
+
+		if (! this.pendingMove && legalMoves.length > 0) {
+			this.pendingMove = square
+
+			legalMoves.forEach(move => this.board.addCircle(move.to))
+		} else if (this.pendingMove && this.pendingMove === square) {
+			this.pendingMove = null
+			this.board.clearCircles()
+		} else if (this.pendingMove) {
+			const moveResult = this.game.move({
+				from: this.pendingMove,
+				to: square,
+				promotion: 'q'
+			})
+
+			if (moveResult) {
+				this.board.clearCircles()
+				this.board.position(this.game.fen()).then(() => window.setTimeout(this.makeBestMove, 250))
+			} else if (piece) {
+				this.pendingMove = square
+				this.board.clearCircles()
+
+				legalMoves.forEach(m => this.board.addCircle(m.to))
+			} else {
+				this.pendingMove = null
+				this.board.clearCircles()
+			}
+		}
+	}
+
 	makeBestMove() {
 		this.game.move(this.getBestMove())
 		this.board.position(this.game.fen())
@@ -222,6 +258,8 @@ class ChessboardMaker {
 	getBestMove() {
 		if (this.game.game_over()) {
 			alert(gameOver)
+
+			return this.game.reset()
 		}
 
 		const depth = document.getElementById("depth" + this.id).value;
@@ -235,6 +273,9 @@ class ChessboardMaker {
 			to: dropEvt.target,
 			promotion: 'q'
 		})
+
+		this.board.clearCircles()
+		this.pendingMove = null
 
 		if (move === null) {
 			return 'snapback'
