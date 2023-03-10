@@ -380,10 +380,11 @@ final class PageArea
 		$this->prepareForumLanguages();
 
 		if ($this->request()->has('remove')) {
-			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id'])
-				logAction('remove_lp_page', [
+			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id']) {
+				$this->logAction('remove_lp_page', [
 					'page' => $this->context['lp_current_page']['title'][$this->user_info['language']]
 				]);
+			}
 
 			$this->remove([$item]);
 

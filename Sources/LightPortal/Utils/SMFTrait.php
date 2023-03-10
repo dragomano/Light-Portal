@@ -308,6 +308,11 @@ trait SMFTrait
 		return constructPageIndex($base_url, $start, $max_value, $num_per_page);
 	}
 
+	protected function logAction(string $action, array $extra = []): int
+	{
+		return (int) logAction($action, $extra);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *
