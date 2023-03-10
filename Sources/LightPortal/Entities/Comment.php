@@ -95,14 +95,20 @@ final class Comment
 
 	public function getAll(int $page_id = 0): array
 	{
+		$sorts = [
+			'com.created_at',
+			'com.created_at DESC',
+			'CASE WHEN rating < 0 THEN -1 WHEN rating > 0 THEN 1 ELSE 0 END DESC',
+		];
+
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name,
 				(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating,
 				(SELECT COUNT(r.id) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id AND r.user_id = {int:user}) AS is_rated
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
-			WHERE com.page_id = {int:id}' : '') . (empty($this->modSettings['lp_comment_sorting']) ? '' : '
-			ORDER BY com.created_at DESC'),
+			WHERE com.page_id = {int:id}' : '') . '
+			ORDER BY ' . $sorts[$this->modSettings['lp_comment_sorting'] ?? 0],
 			[
 				'id'   => $page_id,
 				'user' => $this->context['user']['id']
