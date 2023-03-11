@@ -323,6 +323,11 @@ trait SMFTrait
 		return sentence_list($list);
 	}
 
+	protected function chmod(string $file): bool
+	{
+		return smf_chmod($file);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *
