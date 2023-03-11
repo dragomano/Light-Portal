@@ -328,6 +328,11 @@ trait SMFTrait
 		return smf_chmod($file);
 	}
 
+	protected function memoryReturnBytes(string $val): int
+	{
+		return memoryReturnBytes($val);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *
