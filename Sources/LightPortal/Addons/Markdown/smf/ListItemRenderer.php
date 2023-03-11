@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.10.21
+ * @version 11.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown\Smf;
@@ -21,6 +21,7 @@ use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Xml\XmlNodeRendererInterface;
 use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
 use League\CommonMark\Extension\TaskList\TaskListItemMarker;
+use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Util\HtmlElement;
