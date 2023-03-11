@@ -1105,11 +1105,6 @@ section #display_head span {
   float: right;
   margin: 0 1.2em 0 1em;
 }
-@media screen and (max-width: 468px) {
-  .comment_list li .comment_wrapper .entry .title .rating_area {
-    display: none;
-  }
-}
 .comment_list li .comment_wrapper .entry .title .comment_date {
   border: 1px solid #ddd;
   border-top-left-radius: 0;
@@ -1120,6 +1115,12 @@ section #display_head span {
   vertical-align: top;
   padding: 6px 11px;
   opacity: 0.8;
+}
+@media screen and (max-width: 468px) {
+  .comment_list li .comment_wrapper .entry .title .rating_area,
+  .comment_list li .comment_wrapper .entry .title .comment_date span a {
+    display: none;
+  }
 }
 .comment_list li .comment_wrapper .entry .content {
   padding: 0 14px;
