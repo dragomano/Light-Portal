@@ -318,6 +318,11 @@ trait SMFTrait
 		return JavaScriptEscape($string, $as_json);
 	}
 
+	protected function sentenceList(array $list): string
+	{
+		return sentence_list($list);
+	}
+
 	/**
 	 * Get a list of all used classes for blocks with a header
 	 *

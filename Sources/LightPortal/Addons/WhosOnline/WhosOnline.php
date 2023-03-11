@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 11.03.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -108,7 +108,7 @@ class WhosOnline extends Plugin
 			$online_list[] = $this->translate('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
 		if ($online_list)
-			echo ' (' . sentence_list($online_list) . ')';
+			echo ' (' . $this->sentenceList($online_list) . ')';
 
 		// With avatars
 		if ($parameters['show_avatars']) {
