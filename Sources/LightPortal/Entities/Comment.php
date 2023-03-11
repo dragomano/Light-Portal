@@ -24,9 +24,7 @@ final class Comment
 {
 	use Helper;
 
-	public function __construct(private string $alias = '')
-	{
-	}
+	public function __construct(private string $alias = '') {}
 
 	public function prepare(): void
 	{
@@ -132,6 +130,7 @@ final class Comment
 				'created_at'   => (int) $row['created_at'],
 				'rating'       => (int) $row['rating'],
 				'is_rated'     => (bool) $row['is_rated'],
+				'can_rate'     => $row['author_id'] != $this->context['user']['id'] && empty($this->context['user']['is_guest']),
 				'rating_class' => empty($this->modSettings['lp_allow_comment_ratings']) ? '' : ($row['rating'] && $row['rating'] <= -10 ? 'negative' : ($row['rating'] >= 10 ? 'positive' : '')),
 				'can_edit'     => $this->isCanEdit((int) $row['created_at'])
 			];

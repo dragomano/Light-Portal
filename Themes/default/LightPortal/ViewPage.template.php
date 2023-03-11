@@ -321,26 +321,29 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 					</span>';
 
 	// Authors cannot vote their own comments
-	if (! empty($modSettings['lp_allow_comment_ratings']) && $comment['poster']['id'] !== $context['user']['id']) {
+	if (! empty($modSettings['lp_allow_comment_ratings'])) {
 		echo '
-					<div class="rating_area bg ', $i % 2 == 0 ? 'even' : 'odd', '" @click="comment.like($event.target)">';
+					<div class="rating_area bg ', $i % 2 == 0 ? 'even' : 'odd', '"', $comment['can_rate'] ? ' @click="comment.like($event.target)"' : '', '>';
 
 		if (empty($comment['is_rated'])) {
-			echo '
+			if ($comment['can_rate'])
+				echo '
 						<span class="like_button floatright" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')">
 							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="dislike" title="' . $txt['lp_dislike_button'] . '" class="', $context['lp_icon_set']['dislike']), '
 						</span>';
 
 			show_rating($comment);
 
-			echo '
+			if ($comment['can_rate'])
+				echo '
 						<span class="like_button floatright" @mouseover="$event.target.classList.toggle(\'success\')" @mouseout="$event.target.classList.toggle(\'success\')">
 							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="like" title="' . $txt['lp_like_button'] . '" class="', $context['lp_icon_set']['like']), '
 						</span>';
 		} else {
 			show_rating($comment);
 
-			echo '
+			if ($comment['can_rate'])
+				echo '
 						<span class="like_button floatright">
 							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="unlike" title="' . $txt['poll_change_vote'] . '" class="', $context['lp_icon_set']['unlike']), '
 						</span>';
