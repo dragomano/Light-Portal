@@ -450,10 +450,10 @@ trait Helper
 	public function getPredefinedConstant(string $type): int
 	{
 		return match ($type) {
-			'full' => IntlDateFormatter::FULL,
-			'long' => IntlDateFormatter::LONG,
+			'full'   => IntlDateFormatter::FULL,
+			'long'   => IntlDateFormatter::LONG,
 			'medium' => IntlDateFormatter::MEDIUM,
-			default => IntlDateFormatter::NONE,
+			default  => IntlDateFormatter::NONE,
 		};
 	}
 

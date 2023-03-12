@@ -93,10 +93,10 @@ class CodeMirror extends Plugin
 
 		$mode = match ($current_mode) {
 			'markdown' => '"text/x-markdown"',
-			'php' => '"text/x-php"',
-			'pug' => '"text/x-pug"',
-			'twig' => '{name: "twig", base: "text/html"}',
-			default => '"text/html"',
+			'php'      => '"text/x-php"',
+			'pug'      => '"text/x-pug"',
+			'twig'     => '{name: "twig", base: "text/html"}',
+			default    => '"text/html"',
 		};
 
 		$this->addInlineJavaScript('

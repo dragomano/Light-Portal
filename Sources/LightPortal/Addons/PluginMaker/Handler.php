@@ -684,7 +684,7 @@ class Handler extends Plugin
 	private function getDefaultValue(array $option): string
 	{
 		$default = match ($option['type']) {
-			'int' => (int) $option['default'],
+			'int'   => (int) $option['default'],
 			'float' => (float) $option['default'],
 			default => $option['default'],
 		};
