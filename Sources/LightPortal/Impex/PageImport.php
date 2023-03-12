@@ -111,6 +111,20 @@ final class PageImport extends AbstractImport
 						}
 					}
 
+					if ($item->ratings) {
+						foreach ($item->ratings as $rating) {
+							foreach ($rating as $v) {
+								$ratings[] = [
+									'id'           => intval($v['id']),
+									'value'        => intval($v['value']),
+									'content_type' => 'comment',
+									'content_id'   => intval($v['content_id']),
+									'user_id'      => intval($v['user_id'])
+								];
+							}
+						}
+					}
+
 					if ($item->params) {
 						foreach ($item->params as $param) {
 							foreach ($param as $k => $v) {
@@ -219,6 +233,29 @@ final class PageImport extends AbstractImport
 					],
 					$comments[$i],
 					['id', 'page_id'],
+					2
+				);
+
+				$this->context['lp_num_queries']++;
+			}
+		}
+
+		if ($ratings && $results) {
+			$ratings = array_chunk($ratings, 100);
+			$count   = sizeof($ratings);
+
+			for ($i = 0; $i < $count; $i++) {
+				$results = $this->smcFunc['db_insert']('replace',
+					'{db_prefix}lp_ratings',
+					[
+						'id'           => 'int',
+						'value'        => 'int',
+						'content_type' => 'string',
+						'content_id'   => 'int',
+						'user_id'      => 'int'
+					],
+					$ratings[$i],
+					['id'],
 					2
 				);
 
