@@ -89,9 +89,9 @@ trait SMFTrait
 		loadLanguage($language);
 	}
 
-	protected function fatalLangError(string $error, $log = 'general', $sprintf = [], $status = 403): void
+	protected function fatalLangError(string $error, $status = 403): void
 	{
-		fatal_lang_error($error, $log, $sprintf, $status);
+		fatal_lang_error($error, false, null, $status);
 	}
 
 	protected function fatalError(string $message): void

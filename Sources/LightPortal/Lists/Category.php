@@ -31,7 +31,7 @@ final class Category extends AbstractPageList
 		if (array_key_exists($this->context['lp_category'], $this->getAllCategories()) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
 			$this->txt['back'] = $this->txt['lp_all_categories'];
-			$this->fatalLangError('lp_category_not_found', false, null, 404);
+			$this->fatalLangError('lp_category_not_found', 404);
 		}
 
 		if (empty($this->context['lp_category'])) {

@@ -121,7 +121,7 @@ final class BlockArea
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
 		if (empty($item))
-			$this->fatalLangError('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', 404);
 
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -138,7 +138,7 @@ final class BlockArea
 		$this->context['current_block'] = $this->repository->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			$this->fatalLangError('lp_block_not_editable', false);
+			$this->fatalLangError('lp_block_not_editable');
 
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);

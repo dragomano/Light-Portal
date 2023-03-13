@@ -104,7 +104,7 @@ abstract class AbstractImport implements ImportInterface
 	{
 		if (empty($results)) {
 			$this->smcFunc['db_transaction']('rollback');
-			$this->fatalLangError('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed');
 		}
 
 		$this->smcFunc['db_transaction']('commit');

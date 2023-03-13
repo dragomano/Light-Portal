@@ -76,7 +76,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		}
 
 		if (empty($results))
-			$this->fatalLangError('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed');
 
 		if ($titles) {
 			$titles = array_chunk($titles, 100);

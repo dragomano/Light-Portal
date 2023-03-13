@@ -46,17 +46,17 @@ final class Page
 
 		if (empty($this->context['lp_page'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
 		if (empty($this->context['lp_page']['can_view'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('cannot_light_portal_view_page', false);
+			$this->fatalLangError('cannot_light_portal_view_page');
 		}
 
 		if (empty($this->context['lp_page']['status']) && empty($this->context['lp_page']['can_edit'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_activated', false);
+			$this->fatalLangError('lp_page_not_activated');
 		}
 
 		if ($this->context['lp_page']['created_at'] > time())

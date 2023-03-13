@@ -109,7 +109,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		}
 
 		if (empty($results))
-			$this->fatalLangError('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed');
 
 		// Restore the cache
 		$this->db_cache = $this->tempCache;

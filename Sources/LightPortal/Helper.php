@@ -329,11 +329,11 @@ trait Helper
 
 		$filter = match ($type) {
 			'string' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'int' => FILTER_VALIDATE_INT,
-			'float' => FILTER_VALIDATE_FLOAT,
-			'bool' => FILTER_VALIDATE_BOOLEAN,
-			'url' => FILTER_VALIDATE_URL,
-			default => FILTER_DEFAULT,
+			'int'    => FILTER_VALIDATE_INT,
+			'float'  => FILTER_VALIDATE_FLOAT,
+			'bool'   => FILTER_VALIDATE_BOOLEAN,
+			'url'    => FILTER_VALIDATE_URL,
+			default  => FILTER_DEFAULT,
 		};
 
 		return filter_var($key, $filter);
@@ -390,7 +390,7 @@ trait Helper
 					return $this->getLocalDate($timestamp, 'medium');
 
 				// Other future date
-				return $this->getLocalDate($timestamp, 'long', 'none');
+				return $this->getLocalDate($timestamp, timeType: 'none');
 			}
 
 			// like "In n hours"

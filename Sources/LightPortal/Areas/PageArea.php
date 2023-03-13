@@ -76,14 +76,14 @@ final class PageArea
 			(
 				$this->request()->has('u') ? 'WHERE p.author_id = {int:user_id}' : 'WHERE 1=1'
 			) . (
-				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'
+				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
-				$this->isModArea() ? ' AND p.status = {int:status}' : ($this->request()->has('u') ? '' : ' AND p.status != {int:status}')
+				$this->request()->has('u') ? '' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
 			),
 			[
-				'user_id'             => $this->user_info['id'],
-				'quick_search_string' => $this->smcFunc['strtolower']($search_params['string']),
-				'status'              => 2
+				'user_id' => $this->user_info['id'],
+				'search'  => $this->smcFunc['strtolower']($search_params['string']),
+				'status'  => 2
 			],
 		];
 
@@ -381,7 +381,7 @@ final class PageArea
 		$item = (int) $this->request('id');
 
 		if (empty($item)) {
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
 		$this->loadTemplate('LightPortal/ManagePages');
@@ -396,10 +396,10 @@ final class PageArea
 		$this->context['lp_current_page'] = (new Page)->getDataByItem($item);
 
 		if (empty($this->context['lp_current_page']))
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 
 		if ($this->context['lp_current_page']['can_edit'] === false)
-			$this->fatalLangError('lp_page_not_editable', false);
+			$this->fatalLangError('lp_page_not_editable');
 
 		$this->prepareForumLanguages();
 

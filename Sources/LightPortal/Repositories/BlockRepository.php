@@ -79,7 +79,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty($this->smcFunc['db_num_rows']($request))) {
 			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
 
-			$this->fatalLangError('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', 404);
 		}
 
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
