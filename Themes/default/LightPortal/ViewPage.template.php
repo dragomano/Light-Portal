@@ -323,7 +323,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	// Authors cannot vote their own comments
 	if (! empty($modSettings['lp_allow_comment_ratings'])) {
 		echo '
-					<div class="rating_area bg ', $i % 2 == 0 ? 'even' : 'odd', '"', $comment['can_rate'] ? ' @click="comment.like($event.target)"' : '', '>';
+					<div class="rating_area bg ', $i % 2 == 0 ? 'even' : 'odd', '"', $comment['can_rate'] ? ' @click="comment.like($event.target)"' : '', ' x-show="', $comment['poster']['id'] === $context['user']['id'] ? 'false' : 'true', '">';
 
 		if (empty($comment['is_rated'])) {
 			if ($comment['can_rate'])
@@ -332,7 +332,8 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="dislike" title="' . $txt['lp_dislike_button'] . '" class="', $context['lp_icon_set']['dislike']), '
 						</span>';
 
-			show_rating($comment);
+			if ($comment['poster']['id'] !== $context['user']['id'])
+				show_rating($comment);
 
 			if ($comment['can_rate'])
 				echo '
