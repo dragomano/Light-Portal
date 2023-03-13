@@ -228,6 +228,8 @@ final class Comment
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => $this->getFriendlyTime($time),
 				'raw_message' => $this->unPreparseCode($message),
+				'rating'      => 0,
+				'can_rate'    => false,
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
