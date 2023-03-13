@@ -713,7 +713,11 @@ final class PageArea
 
 			foreach ($this->context['languages'] as $lang) {
 				$this->context['posting_fields']['title']['input']['html'] .= '
-					<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
+					<a
+						class="button floatnone"
+						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
+						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
+					>' . $lang['name'] . '</a>';
 			}
 
 			$this->context['posting_fields']['title']['input']['html'] .= '
@@ -728,7 +732,7 @@ final class PageArea
 						type="text"
 						name="title_' . $lang['filename'] . '"
 						value="' . ($this->context['lp_page']['title'][$lang['filename']] ?? '') . '"
-						x-ref="title_' . $i++ . '"' . (in_array($lang['filename'], $languages) ? ' required' : '') . '
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '" required' : '') . '
 					>
 				</div>';
 		}

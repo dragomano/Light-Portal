@@ -405,6 +405,8 @@ final class BlockArea
 
 		$this->prepareIconList();
 
+		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
+
 		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
 		$this->context['posting_fields']['title']['input']['tab']  = 'content';
 		$this->context['posting_fields']['title']['input']['html'] = '
@@ -416,13 +418,18 @@ final class BlockArea
 
 			foreach ($this->context['languages'] as $lang) {
 				$this->context['posting_fields']['title']['input']['html'] .= '
-					<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
+					<a
+						class="button floatnone"
+						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
+						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
+					>' . $lang['name'] . '</a>';
 			}
 
 			$this->context['posting_fields']['title']['input']['html'] .= '
 				</nav>';
 		}
 
+		$i = 0;
 		foreach ($this->context['languages'] as $lang) {
 			$this->context['posting_fields']['title']['input']['html'] .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
@@ -430,6 +437,7 @@ final class BlockArea
 						type="text"
 						name="title_' . $lang['filename'] . '"
 						value="' . ($this->context['lp_block']['title'][$lang['filename']] ?? '') . '"
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '"' : '') . '
 					>
 				</div>';
 		}

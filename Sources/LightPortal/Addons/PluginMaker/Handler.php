@@ -261,12 +261,17 @@ class Handler extends Plugin
 
 		foreach ($this->context['languages'] as $lang) {
 			$this->context['posting_fields']['title']['input']['html'] .= '
-				<a class="button floatnone" :class="{ \'active\': tab === \'' . $lang['filename'] . '\' }" @click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'">' . $lang['name'] . '</a>';
+				<a
+					class="button floatnone"
+					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
+					@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $lang['filename'] . ']\').focus() }, 50); });"
+				>' . $lang['name'] . '</a>';
 		}
 
 		$this->context['posting_fields']['title']['input']['html'] .= '
 			</nav>';
 
+		$i = count($languages) - 1;
 		foreach ($this->context['languages'] as $lang) {
 			$this->context['posting_fields']['title']['input']['html'] .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
@@ -275,13 +280,13 @@ class Handler extends Plugin
 						name="title_' . $lang['filename'] . '"
 						value="' . ($this->context['lp_plugin']['title'][$lang['filename']] ?? '') . '"
 						placeholder="' . $this->txt['lp_title'] . '"
-						x-ref="title_' . $lang['filename'] . '"
 					>
 					<input
 						type="text"
 						name="description_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"' . (in_array($lang['filename'], $languages) ? ' required' : '') . '
+						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"
 						placeholder="' . $this->txt['lp_page_description'] . '"
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '" required' : '') . '
 					>
 				</div>';
 		}
