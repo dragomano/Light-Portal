@@ -152,7 +152,7 @@ final class Comment
 		return $time_to_change && time() - $date <= $time_to_change * 60;
 	}
 
-	#[NoReturn] private function add(): void
+	private function add(): void
 	{
 		$result['error'] = true;
 
@@ -240,16 +240,24 @@ final class Comment
 				'parent'      => $parent,
 				'comment'     => $comment,
 				'created'     => $time,
-				'title'       => $this->txt['response_prefix'] . $this->context['page_title'],
+				'title'       => $this->context['page_title'],
 				'alias'       => $this->alias,
 				'page_url'    => $page_url,
 				'start'       => $start,
-				'commentator' => $commentator
+				'commentator' => $commentator,
+			];
+
+			$notifyOptions = [
+				'item'      => $item,
+				'time'      => $time,
+				'author_id' => empty($parent) ? $this->context['lp_page']['author_id'] : $commentator,
+				'title'     => $this->context['page_title'],
+				'url'       => $page_url . 'start=' . $start . '#comment' . $item,
 			];
 
 			empty($parent)
-				? $this->makeNotify('new_comment', 'page_comment', $result)
-				: $this->makeNotify('new_reply', 'page_comment_reply', $result);
+				? $this->makeNotify('new_comment', 'page_comment', $notifyOptions)
+				: $this->makeNotify('new_reply', 'page_comment_reply', $notifyOptions);
 
 			$this->cache()->forget('page_' . $this->alias . '_comments');
 		}
@@ -257,7 +265,7 @@ final class Comment
 		exit(json_encode($result));
 	}
 
-	#[NoReturn] private function edit(): void
+	private function edit(): void
 	{
 		$data = $this->request()->json();
 
@@ -408,48 +416,6 @@ final class Comment
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
 		exit;
-	}
-
-	/**
-	 * Creating a background task to notify subscribers of new comments
-	 *
-	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
-	 */
-	private function makeNotify(string $type, string $action, array $options = []): void
-	{
-		if (empty($options))
-			return;
-
-		$this->smcFunc['db_insert']('',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			],
-			[
-				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\Bugo\LightPortal\Tasks\Notifier',
-				'task_data'  => $this->smcFunc['json_encode']([
-					'time'           => $options['created'],
-					'sender_id'	     => $this->user_info['id'],
-					'sender_name'    => $this->user_info['name'],
-					'author_id'      => $this->context['lp_page']['author_id'],
-					'commentator_id' => $options['commentator'],
-					'content_type'   => $type,
-					'content_id'     => $options['item'],
-					'content_action' => $action,
-					'extra'          => $this->smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item'],
-						'sender_gender'   => strtolower($this->user_profile[$this->user_info['id']]['options']['cust_gender'] ?? 'male')
-					])
-				]),
-			],
-			['id_task']
-		);
-
-		$this->context['lp_num_queries']++;
 	}
 
 	private function getTree(array $data): array

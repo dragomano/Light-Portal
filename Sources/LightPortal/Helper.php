@@ -463,4 +463,49 @@ trait Helper
 
 		return $value['src'] ??= '';
 	}
+
+	public function makeNotify(string $type, string $action, array $options = []): void
+	{
+		if (empty($options))
+			return;
+
+		$this->smcFunc['db_insert']('',
+			'{db_prefix}background_tasks',
+			[
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
+			],
+			[
+				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
+				'task_class' => '\Bugo\LightPortal\Tasks\Notifier',
+				'task_data'  => $this->smcFunc['json_encode']([
+					'time'              => $options['time'],
+					'sender_id'	        => $this->user_info['id'],
+					'sender_name'       => $this->user_info['name'],
+					'content_author_id' => $options['author_id'],
+					'content_type'      => $type,
+					'content_id'        => $options['item'],
+					'content_action'    => $action,
+					'extra'             => $this->smcFunc['json_encode']([
+						'content_subject' => $options['title'],
+						'content_link'    => $options['url'],
+						'sender_gender'   => $this->getUserGender()
+					], JSON_UNESCAPED_SLASHES)
+				]),
+			],
+			['id_task']
+		);
+
+		$this->context['lp_num_queries']++;
+	}
+
+	public function getUserGender(): string
+	{
+		return empty($this->user_profile[$this->user_info['id']]) ? 'male' : (
+			isset($this->user_profile[$this->user_info['id']]['options'])
+				&& isset($this->user_profile[$this->user_info['id']]['options']['cust_gender'])
+				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
+		);
+	}
 }

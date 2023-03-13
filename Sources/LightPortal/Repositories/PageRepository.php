@@ -164,6 +164,18 @@ final class PageRepository extends AbstractRepository
 
 		$this->smcFunc['db_transaction']('commit');
 
+		// Notify page moderators about new page
+		$options = [
+			'item'      => $item,
+			'time'      => $this->getPublishTime(),
+			'author_id' => $this->context['lp_page']['page_author'],
+			'title'     => $this->context['lp_page']['title'][$this->user_info['language']] ?? $this->context['lp_page']['title'][$this->language],
+			'url'       => LP_PAGE_URL . $this->context['lp_page']['alias']
+		];
+
+		if (empty($this->context['allow_light_portal_moderate_pages']))
+			$this->makeNotify('new_page', 'page_unapproved', $options);
+
 		return $item;
 	}
 

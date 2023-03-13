@@ -86,6 +86,15 @@ final class Integration extends AbstractMain
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 	}
 
+	public function getPreferenceType($type)
+	{
+		return match ($type) {
+			'new_comment' => 'page_comment',
+			'new_reply'   => 'page_comment_reply',
+			default       => 'page_unapproved'
+		};
+	}
+
 	public function loadTheme()
 	{
 		if ($this->isPortalCanBeLoaded() === false)
@@ -391,32 +400,42 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_alert_types
 	 */
-	public function alertTypes(array &$alert_types)
+	public function alertTypes(array &$types)
 	{
-		if (empty($this->modSettings['lp_show_comment_block']))
-			return;
+		$this->txt['alert_group_light_portal'] = $this->txt['lp_portal'];
 
-		$this->txt['alert_group_light_portal'] = LP_NAME;
-
-		if ($this->modSettings['lp_show_comment_block'] === 'default')
-			$alert_types['light_portal'] = [
+		if (! empty($this->modSettings['lp_show_comment_block']) ?? $this->modSettings['lp_show_comment_block'] === 'default')
+			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
 					'email' => 'never',
-					'permission' => ['name' => 'light_portal_manage_own_pages', 'is_board' => false]
+					'permission' => [
+						'name'     => 'light_portal_manage_own_pages',
+						'is_board' => false
+					]
 				],
 				'page_comment_reply' => [
 					'alert' => 'yes',
 					'email' => 'never',
-					'permission' => ['name' => 'light_portal_view', 'is_board' => false]
+					'permission' => [
+						'name'     => 'light_portal_view',
+						'is_board' => false
+					]
 				]
 			];
+
+		$types['light_portal']['page_unapproved'] = [
+			'alert' => 'yes',
+			'email' => 'yes',
+			'permission' => [
+				'name'     => 'light_portal_moderate_pages',
+				'is_board' => false
+			]
+		];
 	}
 
 	/**
-	 * Adding a notification about new comments
-	 *
-	 * Добавляем оповещение о новых комментариях
+	 * @hook integrate_fetch_alerts
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
@@ -424,14 +443,14 @@ final class Integration extends AbstractMain
 			return;
 
 		foreach ($alerts as $id => $alert) {
-			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply'])) {
+			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
 				if ($alert['sender_id'] !== $this->user_info['id']) {
-					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on') . '"></span>';
+					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_unapproved' ? 'news' : ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on')) . '"></span>';
 					$alerts[$id]['text'] = $this->translate('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
 
 					$substitutions = [
 						'{member_link}' => $alert['sender_id'] && $alert['show_links'] ? '<a href="' . $this->scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
-						'{content_subject}' => $alert['extra']['content_subject']
+						'{content_subject}' => '(' . $alert['extra']['content_subject'] . ')'
 					];
 
 					$alerts[$id]['text'] = strtr($alerts[$id]['text'], $substitutions);

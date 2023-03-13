@@ -284,20 +284,6 @@ trait SMFTrait
 		return getBoardList($options);
 	}
 
-	protected function membersAllowedTo(string $permission): array
-	{
-		require_once $this->sourcedir . '/Subs-Members.php';
-
-		return membersAllowedTo($permission);
-	}
-
-	protected function getNotifyPrefs(array $members, string $prefs = ''): array
-	{
-		require_once $this->sourcedir . '/Subs-Notify.php';
-
-		return getNotifyPrefs($members, $prefs, true);
-	}
-
 	protected function updateMemberData(array $members, array $data): void
 	{
 		updateMemberData($members, $data);

@@ -300,7 +300,7 @@ $txt['lp_comment_placeholder'] = 'Leave a comment...';
 $txt['lp_like_button'] = 'Like';
 $txt['lp_dislike_button'] = 'Dislike';
 
-// Comment alerts
+// Alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';
 $txt['alert_new_comment_page_comment'] = '{gender, select,
 	female {{member_link} left a comment {content_subject}}
@@ -313,6 +313,21 @@ $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
 	male   {{member_link} left a reply to your comment {content_subject}}
 	other  {{member_link} left a reply to your comment {content_subject}}
 }';
+$txt['alert_page_unapproved'] = 'When a new unapproved page appears';
+$txt['alert_new_page_unapproved'] = '{gender, select,
+	female {{member_link} created a page {content_subject}}
+	male   {{member_link} created a page {content_subject}}
+	other  {{member_link} created a page {content_subject}}
+}';
+
+// Emails
+$txt['page_unapproved_subject'] = 'New page from {MEMBERNAME}';
+$txt['page_unapproved_body'] = 'There is a new page from {MEMBERNAME} on the portal, check it out.
+
+Member: {PROFILELINK}
+Page: {PAGELINK}
+
+{REGARDS}';
 
 // Errors
 $txt['lp_page_not_found'] = 'Page not found!';
