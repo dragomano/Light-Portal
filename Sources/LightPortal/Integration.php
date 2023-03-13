@@ -235,11 +235,12 @@ final class Integration extends AbstractMain
 			$buttons['moderate']['show'] = true;
 
 			$buttons['moderate']['sub_buttons'] = [
-				'lp_pages' => array(
-					'title' => $this->txt['lp_pages_manage'],
-					'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+				'lp_pages' => [
+					'title' => $this->txt['lp_pages_unapproved'],
+					'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+					'amt'   => $this->context['lp_num_unapproved_pages'],
 					'show'  => true,
-				),
+				],
 			] + $buttons['moderate']['sub_buttons'];
 		}
 

@@ -68,7 +68,7 @@ trait Area
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
-			SET status = ' . $this->smcFunc['db_custom_order']('status', [1, 0]) . '
+			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 END
 			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
 			[
 				'items' => $items

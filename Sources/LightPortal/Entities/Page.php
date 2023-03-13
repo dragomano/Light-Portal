@@ -20,6 +20,9 @@ use Bugo\LightPortal\Lists\PageListInterface;
 if (! defined('SMF'))
 	die('No direct access...');
 
+/**
+ * Status [0 - inactive, 1 - active, 2 - unapproved]
+ */
 final class Page
 {
 	use Helper;

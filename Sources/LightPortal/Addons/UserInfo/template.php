@@ -41,7 +41,7 @@ function show_user_info($data)
 		echo '
 		<li class="lefttext">
 			<hr>
-			', $context['lp_icon_set']['pager'], ' <a href="', $scripturl, '?action=admin;area=lp_pages;', $context['session_var'], '=', $context['session_id'], '">
+			', $context['lp_icon_set']['pager'], ' <a href="', $scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', $context['session_var'], '=', $context['session_id'], '">
 				', $txt['lp_page_moderation'], '
 			</a>
 		</li>';

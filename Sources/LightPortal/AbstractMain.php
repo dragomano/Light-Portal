@@ -41,7 +41,7 @@ abstract class AbstractMain
 		$this->context['allow_light_portal_approve_pages']     = $this->allowedTo('light_portal_approve_pages');
 		$this->context['allow_light_portal_moderate_pages']    = $this->allowedTo('light_portal_moderate_pages');
 
-		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages']] = $this->getNumActiveEntities();
+		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages'], $this->context['lp_num_my_pages'], $this->context['lp_num_unapproved_pages']] = $this->getNumActiveEntities();
 
 		$this->context['lp_all_title_classes']   = $this->getTitleClasses();
 		$this->context['lp_all_content_classes'] = $this->getContentClasses();
@@ -206,7 +206,17 @@ abstract class AbstractMain
 						FROM {db_prefix}lp_pages p
 						WHERE p.status = {int:status}' . ($this->user_info['is_admin'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
-					) AS num_pages',
+					) AS num_pages,
+					(
+						SELECT COUNT(page_id)
+						FROM {db_prefix}lp_pages
+						WHERE author_id = {int:user_id}
+					) AS num_my_pages,
+					(
+						SELECT COUNT(page_id)
+						FROM {db_prefix}lp_pages
+						WHERE status = 2
+					) AS num_unapproved_pages',
 				[
 					'status'  => 1,
 					'user_id' => $this->user_info['id']
