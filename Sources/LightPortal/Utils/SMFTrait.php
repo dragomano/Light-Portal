@@ -296,7 +296,7 @@ trait SMFTrait
 
 	protected function logAction(string $action, array $extra = []): int
 	{
-		return (int) logAction($action, $extra);
+		return logAction($action, $extra);
 	}
 
 	protected function jsEscape(string $string, bool $as_json = false): string

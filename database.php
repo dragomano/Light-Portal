@@ -1,7 +1,9 @@
 <?php
 
-if (file_exists(dirname(__FILE__) . '/SSI.php') && ! defined('SMF'))
-	require_once(dirname(__FILE__) . '/SSI.php');
+global $user_info, $mbname, $modSettings, $settings;
+
+if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
+	require_once __DIR__ . '/SSI.php';
 elseif(! defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
@@ -10,8 +12,6 @@ if (version_compare(PHP_VERSION, '8.0', '<'))
 
 if (! extension_loaded('intl'))
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
-
-global $user_info, $mbname, $modSettings, $settings;
 
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');

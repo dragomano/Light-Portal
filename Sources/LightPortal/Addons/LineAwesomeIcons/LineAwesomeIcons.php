@@ -29,7 +29,7 @@ class LineAwesomeIcons extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', self::class . '::preCssOutput#', false, __FILE__);
 	}
 
 	public function preCssOutput()

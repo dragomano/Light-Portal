@@ -89,7 +89,7 @@ class WhosOnline extends Plugin
 
 		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'whosOnline', 'array');
+			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
 
 		if (empty($whos_online))
 			return;

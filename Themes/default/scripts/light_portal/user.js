@@ -279,7 +279,7 @@ class Comment {
 			if (el.dataset.id) items.push(el.dataset.id)
 		})
 
-		let response = await fetch(this.pageUrl + 'sa=del_comment', {
+		let response = await fetch(this.pageUrl + 'sa=remove_comment', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'

@@ -10,13 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 9.03.23
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
-use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Area;
+use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\PhpFile;
+use Nette\PhpGenerator\Printer;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -184,8 +187,7 @@ class Handler extends Plugin
 		if (empty($data['name']))
 			$post_errors[] = 'no_name';
 
-		$addon_name_format['options'] = ['regexp' => '/' . self::ADDON_NAME_PATTERN . '/'];
-		if (! empty($data['name']) && empty($this->validate($data['name'], $addon_name_format)))
+		if (! empty($data['name']) && empty($this->validate($data['name'], ['options' => ['regexp' => '/' . self::ADDON_NAME_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_name';
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
@@ -385,7 +387,7 @@ class Handler extends Plugin
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
-		$namespace = new \Nette\PhpGenerator\PhpNamespace('Bugo\LightPortal\Addons\\' . $this->context['lp_plugin']['name']);
+		$namespace = new PhpNamespace('Bugo\LightPortal\Addons\\' . $this->context['lp_plugin']['name']);
 		$namespace->addUse(Plugin::class);
 
 		$class = $namespace->addClass($this->context['lp_plugin']['name']);
@@ -416,7 +418,7 @@ class Handler extends Plugin
 				->setBody("\$this->txt['lp_show_comment_block_set']['$plugin_name'] = '{$this->context['lp_plugin']['name']}';");
 		} else if (! empty($this->context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')
-				->setBody("// add_integration_function('integrate_hook_name', __CLASS__ . '::methodName#', false, __FILE__);");
+				->setBody("// add_integration_function('integrate_hook_name', self::class . '::methodName#', false, __FILE__);");
 		}
 
 		$blockParams = $this->getSpecialParams();
@@ -446,10 +448,8 @@ class Handler extends Plugin
 			$validateBlockData->addBody("if (\$type !== '$plugin_name')");
 			$validateBlockData->addBody("\treturn;" . PHP_EOL);
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
 			}
 
 			$class->addMethod('prepareBlockFields')
@@ -464,10 +464,8 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
 			}
 
 			$validateBlockData = $class->addMethod('validateBlockData');
@@ -475,10 +473,8 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
 			}
 
 			$class->addMethod('prepareBlockFields')
@@ -608,7 +604,7 @@ class Handler extends Plugin
 				$license_link = $this->txt['lp_plugin_maker']['license_link'];
 		}
 
-		$file = new \Nette\PhpGenerator\PhpFile;
+		$file = new PhpFile;
 		$file->addNamespace($namespace);
 		$file->addComment($this->context['lp_plugin']['name'] . '.php');
 		$file->addComment('');
@@ -621,7 +617,7 @@ class Handler extends Plugin
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));
 
-		$content = (new class extends \Nette\PhpGenerator\Printer {
+		$content = (new class extends Printer {
 			protected $indentation = "\t";
 			protected $linesBetweenProperties = 1;
 			protected $linesBetweenMethods = 1;

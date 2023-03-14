@@ -51,7 +51,7 @@ class UserInfo extends Plugin
 
 		$userData = $this->cache('user_info_addon_u' . $this->context['user']['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(self::class, 'getData');
 
 		show_user_info($userData);
 	}

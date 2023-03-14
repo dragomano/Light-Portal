@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Lists\{Category, Tag};
+use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session, SMFTrait};
 
 use MessageFormatter;
@@ -49,9 +51,7 @@ trait Helper
 	}
 
 	/**
-	 * @param string|null $key
 	 * @param mixed|null $default
-	 * @return mixed
 	 */
 	public function request(?string $key = null, mixed $default = null): mixed
 	{
@@ -59,9 +59,7 @@ trait Helper
 	}
 
 	/**
-	 * @param string|null $key
 	 * @param mixed|null $default
-	 * @return mixed
 	 */
 	public function post(?string $key = null, mixed $default = null): mixed
 	{
@@ -123,20 +121,14 @@ trait Helper
 		return $titles;
 	}
 
-	/**
-	 * @return mixed
-	 */
 	public function getAllCategories(): mixed
 	{
-		return $this->cache('all_categories')->setFallback(Lists\Category::class, 'getList');
+		return $this->cache('all_categories')->setFallback(Category::class, 'getList');
 	}
 
-	/**
-	 * @return mixed
-	 */
 	public function getAllTags(): mixed
 	{
-		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
+		return $this->cache('all_tags')->setFallback(Tag::class, 'getList');
 	}
 
 	public function getAllAddons(): array
@@ -219,9 +211,9 @@ trait Helper
 
 		$this->context['languages'] = array_merge(
 			[
-				'english'                    => $temp['english'],
+				$this->language              => $temp[$this->language],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
-				$this->language              => $temp[$this->language]
+				'english'                    => $temp['english'],
 			],
 			$this->context['languages']
 		);
@@ -239,10 +231,6 @@ trait Helper
 		return $template;
 	}
 
-	/**
-	 * @param array|string $data
-	 * @return void
-	 */
 	public function cleanBbcode(array|string &$data): void
 	{
 		$data = preg_replace('~\[[^]]+]~', '', $data);
@@ -316,10 +304,6 @@ trait Helper
 	 * Get the filtered $obj[$key]
 	 *
 	 * Получаем отфильтрованное значение $obj[$key]
-	 *
-	 * @param string $key
-	 * @param array|string $type
-	 * @return mixed
 	 */
 	public function validate(string $key, array|string $type = 'string'): mixed
 	{
@@ -478,7 +462,7 @@ trait Helper
 			],
 			[
 				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\Bugo\LightPortal\Tasks\Notifier',
+				'task_class' => '\\' . Notifier::class,
 				'task_data'  => $this->smcFunc['json_encode']([
 					'time'              => $options['time'],
 					'sender_id'	        => $this->user_info['id'],

@@ -401,7 +401,7 @@ class TinySlider extends Plugin
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $block_id, $parameters);
+			->setFallback(self::class, 'getData', $block_id, $parameters);
 
 		if (empty($tiny_slider_html))
 			return;

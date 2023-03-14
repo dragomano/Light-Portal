@@ -25,13 +25,10 @@ final class Cache
 {
 	private string $prefix = 'lp_';
 
-	private ?string $key;
-
 	private int $lifeTime = 0;
 
-	public function __construct(?string $key = null)
+	public function __construct(private ?string $key = null)
 	{
-		$this->key = $key;
 	}
 
 	public function setLifeTime(int $lifeTime): Cache
@@ -41,12 +38,6 @@ final class Cache
 		return $this;
 	}
 
-	/**
-	 * @param string $className
-	 * @param string $methodName
-	 * @param ...$params
-	 * @return mixed
-	 */
 	public function setFallback(string $className, string $methodName, ...$params): mixed
 	{
 		if (empty($methodName) || empty($className) || $this->lifeTime === 0)

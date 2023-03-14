@@ -45,7 +45,7 @@ final class BlockExport extends AbstractExport
 
 		$this->run();
 
-		$this->context['lp_current_blocks'] = $this->repository->getAll(true);
+		$this->context['lp_current_blocks'] = $this->repository->getAll(with_customs: true);
 
 		$this->context['sub_template'] = 'manage_export_blocks';
 	}

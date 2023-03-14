@@ -30,8 +30,8 @@ class PageLikes extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
-		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
+		add_integration_function('integrate_valid_likes', self::class . '::validLikes#', false, __FILE__);
+		add_integration_function('integrate_issue_like', self::class . '::issueLike#', false, __FILE__);
 	}
 
 	public function validLikes(string $type, int $content): bool|array

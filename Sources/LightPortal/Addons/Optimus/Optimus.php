@@ -44,7 +44,7 @@ class Optimus extends Plugin
 			return;
 
 		if (! empty($this->context['lp_optimus_plugin']['show_topic_keywords']))
-			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')->setFallback(__CLASS__, 'getKeywords', (int) $row['id_topic']);
+			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')->setFallback(self::class, 'getKeywords', (int) $row['id_topic']);
 
 		if (! empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) && ! empty($row['optimus_description']) && ! empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];

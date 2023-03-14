@@ -31,13 +31,15 @@ final class PageRepository extends AbstractRepository
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . (empty($query_string) ? '' : '
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . ($this->request()->has('u') ? '
+			WHERE p.author_id = {int:user_id}' : 'WHERE 1=1') . (empty($query_string) ? '' : '
 				' . $query_string) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, [
 				'lang'          => $this->user_info['language'],
 				'fallback_lang' => $this->language,
+				'user_id'       => $this->user_info['id'],
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $items_per_page,
@@ -72,10 +74,12 @@ final class PageRepository extends AbstractRepository
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . (empty($query_string) ? '' : '
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($this->request()->has('u') ? '
+			WHERE p.author_id = {int:user_id}' : 'WHERE 1=1') . (empty($query_string) ? '' : '
 				' . $query_string),
 			array_merge($query_params, [
-				'lang' => $this->user_info['language'],
+				'lang'    => $this->user_info['language'],
+				'user_id' => $this->user_info['id'],
 			])
 		);
 

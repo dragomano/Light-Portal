@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.03.23
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -43,11 +43,11 @@ class RecentComments extends Plugin
 		if ($type !== 'recent_comments')
 			return;
 
-		$parameters = array(
+		$parameters = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
 			'show_rating'  => FILTER_VALIDATE_BOOLEAN,
-		);
+		];
 	}
 
 	public function prepareBlockFields()
@@ -109,13 +109,13 @@ class RecentComments extends Plugin
 				AND par.value > 0
 			ORDER BY com.created_at DESC
 			LIMIT {int:limit}',
-			array(
+			[
 				'guest'        => $this->txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'limit'        => $num_comments
-			)
+			]
 		);
 
 		$comments = [];
@@ -126,13 +126,13 @@ class RecentComments extends Plugin
 			$num_pages = floor($row['num_comments'] / $limit) + 1;
 			$start     = $num_pages * $limit - $limit;
 
-			$comments[$row['id']] = array(
+			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['alias'] . ($start > 0 && empty($this->modSettings['lp_comment_sorting']) ? ';start=' . $start : '') . '#comment' . $row['id'],
 				'message'     => $this->getTeaser($this->parseBbc($row['message']), $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
 				'rating'      => (int) $row['rating'],
-			);
+			];
 		}
 
 		$this->smcFunc['db_free_result']($request);
@@ -148,7 +148,7 @@ class RecentComments extends Plugin
 
 		$comments = $this->cache('recent_comments_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
+			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
 		if (empty($comments))
 			return;
@@ -156,7 +156,7 @@ class RecentComments extends Plugin
 		echo '
 		<ul class="recent_comments noup">';
 
-		foreach ($comments as $id => $comment) {
+		foreach ($comments as $comment) {
 			echo '
 			<li class="windowbg">
 				<a href="', $comment['link'], '">', $comment['message'], '</a>', empty($parameters['show_rating']) ? '' : (empty($comment['rating']) ? '' : ' <span class="amt floatright">' . $comment['rating'] . '</span>'), '

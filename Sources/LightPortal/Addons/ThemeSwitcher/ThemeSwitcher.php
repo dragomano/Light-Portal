@@ -26,7 +26,7 @@ class ThemeSwitcher extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_manage_themes', __CLASS__ . '::manageThemes#', false, __FILE__);
+		add_integration_function('integrate_manage_themes', self::class . '::manageThemes#', false, __FILE__);
 	}
 
 	public function manageThemes()

@@ -37,7 +37,7 @@ class CategoryList extends Plugin
 
 		$categories = $this->cache('category_list_addon_u' . $this->context['user']['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {
 			echo $this->txt['lp_category_list']['no_items'];

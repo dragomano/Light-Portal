@@ -95,7 +95,7 @@ class TopBoards extends Plugin
 
 		$top_boards = $this->cache('top_boards_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
+			->setFallback(self::class, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
 
 		if (empty($top_boards))
 			return;

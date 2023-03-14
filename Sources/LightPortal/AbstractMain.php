@@ -14,6 +14,9 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Entities\Block;
+use Bugo\LightPortal\Lists\IconList;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -64,8 +67,8 @@ abstract class AbstractMain
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
 		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);
-		$this->context['lp_active_blocks']   = (new Entities\Block)->getActive();
-		$this->context['lp_icon_set']        = (new Lists\IconList)->getAll();
+		$this->context['lp_active_blocks']   = (new Block)->getActive();
+		$this->context['lp_icon_set']        = (new IconList)->getAll();
 	}
 
 	protected function loadAssets(): void
@@ -150,7 +153,7 @@ abstract class AbstractMain
 	 *
 	 * Разрешаем индексацию главной страницы форума
 	 */
-	protected function fixForumIndexing()
+	protected function fixForumIndexing(): void
 	{
 		$this->context['robot_no_index'] = false;
 	}

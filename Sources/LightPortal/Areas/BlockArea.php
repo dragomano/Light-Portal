@@ -200,7 +200,9 @@ final class BlockArea
 
 		$this->request()->put('clone', true);
 
-		$result['success'] = false;
+		$result = [
+			'success' => false
+		];
 
 		$this->context['lp_block']       = $this->repository->getData($item);
 		$this->context['lp_block']['id'] = $this->repository->setData();
@@ -279,6 +281,8 @@ final class BlockArea
 
 	private function validateData(): void
 	{
+		$post_data = [];
+
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'block_id'      => FILTER_VALIDATE_INT,
@@ -356,11 +360,10 @@ final class BlockArea
 		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
 				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-					if ($parameters[$option] === FILTER_DEFAULT)
-						$post_data[$option] = '';
+					$post_data['parameters'][$option] = 0;
 
-					if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
-						$post_data['parameters'][$option] = 0;
+					if ($parameters[$option] === FILTER_DEFAULT)
+						$post_data['parameters'][$option] = '';
 
 					if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 						$post_data['parameters'][$option] = [];
@@ -384,8 +387,7 @@ final class BlockArea
 		if (empty($data['areas']))
 			$post_errors[] = 'no_areas';
 
-		$areas_format['options'] = ['regexp' => '/' . self::AREAS_PATTERN . '/'];
-		if ($data['areas'] && empty($this->validate($data['areas'], $areas_format)))
+		if ($data['areas'] && empty($this->validate($data['areas'], ['options' => ['regexp' => '/' . self::AREAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_areas';
 
 		$this->hook('findBlockErrors', [$data, &$post_errors]);
@@ -401,49 +403,7 @@ final class BlockArea
 
 	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
-
-		$this->prepareIconList();
-
-		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
-
-		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
-		$this->context['posting_fields']['title']['input']['tab']  = 'content';
-		$this->context['posting_fields']['title']['input']['html'] = '
-			<div>';
-
-		if (count($this->context['languages']) > 1) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
-
-			foreach ($this->context['languages'] as $lang) {
-				$this->context['posting_fields']['title']['input']['html'] .= '
-					<a
-						class="button floatnone"
-						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
-						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
-					>' . $lang['name'] . '</a>';
-			}
-
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				</nav>';
-		}
-
-		$i = 0;
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				<div x-show="tab === \'' . $lang['filename'] . '\'">
-					<input
-						type="text"
-						name="title_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_block']['title'][$lang['filename']] ?? '') . '"
-						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '"' : '') . '
-					>
-				</div>';
-		}
-
-		$this->context['posting_fields']['title']['input']['html'] .= '
-			</div>';
+		$this->prepareTitleFields('block', false);
 
 		$this->context['posting_fields']['note']['label']['text'] = $this->txt['lp_block_note'];
 		$this->context['posting_fields']['note']['input'] = [
@@ -626,7 +586,7 @@ final class BlockArea
 		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
-			? prepare_content($this->context['lp_block']['type'])
+			? prepare_content($this->context['lp_block']['type'], parameters: $this->context['lp_block']['options']['parameters'])
 			: parse_content($this->context['preview_content'], $this->context['lp_block']['type']);
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');

@@ -176,7 +176,7 @@ final class Page
 		if (empty($alias))
 			return [];
 
-		$data = $this->cache('page_' . $alias)->setFallback(__CLASS__, 'getData', ['alias' => $alias]);
+		$data = $this->cache('page_' . $alias)->setFallback(self::class, 'getData', ['alias' => $alias]);
 
 		$this->prepareData($data);
 

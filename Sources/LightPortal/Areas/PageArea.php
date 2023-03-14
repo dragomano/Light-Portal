@@ -74,16 +74,13 @@ final class PageArea
 
 		$params = [
 			(
-				$this->request()->has('u') ? 'WHERE p.author_id = {int:user_id}' : 'WHERE 1=1'
-			) . (
 				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
 				$this->request()->has('u') ? '' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
 			),
 			[
-				'user_id' => $this->user_info['id'],
-				'search'  => $this->smcFunc['strtolower']($search_params['string']),
-				'status'  => 2
+				'search' => $this->smcFunc['strtolower']($search_params['string']),
+				'status' => 2
 			],
 		];
 
@@ -436,11 +433,23 @@ final class PageArea
 	{
 		$this->context['browse_type'] = $this->request()->has('u') ? 'own' : ($this->request()->has('moderate') ? 'mod' : 'all');
 
-		$titles = array(
-			'all' => array(';sa=main', $this->txt['all'], $this->repository->getTotalCount(' AND p.status != 2') - $this->context['lp_num_unapproved_pages']),
-			'own' => array(';sa=main;u=' . $this->user_info['id'], $this->txt['lp_my_pages'], (int) $this->context['lp_num_my_pages']),
-			'mod' => array(';sa=main;moderate', $this->txt['awaiting_approval'], (int) $this->context['lp_num_unapproved_pages']),
-		);
+		$titles = [
+			'all' => [
+				';sa=main',
+				$this->txt['all'],
+				$this->repository->getTotalCount(' AND p.status != 2') - $this->context['lp_num_unapproved_pages']
+			],
+			'own' => [
+				';sa=main;u=' . $this->user_info['id'],
+				$this->txt['lp_my_pages'],
+				(int) $this->context['lp_num_my_pages']
+			],
+			'mod' => [
+				';sa=main;moderate',
+				$this->txt['awaiting_approval'],
+				(int) $this->context['lp_num_unapproved_pages']
+			],
+		];
 
 		if (! $this->context['allow_light_portal_moderate_pages']) {
 			unset($titles['all'], $titles['mod']);
@@ -569,6 +578,8 @@ final class PageArea
 
 	private function validateData(): void
 	{
+		$post_data = [];
+
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'category'    => FILTER_VALIDATE_INT,
@@ -642,11 +653,10 @@ final class PageArea
 
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
+				$post_data[$option] = 0;
+
 				if ($parameters[$option] === FILTER_DEFAULT)
 					$post_data[$option] = '';
-
-				if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
-					$post_data[$option] = 0;
 
 				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 					$post_data[$option] = [];
@@ -673,8 +683,7 @@ final class PageArea
 		if (empty($data['alias']))
 			$post_errors[] = 'no_alias';
 
-		$alias_format['options'] = ['regexp' => '/' . self::ALIAS_PATTERN . '/'];
-		if ($data['alias'] && empty($this->validate($data['alias'], $alias_format)))
+		if ($data['alias'] && empty($this->validate($data['alias'], ['options' => ['regexp' => '/' . self::ALIAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_alias';
 
 		if ($data['alias'] && ! $this->isUnique($data))
@@ -696,49 +705,7 @@ final class PageArea
 
 	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
-
-		$this->prepareIconList();
-
-		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
-
-		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
-		$this->context['posting_fields']['title']['input']['tab']  = 'content';
-		$this->context['posting_fields']['title']['input']['html'] = '
-			<div>';
-
-		if (count($this->context['languages']) > 1) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
-
-			foreach ($this->context['languages'] as $lang) {
-				$this->context['posting_fields']['title']['input']['html'] .= '
-					<a
-						class="button floatnone"
-						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
-						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
-					>' . $lang['name'] . '</a>';
-			}
-
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				</nav>';
-		}
-
-		$i = 0;
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
-				<div x-show="tab === \'' . $lang['filename'] . '\'">
-					<input
-						type="text"
-						name="title_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_page']['title'][$lang['filename']] ?? '') . '"
-						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '" required' : '') . '
-					>
-				</div>';
-		}
-
-		$this->context['posting_fields']['title']['input']['html'] .= '
-			</div>';
+		$this->prepareTitleFields();
 
 		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_page_type'];
 		$this->context['posting_fields']['type']['input'] = [

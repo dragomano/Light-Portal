@@ -1,5 +1,7 @@
 <?php
 
+use Bugo\LightPortal\Entities\FrontPage;
+
 require_once __DIR__ . '/SSI.php';
 
 if (empty($sourcedir))
@@ -10,6 +12,6 @@ if (empty($modSettings['lp_standalone_mode']) || empty($modSettings['lp_standalo
 
 require_once $sourcedir . '/LightPortal/Entities/FrontPage.php';
 
-(new \Bugo\LightPortal\Entities\FrontPage)->show();
+(new FrontPage)->show();
 
 obExit();

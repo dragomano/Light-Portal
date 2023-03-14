@@ -35,6 +35,53 @@ trait Area
 		$this->createControlRichedit($editorOptions);
 	}
 
+	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
+	{
+		$this->checkSubmitOnce('register');
+
+		$this->prepareIconList();
+
+		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
+
+		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
+		$this->context['posting_fields']['title']['input']['tab']  = 'content';
+		$this->context['posting_fields']['title']['input']['html'] = '
+			<div>';
+
+		if (count($this->context['languages']) > 1) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
+
+			foreach ($this->context['languages'] as $lang) {
+				$this->context['posting_fields']['title']['input']['html'] .= '
+					<a
+						class="button floatnone"
+						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
+						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
+					>' . $lang['name'] . '</a>';
+			}
+
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				</nav>';
+		}
+
+		$i = 0;
+		foreach ($this->context['languages'] as $lang) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<div x-show="tab === \'' . $lang['filename'] . '\'">
+					<input
+						type="text"
+						name="title_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_' . $entity]['title'][$lang['filename']] ?? '') . '"
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '"' . ($required ? ' required' : '') : '') . '
+					>
+				</div>';
+		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</div>';
+	}
+
 	public function preparePostFields(): void
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
@@ -121,7 +168,13 @@ trait Area
 
 	public function getPreviewTitle(string $prefix = ''): string
 	{
-		return $this->getFloatSpan((empty($prefix) ? '' : ($prefix . ' ')) . $this->context['preview_title'], $this->context['right_to_left'] ? 'right' : 'left') . $this->getFloatSpan($this->txt['preview'], $this->context['right_to_left'] ? 'left' : 'right') . '<br>';
+		return $this->getFloatSpan(
+			(empty($prefix) ? '' : ($prefix . ' ')) . $this->context['preview_title'],
+			$this->context['right_to_left'] ? 'right' : 'left'
+		) . $this->getFloatSpan(
+			$this->txt['preview'],
+			$this->context['right_to_left'] ? 'left' : 'right'
+		) . '<br>';
 	}
 
 	private function getFloatSpan(string $text, string $direction = 'left'): string

@@ -132,7 +132,7 @@ class TopPages extends Plugin
 
 		$top_pages = $this->cache('top_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if ($top_pages) {
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];

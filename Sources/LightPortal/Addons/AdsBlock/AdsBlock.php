@@ -155,11 +155,11 @@ class AdsBlock extends Plugin
 		if (! function_exists('lp_show_blocks'))
 			$this->loadTemplate('LightPortal/ViewBlock');
 
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
-		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
-		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
-		add_integration_function('integrate_prepare_display_context', __CLASS__ . '::prepareDisplayContext#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_admin_areas', self::class . '::adminAreas#', false, __FILE__);
+		add_integration_function('integrate_messageindex_buttons', self::class . '::messageindexButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', self::class . '::displayButtons#', false, __FILE__);
+		add_integration_function('integrate_prepare_display_context', self::class . '::prepareDisplayContext#', false, __FILE__);
 	}
 
 	/**

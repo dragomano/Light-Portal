@@ -155,7 +155,7 @@ class PageList extends Plugin
 
 		$page_list = $this->cache('page_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if ($page_list) {
 			echo '

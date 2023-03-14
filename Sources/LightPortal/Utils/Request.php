@@ -24,12 +24,8 @@ final class Request extends GlobalArray
 		$this->storage = &$_REQUEST;
 	}
 
-	/**
-	 * @param string|array ...$patterns
-	 * @return bool
-	 */
-	public function is(...$patterns): bool
-    {
+	public function is(string|array ...$patterns): bool
+	{
 		if ($this->has('action') === false) {
 			return false;
 		}
@@ -45,23 +41,17 @@ final class Request extends GlobalArray
 		return false;
 	}
 
-	/**
-	 * @param string|array ...$patterns
-	 * @return bool
-	 */
-	public function isNot(...$patterns): bool
+	public function isNot(string|array ...$patterns): bool
 	{
 		return empty($this->is($patterns));
 	}
 
-	/**
-	 * @param string|null $key
-	 * @param mixed|null $default
-	 * @return mixed
-	 */
 	public function json(?string $key = null, mixed $default = null): mixed
 	{
-		$data = json_decode(file_get_contents('php://input'), true) ?? [];
+		if (empty($input = file_get_contents('php://input')))
+			return $default;
+
+		$data = json_decode($input, true) ?? [];
 
 		if (isset($data[$key])) {
 			return $data[$key] ?: $default;

@@ -126,7 +126,7 @@ class SimpleMenu extends Plugin
 
 		$simple_menu_html = $this->cache('simple_menu_addon_b' . $block_id)
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['items']);
+			->setFallback(self::class, 'getData', $parameters['items']);
 
 		if (empty($simple_menu_html))
 			return;

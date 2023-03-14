@@ -95,7 +95,7 @@ class TopTopics extends Plugin
 
 		$top_topics = $this->cache('top_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
+			->setFallback(self::class, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
 
 		if (empty($top_topics))
 			return;

@@ -34,6 +34,7 @@ final class Category extends AbstractPageList
 			$this->fatalLangError('lp_category_not_found', 404);
 		}
 
+		$category = [];
 		if (empty($this->context['lp_category'])) {
 			$this->context['page_title'] = $this->txt['lp_all_pages_without_category'];
 		} else {

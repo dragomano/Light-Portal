@@ -29,8 +29,8 @@ class MainMenu extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_current_action', self::class . '::currentAction#', false, __FILE__);
 	}
 
 	public function menuButtons(array &$buttons)

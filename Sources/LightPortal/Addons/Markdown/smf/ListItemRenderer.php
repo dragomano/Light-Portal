@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 11.03.23
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown\Smf;
@@ -42,15 +42,15 @@ final class ListItemRenderer implements NodeRendererInterface, XmlNodeRendererIn
         $contents = $childRenderer->renderNodes($node->children());
 
         $attrs = [];
-        if (\substr($contents, 0, 1) === '<') {
+        if (str_starts_with($contents, '<')) {
             $attrs = ['class' => 'task_list_item'];
         }
 
-        if (\substr($contents, 0, 1) === '<' && ! $this->startsTaskListItem($node)) {
+        if (str_starts_with($contents, '<') && ! $this->startsTaskListItem($node)) {
             $contents = "\n" . $contents;
         }
 
-        if (\substr($contents, -1, 1) === '>') {
+        if (str_ends_with($contents, '>')) {
             $contents .= "\n";
         }
 

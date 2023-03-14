@@ -250,7 +250,7 @@ final class PluginArea
 
 		$typeCount = [];
 		foreach ($this->context['all_lp_plugins'] as $plugin) {
-			$types = array_merge(array_keys($plugin['types']));
+			$types = [...array_keys($plugin['types'])];
 			foreach ($types as $type) {
 				$key = array_search($type, $this->txt['lp_plugins_types']);
 

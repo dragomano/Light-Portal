@@ -40,7 +40,7 @@ final class Maintainer extends SMF_BackgroundTask
 			],
 			[
 				'$sourcedir/LightPortal/Tasks/Maintainer.php',
-				__CLASS__,
+				'\\' . self::class,
 				'',
 				time() + (7 * 24 * 60 * 60)
 			],

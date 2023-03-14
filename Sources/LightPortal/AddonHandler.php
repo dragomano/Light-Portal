@@ -24,7 +24,7 @@ class PluginStorage extends SplObjectStorage
 {
 	public function getHash($object): string
 	{
-		return get_class($object);
+		return $object::class;
 	}
 }
 
@@ -45,10 +45,6 @@ final class AddonHandler
 
 		$this->prepareAssets();
 	}
-
-	private function __clone() {}
-
-	public function __wakeup() {}
 
 	public static function getInstance(): self
 	{

@@ -88,7 +88,7 @@ class RssFeed extends Plugin
 
 		$feed = $this->cache('rss_feed_addon_b' . $block_id)
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['url']);
+			->setFallback(self::class, 'getData', $parameters['url']);
 
 		if (empty($feed))
 			return;

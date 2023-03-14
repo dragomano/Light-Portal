@@ -32,7 +32,7 @@ class ExtendedMetaTags extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_theme_context', __CLASS__ . '::themeContext#', false, __FILE__);
+		add_integration_function('integrate_theme_context', self::class . '::themeContext#', false, __FILE__);
 	}
 
 	public function themeContext()

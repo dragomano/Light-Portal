@@ -108,7 +108,7 @@ class BoardNews extends Plugin
 
 		$board_news = $this->cache('board_news_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, $teaser_length, 'array');
+			->setFallback(self::class, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, $teaser_length, 'array');
 
 		if (empty($board_news)) {
 			echo $this->txt['lp_board_news']['no_posts'];

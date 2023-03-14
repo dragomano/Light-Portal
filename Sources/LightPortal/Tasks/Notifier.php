@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
+use ErrorException;
 use SMF_BackgroundTask;
 
 final class Notifier extends SMF_BackgroundTask
@@ -22,9 +23,7 @@ final class Notifier extends SMF_BackgroundTask
 	use Helper;
 
 	/**
-	 * Performing the task of notifying subscribers about new comments to portal pages
-	 *
-	 * Выполнение задачи оповещений подписчиков о новых комментариях к страницам портала
+	 * @throws ErrorException
 	 */
 	public function execute(): bool
 	{
@@ -144,7 +143,7 @@ final class Notifier extends SMF_BackgroundTask
 
 				$emaildata = loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
 
-				foreach ($recipients as $id_member => $email_address)
+				foreach ($recipients as $email_address)
 					sendmail($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
 			}
 		}

@@ -131,7 +131,7 @@ class CurrentMonth extends Plugin
 
 		$calendar_data = $this->cache('current_month_addon_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(self::class, 'getData');
 
 		if ($calendar_data) {
 			$calendar_data['block_id'] = $block_id;

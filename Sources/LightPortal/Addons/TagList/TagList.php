@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Lists\Tag;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -123,11 +124,11 @@ class TagList extends Plugin
 		if ($parameters['source'] == 'lp_tags') {
 			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(\Bugo\LightPortal\Lists\Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
+				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
 		} else {
 			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 				->setLifeTime($cache_time)
-				->setFallback(__CLASS__, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
+				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
 		if ($tag_list) {

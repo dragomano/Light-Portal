@@ -29,25 +29,25 @@ final class Integration extends AbstractMain
 {
 	public function hooks()
 	{
-		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
-		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
-		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
-		add_integration_function('integrate_redirect', __CLASS__ . '::changeRedirect#', false, __FILE__);
-		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
-		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
-		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
-		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
-		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
-		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
-		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
-		add_integration_function('integrate_profile_areas', __CLASS__ . '::profileAreas#', false, __FILE__);
-		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
-		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
-		add_integration_function('integrate_packages_sort_id', __CLASS__ . '::packagesSortId#', false, __FILE__);
+		add_integration_function('integrate_user_info', self::class . '::userInfo#', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', self::class . '::preCssOutput#', false, __FILE__);
+		add_integration_function('integrate_load_theme', self::class . '::loadTheme#', false, __FILE__);
+		add_integration_function('integrate_redirect', self::class . '::changeRedirect#', false, __FILE__);
+		add_integration_function('integrate_actions', self::class . '::actions#', false, __FILE__);
+		add_integration_function('integrate_default_action', self::class . '::defaultAction#', false, __FILE__);
+		add_integration_function('integrate_current_action', self::class . '::currentAction#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', self::class . '::displayButtons#', false, __FILE__);
+		add_integration_function('integrate_delete_members', self::class . '::deleteMembers#', false, __FILE__);
+		add_integration_function('integrate_load_illegal_guest_permissions', self::class . '::loadIllegalGuestPermissions#', false, __FILE__);
+		add_integration_function('integrate_load_permissions', self::class . '::loadPermissions#', false, __FILE__);
+		add_integration_function('integrate_alert_types',  self::class . '::alertTypes#', false, __FILE__);
+		add_integration_function('integrate_fetch_alerts',  self::class . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_profile_areas', self::class . '::profileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_popup', self::class . '::profilePopup#', false, __FILE__);
+		add_integration_function('integrate_whos_online', self::class . '::whoisOnline#', false, __FILE__);
+		add_integration_function('integrate_modification_types', self::class . '::modificationTypes#', false, __FILE__);
+		add_integration_function('integrate_packages_sort_id', self::class . '::packagesSortId#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Areas\CreditArea::show#', false, '$sourcedir/LightPortal/Areas/CreditArea.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Areas\ConfigArea::adminAreas#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Areas\ConfigArea::adminSearch#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
@@ -84,15 +84,6 @@ final class Integration extends AbstractMain
 
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn')
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
-	}
-
-	public function getPreferenceType($type)
-	{
-		return match ($type) {
-			'new_comment' => 'page_comment',
-			'new_reply'   => 'page_comment_reply',
-			default       => 'page_unapproved'
-		};
 	}
 
 	public function loadTheme()
@@ -317,10 +308,10 @@ final class Integration extends AbstractMain
 		if (empty($this->user_info['is_admin']) || empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_topics')
 			return;
 
-		$this->context['normal_buttons']['lp_promote'] = array(
+		$this->context['normal_buttons']['lp_promote'] = [
 			'text' => in_array($this->context['current_topic'], $this->context['lp_frontpage_topics']) ? 'lp_remove_from_fp' : 'lp_promote_to_fp',
 			'url'  => LP_BASE_URL . ';sa=promote;t=' . $this->context['current_topic']
-		);
+		];
 	}
 
 	/**
@@ -380,7 +371,7 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_load_permissions
 	 */
-	public function loadPermissions(array $permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
@@ -395,7 +386,7 @@ final class Integration extends AbstractMain
 		$permissionList['membergroup']['light_portal_approve_pages']     = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_moderate_pages']    = [false, 'light_portal'];
 
-		$leftPermissionGroups[] = 'light_portal';
+		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
 	}
 
 	/**
@@ -464,9 +455,7 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * Add the "My pages" item in the profile popup window
-	 *
-	 * Добавляем пункт «Мои страницы» в попап-окне профиля
+	 * @hook integrate_profile_areas
 	 */
 	public function profileAreas(array &$profile_areas)
 	{

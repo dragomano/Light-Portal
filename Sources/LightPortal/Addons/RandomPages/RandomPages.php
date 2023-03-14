@@ -175,7 +175,7 @@ class RandomPages extends Plugin
 
 		$randomPages = $this->cache('random_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', (int) $parameters['num_pages']);
+			->setFallback(self::class, 'getData', (int) $parameters['num_pages']);
 
 		if ($randomPages) {
 			echo '

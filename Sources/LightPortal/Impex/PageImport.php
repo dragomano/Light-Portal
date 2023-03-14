@@ -46,7 +46,7 @@ final class PageImport extends AbstractImport
 		if (! isset($xml->pages->item[0]['page_id']))
 			$this->fatalLangError('lp_wrong_import_file');
 
-		$categories = $tags = $items = $titles = $params = $comments = [];
+		$categories = $tags = $items = $titles = $params = $comments = $ratings = [];
 
 		foreach ($xml as $entity => $element) {
 			if ($entity === 'categories') {

@@ -10,12 +10,14 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 16.04.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Twig;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Twig\Loader\ArrayLoader;
+use Twig\Environment;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -49,8 +51,8 @@ class Twig extends Plugin
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		try {
-			$loader  = new \Twig\Loader\ArrayLoader(['content' => $text]);
-			$twig    = new \Twig\Environment($loader, ['debug' => ! empty($this->context['lp_twig_plugin']['debug_mode'])]);
+			$loader  = new ArrayLoader(['content' => $text]);
+			$twig    = new Environment($loader, ['debug' => ! empty($this->context['lp_twig_plugin']['debug_mode'])]);
 			$content = $twig->render('content', [
 				'txt'         => $this->txt,
 				'context'     => $this->context,

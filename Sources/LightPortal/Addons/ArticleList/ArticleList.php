@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -123,6 +123,7 @@ class ArticleList extends Plugin
 			$this->censorText($row['subject']);
 			$this->censorText($row['body']);
 
+			$value = null;
 			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = empty($image) ? ($this->modSettings['lp_image_placeholder'] ?? '') : array_pop($value);
 
@@ -199,7 +200,7 @@ class ArticleList extends Plugin
 
 		$article_list = $this->cache('article_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
+			->setFallback(self::class, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
 		if ($article_list) {
 			echo '

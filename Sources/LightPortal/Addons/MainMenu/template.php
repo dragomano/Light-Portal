@@ -88,7 +88,7 @@ function callback_main_menu_table()
 												<tr class="windowbg">
 													<td><strong>', $lang['name'], '</strong></td>
 													<td>
-														<input type="text" x-model="item.langs[\'', $lang['filename'], '\']" name="langs[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
+														<input type="text" x-model="item.langs[\'', $lang['filename'], '\']" name="langs[', $lang['filename'], '][]"', in_array($lang['filename'], [$context['user']['language'], 'english']) ? ' required' : '', ' placeholder="', $lang['filename'], '">
 													</td>
 												</tr>';
 	}

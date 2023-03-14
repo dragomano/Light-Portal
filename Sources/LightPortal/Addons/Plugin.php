@@ -31,7 +31,7 @@ abstract class Plugin
 
 	public function getCalledClass(): ReflectionClass
 	{
-		return new ReflectionClass(get_called_class());
+		return new ReflectionClass(static::class);
 	}
 
 	public function getName(): string

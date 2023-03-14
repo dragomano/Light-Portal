@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Repositories\CommentRepository;
 use JetBrains\PhpStorm\NoReturn;
 
 if (! defined('SMF'))
@@ -24,7 +25,12 @@ final class Comment
 {
 	use Helper;
 
-	public function __construct(private string $alias = '') {}
+	private CommentRepository $repository;
+
+	public function __construct(private string $alias = '')
+	{
+		$this->repository = new CommentRepository();
+	}
 
 	public function prepare(): void
 	{
@@ -44,13 +50,15 @@ final class Comment
 				case 'like_comment':
 					$this->like();
 					break;
-				case 'del_comment':
+				case 'remove_comment':
 					$this->remove();
 					break;
 			}
 		}
 
-		$comments = $this->cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $this->context['lp_page']['id']);
+		$comments = $this->cache('page_' . $this->alias . '_comments')
+			->setFallback(CommentRepository::class, 'getByPageId', $this->context['lp_page']['id']);
+
 		$comments = array_map(function ($comment) {
 			$comment['created']    = $this->getFriendlyTime($comment['created_at']);
 			$comment['created_at'] = date('Y-m-d', $comment['created_at']);
@@ -65,7 +73,14 @@ final class Comment
 		$totalParentComments = sizeof($commentTree);
 
 		$this->context['current_start'] = $this->request('start');
-		$this->context['page_index'] = $this->constructPageIndex($this->getPageIndexUrl(), $this->request()->get('start'), $totalParentComments, $limit);
+
+		$this->context['page_index'] = $this->constructPageIndex(
+			$this->getPageIndexUrl(),
+			$this->request()->get('start'),
+			$totalParentComments,
+			$limit
+		);
+
 		$start = $this->request('start');
 
 		$this->context['page_info'] = [
@@ -91,70 +106,11 @@ final class Comment
 		}
 	}
 
-	public function getAll(int $page_id = 0): array
+	#[NoReturn] private function add(): void
 	{
-		$sorts = [
-			'com.created_at',
-			'com.created_at DESC',
-			'CASE WHEN rating < 0 THEN -1 WHEN rating > 0 THEN 1 ELSE 0 END DESC',
+		$result = [
+			'error' => true
 		];
-
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name,
-				(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating,
-				(SELECT COUNT(r.id) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id AND r.user_id = {int:user}) AS is_rated
-			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
-			WHERE com.page_id = {int:id}' : '') . '
-			ORDER BY ' . $sorts[$this->modSettings['lp_comment_sorting'] ?? 0],
-			[
-				'id'   => $page_id,
-				'user' => $this->context['user']['id']
-			]
-		);
-
-		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$this->censorText($row['message']);
-
-			$comments[$row['id']] = [
-				'id'           => (int) $row['id'],
-				'page_id'      => (int) $row['page_id'],
-				'parent_id'    => (int) $row['parent_id'],
-				'poster'       => [
-					'id'   => (int) $row['author_id'],
-					'name' => $row['author_name']
-				],
-				'message'      => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
-				'raw_message'  => $this->unPreparseCode($row['message']),
-				'created_at'   => (int) $row['created_at'],
-				'rating'       => (int) $row['rating'],
-				'is_rated'     => (bool) $row['is_rated'],
-				'can_rate'     => $row['author_id'] != $this->context['user']['id'] && empty($this->context['user']['is_guest']),
-				'rating_class' => empty($this->modSettings['lp_allow_comment_ratings']) ? '' : ($row['rating'] && $row['rating'] <= -10 ? 'negative' : ($row['rating'] >= 10 ? 'positive' : '')),
-				'can_edit'     => $this->isCanEdit((int) $row['created_at'])
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $this->getItemsWithUserAvatars($comments, 'poster');
-	}
-
-	private function isCanEdit(int $date): bool
-	{
-		if (empty($this->modSettings['lp_time_to_change_comments']))
-			return false;
-
-		$time_to_change = (int) $this->modSettings['lp_time_to_change_comments'];
-
-		return $time_to_change && time() - $date <= $time_to_change * 60;
-	}
-
-	private function add(): void
-	{
-		$result['error'] = true;
 
 		if (empty($this->user_info['id']))
 			exit(json_encode($result));
@@ -178,40 +134,16 @@ final class Comment
 
 		$this->preparseCode($message);
 
-		$item = $this->smcFunc['db_insert']('',
-			'{db_prefix}lp_comments',
-			[
-				'parent_id'  => 'int',
-				'page_id'    => 'int',
-				'author_id'  => 'int',
-				'message'    => 'string-65534',
-				'created_at' => 'int'
-			],
-			[
-				$parent,
-				$page_id,
-				$this->user_info['id'],
-				$message,
-				$time = time()
-			],
-			['id', 'page_id'],
-			1
-		);
-
-		$this->context['lp_num_queries']++;
+		$item = $this->repository->save([
+			'parent_id'  => $parent,
+			'page_id'    => $page_id,
+			'author_id'  => $this->user_info['id'],
+			'message'    => $message,
+			'created_at' => $time = time()
+		]);
 
 		if ($item) {
-			$this->smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_comments = num_comments + 1, last_comment_id = {int:item}
-				WHERE page_id = {int:page_id}',
-				[
-					'item'    => $item,
-					'page_id' => $page_id
-				]
-			);
-
-			$this->context['lp_num_queries']++;
+			$this->repository->updateLastCommentId($item, $page_id);
 
 			ob_start();
 
@@ -265,7 +197,7 @@ final class Comment
 		exit(json_encode($result));
 	}
 
-	private function edit(): void
+	#[NoReturn] private function edit(): void
 	{
 		$data = $this->request()->json();
 
@@ -280,19 +212,11 @@ final class Comment
 
 		$this->preparseCode($message);
 
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_comments
-			SET message = {string:message}
-			WHERE id = {int:id}
-				AND author_id = {int:user}',
-			[
-				'message' => $this->getShortenText($message, 65531),
-				'id'      => $item,
-				'user'    => $this->context['user']['id']
-			]
-		);
-
-		$this->context['lp_num_queries']++;
+		$this->repository->update([
+			'message' => $this->getShortenText($message, 65531),
+			'id'      => $item,
+			'user'    => $this->context['user']['id']
+		]);
 
 		$message = empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']);
 
@@ -317,34 +241,7 @@ final class Comment
 		if (empty($item) || empty($operand))
 			exit;
 
-		if ($operand === '!') {
-			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_ratings
-				WHERE content_id = {int:item}
-					AND user_id = {int:user}',
-				[
-					'item' => $item,
-					'user' => $this->user_info['id']
-				]
-			);
-		} else {
-			$this->smcFunc['db_insert']('',
-				'{db_prefix}lp_ratings',
-				[
-					'value'      => 'int',
-					'content_id' => 'int',
-					'user_id'    => 'int'
-				],
-				[
-					$operand === '+' ? 1 : -1,
-					$item,
-					$this->user_info['id']
-				],
-				['id']
-			);
-		}
-
-		$this->context['lp_num_queries']++;
+		$this->repository->updateRating($item, $operand);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
@@ -358,60 +255,7 @@ final class Comment
 		if (empty($items))
 			return;
 
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE id IN ({array_int:items})',
-			[
-				'items' => $items
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_ratings
-			WHERE content_type = {string:type}
-				AND content_id IN ({array_int:items})',
-			[
-				'type'  => 'comment',
-				'items' => $items
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments - {int:num_items}
-			WHERE alias = {string:alias}
-				AND num_comments - {int:num_items} >= 0',
-			[
-				'num_items' => count($items),
-				'alias'     => $this->alias
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}user_alerts
-			WHERE content_type = {string:type}
-				AND content_id IN ({array_int:items})',
-			[
-				'type'  => 'new_comment',
-				'items' => $items
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_pages
-			SET last_comment_id = (
-				SELECT COALESCE(MAX(com.id), 0)
-				FROM {db_prefix}lp_comments AS com
-					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
-				WHERE p.alias = {string:alias}
-			)
-			WHERE alias = {string:alias}',
-			[
-				'alias' => $this->alias
-			]
-		);
-
-		$this->context['lp_num_queries'] += 5;
+		$this->repository->remove($items, $this->alias);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 

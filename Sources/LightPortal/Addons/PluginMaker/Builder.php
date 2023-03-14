@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -24,12 +24,10 @@ class Builder
 {
 	use Helper;
 
-	protected string $name;
 	protected string $path;
 
-	public function __construct(string $name)
+	public function __construct(protected string $name)
 	{
-		$this->name = $name;
 		$this->path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $name;
 	}
 

@@ -151,14 +151,12 @@ final class FrontPage
 		if (empty($this->modSettings['lp_frontpage_num_columns']))
 			return $num_columns;
 
-		$num_columns /= match ($this->modSettings['lp_frontpage_num_columns']) {
+		return $num_columns / match ($this->modSettings['lp_frontpage_num_columns']) {
 			'1' => 2,
 			'2' => 3,
 			'3' => 4,
 			default => 6,
 		};
-
-		return $num_columns;
 	}
 
 	/**
@@ -238,18 +236,16 @@ final class FrontPage
 		if ($value < 10000)
 			return (string) $value;
 
-		$k   = pow(10, 3);
-		$mil = pow(10, 6);
-		$bil = pow(10, 9);
+		$k   = 10 ** 3;
+		$mil = 10 ** 6;
+		$bil = 10 ** 9;
 
 		if ($value >= $bil)
 			return number_format($value / $bil, 1) . 'B';
 		else if ($value >= $mil)
 			return number_format($value / $mil, 1) . 'M';
-		else if ($value >= $k)
-			return number_format($value / $k, 1) . 'K';
 
-		return (string) $value;
+		return number_format($value / $k, 1) . 'K';
 	}
 
 	private function simplePaginate(string $url, int $total, int $limit): string

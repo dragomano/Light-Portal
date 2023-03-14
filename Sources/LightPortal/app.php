@@ -22,12 +22,8 @@ spl_autoload_register(function ($classname) {
 });
 
 // Define important helper functions
-function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_time = 0): string
+function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_time = 0, array $parameters = []): string
 {
-	$context = $GLOBALS['context'];
-
-	$parameters = ($context['lp_active_blocks'][$block_id] ?? $context['lp_block']['options'])['parameters'] ?? [];
-
 	ob_start();
 
 	AddonHandler::getInstance()->run('prepareContent', [$type, $block_id, $cache_time, $parameters]);
