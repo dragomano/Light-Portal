@@ -302,6 +302,7 @@ final class Integration extends AbstractMain
 		// Other fixes
 		$this->fixCanonicalUrl();
 		$this->fixLinktree();
+		$this->fixForumIndexing();
 	}
 
 	/**
