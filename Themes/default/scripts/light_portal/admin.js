@@ -53,7 +53,7 @@ class PortalEntity {
 
 				let focusElement = document.getElementById(formElements[i].id);
 
-				if (focusElement) focusElement.focus();
+				focusElement ? focusElement.focus() : document.querySelector(".pf_title a").click()
 
 				return false
 			}
