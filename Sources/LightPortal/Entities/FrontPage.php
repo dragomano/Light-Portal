@@ -15,7 +15,14 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
+use Bugo\LightPortal\Front\{
+	ArticleInterface,
+	BoardArticle,
+	PageArticle,
+	TopicArticle,
+	ChosenPageArticle,
+	ChosenTopicArticle,
+};
 
 final class FrontPage
 {

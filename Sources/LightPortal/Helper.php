@@ -16,9 +16,16 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Lists\{Category, Tag};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{Cache, File, Post, Request, Session, SMFTrait};
-
+use Bugo\LightPortal\Utils\{
+	Cache,
+	File,
+	Post,
+	Request,
+	Session,
+	SMFTrait,
+};
 use MessageFormatter;
+use IntlException;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -32,20 +39,23 @@ trait Helper
 	use SMFTrait;
 
 	/**
-	 * @see https://symfony.com/doc/current/translation/message_format.html
-	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
-	 * @see https://www.php.net/manual/en/class.messageformatter.php
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
+	 * @see https://symfony.com/doc/6.1/translation/message_format.html
 	 * @see https://intl.rmcreative.ru
 	 */
 	public function translate(string $pattern, array $values = []): string
 	{
-		if (empty($this->txt['lang_locale']))
-			return '';
+		if (extension_loaded('intl')) {
+			try {
+				$fmt = new MessageFormatter($this->txt['lang_locale'] ?? 'en_US', $this->txt[$pattern] ?? $pattern);
 
-		if (extension_loaded('intl'))
-			return MessageFormatter::formatMessage($this->txt['lang_locale'], $this->txt[$pattern] ?? $pattern, $values) ?? '';
-
-		$this->logError('[LP] translate helper: enable intl extension', 'critical');
+				return $fmt->format($values);
+			} catch (IntlException) {
+				$this->logError("[LP] translate helper: pattern syntax error in \$txt['{$pattern}']", 'critical');
+			}
+		} else {
+			$this->logError('[LP] translate helper: you should enable intl extension', 'critical');
+		}
 
 		return '';
 	}

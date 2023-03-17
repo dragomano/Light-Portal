@@ -36,7 +36,7 @@ abstract class AbstractImport implements ImportInterface
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$this->tempCache = $this->db_cache;
+		$this->tempCache = $this->db_cache ?? [];
 		$this->db_cache = [];
 
 		if ($file['type'] !== 'text/xml')
