@@ -2,7 +2,7 @@
 
 function template_plugin_post()
 {
-	global $context, $txt, $settings;
+	global $context, $language, $txt, $settings;
 
 	if (! empty($context['lp_addon_dir_is_not_writable'])) {
 		echo '
@@ -32,7 +32,7 @@ function template_plugin_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }">
 		<div class="roundframe noup">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
@@ -164,7 +164,7 @@ function template_plugin_post()
 																<tr class="windowbg">
 																	<td><strong>', $lang['name'], '</strong></td>
 																	<td>
-																		<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], array($context['user']['language'], 'english')) ? ' required' : '', ' placeholder="', $lang['filename'], '">
+																		<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], [$context['user']['language'], 'english']) ? ' required' : '', ' placeholder="', $lang['filename'], '">
 																	</td>
 																</tr>';
 	}
@@ -215,8 +215,7 @@ function template_plugin_post()
 
 	foreach ($context['languages'] as $lang) {
 		echo '
-					document.querySelector("dt.pf_title_', $lang['filename'], '").style.display = "none";
-					document.querySelector("dd.pf_title_', $lang['filename'], '").style.display = "none";';
+					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "none";';
 	}
 
 	echo '
@@ -226,8 +225,7 @@ function template_plugin_post()
 
 	foreach ($context['languages'] as $lang) {
 		echo '
-					document.querySelector("dt.pf_title_', $lang['filename'], '").style.display = "inline-block";
-					document.querySelector("dd.pf_title_', $lang['filename'], '").style.display = "inline-block";';
+					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "inline-block";';
 	}
 
 	echo '

@@ -6,13 +6,16 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal;
+
+use Bugo\LightPortal\Entities\Block;
+use Bugo\LightPortal\Lists\IconList;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,14 +36,15 @@ abstract class AbstractMain
 		return true;
 	}
 
-	protected function defineVars()
+	protected function defineVars(): void
 	{
 		$this->context['allow_light_portal_view']              = $this->allowedTo('light_portal_view');
 		$this->context['allow_light_portal_manage_own_blocks'] = $this->allowedTo('light_portal_manage_own_blocks');
 		$this->context['allow_light_portal_manage_own_pages']  = $this->allowedTo('light_portal_manage_own_pages');
 		$this->context['allow_light_portal_approve_pages']     = $this->allowedTo('light_portal_approve_pages');
+		$this->context['allow_light_portal_moderate_pages']    = $this->allowedTo('light_portal_moderate_pages');
 
-		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages']] = $this->getNumActiveEntities();
+		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages'], $this->context['lp_num_my_pages'], $this->context['lp_num_unapproved_pages']] = $this->getNumActiveEntities();
 
 		$this->context['lp_all_title_classes']   = $this->getTitleClasses();
 		$this->context['lp_all_content_classes'] = $this->getContentClasses();
@@ -63,19 +67,19 @@ abstract class AbstractMain
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
 		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);
-		$this->context['lp_active_blocks']   = (new Entities\Block)->getActive();
-		$this->context['lp_icon_set']        = (new Lists\IconList)->getAll();
+		$this->context['lp_active_blocks']   = (new Block)->getActive();
+		$this->context['lp_icon_set']        = (new IconList)->getAll();
 	}
 
-	protected function loadAssets()
+	protected function loadAssets(): void
 	{
 		if (! empty($this->modSettings['lp_fa_source'])) {
 			if ($this->modSettings['lp_fa_source'] === 'css_local') {
 				$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
 			} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
-				$this->loadCSSFile(
+				$this->loadExtCSS(
 					$this->modSettings['lp_fa_custom'],
-					['external' => true, 'seed' => false],
+					['seed' => false],
 					'portal_fontawesome'
 				);
 			}
@@ -91,7 +95,7 @@ abstract class AbstractMain
 	 *
 	 * Удаляем ненужные в автономном режиме области
 	 */
-	protected function unsetDisabledActions(array &$data)
+	protected function unsetDisabledActions(array &$data): void
 	{
 		$disabled_actions = empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']);
 		$disabled_actions[] = 'home';
@@ -122,7 +126,7 @@ abstract class AbstractMain
 	 *
 	 * Исправляем канонический адрес для области forum
 	 */
-	protected function fixCanonicalUrl()
+	protected function fixCanonicalUrl(): void
 	{
 		if ($this->request()->is('forum'))
 			$this->context['canonical_url'] = $this->scripturl . '?action=forum';
@@ -133,7 +137,7 @@ abstract class AbstractMain
 	 *
 	 * Меняем дерево ссылок
 	 */
-	protected function fixLinktree()
+	protected function fixLinktree(): void
 	{
 		if (empty($this->context['current_board']) && $this->request()->has('c') === false || empty($this->context['linktree'][1]))
 			return;
@@ -145,13 +149,23 @@ abstract class AbstractMain
 	}
 
 	/**
+	 * Allow forum action page indexing
+	 *
+	 * Разрешаем индексацию главной страницы форума
+	 */
+	protected function fixForumIndexing(): void
+	{
+		$this->context['robot_no_index'] = false;
+	}
+
+	/**
 	 * Show the script execution time and the number of the portal queries
 	 *
 	 * Отображаем время выполнения скрипта и количество запросов к базе
 	 */
-	protected function showDebugInfo()
+	protected function showDebugInfo(): void
 	{
-		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']))
+		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']) || $this->request()->is('devtools'))
 			return;
 
 		$this->context['lp_load_page_stats'] = sprintf($this->txt['lp_load_page_stats'], round(microtime(true) - $this->context['lp_load_time'], 3), $this->context['lp_num_queries']);
@@ -170,7 +184,7 @@ abstract class AbstractMain
 		);
 	}
 
-	protected function promoteTopic()
+	protected function promoteTopic(): void
 	{
 		if (empty($this->user_info['is_admin']) || empty($this->request()->has('t')))
 			return;
@@ -205,7 +219,17 @@ abstract class AbstractMain
 						FROM {db_prefix}lp_pages p
 						WHERE p.status = {int:status}' . ($this->user_info['is_admin'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
-					) AS num_pages',
+					) AS num_pages,
+					(
+						SELECT COUNT(page_id)
+						FROM {db_prefix}lp_pages
+						WHERE author_id = {int:user_id}
+					) AS num_my_pages,
+					(
+						SELECT COUNT(page_id)
+						FROM {db_prefix}lp_pages
+						WHERE status = 2
+					) AS num_unapproved_pages',
 				[
 					'status'  => 1,
 					'user_id' => $this->user_info['id']

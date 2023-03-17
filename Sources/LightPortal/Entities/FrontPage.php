@@ -6,16 +6,23 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, PageArticle, TopicArticle, ChosenPageArticle, ChosenTopicArticle};
+use Bugo\LightPortal\Front\{
+	ArticleInterface,
+	BoardArticle,
+	PageArticle,
+	TopicArticle,
+	ChosenPageArticle,
+	ChosenTopicArticle,
+};
 
 final class FrontPage
 {
@@ -55,7 +62,7 @@ final class FrontPage
 		return false;
 	}
 
-	public function prepare(ArticleInterface $article)
+	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
@@ -90,7 +97,7 @@ final class FrontPage
 		$this->hook('frontAssets');
 	}
 
-	public function prepareTemplates()
+	public function prepareTemplates(): void
 	{
 		if (empty($this->context['lp_frontpage_articles'])) {
 			$this->context['sub_template'] = 'empty';
@@ -130,7 +137,7 @@ final class FrontPage
 		if ($matches[1]) {
 			foreach ($matches[1] as $k => $v) {
 				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
-				$values[]  = strpos($name, '_') === false ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
+				$values[]  = ! str_contains($name, '_') ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
 			}
 
 			$layouts = array_combine($layouts, $values);
@@ -151,21 +158,12 @@ final class FrontPage
 		if (empty($this->modSettings['lp_frontpage_num_columns']))
 			return $num_columns;
 
-		switch ($this->modSettings['lp_frontpage_num_columns']) {
-			case '1':
-				$num_columns /= 2;
-				break;
-			case '2':
-				$num_columns /= 3;
-				break;
-			case '3':
-				$num_columns /= 4;
-				break;
-			default:
-				$num_columns /= 6;
-		}
-
-		return $num_columns;
+		return $num_columns / match ($this->modSettings['lp_frontpage_num_columns']) {
+			'1' => 2,
+			'2' => 3,
+			'3' => 4,
+			default => 6,
+		};
 	}
 
 	/**
@@ -193,7 +191,7 @@ final class FrontPage
 		return $sorting_types[$this->context['current_sorting']];
 	}
 
-	public function updateStart(int $total, int &$start, int $limit)
+	public function updateStart(int $total, int &$start, int $limit): void
 	{
 		if ($start >= $total) {
 			$this->sendStatus(404);
@@ -245,18 +243,16 @@ final class FrontPage
 		if ($value < 10000)
 			return (string) $value;
 
-		$k   = pow(10, 3);
-		$mil = pow(10, 6);
-		$bil = pow(10, 9);
+		$k   = 10 ** 3;
+		$mil = 10 ** 6;
+		$bil = 10 ** 9;
 
 		if ($value >= $bil)
 			return number_format($value / $bil, 1) . 'B';
 		else if ($value >= $mil)
 			return number_format($value / $mil, 1) . 'M';
-		else if ($value >= $k)
-			return number_format($value / $k, 1) . 'K';
 
-		return (string) $value;
+		return number_format($value / $k, 1) . 'K';
 	}
 
 	private function simplePaginate(string $url, int $total, int $limit): string

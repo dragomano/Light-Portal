@@ -6,11 +6,11 @@
  * @package PageLikes (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
@@ -30,11 +30,11 @@ class PageLikes extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_valid_likes', __CLASS__ . '::validLikes#', false, __FILE__);
-		add_integration_function('integrate_issue_like', __CLASS__ . '::issueLike#', false, __FILE__);
+		add_integration_function('integrate_valid_likes', self::class . '::validLikes#', false, __FILE__);
+		add_integration_function('integrate_issue_like', self::class . '::issueLike#', false, __FILE__);
 	}
 
-	public function validLikes(string $type, int $content)
+	public function validLikes(string $type, int $content): bool|array
 	{
 		if ($type !== 'lpp')
 			return false;

@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Entities;
@@ -23,9 +23,9 @@ final class Block
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
-		if ($this->isHideBlocksInAdmin())
+		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools'))
 			return;
 
 		if (empty($this->context['allow_light_portal_view']) || empty($this->context['template_layers']) || empty($this->context['lp_active_blocks']))
@@ -42,7 +42,7 @@ final class Block
 			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_own_blocks'] && $data['user_id'] == $this->context['user']['id']);
 
 			$data['content'] = empty($data['content'])
-				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME)
+				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'])
 				: parse_content($data['content'], $data['type']);
 
 			if (empty($data['title'][$this->context['user']['language']]))
@@ -155,7 +155,7 @@ final class Block
 			if ($area === LP_ACTION && isset($block['areas']['home']) && empty($this->context['lp_page']) && empty($this->context['current_action']))
 				return true;
 
-			if (isset($this->context['lp_page']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']])))
+			if (isset($this->context['lp_page']) && isset($this->context['lp_page']['alias']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']])))
 				return true;
 
 			if (empty($this->context['current_board']))
@@ -185,7 +185,7 @@ final class Block
 
 		$items = explode('|', $entity);
 		foreach ($items as $item) {
-			if (strpos($item, '-') !== false) {
+			if (str_contains($item, '-')) {
 				$range = explode('-', $item);
 				for ($i = $range[0]; $i <= $range[1]; $i++) {
 					$ids[] = $i;

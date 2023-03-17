@@ -6,16 +6,27 @@
  * @package Markdown (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Markdown\Smf\{
+	BlockQuoteRenderer,
+	FencedCodeRenderer,
+	HeadingRenderer,
+	ImageRenderer,
+	LinkRenderer,
+	ListBlockRenderer,
+	ListItemRenderer,
+	TableRowRenderer,
+	TableRenderer,
+};
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -36,7 +47,7 @@ class Markdown extends Plugin
 	{
 		$this->context['lp_content_types']['markdown'] = 'Markdown';
 
-		add_integration_function('integrate_autoload', __CLASS__ . '::autoload#', false, __FILE__);
+		add_integration_function('integrate_autoload', self::class . '::autoload#', false, __FILE__);
 	}
 
 	public function autoload(array &$classMap)
@@ -78,19 +89,19 @@ class Markdown extends Plugin
 		$environment = new Environment($config);
 		$environment->addExtension(new CommonMarkCoreExtension());
 		$environment->addExtension(new GithubFlavoredMarkdownExtension());
-		$environment->addRenderer(BlockQuote::class, new Smf\BlockQuoteRenderer());
-		$environment->addRenderer(FencedCode::class, new Smf\FencedCodeRenderer());
-		$environment->addRenderer(Heading::class, new Smf\HeadingRenderer());
-		$environment->addRenderer(ListBlock::class, new Smf\ListBlockRenderer());
-		$environment->addRenderer(ListItem::class, new Smf\ListItemRenderer());
-		$environment->addRenderer(Image::class, new Smf\ImageRenderer());
-		$environment->addRenderer(Link::class, new Smf\LinkRenderer());
-		$environment->addRenderer(Table::class, new Smf\TableRenderer());
-		$environment->addRenderer(TableRow::class, new Smf\TableRowRenderer());
+		$environment->addRenderer(BlockQuote::class, new BlockQuoteRenderer());
+		$environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
+		$environment->addRenderer(Heading::class, new HeadingRenderer());
+		$environment->addRenderer(ListBlock::class, new ListBlockRenderer());
+		$environment->addRenderer(ListItem::class, new ListItemRenderer());
+		$environment->addRenderer(Image::class, new ImageRenderer());
+		$environment->addRenderer(Link::class, new LinkRenderer());
+		$environment->addRenderer(Table::class, new TableRenderer());
+		$environment->addRenderer(TableRow::class, new TableRowRenderer());
 
 		$converter = new MarkdownConverter($environment);
 
-		return $converter->convertToHtml($this->unHtmlSpecialChars($text));
+		return $converter->convert($this->unHtmlSpecialChars($text));
 	}
 
 	public function credits(array &$links)

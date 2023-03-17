@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal;
@@ -29,25 +29,25 @@ final class Integration extends AbstractMain
 {
 	public function hooks()
 	{
-		add_integration_function('integrate_user_info', __CLASS__ . '::userInfo#', false, __FILE__);
-		add_integration_function('integrate_pre_css_output', __CLASS__ . '::preCssOutput#', false, __FILE__);
-		add_integration_function('integrate_load_theme', __CLASS__ . '::loadTheme#', false, __FILE__);
-		add_integration_function('integrate_redirect', __CLASS__ . '::changeRedirect#', false, __FILE__);
-		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
-		add_integration_function('integrate_default_action', __CLASS__ . '::defaultAction#', false, __FILE__);
-		add_integration_function('integrate_current_action', __CLASS__ . '::currentAction#', false, __FILE__);
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
-		add_integration_function('integrate_delete_members', __CLASS__ . '::deleteMembers#', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', __CLASS__ . '::loadIllegalGuestPermissions#', false, __FILE__);
-		add_integration_function('integrate_load_permissions', __CLASS__ . '::loadPermissions#', false, __FILE__);
-		add_integration_function('integrate_alert_types',  __CLASS__ . '::alertTypes#', false, __FILE__);
-		add_integration_function('integrate_fetch_alerts',  __CLASS__ . '::fetchAlerts#', false, __FILE__);
-		add_integration_function('integrate_pre_profile_areas', __CLASS__ . '::preProfileAreas#', false, __FILE__);
-		add_integration_function('integrate_profile_popup', __CLASS__ . '::profilePopup#', false, __FILE__);
-		add_integration_function('integrate_whos_online', __CLASS__ . '::whoisOnline#', false, __FILE__);
-		add_integration_function('integrate_modification_types', __CLASS__ . '::modificationTypes#', false, __FILE__);
-		add_integration_function('integrate_packages_sort_id', __CLASS__ . '::packagesSortId#', false, __FILE__);
+		add_integration_function('integrate_user_info', self::class . '::userInfo#', false, __FILE__);
+		add_integration_function('integrate_pre_css_output', self::class . '::preCssOutput#', false, __FILE__);
+		add_integration_function('integrate_load_theme', self::class . '::loadTheme#', false, __FILE__);
+		add_integration_function('integrate_redirect', self::class . '::changeRedirect#', false, __FILE__);
+		add_integration_function('integrate_actions', self::class . '::actions#', false, __FILE__);
+		add_integration_function('integrate_default_action', self::class . '::defaultAction#', false, __FILE__);
+		add_integration_function('integrate_current_action', self::class . '::currentAction#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', self::class . '::displayButtons#', false, __FILE__);
+		add_integration_function('integrate_delete_members', self::class . '::deleteMembers#', false, __FILE__);
+		add_integration_function('integrate_load_illegal_guest_permissions', self::class . '::loadIllegalGuestPermissions#', false, __FILE__);
+		add_integration_function('integrate_load_permissions', self::class . '::loadPermissions#', false, __FILE__);
+		add_integration_function('integrate_alert_types',  self::class . '::alertTypes#', false, __FILE__);
+		add_integration_function('integrate_fetch_alerts',  self::class . '::fetchAlerts#', false, __FILE__);
+		add_integration_function('integrate_profile_areas', self::class . '::profileAreas#', false, __FILE__);
+		add_integration_function('integrate_profile_popup', self::class . '::profilePopup#', false, __FILE__);
+		add_integration_function('integrate_whos_online', self::class . '::whoisOnline#', false, __FILE__);
+		add_integration_function('integrate_modification_types', self::class . '::modificationTypes#', false, __FILE__);
+		add_integration_function('integrate_packages_sort_id', self::class . '::packagesSortId#', false, __FILE__);
 		add_integration_function('integrate_credits', __NAMESPACE__ . '\Areas\CreditArea::show#', false, '$sourcedir/LightPortal/Areas/CreditArea.php');
 		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Areas\ConfigArea::adminAreas#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Areas\ConfigArea::adminSearch#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
@@ -60,7 +60,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.0');
+		defined('LP_VERSION') || define('LP_VERSION', '2.1 beta');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -98,6 +98,9 @@ final class Integration extends AbstractMain
 		AddonHandler::getInstance()->run();
 	}
 
+	/**
+	 * @hook integrate_redirect
+	 */
 	public function changeRedirect(string &$setLocation)
 	{
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
@@ -228,6 +231,19 @@ final class Integration extends AbstractMain
 			);
 		}
 
+		if ($this->context['allow_light_portal_moderate_pages']) {
+			$buttons['moderate']['show'] = true;
+
+			$buttons['moderate']['sub_buttons'] = [
+				'lp_pages' => [
+					'title' => $this->txt['lp_pages_unapproved'],
+					'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+					'amt'   => $this->context['lp_num_unapproved_pages'],
+					'show'  => true,
+				],
+			] + $buttons['moderate']['sub_buttons'];
+		}
+
 		$this->showDebugInfo();
 
 		if (empty($this->modSettings['lp_frontpage_mode']))
@@ -241,7 +257,7 @@ final class Integration extends AbstractMain
 				'icon'        => 'home',
 				'show'        => true,
 				'action_hook' => true,
-				'is_last'     => $this->context['right_to_left'],
+				'is_last'     => $this->context['right_to_left']
 			],
 		], $buttons);
 
@@ -265,7 +281,7 @@ final class Integration extends AbstractMain
 						'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
 						'icon'        => 'im_on',
 						'show'        => true,
-						'action_hook' => true,
+						'action_hook' => true
 					],
 				],
 				array_slice($buttons, 2, null, true)
@@ -277,6 +293,7 @@ final class Integration extends AbstractMain
 		// Other fixes
 		$this->fixCanonicalUrl();
 		$this->fixLinktree();
+		$this->fixForumIndexing();
 	}
 
 	/**
@@ -291,16 +308,16 @@ final class Integration extends AbstractMain
 		if (empty($this->user_info['is_admin']) || empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_topics')
 			return;
 
-		$this->context['normal_buttons']['lp_promote'] = array(
+		$this->context['normal_buttons']['lp_promote'] = [
 			'text' => in_array($this->context['current_topic'], $this->context['lp_frontpage_topics']) ? 'lp_remove_from_fp' : 'lp_promote_to_fp',
 			'url'  => LP_BASE_URL . ';sa=promote;t=' . $this->context['current_topic']
-		);
+		];
 	}
 
 	/**
-	 * Remove comments and alerts on deleting members
+	 * Remove comments, ratings, and alerts on deleting members
 	 *
-	 * Удаляем комментарии и оповещения при удалении пользователей
+	 * Удаляем комментарии, оценки и оповещения при удалении пользователей
 	 */
 	public function deleteMembers(array $users)
 	{
@@ -310,6 +327,14 @@ final class Integration extends AbstractMain
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
+			[
+				'users' => $users,
+			]
+		);
+
+		$this->smcFunc['db_query']('', '
+			DELETE FROM {db_prefix}lp_ratings
+			WHERE user_id IN ({array_int:users})',
 			[
 				'users' => $users,
 			]
@@ -338,6 +363,7 @@ final class Integration extends AbstractMain
 				'light_portal_manage_own_blocks',
 				'light_portal_manage_own_pages',
 				'light_portal_approve_pages',
+				'light_portal_moderate_pages'
 			]
 		);
 	}
@@ -345,51 +371,63 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_load_permissions
 	 */
-	public function loadPermissions(array $permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
 		$this->context['permissions_excluded']['light_portal_manage_own_blocks'][] = 0;
 		$this->context['permissions_excluded']['light_portal_manage_own_pages'][]  = 0;
 		$this->context['permissions_excluded']['light_portal_approve_pages'][]     = 0;
+		$this->context['permissions_excluded']['light_portal_moderate_pages'][]    = 0;
 
 		$permissionList['membergroup']['light_portal_view']              = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_own_blocks'] = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_own_pages']  = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_approve_pages']     = [false, 'light_portal'];
+		$permissionList['membergroup']['light_portal_moderate_pages']    = [false, 'light_portal'];
 
-		$leftPermissionGroups[] = 'light_portal';
+		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
 	}
 
 	/**
 	 * @hook integrate_alert_types
 	 */
-	public function alertTypes(array &$alert_types)
+	public function alertTypes(array &$types)
 	{
-		if (empty($this->modSettings['lp_show_comment_block']))
-			return;
+		$this->txt['alert_group_light_portal'] = $this->txt['lp_portal'];
 
-		$this->txt['alert_group_light_portal'] = LP_NAME;
-
-		if ($this->modSettings['lp_show_comment_block'] === 'default')
-			$alert_types['light_portal'] = [
+		if (! empty($this->modSettings['lp_show_comment_block']) ?? $this->modSettings['lp_show_comment_block'] === 'default')
+			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
 					'email' => 'never',
-					'permission' => ['name' => 'light_portal_manage_own_pages', 'is_board' => false]
+					'permission' => [
+						'name'     => 'light_portal_manage_own_pages',
+						'is_board' => false
+					]
 				],
 				'page_comment_reply' => [
 					'alert' => 'yes',
 					'email' => 'never',
-					'permission' => ['name' => 'light_portal_view', 'is_board' => false]
+					'permission' => [
+						'name'     => 'light_portal_view',
+						'is_board' => false
+					]
 				]
 			];
+
+		$types['light_portal']['page_unapproved'] = [
+			'alert' => 'yes',
+			'email' => 'yes',
+			'permission' => [
+				'name'     => 'light_portal_moderate_pages',
+				'is_board' => false
+			]
+		];
 	}
 
 	/**
-	 * Adding a notification about new comments
-	 *
-	 * Добавляем оповещение о новых комментариях
+	 * @hook integrate_fetch_alerts
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
@@ -397,14 +435,14 @@ final class Integration extends AbstractMain
 			return;
 
 		foreach ($alerts as $id => $alert) {
-			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply'])) {
+			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
 				if ($alert['sender_id'] !== $this->user_info['id']) {
-					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on') . '"></span>';
+					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_unapproved' ? 'news' : ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on')) . '"></span>';
 					$alerts[$id]['text'] = $this->translate('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
 
 					$substitutions = [
 						'{member_link}' => $alert['sender_id'] && $alert['show_links'] ? '<a href="' . $this->scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
-						'{content_subject}' => $alert['extra']['content_subject']
+						'{content_subject}' => '(' . $alert['extra']['content_subject'] . ')'
 					];
 
 					$alerts[$id]['text'] = strtr($alerts[$id]['text'], $substitutions);
@@ -417,11 +455,9 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * Add the "My pages" item in the profile popup window
-	 *
-	 * Добавляем пункт «Мои страницы» в попап-окне профиля
+	 * @hook integrate_profile_areas
 	 */
-	public function preProfileAreas(array &$profile_areas)
+	public function profileAreas(array &$profile_areas)
 	{
 		if ($this->context['user']['is_admin'])
 			return;
@@ -431,10 +467,7 @@ final class Integration extends AbstractMain
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
 			'icon'       => 'modifications',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => [
-				'own' => ['light_portal_manage_own_blocks'],
-				'any' => []
-			]
+			'permission' => 'light_portal_manage_own_blocks',
 		];
 
 		$profile_areas['info']['areas']['lp_my_pages'] = [
@@ -442,10 +475,7 @@ final class Integration extends AbstractMain
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => [
-				'own' => ['light_portal_manage_own_pages'],
-				'any' => []
-			]
+			'permission' => 'light_portal_manage_own_pages',
 		];
 	}
 

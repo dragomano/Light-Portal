@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -31,9 +31,10 @@ final class Category extends AbstractPageList
 		if (array_key_exists($this->context['lp_category'], $this->getAllCategories()) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
 			$this->txt['back'] = $this->txt['lp_all_categories'];
-			$this->fatalLangError('lp_category_not_found', false, null, 404);
+			$this->fatalLangError('lp_category_not_found', 404);
 		}
 
+		$category = [];
 		if (empty($this->context['lp_category'])) {
 			$this->context['page_title'] = $this->txt['lp_all_pages_without_category'];
 		} else {
@@ -253,7 +254,7 @@ final class Category extends AbstractPageList
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			if ($row['description'] && strpos($row['description'], ']') !== false) {
+			if ($row['description'] && str_contains($row['description'], ']')) {
 				$row['description'] = $this->parseBbc($row['description']);
 			}
 

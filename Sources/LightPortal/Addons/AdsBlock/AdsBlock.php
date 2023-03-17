@@ -6,11 +6,11 @@
  * @package AdsBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -155,11 +155,11 @@ class AdsBlock extends Plugin
 		if (! function_exists('lp_show_blocks'))
 			$this->loadTemplate('LightPortal/ViewBlock');
 
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
-		add_integration_function('integrate_messageindex_buttons', __CLASS__ . '::messageindexButtons#', false, __FILE__);
-		add_integration_function('integrate_display_buttons', __CLASS__ . '::displayButtons#', false, __FILE__);
-		add_integration_function('integrate_prepare_display_context', __CLASS__ . '::prepareDisplayContext#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_admin_areas', self::class . '::adminAreas#', false, __FILE__);
+		add_integration_function('integrate_messageindex_buttons', self::class . '::messageindexButtons#', false, __FILE__);
+		add_integration_function('integrate_display_buttons', self::class . '::displayButtons#', false, __FILE__);
+		add_integration_function('integrate_prepare_display_context', self::class . '::prepareDisplayContext#', false, __FILE__);
 	}
 
 	/**
@@ -324,7 +324,7 @@ class AdsBlock extends Plugin
 
 			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
-			$(' . JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
+			$(' . $this->jsEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
 		}
 
@@ -343,7 +343,7 @@ class AdsBlock extends Plugin
 
 			$this->addInlineJavaScript('
 		jQuery(document).ready(function ($) {
-			$("#quickModForm").append(' . JavaScriptEscape($after_last_post) . ');
+			$("#quickModForm").append(' . $this->jsEscape($after_last_post) . ');
 		});', true);
 		}
 	}

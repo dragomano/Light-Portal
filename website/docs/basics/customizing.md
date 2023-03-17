@@ -28,7 +28,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/layouts/create_new)_.
+* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/how-to/create_layout)_.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Show the pagination — specify where the page pagination should be displayed.
 * Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
@@ -65,6 +65,8 @@ In this section, you can change the general settings of pages and blocks used bo
 * Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
+* Sorting comments by default — select the desired sorting type for comments on portal pages.
+* Allow voting for comments — "Like" and "Dislike" buttons will appear under each comment. The background of comments will change depending on the number of positive or negative ratings.
 * Show items on tag/category pages as cards — you can display items as a table, or as cards.
 * The type of page editor by default — if you constantly create pages of the same type, you can set this type as default.
 * The maximum number of keywords that can be added to a page — when creating portal pages, you will not be able to specify the number of keywords greater than the specified number.

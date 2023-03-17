@@ -6,11 +6,11 @@
  * @package HelloPortal (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.05.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -31,7 +31,7 @@ class HelloPortal extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
 	}
 
 	public function menuButtons()
@@ -44,23 +44,23 @@ class HelloPortal extends Plugin
 		if (! empty($this->context['admin_menu_name']) && ! empty($this->context[$this->context['admin_menu_name']]) && ! empty($this->context[$this->context['admin_menu_name']]['tab_data']['title']))
 			$this->context[$this->context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . $this->txt['lp_hello_portal']['tour_button'] . '</button>';
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
 		if (! empty($this->context['lp_hello_portal_plugin']['theme']))
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css');
 
 		if ($this->context['right_to_left'])
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
 		$this->addInlineJavaScript('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . JavaScriptEscape($this->txt['previous_next_forward']) . ',
-				prevLabel: ' . JavaScriptEscape($this->txt['previous_next_back']) . ',
-				doneLabel: ' . JavaScriptEscape($this->txt['announce_done']) . ',
+				nextLabel: ' . $this->jsEscape($this->txt['previous_next_forward']) . ',
+				prevLabel: ' . $this->jsEscape($this->txt['previous_next_back']) . ',
+				doneLabel: ' . $this->jsEscape($this->txt['announce_done']) . ',
 				steps: [' . $steps . '],
 				showProgress: ' . (empty($this->context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
 				showButtons: ' . (empty($this->context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',

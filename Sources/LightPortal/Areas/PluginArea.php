@@ -8,10 +8,10 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -35,11 +35,11 @@ final class PluginArea
 		$this->repository = new PluginRepository();
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadLanguage('ManageMaintenance');
 		$this->loadTemplate('LightPortal/ManagePlugins');
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js', ['external' => true]);
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];
 		$this->context['post_url'] = $this->scripturl . '?action=admin;area=lp_plugins;save';
@@ -119,7 +119,7 @@ final class PluginArea
 			// You can do additional actions after settings saving
 			$this->hook('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
 
-			$this->repository->updateSettings($plugin_name, $plugin_options);
+			$this->repository->changeSettings($plugin_name, $plugin_options);
 
 			exit;
 		}
@@ -140,7 +140,7 @@ final class PluginArea
 					$link = $addonClass->getProperty('link')->getValue(new $className);
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
-			} catch (ReflectionException $e) {
+			} catch (ReflectionException) {
 				if (isset($this->context['lp_can_donate'][$item])) {
 					$this->context['lp_loaded_addons'][$snake_name]['type'] = $this->context['lp_can_donate'][$item]['type'] ?? 'other';
 					$special = $this->txt['lp_can_donate'];
@@ -182,13 +182,13 @@ final class PluginArea
 		$this->context['sub_template'] = 'manage_plugins';
 	}
 
-	private function extendPluginList()
+	private function extendPluginList(): void
 	{
 		$this->context['lp_can_donate'] = [];
 		$this->context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$link = 'https://dragomano.ru/addons.json';
+			$link = 'https://gist.githubusercontent.com/dragomano/5ed96dfb2061e3de86ef13450f913842/raw/2694a767be8b5f844e7300d3a4ce69fb3634e806/addons.json';
 
 			$addon_list = $this->fetchWebData($link);
 
@@ -243,14 +243,14 @@ final class PluginArea
 		return ' lp_type_' . $type;
 	}
 
-	private function prepareAddonChart()
+	private function prepareAddonChart(): void
 	{
 		if ($this->request()->has('chart') === false)
 			return;
 
 		$typeCount = [];
 		foreach ($this->context['all_lp_plugins'] as $plugin) {
-			$types = array_merge(array_keys($plugin['types']));
+			$types = [...array_keys($plugin['types'])];
 			foreach ($types as $type) {
 				$key = array_search($type, $this->txt['lp_plugins_types']);
 

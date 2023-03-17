@@ -198,7 +198,7 @@ function template_block_add()
 
 function template_block_post()
 {
-	global $context, $txt;
+	global $context, $txt, $language;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		if (! empty($context['lp_block']['title_style']))
@@ -242,7 +242,7 @@ function template_block_post()
 	$fields = $context['posting_fields'];
 
 	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data>
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }">
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>

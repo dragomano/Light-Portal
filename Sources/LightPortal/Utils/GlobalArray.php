@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Utils;
@@ -21,21 +21,12 @@ abstract class GlobalArray
 {
 	protected array $storage = [];
 
-	/**
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function &get(string $key)
+	public function &get(string $key): mixed
 	{
 		return $this->storage[$key];
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
-	 */
-	public function put(string $key, $value)
+	public function put(string $key, mixed $value): void
 	{
 		$this->storage[$key] = &$value;
 	}
@@ -60,11 +51,7 @@ abstract class GlobalArray
 		return $result;
 	}
 
-	/**
-	 * @param string|array $keys
-	 * @return bool
-	 */
-	public function has($keys): bool
+	public function has(array|string $keys): bool
 	{
 		if (is_array($keys)) {
 			foreach ($keys as $key) {

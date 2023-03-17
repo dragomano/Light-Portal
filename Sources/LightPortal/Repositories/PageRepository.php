@@ -8,10 +8,10 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Repositories;
@@ -31,10 +31,9 @@ final class PageRepository extends AbstractRepository
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . ($this->user_info['is_admin'] ? '
-			WHERE 1=1' : '
-			WHERE p.author_id = {int:user_id}') . (empty($query_string) ? '' : '
-				AND ' . $query_string) . '
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})' . ($this->request()->has('u') ? '
+			WHERE p.author_id = {int:user_id}' : 'WHERE 1=1') . (empty($query_string) ? '' : '
+				' . $query_string) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($query_params, [
@@ -75,10 +74,9 @@ final class PageRepository extends AbstractRepository
 		$request = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($this->user_info['is_admin'] ? '
-			WHERE 1=1' : '
-			WHERE p.author_id = {int:user_id}') . (empty($query_string) ? '' : '
-				AND ' . $query_string),
+				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})' . ($this->request()->has('u') ? '
+			WHERE p.author_id = {int:user_id}' : 'WHERE 1=1') . (empty($query_string) ? '' : '
+				' . $query_string),
 			array_merge($query_params, [
 				'lang'    => $this->user_info['language'],
 				'user_id' => $this->user_info['id'],
@@ -170,6 +168,18 @@ final class PageRepository extends AbstractRepository
 
 		$this->smcFunc['db_transaction']('commit');
 
+		// Notify page moderators about new page
+		$options = [
+			'item'      => $item,
+			'time'      => $this->getPublishTime(),
+			'author_id' => $this->context['lp_page']['page_author'],
+			'title'     => $this->context['lp_page']['title'][$this->user_info['language']] ?? $this->context['lp_page']['title'][$this->language],
+			'url'       => LP_PAGE_URL . $this->context['lp_page']['alias']
+		];
+
+		if (empty($this->context['allow_light_portal_moderate_pages']))
+			$this->makeNotify('new_page', 'page_unapproved', $options);
+
 		return $item;
 	}
 
@@ -203,10 +213,11 @@ final class PageRepository extends AbstractRepository
 		$this->saveTags();
 		$this->saveOptions($item, 'replace');
 
-		if ($this->context['lp_page']['page_author'] !== $this->user_info['id'])
-			logAction('update_lp_page', [
+		if ($this->context['lp_page']['page_author'] !== $this->user_info['id']) {
+			$this->logAction('update_lp_page', [
 				'page' => '<a href="' . LP_PAGE_URL . $this->context['lp_page']['alias'] . '">' . $this->context['lp_page']['title'][$this->user_info['language']] . '</a>'
 			]);
+		}
 
 		$this->smcFunc['db_transaction']('commit');
 	}

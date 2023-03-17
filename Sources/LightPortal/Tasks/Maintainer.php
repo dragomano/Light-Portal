@@ -6,19 +6,16 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
 use SMF_BackgroundTask;
-
-if (! defined('SMF'))
-	die('No direct access...');
 
 final class Maintainer extends SMF_BackgroundTask
 {
@@ -43,7 +40,7 @@ final class Maintainer extends SMF_BackgroundTask
 			],
 			[
 				'$sourcedir/LightPortal/Tasks/Maintainer.php',
-				__CLASS__,
+				'\\' . self::class,
 				'',
 				time() + (7 * 24 * 60 * 60)
 			],
@@ -93,17 +90,44 @@ final class Maintainer extends SMF_BackgroundTask
 			]
 		);
 
-		$this->smcFunc['db_query']('', /** @lang text */ '
-			DELETE FROM {db_prefix}lp_comments
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 			[]
 		);
+
+		$comments = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$comments[] = $row['id'];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+
+		if ($comments) {
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_ratings
+				WHERE content_type = {string:type}
+					AND content_id IN ({array_int:items})',
+				[
+					'type'  => 'comment',
+					'items' => $comments
+				]
+			);
+		}
 	}
 
 	private function updateNumComments()
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, COUNT(c.id) AS amount
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -139,7 +163,7 @@ final class Maintainer extends SMF_BackgroundTask
 
 	private function updateLastCommentIds()
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, MAX(c.id) AS last_comment_id
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)

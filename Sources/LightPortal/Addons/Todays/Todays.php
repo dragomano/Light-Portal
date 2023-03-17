@@ -6,11 +6,11 @@
  * @package Todays (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 10.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -28,7 +28,7 @@ class Todays extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_menu_buttons', __CLASS__ . '::menuButtons#', false, __FILE__);
+		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
 	}
 
 	public function menuButtons(array &$buttons)
@@ -115,6 +115,17 @@ class Todays extends Plugin
 				$this->getData($parameters['widget_type']);
 			else
 				echo $this->txt['lp_todays']['empty_list'];
+		} elseif ($parameters['widget_type'] === 'events' && $result) {
+			echo '
+		<ul>';
+
+			foreach ($result as $event) {
+				echo '
+			<li>', $event['start_date_local'], ' - ', $event['link'], ($event['can_edit'] ? ' <a href="' . $event['modify_href'] . '" style="color: #ff0000;">*</a>' : ''), '</li>';
+			}
+
+			echo '
+		</ul>';
 		} elseif ($result) {
 			if ($parameters['widget_type'] !== 'birthdays' || count($result) <= $parameters['max_items']) {
 				$this->getData($parameters['widget_type']);

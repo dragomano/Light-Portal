@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Addons;
@@ -31,7 +31,7 @@ abstract class Plugin
 
 	public function getCalledClass(): ReflectionClass
 	{
-		return new ReflectionClass(get_called_class());
+		return new ReflectionClass(static::class);
 	}
 
 	public function getName(): string
@@ -52,7 +52,7 @@ abstract class Plugin
 		return $this;
 	}
 
-	public function withLayer(string $layer)
+	public function withLayer(string $layer): void
 	{
 		$this->context['template_layers'][] = $layer;
 	}
@@ -69,7 +69,7 @@ abstract class Plugin
 		return false;
 	}
 
-	public function addDefaultValues(array $values)
+	public function addDefaultValues(array $values): void
 	{
 		$snake_name = $this->getSnakeName($this->getName());
 

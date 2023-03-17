@@ -6,11 +6,11 @@
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -24,12 +24,10 @@ class Builder
 {
 	use Helper;
 
-	protected string $name;
 	protected string $path;
 
-	public function __construct(string $name)
+	public function __construct(protected string $name)
 	{
-		$this->name = $name;
 		$this->path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $name;
 	}
 
@@ -69,7 +67,7 @@ class Builder
 		return $this;
 	}
 
-	private function addSecurityCheck(string &$content)
+	private function addSecurityCheck(string &$content): void
 	{
 		$message = <<<XXX
 	if (! defined('LP_NAME'))

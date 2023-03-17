@@ -549,6 +549,36 @@ function template_callback_comment_settings()
 			<dd>
 				<input type="number" name="lp_num_comments_per_page" id="lp_num_comments_per_page" value="', $modSettings['lp_num_comments_per_pages'] ?? 10, '" size="6" min="1">
 			</dd>
+		</template>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_comment_sorting"></a> <span><label for="lp_comment_sorting">', $txt['lp_comment_sorting'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<select id="lp_comment_sorting" name="lp_comment_sorting">';
+
+	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc'], $txt['lp_sort_by_rating']] as $sort_value => $sort_title) {
+		echo '
+					<option value="', $sort_value, '"', ! empty($modSettings['lp_comment_sorting']) && $modSettings['lp_comment_sorting'] == $sort_value ? ' selected' : '', '>', $sort_title, '</option>';
+	}
+
+	echo '
+				</select>
+			</dd>
+		</template>
+
+		<template x-if="comment_block === \'default\'">
+			<dt>
+				<a id="setting_lp_allow_comment_ratings"></a> <span><label for="lp_allow_comment_ratings">', $txt['lp_allow_comment_ratings'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="comment_block === \'default\'">
+			<dd>
+				<input type="checkbox" name="lp_allow_comment_ratings" id="lp_allow_comment_ratings"', empty($modSettings['lp_allow_comment_ratings']) ? '' : ' checked', ' value="1">
+			</dd>
 		</template>';
 }
 

@@ -6,11 +6,11 @@
  * @package SimpleMenu (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 18.12.22
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -99,7 +99,7 @@ class SimpleMenu extends Plugin
 			[$title, $link] = [$item['name'], $item['link']];
 
 			$ext = true;
-			if (strpos($link, 'http') !== 0) {
+			if (! str_starts_with($link, 'http')) {
 				$active = $link == $this->context['current_action'];
 				$link   = $this->scripturl . '?action=' . $link;
 				$ext    = false;
@@ -126,7 +126,7 @@ class SimpleMenu extends Plugin
 
 		$simple_menu_html = $this->cache('simple_menu_addon_b' . $block_id)
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['items']);
+			->setFallback(self::class, 'getData', $parameters['items']);
 
 		if (empty($simple_menu_html))
 			return;

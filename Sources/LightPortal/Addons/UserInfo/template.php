@@ -37,6 +37,16 @@ function show_user_info($data)
 		</li>';
 	}
 
+	if ($context['allow_light_portal_moderate_pages']) {
+		echo '
+		<li class="lefttext">
+			<hr>
+			', $context['lp_icon_set']['pager'], ' <a href="', $scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', $context['session_var'], '=', $context['session_id'], '">
+				', $txt['lp_page_moderation'], '
+			</a>
+		</li>';
+	}
+
 	echo '
 		<li>
 			<hr>

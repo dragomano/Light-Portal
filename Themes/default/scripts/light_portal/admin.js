@@ -53,7 +53,7 @@ class PortalEntity {
 
 				let focusElement = document.getElementById(formElements[i].id);
 
-				if (focusElement) focusElement.focus();
+				focusElement ? focusElement.focus() : document.querySelector(".pf_title a").click()
 
 				return false
 			}
@@ -150,6 +150,8 @@ class Page extends PortalEntity {
 
 	change(refs) {
 		refs.type.disabled = ! document.querySelector(".pf_content textarea").value;
+
+		if (! refs.title_0.value) refs.title_0.focus();
 
 		// Create a page alias if it does not exist
 		if (refs.alias.value === '' && typeof (slugify) === 'function') {

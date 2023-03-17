@@ -6,11 +6,11 @@
  * @package Search (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -26,7 +26,7 @@ class Search extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_actions', __CLASS__ . '::actions#', false, __FILE__);
+		add_integration_function('integrate_actions', self::class . '::actions#', false, __FILE__);
 	}
 
 	public function addSettings(array &$config_vars)
@@ -98,7 +98,7 @@ class Search extends Plugin
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 4 . ' ELSE 0 END';
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 3 . ' ELSE 0 END';
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) = lower(\'' . $word . '\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 1 . ' ELSE 0 END';
+			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) . ' ELSE 0 END';
 		}
 
 		$request = $this->smcFunc['db_query']('', '
@@ -144,8 +144,8 @@ class Search extends Plugin
 		if ($type !== 'search')
 			return;
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js');
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">

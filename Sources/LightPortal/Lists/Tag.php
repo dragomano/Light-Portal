@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -31,7 +31,7 @@ final class Tag extends AbstractPageList
 		if (array_key_exists($this->context['lp_tag'], $this->getAllTags()) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
 			$this->txt['back'] = $this->txt['lp_all_page_tags'];
-			$this->fatalLangError('lp_tag_not_found', false, null, 404);
+			$this->fatalLangError('lp_tag_not_found', 404);
 		}
 
 		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getAllTags()[$this->context['lp_tag']]);

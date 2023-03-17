@@ -6,64 +6,65 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
+use ErrorException;
 use SMF_BackgroundTask;
-
-if (! defined('SMF'))
-	die('No direct access...');
 
 final class Notifier extends SMF_BackgroundTask
 {
 	use Helper;
 
 	/**
-	 * Performing the task of notifying subscribers about new comments to portal pages
-	 *
-	 * Выполнение задачи оповещений подписчиков о новых комментариях к страницам портала
+	 * @throws ErrorException
 	 */
 	public function execute(): bool
 	{
-		$members = $this->membersAllowedTo('light_portal_view');
+		require_once $this->sourcedir . '/Subs-Members.php';
+		require_once $this->sourcedir . '/Subs-Notify.php';
 
-		$this->_details['content_type'] === 'new_comment'
-			? $members = array_intersect($members, [$this->_details['author_id']])
-			: $members = array_intersect($members, [$this->_details['commentator_id']]);
+		$members = match ($this->_details['content_type']) {
+			'new_page' => membersAllowedTo('light_portal_moderate_pages'),
+			default    => array_intersect(membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
+		};
 
-		// Don't alert the comment author | Не будем уведомлять сами себя, ок?
+		// Let's not notify ourselves, okay?
 		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
 
-		$prefs = $this->getNotifyPrefs($members, $this->_details['content_type'] === 'new_comment' ? 'page_comment' : 'page_comment_reply');
+		$prefs = getNotifyPrefs($members, match ($this->_details['content_type']) {
+			'new_comment' => 'page_comment',
+			'new_reply'   => 'page_comment_reply',
+			default       => 'page_unapproved'
+		}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			$this->loadMemberData($this->_details['sender_id'], false, 'minimal');
+			$this->loadMemberData($this->_details['sender_id'], set: 'minimal');
 
 			empty($this->user_profile[$this->_details['sender_id']])
-				? $this->_details['sender_id'] = 0
+				? $this->_details['sender_id']   = 0
 				: $this->_details['sender_name'] = $this->user_profile[$this->_details['sender_id']]['real_name'];
 		}
 
 		$alert_bits = [
-			'alert' => self::RECEIVE_NOTIFY_ALERT
+			'alert' => self::RECEIVE_NOTIFY_ALERT,
+			'email' => self::RECEIVE_NOTIFY_EMAIL,
 		];
 
 		$notifies = [];
 		foreach ($prefs as $member => $pref_option) {
 			foreach ($alert_bits as $type => $bitvalue) {
-				if ($this->_details['content_type'] === 'new_comment') {
-					if ($pref_option['page_comment'] & $bitvalue) {
+				foreach (['page_comment', 'page_comment_reply', 'page_unapproved'] as $option) {
+					if (isset($pref_option[$option]) && ($pref_option[$option] & $bitvalue)) {
 						$notifies[$type][] = $member;
 					}
-				} elseif ($pref_option['page_comment_reply'] & $bitvalue) {
-					$notifies[$type][] = $member;
 				}
 			}
 		}
@@ -103,6 +104,47 @@ final class Notifier extends SMF_BackgroundTask
 				);
 
 				$this->updateMemberData($notifies['alert'], ['alerts' => '+']);
+			}
+		}
+
+		if (! empty($notifies['email'])) {
+			require_once $this->sourcedir . '/Subs-Post.php';
+			require_once $this->sourcedir . '/ScheduledTasks.php';
+
+			loadEssentialThemeData();
+
+			$emails = [];
+			$request = $this->smcFunc['db_query']('', '
+				SELECT id_member, lngfile, email_address
+				FROM {db_prefix}members
+				WHERE id_member IN ({array_int:members})',
+				[
+					'members' => $notifies['email'],
+				]
+			);
+
+			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+				if (empty($row['lngfile']))
+					$row['lngfile'] = $this->language;
+
+				$emails[$row['lngfile']][$row['id_member']] = $row['email_address'];
+			}
+
+			$this->smcFunc['db_free_result']($request);
+
+			foreach ($emails as $this_lang => $recipients) {
+				$replacements = [
+					'MEMBERNAME'  => $this->_details['sender_name'],
+					'PROFILELINK' => $this->scripturl . '?action=profile;u=' . $this->_details['sender_id'],
+					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], true, false)['content_link'],
+				];
+
+				loadLanguage('LightPortal/LightPortal', $this_lang);
+
+				$emaildata = loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
+
+				foreach ($recipients as $email_address)
+					sendmail($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
 			}
 		}
 

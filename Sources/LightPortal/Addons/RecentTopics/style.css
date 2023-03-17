@@ -17,3 +17,17 @@
 	width: 40px;
 	height: 40px;
 }
+
+.recent_topics_list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	grid-gap: 4px;
+}
+
+.recent_topics_list > div {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	text-align: center;
+	margin: 0 !important;
+}

@@ -6,11 +6,11 @@
  * @package TinySlider (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -401,14 +401,14 @@ class TinySlider extends Plugin
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $block_id, $parameters);
+			->setFallback(self::class, 'getData', $block_id, $parameters);
 
 		if (empty($tiny_slider_html))
 			return;
 
 		if ($parameters['use_cdn']) {
-			$this->loadCSSFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css', ['external' => true]);
-			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js', ['external' => true]);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
+			$this->loadExtJS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
 		} else {
 			$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
 			$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);

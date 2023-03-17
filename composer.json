@@ -1,8 +1,19 @@
 {
+    "autoload": {
+        "psr-4": {
+            "Bugo\\LightPortal\\": "Sources\\LightPortal"
+        }
+    },
+    "require": {
+        "php": "^8.0",
+        "ext-dom": "*"
+    },
     "require-dev": {
+        "rector/rector": "^0.15.21",
         "phing/phing": "2.*"
     },
     "scripts": {
+        "check": "vendor/bin/rector process --dry-run --clear-cache",
         "build": "vendor/bin/phing"
     }
 }

@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -23,7 +23,7 @@ final class CreditArea
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
 		$this->context['credits_modifications'][] = $this->getLink();
 
@@ -44,10 +44,10 @@ final class CreditArea
 	{
 		$link = $this->user_info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;2022</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
-	public function prepareComponents()
+	public function prepareComponents(): void
 	{
 		$this->middleware('light_portal_view');
 
@@ -65,7 +65,7 @@ final class CreditArea
 		$this->context['testers'] = [
 			[
 				'name' => 'Wylek',
-				'link' => 'https://wylek.ru/'
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=608635'
 			],
 		];
 

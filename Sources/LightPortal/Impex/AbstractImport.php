@@ -6,9 +6,9 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -27,10 +27,7 @@ abstract class AbstractImport implements ImportInterface
 
 	abstract protected function run();
 
-	/**
-	 * @return false|SimpleXMLElement
-	 */
-	protected function getXmlFile(string $name = 'import_file')
+	protected function getXmlFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
 		if (empty($file = $this->files($name)))
 			return false;
@@ -39,7 +36,7 @@ abstract class AbstractImport implements ImportInterface
 		@set_time_limit(600);
 
 		// Don't allow the cache to get too full
-		$this->tempCache = $this->db_cache;
+		$this->tempCache = $this->db_cache ?? [];
 		$this->db_cache = [];
 
 		if ($file['type'] !== 'text/xml')
@@ -104,7 +101,7 @@ abstract class AbstractImport implements ImportInterface
 	{
 		if (empty($results)) {
 			$this->smcFunc['db_transaction']('rollback');
-			$this->fatalLangError('lp_import_failed', false);
+			$this->fatalLangError('lp_import_failed');
 		}
 
 		$this->smcFunc['db_transaction']('commit');

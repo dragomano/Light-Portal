@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Front;
@@ -107,7 +107,7 @@ class PageArticle extends AbstractArticle
 					],
 					'is_new' => $this->user_info['last_login'] < $row['date'] && $row['author_id'] != $this->user_info['id'],
 					'image' => empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($row['content']),
-					'can_edit' => $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $row['author_id'] == $this->user_info['id']),
+					'can_edit' => $this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] || ($this->context['allow_light_portal_manage_own_pages'] && $row['author_id'] == $this->user_info['id']),
 					'edit_link' => $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 				];
 

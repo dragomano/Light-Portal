@@ -6,11 +6,11 @@
  * @package RandomTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 12.10.22
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -187,7 +187,7 @@ class RandomTopics extends Plugin
 
 		$randomTopics = $this->cache('random_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['num_topics']);
+			->setFallback(self::class, 'getData', (int) $parameters['num_topics']);
 
 		if ($randomTopics) {
 			echo '

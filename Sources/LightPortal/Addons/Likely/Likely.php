@@ -6,11 +6,11 @@
  * @package Likely (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -101,8 +101,8 @@ class Likely extends Plugin
 		if (empty($parameters['buttons']))
 			return;
 
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css', ['external' => true]);
-		$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js', ['external' => true]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js');
 
 		echo '
 			<div class="centertext likely_links">

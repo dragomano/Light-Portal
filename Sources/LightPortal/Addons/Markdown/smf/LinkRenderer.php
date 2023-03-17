@@ -8,11 +8,11 @@ declare(strict_types=1);
  * @package Markdown (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.10.21
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown\Smf;
@@ -58,7 +58,7 @@ final class LinkRenderer implements NodeRendererInterface, XmlNodeRendererInterf
             $attrs['rel'] = 'noopener noreferrer';
         }
 
-        $attrs = array_merge(['class' => strpos($attrs['href'], 'mailto:') !== false ? 'bbc_email' : 'bbc_link'], $attrs);
+        $attrs = array_merge(['class' => str_contains($attrs['href'], 'mailto:') ? 'bbc_email' : 'bbc_link'], $attrs);
 
         return new HtmlElement('a', $attrs, $childRenderer->renderNodes($node->children()));
     }

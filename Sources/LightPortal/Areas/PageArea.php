@@ -8,10 +8,10 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -36,17 +36,28 @@ final class PageArea
 		$this->repository = new PageRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
+		$this->checkUser();
+
 		$this->loadLanguage('Packages');
 		$this->loadTemplate('LightPortal/ManagePages');
+
+		if ($this->isModArea())
+			$this->addInlineCss('
+		#lp_pages .num_views, #lp_pages .num_comments {
+			display: none;
+		}');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_manage'];
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_manage_' . ($this->context['user']['is_admin'] ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
+			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_moderate_pages'] && $this->request()->has('u') === false ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
+
+		if ($this->isModArea())
+			$this->context[$this->context['admin_menu_name']]['tab_data']['description'] = $this->txt['lp_pages_unapproved_description'];
 
 		$this->doActions();
 		$this->massActions();
@@ -61,6 +72,18 @@ final class PageArea
 			'string' => $search_params['string'],
 		];
 
+		$params = [
+			(
+				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+			) . (
+				$this->request()->has('u') ? '' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
+			),
+			[
+				'search' => $this->smcFunc['strtolower']($search_params['string']),
+				'status' => 2
+			],
+		];
+
 		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 20,
@@ -70,17 +93,11 @@ final class PageArea
 			'default_sort_col' => 'date',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll'],
-				'params' => [
-					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
-					['quick_search_string' => $this->smcFunc['strtolower']($search_params['string'])],
-				],
+				'params'   => $params,
 			],
 			'get_count' => [
 				'function' => [$this->repository, 'getTotalCount'],
-				'params' => [
-					(empty($search_params['string']) ? '' : ' (INSTR(LOWER(p.alias), {string:quick_search_string}) > 0 OR INSTR(LOWER(t.title), {string:quick_search_string}) > 0)'),
-					['quick_search_string' => $this->smcFunc['strtolower']($search_params['string'])],
-				],
+				'params'   => $params,
 			],
 			'columns' => [
 				'id' => [
@@ -125,7 +142,7 @@ final class PageArea
 				],
 				'num_comments' => [
 					'header' => [
-						'value' => str_replace(' class=', '  title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
+						'value' => str_replace(' class=', ' title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
 					],
 					'data' => [
 						'db' => 'num_comments',
@@ -171,9 +188,9 @@ final class PageArea
 						'value' => $this->txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>' : '<div x-data="{status: ' . (empty($entry['status']) ? 'false' : 'true') . '}">
+							</div>' : '<div x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
 							</div>',
 						'class' => 'centertext',
@@ -210,15 +227,6 @@ final class PageArea
 						'class' => 'centertext',
 					],
 				],
-				'mass' => [
-					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
-					],
-					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
-						'class' => 'centertext',
-					],
-				],
 			],
 			'form' => [
 				'name' => 'manage_pages',
@@ -246,20 +254,33 @@ final class PageArea
 							</div>
 						</div>',
 				],
-				[
-					'position' => 'below_table_data',
-					'value' => '
-						<select name="page_actions">
-							<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] ? '
-							<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
-							<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
-							<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
-						</select>
-						<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
-					'class' => 'floatright',
-				],
 			],
 		];
+
+		if ($this->context['user']['is_admin']) {
+			$listOptions['columns']['mass'] = [
+				'header' => [
+					'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
+				],
+				'data' => [
+					'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
+					'class' => 'centertext',
+				],
+			];
+
+			$listOptions['additional_rows'][] = [
+				'position' => 'below_table_data',
+				'value' => '
+					<select name="page_actions">
+						<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '
+						<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
+						<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
+						<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
+					</select>
+					<input type="submit" name="mass_actions" value="' . $this->txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . $this->txt['quickmod_confirm'] . '\');">',
+				'class' => 'floatright',
+			];
+		}
 
 		$listOptions['title'] = '
 			<span class="floatright">
@@ -274,7 +295,7 @@ final class PageArea
 
 		$this->createList($listOptions);
 
-		$this->context['lp_pages']['title'] .= ' (' . $this->context['lp_pages']['total_num_items'] . ')';
+		$this->changeTableTitle($listOptions);
 	}
 
 	/**
@@ -282,7 +303,7 @@ final class PageArea
 	 *
 	 * Возможные действия со страницами
 	 */
-	public function doActions()
+	public function doActions(): void
 	{
 		if ($this->request()->has('actions') === false)
 			return;
@@ -300,7 +321,7 @@ final class PageArea
 		exit;
 	}
 
-	public function massActions()
+	public function massActions(): void
 	{
 		if ($this->request()->has('mass_actions') === false || $this->request()->isEmpty('items'))
 			return;
@@ -328,7 +349,7 @@ final class PageArea
 		$this->redirect($redirect);
 	}
 
-	public function add()
+	public function add(): void
 	{
 		$this->loadTemplate('LightPortal/ManagePages');
 
@@ -352,12 +373,12 @@ final class PageArea
 		$this->context['sub_template'] = 'page_post';
 	}
 
-	public function edit()
+	public function edit(): void
 	{
 		$item = (int) $this->request('id');
 
 		if (empty($item)) {
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
 		$this->loadTemplate('LightPortal/ManagePages');
@@ -372,24 +393,25 @@ final class PageArea
 		$this->context['lp_current_page'] = (new Page)->getDataByItem($item);
 
 		if (empty($this->context['lp_current_page']))
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 
 		if ($this->context['lp_current_page']['can_edit'] === false)
-			$this->fatalLangError('lp_page_not_editable', false);
+			$this->fatalLangError('lp_page_not_editable');
 
 		$this->prepareForumLanguages();
 
 		if ($this->request()->has('remove')) {
-			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id'])
-				logAction('remove_lp_page', [
+			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id']) {
+				$this->logAction('remove_lp_page', [
 					'page' => $this->context['lp_current_page']['title'][$this->user_info['language']]
 				]);
+			}
 
 			$this->remove([$item]);
 
 			$this->cache()->forget('page_' . $this->context['lp_current_page']['alias']);
 
-			$this->redirect('action=admin;area=lp_pages;sa=main');
+			$this->redirect('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
@@ -407,7 +429,45 @@ final class PageArea
 		$this->context['sub_template'] = 'page_post';
 	}
 
-	private function remove(array $items)
+	private function changeTableTitle(array $listOptions): void
+	{
+		$this->context['browse_type'] = $this->request()->has('u') ? 'own' : ($this->request()->has('moderate') ? 'mod' : 'all');
+
+		$titles = [
+			'all' => [
+				';sa=main',
+				$this->txt['all'],
+				$this->repository->getTotalCount(' AND p.status != 2') - $this->context['lp_num_unapproved_pages']
+			],
+			'own' => [
+				';sa=main;u=' . $this->user_info['id'],
+				$this->txt['lp_my_pages'],
+				(int) $this->context['lp_num_my_pages']
+			],
+			'mod' => [
+				';sa=main;moderate',
+				$this->txt['awaiting_approval'],
+				(int) $this->context['lp_num_unapproved_pages']
+			],
+		];
+
+		if (! $this->context['allow_light_portal_moderate_pages']) {
+			unset($titles['all'], $titles['mod']);
+		}
+
+		$this->context['lp_pages']['title'] .= ': ';
+		foreach ($titles as $browse_type => $details) {
+			if ($this->context['browse_type'] === $browse_type)
+				$this->context['lp_pages']['title'] .= '<img src="' . $this->settings['images_url'] . '/selected.png" alt="&gt;"> ';
+
+			$this->context['lp_pages']['title'] .= '<a href="' . $listOptions['form']['href'] . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
+
+			if ($browse_type !== 'mod' && count($titles) > 1)
+				$this->context['lp_pages']['title'] .= ' | ';
+		}
+	}
+
+	private function remove(array $items): void
 	{
 		if (empty($items))
 			return;
@@ -424,14 +484,6 @@ final class PageArea
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
 			[
 				'items' => $items,
 			]
@@ -455,12 +507,48 @@ final class PageArea
 			]
 		);
 
-		$this->context['lp_num_queries'] += 5;
+		$request = $this->smcFunc['db_query']('', '
+			SELECT id FROM {db_prefix}lp_comments
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$comments = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$comments[] = $row['id'];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries'] += 6;
+
+		if ($comments) {
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			$this->smcFunc['db_query']('', '
+				DELETE FROM {db_prefix}lp_ratings
+				WHERE content_type = {string:type}
+					AND content_id IN ({array_int:items})',
+				[
+					'type'  => 'comment',
+					'items' => $comments
+				]
+			);
+
+			$this->context['lp_num_queries'] += 2;
+		}
 
 		$this->hook('onPageRemoving', [$items]);
 	}
 
-	private function promote(array $items, string $type = 'up')
+	private function promote(array $items, string $type = 'up'): void
 	{
 		if (empty($items))
 			return;
@@ -488,8 +576,10 @@ final class PageArea
 		return $options;
 	}
 
-	private function validateData()
+	private function validateData(): void
 	{
+		$post_data = [];
+
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'category'    => FILTER_VALIDATE_INT,
@@ -538,13 +628,13 @@ final class PageArea
 			'id'          => (int) ($post_data['id'] ?? $this->context['lp_current_page']['id'] ?? 0),
 			'title'       => $this->context['lp_current_page']['title'] ?? [],
 			'category'    => $post_data['category'] ?? $this->context['lp_current_page']['category_id'] ?? 0,
-			'page_author' => (int) ($post_data['page_author'] ?? $this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
+			'page_author' => (int) ($this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
 			'alias'       => $post_data['alias'] ?? $this->context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $this->context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? $this->modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $this->context['lp_current_page']['status'] ?? (int) $this->context['allow_light_portal_approve_pages'],
+			'status'      => $this->context['lp_current_page']['status'] ?? 2,
 			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $dateTime->format('Y-m-d'),
 			'time'        => $post_data['time'] ?? $dateTime->format('H:i'),
@@ -552,17 +642,21 @@ final class PageArea
 			'options'     => $options,
 		];
 
+		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'])
+			$this->context['lp_page']['status'] = 1;
+
+		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
+
 		if (! (empty($this->modSettings['lp_prohibit_php']) || $this->user_info['is_admin']) && $this->context['lp_page']['type'] === 'php') {
 			$this->context['lp_page']['type'] = 'bbc';
 		}
 
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
+				$post_data[$option] = 0;
+
 				if ($parameters[$option] === FILTER_DEFAULT)
 					$post_data[$option] = '';
-
-				if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
-					$post_data[$option] = 0;
 
 				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 					$post_data[$option] = [];
@@ -578,7 +672,7 @@ final class PageArea
 		$this->cleanBbcode($this->context['lp_page']['title']);
 	}
 
-	private function findErrors(array $data)
+	private function findErrors(array $data): void
 	{
 		$post_errors = [];
 
@@ -589,8 +683,7 @@ final class PageArea
 		if (empty($data['alias']))
 			$post_errors[] = 'no_alias';
 
-		$alias_format['options'] = ['regexp' => '/' . self::ALIAS_PATTERN . '/'];
-		if ($data['alias'] && empty($this->validate($data['alias'], $alias_format)))
+		if ($data['alias'] && empty($this->validate($data['alias'], ['options' => ['regexp' => '/' . self::ALIAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_alias';
 
 		if ($data['alias'] && ! $this->isUnique($data))
@@ -610,30 +703,9 @@ final class PageArea
 		}
 	}
 
-	private function prepareFormFields()
+	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
-
-		$this->prepareIconList();
-
-		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : [$this->context['user']['language'], $this->language];
-
-		$i = 0;
-		foreach ($this->context['languages'] as $lang) {
-			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type'       => 'text',
-				'tab'        => 'content',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_page']['title'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $i++,
-				],
-			];
-		}
+		$this->prepareTitleFields();
 
 		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_page_type'];
 		$this->context['posting_fields']['type']['input'] = [
@@ -680,7 +752,6 @@ final class PageArea
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'style'     => 'width: 100%',
 				'x-ref'     => 'alias',
 			],
 		];
@@ -805,7 +876,7 @@ final class PageArea
 		$this->preparePostFields();
 	}
 
-	private function prepareMemberList()
+	private function prepareMemberList(): void
 	{
 		if ($this->request()->has('members') === false)
 			return;
@@ -846,12 +917,12 @@ final class PageArea
 		exit(json_encode($members));
 	}
 
-	private function prepareEditor()
+	private function prepareEditor(): void
 	{
 		$this->hook('prepareEditor', [$this->context['lp_page']]);
 	}
 
-	private function preparePreview()
+	private function preparePreview(): void
 	{
 		if ($this->request()->has('preview') === false)
 			return;
@@ -891,5 +962,16 @@ final class PageArea
 		$this->context['lp_num_queries']++;
 
 		return $count == 0;
+	}
+
+	private function checkUser(): void
+	{
+		if ($this->context['allow_light_portal_moderate_pages'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->has('u') === false)
+			$this->redirect('action=admin;area=lp_pages;u=' . $this->user_info['id']);
+	}
+
+	private function isModArea(): bool
+	{
+		return $this->request()->has(['sa', 'moderate']) && $this->request('sa') === 'main';
 	}
 }

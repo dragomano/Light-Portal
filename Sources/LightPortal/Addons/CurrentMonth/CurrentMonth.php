@@ -6,11 +6,11 @@
  * @package CurrentMonth (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.01.22
+ * @version 11.02.23
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
@@ -43,7 +43,7 @@ class CurrentMonth extends Plugin
 			: date_create(implode('-', [$today['year'], $today['month'], $today['day']]));
 
 		$calendarOptions = [
-			'start_day'          => $this->options['calendar_start_day'] ?: 0,
+			'start_day'          => (int) ($this->options['calendar_start_day'] ?? 0),
 			'show_birthdays'     => in_array($this->modSettings['cal_showbdays'], [1, 2]),
 			'show_events'        => in_array($this->modSettings['cal_showevents'], [1, 2]),
 			'show_holidays'      => in_array($this->modSettings['cal_showholidays'], [1, 2]),
@@ -51,7 +51,7 @@ class CurrentMonth extends Plugin
 			'short_day_titles'   => (bool) $this->modSettings['cal_short_days'],
 			'short_month_titles' => (bool) $this->modSettings['cal_short_months'],
 			'show_next_prev'     => (bool) $this->modSettings['cal_prev_next_links'],
-			'show_week_links'    => $this->modSettings['cal_week_links'] ?? 0
+			'show_week_links'    => (int) ($this->modSettings['cal_week_links'] ?? 0)
 		];
 
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
@@ -131,7 +131,7 @@ class CurrentMonth extends Plugin
 
 		$calendar_data = $this->cache('current_month_addon_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(self::class, 'getData');
 
 		if ($calendar_data) {
 			$calendar_data['block_id'] = $block_id;

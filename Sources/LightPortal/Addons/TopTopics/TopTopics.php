@@ -6,7 +6,7 @@
  * @package TopTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
@@ -95,7 +95,7 @@ class TopTopics extends Plugin
 
 		$top_topics = $this->cache('top_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
+			->setFallback(self::class, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
 
 		if (empty($top_topics))
 			return;

@@ -6,7 +6,7 @@
  * @package BoardStats (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
@@ -133,7 +133,7 @@ class BoardStats extends Plugin
 
 		$board_stats = $this->cache('board_stats_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($board_stats))
 			return;

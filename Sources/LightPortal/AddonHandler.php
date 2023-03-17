@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal;
@@ -24,7 +24,7 @@ class PluginStorage extends SplObjectStorage
 {
 	public function getHash($object): string
 	{
-		return get_class($object);
+		return $object::class;
 	}
 }
 
@@ -46,10 +46,6 @@ final class AddonHandler
 		$this->prepareAssets();
 	}
 
-	private function __clone() {}
-
-	public function __wakeup() {}
-
 	public static function getInstance(): self
 	{
 		if (empty(self::$instance)) {
@@ -70,7 +66,7 @@ final class AddonHandler
 	/**
 	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
 	 */
-	public function run(string $hook = 'init', array $vars = [], array $plugins = [])
+	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
 		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
 
@@ -109,7 +105,7 @@ final class AddonHandler
 		}
 	}
 
-	private function prepareAssets()
+	private function prepareAssets(): void
 	{
 		$assets = [];
 
@@ -139,7 +135,7 @@ final class AddonHandler
 		}
 	}
 
-	private function loadLang(string $path, string $snakeName)
+	private function loadLang(string $path, string $snakeName): void
 	{
 		if (isset($this->txt['lp_' . $snakeName]))
 			return;
@@ -156,7 +152,7 @@ final class AddonHandler
 			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private function loadCSS(string $path, string $snakeName)
+	private function loadCSS(string $path, string $snakeName): void
 	{
 		if (! is_file($style = $path . 'style.css'))
 			return;
@@ -173,7 +169,7 @@ final class AddonHandler
 		$this->loadCSSFile('light_portal/addon_' . $snakeName . '.css');
 	}
 
-	private function loadJS(string $path, string $snakeName)
+	private function loadJS(string $path, string $snakeName): void
 	{
 		if (! is_file($script = $path . 'script.js'))
 			return;

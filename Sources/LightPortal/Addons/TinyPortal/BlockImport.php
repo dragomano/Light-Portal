@@ -6,11 +6,11 @@
  * @package TinyPortal (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -226,34 +226,22 @@ class BlockImport extends AbstractOtherBlockImport
 
 	private function getType(int $type): string
 	{
-		switch ($type) {
-			case 5:
-				return 'bbc';
-			case 10:
-				return 'php';
-			case 11:
-			default:
-				return 'html';
-		}
+		return match ($type) {
+			5  => 'bbc',
+			10 => 'php',
+			default: 'html',
+		};
 	}
 
 	private function getPlacement(int $bar): string
 	{
-		switch ($bar) {
-			case 1:
-				return 'left';
-			case 2:
-				return 'right';
-			case 5:
-				return 'footer';
-			case 6:
-				return 'header';
-			case 7:
-				return 'bottom';
-			case 3:
-			case 4:
-			default:
-				return 'top';
-		}
+		return match ($bar) {
+			1 => 'left',
+			2 => 'right',
+			5 => 'footer',
+			6 => 'header',
+			7 => 'bottom',
+			default => 'top',
+		};
 	}
 }

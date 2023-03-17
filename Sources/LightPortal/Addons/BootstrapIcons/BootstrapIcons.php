@@ -6,11 +6,11 @@
  * @package BootstrapIcons (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -31,7 +31,7 @@ class BootstrapIcons extends Plugin
 
 	public function init()
 	{
-		$this->loadCSSFile('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['external' => true, 'seed' => false]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
 	}
 
 	public function addSettings(array &$config_vars)
@@ -80,6 +80,7 @@ class BootstrapIcons extends Plugin
 		$set['copyright']     = 'at';
 		$set['date']          = 'clock';
 		$set['design']        = 'fan';
+		$set['dislike']       = 'arrow-down';
 		$set['donate']        = 'currency-dollar';
 		$set['download']      = 'download';
 		$set['edit']          = 'pencil-square';
@@ -89,6 +90,7 @@ class BootstrapIcons extends Plugin
 		$set['image']         = 'image';
 		$set['import']        = 'file-arrow-up';
 		$set['italic']        = 'type-italic';
+		$set['like']          = 'arrow-up';
 		$set['link']          = 'link';
 		$set['main']          = 'card-list';
 		$set['map_signs']     = 'map';
@@ -118,6 +120,7 @@ class BootstrapIcons extends Plugin
 		$set['toggle']        = 'toggle-';
 		$set['tools']         = 'tools';
 		$set['undo']          = 'backspace';
+		$set['unlike']        = 'heartbreak';
 		$set['user_plus']     = 'person-plus-fill';
 		$set['user']          = 'person-fill';
 		$set['users']         = 'people-fill';

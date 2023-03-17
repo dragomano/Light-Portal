@@ -6,11 +6,11 @@
  * @package Disqus (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 4.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -62,10 +62,9 @@ class Disqus extends Plugin
 		if (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] !== 'disqus' || empty($this->context['lp_disqus_plugin']['shortname']))
 			return;
 
-		$this->loadJavaScriptFile(
+		$this->loadExtJS(
 			'https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
 			[
-				'external' => true,
 				'async' => true,
 				'attributes' => [
 					'id' => 'dsq-count-scr'

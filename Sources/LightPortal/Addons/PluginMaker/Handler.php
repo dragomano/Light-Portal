@@ -6,17 +6,20 @@
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
-use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Area;
+use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\PhpFile;
+use Nette\PhpGenerator\Printer;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,7 +54,7 @@ class Handler extends Plugin
 		$this->setTemplate('plugin_post');
 	}
 
-	public function prepareForumLanguages()
+	public function prepareForumLanguages(): void
 	{
 		$this->getLanguages();
 
@@ -184,8 +187,7 @@ class Handler extends Plugin
 		if (empty($data['name']))
 			$post_errors[] = 'no_name';
 
-		$addon_name_format['options'] = ['regexp' => '/' . self::ADDON_NAME_PATTERN . '/'];
-		if (! empty($data['name']) && empty($this->validate($data['name'], $addon_name_format)))
+		if (! empty($data['name']) && empty($this->validate($data['name'], ['options' => ['regexp' => '/' . self::ADDON_NAME_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_name';
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
@@ -251,41 +253,48 @@ class Handler extends Plugin
 			'options' => [],
 		];
 
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $this->txt['lp_title'];
+		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'] . '</label>';
+		$this->context['posting_fields']['title']['input']['tab']  = 'content';
+		$this->context['posting_fields']['title']['input']['html'] = '
+			<div>';
 
-			if (count($this->context['languages']) > 1)
-				$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] .= ' [' . $lang['name'] . ']';
-
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type' => 'text',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_plugin']['title'][$lang['filename']] ?? '',
-					'style'     => 'width: 100%',
-					'x-ref'     => 'title_' . $lang['filename']
-				],
-				'tab' => 'content'
-			];
-		}
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['description_' . $lang['filename']]['label']['text'] = $this->txt['lp_page_description'];
-
-			if (count($this->context['languages']) > 1)
-				$this->context['posting_fields']['description_' . $lang['filename']]['label']['text'] .= ' [' . $lang['name'] . ']';
-
-			$this->context['posting_fields']['description_' . $lang['filename']]['input'] = [
-				'type' => 'text',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_plugin']['description'][$lang['filename']] ?? '',
-					'required'  => in_array($lang['filename'], $languages),
-					'style'     => 'width: 100%'
-				],
-				'tab' => 'content'
-			];
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<a
+					class="button floatnone"
+					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
+					@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $lang['filename'] . ']\').focus() }, 50); });"
+				>' . $lang['name'] . '</a>';
 		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</nav>';
+
+		$i = count($languages) - 1;
+		foreach ($this->context['languages'] as $lang) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
+				<div x-show="tab === \'' . $lang['filename'] . '\'">
+					<input
+						type="text"
+						name="title_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_plugin']['title'][$lang['filename']] ?? '') . '"
+						placeholder="' . $this->txt['lp_title'] . '"
+					>
+					<input
+						type="text"
+						name="description_' . $lang['filename'] . '"
+						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"
+						placeholder="' . $this->txt['lp_page_description'] . '"
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '" required' : '') . '
+					>
+				</div>';
+		}
+
+		$this->context['posting_fields']['title']['input']['html'] .= '
+			</div>';
 
 		$this->context['posting_fields']['author']['label']['text'] = $this->txt['author'];
 		$this->context['posting_fields']['author']['input'] = [
@@ -294,7 +303,6 @@ class Handler extends Plugin
 				'maxlength' => 255,
 				'value'     => $this->context['lp_plugin']['author'],
 				'required'  => true,
-				'style'     => 'width: 100%'
 			],
 			'tab' => 'copyrights'
 		];
@@ -379,7 +387,7 @@ class Handler extends Plugin
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
-		$namespace = new \Nette\PhpGenerator\PhpNamespace('Bugo\LightPortal\Addons\\' . $this->context['lp_plugin']['name']);
+		$namespace = new PhpNamespace('Bugo\LightPortal\Addons\\' . $this->context['lp_plugin']['name']);
 		$namespace->addUse(Plugin::class);
 
 		$class = $namespace->addClass($this->context['lp_plugin']['name']);
@@ -410,7 +418,7 @@ class Handler extends Plugin
 				->setBody("\$this->txt['lp_show_comment_block_set']['$plugin_name'] = '{$this->context['lp_plugin']['name']}';");
 		} else if (! empty($this->context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')
-				->setBody("// add_integration_function('integrate_hook_name', __CLASS__ . '::methodName#', false, __FILE__);");
+				->setBody("// add_integration_function('integrate_hook_name', self::class . '::methodName#', false, __FILE__);");
 		}
 
 		$blockParams = $this->getSpecialParams();
@@ -440,10 +448,8 @@ class Handler extends Plugin
 			$validateBlockData->addBody("if (\$type !== '$plugin_name')");
 			$validateBlockData->addBody("\treturn;" . PHP_EOL);
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
 			}
 
 			$class->addMethod('prepareBlockFields')
@@ -458,10 +464,8 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
 			}
 
 			$validateBlockData = $class->addMethod('validateBlockData');
@@ -469,10 +473,8 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			if (! empty($blockParams)) {
-				foreach ($blockParams as $param) {
-					$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
-				}
+			foreach ($blockParams as $param) {
+				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
 			}
 
 			$class->addMethod('prepareBlockFields')
@@ -602,7 +604,7 @@ class Handler extends Plugin
 				$license_link = $this->txt['lp_plugin_maker']['license_link'];
 		}
 
-		$file = new \Nette\PhpGenerator\PhpFile;
+		$file = new PhpFile;
 		$file->addNamespace($namespace);
 		$file->addComment($this->context['lp_plugin']['name'] . '.php');
 		$file->addComment('');
@@ -615,7 +617,7 @@ class Handler extends Plugin
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));
 
-		$content = (new class extends \Nette\PhpGenerator\Printer {
+		$content = (new class extends Printer {
 			protected $indentation = "\t";
 			protected $linesBetweenProperties = 1;
 			protected $linesBetweenMethods = 1;
@@ -670,7 +672,7 @@ class Handler extends Plugin
 	{
 		$params = [];
 		foreach ($this->context['lp_plugin']['options'] as $id => $option) {
-			if (strpos($option['name'], $type . '_') !== false) {
+			if (str_contains($option['name'], $type . '_')) {
 				$option['name'] = str_replace($type . '_', '', $option['name']);
 				$params[] = $option;
 				unset($this->context['lp_plugin']['options'][$id]);
@@ -682,54 +684,29 @@ class Handler extends Plugin
 
 	private function getDefaultValue(array $option): string
 	{
-		switch ($option['type']) {
-			case 'int':
-				$default = (int) $option['default'];
-				break;
-
-			case 'float':
-				$default = (float) $option['default'];
-				break;
-
-			default:
-				$default = $option['default'];
-		}
+		$default = match ($option['type']) {
+			'int'   => (int) $option['default'],
+			'float' => (float) $option['default'],
+			default => $option['default'],
+		};
 
 		return var_export($default, true);
 	}
 
 	private function getFilter(array $param): string
 	{
-		switch ($param['type']) {
-			case 'url':
-				$filter = 'FILTER_VALIDATE_URL';
-				break;
-
-			case 'int':
-				$filter = 'FILTER_VALIDATE_INT';
-				break;
-
-			case 'float':
-				$filter = 'FILTER_VALIDATE_FLOAT';
-				break;
-
-			case 'check':
-				$filter = 'FILTER_VALIDATE_BOOLEAN';
-				break;
-
-			case 'multicheck':
-				$filter = "[
+		return match ($param['type']) {
+			'url' => 'FILTER_VALIDATE_URL',
+			'int' => 'FILTER_VALIDATE_INT',
+			'float' => 'FILTER_VALIDATE_FLOAT',
+			'check' => 'FILTER_VALIDATE_BOOLEAN',
+			'multicheck' => "[
 	'name'   => '{$param['name']}',
 	'filter' => FILTER_DEFAULT,
 	'flags'  => FILTER_REQUIRE_ARRAY
-]";
-				break;
-
-			default:
-				$filter = 'FILTER_DEFAULT';
-		}
-
-		return $filter;
+]",
+			default => 'FILTER_DEFAULT',
+		};
 	}
 
 	/**

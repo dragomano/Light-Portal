@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -35,7 +35,7 @@ final class BlockArea
 		$this->repository = new BlockRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -53,7 +53,7 @@ final class BlockArea
 		$this->context['sub_template'] = 'manage_blocks';
 	}
 
-	public function doActions()
+	public function doActions(): void
 	{
 		if ($this->request()->has('actions') === false)
 			return;
@@ -76,7 +76,7 @@ final class BlockArea
 		exit;
 	}
 
-	public function add()
+	public function add(): void
 	{
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -87,6 +87,8 @@ final class BlockArea
 			'title'       => LP_NAME,
 			'description' => $this->txt['lp_blocks_add_description']
 		];
+
+		$this->txt['lp_blocks_add_instruction'] = sprintf($this->txt['lp_blocks_add_instruction'], $this->scripturl . '?action=admin;area=lp_plugins');
 
 		$this->context['current_block']['placement'] = $this->request('placement', '');
 
@@ -114,12 +116,12 @@ final class BlockArea
 		$this->repository->setData();
 	}
 
-	public function edit()
+	public function edit(): void
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
 		if (empty($item))
-			$this->fatalLangError('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', 404);
 
 		$this->loadTemplate('LightPortal/ManageBlocks');
 
@@ -136,7 +138,7 @@ final class BlockArea
 		$this->context['current_block'] = $this->repository->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			$this->fatalLangError('lp_block_not_editable', false);
+			$this->fatalLangError('lp_block_not_editable');
 
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
@@ -155,7 +157,7 @@ final class BlockArea
 		$this->repository->setData((int) $this->context['lp_block']['id']);
 	}
 
-	private function remove(array $items)
+	private function remove(array $items): void
 	{
 		if (empty($items))
 			return;
@@ -191,14 +193,16 @@ final class BlockArea
 		$this->hook('onBlockRemoving', [$items]);
 	}
 
-	private function makeCopy(int $item)
+	private function makeCopy(int $item): void
 	{
 		if (empty($item))
 			return;
 
 		$this->request()->put('clone', true);
 
-		$result['success'] = false;
+		$result = [
+			'success' => false
+		];
 
 		$this->context['lp_block']       = $this->repository->getData($item);
 		$this->context['lp_block']['id'] = $this->repository->setData();
@@ -215,7 +219,7 @@ final class BlockArea
 		exit(json_encode($result));
 	}
 
-	private function updatePriority()
+	private function updatePriority(): void
 	{
 		$data = $this->request()->json();
 
@@ -275,8 +279,10 @@ final class BlockArea
 		return $options;
 	}
 
-	private function validateData()
+	private function validateData(): void
 	{
+		$post_data = [];
+
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			$args = [
 				'block_id'      => FILTER_VALIDATE_INT,
@@ -354,11 +360,10 @@ final class BlockArea
 		if (isset($this->context['lp_block']['options']['parameters'])) {
 			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
 				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-					if ($parameters[$option] === FILTER_DEFAULT)
-						$post_data[$option] = '';
+					$post_data['parameters'][$option] = 0;
 
-					if ($parameters[$option] === FILTER_VALIDATE_BOOLEAN)
-						$post_data['parameters'][$option] = 0;
+					if ($parameters[$option] === FILTER_DEFAULT)
+						$post_data['parameters'][$option] = '';
 
 					if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
 						$post_data['parameters'][$option] = [];
@@ -375,15 +380,14 @@ final class BlockArea
 		$this->cleanBbcode($this->context['lp_block']['title']);
 	}
 
-	private function findErrors(array $data)
+	private function findErrors(array $data): void
 	{
 		$post_errors = [];
 
 		if (empty($data['areas']))
 			$post_errors[] = 'no_areas';
 
-		$areas_format['options'] = ['regexp' => '/' . self::AREAS_PATTERN . '/'];
-		if ($data['areas'] && empty($this->validate($data['areas'], $areas_format)))
+		if ($data['areas'] && empty($this->validate($data['areas'], ['options' => ['regexp' => '/' . self::AREAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_areas';
 
 		$this->hook('findBlockErrors', [$data, &$post_errors]);
@@ -397,25 +401,9 @@ final class BlockArea
 		}
 	}
 
-	private function prepareFormFields()
+	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
-
-		$this->prepareIconList();
-
-		foreach ($this->context['languages'] as $lang) {
-			$title = $this->txt['lp_title'] . (count($this->context['languages']) > 1 ? ' [' . $lang['name'] . ']' : '');
-			$this->context['posting_fields']['title_' . $lang['filename']]['label']['text'] = $title;
-			$this->context['posting_fields']['title_' . $lang['filename']]['input'] = [
-				'type'       => 'text',
-				'tab'        => 'content',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_block']['title'][$lang['filename']] ?? '',
-					'style'     => 'width: 100%',
-				],
-			];
-		}
+		$this->prepareTitleFields('block', false);
 
 		$this->context['posting_fields']['note']['label']['text'] = $this->txt['lp_block_note'];
 		$this->context['posting_fields']['note']['input'] = [
@@ -424,7 +412,6 @@ final class BlockArea
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['note'] ?? '',
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -469,7 +456,6 @@ final class BlockArea
 				'value'     => $this->context['lp_block']['areas'],
 				'required'  => true,
 				'pattern'   => self::AREAS_PATTERN,
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -491,7 +477,6 @@ final class BlockArea
 			'attributes' => [
 				'maxlength' => 255,
 				'value'     => $this->context['lp_block']['title_style'],
-				'style'     => 'width: 100%',
 			],
 		];
 
@@ -507,7 +492,6 @@ final class BlockArea
 				'attributes' => [
 					'maxlength' => 255,
 					'value'     => $this->context['lp_block']['content_style'],
-					'style'     => 'width: 100%',
 				],
 			];
 		}
@@ -582,12 +566,12 @@ final class BlockArea
 		return in_array($check_value, $result);
 	}
 
-	private function prepareEditor()
+	private function prepareEditor(): void
 	{
 		$this->hook('prepareEditor', [$this->context['lp_block']]);
 	}
 
-	private function preparePreview()
+	private function preparePreview(): void
 	{
 		if ($this->request()->has('preview') === false)
 			return;
@@ -602,7 +586,7 @@ final class BlockArea
 		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
-			? prepare_content($this->context['lp_block']['type'])
+			? prepare_content($this->context['lp_block']['type'], parameters: $this->context['lp_block']['options']['parameters'])
 			: parse_content($this->context['preview_content'], $this->context['lp_block']['type']);
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
@@ -631,7 +615,7 @@ final class BlockArea
 		return (int) $priority;
 	}
 
-	private function prepareBlockList()
+	private function prepareBlockList(): void
 	{
 		$plugins = array_merge($this->context['lp_enabled_plugins'], array_keys($this->getContentTypes()));
 

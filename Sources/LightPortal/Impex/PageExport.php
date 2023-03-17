@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -140,11 +140,12 @@ final class PageExport extends AbstractExport
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at, r.id AS rating_id, r.value AS rating_value, r.content_id, r.user_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)
+				LEFT JOIN smf_lp_ratings AS r ON (com.id = r.content_id AND r.content_type = {literal:comment})' . (empty($pages) ? '' : '
 			WHERE p.page_id IN ({array_int:pages})'),
 			[
 				'pages' => $pages
@@ -182,6 +183,14 @@ final class PageExport extends AbstractExport
 					'author_id'  => $row['com_author_id'],
 					'message'    => trim($row['message']),
 					'created_at' => $row['com_created_at']
+				];
+			}
+			if (! empty($row['rating_value'])) {
+				$items[$row['page_id']]['ratings'][$row['rating_id']] = [
+					'id'         => $row['rating_id'],
+					'value'      => $row['rating_value'],
+					'content_id' => $row['content_id'],
+					'user_id'    => $row['user_id']
 				];
 			}
 		}
@@ -264,6 +273,14 @@ final class PageExport extends AbstractExport
 							foreach ($comment as $label => $text) {
 								$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
 								$xmlCommentElem->appendChild($label == 'message' ? $xml->createCDATASection($text) : $xml->createTextNode($text));
+							}
+						}
+					} elseif ($key == 'ratings') {
+						foreach ($val as $rating) {
+							$xmlRating = $xmlName->appendChild($xml->createElement('rating'));
+							foreach ($rating as $label => $text) {
+								$xmlRatingElem = $xmlRating->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
+								$xmlRatingElem->appendChild($xml->createTextNode($text));
 							}
 						}
 					} else {

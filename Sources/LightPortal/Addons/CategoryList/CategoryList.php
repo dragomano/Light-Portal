@@ -6,7 +6,7 @@
  * @package CategoryList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2022 Bugo
+ * @copyright 2022-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
@@ -37,7 +37,7 @@ class CategoryList extends Plugin
 
 		$categories = $this->cache('category_list_addon_u' . $this->context['user']['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData');
+			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {
 			echo $this->txt['lp_category_list']['no_items'];

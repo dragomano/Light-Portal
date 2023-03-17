@@ -13,6 +13,7 @@ $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
 $txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
+$txt['lp_page_moderation'] = 'Page moderation';
 $txt['lp_views'] = 'Views';
 $txt['lp_replies'] = 'Replies';
 $txt['lp_default'] = 'Default';
@@ -50,7 +51,7 @@ $txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will show i
 $txt['lp_show_views_and_comments'] = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_replies'] = 'Display articles with the highest number of comments first';
 $txt['lp_frontpage_article_sorting'] = 'Sort articles';
-$txt['lp_frontpage_article_sorting_set'] = array('By last comment', 'By date of creation (new first)', 'By date of creation (old first)', 'By last update (fresh first)');
+$txt['lp_frontpage_article_sorting_set'] = array('By last comment', 'By posting date (new first)', 'By posting date (old first)', 'By last update (fresh first)');
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
@@ -71,6 +72,7 @@ $txt['groups_light_portal_view'] = 'Who can view the portal elements';
 $txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
 $txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
+$txt['groups_light_portal_moderate_pages'] = 'Who can manage any pages (<span class="error">Page Moderator</span>)';
 $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 
 // Pages and blocks
@@ -88,6 +90,9 @@ $txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bb
 $txt['lp_show_comment_block_set'] = array('None', 'Integrated');
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
+$txt['lp_comment_sorting'] = 'Sort comments by default';
+$txt['lp_sort_by_rating'] = 'By rating';
+$txt['lp_allow_comment_ratings'] = 'Allow voting for comments';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The default type of the page editor';
 $txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
@@ -158,7 +163,7 @@ $txt['lp_blocks_manage_description'] = 'All created portal blocks are listed her
 $txt['lp_blocks_add'] = 'Add block';
 $txt['lp_blocks_add_title'] = 'Adding a block';
 $txt['lp_blocks_add_description'] = 'Blocks can contain any content, depending on their type.';
-$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it.';
+$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it. If the block you need is not on the list, check if the <a class="bbc_link" href="%1$s">corresponding plugin</a> is enabled.';
 $txt['lp_blocks_edit_title'] = 'Editing block';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
 $txt['lp_block_type'] = 'Block type';
@@ -206,6 +211,8 @@ $txt['lp_pages_manage'] = 'Manage pages';
 $txt['lp_pages_manage_all_pages'] = 'Here you can view all portal pages.';
 $txt['lp_pages_manage_own_pages'] = 'Here you can view all your own portal pages.';
 $txt['lp_pages_manage_description'] = 'Use the corresponding button to add a new page.';
+$txt['lp_pages_unapproved'] = 'Unapproved pages';
+$txt['lp_pages_unapproved_description'] = 'Here you can view all unapproved portal pages. Read them and decide whether to publish or not.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
 $txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
@@ -223,7 +230,7 @@ $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = array('Show the title', 'Show the author and creation date', 'Show related pages', 'Allow comments');
+$txt['lp_page_options'] = array('Show the title', 'Show the author and posting date', 'Show related pages', 'Allow comments');
 
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';
@@ -275,8 +282,8 @@ $txt['lp_frequency_column'] = 'Frequency';
 $txt['lp_sorting_label'] = 'Sort by';
 $txt['lp_sort_by_title_desc'] = 'Title (desc)';
 $txt['lp_sort_by_title'] = 'Title (asc)';
-$txt['lp_sort_by_created_desc'] = 'Creation date (new first)';
-$txt['lp_sort_by_created'] = 'Creation date (old first)';
+$txt['lp_sort_by_created_desc'] = 'Posting date (new first)';
+$txt['lp_sort_by_created'] = 'Posting date (old first)';
 $txt['lp_sort_by_updated_desc'] = 'Update date (new first)';
 $txt['lp_sort_by_updated'] = 'Update date (old first)';
 $txt['lp_sort_by_author_desc'] = 'Author name (desc)';
@@ -290,8 +297,10 @@ $txt['lp_related_pages'] = 'Related pages';
 // Comments
 $txt['lp_comments'] = 'Comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
+$txt['lp_like_button'] = 'Like';
+$txt['lp_dislike_button'] = 'Dislike';
 
-// Comment alerts
+// Alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';
 $txt['alert_new_comment_page_comment'] = '{gender, select,
 	female {{member_link} left a comment {content_subject}}
@@ -304,6 +313,21 @@ $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
 	male   {{member_link} left a reply to your comment {content_subject}}
 	other  {{member_link} left a reply to your comment {content_subject}}
 }';
+$txt['alert_page_unapproved'] = 'When a new unapproved page appears';
+$txt['alert_new_page_unapproved'] = '{gender, select,
+	female {{member_link} created a page {content_subject}}
+	male   {{member_link} created a page {content_subject}}
+	other  {{member_link} created a page {content_subject}}
+}';
+
+// Emails
+$txt['page_unapproved_subject'] = 'New page from {MEMBERNAME}';
+$txt['page_unapproved_body'] = 'There is a new page from {MEMBERNAME} on the portal, check it out.
+
+Member: {PROFILELINK}
+Page: {PAGELINK}
+
+{REGARDS}';
 
 // Errors
 $txt['lp_page_not_found'] = 'Page not found!';
@@ -345,14 +369,17 @@ $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_v
 $txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Manage own blocks';
 $txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
+$txt['permissionname_light_portal_moderate_pages'] = $txt['group_perms_name_light_portal_moderate_pages'] = 'Moderate any pages';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
 $txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
 $txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
+$txt['permissionhelp_light_portal_moderate_pages'] = 'Ability to manage any pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Moderate - Unapproved pages</em>.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
 $txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
+$txt['cannot_light_portal_moderate_pages'] = 'Sorry, you are not allowed to moderate portal pages!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units

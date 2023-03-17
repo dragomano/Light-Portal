@@ -2,7 +2,7 @@
 
 function template_page_post()
 {
-	global $context, $txt;
+	global $context, $language, $txt;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '
@@ -43,7 +43,7 @@ function template_page_post()
 		method="post"
 		accept-charset="', $context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data
+		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }"
 	>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">

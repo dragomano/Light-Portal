@@ -6,17 +6,26 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\{Cache, File, Request, Session, SMFTrait};
-
+use Bugo\LightPortal\Lists\{Category, Tag};
+use Bugo\LightPortal\Tasks\Notifier;
+use Bugo\LightPortal\Utils\{
+	Cache,
+	File,
+	Post,
+	Request,
+	Session,
+	SMFTrait,
+};
 use MessageFormatter;
+use IntlException;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -30,32 +39,41 @@ trait Helper
 	use SMFTrait;
 
 	/**
-	 * @see https://symfony.com/doc/current/translation/message_format.html
-	 * @see https://unicode-org.github.io/cldr-staging/charts/37/supplemental/language_plural_rules.html
-	 * @see https://www.php.net/manual/en/class.messageformatter.php
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
+	 * @see https://symfony.com/doc/6.1/translation/message_format.html
 	 * @see https://intl.rmcreative.ru
 	 */
 	public function translate(string $pattern, array $values = []): string
 	{
-		if (empty($this->txt['lang_locale']))
-			return '';
+		if (extension_loaded('intl')) {
+			try {
+				$fmt = new MessageFormatter($this->txt['lang_locale'] ?? 'en_US', $this->txt[$pattern] ?? $pattern);
 
-		if (extension_loaded('intl'))
-			return MessageFormatter::formatMessage($this->txt['lang_locale'], $this->txt[$pattern] ?? $pattern, $values) ?? '';
-
-		$this->logError('[LP] translate helper: enable intl extension', 'critical');
+				return $fmt->format($values);
+			} catch (IntlException) {
+				$this->logError("[LP] translate helper: pattern syntax error in \$txt['{$pattern}']", 'critical');
+			}
+		} else {
+			$this->logError('[LP] translate helper: you should enable intl extension', 'critical');
+		}
 
 		return '';
 	}
 
 	/**
-	 * @param string|null $key
-	 * @param mixed $default
-	 * @return mixed
+	 * @param mixed|null $default
 	 */
-	public function request(?string $key = null, $default = null)
+	public function request(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
+	}
+
+	/**
+	 * @param mixed|null $default
+	 */
+	public function post(?string $key = null, mixed $default = null): mixed
+	{
+		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
 	public function cache(?string $key = null): Cache
@@ -73,12 +91,12 @@ trait Helper
 		return new Session;
 	}
 
-	public function hook(string $hook, array $vars = [], array $plugins = [])
+	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
 		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
-	public function require(string $filename)
+	public function require(string $filename): void
 	{
 		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
 			require_once $path;
@@ -113,20 +131,14 @@ trait Helper
 		return $titles;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getAllCategories()
+	public function getAllCategories(): mixed
 	{
-		return $this->cache('all_categories')->setFallback(Lists\Category::class, 'getList');
+		return $this->cache('all_categories')->setFallback(Category::class, 'getList');
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getAllTags()
+	public function getAllTags(): mixed
 	{
-		return $this->cache('all_tags')->setFallback(Lists\Tag::class, 'getList');
+		return $this->cache('all_tags')->setFallback(Tag::class, 'getList');
 	}
 
 	public function getAllAddons(): array
@@ -194,7 +206,7 @@ trait Helper
 		return $themes;
 	}
 
-	public function prepareForumLanguages()
+	public function prepareForumLanguages(): void
 	{
 		$this->getLanguages();
 
@@ -209,9 +221,9 @@ trait Helper
 
 		$this->context['languages'] = array_merge(
 			[
-				'english'                    => $temp['english'],
+				$this->language              => $temp[$this->language],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
-				$this->language              => $temp[$this->language]
+				'english'                    => $temp['english'],
 			],
 			$this->context['languages']
 		);
@@ -229,11 +241,7 @@ trait Helper
 		return $template;
 	}
 
-	/**
-	 * @param array|string $data
-	 * @return void
-	 */
-	public function cleanBbcode(&$data)
+	public function cleanBbcode(array|string &$data): void
 	{
 		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
@@ -250,6 +258,8 @@ trait Helper
 
 	public function getTeaser(string $text, int $length = 150): string
 	{
+		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
+
 		return $this->getShortenText(strip_tags($text), $length) ?: '...';
 	}
 
@@ -260,22 +270,13 @@ trait Helper
 	 */
 	public function canViewItem(int $permissions, int $check_id = 0): bool
 	{
-		switch ($permissions) {
-			case 0:
-				return $this->user_info['is_admin'];
-				// no break
-			case 1:
-				return $this->user_info['is_guest'];
-				// no break
-			case 2:
-				return $this->user_info['id'] > 0;
-				// no break
-			case 4:
-				return $this->user_info['id'] === $check_id;
-				// no break
-			default:
-				return true;
-		}
+		return match ($permissions) {
+			0 => $this->user_info['is_admin'],
+			1 => $this->user_info['is_guest'],
+			2 => $this->user_info['id'] > 0,
+			4 => $this->user_info['id'] === $check_id,
+			default => true,
+		};
 	}
 
 	/**
@@ -313,36 +314,21 @@ trait Helper
 	 * Get the filtered $obj[$key]
 	 *
 	 * Получаем отфильтрованное значение $obj[$key]
-	 *
-	 * @param string $key
-	 * @param string|array $type
-	 * @return mixed
 	 */
-	public function validate(string $key, $type = 'string')
+	public function validate(string $key, array|string $type = 'string'): mixed
 	{
 		if (is_array($type)) {
 			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
 		}
 
-		switch ($type) {
-			case 'string':
-				$filter = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-				break;
-			case 'int':
-				$filter = FILTER_VALIDATE_INT;
-				break;
-			case 'float':
-				$filter = FILTER_VALIDATE_FLOAT;
-				break;
-			case 'bool':
-				$filter = FILTER_VALIDATE_BOOLEAN;
-				break;
-			case 'url':
-				$filter = FILTER_VALIDATE_URL;
-				break;
-			default:
-				$filter = FILTER_DEFAULT;
-		}
+		$filter = match ($type) {
+			'string' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'int'    => FILTER_VALIDATE_INT,
+			'float'  => FILTER_VALIDATE_FLOAT,
+			'bool'   => FILTER_VALIDATE_BOOLEAN,
+			'url'    => FILTER_VALIDATE_URL,
+			default  => FILTER_DEFAULT,
+		};
 
 		return filter_var($key, $filter);
 	}
@@ -398,7 +384,7 @@ trait Helper
 					return $this->getLocalDate($timestamp, 'medium');
 
 				// Other future date
-				return $this->getLocalDate($timestamp, 'long', 'none');
+				return $this->getLocalDate($timestamp, timeType: 'none');
 			}
 
 			// like "In n hours"
@@ -437,7 +423,7 @@ trait Helper
 		elseif ($y === date('Y', $now))
 			return $this->getLocalDate($timestamp);
 
-		// like "20 February 2019" (last year)
+		// like "20 February 2019" (past year)
 		return $this->getLocalDate($timestamp, 'long', 'none');
 	}
 
@@ -457,21 +443,12 @@ trait Helper
 	 */
 	public function getPredefinedConstant(string $type): int
 	{
-		switch ($type) {
-			case 'full':
-				$const = IntlDateFormatter::FULL;
-				break;
-			case 'long':
-				$const = IntlDateFormatter::LONG;
-				break;
-			case 'medium':
-				$const = IntlDateFormatter::MEDIUM;
-				break;
-			default:
-				$const = IntlDateFormatter::NONE;
-		}
-
-		return $const;
+		return match ($type) {
+			'full'   => IntlDateFormatter::FULL,
+			'long'   => IntlDateFormatter::LONG,
+			'medium' => IntlDateFormatter::MEDIUM,
+			default  => IntlDateFormatter::NONE,
+		};
 	}
 
 	public function getImageFromText(string $text): string
@@ -479,5 +456,50 @@ trait Helper
 		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
 		return $value['src'] ??= '';
+	}
+
+	public function makeNotify(string $type, string $action, array $options = []): void
+	{
+		if (empty($options))
+			return;
+
+		$this->smcFunc['db_insert']('',
+			'{db_prefix}background_tasks',
+			[
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
+			],
+			[
+				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
+				'task_class' => '\\' . Notifier::class,
+				'task_data'  => $this->smcFunc['json_encode']([
+					'time'              => $options['time'],
+					'sender_id'	        => $this->user_info['id'],
+					'sender_name'       => $this->user_info['name'],
+					'content_author_id' => $options['author_id'],
+					'content_type'      => $type,
+					'content_id'        => $options['item'],
+					'content_action'    => $action,
+					'extra'             => $this->smcFunc['json_encode']([
+						'content_subject' => $options['title'],
+						'content_link'    => $options['url'],
+						'sender_gender'   => $this->getUserGender()
+					], JSON_UNESCAPED_SLASHES)
+				]),
+			],
+			['id_task']
+		);
+
+		$this->context['lp_num_queries']++;
+	}
+
+	public function getUserGender(): string
+	{
+		return empty($this->user_profile[$this->user_info['id']]) ? 'male' : (
+			isset($this->user_profile[$this->user_info['id']]['options'])
+				&& isset($this->user_profile[$this->user_info['id']]['options']['cust_gender'])
+				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
+		);
 	}
 }

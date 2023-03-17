@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -45,7 +45,7 @@ final class BlockExport extends AbstractExport
 
 		$this->run();
 
-		$this->context['lp_current_blocks'] = $this->repository->getAll(true);
+		$this->context['lp_current_blocks'] = $this->repository->getAll(with_customs: true);
 
 		$this->context['sub_template'] = 'manage_export_blocks';
 	}
@@ -99,9 +99,7 @@ final class BlockExport extends AbstractExport
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		$items = array_map(fn($item) => array_filter($item), $items);
-
-		return $items;
+		return array_map(fn($item) => array_filter($item), $items);
 	}
 
 	protected function getXmlFile(): string
@@ -137,7 +135,7 @@ final class BlockExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			$this->error('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage());
+			$this->logError('[LP] ' . $this->txt['lp_blocks_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

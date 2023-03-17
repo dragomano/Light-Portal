@@ -6,11 +6,11 @@
  * @package DevTools (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2022 Bugo
+ * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -29,11 +29,11 @@ class DemoArticle extends AbstractArticle
 	{
 		$products = $this->cache('dev_tools_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(__CLASS__, 'getProducts');
+			->setFallback(self::class, 'getProducts');
 
 		$users = $this->cache('dev_tools_addon_demo_users')
 			->setLifeTime(21600)
-			->setFallback(__CLASS__, 'getUsers');
+			->setFallback(self::class, 'getUsers');
 
 		$demo_articles = [];
 
@@ -53,7 +53,7 @@ class DemoArticle extends AbstractArticle
 				'date'      => $this->smcFunc['random_int']((new DateTime('-2 years'))->getTimestamp(), time()),
 				'title'     => $this->getShortenText(Lorem::ipsum(1), 40),
 				'link'      => $link = $this->scripturl . '?topic=' . $article['id'] . '.0',
-				'is_new'    => rand(0, 1),
+				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => $this->smcFunc['random_int'](0, 9999),
 					'title' => $this->txt['lp_views']
@@ -62,7 +62,7 @@ class DemoArticle extends AbstractArticle
 					'num'   => $num_replies = $this->smcFunc['random_int'](0, 9999),
 					'title' => $this->txt['lp_replies']
 				],
-				'css_class' => rand(0, 1) ? ' sticky' : '',
+				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
 				'can_edit'  => $this->user_info['is_admin'],
 				'edit_link' => $this->scripturl . '?action=post;msg=' . ($msg_id = $this->smcFunc['random_int'](0, 9999)) . ';topic=' . $article['id'] . '.0',
@@ -86,7 +86,7 @@ class DemoArticle extends AbstractArticle
 	{
 		$products = $this->cache('dev_tools_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(__CLASS__, 'getProducts');
+			->setFallback(self::class, 'getProducts');
 
 		return count($products);
 	}

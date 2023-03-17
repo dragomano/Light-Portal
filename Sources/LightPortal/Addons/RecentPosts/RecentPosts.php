@@ -6,11 +6,11 @@
  * @package RecentPosts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -169,9 +169,7 @@ class RecentPosts extends Plugin
 		if (! empty($parameters['exclude_topics'])) {
 			$exclude_topics = array_flip(explode(',', $parameters['exclude_topics']));
 
-			$posts = array_filter($posts, function ($item) use ($exclude_topics) {
-				return ! array_key_exists($item['topic'], $exclude_topics);
-			});
+			$posts = array_filter($posts, fn($item) => ! array_key_exists($item['topic'], $exclude_topics));
 		}
 
 		if (! empty($parameters['include_topics'])) {
@@ -196,7 +194,7 @@ class RecentPosts extends Plugin
 
 		$recent_posts = $this->cache('recent_posts_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($recent_posts))
 			return;

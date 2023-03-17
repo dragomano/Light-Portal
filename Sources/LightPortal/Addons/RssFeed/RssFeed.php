@@ -6,7 +6,7 @@
  * @package RssFeed (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2022 Bugo
+ * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
@@ -88,7 +88,7 @@ class RssFeed extends Plugin
 
 		$feed = $this->cache('rss_feed_addon_b' . $block_id)
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', $parameters['url']);
+			->setFallback(self::class, 'getData', $parameters['url']);
 
 		if (empty($feed))
 			return;

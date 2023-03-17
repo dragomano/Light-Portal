@@ -6,11 +6,11 @@
  * @package RecentComments (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2022 Bugo
+ * @copyright 2022-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.05.22
+ * @version 16.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -33,6 +33,8 @@ class RecentComments extends Plugin
 
 		$options['recent_comments']['parameters'] = [
 			'num_comments' => 10,
+			'length'       => 80,
+			'show_rating'  => false,
 		];
 	}
 
@@ -41,9 +43,11 @@ class RecentComments extends Plugin
 		if ($type !== 'recent_comments')
 			return;
 
-		$parameters = array(
-			'num_comments' => FILTER_VALIDATE_INT
-		);
+		$parameters = [
+			'num_comments' => FILTER_VALIDATE_INT,
+			'length'       => FILTER_VALIDATE_INT,
+			'show_rating'  => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields()
@@ -60,15 +64,36 @@ class RecentComments extends Plugin
 				'value' => $this->context['lp_block']['options']['parameters']['num_comments']
 			]
 		];
+
+		$this->context['posting_fields']['length']['label']['text'] = $this->txt['lp_recent_comments']['length'];
+		$this->context['posting_fields']['length']['input'] = [
+			'type' => 'number',
+			'attributes' => [
+				'id'    => 'length',
+				'min'   => 10,
+				'value' => $this->context['lp_block']['options']['parameters']['length']
+			]
+		];
+
+		$this->context['posting_fields']['show_rating']['label']['text'] = $this->txt['lp_recent_comments']['show_rating'];
+		$this->context['posting_fields']['show_rating']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'show_rating',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_rating']
+			]
+		];
 	}
 
-	public function getData(int $num_comments): array
+	public function getData(int $num_comments, int $length = 80): array
 	{
 		if (empty($num_comments))
 			return [];
 
 		$request = $this->smcFunc['db_query']('', '
-			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name
+			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
+			(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating,
+			(SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2 WHERE com2.parent_id = 0 AND com2.page_id = com.page_id) AS num_comments
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN (
 					SELECT lt.page_id AS page_id, MAX(lt.created_at) AS created_at
@@ -84,28 +109,34 @@ class RecentComments extends Plugin
 				AND par.value > 0
 			ORDER BY com.created_at DESC
 			LIMIT {int:limit}',
-			array(
+			[
 				'guest'        => $this->txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'limit'        => $num_comments
-			)
+			]
 		);
 
 		$comments = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$this->censorText($row['message']);
 
-			$comments[$row['id']] = array(
-				'link'        => LP_PAGE_URL . $row['alias'],
-				'message'     => $this->getShortenText($this->parseBbc($row['message']), 20),
+			$limit     = $this->modSettings['lp_num_comments_per_page'];
+			$num_pages = floor($row['num_comments'] / $limit) + 1;
+			$start     = $num_pages * $limit - $limit;
+
+			$comments[$row['id']] = [
+				'link'        => LP_PAGE_URL . $row['alias'] . ($start > 0 && empty($this->modSettings['lp_comment_sorting']) ? ';start=' . $start : '') . '#comment' . $row['id'],
+				'message'     => $this->getTeaser($this->parseBbc($row['message']), $length),
 				'created_at'  => (int) $row['created_at'],
-				'author_name' => $row['author_name']
-			);
+				'author_name' => $row['author_name'],
+				'rating'      => (int) $row['rating'],
+			];
 		}
 
 		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
 
 		return $comments;
 	}
@@ -117,7 +148,7 @@ class RecentComments extends Plugin
 
 		$comments = $this->cache('recent_comments_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(__CLASS__, 'getData', (int) $parameters['num_comments']);
+			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
 		if (empty($comments))
 			return;
@@ -128,11 +159,11 @@ class RecentComments extends Plugin
 		foreach ($comments as $comment) {
 			echo '
 			<li class="windowbg">
-				<a href="', $comment['link'], '">', $comment['message'], '</a>
+				<a href="', $comment['link'], '">', $comment['message'], '</a>', empty($parameters['show_rating']) ? '' : (empty($comment['rating']) ? '' : ' <span class="amt floatright">' . $comment['rating'] . '</span>'), '
 				<br><span class="smalltext">', $this->txt['by'], ' ', $comment['author_name'], '</span>
 				<br><span class="smalltext">', $this->getFriendlyTime($comment['created_at']), '</span>
 			</li>';
-			}
+		}
 
 		echo '
 		</ul>';

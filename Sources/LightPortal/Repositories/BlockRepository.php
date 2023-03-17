@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Repositories;
@@ -79,7 +79,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty($this->smcFunc['db_num_rows']($request))) {
 			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
 
-			$this->fatalLangError('lp_block_not_found', false, null, 404);
+			$this->fatalLangError('lp_block_not_found', 404);
 		}
 
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {

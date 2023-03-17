@@ -6,10 +6,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Entities;
@@ -20,11 +20,14 @@ use Bugo\LightPortal\Lists\PageListInterface;
 if (! defined('SMF'))
 	die('No direct access...');
 
+/**
+ * Status [0 - inactive, 1 - active, 2 - unapproved]
+ */
 final class Page
 {
 	use Helper;
 
-	public function show()
+	public function show(): void
 	{
 		$this->middleware('light_portal_view');
 
@@ -43,17 +46,17 @@ final class Page
 
 		if (empty($this->context['lp_page'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_found', false, null, 404);
+			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
 		if (empty($this->context['lp_page']['can_view'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('cannot_light_portal_view_page', false);
+			$this->fatalLangError('cannot_light_portal_view_page');
 		}
 
 		if (empty($this->context['lp_page']['status']) && empty($this->context['lp_page']['can_edit'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_activated', false);
+			$this->fatalLangError('lp_page_not_activated');
 		}
 
 		if ($this->context['lp_page']['created_at'] > time())
@@ -97,7 +100,7 @@ final class Page
 		$this->updateNumViews();
 
 		if ($this->context['user']['is_logged']) {
-			$this->loadJavaScriptFile('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['external' => true, 'defer' => true]);
+			$this->loadExtJS('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['defer' => true]);
 			$this->loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
 		}
 	}
@@ -173,7 +176,7 @@ final class Page
 		if (empty($alias))
 			return [];
 
-		$data = $this->cache('page_' . $alias)->setFallback(__CLASS__, 'getData', ['alias' => $alias]);
+		$data = $this->cache('page_' . $alias)->setFallback(self::class, 'getData', ['alias' => $alias]);
 
 		$this->prepareData($data);
 
@@ -192,7 +195,7 @@ final class Page
 		return $data;
 	}
 
-	public function showAsCards(PageListInterface $entity)
+	public function showAsCards(PageListInterface $entity): void
 	{
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
@@ -290,7 +293,7 @@ final class Page
 		];
 	}
 
-	private function changeErrorPage()
+	private function changeErrorPage(): void
 	{
 		$this->context['error_link'] = $this->scripturl;
 		$this->txt['back'] = empty($this->modSettings['lp_frontpage_mode']) ? $this->txt['lp_forum'] : $this->txt['lp_portal'];
@@ -301,7 +304,7 @@ final class Page
 		}
 	}
 
-	private function promote()
+	private function promote(): void
 	{
 		if (empty($this->user_info['is_admin']) || empty($this->request()->has('promote')))
 			return;
@@ -319,7 +322,7 @@ final class Page
 		$this->redirect($this->context['canonical_url']);
 	}
 
-	private function setMeta()
+	private function setMeta(): void
 	{
 		if (empty($this->context['lp_page']))
 			return;
@@ -360,7 +363,7 @@ final class Page
 	}
 
 
-	private function preparePrevNextLinks()
+	private function preparePrevNextLinks(): void
 	{
 		if (empty($this->context['lp_page']) || empty($this->modSettings['lp_show_prev_next_links']))
 			return;
@@ -422,7 +425,7 @@ final class Page
 		}
 	}
 
-	private function prepareRelatedPages()
+	private function prepareRelatedPages(): void
 	{
 		if (empty($item = $this->context['lp_page']) || empty($this->modSettings['lp_show_related_pages']) || empty($this->context['lp_page']['options']['show_related_pages']))
 			return;
@@ -481,7 +484,7 @@ final class Page
 		$this->context['lp_num_queries']++;
 	}
 
-	private function prepareData(?array &$data)
+	private function prepareData(?array &$data): void
 	{
 		if (empty($data))
 			return;
@@ -491,7 +494,7 @@ final class Page
 		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
 		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
 		$data['can_view'] = $this->canViewItem($data['permissions']) || $this->user_info['is_admin'] || $is_author;
-		$data['can_edit'] = $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
+		$data['can_edit'] = $this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
 
 		if ($data['type'] === 'bbc') {
 			$data['content'] = $this->unPreparseCode($data['content']);
@@ -508,7 +511,7 @@ final class Page
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
-	private function prepareComments()
+	private function prepareComments(): void
 	{
 		if (empty($this->modSettings['lp_show_comment_block']) || empty($this->context['lp_page']['options']['allow_comments']))
 			return;
@@ -552,7 +555,7 @@ final class Page
 		return $items;
 	}
 
-	private function updateNumViews()
+	private function updateNumViews(): void
 	{
 		if (empty($this->context['lp_page']['id']) || $this->user_info['possibly_robot'])
 			return;

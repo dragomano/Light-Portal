@@ -1,58 +1,20 @@
 <?php
 
-if (file_exists(dirname(__FILE__) . '/SSI.php') && ! defined('SMF'))
-	require_once(dirname(__FILE__) . '/SSI.php');
+global $user_info, $mbname, $modSettings, $settings;
+
+if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
+	require_once __DIR__ . '/SSI.php';
 elseif(! defined('SMF'))
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
 
-if (version_compare(PHP_VERSION, '7.4', '<'))
-	die('This mod needs PHP 7.4 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '8.0', '<'))
+	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
 
 if (! extension_loaded('intl'))
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
 
-global $user_info, $mbname, $modSettings, $settings;
-
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
-
-$tables[] = array(
-	'name' => 'lp_categories',
-	'columns' => array(
-		array(
-			'name'     => 'category_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
-			'unsigned' => true,
-			'auto'     => true
-		),
-		array(
-			'name' => 'name',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		),
-		array(
-			'name' => 'description',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		),
-		array(
-			'name'     => 'priority',
-			'type'     => 'tinyint',
-			'size'     => 1,
-			'unsigned' => true,
-			'default'  => 0
-		)
-	),
-	'indexes' => array(
-		array(
-			'type'    => 'primary',
-			'columns' => array('category_id')
-		)
-	)
-);
 
 $tables[] = array(
 	'name' => 'lp_blocks',
@@ -157,6 +119,44 @@ $tables[] = array(
 		array(
 			'type'    => 'primary',
 			'columns' => array('block_id')
+		)
+	)
+);
+
+$tables[] = array(
+	'name' => 'lp_categories',
+	'columns' => array(
+		array(
+			'name'     => 'category_id',
+			'type'     => 'tinyint',
+			'size'     => 3,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'name',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		),
+		array(
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		),
+		array(
+			'name'     => 'priority',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 0
+		)
+	),
+	'indexes' => array(
+		array(
+			'type'    => 'primary',
+			'columns' => array('category_id')
 		)
 	)
 );
@@ -416,6 +416,49 @@ $tables[] = array(
 );
 
 $tables[] = array(
+	'name' => 'lp_ratings',
+	'columns' => array(
+		array(
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		),
+		array(
+			'name' => 'value',
+			'type' => 'int',
+			'size' => 11
+		),
+		array(
+			'name'    => 'content_type',
+			'type'    => 'varchar',
+			'size'    => 20,
+			'default' => 'comment',
+			'null'    => false
+		),
+		array(
+			'name'     => 'content_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		),
+		array(
+			'name'     => 'user_id',
+			'type'     => 'mediumint',
+			'size'     => 8,
+			'unsigned' => true
+		),
+	),
+	'indexes' => array(
+		array(
+			'type'    => 'primary',
+			'columns' => array('id')
+		)
+	)
+);
+
+$tables[] = array(
 	'name' => 'lp_tags',
 	'columns' => array(
 		array(
@@ -492,7 +535,7 @@ $tables[] = array(
 db_extend('packages');
 
 foreach ($tables as $table) {
-	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], [], 'update');
+	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);

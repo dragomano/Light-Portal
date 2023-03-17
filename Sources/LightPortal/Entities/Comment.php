@@ -6,15 +6,17 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2022 Bugo
+ * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.0
+ * @version 2.1
  */
 
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Repositories\CommentRepository;
+use JetBrains\PhpStorm\NoReturn;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,14 +25,14 @@ final class Comment
 {
 	use Helper;
 
-	private string $alias;
+	private CommentRepository $repository;
 
-	public function __construct(string $alias = '')
+	public function __construct(private string $alias = '')
 	{
-		$this->alias = $alias;
+		$this->repository = new CommentRepository();
 	}
 
-	public function prepare()
+	public function prepare(): void
 	{
 		if (empty($this->alias))
 			return;
@@ -43,17 +45,20 @@ final class Comment
 			switch ($this->request('sa')) {
 				case 'add_comment':
 					$this->add();
-					break;
 				case 'edit_comment':
 					$this->edit();
+				case 'like_comment':
+					$this->like();
 					break;
-				case 'del_comment':
+				case 'remove_comment':
 					$this->remove();
 					break;
 			}
 		}
 
-		$comments = $this->cache('page_' . $this->alias . '_comments')->setFallback(__CLASS__, 'getAll', $this->context['lp_page']['id']);
+		$comments = $this->cache('page_' . $this->alias . '_comments')
+			->setFallback(CommentRepository::class, 'getByPageId', $this->context['lp_page']['id']);
+
 		$comments = array_map(function ($comment) {
 			$comment['created']    = $this->getFriendlyTime($comment['created_at']);
 			$comment['created_at'] = date('Y-m-d', $comment['created_at']);
@@ -68,7 +73,14 @@ final class Comment
 		$totalParentComments = sizeof($commentTree);
 
 		$this->context['current_start'] = $this->request('start');
-		$this->context['page_index'] = $this->constructPageIndex($this->getPageIndexUrl(), $this->request()->get('start'), $totalParentComments, $limit);
+
+		$this->context['page_index'] = $this->constructPageIndex(
+			$this->getPageIndexUrl(),
+			$this->request()->get('start'),
+			$totalParentComments,
+			$limit
+		);
+
 		$start = $this->request('start');
 
 		$this->context['page_info'] = [
@@ -94,56 +106,11 @@ final class Comment
 		}
 	}
 
-	public function getAll(int $page_id = 0): array
+	#[NoReturn] private function add(): void
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name
-			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)' . ($page_id ? '
-			WHERE com.page_id = {int:id}' : ''),
-			[
-				'id' => $page_id
-			]
-		);
-
-		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$this->censorText($row['message']);
-
-			$comments[$row['id']] = [
-				'id'          => (int) $row['id'],
-				'page_id'     => (int) $row['page_id'],
-				'parent_id'   => (int) $row['parent_id'],
-				'poster'      => [
-					'id'   => (int) $row['author_id'],
-					'name' => $row['author_name']
-				],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
-				'raw_message' => $this->unPreparseCode($row['message']),
-				'created_at'  => (int) $row['created_at'],
-				'can_edit'    => $this->isCanEdit((int) $row['created_at'])
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $this->getItemsWithUserAvatars($comments, 'poster');
-	}
-
-	private function isCanEdit(int $date): bool
-	{
-		if (empty($this->modSettings['lp_time_to_change_comments']))
-			return false;
-
-		$time_to_change = (int) $this->modSettings['lp_time_to_change_comments'];
-
-		return $time_to_change && time() - $date <= $time_to_change * 60;
-	}
-
-	private function add()
-	{
-		$result['error'] = true;
+		$result = [
+			'error' => true
+		];
 
 		if (empty($this->user_info['id']))
 			exit(json_encode($result));
@@ -167,40 +134,16 @@ final class Comment
 
 		$this->preparseCode($message);
 
-		$item = $this->smcFunc['db_insert']('',
-			'{db_prefix}lp_comments',
-			[
-				'parent_id'  => 'int',
-				'page_id'    => 'int',
-				'author_id'  => 'int',
-				'message'    => 'string-65534',
-				'created_at' => 'int'
-			],
-			[
-				$parent,
-				$page_id,
-				$this->user_info['id'],
-				$message,
-				$time = time()
-			],
-			['id', 'page_id'],
-			1
-		);
-
-		$this->context['lp_num_queries']++;
+		$item = $this->repository->save([
+			'parent_id'  => $parent,
+			'page_id'    => $page_id,
+			'author_id'  => $this->user_info['id'],
+			'message'    => $message,
+			'created_at' => $time = time()
+		]);
 
 		if ($item) {
-			$this->smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_comments = num_comments + 1, last_comment_id = {int:item}
-				WHERE page_id = {int:page_id}',
-				[
-					'item'    => $item,
-					'page_id' => $page_id
-				]
-			);
-
-			$this->context['lp_num_queries']++;
+			$this->repository->updateLastCommentId($item, $page_id);
 
 			ob_start();
 
@@ -217,6 +160,8 @@ final class Comment
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => $this->getFriendlyTime($time),
 				'raw_message' => $this->unPreparseCode($message),
+				'rating'      => 0,
+				'can_rate'    => false,
 				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
@@ -227,16 +172,24 @@ final class Comment
 				'parent'      => $parent,
 				'comment'     => $comment,
 				'created'     => $time,
-				'title'       => $this->txt['response_prefix'] . $this->context['page_title'],
+				'title'       => $this->context['page_title'],
 				'alias'       => $this->alias,
 				'page_url'    => $page_url,
 				'start'       => $start,
-				'commentator' => $commentator
+				'commentator' => $commentator,
+			];
+
+			$notifyOptions = [
+				'item'      => $item,
+				'time'      => $time,
+				'author_id' => empty($parent) ? $this->context['lp_page']['author_id'] : $commentator,
+				'title'     => $this->context['page_title'],
+				'url'       => $page_url . 'start=' . $start . '#comment' . $item,
 			];
 
 			empty($parent)
-				? $this->makeNotify('new_comment', 'page_comment', $result)
-				: $this->makeNotify('new_reply', 'page_comment_reply', $result);
+				? $this->makeNotify('new_comment', 'page_comment', $notifyOptions)
+				: $this->makeNotify('new_reply', 'page_comment_reply', $notifyOptions);
 
 			$this->cache()->forget('page_' . $this->alias . '_comments');
 		}
@@ -244,7 +197,7 @@ final class Comment
 		exit(json_encode($result));
 	}
 
-	private function edit()
+	#[NoReturn] private function edit(): void
 	{
 		$data = $this->request()->json();
 
@@ -259,19 +212,11 @@ final class Comment
 
 		$this->preparseCode($message);
 
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_comments
-			SET message = {string:message}
-			WHERE id = {int:id}
-				AND author_id = {int:user}',
-			[
-				'message' => $this->getShortenText($message, 65531),
-				'id'      => $item,
-				'user'    => $this->context['user']['id']
-			]
-		);
-
-		$this->context['lp_num_queries']++;
+		$this->repository->update([
+			'message' => $this->getShortenText($message, 65531),
+			'id'      => $item,
+			'user'    => $this->context['user']['id']
+		]);
 
 		$message = empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']);
 
@@ -280,103 +225,41 @@ final class Comment
 		exit(json_encode($message));
 	}
 
-	private function remove()
+	private function like(): void
 	{
-		$items = $this->request()->json('items');
-
-		if (empty($items))
+		if (empty($this->modSettings['lp_allow_comment_ratings']))
 			return;
 
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_comments
-			WHERE id IN ({array_int:items})',
-			[
-				'items' => $items
-			]
-		);
+		$data = $this->request()->json();
 
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments - {int:num_items}
-			WHERE alias = {string:alias}
-				AND num_comments - {int:num_items} >= 0',
-			[
-				'num_items' => count($items),
-				'alias'     => $this->alias
-			]
-		);
+		if (empty($data) || $this->context['user']['is_guest'])
+			exit;
 
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}user_alerts
-			WHERE content_type = {string:type}
-				AND content_id IN ({array_int:items})',
-			[
-				'type'  => 'new_comment',
-				'items' => $items
-			]
-		);
+		$item    = $data['comment_id'];
+		$operand = $data['operand'];
 
-		$this->smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_pages
-			SET last_comment_id = (
-				SELECT COALESCE(MAX(com.id), 0)
-				FROM {db_prefix}lp_comments AS com
-					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
-				WHERE p.alias = {string:alias}
-			)
-			WHERE alias = {string:alias}',
-			[
-				'alias' => $this->alias
-			]
-		);
+		if (empty($item) || empty($operand))
+			exit;
 
-		$this->context['lp_num_queries'] += 4;
+		$this->repository->updateRating($item, $operand);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
 		exit;
 	}
 
-	/**
-	 * Creating a background task to notify subscribers of new comments
-	 *
-	 * Создаем фоновую задачу для уведомления подписчиков о новых комментариях
-	 */
-	private function makeNotify(string $type, string $action, array $options = [])
+	private function remove(): void
 	{
-		if (empty($options))
+		$items = $this->request()->json('items');
+
+		if (empty($items))
 			return;
 
-		$this->smcFunc['db_insert']('',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			],
-			[
-				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\Bugo\LightPortal\Tasks\Notifier',
-				'task_data'  => $this->smcFunc['json_encode']([
-					'time'           => $options['created'],
-					'sender_id'	     => $this->user_info['id'],
-					'sender_name'    => $this->user_info['name'],
-					'author_id'      => $this->context['lp_page']['author_id'],
-					'commentator_id' => $options['commentator'],
-					'content_type'   => $type,
-					'content_id'     => $options['item'],
-					'content_action' => $action,
-					'extra'          => $this->smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['page_url'] . 'start=' . $options['start'] . '#comment' . $options['item'],
-						'sender_gender'   => strtolower($this->user_profile[$this->user_info['id']]['options']['cust_gender'] ?? 'male')
-					])
-				]),
-			],
-			['id_task']
-		);
+		$this->repository->remove($items, $this->alias);
 
-		$this->context['lp_num_queries']++;
+		$this->cache()->forget('page_' . $this->alias . '_comments');
+
+		exit;
 	}
 
 	private function getTree(array $data): array
