@@ -177,7 +177,7 @@ final class PageRepository extends AbstractRepository
 			'url'       => LP_PAGE_URL . $this->context['lp_page']['alias']
 		];
 
-		if (empty($this->context['allow_light_portal_moderate_pages']))
+		if (empty($this->context['allow_light_portal_manage_pages_any']))
 			$this->makeNotify('new_page', 'page_unapproved', $options);
 
 		return $item;

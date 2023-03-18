@@ -28,7 +28,7 @@ final class BlockArea
 
 	private BlockRepository $repository;
 
-	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
+	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,!]+$';
 
 	public function __construct()
 	{
@@ -327,7 +327,7 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_own_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
@@ -536,7 +536,8 @@ final class BlockArea
 			'topic=id3|id7',
 		];
 
-		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'home,portal,forum,search');
+		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'portal,forum,search');
+
 		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 
 		ob_start();

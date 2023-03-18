@@ -39,7 +39,7 @@ final class Block
 			if ($this->canViewItem($data['permissions'], $data['user_id']) === false)
 				continue;
 
-			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_own_blocks'] && $data['user_id'] == $this->context['user']['id']);
+			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_blocks'] && $data['user_id'] == $this->context['user']['id']);
 
 			$data['content'] = empty($data['content'])
 				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'])
@@ -149,14 +149,22 @@ final class Block
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
+			if (isset($block['areas']['!' . $area]) && $temp_areas[0] === 'all')
+				return false;
+
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
 			if ($area === LP_ACTION && isset($block['areas']['home']) && empty($this->context['lp_page']) && empty($this->context['current_action']))
 				return true;
 
-			if (isset($this->context['lp_page']) && isset($this->context['lp_page']['alias']) && (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']])))
-				return true;
+			if (isset($this->context['lp_page']) && isset($this->context['lp_page']['alias'])) {
+				if (isset($block['areas']['!' . LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']]) && $temp_areas[0] === 'pages')
+					return false;
+
+				if (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']]))
+					return true;
+			}
 
 			if (empty($this->context['current_board']))
 				return false;

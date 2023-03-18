@@ -38,11 +38,11 @@ abstract class AbstractMain
 
 	protected function defineVars(): void
 	{
-		$this->context['allow_light_portal_view']              = $this->allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_own_blocks'] = $this->allowedTo('light_portal_manage_own_blocks');
-		$this->context['allow_light_portal_manage_own_pages']  = $this->allowedTo('light_portal_manage_own_pages');
-		$this->context['allow_light_portal_approve_pages']     = $this->allowedTo('light_portal_approve_pages');
-		$this->context['allow_light_portal_moderate_pages']    = $this->allowedTo('light_portal_moderate_pages');
+		$this->context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
+		$this->context['allow_light_portal_manage_blocks']    = $this->allowedTo('light_portal_manage_blocks');
+		$this->context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
+		$this->context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
+		$this->context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
 
 		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages'], $this->context['lp_num_my_pages'], $this->context['lp_num_unapproved_pages']] = $this->getNumActiveEntities();
 
