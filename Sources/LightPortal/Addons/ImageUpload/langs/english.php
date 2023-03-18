@@ -6,7 +6,7 @@ return [
 	'allowed_extensions_subtext' => 'For example: «<strong>.jpg,.jpeg,.png</strong>» or «<strong>image/*</strong>» (all image types).',
 	'upload_dir' => 'Directory for downloads',
 	'upload_dir_subtext' => 'A directory with the specified name will be created in the root folder of the forum. Make sure the specified directory is writeable.',
-	'max_filesize' => 'Максимальный размер файла',
+	'max_filesize' => 'Maximum file size',
 	'image_width' => 'Maximum width of uploaded images',
 	'image_width_subtext' => 'Specify 0 to disable.',
 	'image_height' => 'Maximum height of uploaded images',
