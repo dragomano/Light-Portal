@@ -314,7 +314,7 @@ $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
 	other  {{member_link} left a reply to your comment {content_subject}}
 }';
 $txt['alert_page_unapproved'] = 'When a new unapproved page appears';
-$txt['alert_new_page_unapproved'] = '{gender, select,
+$txt['alert_new_page_page_unapproved'] = '{gender, select,
 	female {{member_link} created a page {content_subject}}
 	male   {{member_link} created a page {content_subject}}
 	other  {{member_link} created a page {content_subject}}
