@@ -172,23 +172,23 @@ $txt['lp_block_priority'] = 'Priority';
 $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = array('Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer');
 
-$txt['lp_block_areas'] = 'Areas';
+$txt['lp_block_areas'] = 'Display areas';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:';
 $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values'] = array(
-	'everywhere',
-	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: %1$s)',
+	'everywhere (use "!" to add an exclusion: <strong>all,!custom_action</strong>)',
+	'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%1$s</em>)',
 	'on all portal pages',
 	'on page <em>index.php?page</em>=<strong>alias</strong>',
-	'in all boards',
+	'in all boards and topics',
 	'only inside the board with identifier <strong>id</strong> (including all topics inside the board)',
 	'in boards id1, id2, id3',
 	'in boards id3, and id7',
 	'in all topics',
 	'only inside the topic with identifier <strong>id</strong>',
 	'in topics id1, id2, id3',
-	'in topics id3, and id7'
+	'in topics id3, and id7',
 );
 
 $txt['lp_block_select_icon'] = 'Select icon';
