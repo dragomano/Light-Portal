@@ -34,11 +34,11 @@ echo '
 					for (let i = 0; i < json.length; i++) {
 						data.push({label: json[i].text, value: json[i].value})
 					}
-					console.log(response);
+
 					virtualSelect.setServerOptions(data)
 				} else {
 					virtualSelect.setServerOptions(false)
 				}
-			},
+			}
 		});
 	</script>';
