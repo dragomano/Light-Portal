@@ -12,5 +12,9 @@ files: [
   {
     source: "Sources/LightPortal/Addons/**/langs/english.php",
     translation: "%original_path%/%language%.php",
+  },
+  {
+    source: "/website/docs/**/*",
+    translation: "/website/i18n/%two_letters_code%/docusaurus-plugin-content-docs/current/**/%original_file_name%",
   }
 ]
