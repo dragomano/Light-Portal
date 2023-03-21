@@ -41,7 +41,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### validateBlockData
 (`&$parameters, $context['current_block']['type']`)
-> adding custom validating data when block adding/edition
+> adding custom validating rules when block adding/edition
 
 ### findBlockErrors
 (`$data, &$post_errors`)
@@ -66,7 +66,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### validatePageData
 (`&$parameters`)
-> adding custom validating data when page adding/edition
+> adding custom validating rules when page adding/edition
 
 ### findPageErrors
 (`$data, &$post_errors`)
