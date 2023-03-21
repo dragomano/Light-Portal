@@ -56,7 +56,7 @@ function template_show_articles_custom() // Не забудьте поменят
 
 После этого в настройках портала появится макет главной страницы под названием `Custom`. При желании в этом же файле можно добавить дополнительные макеты (`template_show_articles_custom1()`, `template_show_articles_custom2()` и т. д.).
 
-![Выбираем кастомный макет](https://user-images.githubusercontent.com/229402/136643076-765289c2-342f-43c5-865a-1aca948beafe.png)
+![Выбираем кастомный макет](set_custom_template.png)
 
 Для кастомизации таблиц стилей создайте файл `custom_frontpage.css` в директории `/Themes/default/css`:
 

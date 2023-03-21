@@ -56,7 +56,7 @@ function template_show_articles_custom() // Do not forget change custom name *cu
 
 After that you will see a new frontpage layout - `Custom` - on the portal settings. You can create as many such layouts as you want (`template_show_articles_custom1()`, `template_show_articles_custom2()`, etc.).
 
-![Select custom template](https://user-images.githubusercontent.com/229402/136643076-765289c2-342f-43c5-865a-1aca948beafe.png)
+![Select custom template](set_custom_template.png)
 
 To customize stylesheets, create a file `custom_frontpage.css` in the `/Themes/default/css` directory:
 
