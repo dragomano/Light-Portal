@@ -60,6 +60,7 @@ final class CreditArea
 			'German'     => ['trucker2006', 'm4z'],
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
+			'Greek'      => ['Panoulis64'],
 		];
 
 		$this->context['testers'] = [
