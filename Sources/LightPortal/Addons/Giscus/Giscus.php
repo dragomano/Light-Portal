@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.03.23
+ * @version 22.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -63,7 +63,11 @@ class Giscus extends Plugin
 
 	public function comments()
 	{
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'giscus' && ! empty($this->context['lp_giscus_plugin']['repo'])) {
+		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'giscus'
+			&& ! empty($this->context['lp_giscus_plugin']['repo'])
+			&& ! empty($this->context['lp_giscus_plugin']['repo_id'])
+			&& ! empty($this->context['lp_giscus_plugin']['category'])
+			&& ! empty($this->context['lp_giscus_plugin']['category_id'])) {
 			$this->context['lp_giscus_comment_block'] = '
 			<div class="giscus windowbg"></div>
 			<script src="https://giscus.app/client.js"
