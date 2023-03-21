@@ -88,7 +88,7 @@ final class Category extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, t.title
+				COALESCE(mem.real_name, 0) AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
@@ -99,7 +99,6 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'guest'        => $this->txt['guest_title'],
 				'lang'         => $this->user_info['language'],
 				'id'           => $this->context['lp_category'],
 				'status'       => 1,
