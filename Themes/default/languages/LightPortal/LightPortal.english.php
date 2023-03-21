@@ -68,12 +68,12 @@ $txt['lp_disabled_actions'] = 'Disabled actions';
 $txt['lp_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
-$txt['groups_light_portal_view'] = 'Who can view the portal elements';
-$txt['groups_light_portal_manage_own_blocks'] = 'Who can manage own blocks';
-$txt['groups_light_portal_manage_own_pages'] = 'Who can manage own pages';
-$txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval';
-$txt['groups_light_portal_moderate_pages'] = 'Who can manage any pages (<span class="error">Page Moderator</span>)';
 $txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
+$txt['groups_light_portal_view'] = 'Who can view the portal elements — <span class="new_posts lp_type_other">Tourist</span>';
+$txt['groups_light_portal_manage_blocks'] = 'Who can manage own blocks — <span class="new_posts lp_type_block">Architect</span>';
+$txt['groups_light_portal_manage_pages_own'] = 'Who can manage own pages — <span class="new_posts lp_type_editor">Writer</span>';
+$txt['groups_light_portal_manage_pages_any'] = 'Who can manage any pages — <span class="new_posts lp_type_article">Page Moderator</span>';
+$txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval — <span class="new_posts lp_type_comment">The Chosen One</span>';
 
 // Pages and blocks
 $txt['lp_extra'] = 'Pages and blocks';
@@ -366,20 +366,21 @@ $txt['lp_who_viewing_adding_page'] = 'Adding a page for the portal.';
 
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
-$txt['permissionname_light_portal_manage_own_blocks'] = $txt['group_perms_name_light_portal_manage_own_blocks'] = 'Manage own blocks';
-$txt['permissionname_light_portal_manage_own_pages'] = $txt['group_perms_name_light_portal_manage_own_pages'] = 'Manage own pages';
-$txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
-$txt['permissionname_light_portal_moderate_pages'] = $txt['group_perms_name_light_portal_moderate_pages'] = 'Moderate any pages';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
-$txt['permissionhelp_light_portal_manage_own_blocks'] = 'Access to manage own blocks.';
-$txt['permissionhelp_light_portal_manage_own_pages'] = 'Access to manage own pages.';
+$txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Manage own blocks';
+$txt['permissionhelp_light_portal_manage_blocks'] = 'Access to manage own blocks.';
+$txt['permissionname_light_portal_manage_pages'] = $txt['group_perms_name_light_portal_manage_pages'] = 'Manage pages';
+$txt['permissionhelp_light_portal_manage_pages'] = 'Access to manage the portal pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Moderate - Unapproved pages</em>.';
+$txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
-$txt['permissionhelp_light_portal_moderate_pages'] = 'Ability to manage any pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Moderate - Unapproved pages</em>.';
+$txt['permissionname_light_portal_manage_pages_own'] = $txt['group_perms_name_light_portal_manage_pages_own'] = 'Manage own pages';
+$txt['permissionhelp_light_portal_manage_pages_own'] = 'Access to manage own pages.';
+$txt['permissionname_light_portal_manage_pages_any'] = $txt['group_perms_name_light_portal_manage_pages_any'] = 'Manage any pages (moderation)';
+$txt['permissionhelp_light_portal_manage_pages_any'] = 'Ability to create and edit any pages on the portal.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
-$txt['cannot_light_portal_manage_own_blocks'] = 'Sorry, you are not allowed to manage blocks!';
-$txt['cannot_light_portal_manage_own_pages'] = 'Sorry, you are not allowed to manage pages!';
+$txt['cannot_light_portal_manage_blocks'] = 'Sorry, you are not allowed to manage blocks!';
+$txt['cannot_light_portal_manage_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
-$txt['cannot_light_portal_moderate_pages'] = 'Sorry, you are not allowed to moderate portal pages!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
 
 // Time units

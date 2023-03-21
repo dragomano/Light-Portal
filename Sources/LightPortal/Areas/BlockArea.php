@@ -327,7 +327,7 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_own_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',

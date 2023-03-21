@@ -231,7 +231,7 @@ final class Integration extends AbstractMain
 			);
 		}
 
-		if ($this->context['allow_light_portal_moderate_pages']) {
+		if ($this->context['allow_light_portal_manage_pages_any']) {
 			$buttons['moderate']['show'] = true;
 
 			$buttons['moderate']['sub_buttons'] = [
@@ -360,10 +360,9 @@ final class Integration extends AbstractMain
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
 			[
-				'light_portal_manage_own_blocks',
-				'light_portal_manage_own_pages',
+				'light_portal_manage_blocks',
+				'light_portal_manage_pages',
 				'light_portal_approve_pages',
-				'light_portal_moderate_pages'
 			]
 		);
 	}
@@ -375,16 +374,14 @@ final class Integration extends AbstractMain
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
-		$this->context['permissions_excluded']['light_portal_manage_own_blocks'][] = 0;
-		$this->context['permissions_excluded']['light_portal_manage_own_pages'][]  = 0;
+		$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
+		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
 		$this->context['permissions_excluded']['light_portal_approve_pages'][]     = 0;
-		$this->context['permissions_excluded']['light_portal_moderate_pages'][]    = 0;
 
-		$permissionList['membergroup']['light_portal_view']              = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_manage_own_blocks'] = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_manage_own_pages']  = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_approve_pages']     = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_moderate_pages']    = [false, 'light_portal'];
+		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
+		$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
+		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
+		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
 
 		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
 	}
@@ -402,7 +399,7 @@ final class Integration extends AbstractMain
 					'alert' => 'yes',
 					'email' => 'never',
 					'permission' => [
-						'name'     => 'light_portal_manage_own_pages',
+						'name'     => 'light_portal_manage_pages_own',
 						'is_board' => false
 					]
 				],
@@ -420,7 +417,7 @@ final class Integration extends AbstractMain
 			'alert' => 'yes',
 			'email' => 'yes',
 			'permission' => [
-				'name'     => 'light_portal_moderate_pages',
+				'name'     => 'light_portal_manage_pages_any',
 				'is_board' => false
 			]
 		];
@@ -467,7 +464,7 @@ final class Integration extends AbstractMain
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
 			'icon'       => 'modifications',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_own_blocks',
+			'permission' => 'light_portal_manage_blocks',
 		];
 
 		$profile_areas['info']['areas']['lp_my_pages'] = [
@@ -475,7 +472,7 @@ final class Integration extends AbstractMain
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_own_pages',
+			'permission' => 'light_portal_manage_pages_own',
 		];
 	}
 
@@ -487,7 +484,7 @@ final class Integration extends AbstractMain
 		if ($this->context['user']['is_admin'])
 			return;
 
-		if (! ($this->context['allow_light_portal_manage_own_blocks'] || $this->context['allow_light_portal_manage_own_pages']))
+		if (! ($this->context['allow_light_portal_manage_blocks'] || $this->context['allow_light_portal_manage_pages_own']))
 			return;
 
 		$counter = 0;
@@ -500,13 +497,13 @@ final class Integration extends AbstractMain
 
 		$portal_items = [];
 
-		if ($this->context['allow_light_portal_manage_own_blocks'])
+		if ($this->context['allow_light_portal_manage_blocks'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_blocks'
 			];
 
-		if ($this->context['allow_light_portal_manage_own_pages'])
+		if ($this->context['allow_light_portal_manage_pages_own'])
 			$portal_items[] = [
 				'menu' => 'info',
 				'area' => 'lp_my_pages'

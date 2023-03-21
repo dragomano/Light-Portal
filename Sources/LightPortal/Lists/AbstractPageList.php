@@ -77,7 +77,7 @@ abstract class AbstractPageList implements PageListInterface
 				'is_new'    => $this->user_info['last_login'] < $row['date'] && $row['author_id'] != $this->user_info['id'],
 				'is_front'  => $this->isFrontpage($row['alias']),
 				'image'     => $image,
-				'can_edit'  => $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_own_pages'] && $row['author_id'] == $this->user_info['id']),
+				'can_edit'  => $this->user_info['is_admin'] || ($this->context['allow_light_portal_manage_pages_own'] && $row['author_id'] == $this->user_info['id']),
 				'edit_link' => $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 			];
 
