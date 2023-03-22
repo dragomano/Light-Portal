@@ -14,18 +14,18 @@ Since version 1.9, the functionality for creating plugins has been moved to a se
 ## Choosing the type of plugin
 Currently, the following types of plugins are available:
 
-* 'block' — plugins that add a new type of blocks for the portal
-* 'ssi' — plugins (usually blocks) that use SSI functions to retrieve data
-* 'editor' — plugins that add a third-party editor for different types of content
-* 'comment' — plugins that add a third-party comment widget instead of the built-in
-* 'parser' — plugins that implement the parser for the content of pages and blocks
-* 'article' — plugins for processing the content of article cards on the main page
-* 'frontpage' — plugins for changing the main page of the portal
-* 'impex' — plugins for importing and exporting various portal elements
-* 'block_options' and 'page_options' — plugins that add additional parameters for the corresponding entity (block or page)
-* 'icons' — plugins that add new icon libraries to replace interface elements or for use in block headers
-* 'seo' — plugins that somehow affect the visibility of the forum on the network
-* 'other' — plugins that are not related to any of the categories above
+* `block` — plugins that add a new type of blocks for the portal
+* `ssi` — plugins (usually blocks) that use SSI functions to retrieve data
+* `editor` — plugins that add a third-party editor for different types of content
+* `comment` — plugins that add a third-party comment widget instead of the built-in
+* `parser` — plugins that implement the parser for the content of pages and blocks
+* `article` — plugins for processing the content of article cards on the main page
+* `frontpage` — plugins for changing the main page of the portal
+* `impex` — plugins for importing and exporting various portal elements
+* `block_options` and `page_options` — plugins that add additional parameters for the corresponding entity (block or page)
+* `icons` — plugins that add new icon libraries to replace interface elements or for use in block headers
+* `seo` — plugins that somehow affect the visibility of the forum on the network
+* `other` — plugins that are not related to any of the categories above
 
 ## Creating a plugin directory
 Create a separate folder for your plugin files, inside `/Sources/LightPortal/Addons`. For example, if your plugin is called `HelloWorld`, the folder structure should look like this:
@@ -80,7 +80,8 @@ If the plugin needs to retrieve any data using SSI functions, use the built-in `
 ```php
 <?php
 
-    $data = $this->getFromSsi('topTopics', 'views', 10, 'array'); // See ssi_topTopics function in the SSI.php file
+    // See ssi_topTopics function in the SSI.php file
+    $data = $this->getFromSsi('topTopics', 'views', 10, 'array');
 ```
 
 :::caution
