@@ -66,7 +66,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        /* copyright: `Built at ${new Date().getFullYear()} with Docusaurus especially for Light Portal.`, */
+        copyright: `<a href="https://crowdin.com/project/light-portal">Help us translate the documentation</a>`,
       },
       prism: {
         theme: lightCodeTheme,
