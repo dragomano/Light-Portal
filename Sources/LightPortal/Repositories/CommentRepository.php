@@ -253,7 +253,7 @@ final class CommentRepository
 
 	private function isCanEdit(int $date): bool
 	{
-		if (empty($time_to_change = (int) $this->modSettings['lp_time_to_change_comments']))
+		if (empty($time_to_change = (int) ($this->modSettings['lp_time_to_change_comments']) ?? 0))
 			return false;
 
 		return $time_to_change && time() - $date <= $time_to_change * 60;
