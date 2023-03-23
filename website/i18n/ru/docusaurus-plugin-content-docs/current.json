@@ -3,24 +3,24 @@
     "message": "Next",
     "description": "The label for version current"
   },
-  "sidebar.tutorialSidebar.category.Basics": {
+  "sidebar.baseSidebar.category.Basics": {
     "message": "Основы",
-    "description": "The label for category Основы in sidebar tutorialSidebar"
+    "description": "The label for category Basics in sidebar baseSidebar"
   },
-  "sidebar.tutorialSidebar.category.Blocks": {
+  "sidebar.baseSidebar.category.Blocks": {
     "message": "Блоки",
-    "description": "The label for category Блоки in sidebar tutorialSidebar"
+    "description": "The label for category Blocks in sidebar baseSidebar"
   },
-  "sidebar.tutorialSidebar.category.Pages": {
+  "sidebar.baseSidebar.category.Pages": {
     "message": "Страницы",
-    "description": "The label for category Страницы in sidebar tutorialSidebar"
+    "description": "The label for category Pages in sidebar baseSidebar"
   },
-  "sidebar.tutorialSidebar.category.Plugins": {
+  "sidebar.baseSidebar.category.Plugins": {
     "message": "Плагины",
-    "description": "The label for category Плагины in sidebar tutorialSidebar"
+    "description": "The label for category Plugins in sidebar baseSidebar"
   },
-  "sidebar.tutorialSidebar.category.Layouts": {
-    "message": "Макеты",
-    "description": "The label for category Макеты in sidebar tutorialSidebar"
+  "sidebar.baseSidebar.category.How To": {
+    "message": "Инструкции",
+    "description": "The label for category How To in sidebar baseSidebar"
   }
 }

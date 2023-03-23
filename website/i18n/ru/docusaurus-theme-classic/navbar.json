@@ -5,10 +5,14 @@
   },
   "item.label.Demo": {
     "message": "Демка",
-    "description": "Navbar item with label Демка"
+    "description": "Navbar item with label Demo"
   },
   "item.label.GitHub": {
     "message": "GitHub",
     "description": "Navbar item with label GitHub"
+  },
+  "logo.alt": {
+    "message": "Логотип",
+    "description": "The alt text of navbar logo"
   }
 }
