@@ -46,16 +46,16 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
 <?php
 
 /**
- * HelloWorld.php (Name of the current file)
+ * HelloWorld.php
  *
- * @package HelloWorld (Light Portal) (name of the plugin and name of the portal)
- * @link https://dragomano.ru/mods/light-portal (link to the portal page, or to the page of your plugin, if it is not included with the portal)
- * @author Your nickname and email address
- * @copyright Year of creation of the plugin and your nickname (again)
- * @license Link to the license under which your plugin is distributed and the name of the license
+ * @package HelloWorld (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
+ * @author Nickname <email>
+ * @copyright 2023 Nickname
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.01.22 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
+ * @version 23.03.23 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
