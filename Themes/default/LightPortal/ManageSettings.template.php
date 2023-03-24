@@ -330,7 +330,7 @@ function template_callback_frontpage_mode_settings()
 			<dd>
 				<select name="lp_frontpage_num_columns" id="lp_frontpage_num_columns">';
 
-	foreach ($txt['lp_frontpage_num_columns_set'] as $value => $label) {
+	foreach ($context['lp_column_set'] as $value => $label) {
 		echo '
 					<option value="', $value, '"', ! empty($modSettings['lp_frontpage_num_columns']) && $modSettings['lp_frontpage_num_columns'] == $value ? ' selected' : '', '>
 						', $label, '

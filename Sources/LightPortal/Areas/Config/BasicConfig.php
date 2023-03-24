@@ -69,6 +69,7 @@ final class BasicConfig
 		);
 
 		$this->context['board_list'] = $this->getBoardList();
+		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
