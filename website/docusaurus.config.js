@@ -77,7 +77,7 @@ const config = {
 
     i18n: {
       defaultLocale: 'en',
-      locales: ['en', 'ru'],
+      locales: ['en', 'ru', 'el'],
     },
 
     plugins: [
