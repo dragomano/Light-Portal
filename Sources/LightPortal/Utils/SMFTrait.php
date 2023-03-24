@@ -59,6 +59,21 @@ trait SMFTrait
 		$this->logError('[LP] unsupported property: ' . $name);
 	}
 
+	protected function applyHook(string $name, string|array $method, string $file = ''): void
+	{
+		$name = str_replace('integrate_', '', $name);
+
+		if (is_array($method) && count($method) === 2) {
+			$method = $method[0] . '::' . str_replace('#', '', $method[1]);
+		} else {
+			$method = static::class . '::' . str_replace('#', '', $method);
+		}
+
+		$file = $file ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
+
+		add_integration_function('integrate_' . $name, $method . '#', false, $file);
+	}
+
 	protected function unHtmlSpecialChars(string $string): string
 	{
 		return un_htmlspecialchars($string);
