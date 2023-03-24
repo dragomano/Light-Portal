@@ -265,7 +265,7 @@ final class Page
 						'value' => $this->txt['author']
 					],
 					'data' => [
-						'function' => fn($entry) => empty($entry['author']['id']) ? $entry['author']['name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $entry['author']['id'] . '">' . $entry['author']['name'] . '</a>',
+						'function' => fn($entry) => empty($entry['author']['name']) ? $this->txt['guest_title'] : '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
 						'class' => 'centertext'
 					],
 					'sort' => [
