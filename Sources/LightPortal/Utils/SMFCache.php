@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Cache.php
+ * SMFCache.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -21,7 +21,7 @@ use function clean_cache;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Cache
+final class SMFCache implements CacheInterface
 {
 	private string $prefix = 'lp_';
 
@@ -31,7 +31,7 @@ final class Cache
 	{
 	}
 
-	public function setLifeTime(int $lifeTime): Cache
+	public function setLifeTime(int $lifeTime): self
 	{
 		$this->lifeTime = $lifeTime;
 
