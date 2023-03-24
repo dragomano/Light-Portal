@@ -122,6 +122,9 @@ final class ConfigArea
 		$this->hook('addAdminAreas', [&$admin_areas]);
 	}
 
+	/**
+	 * @hook integrate_helpadmin
+	 */
 	public function helpadmin(): void
 	{
 		$this->txt['lp_standalone_url_help'] = sprintf($this->txt['lp_standalone_url_help'], $this->boardurl . '/portal.php', $this->scripturl);
