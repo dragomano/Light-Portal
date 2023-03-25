@@ -99,9 +99,9 @@ trait SMFTrait
 		loadTemplate($template);
 	}
 
-	protected function loadLanguage(string $language): void
+	protected function loadLanguage(string $language, string $lang = ''): void
 	{
-		loadLanguage($language);
+		loadLanguage($language, $lang);
 	}
 
 	protected function fatalLangError(string $error, $status = 403): void

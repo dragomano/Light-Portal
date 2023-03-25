@@ -139,7 +139,7 @@ final class Notifier extends SMF_BackgroundTask
 					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], true, false)['content_link'],
 				];
 
-				loadLanguage('LightPortal/LightPortal', $this_lang);
+				$this->loadLanguage('LightPortal/LightPortal', $this_lang);
 
 				$emaildata = loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
 
