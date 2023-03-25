@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.05.22
+ * @version 24.03.23
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -32,7 +32,7 @@ class ExtendedMetaTags extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_theme_context', self::class . '::themeContext#', false, __FILE__);
+		$this->applyHook('theme_context', 'themeContext');
 	}
 
 	public function themeContext()

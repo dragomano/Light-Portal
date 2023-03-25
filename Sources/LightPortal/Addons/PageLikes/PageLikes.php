@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 24.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PageLikes;
@@ -30,8 +30,8 @@ class PageLikes extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_valid_likes', self::class . '::validLikes#', false, __FILE__);
-		add_integration_function('integrate_issue_like', self::class . '::issueLike#', false, __FILE__);
+		$this->applyHook('valid_likes', 'validLikes');
+		$this->applyHook('issue_like', 'issueLike');
 	}
 
 	public function validLikes(string $type, int $content): bool|array

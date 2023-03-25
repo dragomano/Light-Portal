@@ -17,8 +17,6 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Entities\{Block, Page, FrontPage};
 use Bugo\LightPortal\Lists\{Category, Tag};
 
-use function add_integration_function;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -29,29 +27,28 @@ final class Integration extends AbstractMain
 {
 	public function hooks()
 	{
-		add_integration_function('integrate_user_info', self::class . '::userInfo#', false, __FILE__);
-		add_integration_function('integrate_pre_css_output', self::class . '::preCssOutput#', false, __FILE__);
-		add_integration_function('integrate_load_theme', self::class . '::loadTheme#', false, __FILE__);
-		add_integration_function('integrate_redirect', self::class . '::changeRedirect#', false, __FILE__);
-		add_integration_function('integrate_actions', self::class . '::actions#', false, __FILE__);
-		add_integration_function('integrate_default_action', self::class . '::defaultAction#', false, __FILE__);
-		add_integration_function('integrate_current_action', self::class . '::currentAction#', false, __FILE__);
-		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
-		add_integration_function('integrate_display_buttons', self::class . '::displayButtons#', false, __FILE__);
-		add_integration_function('integrate_delete_members', self::class . '::deleteMembers#', false, __FILE__);
-		add_integration_function('integrate_load_illegal_guest_permissions', self::class . '::loadIllegalGuestPermissions#', false, __FILE__);
-		add_integration_function('integrate_load_permissions', self::class . '::loadPermissions#', false, __FILE__);
-		add_integration_function('integrate_alert_types',  self::class . '::alertTypes#', false, __FILE__);
-		add_integration_function('integrate_fetch_alerts',  self::class . '::fetchAlerts#', false, __FILE__);
-		add_integration_function('integrate_profile_areas', self::class . '::profileAreas#', false, __FILE__);
-		add_integration_function('integrate_profile_popup', self::class . '::profilePopup#', false, __FILE__);
-		add_integration_function('integrate_whos_online', self::class . '::whoisOnline#', false, __FILE__);
-		add_integration_function('integrate_modification_types', self::class . '::modificationTypes#', false, __FILE__);
-		add_integration_function('integrate_packages_sort_id', self::class . '::packagesSortId#', false, __FILE__);
-		add_integration_function('integrate_credits', __NAMESPACE__ . '\Areas\CreditArea::show#', false, '$sourcedir/LightPortal/Areas/CreditArea.php');
-		add_integration_function('integrate_admin_areas', __NAMESPACE__ . '\Areas\ConfigArea::adminAreas#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
-		add_integration_function('integrate_admin_search', __NAMESPACE__ . '\Areas\ConfigArea::adminSearch#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
-		add_integration_function('integrate_helpadmin', __NAMESPACE__ . '\Areas\ConfigArea::helpadmin#', false, '$sourcedir/LightPortal/Areas/ConfigArea.php');
+		$this->applyHook('user_info', 'userInfo');
+		$this->applyHook('pre_css_output', 'preCssOutput');
+		$this->applyHook('load_theme', 'loadTheme');
+		$this->applyHook('redirect', 'changeRedirect');
+		$this->applyHook('actions', 'actions');
+		$this->applyHook('default_action', 'defaultAction');
+		$this->applyHook('current_action', 'currentAction');
+		$this->applyHook('menu_buttons', 'menuButtons');
+		$this->applyHook('display_buttons', 'displayButtons');
+		$this->applyHook('delete_members', 'deleteMembers');
+		$this->applyHook('load_illegal_guest_permissions', 'loadIllegalGuestPermissions');
+		$this->applyHook('load_permissions', 'loadPermissions');
+		$this->applyHook('alert_types', 'alertTypes');
+		$this->applyHook('fetch_alerts', 'fetchAlerts');
+		$this->applyHook('profile_areas', 'profileAreas');
+		$this->applyHook('profile_popup', 'profilePopup');
+		$this->applyHook('whos_online', 'whoisOnline');
+		$this->applyHook('modification_types', 'modificationTypes');
+		$this->applyHook('packages_sort_id', 'packagesSortId');
+		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
+		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
+		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 	}
 
 	public function userInfo()

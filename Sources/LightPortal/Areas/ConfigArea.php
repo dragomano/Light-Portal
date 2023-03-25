@@ -123,14 +123,8 @@ final class ConfigArea
 	}
 
 	/**
-	 * @hook integrate_admin_search
+	 * @hook integrate_helpadmin
 	 */
-	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search): void
-	{
-		$settings_search[] = [[new PanelConfig, 'show'], 'area=lp_settings;sa=panels'];
-		$settings_search[] = [[new MiscConfig, 'show'], 'area=lp_settings;sa=misc'];
-	}
-
 	public function helpadmin(): void
 	{
 		$this->txt['lp_standalone_url_help'] = sprintf($this->txt['lp_standalone_url_help'], $this->boardurl . '/portal.php', $this->scripturl);
