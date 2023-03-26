@@ -32,7 +32,7 @@ class CrowdinContext extends Plugin
 		if (empty($this->user_info['is_admin']))
 			return;
 
-		$this->applyHook('actions', 'actions');
+		$this->applyHook('actions');
 
 		$this->loadLanguage('LightPortal/LightPortal', 'crowdin');
 

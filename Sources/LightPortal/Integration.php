@@ -27,25 +27,25 @@ final class Integration extends AbstractMain
 {
 	public function hooks()
 	{
-		$this->applyHook('user_info', 'userInfo');
-		$this->applyHook('pre_css_output', 'preCssOutput');
-		$this->applyHook('load_theme', 'loadTheme');
+		$this->applyHook('user_info');
+		$this->applyHook('pre_css_output');
+		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
-		$this->applyHook('actions', 'actions');
-		$this->applyHook('default_action', 'defaultAction');
-		$this->applyHook('current_action', 'currentAction');
-		$this->applyHook('menu_buttons', 'menuButtons');
-		$this->applyHook('display_buttons', 'displayButtons');
-		$this->applyHook('delete_members', 'deleteMembers');
-		$this->applyHook('load_illegal_guest_permissions', 'loadIllegalGuestPermissions');
-		$this->applyHook('load_permissions', 'loadPermissions');
-		$this->applyHook('alert_types', 'alertTypes');
-		$this->applyHook('fetch_alerts', 'fetchAlerts');
-		$this->applyHook('profile_areas', 'profileAreas');
-		$this->applyHook('profile_popup', 'profilePopup');
+		$this->applyHook('actions');
+		$this->applyHook('default_action');
+		$this->applyHook('current_action');
+		$this->applyHook('menu_buttons');
+		$this->applyHook('display_buttons');
+		$this->applyHook('delete_members');
+		$this->applyHook('load_illegal_guest_permissions');
+		$this->applyHook('load_permissions');
+		$this->applyHook('alert_types');
+		$this->applyHook('fetch_alerts');
+		$this->applyHook('profile_areas');
+		$this->applyHook('profile_popup');
 		$this->applyHook('whos_online', 'whoisOnline');
-		$this->applyHook('modification_types', 'modificationTypes');
-		$this->applyHook('packages_sort_id', 'packagesSortId');
+		$this->applyHook('modification_types');
+		$this->applyHook('packages_sort_id');
 		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
 		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');

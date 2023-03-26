@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 24.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -47,7 +47,7 @@ class Markdown extends Plugin
 	{
 		$this->context['lp_content_types']['markdown'] = 'Markdown';
 
-		$this->applyHook('autoload', 'autoload');
+		$this->applyHook('autoload');
 	}
 
 	public function autoload(array &$classMap)

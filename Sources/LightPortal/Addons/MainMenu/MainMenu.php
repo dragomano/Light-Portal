@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -29,8 +29,8 @@ class MainMenu extends Plugin
 
 	public function init()
 	{
-		$this->applyHook('menu_buttons', 'menuButtons');
-		$this->applyHook('current_action', 'currentAction');
+		$this->applyHook('menu_buttons');
+		$this->applyHook('current_action');
 	}
 
 	public function menuButtons(array &$buttons)

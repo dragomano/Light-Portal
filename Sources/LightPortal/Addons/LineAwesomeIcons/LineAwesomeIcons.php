@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\LineAwesomeIcons;
@@ -29,7 +29,7 @@ class LineAwesomeIcons extends Plugin
 
 	public function init()
 	{
-		$this->applyHook('pre_css_output', 'preCssOutput');
+		$this->applyHook('pre_css_output');
 	}
 
 	public function preCssOutput()
