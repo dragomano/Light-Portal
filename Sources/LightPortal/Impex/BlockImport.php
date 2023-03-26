@@ -21,7 +21,7 @@ final class BlockImport extends AbstractImport
 {
 	public function main()
 	{
-		$this->loadTemplate('LightPortal/ManageImpex');
+		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_import'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
@@ -32,8 +32,6 @@ final class BlockImport extends AbstractImport
 			'title'       => LP_NAME,
 			'description' => $this->txt['lp_blocks_import_description']
 		];
-
-		$this->context['sub_template'] = 'manage_import';
 
 		$this->run();
 	}

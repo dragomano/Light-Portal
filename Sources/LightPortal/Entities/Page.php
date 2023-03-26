@@ -88,9 +88,7 @@ final class Page
 			];
 		}
 
-		$this->loadTemplate('LightPortal/ViewPage');
-
-		$this->context['sub_template'] = 'show_page';
+		$this->loadTemplate('LightPortal/ViewPage', 'show_page');
 
 		$this->promote();
 		$this->setMeta();

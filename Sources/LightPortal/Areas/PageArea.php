@@ -351,7 +351,7 @@ final class PageArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_add_title'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_add_title'];
@@ -369,8 +369,6 @@ final class PageArea
 		$this->preparePreview();
 
 		$this->repository->setData();
-
-		$this->context['sub_template'] = 'page_post';
 	}
 
 	public function edit(): void
@@ -381,7 +379,7 @@ final class PageArea
 			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
-		$this->loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_edit_title'];
 
@@ -425,8 +423,6 @@ final class PageArea
 		$this->preparePreview();
 
 		$this->repository->setData($this->context['lp_page']['id']);
-
-		$this->context['sub_template'] = 'page_post';
 	}
 
 	private function changeTableTitle(array $listOptions): void

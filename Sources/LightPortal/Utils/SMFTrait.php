@@ -97,9 +97,12 @@ trait SMFTrait
 		redirectexit($url);
 	}
 
-	protected function loadTemplate(string $template): void
+	protected function loadTemplate(string $template, string $sub_template = ''): void
 	{
 		loadTemplate($template);
+
+		if ($sub_template)
+			$this->context['sub_template'] = $sub_template;
 	}
 
 	protected function loadLanguage(string $language, string $lang = ''): void

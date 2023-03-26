@@ -37,7 +37,7 @@ final class BlockArea
 
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'manage_blocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_manage'];
 
@@ -49,8 +49,6 @@ final class BlockArea
 		$this->doActions();
 
 		$this->context['lp_current_blocks'] = $this->repository->getAll();
-
-		$this->context['sub_template'] = 'manage_blocks';
 	}
 
 	public function doActions(): void
@@ -78,7 +76,7 @@ final class BlockArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'block_add');
 
 		$this->context['page_title']    = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_add_title'];
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_blocks;sa=add';
@@ -94,8 +92,6 @@ final class BlockArea
 
 		$this->prepareBlockList();
 
-		$this->context['sub_template'] = 'block_add';
-
 		$json = $this->request()->json();
 		$type = $json['add_block'] ?? $this->request('add_block', '') ?? '';
 
@@ -105,15 +101,14 @@ final class BlockArea
 		$this->context['current_block']['type'] = $type;
 
 		$this->prepareForumLanguages();
-
-		$this->context['sub_template'] = 'block_post';
-
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
 
 		$this->repository->setData();
+
+		$this->context['sub_template'] = 'block_post';
 	}
 
 	public function edit(): void
@@ -123,7 +118,7 @@ final class BlockArea
 		if (empty($item))
 			$this->fatalLangError('lp_block_not_found', 404);
 
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'block_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_edit_title'];
 
@@ -134,7 +129,6 @@ final class BlockArea
 
 		$this->prepareForumLanguages();
 
-		$this->context['sub_template']  = 'block_post';
 		$this->context['current_block'] = $this->repository->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])

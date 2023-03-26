@@ -32,7 +32,7 @@ final class BlockExport extends AbstractExport
 
 	public function main()
 	{
-		$this->loadTemplate('LightPortal/ManageImpex');
+		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_blocks');
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_export'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_export'];
@@ -46,8 +46,6 @@ final class BlockExport extends AbstractExport
 		$this->run();
 
 		$this->context['lp_current_blocks'] = $this->repository->getAll(with_customs: true);
-
-		$this->context['sub_template'] = 'manage_export_blocks';
 	}
 
 	protected function getData(): array
