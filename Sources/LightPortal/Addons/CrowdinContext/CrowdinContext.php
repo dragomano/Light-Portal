@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 25.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -35,6 +35,13 @@ class CrowdinContext extends Plugin
 		$this->applyHook('actions', 'actions');
 
 		$this->loadLanguage('LightPortal/LightPortal', 'crowdin');
+
+		$addons = $this->getAllAddons();
+		array_walk($addons, function ($addon) {
+			if (is_file($file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR . 'langs' . DIRECTORY_SEPARATOR . 'crowdin.php')) {
+				$this->txt['lp_' . $this->getSnakeName($addon)] = require $file;
+			}
+		});
 
 		$this->addInlineJavaScript('
 		var _jipt = [];
