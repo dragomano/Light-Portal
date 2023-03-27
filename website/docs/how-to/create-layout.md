@@ -68,3 +68,9 @@ To customize stylesheets, create a file `custom_frontpage.css` in the `/Themes/d
 ```
 
 The advantage of this method is that if you delete or update the portal, the files you created will remain intact.
+
+:::tip
+
+If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
+
+:::

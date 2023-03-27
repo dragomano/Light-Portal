@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Installing
+# Installation
 There are no subtleties here. Light Portal can be installed like any other modification for SMF - through the package manager.
 
 :::info

@@ -28,17 +28,11 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/how_to/create_layout)_.
+* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/how-to/create-layout)_.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Show the pagination — specify where the page pagination should be displayed.
 * Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
-
-:::tip
-
-If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
-
-:::
 
 ### Standalone mode
 
