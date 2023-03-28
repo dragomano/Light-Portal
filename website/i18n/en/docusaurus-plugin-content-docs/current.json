@@ -3,9 +3,9 @@
     "message": "Next",
     "description": "The label for version current"
   },
-  "sidebar.baseSidebar.category.Basics": {
-    "message": "Basics",
-    "description": "The label for category Basics in sidebar baseSidebar"
+  "sidebar.baseSidebar.category.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label for category Getting Started in sidebar baseSidebar"
   },
   "sidebar.baseSidebar.category.Blocks": {
     "message": "Blocks",

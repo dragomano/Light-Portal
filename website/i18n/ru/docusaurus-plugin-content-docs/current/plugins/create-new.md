@@ -5,7 +5,7 @@ sidebar_position: 2
 # Создание плагина
 Плагины — дополнения, расширяющие возможности портала. Чтобы создать собственный плагин для Light Portal, достаточно следовать инструкциям ниже.
 
-:::info
+:::info Информация
 
 С версии 1.9 функционал для создания плагинов вынесен в отдельный плагин — **PluginMaker**. Скачайте и подключите его на странице _Админка -> Настройки портала -> Плагины_.
 
@@ -35,8 +35,7 @@ sidebar_position: 2
 └── HelloWorld/
     ├── langs/
     │   ├── english.php
-    │   ├── index.php
-    │   └── russian.php
+    │   └── index.php
     ├── index.php
     └── HelloWorld.php
 ```
@@ -47,16 +46,16 @@ sidebar_position: 2
 <?php
 
 /**
- * HelloWorld.php (имя текущего файла)
+ * HelloWorld.php
  *
- * @package HelloWorld (Light Portal) (название дополнения и портала)
- * @link https://dragomano.ru/mods/light-portal (ссылка на страницу портала, либо на страницу вашего дополнения, если оно не идет в комплекте с порталом)
- * @author Ваш никнейм и почта
- * @copyright Год создания дополнения и ваш никнейм (да, снова)
- * @license Ссылка на лицензию, под которой распространяется ваше дополнение, и название лицензии
+ * @package HelloWorld (Light Portal)
+ * @link https://custom.simplemachines.org/index.php?mod=4244
+ * @author Nickname <email>
+ * @copyright 2023 Nickname
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.01.22 (дата создания а затем последнего обновления исходного кода дополнения)
+ * @version 23.03.23 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
@@ -64,7 +63,7 @@ namespace Bugo\LightPortal\Addons\HelloWorld;
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
-	die('No direct access...');
+    die('No direct access...');
 
 class HelloWorld extends Plugin
 {

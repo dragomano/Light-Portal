@@ -1,14 +1,14 @@
 {
   "title": {
-    "message": "Light Portal Docs",
+    "message": "Έγγραφα Light Portal",
     "description": "The title in the navbar"
   },
   "logo.alt": {
-    "message": "Logo",
+    "message": "Λογότυπο",
     "description": "The alt text of navbar logo"
   },
   "item.label.Demo": {
-    "message": "Demo",
+    "message": "Επίδειξη",
     "description": "Navbar item with label Demo"
   },
   "item.label.GitHub": {

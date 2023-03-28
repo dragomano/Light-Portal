@@ -18,38 +18,38 @@ sidebar_position: 1
  */
 function template_show_articles_custom() // Не забудьте поменять *_custom* на что-нибудь другое, для уникализации
 {
-	global $context;
+    global $context;
 
-	if (empty($context['lp_active_blocks']))
-		echo '
-	<div class="col-xs">';
+    if (empty($context['lp_active_blocks']))
+        echo '
+    <div class="col-xs">';
 
-	echo '
-	<div class="lp_frontpage_articles article_custom">'; // Не забудьте поменять *article_custom* на что-нибудь другое, для уникализации
+    echo '
+    <div class="lp_frontpage_articles article_custom">'; // Не забудьте поменять *article_custom* на что-нибудь другое, для уникализации
 
-	show_pagination();
+    show_pagination();
 
-	foreach ($context['lp_frontpage_articles'] as $article) {
-		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
+    foreach ($context['lp_frontpage_articles'] as $article) {
+        echo '
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
 
-		// Отображение содержимого переменной $article, в качестве подсказки
-		echo '<figure class="noticebox">' . parse_bbc('[code]' . print_r($article, true) . '[/code]') . '</figure>';
+        // Отображение содержимого переменной $article, в качестве подсказки
+        echo '<figure class="noticebox">' . parse_bbc('[code]' . print_r($article, true) . '[/code]') . '</figure>';
 
-		// Ваш код
+        // Ваш код
 
-		echo '
-		</div>';
-	}
+        echo '
+        </div>';
+    }
 
-	show_pagination('bottom');
+    show_pagination('bottom');
 
-	echo '
-	</div>';
+    echo '
+    </div>';
 
-	if (empty($context['lp_active_blocks']))
-		echo '
-	</div>';
+    if (empty($context['lp_active_blocks']))
+        echo '
+    </div>';
 }
 
 ```
@@ -63,8 +63,14 @@ function template_show_articles_custom() // Не забудьте поменят
 ```css {3}
 /* Custom layout */
 .article_custom {
-	/* Ваши правила */
+    /* Ваши правила */
 }
 ```
 
 Преимущество этого способа в том, что при удалении или обновлении портала созданные вами файлы останутся нетронутыми.
+
+:::tip
+
+Если вы создали свой шаблон главной страницы и хотите поделиться им с разработчиком и другими пользователями, воспользуйтесь https://codepen.io/pen/ или другими подобными ресурсами.
+
+:::

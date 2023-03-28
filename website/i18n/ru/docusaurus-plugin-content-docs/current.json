@@ -1,11 +1,11 @@
 {
   "version.label": {
-    "message": "Next",
+    "message": "Следующая",
     "description": "The label for version current"
   },
-  "sidebar.baseSidebar.category.Basics": {
-    "message": "Основы",
-    "description": "The label for category Basics in sidebar baseSidebar"
+  "sidebar.baseSidebar.category.Getting Started": {
+    "message": "Плагины",
+    "description": "The label for category Getting Started in sidebar baseSidebar"
   },
   "sidebar.baseSidebar.category.Blocks": {
     "message": "Блоки",

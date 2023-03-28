@@ -56,7 +56,7 @@ function template_show_articles_custom() // Do not forget change custom name *cu
 
 Μετά από αυτό, θα δείτε μια νέα διάταξη πρώτης σελίδας - `Προσαρμοσμένη` - στις ρυθμίσεις της πύλης. Μπορείτε να δημιουργήσετε όσες τέτοιες διατάξεις θέλετε (`template_show_articles_custom1()`, `template_show_articles_custom2()`, κ.λπ.).
 
-![Επιλέξτε προσαρμοσμένο πρότυπο](https://user-images.githubusercontent.com/229402/136643076-765289c2-342f-43c5-865a-1aca948beafe.png)
+![Επιλέξτε προσαρμοσμένο πρότυπο](set_custom_template.png)
 
 Για να προσαρμόσετε τα φύλλα στυλ, δημιουργήστε ένα αρχείο `custom_frontpage.css` στον κατάλογο `/Themes/default/css`:
 
@@ -68,3 +68,9 @@ function template_show_articles_custom() // Do not forget change custom name *cu
 ```
 
 Το πλεονέκτημα αυτής της μεθόδου είναι ότι εάν διαγράψετε ή ενημερώσετε την πύλη, τα αρχεία που δημιουργήσατε θα παραμείνουν ανέπαφα.
+
+:::tip
+
+Εάν έχετε δημιουργήσει το δικό σας πρότυπο πρώτης σελίδας και θέλετε να το μοιραστείτε με τον προγραμματιστή και άλλους χρήστες, χρησιμοποιήστε τη διεύθυνση https://codepen.io/pen/ ή άλλους παρόμοιους πόρους.
+
+:::
