@@ -143,7 +143,7 @@ function show_plugin_settings(array $plugin)
 		echo '
 				<div>';
 
-		if (! in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
+		if (! in_array($value[0], ['callback', 'title', 'desc', 'check'])) {
 			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '>', $label, '</label>';
 		}
