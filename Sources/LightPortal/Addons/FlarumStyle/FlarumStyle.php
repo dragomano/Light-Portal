@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 29.03.23
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -24,14 +24,15 @@ class FlarumStyle extends Plugin
 {
 	public string $type = 'frontpage';
 
+	public function addSettings(array &$config_vars)
+	{
+		$config_vars['flarum_style'][] = ['check', 'disable_sidebar'];
+	}
+
 	public function frontCustomTemplate()
 	{
 		if (! in_array($this->modSettings['lp_frontpage_mode'], ['all_topics', 'chosen_topics', 'all_pages', 'chosen_pages']))
 			return;
-
-		$this->context['is_portal'] = in_array($this->modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
-
-		$this->context['lp_all_categories'] = $this->getCategories();
 
 		$this->context['lp_need_lower_case'] = $this->isLowerCaseForDates();
 
@@ -42,6 +43,13 @@ class FlarumStyle extends Plugin
 
 	private function prepareFantomBLock()
 	{
+		if (! empty($this->context['lp_flarum_style_plugin']['disable_sidebar']))
+			return;
+
+		$this->context['is_portal'] = in_array($this->modSettings['lp_frontpage_mode'], ['all_pages', 'chosen_pages']);
+
+		$this->context['lp_all_categories'] = $this->getCategories();
+
 		ob_start();
 
 		show_ffs_sidebar();
