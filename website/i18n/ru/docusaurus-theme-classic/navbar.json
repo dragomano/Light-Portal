@@ -3,9 +3,13 @@
     "message": "Документация Light Portal",
     "description": "The title in the navbar"
   },
+  "logo.alt": {
+    "message": "Логотип",
+    "description": "The alt text of navbar logo"
+  },
   "item.label.Demo": {
     "message": "Демка",
-    "description": "Navbar item with label Демка"
+    "description": "Navbar item with label Demo"
   },
   "item.label.GitHub": {
     "message": "GitHub",

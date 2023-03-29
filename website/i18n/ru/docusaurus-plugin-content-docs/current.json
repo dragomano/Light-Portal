@@ -1,26 +1,26 @@
 {
   "version.label": {
-    "message": "Next",
+    "message": "Следующая",
     "description": "The label for version current"
   },
-  "sidebar.tutorialSidebar.category.Basics": {
-    "message": "Основы",
-    "description": "The label for category Основы in sidebar tutorialSidebar"
-  },
-  "sidebar.tutorialSidebar.category.Blocks": {
-    "message": "Блоки",
-    "description": "The label for category Блоки in sidebar tutorialSidebar"
-  },
-  "sidebar.tutorialSidebar.category.Pages": {
-    "message": "Страницы",
-    "description": "The label for category Страницы in sidebar tutorialSidebar"
-  },
-  "sidebar.tutorialSidebar.category.Plugins": {
+  "sidebar.baseSidebar.category.Getting Started": {
     "message": "Плагины",
-    "description": "The label for category Плагины in sidebar tutorialSidebar"
+    "description": "The label for category Getting Started in sidebar baseSidebar"
   },
-  "sidebar.tutorialSidebar.category.Layouts": {
-    "message": "Макеты",
-    "description": "The label for category Макеты in sidebar tutorialSidebar"
+  "sidebar.baseSidebar.category.Blocks": {
+    "message": "Блоки",
+    "description": "The label for category Blocks in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.Pages": {
+    "message": "Страницы",
+    "description": "The label for category Pages in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.Plugins": {
+    "message": "Плагины",
+    "description": "The label for category Plugins in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.How To": {
+    "message": "Инструкции",
+    "description": "The label for category How To in sidebar baseSidebar"
   }
 }

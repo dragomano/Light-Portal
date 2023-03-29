@@ -88,4 +88,9 @@ abstract class Plugin
 
 		(new PluginRepository)->addSettings($settings);
 	}
+
+	public function isBlockInPlacements(int $block_id, array $positions): bool
+	{
+		return in_array(($this->context['lp_active_blocks'][$block_id] ?? $this->context['lp_block'])['placement'], $positions);
+	}
 }

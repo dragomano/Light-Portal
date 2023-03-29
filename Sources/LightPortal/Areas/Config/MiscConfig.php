@@ -24,19 +24,11 @@ final class MiscConfig
 {
 	use Helper;
 
-	/**
-	 * Output additional settings
-	 *
-	 * Выводим дополнительные настройки
-	 *
-	 * @return array|void
-	 */
-	public function show(bool $return_config = false)
+	public function show(): void
 	{
 		$this->context['page_title'] = $this->txt['lp_misc'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
-		// Initial settings
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_cache_update_interval']))
 			$addSettings['lp_cache_update_interval'] = LP_CACHE_TIME;
@@ -56,9 +48,6 @@ final class MiscConfig
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']
 		];
-
-		if ($return_config)
-			return $config_vars;
 
 		$this->context['sub_template'] = 'show_settings';
 

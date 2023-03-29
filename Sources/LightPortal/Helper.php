@@ -17,11 +17,11 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Lists\{Category, Tag};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{
-	Cache,
 	File,
 	Post,
 	Request,
 	Session,
+	SMFCache,
 	SMFTrait,
 };
 use MessageFormatter;
@@ -76,9 +76,9 @@ trait Helper
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
-	public function cache(?string $key = null): Cache
+	public function cache(?string $key = null): SMFCache
 	{
-		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
+		return (new SMFCache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
 	public function files(?string $key = null)
@@ -248,7 +248,7 @@ trait Helper
 
 	public function getSnakeName(string $value): string
 	{
-		return $this->smcFunc['strtolower'](preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	public function getCamelName(string $value): string

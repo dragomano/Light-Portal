@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 29.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -144,7 +144,9 @@ class RecentTopics extends Plugin
 		if (empty($topics))
 			return [];
 
-		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
+		array_walk($topics, fn(&$topic) => $topic['timestamp'] = $this->getFriendlyTime((int) $topic['timestamp']));
+
+		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style']))
 			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
 
 		return $topics;
@@ -165,104 +167,8 @@ class RecentTopics extends Plugin
 		if (empty($recent_topics))
 			return;
 
-		// Only for blocks with placements in header, top, bottom, footer
-		if (in_array(($this->context['lp_active_blocks'][$block_id] ?? $this->context['lp_block'])['placement'], ['header', 'top', 'bottom', 'footer'])) {
-			echo '
-		<div class="recent_topics_list">';
+		$this->setTemplate();
 
-			if (empty($parameters['use_simple_style'])) {
-				foreach ($recent_topics as $topic) {
-					echo '
-				<div class="windowbg">';
-
-					if ($parameters['show_avatars'] && $topic['poster']['avatar'])
-						echo '
-					<div class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</div>';
-
-					if ($topic['is_new'])
-						echo '
-					<a class="new_posts" href="', $this->scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $this->txt['new'], '</a> ';
-
-					echo '
-					<span>', ($parameters['show_icons'] ? $topic['icon'] . ' ' : ''), $topic['link'];
-
-					if (empty($parameters['show_avatars']))
-						echo '
-						<br><span class="smalltext">', $this->txt['by'], ' ', $topic['poster']['link'], '</span>';
-
-					echo '
-						<br><span class="smalltext">', $this->getFriendlyTime((int) $topic['timestamp']), '</span>
-					</span>
-				</div>';
-				}
-			} else {
-				foreach ($recent_topics as $topic) {
-					echo '
-			<div class="windowbg">
-				<div class="smalltext">', $topic['time'], '</div>';
-
-					echo $topic['link'];
-
-					echo '
-				<div class="smalltext', $this->context['right_to_left'] ? ' floatright' : '', '">
-					<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
-					<i class="fas fa-comment"></i> ', $topic['replies'], '
-				</div>
-			</div>';
-				}
-			}
-
-			echo '
-		</div>';
-
-			return;
-		}
-
-		// Only for all other block placements
-		echo '
-		<ul class="recent_topics noup">';
-
-		if (empty($parameters['use_simple_style'])) {
-			foreach ($recent_topics as $topic) {
-				echo '
-			<li class="windowbg">';
-
-				if ($parameters['show_avatars'] && $topic['poster']['avatar'])
-					echo '
-				<div class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</div>';
-
-				if ($topic['is_new'])
-					echo '
-				<a class="new_posts" href="', $this->scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $this->txt['new'], '</a> ';
-
-				echo ($parameters['show_icons'] ? $topic['icon'] . ' ' : ''), $topic['link'];
-
-				if (empty($parameters['show_avatars']))
-					echo '
-				<br><span class="smalltext">', $this->txt['by'], ' ', $topic['poster']['link'], '</span>';
-
-				echo '
-				<br><span class="smalltext">', $this->getFriendlyTime((int) $topic['timestamp']), '</span>
-			</li>';
-			}
-		} else {
-			foreach ($recent_topics as $topic) {
-				echo '
-			<li class="windowbg">
-				<div class="smalltext">', $topic['time'], '</div>';
-
-				echo $topic['link'];
-
-				echo '
-				<div class="smalltext', $this->context['right_to_left'] ? ' floatright' : '', '">
-					<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
-					<i class="fas fa-comment"></i> ', $topic['replies'], '
-				</div>
-			</li>';
-			}
-		}
-
-		echo '
-		</ul>';
+		show_topics($recent_topics, $parameters, $this->isBlockInPlacements($block_id, ['header', 'top', 'bottom', 'footer']));
 	}
 }

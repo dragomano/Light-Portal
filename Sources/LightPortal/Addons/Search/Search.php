@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -26,7 +26,7 @@ class Search extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_actions', self::class . '::actions#', false, __FILE__);
+		$this->applyHook('actions');
 	}
 
 	public function addSettings(array &$config_vars)

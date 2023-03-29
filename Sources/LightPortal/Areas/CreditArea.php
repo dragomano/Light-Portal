@@ -30,11 +30,11 @@ final class CreditArea
 		if ($this->context['current_subaction'] && $this->context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
-			$this->loadTemplate('LightPortal/ViewCredits');
-
-			$this->context['sub_template']   = 'portal_credits';
 			$this->context['robot_no_index'] = true;
-			$this->context['page_title']     = LP_NAME . ' - ' . $this->txt['lp_used_components'];
+
+			$this->context['page_title'] = LP_NAME . ' - ' . $this->txt['lp_used_components'];
+
+			$this->loadTemplate('LightPortal/ViewCredits', 'portal_credits');
 
 			$this->obExit();
 		}
@@ -60,6 +60,7 @@ final class CreditArea
 			'German'     => ['trucker2006', 'm4z'],
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
+			'Greek'      => ['Panoulis64'],
 		];
 
 		$this->context['testers'] = [

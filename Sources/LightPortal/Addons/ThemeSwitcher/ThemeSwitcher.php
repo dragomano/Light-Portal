@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.04.22
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
@@ -26,7 +26,7 @@ class ThemeSwitcher extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_manage_themes', self::class . '::manageThemes#', false, __FILE__);
+		$this->applyHook('manage_themes');
 	}
 
 	public function manageThemes()

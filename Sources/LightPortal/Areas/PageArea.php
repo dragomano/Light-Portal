@@ -53,7 +53,7 @@ final class PageArea
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_moderate_pages'] && $this->request()->has('u') === false ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
+			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->has('u') === false ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
 
 		if ($this->isModArea())
@@ -188,7 +188,7 @@ final class PageArea
 						'value' => $this->txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
 							</div>' : '<div x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
@@ -272,7 +272,7 @@ final class PageArea
 				'position' => 'below_table_data',
 				'value' => '
 					<select name="page_actions">
-						<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'] ? '
+						<option value="delete">' . $this->txt['remove'] . '</option>' . ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? '
 						<option value="toggle">' . $this->txt['lp_action_toggle'] . '</option>' : '') . (! empty($this->modSettings['lp_frontpage_mode']) && $this->modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
 						<option value="promote_up">' . $this->txt['lp_promote_to_fp'] . '</option>
 						<option value="promote_down">' . $this->txt['lp_remove_from_fp'] . '</option>' : '') . '
@@ -351,7 +351,7 @@ final class PageArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_add_title'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_add_title'];
@@ -369,8 +369,6 @@ final class PageArea
 		$this->preparePreview();
 
 		$this->repository->setData();
-
-		$this->context['sub_template'] = 'page_post';
 	}
 
 	public function edit(): void
@@ -381,7 +379,7 @@ final class PageArea
 			$this->fatalLangError('lp_page_not_found', 404);
 		}
 
-		$this->loadTemplate('LightPortal/ManagePages');
+		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_edit_title'];
 
@@ -425,8 +423,6 @@ final class PageArea
 		$this->preparePreview();
 
 		$this->repository->setData($this->context['lp_page']['id']);
-
-		$this->context['sub_template'] = 'page_post';
 	}
 
 	private function changeTableTitle(array $listOptions): void
@@ -451,7 +447,7 @@ final class PageArea
 			],
 		];
 
-		if (! $this->context['allow_light_portal_moderate_pages']) {
+		if (! $this->context['allow_light_portal_manage_pages_any']) {
 			unset($titles['all'], $titles['mod']);
 		}
 
@@ -642,7 +638,7 @@ final class PageArea
 			'options'     => $options,
 		];
 
-		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_moderate_pages'])
+		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'])
 			$this->context['lp_page']['status'] = 1;
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
@@ -966,7 +962,7 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if ($this->context['allow_light_portal_moderate_pages'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->has('u') === false)
+		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->has('u') === false)
 			$this->redirect('action=admin;area=lp_pages;u=' . $this->user_info['id']);
 	}
 

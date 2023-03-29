@@ -54,7 +54,7 @@ final class ConfigArea
 			[
 				'lp_portal' => [
 					'title' => $this->txt['lp_portal'],
-					'permission' => ['admin_forum', 'light_portal_manage_own_blocks', 'light_portal_manage_own_pages'],
+					'permission' => ['admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_pages_own'],
 					'areas' => [
 						'lp_settings' => [
 							'label' => $this->txt['settings'],
@@ -74,7 +74,7 @@ final class ConfigArea
 							'function' => [$this, 'blockAreas'],
 							'icon' => 'modifications',
 							'amt' => $this->context['lp_num_active_blocks'],
-							'permission' => ['admin_forum', 'light_portal_manage_own_blocks'],
+							'permission' => ['admin_forum', 'light_portal_manage_blocks'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_blocks_manage']],
 								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_blocks_add']]
@@ -84,8 +84,8 @@ final class ConfigArea
 							'label' => $this->txt['lp_pages'],
 							'function' => [$this, 'pageAreas'],
 							'icon' => 'reports',
-							'amt' => $this->request()->has('u') && ! $this->context['allow_light_portal_moderate_pages'] ? $this->context['lp_num_my_pages'] : $this->context['lp_num_active_pages'],
-							'permission' => ['admin_forum', 'light_portal_moderate_pages', 'light_portal_manage_own_pages'],
+							'amt' => $this->request()->has('u') && ! $this->context['allow_light_portal_manage_pages_any'] ? $this->context['lp_num_my_pages'] : $this->context['lp_num_active_pages'],
+							'permission' => ['admin_forum', 'light_portal_manage_pages_any', 'light_portal_manage_pages_own'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_pages_manage']],
 								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_pages_add']]
@@ -123,14 +123,8 @@ final class ConfigArea
 	}
 
 	/**
-	 * @hook integrate_admin_search
+	 * @hook integrate_helpadmin
 	 */
-	public function adminSearch(array &$language_files, array &$include_files, array &$settings_search): void
-	{
-		$settings_search[] = [[new PanelConfig, 'show'], 'area=lp_settings;sa=panels'];
-		$settings_search[] = [[new MiscConfig, 'show'], 'area=lp_settings;sa=misc'];
-	}
-
 	public function helpadmin(): void
 	{
 		$this->txt['lp_standalone_url_help'] = sprintf($this->txt['lp_standalone_url_help'], $this->boardurl . '/portal.php', $this->scripturl);
@@ -182,7 +176,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		$this->middleware('light_portal_manage_own_blocks');
+		$this->middleware('light_portal_manage_blocks');
 
 		$subActions = [
 			'main' => [new BlockArea, 'main'],
@@ -202,7 +196,7 @@ final class ConfigArea
 
 	public function pageAreas(): void
 	{
-		$this->middleware(['light_portal_manage_own_pages', 'light_portal_moderate_pages']);
+		$this->middleware(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$subActions = [
 			'main' => [new PageArea, 'main'],

@@ -24,14 +24,9 @@ final class CategoryConfig
 {
 	use Helper;
 
-	/**
-	 * Output category settings
-	 *
-	 * Выводим настройки рубрик
-	 */
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManageSettings', 'lp_category_settings');
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
@@ -59,8 +54,6 @@ final class CategoryConfig
 
 			exit;
 		}
-
-		$this->context['sub_template'] = 'lp_category_settings';
 	}
 
 	private function add(string $name, string $desc = ''): void

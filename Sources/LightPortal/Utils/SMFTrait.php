@@ -59,6 +59,24 @@ trait SMFTrait
 		$this->logError('[LP] unsupported property: ' . $name);
 	}
 
+	protected function applyHook(string $name, string|array $method = '', string $file = ''): void
+	{
+		$name = str_replace('integrate_', '', $name);
+
+		if (func_num_args() === 1)
+			$method = lcfirst($this->getCamelName($name));
+
+		if (is_array($method)) {
+			$method = $method[0] . '::' . str_replace('#', '', $method[1] ?? '__invoke');
+		} else {
+			$method = static::class . '::' . str_replace('#', '', $method);
+		}
+
+		$file = $file ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
+
+		add_integration_function('integrate_' . $name, $method . '#', false, $file);
+	}
+
 	protected function unHtmlSpecialChars(string $string): string
 	{
 		return un_htmlspecialchars($string);
@@ -79,14 +97,17 @@ trait SMFTrait
 		redirectexit($url);
 	}
 
-	protected function loadTemplate(string $template): void
+	protected function loadTemplate(string $template, string $sub_template = ''): void
 	{
 		loadTemplate($template);
+
+		if ($sub_template)
+			$this->context['sub_template'] = $sub_template;
 	}
 
-	protected function loadLanguage(string $language): void
+	protected function loadLanguage(string $language, string $lang = ''): void
 	{
-		loadLanguage($language);
+		loadLanguage($language, $lang);
 	}
 
 	protected function fatalLangError(string $error, $status = 403): void

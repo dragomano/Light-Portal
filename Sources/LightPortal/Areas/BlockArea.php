@@ -28,7 +28,7 @@ final class BlockArea
 
 	private BlockRepository $repository;
 
-	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,]+$';
+	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,!]+$';
 
 	public function __construct()
 	{
@@ -37,7 +37,7 @@ final class BlockArea
 
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'manage_blocks');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_manage'];
 
@@ -49,8 +49,6 @@ final class BlockArea
 		$this->doActions();
 
 		$this->context['lp_current_blocks'] = $this->repository->getAll();
-
-		$this->context['sub_template'] = 'manage_blocks';
 	}
 
 	public function doActions(): void
@@ -78,7 +76,7 @@ final class BlockArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'block_add');
 
 		$this->context['page_title']    = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_add_title'];
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_blocks;sa=add';
@@ -94,8 +92,6 @@ final class BlockArea
 
 		$this->prepareBlockList();
 
-		$this->context['sub_template'] = 'block_add';
-
 		$json = $this->request()->json();
 		$type = $json['add_block'] ?? $this->request('add_block', '') ?? '';
 
@@ -105,15 +101,14 @@ final class BlockArea
 		$this->context['current_block']['type'] = $type;
 
 		$this->prepareForumLanguages();
-
-		$this->context['sub_template'] = 'block_post';
-
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
 
 		$this->repository->setData();
+
+		$this->context['sub_template'] = 'block_post';
 	}
 
 	public function edit(): void
@@ -123,7 +118,7 @@ final class BlockArea
 		if (empty($item))
 			$this->fatalLangError('lp_block_not_found', 404);
 
-		$this->loadTemplate('LightPortal/ManageBlocks');
+		$this->loadTemplate('LightPortal/ManageBlocks', 'block_post');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_edit_title'];
 
@@ -134,7 +129,6 @@ final class BlockArea
 
 		$this->prepareForumLanguages();
 
-		$this->context['sub_template']  = 'block_post';
 		$this->context['current_block'] = $this->repository->getData($item);
 
 		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
@@ -327,7 +321,7 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_own_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
@@ -536,7 +530,8 @@ final class BlockArea
 			'topic=id3|id7',
 		];
 
-		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'home,portal,forum,search');
+		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'portal,forum,search');
+
 		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 
 		ob_start();
@@ -586,7 +581,7 @@ final class BlockArea
 		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
-			? prepare_content($this->context['lp_block']['type'], parameters: $this->context['lp_block']['options']['parameters'])
+			? prepare_content($this->context['lp_block']['type'], $this->context['lp_block']['id'], 0, $this->context['lp_block']['options']['parameters'])
 			: parse_content($this->context['preview_content'], $this->context['lp_block']['type']);
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');

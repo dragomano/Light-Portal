@@ -5,7 +5,7 @@ function template_manage_blocks()
 	global $context, $scripturl, $txt;
 
 	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
-		$block_group_type = in_array($placement, array('header', 'top', 'left', 'right', 'bottom', 'footer')) ? 'default' : 'additional';
+		$block_group_type = in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']) ? 'default' : 'additional';
 
 		echo '
 	<div class="cat_bar">

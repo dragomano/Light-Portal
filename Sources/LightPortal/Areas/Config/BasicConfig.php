@@ -37,10 +37,10 @@ final class BasicConfig
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_base'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=basic;save';
 
-		$this->context['permissions_excluded']['light_portal_manage_own_blocks'] = [-1, 0];
-		$this->context['permissions_excluded']['light_portal_manage_own_pages']  = [-1, 0];
-		$this->context['permissions_excluded']['light_portal_approve_pages']     = [-1, 0];
-		$this->context['permissions_excluded']['light_portal_moderate_pages']    = [-1, 0];
+		$this->context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
+		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
+		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
+		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
 		$this->context['lp_all_categories']    = $this->getAllCategories();
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
@@ -69,6 +69,7 @@ final class BasicConfig
 		);
 
 		$this->context['board_list'] = $this->getBoardList();
+		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
@@ -77,10 +78,10 @@ final class BasicConfig
 			['title', 'edit_permissions'],
 			['check', 'lp_prohibit_php', 'invalid' => true],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
-			['permissions', 'light_portal_manage_own_blocks', 'help' => 'permissionhelp_light_portal_manage_own_blocks'],
-			['permissions', 'light_portal_manage_own_pages', 'help' => 'permissionhelp_light_portal_manage_own_pages'],
+			['permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'],
+			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
+			['permissions', 'light_portal_manage_pages_any', 'help' => 'permissionhelp_light_portal_manage_pages'],
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],
-			['permissions', 'light_portal_moderate_pages', 'help' => 'permissionhelp_light_portal_moderate_pages'],
 		];
 
 		$this->loadTemplate('LightPortal/ManageSettings');

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 27.03.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Area;
+use Bugo\LightPortal\Repositories\PluginRepository;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Printer;
@@ -132,10 +133,10 @@ class Handler extends Plugin
 			'name'       => $post_data['name'] ?? $this->context['lp_plugin']['name'] = 'MyNewAddon',
 			'type'       => $post_data['type'] ?? $this->context['lp_plugin']['type'] ?? 'block',
 			'icon'       => $post_data['icon'] ?? $this->context['lp_plugin']['icon'] ?? '',
-			'author'     => $post_data['author'] ?? $this->context['lp_plugin']['author'] ?? $this->user_info['name'],
-			'email'      => $post_data['email'] ?? $this->context['lp_plugin']['email'] ?? $this->user_info['email'],
-			'site'       => $post_data['site'] ?? $this->context['lp_plugin']['site'] ?? '',
-			'license'    => $post_data['license'] ?? $this->context['lp_plugin']['license'] ?? 'gpl',
+			'author'     => $post_data['author'] ?? $this->context['lp_plugin']['author'] ?? $this->context['lp_plugin_maker_plugin']['author'] ?? $this->user_info['name'],
+			'email'      => $post_data['email'] ?? $this->context['lp_plugin']['email'] ?? $this->context['lp_plugin_maker_plugin']['email'] ?? $this->user_info['email'],
+			'site'       => $post_data['site'] ?? $this->context['lp_plugin']['site'] ?? $this->context['lp_plugin_maker_plugin']['site'] ?? '',
+			'license'    => $post_data['license'] ?? $this->context['lp_plugin']['license'] ?? $this->context['lp_plugin_maker_plugin']['license'] ?? 'gpl',
 			'smf_hooks'  => $post_data['smf_hooks'] ?? $this->context['lp_plugin']['smf_hooks'] ?? false,
 			'smf_ssi'    => $post_data['smf_ssi'] ?? $this->context['lp_plugin']['smf_ssi'] ?? false,
 			'components' => $post_data['components'] ?? $this->context['lp_plugin']['components'] ?? false,
@@ -418,7 +419,7 @@ class Handler extends Plugin
 				->setBody("\$this->txt['lp_show_comment_block_set']['$plugin_name'] = '{$this->context['lp_plugin']['name']}';");
 		} else if (! empty($this->context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')
-				->setBody("// add_integration_function('integrate_hook_name', self::class . '::methodName#', false, __FILE__);");
+				->setBody("// \$this->applyHook('hook_name');");
 		}
 
 		$blockParams = $this->getSpecialParams();
@@ -665,6 +666,8 @@ class Handler extends Plugin
 			$plugin->createLangs($languages);
 		}
 
+		$this->saveAuthorData();
+
 		$this->redirect('action=admin;area=lp_plugins;sa=main');
 	}
 
@@ -707,6 +710,16 @@ class Handler extends Plugin
 ]",
 			default => 'FILTER_DEFAULT',
 		};
+	}
+
+	private function saveAuthorData(): void
+	{
+		(new PluginRepository)->changeSettings('plugin_maker', [
+			'author'  => $this->context['lp_plugin']['author'],
+			'email'   => $this->context['lp_plugin']['email'],
+			'site'    => $this->context['lp_plugin']['site'],
+			'license' => $this->context['lp_plugin']['license'],
+		]);
 	}
 
 	/**

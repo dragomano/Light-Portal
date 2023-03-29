@@ -21,7 +21,7 @@ final class PageImport extends AbstractImport
 {
 	public function main()
 	{
-		$this->loadTemplate('LightPortal/ManageImpex');
+		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_import'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
@@ -32,8 +32,6 @@ final class PageImport extends AbstractImport
 			'title'       => LP_NAME,
 			'description' => $this->txt['lp_pages_import_description']
 		];
-
-		$this->context['sub_template'] = 'manage_import';
 
 		$this->run();
 	}

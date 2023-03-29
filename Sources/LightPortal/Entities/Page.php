@@ -88,9 +88,7 @@ final class Page
 			];
 		}
 
-		$this->loadTemplate('LightPortal/ViewPage');
-
-		$this->context['sub_template'] = 'show_page';
+		$this->loadTemplate('LightPortal/ViewPage', 'show_page');
 
 		$this->promote();
 		$this->setMeta();
@@ -265,7 +263,7 @@ final class Page
 						'value' => $this->txt['author']
 					],
 					'data' => [
-						'function' => fn($entry) => empty($entry['author']['id']) ? $entry['author']['name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $entry['author']['id'] . '">' . $entry['author']['name'] . '</a>',
+						'function' => fn($entry) => empty($entry['author']['name']) ? $this->txt['guest_title'] : '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -494,7 +492,7 @@ final class Page
 		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
 		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
 		$data['can_view'] = $this->canViewItem($data['permissions']) || $this->user_info['is_admin'] || $is_author;
-		$data['can_edit'] = $this->user_info['is_admin'] || $this->context['allow_light_portal_moderate_pages'] || ($this->context['allow_light_portal_manage_own_pages'] && $is_author);
+		$data['can_edit'] = $this->user_info['is_admin'] || $this->context['allow_light_portal_manage_pages_any'] || ($this->context['allow_light_portal_manage_pages_own'] && $is_author);
 
 		if ($data['type'] === 'bbc') {
 			$data['content'] = $this->unPreparseCode($data['content']);

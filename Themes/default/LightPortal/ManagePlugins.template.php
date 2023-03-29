@@ -143,20 +143,20 @@ function show_plugin_settings(array $plugin)
 		echo '
 				<div>';
 
-		if (! in_array($value[0], array('callback', 'title', 'desc', 'check'))) {
+		if (! in_array($value[0], ['callback', 'title', 'desc', 'check'])) {
 			echo '
 					<label', $value[0] != 'multicheck' ? (' for="' . $value[1] . '"') : '', '>', $label, '</label>';
 		}
 
 		if ($value[0] === 'text') {
 			echo '
-					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), '>';
+					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), ' required>';
 		} elseif ($value[0] === 'large_text') {
 			echo '
 					<br><textarea name="', $value[1], '" id="', $value[1], '">', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '</textarea>';
 		} elseif ($value[0] === 'url') {
 			echo '
-					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '">';
+					<br><input type="url" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['placeholder']) ? '' : (' placeholder="' . $value['placeholder'] . '"'), '>';
 		} elseif ($value[0] === 'color') {
 			echo '
 					<br><input id="', $value[1], '" name="', $value[1], '" data-jscolor="{}" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '">';

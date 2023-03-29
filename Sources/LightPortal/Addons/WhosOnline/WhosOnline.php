@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.03.23
+ * @version 29.03.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -111,7 +111,7 @@ class WhosOnline extends Plugin
 			echo ' (' . $this->sentenceList($online_list) . ')';
 
 		// With avatars
-		if ($parameters['show_avatars']) {
+		if (! empty($parameters['show_avatars'])) {
 			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whos_online['users_online']);
 
 			$whos_online['list_users_online'] = [];
@@ -123,7 +123,7 @@ class WhosOnline extends Plugin
 		echo '
 			<br>' . implode(', ', $whos_online['list_users_online']);
 
-		if ($parameters['show_group_key'] && $whos_online['online_groups']) {
+		if (! empty($parameters['show_group_key']) && $whos_online['online_groups']) {
 			$groups = [];
 
 			foreach ($whos_online['online_groups'] as $group) {

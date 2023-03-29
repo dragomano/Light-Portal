@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.03.23
+ * @version 26.03.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -31,7 +31,7 @@ class HelloPortal extends Plugin
 
 	public function init()
 	{
-		add_integration_function('integrate_menu_buttons', self::class . '::menuButtons#', false, __FILE__);
+		$this->applyHook('menu_buttons');
 	}
 
 	public function menuButtons()

@@ -38,7 +38,7 @@ final class PluginArea
 	public function main(): void
 	{
 		$this->loadLanguage('ManageMaintenance');
-		$this->loadTemplate('LightPortal/ManagePlugins');
+		$this->loadTemplate('LightPortal/ManagePlugins', 'manage_plugins');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/@eastdesire/jscolor@2/jscolor.min.js');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];
@@ -46,7 +46,7 @@ final class PluginArea
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-an-addon'),
+			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-a-plugin'),
 		];
 
 		$this->context['lp_plugins'] = $this->getAllAddons();
@@ -178,8 +178,6 @@ final class PluginArea
 				fn($item) => ! in_array($filter, array_keys($this->context['lp_plugin_types'])) || in_array($this->context['lp_plugin_types'][$filter], array_keys($item['types']))
 			);
 		}
-
-		$this->context['sub_template'] = 'manage_plugins';
 	}
 
 	private function extendPluginList(): void

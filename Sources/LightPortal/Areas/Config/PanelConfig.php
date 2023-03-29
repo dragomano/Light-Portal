@@ -23,14 +23,7 @@ final class PanelConfig
 {
 	use Helper;
 
-	/**
-	 * Output panel settings
-	 *
-	 * Выводим настройки панелей
-	 *
-	 * @return array|void
-	 */
-	public function show(bool $return_config = false)
+	public function show(): void
 	{
 		$this->loadTemplate('LightPortal/ManageSettings');
 
@@ -42,7 +35,6 @@ final class PanelConfig
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_panels'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
-		// Initial settings | Первоначальные настройки
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_swap_left_right']))
 			$addSettings['lp_swap_left_right'] = (bool) $this->txt['lang_rtl'];
@@ -70,9 +62,6 @@ final class PanelConfig
 			['callback', 'panel_layout'],
 			['callback', 'panel_direction']
 		];
-
-		if ($return_config)
-			return $config_vars;
 
 		$this->context['sub_template'] = 'show_settings';
 

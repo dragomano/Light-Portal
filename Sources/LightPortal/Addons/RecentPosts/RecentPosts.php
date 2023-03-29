@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 29.03.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -178,7 +178,7 @@ class RecentPosts extends Plugin
 			$posts = array_filter($posts, fn($item) => array_key_exists($item['topic'], $include_topics));
 		}
 
-		if ($parameters['show_avatars'])
+		if (! empty($parameters['show_avatars']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');
 
 		return $posts;
@@ -208,7 +208,7 @@ class RecentPosts extends Plugin
 			echo '
 			<li class="windowbg">';
 
-			if ($parameters['show_avatars'] && $post['poster']['avatar'])
+			if (! empty($parameters['show_avatars']) && $post['poster']['avatar'])
 				echo '
 				<div class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</div>';
 

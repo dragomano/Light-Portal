@@ -17,7 +17,7 @@ function show_user_info($data)
 		<li>', $data['primary_group'] ?: ($data['post_group'] ?: ''), '</li>
 		<li>', $data['group_icons'], '</li>';
 
-	if ($context['allow_light_portal_manage_own_blocks']) {
+	if ($context['allow_light_portal_manage_blocks']) {
 		echo '
 		<li class="lefttext">
 			<hr>
@@ -27,7 +27,7 @@ function show_user_info($data)
 		</li>';
 	}
 
-	if ($context['allow_light_portal_manage_own_pages']) {
+	if ($context['allow_light_portal_manage_pages_own']) {
 		echo '
 		<li class="lefttext">
 			<hr>
@@ -37,7 +37,7 @@ function show_user_info($data)
 		</li>';
 	}
 
-	if ($context['allow_light_portal_moderate_pages']) {
+	if ($context['allow_light_portal_manage_pages_any']) {
 		echo '
 		<li class="lefttext">
 			<hr>

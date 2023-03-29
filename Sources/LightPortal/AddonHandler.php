@@ -38,6 +38,8 @@ final class AddonHandler
 
 	private static self $instance;
 
+	private string $prefix = 'lp_';
+
 	private function __construct()
 	{
 		$this->pluginSettings = (new PluginRepository())->getSettings();
@@ -64,7 +66,7 @@ final class AddonHandler
 	}
 
 	/**
-	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
+	 * @see https://dragomano.github.io/Light-Portal/plugins/all-hooks
 	 */
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
@@ -95,7 +97,7 @@ final class AddonHandler
 				$this->loadCSS($path, $snakeName);
 				$this->loadJS($path, $snakeName);
 
-				$this->context['lp_' . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
+				$this->context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
 				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
 			}
 
@@ -137,7 +139,7 @@ final class AddonHandler
 
 	private function loadLang(string $path, string $snakeName): void
 	{
-		if (isset($this->txt['lp_' . $snakeName]))
+		if (isset($this->txt[$this->prefix . $snakeName]))
 			return;
 
 		$languages = array_unique(['english', $this->user_info['language']]);
@@ -149,7 +151,7 @@ final class AddonHandler
 		}
 
 		if (is_array($addonLanguages['english']))
-			$this->txt['lp_' . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
+			$this->txt[$this->prefix . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
 	private function loadCSS(string $path, string $snakeName): void

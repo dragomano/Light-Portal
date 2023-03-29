@@ -69,7 +69,7 @@ final class Tag extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, ps.value, t.title
+				COALESCE(mem.real_name, 0) AS author_name, ps.value, t.title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -81,7 +81,6 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'guest'        => $this->txt['guest_title'],
 				'lang'         => $this->user_info['language'],
 				'id'           => $this->context['lp_tag'],
 				'status'       => 1,

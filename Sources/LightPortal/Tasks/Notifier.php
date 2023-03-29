@@ -31,7 +31,7 @@ final class Notifier extends SMF_BackgroundTask
 		require_once $this->sourcedir . '/Subs-Notify.php';
 
 		$members = match ($this->_details['content_type']) {
-			'new_page' => membersAllowedTo('light_portal_moderate_pages'),
+			'new_page' => membersAllowedTo('light_portal_manage_pages_any'),
 			default    => array_intersect(membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
 		};
 
@@ -139,7 +139,7 @@ final class Notifier extends SMF_BackgroundTask
 					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], true, false)['content_link'],
 				];
 
-				loadLanguage('LightPortal/LightPortal', $this_lang);
+				$this->loadLanguage('LightPortal/LightPortal', $this_lang);
 
 				$emaildata = loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
 
