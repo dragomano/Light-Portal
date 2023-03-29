@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 29.06.22
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -113,7 +113,7 @@ class TopPosters extends Plugin
 				'link'   => $this->allowedTo('profile_view')
 					? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
 					: $row['real_name'],
-				'avatar' => $parameters['show_avatars'] ? $this->memberContext[$row['id_member']]['avatar']['image'] : '',
+				'avatar' => empty($parameters['show_avatars']) ? '' : $this->memberContext[$row['id_member']]['avatar']['image'],
 				'posts'  => $row['posts']
 			];
 		}
