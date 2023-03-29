@@ -106,5 +106,7 @@ final class PluginRepository
 		);
 
 		$this->context['lp_num_queries']++;
+
+		$this->cache()->forget('plugin_settings');
 	}
 }
