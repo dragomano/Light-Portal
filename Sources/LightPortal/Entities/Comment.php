@@ -235,7 +235,7 @@ final class Comment
 		if (empty($data) || $this->context['user']['is_guest'])
 			exit;
 
-		$item    = $data['comment_id'];
+		$item    = (int) $data['comment_id'];
 		$operand = $data['operand'];
 
 		if (empty($item) || empty($operand))

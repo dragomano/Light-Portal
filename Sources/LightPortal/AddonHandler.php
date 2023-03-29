@@ -66,7 +66,7 @@ final class AddonHandler
 	}
 
 	/**
-	 * @see https://dragomano.github.io/Light-Portal/plugins/all_hooks
+	 * @see https://dragomano.github.io/Light-Portal/plugins/all-hooks
 	 */
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{

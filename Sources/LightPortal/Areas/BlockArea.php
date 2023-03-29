@@ -581,7 +581,7 @@ final class BlockArea
 		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
-			? prepare_content($this->context['lp_block']['type'], parameters: $this->context['lp_block']['options']['parameters'])
+			? prepare_content($this->context['lp_block']['type'], $this->context['lp_block']['id'], 0, $this->context['lp_block']['options']['parameters'])
 			: parse_content($this->context['preview_content'], $this->context['lp_block']['type']);
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
