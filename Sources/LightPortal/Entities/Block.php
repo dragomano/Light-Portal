@@ -42,7 +42,7 @@ final class Block
 			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_blocks'] && $data['user_id'] == $this->context['user']['id']);
 
 			$data['content'] = empty($data['content'])
-				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'])
+				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
 				: parse_content($data['content'], $data['type']);
 
 			if (empty($data['title'][$this->context['user']['language']]))
