@@ -24,5 +24,9 @@ files: [
   {
     source: "/website/i18n/en/docusaurus-theme-classic/navbar.json",
     translation: "/website/i18n/%two_letters_code%/docusaurus-theme-classic/%original_file_name%",
+  },
+  {
+    source: "/website/i18n/en/code.json",
+    translation: "/website/i18n/%two_letters_code%/%original_file_name%",
   }
 ]
