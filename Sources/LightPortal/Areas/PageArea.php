@@ -439,12 +439,12 @@ final class PageArea
 			'own' => [
 				';u=' . $this->user_info['id'],
 				$this->txt['lp_my_pages'],
-				$this->context['lp_num_my_pages']
+				$this->context['lp_quantities']['my_pages']
 			],
 			'mod' => [
 				';moderate',
 				$this->txt['awaiting_approval'],
-				$this->context['lp_num_unapproved_pages']
+				$this->context['lp_quantities']['unapproved_pages']
 			],
 		];
 

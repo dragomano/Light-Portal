@@ -44,7 +44,7 @@ abstract class AbstractMain
 		$this->context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
 		$this->context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
 
-		[$this->context['lp_num_active_blocks'], $this->context['lp_num_active_pages'], $this->context['lp_num_my_pages'], $this->context['lp_num_unapproved_pages']] = $this->getNumActiveEntities();
+		$this->calculateNumberOfEntities();
 
 		$this->context['lp_all_title_classes']   = $this->getTitleClasses();
 		$this->context['lp_all_content_classes'] = $this->getContentClasses();
@@ -53,17 +53,13 @@ abstract class AbstractMain
 		$this->context['lp_plugin_types']        = $this->getPluginTypes();
 		$this->context['lp_content_types']       = $this->getContentTypes();
 
-		$this->context['lp_enabled_plugins']  = empty($this->modSettings['lp_enabled_plugins']) ? [] : explode(',', $this->modSettings['lp_enabled_plugins']);
-		$this->context['lp_frontpage_pages']  = empty($this->modSettings['lp_frontpage_pages']) ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
+		$this->context['lp_enabled_plugins']  = empty($this->modSettings['lp_enabled_plugins'])  ? [] : explode(',', $this->modSettings['lp_enabled_plugins']);
+		$this->context['lp_frontpage_pages']  = empty($this->modSettings['lp_frontpage_pages'])  ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
 		$this->context['lp_frontpage_topics'] = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
 
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
-		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])
-			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: $this->jsonDecode($this->modSettings['lp_left_panel_width'], true, false);
-		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])
-			? ['md' => 3, 'lg' => 3, 'xl' => 2]
-			: $this->jsonDecode($this->modSettings['lp_right_panel_width'], true, false);
+		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])   ? ['md' => 3, 'lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_left_panel_width'], true, false);
+		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])  ? ['md' => 3, 'lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_right_panel_width'], true, false);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
 		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);
@@ -202,7 +198,7 @@ abstract class AbstractMain
 		$this->redirect('topic=' . $topic);
 	}
 
-	private function getNumActiveEntities(): array
+	private function calculateNumberOfEntities(): void
 	{
 		if (($num_entities = $this->cache()->get('num_active_entities_u' . $this->user_info['id'])) === null) {
 			$request = $this->smcFunc['db_query']('', '
@@ -210,14 +206,14 @@ abstract class AbstractMain
 					(
 						SELECT COUNT(b.block_id)
 						FROM {db_prefix}lp_blocks b
-						WHERE b.status = {int:status}' . ($this->user_info['is_admin'] ? '
+						WHERE b.status = {int:active}' . ($this->user_info['is_admin'] ? '
 							AND b.user_id = 0' : '
 							AND b.user_id = {int:user_id}') . '
 					) AS num_blocks,
 					(
 						SELECT COUNT(p.page_id)
 						FROM {db_prefix}lp_pages p
-						WHERE p.status = {int:status}' . ($this->user_info['is_admin'] ? '' : '
+						WHERE p.status = {int:active}' . ($this->user_info['is_admin'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
 					) AS num_pages,
 					(
@@ -228,15 +224,17 @@ abstract class AbstractMain
 					(
 						SELECT COUNT(page_id)
 						FROM {db_prefix}lp_pages
-						WHERE status = 2
+						WHERE status = {int:unapproved}
 					) AS num_unapproved_pages',
 				[
-					'status'  => 1,
-					'user_id' => $this->user_info['id']
+					'active'     => 1,
+					'unapproved' => 2,
+					'user_id'    => $this->user_info['id']
 				]
 			);
 
 			$num_entities = $this->smcFunc['db_fetch_assoc']($request);
+			array_walk($num_entities, fn(&$item) => $item = (int) $item);
 
 			$this->smcFunc['db_free_result']($request);
 			$this->context['lp_num_queries']++;
@@ -244,7 +242,12 @@ abstract class AbstractMain
 			$this->cache()->put('num_active_entities_u' . $this->user_info['id'], $num_entities);
 		}
 
-		return array_values($num_entities);
+		$this->context['lp_quantities'] = [
+			'active_blocks'    => $num_entities['num_blocks'],
+			'active_pages'     => $num_entities['num_pages'],
+			'my_pages'         => $num_entities['num_my_pages'],
+			'unapproved_pages' => $num_entities['num_unapproved_pages'],
+		];
 	}
 
 	private function getBlockPlacements(): array

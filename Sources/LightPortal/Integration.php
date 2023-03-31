@@ -205,13 +205,13 @@ final class Integration extends AbstractMain
 							'blocks'  => [
 								'title' => $this->txt['lp_blocks'],
 								'href'  => $this->scripturl . '?action=admin;area=lp_blocks',
-								'amt'   => $this->context['lp_num_active_blocks'],
+								'amt'   => $this->context['lp_quantities']['active_blocks'],
 								'show'  => true,
 							],
 							'pages'   => [
 								'title' => $this->txt['lp_pages'],
 								'href'  => $this->scripturl . '?action=admin;area=lp_pages',
-								'amt'   => $this->context['lp_num_active_pages'],
+								'amt'   => $this->context['lp_quantities']['active_pages'],
 								'show'  => true,
 							],
 							'plugins' => [
@@ -235,7 +235,7 @@ final class Integration extends AbstractMain
 				'lp_pages' => [
 					'title' => $this->txt['lp_pages_unapproved'],
 					'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
-					'amt'   => $this->context['lp_num_unapproved_pages'],
+					'amt'   => $this->context['lp_quantities']['unapproved_pages'],
 					'show'  => true,
 				],
 			] + $buttons['moderate']['sub_buttons'];

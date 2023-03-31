@@ -73,7 +73,7 @@ final class ConfigArea
 							'label' => $this->txt['lp_blocks'],
 							'function' => [$this, 'blockAreas'],
 							'icon' => 'modifications',
-							'amt' => $this->context['lp_num_active_blocks'],
+							'amt' => $this->context['lp_quantities']['active_blocks'],
 							'permission' => ['admin_forum', 'light_portal_manage_blocks'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_blocks_manage']],
@@ -84,7 +84,7 @@ final class ConfigArea
 							'label' => $this->txt['lp_pages'],
 							'function' => [$this, 'pageAreas'],
 							'icon' => 'reports',
-							'amt' => $this->request()->has('u') && ! $this->context['allow_light_portal_manage_pages_any'] ? $this->context['lp_num_my_pages'] : $this->context['lp_num_active_pages'],
+							'amt' => $this->request()->has('u') && ! $this->context['allow_light_portal_manage_pages_any'] ? $this->context['lp_quantities']['my_pages'] : $this->context['lp_quantities']['active_pages'],
 							'permission' => ['admin_forum', 'light_portal_manage_pages_any', 'light_portal_manage_pages_own'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_pages_manage']],
