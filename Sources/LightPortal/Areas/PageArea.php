@@ -76,7 +76,7 @@ final class PageArea
 			(
 				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
-				$this->request()->has('u') ? '' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
+				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
 			),
 			[
 				'search' => $this->smcFunc['strtolower']($search_params['string']),
@@ -84,12 +84,15 @@ final class PageArea
 			],
 		];
 
+		$this->context['browse_type'] = $this->request()->has('u') ? 'own' : ($this->request()->has('moderate') ? 'mod' : 'all');
+		$type = $this->context['browse_type'] === 'own' ? ';u=' . $this->user_info['id'] : ($this->context['browse_type'] === 'mod' ? ';moderate' : '');
+
 		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 20,
 			'title' => $this->txt['lp_pages_extra'],
 			'no_items_label' => $this->txt['lp_no_items'],
-			'base_href' => $this->scripturl . '?action=admin;area=lp_pages' . (empty($this->context['search_params']) ? '' : ';params=' . $this->context['search_params']),
+			'base_href' => $this->scripturl . '?action=admin;area=lp_pages;sa=main' . $type . (empty($this->context['search_params']) ? '' : ';params=' . $this->context['search_params']),
 			'default_sort_col' => 'date',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll'],
@@ -230,7 +233,7 @@ final class PageArea
 			],
 			'form' => [
 				'name' => 'manage_pages',
-				'href' => $this->scripturl . '?action=admin;area=lp_pages',
+				'href' => $this->scripturl . '?action=admin;area=lp_pages;sa=main' . $type,
 				'include_sort' => true,
 				'include_start' => true,
 				'hidden_fields' => [
@@ -427,23 +430,21 @@ final class PageArea
 
 	private function changeTableTitle(array $listOptions): void
 	{
-		$this->context['browse_type'] = $this->request()->has('u') ? 'own' : ($this->request()->has('moderate') ? 'mod' : 'all');
-
 		$titles = [
 			'all' => [
-				';sa=main',
+				'',
 				$this->txt['all'],
-				$this->repository->getTotalCount(' AND p.status != 2') - $this->context['lp_num_unapproved_pages']
+				$this->repository->getTotalCount(' AND p.status != 2')
 			],
 			'own' => [
-				';sa=main;u=' . $this->user_info['id'],
+				';u=' . $this->user_info['id'],
 				$this->txt['lp_my_pages'],
-				(int) $this->context['lp_num_my_pages']
+				$this->context['lp_num_my_pages']
 			],
 			'mod' => [
-				';sa=main;moderate',
+				';moderate',
 				$this->txt['awaiting_approval'],
-				(int) $this->context['lp_num_unapproved_pages']
+				$this->context['lp_num_unapproved_pages']
 			],
 		];
 
@@ -456,7 +457,7 @@ final class PageArea
 			if ($this->context['browse_type'] === $browse_type)
 				$this->context['lp_pages']['title'] .= '<img src="' . $this->settings['images_url'] . '/selected.png" alt="&gt;"> ';
 
-			$this->context['lp_pages']['title'] .= '<a href="' . $listOptions['form']['href'] . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
+			$this->context['lp_pages']['title'] .= '<a href="' . $this->scripturl . '?action=admin;area=lp_pages;sa=main' . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
 
 			if ($browse_type !== 'mod' && count($titles) > 1)
 				$this->context['lp_pages']['title'] .= ' | ';
