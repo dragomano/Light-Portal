@@ -66,7 +66,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `<a href="https://crowdin.com/project/light-portal">Help us translate the documentation</a>`,
+        copyright: `<a href="https://crowdin.com/project/light-portal">Help us translate / improve the documentation</a>`,
       },
       prism: {
         theme: lightCodeTheme,
@@ -77,7 +77,7 @@ const config = {
 
     i18n: {
       defaultLocale: 'en',
-      locales: ['en', 'ru', 'el'],
+      locales: ['en', 'ru', 'el', 'cs', 'da', 'nl', 'no', 'sv'],
     },
 
     plugins: [
@@ -88,13 +88,13 @@ const config = {
           trackHash: true
         },
       ],
-/*       [
+      [
         require.resolve("@cmfcmf/docusaurus-search-local"),
         {
-          language: ['en', 'ru'],
+          language: ['en', 'ru', 'da', 'nl', 'no', 'sv'],
           indexBlog: false,
         },
-      ], */
+      ],
     ],
 };
 

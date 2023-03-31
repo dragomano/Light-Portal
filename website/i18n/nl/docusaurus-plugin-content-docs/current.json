@@ -1,0 +1,26 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.baseSidebar.category.Getting Started": {
+    "message": "Basisprincipes",
+    "description": "The label for category Getting Started in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.Blocks": {
+    "message": "Blokken",
+    "description": "The label for category Blocks in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.Pages": {
+    "message": "Pagina's",
+    "description": "The label for category Pages in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.Plugins": {
+    "message": "Plug-ins",
+    "description": "The label for category Plugins in sidebar baseSidebar"
+  },
+  "sidebar.baseSidebar.category.How To": {
+    "message": "Hoe te",
+    "description": "The label for category How To in sidebar baseSidebar"
+  }
+}

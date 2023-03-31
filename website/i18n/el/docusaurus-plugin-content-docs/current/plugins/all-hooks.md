@@ -41,7 +41,7 @@ sidebar_position: 3
 
 ### validateBlockData
 (`&$parameters, $context['current_block']['type']`)
-> προσθήκη προσαρμοσμένων δεδομένων επικύρωσης κατά την προσθήκη/έκδοση μπλοκ
+> προσθήκη προσαρμοσμένων κανόνων επικύρωσης κατά την προσθήκη/έκδοση μπλοκ
 
 ### findBlockErrors
 (`$data, &$post_errors`)
@@ -66,7 +66,7 @@ sidebar_position: 3
 
 ### validatePageData
 (`&$parameters`)
-> προσθήκη προσαρμοσμένων δεδομένων επικύρωσης κατά την προσθήκη/έκδοση σελίδας
+> προσθήκη προσαρμοσμένων κανόνων επικύρωσης κατά την προσθήκη/έκδοση μπλοκ
 
 ### findPageErrors
 (`$data, &$post_errors`)
