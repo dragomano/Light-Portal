@@ -143,7 +143,7 @@ function lp_show_blocks(string $placement = '')
 			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
 
 		if (! empty($block['can_edit']) && ! empty($block['title']))
-			$block['title'] = $block['title'] . '<a class="floatright" href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $context['lp_icon_set']['tools'] . '</a>';
+			$block['title'] = $block['title'] . '<a class="floatright block_edit" href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $context['lp_icon_set']['tools'] . '</a>';
 
 		if (empty($block['title']))
 			$block['title'] = '';

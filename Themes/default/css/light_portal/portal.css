@@ -299,6 +299,12 @@
   clear: both;
   margin-top: 4px;
 }
+#lp_layout aside .block_edit {
+  opacity: 0.5;
+}
+#lp_layout aside .block_edit:hover {
+  opacity: 1;
+}
 .related_pages {
   margin-top: 1em;
 }
