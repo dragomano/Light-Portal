@@ -185,6 +185,6 @@ final class AddonHandler
 		if (! @is_writable($this->settings['default_theme_dir'] . '/scripts/light_portal') || ! $isFileExists)
 			return;
 
-		$this->loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js');
+		$this->loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js', ['minimize' => true]);
 	}
 }
