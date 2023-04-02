@@ -191,11 +191,11 @@
     "description": "The copy button label on code blocks"
   },
   "theme.CodeBlock.wordWrapToggle": {
-    "message": "Toggle word wrap",
+    "message": "Εναλλαγή αναδίπλωσης λέξης",
     "description": "The title attribute for toggle word wrapping button of code block lines"
   },
   "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel": {
-    "message": "Toggle the collapsible sidebar category '{label}'",
+    "message": "Εναλλαγή της κατηγορίας πτυσσόμενης πλευρικής γραμμής '{label}'",
     "description": "The ARIA label to toggle the collapsible sidebar category"
   },
   "theme.NavBar.navAriaLabel": {
@@ -203,35 +203,35 @@
     "description": "The ARIA label for the main navigation"
   },
   "theme.navbar.mobileLanguageDropdown.label": {
-    "message": "Languages",
+    "message": "Γλώσσες",
     "description": "The label for the mobile language switcher dropdown"
   },
   "theme.TOCCollapsible.toggleButtonLabel": {
-    "message": "On this page",
+    "message": "Σε αυτήν την σελίδα",
     "description": "The label used by the button on the collapsible TOC component"
   },
   "theme.blog.post.readMore": {
-    "message": "Read More",
+    "message": "Διαβάστε περισσότερα",
     "description": "The label used in blog post item excerpts to link to full blog posts"
   },
   "theme.blog.post.readMoreLabel": {
-    "message": "Read more about {title}",
+    "message": "Διαβάστε περισσότερα για {title}",
     "description": "The ARIA label for the link to full blog posts from excerpts"
   },
   "theme.blog.post.readingTime.plurals": {
-    "message": "One min read|{readingTime} min read",
+    "message": "Ένα λεπτό ανάγνωσης|{readingTime} λεπτό ανάγνωσης",
     "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
   },
   "theme.docs.breadcrumbs.home": {
-    "message": "Home page",
+    "message": "Αρχική σελίδα",
     "description": "The ARIA label for the home page in the breadcrumbs"
   },
   "theme.docs.sidebar.collapseButtonTitle": {
-    "message": "Collapse sidebar",
+    "message": "Σύμπτυξη πλαϊνής γραμμής",
     "description": "The title attribute for collapse button of doc sidebar"
   },
   "theme.docs.sidebar.collapseButtonAriaLabel": {
-    "message": "Collapse sidebar",
+    "message": "Σύμπτυξη πλαϊνής γραμμής",
     "description": "The title attribute for collapse button of doc sidebar"
   },
   "theme.docs.sidebar.navAriaLabel": {
@@ -239,31 +239,31 @@
     "description": "The ARIA label for the sidebar navigation"
   },
   "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
-    "message": "Close navigation bar",
+    "message": "Κλείστε τη γραμμή πλοήγησης",
     "description": "The ARIA label for close button of mobile sidebar"
   },
   "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-    "message": "← Back to main menu",
+    "message": "← Επιστροφή στο κύριο μενού",
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
-    "message": "Toggle navigation bar",
+    "message": "Εναλλαγή γραμμής πλοήγησης",
     "description": "The ARIA label for hamburger menu button of mobile navigation"
   },
   "theme.docs.sidebar.expandButtonTitle": {
-    "message": "Expand sidebar",
+    "message": "Αναπτύξτε την πλαϊνή γραμμή",
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "theme.docs.sidebar.expandButtonAriaLabel": {
-    "message": "Expand sidebar",
+    "message": "Αναπτύξτε την πλαϊνή γραμμή",
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "theme.ErrorPageContent.tryAgain": {
-    "message": "Try again",
+    "message": "Προσπάθησε ξανά",
     "description": "The label of the button to try again rendering when the React error boundary captures an error"
   },
   "theme.common.skipToMainContent": {
-    "message": "Skip to main content",
+    "message": "Μετάβαση στο κύριο περιεχόμενο",
     "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
   },
   "theme.tags.tagsPageTitle": {
@@ -271,18 +271,18 @@
     "description": "The title of the tag list page"
   },
   "cmfcmf/d-s-l.searchBar.placeholder": {
-    "message": "Search..."
+    "message": "Αναζήτηση"
   },
   "cmfcmf/d-s-l.searchBar.noResults": {
-    "message": "No results found."
+    "message": "Δεν βρέθηκαν αποτελέσματα."
   },
   "cmfcmf/d-s-l.searchBar.clearButtonTitle": {
-    "message": "Clear"
+    "message": "Σαφή"
   },
   "cmfcmf/d-s-l.searchBar.detachedCancelButtonText": {
-    "message": "Cancel"
+    "message": "Ματαίωση"
   },
   "cmfcmf/d-s-l.searchBar.submitButtonTitle": {
-    "message": "Submit"
+    "message": "Υποβάλλουν"
   }
 }
