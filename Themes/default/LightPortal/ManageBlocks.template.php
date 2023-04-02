@@ -77,7 +77,8 @@ function template_manage_blocks()
 				animation: 500,
 				handle: ".handle",
 				draggable: "tr.windowbg",
-				onSort: e => block.sort(e)
+				onAdd: e => block.sort(e),
+				onUpdate: e => block.sort(e),
 			});
 		});
 
