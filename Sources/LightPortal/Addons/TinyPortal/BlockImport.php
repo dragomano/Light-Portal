@@ -229,7 +229,7 @@ class BlockImport extends AbstractOtherBlockImport
 		return match ($type) {
 			5  => 'bbc',
 			10 => 'php',
-			default: 'html',
+			default => 'html',
 		};
 	}
 
