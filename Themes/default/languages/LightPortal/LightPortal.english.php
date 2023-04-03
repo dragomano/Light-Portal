@@ -11,6 +11,7 @@ $txt['lp_article'] = 'Article';
 $txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
+$txt['lp_caution'] = 'Caution';
 $txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_page_moderation'] = 'Page moderation';

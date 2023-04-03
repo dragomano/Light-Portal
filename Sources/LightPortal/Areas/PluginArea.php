@@ -156,6 +156,8 @@ final class PluginArea
 				'name'       => $item,
 				'snake_name' => $snake_name,
 				'desc'       => $this->txt['lp_' . $snake_name]['description'] ?? '',
+				'caution'    => $this->txt['lp_' . $snake_name]['caution'] ?? '',
+				'note'       => $this->txt['lp_' . $snake_name]['note'] ?? '',
 				'author'     => $author ?? '',
 				'link'       => $link ?? '',
 				'status'     => in_array($item, $this->context['lp_enabled_plugins']) ? 'on' : 'off',

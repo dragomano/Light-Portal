@@ -69,6 +69,16 @@ function template_manage_plugins()
 			}
 		} else {
 			echo $plugin['desc'];
+
+			if (! empty($plugin['caution'])) {
+				echo '
+							<br><strong>', $txt['lp_caution'], '</strong>: ', $plugin['caution'];
+			}
+
+			if (! empty($plugin['note'])) {
+				echo '
+							<br><strong>', $txt['lp_block_note'], '</strong>: ', $plugin['note'];
+			}
 		}
 
 		echo '
