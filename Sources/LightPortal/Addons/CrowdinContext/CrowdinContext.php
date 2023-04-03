@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.23
+ * @version 03.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -27,9 +27,18 @@ class CrowdinContext extends Plugin
 {
 	public string $type = 'other';
 
-	public function init()
+	public function addSettings(array &$config_vars): void
 	{
-		if (empty($this->user_info['is_admin']))
+		$this->addDefaultValues([
+			'admin_id' => $this->user_info['id'],
+		]);
+
+		$config_vars['crowdin_context'][] = ['int', 'admin_id'];
+	}
+
+	public function init(): void
+	{
+		if ($this->isCanUse() === false)
 			return;
 
 		$this->applyHook('actions');
@@ -54,11 +63,8 @@ class CrowdinContext extends Plugin
 		$this->loadExtJS('//cdn.crowdin.com/jipt/jipt.js', ['defer' => true]);
 	}
 
-	public function actions()
+	public function actions(): void
 	{
-		if (empty($this->user_info['is_admin']))
-			return;
-
 		if ($this->request()->is(LP_ACTION) && $this->request()->has('disable_crowdin')) {
 			if ($key = array_search('CrowdinContext', $this->context['lp_enabled_plugins'])) {
 				unset($this->context['lp_enabled_plugins'][$key]);
@@ -68,5 +74,10 @@ class CrowdinContext extends Plugin
 				$this->redirect('action=admin;area=lp_plugins');
 			}
 		}
+	}
+
+	private function isCanUse(): bool
+	{
+		return ! empty($this->user_info['is_admin']) && isset($this->context['lp_crowdin_context_plugin']['admin_id']) && (int) $this->context['lp_crowdin_context_plugin']['admin_id'] === $this->user_info['id'];
 	}
 }
