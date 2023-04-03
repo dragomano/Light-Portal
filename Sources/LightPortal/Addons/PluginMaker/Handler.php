@@ -381,7 +381,7 @@ class Handler extends Plugin
 
 	private function setData()
 	{
-		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->request()->has('save') === false)
+		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->request()->hasNot('save'))
 			return;
 
 		$this->checkSubmitOnce('check');

@@ -120,7 +120,7 @@ final class BasicConfig
 			if ($this->request()->has('lp_frontpage_alias'))
 				$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->has('lp_frontpage_alias') === false) {
+			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->hasNot('lp_frontpage_alias')) {
 				$save_vars[] = ['text', 'lp_frontpage_title'];
 				$save_vars[] = ['text', 'lp_frontpage_categories'];
 				$save_vars[] = ['text', 'lp_frontpage_boards'];
@@ -157,7 +157,7 @@ final class BasicConfig
 
 	private function prepareAliasList(): void
 	{
-		if ($this->request()->has('alias_list') === false)
+		if ($this->request()->hasNot('alias_list'))
 			return;
 
 		$data = $this->request()->json();
@@ -176,7 +176,7 @@ final class BasicConfig
 
 	private function prepareTopicList(): void
 	{
-		if ($this->request()->has('topic_list') === false)
+		if ($this->request()->hasNot('topic_list'))
 			return;
 
 		$data = $this->request()->json();

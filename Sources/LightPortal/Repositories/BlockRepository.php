@@ -127,9 +127,9 @@ final class BlockRepository extends AbstractRepository
 	public function setData(int $item = 0)
 	{
 		if (isset($this->context['post_errors']) || (
-			$this->request()->has('save') === false &&
-			$this->request()->has('save_exit') === false &&
-			$this->request()->has('clone') === false)
+			$this->request()->hasNot('save') &&
+			$this->request()->hasNot('save_exit') &&
+			$this->request()->hasNot('clone'))
 		)
 			return 0;
 

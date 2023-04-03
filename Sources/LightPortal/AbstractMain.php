@@ -135,7 +135,7 @@ abstract class AbstractMain
 	 */
 	protected function fixLinktree(): void
 	{
-		if (empty($this->context['current_board']) && $this->request()->has('c') === false || empty($this->context['linktree'][1]))
+		if (empty($this->context['current_board']) && $this->request()->hasNot('c') || empty($this->context['linktree'][1]))
 			return;
 
 		$old_url = explode('#', $this->context['linktree'][1]['url']);
@@ -182,7 +182,7 @@ abstract class AbstractMain
 
 	protected function promoteTopic(): void
 	{
-		if (empty($this->user_info['is_admin']) || empty($this->request()->has('t')))
+		if (empty($this->user_info['is_admin']) || $this->request()->hasNot('t'))
 			return;
 
 		$topic = $this->request('t');

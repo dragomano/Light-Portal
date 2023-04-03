@@ -53,7 +53,7 @@ final class BlockArea
 
 	public function doActions(): void
 	{
-		if ($this->request()->has('actions') === false)
+		if ($this->request()->hasNot('actions'))
 			return;
 
 		$data = $this->request()->json();
@@ -568,7 +568,7 @@ final class BlockArea
 
 	private function preparePreview(): void
 	{
-		if ($this->request()->has('preview') === false)
+		if ($this->request()->hasNot('preview'))
 			return;
 
 		$this->checkSubmitOnce('free');

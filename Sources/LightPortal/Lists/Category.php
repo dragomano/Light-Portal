@@ -23,7 +23,7 @@ final class Category extends AbstractPageList
 {
 	public function show(Page $page)
 	{
-		if ($this->request()->has('id') === false)
+		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
 		$this->context['lp_category'] = $this->request('id');

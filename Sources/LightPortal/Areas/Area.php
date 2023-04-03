@@ -127,7 +127,7 @@ trait Area
 
 	public function prepareIconList(): void
 	{
-		if ($this->request()->has('icons') === false)
+		if ($this->request()->hasNot('icons'))
 			return;
 
 		$data = $this->request()->json();

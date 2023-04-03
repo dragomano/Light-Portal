@@ -245,7 +245,7 @@ final class PluginArea
 
 	private function prepareAddonChart(): void
 	{
-		if ($this->request()->has('chart') === false)
+		if ($this->request()->hasNot('chart'))
 			return;
 
 		$typeCount = [];

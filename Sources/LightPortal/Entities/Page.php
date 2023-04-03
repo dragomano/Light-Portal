@@ -304,7 +304,7 @@ final class Page
 
 	private function promote(): void
 	{
-		if (empty($this->user_info['is_admin']) || empty($this->request()->has('promote')))
+		if (empty($this->user_info['is_admin']) || $this->request()->hasNot('promote'))
 			return;
 
 		$page = $this->context['lp_page']['id'];

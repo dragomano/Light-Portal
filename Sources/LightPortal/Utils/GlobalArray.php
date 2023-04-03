@@ -66,6 +66,21 @@ abstract class GlobalArray
 		return isset($this->storage[$keys]);
 	}
 
+	public function hasNot(array|string $keys): bool
+	{
+		if (is_array($keys)) {
+			foreach ($keys as $key) {
+				if (isset($this->storage[$key])) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return empty($this->has($keys));
+	}
+
 	public function isEmpty(string $key): bool
 	{
 		return empty($this->storage[$key]);

@@ -50,10 +50,10 @@ final class BlockExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('blocks') && $this->request()->has('export_all') === false)
+		if ($this->request()->isEmpty('blocks') && $this->request()->hasNot('export_all'))
 			return [];
 
-		$blocks = $this->request('blocks') && $this->request()->has('export_all') === false ? $this->request('blocks') : null;
+		$blocks = $this->request('blocks') && $this->request()->hasNot('export_all') ? $this->request('blocks') : null;
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
