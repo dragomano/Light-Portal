@@ -504,4 +504,76 @@ trait Helper
 				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
 		);
 	}
+
+	public function prepareAliasList(): void
+	{
+		if ($this->request()->hasNot('alias_list'))
+			return;
+
+		$data = $this->request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$results = $this->pageRepository->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
+		$results = array_column($results, 'alias');
+		array_walk($results, function (&$item) {
+			$item = ['value' => $item];
+		});
+
+		exit(json_encode($results));
+	}
+
+	public function prepareTopicList(): void
+	{
+		if ($this->request()->hasNot('topic_list'))
+			return;
+
+		$data = $this->request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$results = $this->getTopicsBySubject($search);
+
+		exit(json_encode($results));
+	}
+
+	public function getTopicsBySubject(string $subject): array
+	{
+		$request = $this->smcFunc['db_query']('', '
+			SELECT t.id_topic, m.subject
+			FROM {db_prefix}topics AS t
+				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
+			WHERE t.id_poll = {int:id_poll}
+				AND t.approved = {int:is_approved}
+				AND t.id_redirect_topic = {int:id_redirect_topic}
+				AND t.id_board != {int:recycle_board}
+				AND INSTR(LOWER(m.subject), {string:subject}) > 0
+			ORDER BY m.subject
+			LIMIT 100',
+			[
+				'id_poll'           => 0,
+				'is_approved'       => 1,
+				'id_redirect_topic' => 0,
+				'recycle_board'     => empty($this->modSettings['recycle_board']) ? $this->modSettings['recycle_board'] : 0,
+				'subject'           => $this->smcFunc['strtolower']($subject),
+			]
+		);
+
+		$topics = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$this->censorText($row['subject']);
+
+			$topics[] = [
+				'id'      => $row['id_topic'],
+				'subject' => $row['subject'],
+			];
+		}
+
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		return $topics;
+	}
 }
