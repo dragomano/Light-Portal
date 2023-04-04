@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-^8.0-blue.svg?style=flat)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
-* **Tested on:** PHP 8.2.0 / MariaDB 10.6.7
+* **Tested on:** PHP 8.2.0 / MariaDB 10.6.7, MySQL 8.0.32, PostgreSQL 15.2
 * **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru) [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
