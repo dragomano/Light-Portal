@@ -14,9 +14,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 abstract class GlobalArray
 {
 	protected array $storage = [];
@@ -38,32 +35,17 @@ abstract class GlobalArray
 
 	public function only(array $keys): array
 	{
-		$result = [];
-
-		foreach ($keys as $key) {
-			$key = trim($key);
-
-			if (isset($this->storage[$key])) {
-				$result[$key] = $this->storage[$key];
-			}
-		}
-
-		return $result;
+		return array_intersect_key($this->all(), array_flip($keys));
 	}
 
 	public function has(array|string $keys): bool
 	{
-		if (is_array($keys)) {
-			foreach ($keys as $key) {
-				if (! isset($this->storage[$key])) {
-					return false;
-				}
-			}
+		return array_reduce((array) $keys, fn($carry, $key) => $carry && isset($this->storage[$key]), true);
+	}
 
-			return true;
-		}
-
-		return isset($this->storage[$keys]);
+	public function hasNot(array|string $keys): bool
+	{
+		return empty($this->has($keys));
 	}
 
 	public function isEmpty(string $key): bool

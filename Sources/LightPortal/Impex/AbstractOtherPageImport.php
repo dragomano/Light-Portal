@@ -28,7 +28,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 
 	protected function run()
 	{
-		if ($this->request()->isEmpty('pages') && $this->request()->has('import_all') === false)
+		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('import_all'))
 			return;
 
 		// Might take some time.
@@ -38,7 +38,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 		$this->tempCache = $this->db_cache;
 		$this->db_cache = [];
 
-		$pages = $this->request('pages') && $this->request()->has('import_all') === false ? $this->request('pages') : [];
+		$pages = $this->request('pages') && $this->request()->hasNot('import_all') ? $this->request('pages') : [];
 
 		$results = $titles = $params = $comments = [];
 		$items = $this->getItems($pages);

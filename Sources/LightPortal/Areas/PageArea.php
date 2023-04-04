@@ -53,7 +53,7 @@ final class PageArea
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->has('u') === false ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
+			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
 
 		if ($this->isModArea())
@@ -308,7 +308,7 @@ final class PageArea
 	 */
 	public function doActions(): void
 	{
-		if ($this->request()->has('actions') === false)
+		if ($this->request()->hasNot('actions'))
 			return;
 
 		$data = $this->request()->json();
@@ -326,7 +326,7 @@ final class PageArea
 
 	public function massActions(): void
 	{
-		if ($this->request()->has('mass_actions') === false || $this->request()->isEmpty('items'))
+		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
 			return;
 
 		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, ['options' => ['default' => 'action=admin;area=lp_pages']]);
@@ -875,7 +875,7 @@ final class PageArea
 
 	private function prepareMemberList(): void
 	{
-		if ($this->request()->has('members') === false)
+		if ($this->request()->hasNot('members'))
 			return;
 
 		$data = $this->request()->json();
@@ -921,7 +921,7 @@ final class PageArea
 
 	private function preparePreview(): void
 	{
-		if ($this->request()->has('preview') === false)
+		if ($this->request()->hasNot('preview'))
 			return;
 
 		$this->checkSubmitOnce('free');
@@ -963,7 +963,7 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->has('u') === false)
+		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
 			$this->redirect('action=admin;area=lp_pages;u=' . $this->user_info['id']);
 	}
 

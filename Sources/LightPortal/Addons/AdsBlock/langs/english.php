@@ -8,9 +8,9 @@ return [
 	'end_date' => 'End date (the block will turn off automatically)',
 	'ads_type' => 'Boards and topics',
 	'included_boards' => 'Boards',
-	'included_boards_subtext' => 'Enter boards IDs to display ads only there. Otherwise, the block will be displayed in all boards.',
+	'included_boards_select' => 'Select boards to display ads only there. Otherwise, the block will be displayed in all boards.',
 	'included_topics' => 'Topics',
-	'included_topics_subtext' => 'Enter topic IDs to display ads only there. Otherwise, the block will be displayed in all topics.',
+	'included_topics_select' => 'Select topics to display ads only there. Otherwise, the block will be displayed in all topics.',
 	'select_placement' => 'Where should the block be displayed?',
 	'placement_set' => array(
 		'At the top of boards',

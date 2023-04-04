@@ -50,7 +50,13 @@ function parse_content(string $content, string $type = 'bbc'): string
 		ob_start();
 
 		try {
-			eval(html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
+			$tempFile = tempnam(sys_get_temp_dir(), 'code');
+
+			file_put_contents($tempFile, '<?php ' . html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
+
+			include $tempFile;
+
+			unlink($tempFile);
 		} catch (ParseError $p) {
 			echo $p->getMessage();
 		}

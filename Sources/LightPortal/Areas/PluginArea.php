@@ -156,6 +156,8 @@ final class PluginArea
 				'name'       => $item,
 				'snake_name' => $snake_name,
 				'desc'       => $this->txt['lp_' . $snake_name]['description'] ?? '',
+				'caution'    => $this->txt['lp_' . $snake_name]['caution'] ?? '',
+				'note'       => $this->txt['lp_' . $snake_name]['note'] ?? '',
 				'author'     => $author ?? '',
 				'link'       => $link ?? '',
 				'status'     => in_array($item, $this->context['lp_enabled_plugins']) ? 'on' : 'off',
@@ -186,7 +188,7 @@ final class PluginArea
 		$this->context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$link = 'https://gist.githubusercontent.com/dragomano/5ed96dfb2061e3de86ef13450f913842/raw/2694a767be8b5f844e7300d3a4ce69fb3634e806/addons.json';
+			$link = 'https://api.jsonserve.com/rQgM8R';
 
 			$addon_list = $this->fetchWebData($link);
 
@@ -201,14 +203,14 @@ final class PluginArea
 		if (empty($xml) || ! is_array($xml))
 			return;
 
-		if ($xml['donate']) {
+		if (isset($xml['donate'])) {
 			foreach ($xml['donate'] as $addon) {
 				$this->context['lp_plugins'][] = $addon['name'];
 				$this->context['lp_can_donate'][$addon['name']] = $addon;
 			}
 		}
 
-		if ($xml['download']) {
+		if (isset($xml['download'])) {
 			foreach ($xml['download'] as $addon) {
 				$this->context['lp_plugins'][] = $addon['name'];
 				$this->context['lp_can_download'][$addon['name']] = $addon;
@@ -243,7 +245,7 @@ final class PluginArea
 
 	private function prepareAddonChart(): void
 	{
-		if ($this->request()->has('chart') === false)
+		if ($this->request()->hasNot('chart'))
 			return;
 
 		$typeCount = [];

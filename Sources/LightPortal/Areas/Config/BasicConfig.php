@@ -25,6 +25,17 @@ final class BasicConfig
 {
 	use Helper;
 
+	private FrontPage $frontPage;
+
+	private PageRepository $pageRepository;
+
+	public function __construct()
+	{
+		$this->frontPage = new FrontPage;
+
+		$this->pageRepository = new PageRepository();
+	}
+
 	/**
 	 * Output general settings
 	 *
@@ -33,6 +44,7 @@ final class BasicConfig
 	public function show(): void
 	{
 		$this->prepareAliasList();
+		$this->prepareTopicList();
 
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_base'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=basic;save';
@@ -41,9 +53,6 @@ final class BasicConfig
 		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
-
-		$this->context['lp_all_categories']    = $this->getAllCategories();
-		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
 		// Initial settings
 		$addSettings = [];
@@ -69,7 +78,16 @@ final class BasicConfig
 		);
 
 		$this->context['board_list'] = $this->getBoardList();
+
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
+
+		$this->context['lp_frontpage_layouts'] = $this->frontPage->getLayouts();
+
+		$this->context['lp_all_categories'] = $this->getAllCategories();
+
+		$this->context['lp_all_pages'] = $this->pageRepository->getAll(0, $this->pageRepository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
+
+		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
@@ -102,7 +120,7 @@ final class BasicConfig
 			if ($this->request()->has('lp_frontpage_alias'))
 				$save_vars[] = ['text', 'lp_frontpage_alias'];
 
-			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->has('lp_frontpage_alias') === false) {
+			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->hasNot('lp_frontpage_alias')) {
 				$save_vars[] = ['text', 'lp_frontpage_title'];
 				$save_vars[] = ['text', 'lp_frontpage_categories'];
 				$save_vars[] = ['text', 'lp_frontpage_boards'];
@@ -137,22 +155,31 @@ final class BasicConfig
 		$this->prepareDBSettingContext($config_vars);
 	}
 
-	private function prepareAliasList(): void
+	private function getSelectedTopics(): array
 	{
-		if ($this->request()->has('alias_list') === false)
-			return;
+		if (empty($this->modSettings['lp_frontpage_topics']))
+			return [];
 
-		$data = $this->request()->json();
+		$request = $this->smcFunc['db_query']('', '
+			SELECT t.id_topic, m.subject
+			FROM {db_prefix}topics AS t
+				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
+			WHERE t.id_topic IN ({array_int:topics})',
+			[
+				'topics' => explode(',', $this->modSettings['lp_frontpage_topics']),
+			]
+		);
 
-		if (empty($search = $data['search']))
-			return;
+		$topics = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			$this->censorText($row['subject']);
 
-		$results = (new PageRepository)->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
-		$results = array_column($results, 'alias');
-		array_walk($results, function (&$item) {
-			$item = ['value' => $item];
-		});
+			$topics[$row['id_topic']] = $row['subject'];
+		}
 
-		exit(json_encode($results));
+		$this->smcFunc['db_free_result']($request);
+		$this->context['lp_num_queries']++;
+
+		return $topics;
 	}
 }

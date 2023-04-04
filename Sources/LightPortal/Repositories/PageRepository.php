@@ -26,7 +26,7 @@ final class PageRepository extends AbstractRepository
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		$request = $this->smcFunc['db_query']('', '
-			SELECT p.page_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.num_comments,
+			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.num_comments,
 				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -50,6 +50,7 @@ final class PageRepository extends AbstractRepository
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
+				'category_id'  => (int) $row['category_id'],
 				'alias'        => $row['alias'],
 				'type'         => $row['type'],
 				'status'       => (int) $row['status'],
@@ -94,8 +95,8 @@ final class PageRepository extends AbstractRepository
 	public function setData(int $item = 0)
 	{
 		if (isset($this->context['post_errors']) || (
-			$this->request()->has('save') === false &&
-			$this->request()->has('save_exit') === false)
+			$this->request()->hasNot('save') &&
+			$this->request()->hasNot('save_exit'))
 		)
 			return;
 

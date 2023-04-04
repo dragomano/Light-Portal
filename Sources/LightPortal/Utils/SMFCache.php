@@ -43,17 +43,12 @@ final class SMFCache implements CacheInterface
 		if (empty($methodName) || empty($className) || $this->lifeTime === 0)
 			$this->forget($this->key);
 
-		if ((${$this->key} = $this->get($this->key, $this->lifeTime)) === null) {
-			${$this->key} = null;
-
-			if (method_exists($className, $methodName)) {
-				${$this->key} = (new $className)->{$methodName}(...$params);
-			}
-
-			$this->put($this->key, ${$this->key}, $this->lifeTime);
+		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
+			$cachedValue = $this->callMethod($className, $methodName, ...$params);
+			$this->put($this->key, $cachedValue, $this->lifeTime);
 		}
 
-		return ${$this->key};
+		return $cachedValue;
 	}
 
 	public function get(string $key, ?int $time = null): ?array
@@ -74,5 +69,14 @@ final class SMFCache implements CacheInterface
 	public function flush(): void
 	{
 		clean_cache();
+	}
+
+	protected function callMethod(string $className, string $methodName, ...$params): mixed
+	{
+		if (method_exists($className, $methodName)) {
+			return (new $className)->{$methodName}(...$params);
+		}
+
+		return null;
 	}
 }

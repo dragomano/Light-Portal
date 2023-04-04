@@ -40,7 +40,7 @@ function template_plugin_post()
 				<input id="tab2" type="radio" name="tabs">
 				<label for="tab2" class="bg odd">', $context['lp_icon_set']['copyright'], '<span>', $txt['lp_plugin_maker']['tab_copyrights'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $context['lp_icon_set']['cog_spin'], '<span>', $txt['lp_plugin_maker']['tab_settings'], '</span></label>
+				<label for="tab3" class="bg odd">', $context['lp_icon_set']['cog_spin'], '<span>', $txt['settings'], '</span></label>
 				<input id="tab4" type="radio" name="tabs">
 				<label for="tab4" class="bg odd">', $context['lp_icon_set']['tools'], '<span>', $txt['lp_plugin_maker']['tab_tuning'], '</span></label>
 				<section id="content-tab1" class="bg even">';

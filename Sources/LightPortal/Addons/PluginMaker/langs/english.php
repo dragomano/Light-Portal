@@ -1,14 +1,13 @@
 <?php
 
 return [
-	'description' => 'A tool for creating plugin skeletons. Adds an "Add Plugin" page to the plugin manage area.',
+	'description' => 'A tool for creating plugin skeletons. Adds its own section in the plugins manage area.',
 	'add' => 'Add plugin',
 	'add_title' => 'Adding a plugin',
 	'add_desc' => 'The plugin maker wizard will help you prepare the addon skeleton for further changes. Fill in the suggested fields carefully.',
-	'add_info' => 'The plugin files will be saved in the directory %1$s<br>Be sure to look there and check/edit the necessary files.',
+	'add_info' => 'The plugin files will be saved in the directory %1$s',
 	'tab_content' => 'Basic information',
 	'tab_copyrights' => 'Copyrights',
-	'tab_settings' => 'Settings',
 	'tab_tuning' => 'Additional',
 	'name' => 'The plugin name',
 	'name_subtext' => 'In Latin letters, without spaces!',
@@ -27,7 +26,7 @@ return [
 	'option_name' => 'Option name (Latin)',
 	'option_desc' => 'Use the "block_option_name" template to add block parameters, or "option_name" - to add plugin parameters.',
 	'option_type' => 'Option type',
-	'option_type_set' => array('Text field', 'Web address', 'Input color', 'Input number (int)', 'Input number (float)', 'Checkbox', 'Multiple select', 'Select'),
+	'option_type_set' => ['Text field', 'Web address', 'Input color', 'Input number (int)', 'Input number (float)', 'Checkbox', 'Multiple select', 'Select'],
 	'option_default_value' => 'Default value',
 	'option_variants' => 'Possible values',
 	'option_variants_placeholder' => 'Multiple options separated by "|"',

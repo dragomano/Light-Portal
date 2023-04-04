@@ -37,7 +37,7 @@ class ExtendedMetaTags extends Plugin
 
 	public function themeContext()
 	{
-		if ($this->request()->has('page') === false || empty($this->context['lp_page']['options']))
+		if ($this->request()->hasNot('page') || empty($this->context['lp_page']['options']))
 			return;
 
 		if (! empty($this->context['lp_page']['options']['meta_robots'])) {

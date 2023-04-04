@@ -94,7 +94,7 @@ final class ExtraConfig
 			$parse_tags = (array) $this->parseBbc(false);
 			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
 
-			if ($this->request()->has('lp_disabled_bbc_in_comments_enabledTags') === false) {
+			if ($this->request()->hasNot('lp_disabled_bbc_in_comments_enabledTags')) {
 				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', '');
 			} elseif (! is_array($this->request('lp_disabled_bbc_in_comments_enabledTags'))) {
 				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', $this->request('lp_disabled_bbc_in_comments_enabledTags'));

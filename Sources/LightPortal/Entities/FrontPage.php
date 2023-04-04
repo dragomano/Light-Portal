@@ -85,6 +85,8 @@ final class FrontPage
 
 		$articles = $this->postProcess($article, $articles);
 
+		$this->preLoadImages($articles);
+
 		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
@@ -231,6 +233,15 @@ final class FrontPage
 
 			return $item;
 		}, $articles);
+	}
+
+	private function preLoadImages(array $articles): void
+	{
+		$images = array_column($articles, 'image');
+
+		foreach ($images as $image) {
+			$this->context['html_headers'] .= "\n\t" . '<link rel="preload" as="image" href="' . $image . '">';
+		}
 	}
 
 	/**

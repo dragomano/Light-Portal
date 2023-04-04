@@ -14,9 +14,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 final class Post extends GlobalArray
 {
 	public function __construct()
