@@ -51,7 +51,7 @@ trait Helper
 
 				return $fmt->format($values);
 			} catch (IntlException) {
-				$this->logError("[LP] translate helper: pattern syntax error in \$txt['{$pattern}']", 'critical');
+				$this->logError("[LP] translate helper: pattern syntax error in \$txt['$pattern']", 'critical');
 			}
 		} else {
 			$this->logError('[LP] translate helper: you should enable intl extension', 'critical');
@@ -190,16 +190,17 @@ trait Helper
 
 	public function getForumThemes(bool $only_available = false): array
 	{
-		if (($themes = $this->cache()->get('forum_themes')) === null) {
-			$this->prepareInstalledThemes();
+		$themes = $this->cache()->get('forum_themes');
 
+		if ($themes === null) {
+			$this->prepareInstalledThemes();
 			$themes = $this->context['themes'];
 
-			if ($only_available)
-				$themes = array_filter($themes, fn ($theme) => $theme['known'] && $theme['enable']);
+			if ($only_available) {
+				$themes = array_filter($themes, fn($theme) => $theme['known'] && $theme['enable']);
+			}
 
 			$themes = array_column($themes, 'name', 'id');
-
 			$this->cache()->put('forum_themes', $themes);
 		}
 
@@ -213,17 +214,18 @@ trait Helper
 		$temp = $this->context['languages'];
 
 		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['languages'] = [];
-			$this->context['languages'][$this->language] = $temp[$this->language];
+			$this->context['languages'] = [
+				$this->language => $temp[$this->language]
+			];
 
 			return;
 		}
 
 		$this->context['languages'] = array_merge(
 			[
-				$this->language              => $temp[$this->language],
+				$this->language => $temp[$this->language],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
-				'english'                    => $temp['english'],
+				'english' => $temp['english'],
 			],
 			$this->context['languages']
 		);

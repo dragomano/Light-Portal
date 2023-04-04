@@ -14,9 +14,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 final class Request extends GlobalArray
 {
 	public function __construct()
@@ -26,19 +23,9 @@ final class Request extends GlobalArray
 
 	public function is(string|array ...$patterns): bool
 	{
-		if ($this->has('action') === false) {
-			return false;
-		}
+		$patterns = is_array($patterns[0]) ? $patterns[0] : $patterns;
 
-		if (is_array($patterns[0])) {
-			$patterns = $patterns[0];
-		}
-
-		if (in_array($this->storage['action'], $patterns, true)) {
-			return true;
-		}
-
-		return false;
+		return $this->has('action') && in_array($this->storage['action'], $patterns, true);
 	}
 
 	public function isNot(string|array ...$patterns): bool
@@ -48,16 +35,10 @@ final class Request extends GlobalArray
 
 	public function json(?string $key = null, mixed $default = null): mixed
 	{
-		if (empty($input = file_get_contents('php://input')))
-			return $default;
-
+		$input = file_get_contents('php://input');
 		$data = json_decode($input, true) ?? [];
 
-		if (isset($data[$key])) {
-			return $data[$key] ?: $default;
-		}
-
-		return $data;
+		return $key ? ($data[$key] ?? $default) : $data;
 	}
 
 	public function url(): string
