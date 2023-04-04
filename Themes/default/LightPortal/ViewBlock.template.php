@@ -49,7 +49,7 @@ function template_lp_portal_above()
 		echo '
 
 				<div class="row">
-					<div class="col-xs">';
+					<div class="col-xs-12 col-sm">';
 
 		lp_show_blocks('top');
 
@@ -75,7 +75,7 @@ function template_lp_portal_below()
 	if (! empty($context['lp_blocks']['bottom'])) {
 		echo '
 				<div class="row">
-					<div class="col-xs">';
+					<div class="col-xs-12 col-sm">';
 
 		lp_show_blocks('bottom');
 
@@ -134,7 +134,7 @@ function lp_show_blocks(string $placement = '')
 	}
 
 	foreach ($context['lp_blocks'][$placement] as $block) {
-		$class = 'block_' . $block['type'] . (empty($context['lp_panel_direction'][$placement]) ? '' : ' col-xs') . (empty($block['custom_class']) ? '' : (' ' . $block['custom_class']));
+		$class = 'block_' . $block['type'] . (empty($context['lp_panel_direction'][$placement]) ? '' : ' col-xs-12 col-sm') . (empty($block['custom_class']) ? '' : (' ' . $block['custom_class']));
 
 		echo '
 			<aside id="block_', $block['id'], '" class="', $class, '">';
