@@ -57,7 +57,7 @@ final class BasicConfig
 		// Initial settings
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_frontpage_title']))
-			$addSettings['lp_frontpage_title'] = $this->context['forum_name'];
+			$addSettings['lp_frontpage_title'] = str_replace(array("'", "\""), "", $this->context['forum_name']);
 		if (! isset($this->modSettings['lp_frontpage_alias']))
 			$addSettings['lp_frontpage_alias'] = 'home';
 		if (! isset($this->modSettings['lp_show_views_and_comments']))
@@ -174,7 +174,7 @@ final class BasicConfig
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$this->censorText($row['subject']);
 
-			$topics[$row['id_topic']] = $row['subject'];
+			$topics[$row['id_topic']] = str_replace(array("'", "\""), "", $row['subject']);
 		}
 
 		$this->smcFunc['db_free_result']($request);

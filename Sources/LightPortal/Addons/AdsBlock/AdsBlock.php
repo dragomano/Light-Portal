@@ -447,7 +447,7 @@ class AdsBlock extends Plugin
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$this->censorText($row['subject']);
 
-			$topics[$row['id_topic']] = $row['subject'];
+			$topics[$row['id_topic']] = str_replace(array("'", "\""), "", $row['subject']);
 		}
 
 		$this->smcFunc['db_free_result']($request);

@@ -39,7 +39,7 @@ function template_callback_frontpage_mode_settings()
 					id="lp_frontpage_title"
 					value="', $modSettings['lp_frontpage_title'] ?? '', '"
 					size="80"
-					placeholder="',  $context['forum_name'], ' - ', $txt['lp_portal'], '"
+					placeholder="',  str_replace(array("'", "\""), "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
 				>
 			</dd>
 		</template>
@@ -124,7 +124,7 @@ function template_callback_frontpage_mode_settings()
 
 	foreach ($context['lp_all_categories'] as $id => $cat) {
 		echo '
-							{label: "', $cat['name'], '", value: "', $id, '"},';
+							{label: "', str_replace(array("'", "\""), "", $cat['name']), '", value: "', $id, '"},';
 	}
 
 	echo '
@@ -163,12 +163,12 @@ function template_callback_frontpage_mode_settings()
 	foreach ($context['board_list'] as $cat) {
 		echo '
 							{
-								label: "', $cat['name'], '",
+								label: "', str_replace(array("'", "\""), "", $cat['name']), '",
 								options: [';
 
 		foreach ($cat['boards'] as $id_board => $board) {
 			echo '
-									{label: "', $board['name'], '", value: "', $id_board, '"},';
+									{label: "', str_replace(array("'", "\""), "", $board['name']), '", value: "', $id_board, '"},';
 		}
 
 		echo '
@@ -213,7 +213,7 @@ function template_callback_frontpage_mode_settings()
 
 	foreach ($context['lp_all_pages'] as $id => $page) {
 		echo '
-							{label: "', $page['title'], '", value: "', $id, '"},';
+							{label: "', str_replace(array("'", "\""), "", $page['title']), '", value: "', $id, '"},';
 	}
 
 	echo '

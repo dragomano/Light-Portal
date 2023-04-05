@@ -94,12 +94,12 @@ function template_ads_block_below()
 	foreach ($context['lp_selected_boards'] as $cat) {
 		echo '
 				{
-					label: "', $cat['name'], '",
+					label: "', str_replace(array("'", "\""), "", $cat['name']), '",
 					options: [';
 
 		foreach ($cat['boards'] as $id_board => $board) {
 			echo '
-						{label: "', $board['name'], '", value: "', $id_board, '"},';
+						{label: "', str_replace(array("'", "\""), "", $board['name']), '", value: "', $id_board, '"},';
 		}
 
 		echo '
