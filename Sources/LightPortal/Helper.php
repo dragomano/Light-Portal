@@ -81,14 +81,14 @@ trait Helper
 		return (new SMFCache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
-	public function files(?string $key = null)
+	public function files(?string $key = null): mixed
 	{
 		return $key ? (new File())->get($key) : new File();
 	}
 
 	public function session(): Session
 	{
-		return new Session;
+		return new Session();
 	}
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
@@ -503,25 +503,6 @@ trait Helper
 				&& isset($this->user_profile[$this->user_info['id']]['options']['cust_gender'])
 				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
 		);
-	}
-
-	public function prepareAliasList(): void
-	{
-		if ($this->request()->hasNot('alias_list'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$results = $this->pageRepository->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
-		$results = array_column($results, 'alias');
-		array_walk($results, function (&$item) {
-			$item = ['value' => $item];
-		});
-
-		exit(json_encode($results));
 	}
 
 	public function prepareTopicList(): void

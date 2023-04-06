@@ -155,6 +155,25 @@ final class BasicConfig
 		$this->prepareDBSettingContext($config_vars);
 	}
 
+	private function prepareAliasList(): void
+	{
+		if ($this->request()->hasNot('alias_list'))
+			return;
+
+		$data = $this->request()->json();
+
+		if (empty($search = $data['search']))
+			return;
+
+		$results = $this->pageRepository->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
+		$results = array_column($results, 'alias');
+		array_walk($results, function (&$item) {
+			$item = ['value' => $item];
+		});
+
+		exit(json_encode($results));
+	}
+
 	private function getSelectedTopics(): array
 	{
 		if (empty($this->modSettings['lp_frontpage_topics']))
