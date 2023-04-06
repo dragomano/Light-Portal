@@ -4,7 +4,7 @@
     "description": "The label for version current"
   },
   "sidebar.baseSidebar.category.Getting Started": {
-    "message": "Ξεκινώντας",
+    "message": "Βασικά",
     "description": "The label for category Getting Started in sidebar baseSidebar"
   },
   "sidebar.baseSidebar.category.Blocks": {

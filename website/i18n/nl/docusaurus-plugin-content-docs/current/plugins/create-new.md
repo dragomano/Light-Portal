@@ -14,18 +14,18 @@ Sinds versie 1.9 is de functionaliteit voor het maken van plugins verplaatst naa
 ## Het type plug-in kiezen
 Momenteel zijn de volgende plugins beschikbaar:
 
-* `blok` - plugins die een nieuw type blokken toevoegen aan het portaal
+* `block` - plugins die een nieuw type blokken toevoegen aan het portaal
 * `ssi` - plugins (meestal blokken) die SSI-functies gebruiken om gegevens op te halen
 * `editor` - plugins die een derde partij editor toevoegen voor verschillende soorten inhoud
-* `reactie` - plugins die een commentaar widget van derden toevoegen in plaats van de ingebouwde
+* `comment` - plugins die een commentaar widget van derden toevoegen in plaats van de ingebouwde
 * `parser` - plugins die de parser implementeren voor de inhoud van pagina's en blokken
-* `artikel` – plugins voor het verwerken van de inhoud van de artikelkaarten op de hoofdpagina
-* `voorpagina` - plugins voor het wijzigen van de hoofdpagina van het portaal
+* `article` – plugins voor het verwerken van de inhoud van de artikelkaarten op de hoofdpagina
+* `frontpage` - plugins voor het wijzigen van de hoofdpagina van het portaal
 * `impex` - plugins voor het importeren en exporteren van verschillende portaalelementen
 * `block_options` and `page_options` — plugins die extra parameters voor de bijbehorende entiteit (blok of pagina) toevoegen
-* `iconen` - plugins die nieuwe icoonbibliotheken toevoegen om interface elementen te vervangen of om te gebruiken in block headers
+* `icons` - plugins die nieuwe icoonbibliotheken toevoegen om interface elementen te vervangen of om te gebruiken in block headers
 * `seo` - plugins die de zichtbaarheid van het forum op het netwerk beïnvloeden
-* `andere` — plugins die niet gerelateerd zijn aan een van de bovenstaande categorieën
+* `other` — plugins die niet gerelateerd zijn aan een van de bovenstaande categorieën
 
 ## Aanmaken van een plugin map
 Maak een aparte map voor uw plugin bestanden, binnen `/Sources/LightPortal/Addons`. Bijvoorbeeld, als de plugin `HelloWorld`heet, zou de mapstructuur er als volgt uit moeten zien:

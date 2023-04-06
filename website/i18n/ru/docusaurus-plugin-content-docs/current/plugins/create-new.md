@@ -5,7 +5,7 @@ sidebar_position: 2
 # Создание плагина
 Плагины — дополнения, расширяющие возможности портала. Чтобы создать собственный плагин для Light Portal, достаточно следовать инструкциям ниже.
 
-:::info Информация
+:::info
 
 С версии 1.9 функционал для создания плагинов вынесен в отдельный плагин — **PluginMaker**. Скачайте и подключите его на странице _Админка -> Настройки портала -> Плагины_.
 
@@ -50,12 +50,12 @@ sidebar_position: 2
  *
  * @package HelloWorld (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
- * @author Nickname <email>
- * @copyright 2023 Nickname
+ * @author Никнейм <email>
+ * @copyright 2023 Никнейм
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.03.23 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
+ * @version 23.03.23 (дата создания, а в дальнейшем — обновления кода плагина, в формате дд.мм.гг)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;

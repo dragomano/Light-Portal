@@ -14,18 +14,18 @@ Od verze 1.9 byly funkce pro vytváření pluginů přesunuty do samostatného p
 ## Výběr typu pluginu
 V současné době jsou k dispozici následující typy pluginů:
 
-* `blok` — pluginy, které přidávají nový typ bloků portálu
+* `block` — pluginy, které přidávají nový typ bloků portálu
 * `ssi` – pluginy (obvykle blokují), které používají funkce SSI k načítání dat
 * `editor` – pluginy, které přidávají editor třetích stran pro různé typy obsahu
-* `komentář` — pluginy, které přidávají komentář třetí strany namísto vestavěného
+* `comment` — pluginy, které přidávají komentář třetí strany namísto vestavěného
 * `parser` – pluginy, které implementují parser pro obsah stránek a bloků
-* `článek` – zásuvné moduly pro zpracování obsahu karet článku na hlavní stránce
+* `article` – zásuvné moduly pro zpracování obsahu karet článku na hlavní stránce
 * `frontpage` – zásuvné moduly pro změnu hlavní stránky portálu
 * `impex` – pluginy pro import a export různých prvků portálu
 * `block_options` a `page_options` – pluginy, které přidávají další parametry odpovídající entity (blok nebo stránka)
-* `ikony` – pluginy, které přidávají nové knihovny ikon k nahrazení prvků rozhraní nebo pro použití v záhlaví bloku
+* `icons` – pluginy, které přidávají nové knihovny ikon k nahrazení prvků rozhraní nebo pro použití v záhlaví bloku
 * `seo` — pluginy, které nějakým způsobem ovlivňují viditelnost fóra v síti
-* `jiný` – pluginy, které nesouvisejí s žádnou z výše uvedených kategorií
+* `other` – pluginy, které nesouvisejí s žádnou z výše uvedených kategorií
 
 ## Vytváření adresáře pluginů
 Vytvořte samostatnou složku pro vaše soubory pluginu uvnitř `/Sources/LightPortal/Addons`. Například, pokud se váš plugin nazývá `HelloWorld`, struktura složek by měla vypadat takto:

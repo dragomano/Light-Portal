@@ -14,18 +14,18 @@ Siden versjon 1.9, har funksjonaliteten for å opprette plugins blitt flyttet ti
 ## Velger type plugin
 For øyeblikket er følgende typer plugins tilgjengelige:
 
-* `blokk` – plugins som legger til en ny type blokker for portalen
+* `block` – plugins som legger til en ny type blokker for portalen
 * `ssi` — plugins (vanligvis blokker) som bruker SSI-funksjoner for å hente data
 * `editor` - programtillegg som legger til en tredjeparts-editor for forskjellige typer innhold
 * `comment` — plugins som legger til en tredjeparts kommentar widget i stedet for innebygget
-* `analyserer` — programtillegg som implementerer tolker for innhold på sider og blokker
-* `artikkel` — programtillegg for behandling av innhold i artikkelkort på hovedsiden
-* `forside` — programtillegg for å endre hovedsiden i portalen
+* `parser` — programtillegg som implementerer tolker for innhold på sider og blokker
+* `article` — programtillegg for behandling av innhold i artikkelkort på hovedsiden
+* `frontpage` — programtillegg for å endre hovedsiden i portalen
 * `impex` — plugins for import og eksport av ulike portalelementer
 * `block_options` and `page_options` — plugins som legger til ekstra parametere for tilsvarende enhet (blokk eller side)
-* `Icon` — plugins som legger til nye ikon biblioteker for å erstatte grensesnittelementer eller for bruk i blokkoverskrifter
+* `icons` — plugins som legger til nye ikon biblioteker for å erstatte grensesnittelementer eller for bruk i blokkoverskrifter
 * `seo` — plugins som påvirker synligheten til forumet på nettverket
-* `andre` — plugins som ikke er relatert til noen av kategoriene ovenfor
+* `other` — plugins som ikke er relatert til noen av kategoriene ovenfor
 
 ## Oppretter en plugin-mappe
 Opprett en egen mappe for plugin-filene, i `/Sources/LightPortal/Addons`. For eksempel, hvis pluginen din heter `HalloWorld`, skal mappestrukturen se slik ut:

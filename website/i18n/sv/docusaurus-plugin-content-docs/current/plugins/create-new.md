@@ -17,15 +17,15 @@ För närvarande är följande typer av plugins tillgängliga:
 * `block` — plugins som lägger till en ny typ av block för portalen
 * `ssi` — plugins (vanligtvis block) som använder SSI-funktioner för att hämta data
 * `editor` — plugins som lägger till en tredjepartsredigerare för olika typer av innehåll
-* `kommentar` — plugins som lägger till en kommentar från tredje part widget istället för den inbyggda
+* `comment` — plugins som lägger till en kommentar från tredje part widget istället för den inbyggda
 * `parser` — plugins som implementerar tolken för innehållet i sidor och block
 * `article` — plugins för att behandla innehållet i artikelkort på huvudsidan
 * `frontpage` — plugins för att ändra huvudsidan för portalen
 * `impex` — plugins för import och export av olika portalelement
 * `block_options` och `page_options` — plugins som lägger till ytterligare parametrar för motsvarande enhet (block eller sida)
-* `ikoner` — plugins som lägger till nya ikonbibliotek för att ersätta gränssnittselement eller för användning i blockrubriker
+* `icons` — plugins som lägger till nya ikonbibliotek för att ersätta gränssnittselement eller för användning i blockrubriker
 * `seo` — plugins som på något sätt påverkar synligheten av forumet på nätverket
-* `andra` — plugins som inte är relaterade till någon av kategorierna ovan
+* `other` — plugins som inte är relaterade till någon av kategorierna ovan
 
 ## Skapa en plugin-katalog
 Skapa en separat mapp för dina plugin-filer, inuti `/Källor/LightPortal/Addons`. Till exempel, om din plugin heter `HelloWorld`, mappstrukturen bör se ut så här:
