@@ -269,5 +269,20 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "cmfcmf/d-s-l.searchBar.placeholder": {
+    "message": "Search..."
+  },
+  "cmfcmf/d-s-l.searchBar.noResults": {
+    "message": "No results found."
+  },
+  "cmfcmf/d-s-l.searchBar.clearButtonTitle": {
+    "message": "Clear"
+  },
+  "cmfcmf/d-s-l.searchBar.detachedCancelButtonText": {
+    "message": "Cancel"
+  },
+  "cmfcmf/d-s-l.searchBar.submitButtonTitle": {
+    "message": "Submit"
   }
 }
