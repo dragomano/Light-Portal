@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{Category, Tag};
+use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{
 	File,
@@ -133,12 +133,17 @@ trait Helper
 
 	public function getAllCategories(): mixed
 	{
-		return $this->cache('all_categories')->setFallback(Category::class, 'getList');
+		return $this->cache('all_categories')->setFallback(CategoryList::class, 'getList');
+	}
+
+	public function getAllPages(): mixed
+	{
+		return $this->cache('all_pages')->setFallback(PageList::class, 'getList');
 	}
 
 	public function getAllTags(): mixed
 	{
-		return $this->cache('all_tags')->setFallback(Tag::class, 'getList');
+		return $this->cache('all_tags')->setFallback(TagList::class, 'getList');
 	}
 
 	public function getAllAddons(): array

@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Lists\Category;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,7 +29,7 @@ final class CategoryConfig
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
-		$this->context['lp_categories'] = (new Category)->getList();
+		$this->context['lp_categories'] = $this->getAllCategories();
 
 		unset($this->context['lp_categories'][0]);
 

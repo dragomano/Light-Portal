@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * PageListInterface.php
+ * PageList.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,20 +14,22 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-interface PageListInterface
+final class PageList
 {
-	public function show(Page $page);
+	private PageRepository $repository;
 
-	public function getPages(int $start, int $items_per_page, string $sort): array;
+	public function __construct()
+	{
+		$this->repository = new PageRepository();
+	}
 
-	public function getTotalCountPages(): int;
-
-	public function showAll();
-
-	public function getAll(int $start, int $items_per_page, string $sort): array;
+	public function getList(): array
+	{
+		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
+	}
 }

@@ -204,31 +204,6 @@ final class Category extends AbstractPageList
 		$this->obExit();
 	}
 
-	public function getList(): array
-	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT category_id, name, description, priority
-			FROM {db_prefix}lp_categories
-			ORDER BY priority',
-			[]
-		);
-
-		$items = [0 => ['name' => $this->txt['lp_no_category']]];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['category_id']] = [
-				'id'       => $row['category_id'],
-				'name'     => $row['name'],
-				'desc'     => $row['description'],
-				'priority' => $row['priority']
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $items;
-	}
-
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
 		$request = $this->smcFunc['db_query']('', '

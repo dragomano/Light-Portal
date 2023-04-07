@@ -25,17 +25,6 @@ final class BasicConfig
 {
 	use Helper;
 
-	private FrontPage $frontPage;
-
-	private PageRepository $pageRepository;
-
-	public function __construct()
-	{
-		$this->frontPage = new FrontPage;
-
-		$this->pageRepository = new PageRepository();
-	}
-
 	/**
 	 * Output general settings
 	 *
@@ -81,11 +70,11 @@ final class BasicConfig
 
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
-		$this->context['lp_frontpage_layouts'] = $this->frontPage->getLayouts();
+		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
 		$this->context['lp_all_categories'] = $this->getAllCategories();
 
-		$this->context['lp_all_pages'] = $this->pageRepository->getAll(0, $this->pageRepository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
+		$this->context['lp_all_pages'] = $this->getAllPages();
 
 		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
 
@@ -165,7 +154,7 @@ final class BasicConfig
 		if (empty($search = $data['search']))
 			return;
 
-		$results = $this->pageRepository->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
+		$results = (new PageRepository())->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
 		$results = array_column($results, 'alias');
 		array_walk($results, function (&$item) {
 			$item = ['value' => $item];

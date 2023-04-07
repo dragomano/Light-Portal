@@ -187,26 +187,6 @@ final class Tag extends AbstractPageList
 		$this->obExit();
 	}
 
-	public function getList(): array
-	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			ORDER BY value',
-			[]
-		);
-
-		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['tag_id']] = $row['value'];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $items;
-	}
-
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
 		$request = $this->smcFunc['db_query']('', '
