@@ -165,7 +165,7 @@ class PageArticle extends AbstractArticle
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
 			WHERE p.item_id IN ({array_int:pages})
-				AND FIND_IN_SET(t.tag_id, p.value)
+				AND FIND_IN_SET(t.tag_id, p.value) > 0
 			ORDER BY t.value',
 			[
 				'pages' => array_keys($pages)

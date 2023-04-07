@@ -532,7 +532,7 @@ final class Page
 		$request = $this->smcFunc['db_query']('', '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
-			WHERE FIND_IN_SET(tag_id, {string:tags})
+			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
 			ORDER BY value',
 			[
 				'tags' => $tags
