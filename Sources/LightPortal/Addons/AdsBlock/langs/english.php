@@ -2,17 +2,19 @@
 
 return [
 	'title' => 'Ads block',
-	'description' => 'Displays custom HTML code in boards and topics.',
+	'description' => 'Displays custom HTML code in boards, topics, and on portal pages.',
 	'min_replies' => 'Do not display ads in topics that have less than the specified number of replies',
 	'loader_code' => 'Loader code (between &lt;head&gt; and &lt;/head&gt; tags)',
 	'end_date' => 'End date (the block will turn off automatically)',
-	'ads_type' => 'Boards and topics',
+	'ads_type' => 'Advertising in boards, topics and portal pages',
 	'included_boards' => 'Boards',
 	'included_boards_select' => 'Select boards to display ads only there. Otherwise, the block will be displayed in all boards.',
 	'included_topics' => 'Topics',
 	'included_topics_select' => 'Select topics to display ads only there. Otherwise, the block will be displayed in all topics.',
+	'included_pages' => 'Pages',
+	'included_pages_select' => 'Select portal pages to display ads only there. Otherwise, the block will be displayed in all pages.',
 	'select_placement' => 'Where should the block be displayed?',
-	'placement_set' => array(
+	'placement_set' => [
 		'At the top of boards',
 		'At the bottom of boards',
 		'At the top of topics',
@@ -24,7 +26,9 @@ return [
 		'After the first message',
 		'After each first message on the page',
 		'After each last message on the page',
-		'After the last message'
-	),
+		'After the last message',
+		'At the top of portal pages',
+		'At the bottom of portal pages',
+	],
 	'no_ads_placement' => 'The <strong>placement</strong> field was not filled out. It is required.',
 ];

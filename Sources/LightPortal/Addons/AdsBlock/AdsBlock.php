@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.04.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -38,6 +38,7 @@ class AdsBlock extends Plugin
 			'ads_placement'   => '',
 			'included_boards' => '',
 			'included_topics' => '',
+			'included_pages'  => '',
 			'end_date'        => '',
 		];
 	}
@@ -57,6 +58,7 @@ class AdsBlock extends Plugin
 		$parameters['ads_placement']   = FILTER_DEFAULT;
 		$parameters['included_boards'] = FILTER_DEFAULT;
 		$parameters['included_topics'] = FILTER_DEFAULT;
+		$parameters['included_pages']  = FILTER_DEFAULT;
 		$parameters['end_date']        = FILTER_DEFAULT;
 	}
 
@@ -117,6 +119,12 @@ class AdsBlock extends Plugin
 
 		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
 
+		$this->context['posting_fields']['included_pages']['label']['html'] = '<label for="included_pages">' . $this->txt['lp_ads_block']['included_pages'] . '</label>';
+		$this->context['posting_fields']['included_pages']['input']['html'] = '<div id="included_pages" name="included_pages"></div>';
+		$this->context['posting_fields']['included_pages']['input']['tab']  = 'access_placement';
+
+		$this->context['lp_selected_pages'] = $this->getAllPages();
+
 		$this->context['posting_fields']['end_date']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_date'] . '</label>';
 		$this->context['posting_fields']['end_date']['input']['html'] = '
 			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">';
@@ -160,7 +168,7 @@ class AdsBlock extends Plugin
 	{
 		$this->context['lp_block_placements']['ads'] = $this->txt['lp_ads_block']['ads_type'];
 
-		if (empty($this->context['current_board']) || $this->request()->is('xml'))
+		if ((empty($this->context['current_board']) && empty($this->context['lp_page'])) || $this->request()->is('xml'))
 			return;
 
 		$this->context['lp_ads_blocks'] = $this->getData();
@@ -220,6 +228,18 @@ class AdsBlock extends Plugin
 			return;
 
 		$this->setTemplate()->withLayer('ads_placement_topic');
+	}
+
+	/**
+	 * Display ads within portal pages
+	 *
+	 * Отображаем рекламу на страницах портала
+	 *
+	 * @hook preparePageData (portal)
+	 */
+	public function preparePageData()
+	{
+		$this->setTemplate()->withLayer('ads_placement_page');
 	}
 
 	/**
@@ -351,29 +371,67 @@ class AdsBlock extends Plugin
 		if (empty($position))
 			return [];
 
-		return array_filter($this->context['lp_blocks']['ads'], function ($block) use ($position) {
-			if (! empty($block['parameters']['included_boards'])) {
-				$boards = array_flip(explode(',', $block['parameters']['included_boards']));
+		return array_filter(
+			$this->context['lp_blocks']['ads'],
+			fn ($block) => (
+				$this->filterByIncludedTopics($block) &&
+				$this->filterByIncludedBoards($block) &&
+				$this->filterByIncludedPages($block) &&
+				$this->filterByAdsPlacement($position, $block)
+			)
+		);
+	}
 
-				if (! array_key_exists($this->context['current_board'], $boards))
-					return false;
+	private function filterByIncludedTopics(array $block): bool
+	{
+		if (! empty($block['parameters']['included_topics']) && ! empty($this->context['current_topic'])) {
+			$topics = array_flip(explode(',', $block['parameters']['included_topics']));
+
+			if (! array_key_exists($this->context['current_topic'], $topics)) {
+				return false;
 			}
+		}
 
-			if (! empty($block['parameters']['included_topics']) && ! empty($this->context['current_topic'])) {
-				$topics = array_flip(explode(',', $block['parameters']['included_topics']));
+		return true;
+	}
 
-				if (! array_key_exists($this->context['current_topic'], $topics))
-					return false;
+	private function filterByIncludedBoards(array $block): bool
+	{
+		if (! empty($block['parameters']['included_boards']) && ! empty($this->context['current_board']) && empty($this->context['current_topic'])) {
+			$boards = array_flip(explode(',', $block['parameters']['included_boards']));
+
+			if (! array_key_exists($this->context['current_board'], $boards)) {
+				return false;
 			}
+		}
 
-			if ($block['parameters']['ads_placement']) {
-				$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+		return true;
+	}
 
-				return array_key_exists($position, $placements);
+	private function filterByIncludedPages(array $block): bool
+	{
+		if (! empty($block['parameters']['included_pages']) && ! empty($this->context['lp_page'])) {
+			$pages = array_flip(explode(',', $block['parameters']['included_pages']));
+
+			if (! array_key_exists($this->context['lp_page']['id'], $pages)) {
+				return false;
 			}
+		}
 
-			return false;
-		});
+		return true;
+	}
+
+	private function filterByAdsPlacement(string $position, array $block): bool
+	{
+		if ($block['parameters']['ads_placement']) {
+			$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+
+			if (! array_key_exists($position, $placements)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private function getPlacements(): array
@@ -391,7 +449,9 @@ class AdsBlock extends Plugin
 				'after_first_post',
 				'after_every_first_post',
 				'after_every_last_post',
-				'after_last_post'
+				'after_last_post',
+				'page_top',
+				'page_bottom',
 			],
 			$this->txt['lp_ads_block']['placement_set']
 		);

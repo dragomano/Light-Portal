@@ -20,6 +20,16 @@ function template_ads_placement_topic_below()
 	lp_show_blocks('topic_bottom');
 }
 
+function template_ads_placement_page_above()
+{
+	lp_show_blocks('page_top');
+}
+
+function template_ads_placement_page_below()
+{
+	lp_show_blocks('page_bottom');
+}
+
 function template_ads_block_form_above() {}
 
 function template_ads_block_form_below()
@@ -160,6 +170,33 @@ function template_ads_block_below()
 					virtualSelect.setServerOptions(false)
 				})
 			}
+		});
+		VirtualSelect.init({
+			ele: "#included_pages",', ($context['right_to_left'] ? '
+			textDirection: "rtl",' : ''), '
+			dropboxWrapper: "body",
+			multiple: true,
+			search: true,
+			markSearchResults: true,
+			showSelectedOptionsFirst: true,
+			placeholder: "', $txt['lp_ads_block']['included_pages_select'], '",
+			noSearchResultsText: "', $txt['no_matches'], '",
+			searchPlaceholderText: "', $txt['search'], '",
+			allOptionsSelectedText: "', $txt['all'], '",
+			noOptionsText: "', $txt['lp_frontpage_pages_no_items'], '",
+			moreText: "', $txt['post_options'], '",
+			showValueAsTags: true,
+			maxWidth: "100%",
+			options: [';
+
+	foreach ($context['lp_selected_pages'] as $id => $page) {
+		echo '
+				{label: "', str_replace(array("'", "\""), "", $page['title']), '", value: "', $id, '"},';
+	}
+
+	echo '
+			],
+			selectedValue: [', $context['lp_block']['options']['parameters']['included_pages'] ?? '', ']
 		});
 	</script>';
 }
