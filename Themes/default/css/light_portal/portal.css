@@ -208,6 +208,10 @@
     display: none;
   }
 }
+/* Fix for buttons on block/page post areas */
+#lp_post .centertext .button {
+  margin-left: 4px;
+}
 /* Checkbox toggler */
 .checkbox {
   vertical-align: top;
