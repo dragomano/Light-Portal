@@ -45,7 +45,7 @@ class CrowdinContext extends Plugin
 
 		$this->loadLanguage('LightPortal/LightPortal', 'crowdin');
 
-		$addons = $this->getAllAddons();
+		$addons = $this->getEntityList('plugin');
 		array_walk($addons, function ($addon) {
 			if (is_file($file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR . 'langs' . DIRECTORY_SEPARATOR . 'crowdin.php')) {
 				$this->txt['lp_' . $this->getSnakeName($addon)] = require $file;

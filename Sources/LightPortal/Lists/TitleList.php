@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * TagList.php
+ * TitleList.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -19,27 +19,32 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagList implements ListInterface
+final class TitleList implements ListInterface
 {
 	use Helper;
 
 	public function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			ORDER BY value',
-			[]
+		$request = $this->smcFunc['db_query']('', '
+			SELECT item_id, lang, title
+			FROM {db_prefix}lp_titles
+			WHERE type = {string:type}
+				AND title <> {string:blank_string}
+			ORDER BY lang, title',
+			[
+				'type'         => 'page',
+				'blank_string' => '',
+			]
 		);
 
-		$items = [];
+		$titles = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['tag_id']] = $row['value'];
+			$titles[$row['item_id']][$row['lang']] = $row['title'];
 		}
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $items;
+		return $titles;
 	}
 }

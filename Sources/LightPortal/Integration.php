@@ -14,8 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{Block, Page, FrontPage};
-use Bugo\LightPortal\Lists\{Category, Tag};
+use Bugo\LightPortal\Entities\{FrontPage, Block, Page, Category, Tag};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -537,7 +536,7 @@ final class Integration extends AbstractMain
 
 		if ($actions['action'] === LP_ACTION) {
 			if ($actions['sa'] === 'tags') {
-				$tags = $this->getAllTags();
+				$tags = $this->getEntityList('tag');
 
 				isset($actions['id'])
 					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])

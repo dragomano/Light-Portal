@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -88,7 +88,7 @@ class TopPages extends Plugin
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments

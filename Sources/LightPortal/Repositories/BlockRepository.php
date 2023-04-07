@@ -266,7 +266,7 @@ final class BlockRepository extends AbstractRepository
 
 		$addon = $this->getCamelName($type);
 
-		$message = in_array($addon, $this->getAllAddons()) ? $this->txt['lp_addon_not_activated'] : $this->txt['lp_addon_not_installed'];
+		$message = in_array($addon, $this->getEntityList('plugin')) ? $this->txt['lp_addon_not_activated'] : $this->txt['lp_addon_not_installed'];
 
 		$this->context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
 	}

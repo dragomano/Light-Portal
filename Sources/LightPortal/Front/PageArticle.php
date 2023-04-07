@@ -47,7 +47,7 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		$this->params += [
 			'start' => $start,

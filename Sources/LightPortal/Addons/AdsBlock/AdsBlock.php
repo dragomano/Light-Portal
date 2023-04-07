@@ -123,7 +123,7 @@ class AdsBlock extends Plugin
 		$this->context['posting_fields']['included_pages']['input']['html'] = '<div id="included_pages" name="included_pages"></div>';
 		$this->context['posting_fields']['included_pages']['input']['tab']  = 'access_placement';
 
-		$this->context['lp_selected_pages'] = $this->getAllPages();
+		$this->context['lp_selected_pages'] = $this->getEntityList('page');
 
 		$this->context['posting_fields']['end_date']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_date'] . '</label>';
 		$this->context['posting_fields']['end_date']['input']['html'] = '

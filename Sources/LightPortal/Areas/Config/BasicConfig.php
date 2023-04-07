@@ -72,9 +72,9 @@ final class BasicConfig
 
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
-		$this->context['lp_all_categories'] = $this->getAllCategories();
+		$this->context['lp_all_categories'] = $this->getEntityList('category');
 
-		$this->context['lp_all_pages'] = $this->getAllPages();
+		$this->context['lp_all_pages'] = $this->getEntityList('page');
 
 		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
 

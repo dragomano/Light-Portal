@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -148,7 +148,7 @@ class ArticleList extends Plugin
 		if (empty($parameters['ids']))
 			return [];
 
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type

@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.03.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Lists\Category;
+use Bugo\LightPortal\Entities\Category;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

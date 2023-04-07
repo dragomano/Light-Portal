@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -729,6 +729,6 @@ class Handler extends Plugin
 	 */
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, $this->getAllAddons());
+		return ! in_array($name, $this->getEntityList('plugin'));
 	}
 }

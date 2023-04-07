@@ -19,7 +19,7 @@ use Bugo\LightPortal\Repositories\PageRepository;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageList
+final class PageList implements ListInterface
 {
 	private PageRepository $repository;
 
@@ -28,7 +28,7 @@ final class PageList
 		$this->repository = new PageRepository();
 	}
 
-	public function getList(): array
+	public function getAll(): array
 	{
 		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
 	}

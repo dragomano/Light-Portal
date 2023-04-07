@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -83,15 +83,16 @@ class PageList extends Plugin
 			]
 		];
 
-		$this->context['all_categories'] = $this->getAllCategories();
+		$this->context['all_categories'] = $this->getEntityList('category');
 
 		$this->setTemplate()->withLayer('page_list');
 	}
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getAllTitles();
-		$all_categories = $this->getAllCategories();
+		$titles = $this->getEntityList('title');
+
+		$all_categories = $this->getEntityList('category');
 
 		if (empty($parameters['categories']))
 			$parameters['categories'] = [];

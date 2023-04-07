@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.12.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -59,7 +59,7 @@ class RandomPages extends Plugin
 		if (empty($num_pages))
 			return [];
 
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		if ($this->db_type === 'postgresql') {
 			$request = $this->smcFunc['db_query']('', '

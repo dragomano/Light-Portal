@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\FlarumStyle;
@@ -66,7 +66,7 @@ class FlarumStyle extends Plugin
 	private function getCategories(): array
 	{
 		if ($this->context['is_portal']) {
-			$all_categories = $this->getAllCategories();
+			$all_categories = $this->getEntityList('category');
 
 			$categories = [
 				[

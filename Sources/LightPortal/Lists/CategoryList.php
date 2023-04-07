@@ -19,11 +19,11 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryList
+final class CategoryList implements ListInterface
 {
 	use Helper;
 
-	public function getList(): array
+	public function getAll(): array
 	{
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT category_id, name, description, priority

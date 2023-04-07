@@ -14,22 +14,24 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList};
+use Bugo\LightPortal\Lists\{
+	CategoryList,
+	IconList,
+	PageList,
+	TagList,
+	TitleList
+};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{
 	File,
+	IntlTrait,
 	Post,
 	Request,
 	Session,
 	SMFCache,
 	SMFTrait,
 };
-use MessageFormatter;
-use IntlException;
-use DateTime;
-use DateTimeZone;
 use Exception;
-use IntlDateFormatter;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,28 +39,7 @@ if (! defined('SMF'))
 trait Helper
 {
 	use SMFTrait;
-
-	/**
-	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
-	 * @see https://symfony.com/doc/6.1/translation/message_format.html
-	 * @see https://intl.rmcreative.ru
-	 */
-	public function translate(string $pattern, array $values = []): string
-	{
-		if (extension_loaded('intl')) {
-			try {
-				$fmt = new MessageFormatter($this->txt['lang_locale'] ?? 'en_US', $this->txt[$pattern] ?? $pattern);
-
-				return $fmt->format($values);
-			} catch (IntlException) {
-				$this->logError("[LP] translate helper: pattern syntax error in \$txt['$pattern']", 'critical');
-			}
-		} else {
-			$this->logError('[LP] translate helper: you should enable intl extension', 'critical');
-		}
-
-		return '';
-	}
+	use IntlTrait;
 
 	/**
 	 * @param mixed|null $default
@@ -102,53 +83,17 @@ trait Helper
 			require_once $path;
 	}
 
-	public function getAllTitles(string $type = 'page'): array
+	public function getEntityList(string $entity): array
 	{
-		if (($titles = $this->cache()->get('all_titles')) === null) {
-			$request = $this->smcFunc['db_query']('', '
-				SELECT item_id, lang, title
-				FROM {db_prefix}lp_titles
-				WHERE type = {string:type}
-					AND title <> {string:blank_string}
-				ORDER BY lang, title',
-				[
-					'type'         => $type,
-					'blank_string' => '',
-				]
-			);
-
-			$titles = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-				$titles[$row['item_id']][$row['lang']] = $row['title'];
-			}
-
-			$this->smcFunc['db_free_result']($request);
-			$this->context['lp_num_queries']++;
-
-			$this->cache()->put('all_titles', $titles);
-		}
-
-		return $titles;
-	}
-
-	public function getAllCategories(): mixed
-	{
-		return $this->cache('all_categories')->setFallback(CategoryList::class, 'getList');
-	}
-
-	public function getAllPages(): mixed
-	{
-		return $this->cache('all_pages')->setFallback(PageList::class, 'getList');
-	}
-
-	public function getAllTags(): mixed
-	{
-		return $this->cache('all_tags')->setFallback(TagList::class, 'getList');
-	}
-
-	public function getAllAddons(): array
-	{
-		return AddonHandler::getInstance()->getAll();
+		return match ($entity) {
+			'category' => $this->cache('all_categories')->setFallback(CategoryList::class, 'getAll'),
+			'page'     => $this->cache('all_pages')->setFallback(PageList::class, 'getAll'),
+			'tag'      => $this->cache('all_tags')->setFallback(TagList::class, 'getAll'),
+			'title'    => $this->cache('all_titles')->setFallback(TitleList::class, 'getAll'),
+			'icon'     => (new IconList)->getAll(),
+			'plugin'   => AddonHandler::getInstance()->getAll(),
+			default    => [],
+		};
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
@@ -338,124 +283,6 @@ trait Helper
 		};
 
 		return filter_var($key, $filter);
-	}
-
-	public function getDateTime(int $timestamp = 0): DateTime
-	{
-		$dateTime = new DateTime;
-		$dateTime->setTimestamp($timestamp ?: time());
-		$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?? $this->modSettings['default_timezone']));
-
-		return $dateTime;
-	}
-
-	/**
-	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
-	 *
-	 * Получаем время в формате «Вчера в ...», «Сегодня в ...», «X минут назад» и т. д.
-	 */
-	public function getFriendlyTime(int $timestamp): string
-	{
-		$now = time();
-
-		$dateTime = $this->getDateTime($timestamp);
-
-		$t = $dateTime->format('H:i');
-		$d = $dateTime->format('j');
-		$m = $dateTime->format('m');
-		$y = $dateTime->format('Y');
-
-		$timeDifference = $now - $timestamp;
-
-		// Just now?
-		if (empty($timeDifference))
-			return $this->txt['lp_just_now'];
-
-		// Future time?
-		if ($timeDifference < 0) {
-			// like "Tomorrow at ..."
-			if ($d.$m.$y === date('jmY', strtotime('+1 day')))
-				return $this->txt['lp_tomorrow'] . $t;
-
-			// like "In n days"
-			$days = floor(($timestamp - $now) / 60 / 60 / 24);
-			if ($days > 1) {
-				if ($days < 7)
-					return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_days_set', compact('days')));
-
-				// Future date in current month
-				if ($m === date('m', $now) && $y === date('Y', $now))
-					return $this->getLocalDate($timestamp, 'full');
-				// Future date in current year
-				elseif ($y === date('Y', $now))
-					return $this->getLocalDate($timestamp, 'medium');
-
-				// Other future date
-				return $this->getLocalDate($timestamp, timeType: 'none');
-			}
-
-			// like "In n hours"
-			$hours = ($timestamp - $now) / 60 / 60;
-			if ($hours >= 1)
-				return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_hours_set', ['hours' => ceil($hours)]));
-
-			// like "In n minutes"
-			$minutes = ($timestamp - $now) / 60;
-			if ($minutes >= 1)
-				return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_minutes_set', ['minutes' => ceil($minutes)]));
-
-			// like "In n seconds"
-			return sprintf($this->txt['lp_time_label_in'], $this->translate('lp_seconds_set', ['seconds' => abs($timeDifference)]));
-		}
-
-		// Less than an hour
-		$lastMinutes = round($timeDifference / 60);
-
-		// like "n seconds ago"
-		if ($timeDifference < 60)
-			return $this->smcFunc['ucfirst']($this->translate('lp_seconds_set', ['seconds' => $timeDifference])) . $this->txt['lp_time_label_ago'];
-		// like "n minutes ago"
-		elseif ($lastMinutes < 60)
-			return $this->smcFunc['ucfirst']($this->translate('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . $this->txt['lp_time_label_ago'];
-		// like "Today at ..."
-		elseif ($d.$m.$y === date('jmY', $now))
-			return $this->txt['today'] . $t;
-		// like "Yesterday at ..."
-		elseif ($d.$m.$y === date('jmY', strtotime('-1 day')))
-			return $this->txt['yesterday'] . $t;
-		// like "Tuesday, 20 February, H:m" (current month)
-		elseif ($m === date('m', $now) && $y === date('Y', $now))
-			return $this->getLocalDate($timestamp);
-		// like "20 February, H:m" (current year)
-		elseif ($y === date('Y', $now))
-			return $this->getLocalDate($timestamp);
-
-		// like "20 February 2019" (past year)
-		return $this->getLocalDate($timestamp, 'long', 'none');
-	}
-
-	public function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
-	{
-		if (extension_loaded('intl')) {
-			return (new IntlDateFormatter($this->txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType)))->format($timestamp);
-		}
-
-		$this->logError('[LP] getLocalDate helper: enable intl extension', 'critical');
-
-		return '';
-	}
-
-	/**
-	 * @see https://www.php.net/manual/en/class.intldateformatter.php
-	 */
-	public function getPredefinedConstant(string $type): int
-	{
-		return match ($type) {
-			'full'   => IntlDateFormatter::FULL,
-			'long'   => IntlDateFormatter::LONG,
-			'medium' => IntlDateFormatter::MEDIUM,
-			default  => IntlDateFormatter::NONE,
-		};
 	}
 
 	public function getImageFromText(string $text): string

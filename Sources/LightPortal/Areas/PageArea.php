@@ -774,7 +774,7 @@ final class PageArea
 			],
 		];
 
-		$this->context['lp_tags'] = $this->getAllTags();
+		$this->context['lp_tags'] = $this->getEntityList('tag');
 
 		foreach ($this->context['lp_tags'] as $value => $text) {
 			$this->context['posting_fields']['keywords']['input']['options'][$text] = [
@@ -798,7 +798,7 @@ final class PageArea
 			];
 		}
 
-		$allCategories = $this->getAllCategories();
+		$allCategories = $this->getEntityList('category');
 
 		$this->context['posting_fields']['category']['label']['text'] = $this->txt['lp_category'];
 		$this->context['posting_fields']['category']['input'] = [

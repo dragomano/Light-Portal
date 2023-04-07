@@ -29,7 +29,7 @@ final class CategoryConfig
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
-		$this->context['lp_categories'] = $this->getAllCategories();
+		$this->context['lp_categories'] = $this->getEntityList('category');
 
 		unset($this->context['lp_categories'][0]);
 

@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class IconList
+final class IconList implements ListInterface
 {
 	use Helper;
 

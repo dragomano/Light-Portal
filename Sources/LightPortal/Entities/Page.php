@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Lists\PageListInterface;
+use Bugo\LightPortal\Entities\PageListInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -501,7 +501,7 @@ final class Page
 		$data['post_content'] = '';
 
 		if (! empty($data['category_id']))
-			$data['category'] = $this->getAllCategories()[$data['category_id']]['name'];
+			$data['category'] = $this->getEntityList('category')[$data['category_id']]['name'];
 
 		if (! empty($data['options']['keywords']))
 			$data['tags'] = $this->getTags($data['options']['keywords']);

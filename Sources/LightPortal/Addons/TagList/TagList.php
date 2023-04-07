@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Lists\Tag;
+use Bugo\LightPortal\Entities\Tag;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
