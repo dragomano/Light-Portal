@@ -15,6 +15,8 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{FrontPage, Block, Page, Category, Tag};
+use Bugo\LightPortal\Utils\Ajax;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -31,6 +33,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
 		$this->applyHook('actions');
+		$this->applyHook('pre_log_stats');
 		$this->applyHook('default_action');
 		$this->applyHook('current_action');
 		$this->applyHook('menu_buttons');
@@ -113,6 +116,8 @@ final class Integration extends AbstractMain
 
 		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
 
+		$actions['lp_ajax'] = [false, [new Ajax, 'process']];
+
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
 			(new Category)->show(new Page);
 
@@ -128,6 +133,14 @@ final class Integration extends AbstractMain
 			if (! empty($this->context['current_action']) && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
 				$this->redirect();
 		}
+	}
+
+	/**
+	 * @hook integrate_pre_log_stats
+	 */
+	public function preLogStats(array &$no_stat_actions)
+	{
+		$no_stat_actions['lp_ajax'] = true;
 	}
 
 	public function defaultAction()
@@ -421,6 +434,7 @@ final class Integration extends AbstractMain
 
 	/**
 	 * @hook integrate_fetch_alerts
+	 * @throws IntlException
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
