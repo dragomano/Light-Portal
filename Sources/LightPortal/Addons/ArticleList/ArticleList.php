@@ -10,17 +10,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 08.04.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\{PageSelect, TopicSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class ArticleList extends Plugin
+class ArticleList extends Block
 {
 	public string $icon = 'far fa-file-alt';
 
@@ -29,10 +30,11 @@ class ArticleList extends Plugin
 		$options['article_list']['no_content_class'] = true;
 
 		$options['article_list']['parameters'] = [
-			'body_class'   => 'descbox',
-			'display_type' => 0,
-			'ids'          => '',
-			'seek_images'  => false
+			'body_class'     => 'descbox',
+			'display_type'   => 0,
+			'include_topics' => '',
+			'include_pages'  => '',
+			'seek_images'    => false
 		];
 	}
 
@@ -41,10 +43,11 @@ class ArticleList extends Plugin
 		if ($type !== 'article_list')
 			return;
 
-		$parameters['body_class']   = FILTER_DEFAULT;
-		$parameters['display_type'] = FILTER_VALIDATE_INT;
-		$parameters['ids']          = FILTER_DEFAULT;
-		$parameters['seek_images']  = FILTER_VALIDATE_BOOLEAN;
+		$parameters['body_class']     = FILTER_DEFAULT;
+		$parameters['display_type']   = FILTER_VALIDATE_INT;
+		$parameters['include_topics'] = FILTER_DEFAULT;
+		$parameters['include_pages']  = FILTER_DEFAULT;
+		$parameters['seek_images']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	public function prepareBlockFields()
@@ -73,17 +76,21 @@ class ArticleList extends Plugin
 			];
 		}
 
-		$this->context['posting_fields']['ids']['label']['text'] = $this->txt['lp_article_list']['ids'];
-		$this->context['posting_fields']['ids']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_article_list']['ids_subtext'],
-			'attributes' => [
-				'id'    => 'ids',
-				'value' => $this->context['lp_block']['options']['parameters']['ids'],
-				'style' => 'width: 100%'
-			],
-			'tab' => 'content'
-		];
+		$this->context['posting_fields']['include_topics']['label']['html'] = '<label for="include_topics">' . $this->txt['lp_article_list']['include_topics'] . '</label>';
+		$this->context['posting_fields']['include_topics']['input']['tab'] = 'content';
+		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
+			'id'    => 'include_topics',
+			'hint'  => $this->txt['lp_article_list']['include_topics_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+		]);
+
+		$this->context['posting_fields']['include_pages']['label']['html'] = '<label for="include_pages">' . $this->txt['lp_article_list']['include_pages'] . '</label>';
+		$this->context['posting_fields']['include_pages']['input']['tab'] = 'content';
+		$this->context['posting_fields']['include_pages']['input']['html'] = (new PageSelect)([
+			'id'    => 'include_pages',
+			'hint'  => $this->txt['lp_article_list']['include_pages_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
+		]);
 
 		$this->context['posting_fields']['seek_images']['label']['text'] = $this->txt['lp_article_list']['seek_images'];
 		$this->context['posting_fields']['seek_images']['input'] = [
@@ -99,7 +106,7 @@ class ArticleList extends Plugin
 
 	public function getTopics(array $parameters): array
 	{
-		if (empty($parameters['ids']))
+		if (empty($parameters['include_topics']))
 			return [];
 
 		$request = $this->smcFunc['db_query']('', '
@@ -113,7 +120,7 @@ class ArticleList extends Plugin
 				AND m.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
 			[
-				'topics'      => $parameters['ids'],
+				'topics'      => explode(',', $parameters['include_topics']),
 				'is_approved' => 1
 			]
 		);
@@ -145,7 +152,7 @@ class ArticleList extends Plugin
 
 	public function getPages(array $parameters): array
 	{
-		if (empty($parameters['ids']))
+		if (empty($parameters['include_pages']))
 			return [];
 
 		$titles = $this->getEntityList('title');
@@ -162,7 +169,7 @@ class ArticleList extends Plugin
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
-				'pages'        => $parameters['ids']
+				'pages'        => explode(',', $parameters['include_pages'])
 			]
 		);
 
@@ -194,9 +201,6 @@ class ArticleList extends Plugin
 	{
 		if ($type !== 'article_list')
 			return;
-
-		$ids = explode(',', $parameters['ids']);
-		$parameters['ids'] = array_filter($ids, fn($item) => is_numeric($item));
 
 		$article_list = $this->cache('article_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)

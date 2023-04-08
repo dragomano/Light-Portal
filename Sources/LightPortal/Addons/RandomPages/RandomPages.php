@@ -15,12 +15,12 @@
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RandomPages extends Plugin
+class RandomPages extends Block
 {
 	public string $icon = 'fas fa-random';
 

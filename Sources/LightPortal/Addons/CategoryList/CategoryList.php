@@ -15,13 +15,13 @@
 
 namespace Bugo\LightPortal\Addons\CategoryList;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Entities\Category;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CategoryList extends Plugin
+class CategoryList extends Block
 {
 	public string $icon = 'fas fa-folder';
 

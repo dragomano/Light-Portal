@@ -90,9 +90,6 @@ class FlarumStyle extends Plugin
 		}
 
 		$options = [
-			'ignore_boards'   => true,
-			'use_permissions' => true,
-			'not_redirection' => true,
 			'included_boards' => empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards'])
 		];
 

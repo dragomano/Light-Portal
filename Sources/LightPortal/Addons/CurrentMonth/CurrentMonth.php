@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.02.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CurrentMonth extends Plugin
+class CurrentMonth extends Block
 {
 	public string $icon = 'fas fa-calendar-check';
 
@@ -57,73 +57,6 @@ class CurrentMonth extends Plugin
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
 	}
 
-	private function showCurrentMonthGrid(array $data)
-	{
-		if (empty($data))
-			return;
-
-		$calendar_data = &$data;
-
-		echo '
-				<table>';
-
-		if (empty($calendar_data['disable_day_titles'])) {
-			echo '
-					<thead>
-						<tr>';
-
-			foreach ($calendar_data['week_days'] as $day)
-				echo '
-							<th scope="col">', $this->txt['days_short'][$day], '</th>';
-
-			echo '
-						</tr>
-					</thead>';
-		}
-
-		foreach ($calendar_data['weeks'] as $week) {
-			echo '
-					<tbody>
-						<tr class="days_wrapper">';
-
-			foreach ($week['days'] as $day) {
-				$classes = ['days'];
-				if ($day['day']) {
-					$classes[] = empty($day['is_today']) ? 'windowbg' : 'calendar_today';
-
-					foreach (['events', 'holidays', 'birthdays'] as $event_type)
-						if ($day[$event_type])
-							$classes[] = $event_type;
-				} else {
-					$classes[] = 'disabled';
-				}
-
-				echo '
-							<td class="', implode(' ', $classes), '">';
-
-				if ($day['day']) {
-					if (empty($this->modSettings['cal_enabled'])) {
-						echo '
-								<span class="day_text">', $day['day'], '</span>';
-					} else {
-						echo '
-								<a href="', $this->scripturl, '?action=calendar;viewlist;year=', $calendar_data['current_year'], ';month=', $calendar_data['current_month'], ';day=', $day['day'], '"><span class="day_text">', $day['day'], '</span></a>';
-					}
-				}
-
-				echo '
-							</td>';
-			}
-
-			echo '
-						</tr>
-					</tbody>';
-		}
-
-		echo '
-				</table>';
-	}
-
 	public function prepareContent(string $type, int $block_id, int $cache_time)
 	{
 		if ($type !== 'current_month')
@@ -145,7 +78,9 @@ class CurrentMonth extends Plugin
 				$this->context['lp_active_blocks'][$block_id]['title'][$this->user_info['language']] = $title;
 			}
 
-			$this->showCurrentMonthGrid($calendar_data);
+			$this->setTemplate();
+
+			show_current_month_grid($calendar_data);
 		}
 	}
 }

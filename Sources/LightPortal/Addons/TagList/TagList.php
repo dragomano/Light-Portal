@@ -15,13 +15,13 @@
 
 namespace Bugo\LightPortal\Addons\TagList;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Entities\Tag;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class TagList extends Plugin
+class TagList extends Block
 {
 	public string $icon = 'fas fa-tags';
 

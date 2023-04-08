@@ -15,12 +15,12 @@
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class TopPages extends Plugin
+class TopPages extends Block
 {
 	public string $icon = 'fas fa-balance-scale-left';
 

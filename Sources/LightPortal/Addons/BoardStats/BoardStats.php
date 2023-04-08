@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.05.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardStats extends Plugin
+class BoardStats extends Block
 {
 	public string $type = 'block ssi';
 

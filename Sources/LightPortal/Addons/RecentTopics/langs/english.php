@@ -9,8 +9,8 @@ return [
 	'show_icons' => 'Show topic icons',
 	'num_topics' => 'Number of topics to display',
 	'exclude_boards' => 'Exclude boards',
-	'exclude_boards_subtext' => 'If you specify the IDs of the boards, recent topics will NOT be displayed from these boards.',
+	'exclude_boards_select' => 'Select the boards from which topics will NOT be displayed.',
 	'include_boards' => 'Include boards',
-	'include_boards_subtext' => 'If you specify the IDs of the boards, recent topics will be displayed ONLY from those boards.',
+	'include_boards_select' => 'Topics will be displayed ONLY from the selected boards.',
 	'update_interval' => 'List refresh interval, in seconds',
 ];

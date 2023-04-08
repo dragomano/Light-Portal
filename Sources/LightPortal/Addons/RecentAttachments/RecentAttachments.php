@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.03.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentAttachments extends Plugin
+class RecentAttachments extends Block
 {
 	public string $type = 'block ssi';
 
@@ -30,7 +30,7 @@ class RecentAttachments extends Plugin
 	{
 		$options['recent_attachments']['parameters'] = [
 			'num_attachments' => 5,
-			'extensions'      => '',
+			'extensions'      => 'jpg',
 			'direction'       => 'horizontal',
 		];
 	}

@@ -28,6 +28,7 @@ if (! defined('LP_NAME'))
 class Twig extends Plugin
 {
 	public string $icon = 'fab fa-symfony';
+
 	public string $type = 'parser';
 
 	public function init()

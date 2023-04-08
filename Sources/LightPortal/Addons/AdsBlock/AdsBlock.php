@@ -10,17 +10,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 08.04.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\{BoardSelect, PageSelect, TopicSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class AdsBlock extends Plugin
+class AdsBlock extends Block
 {
 	public string $icon = 'fas fa-ad';
 
@@ -34,12 +35,12 @@ class AdsBlock extends Plugin
 		$options['ads_block']['content'] = 'html';
 
 		$options['ads_block']['parameters'] = [
-			'loader_code'     => '',
-			'ads_placement'   => '',
-			'included_boards' => '',
-			'included_topics' => '',
-			'included_pages'  => '',
-			'end_date'        => '',
+			'loader_code'    => '',
+			'ads_placement'  => '',
+			'include_boards' => '',
+			'include_topics' => '',
+			'include_pages'  => '',
+			'end_date'       => '',
 		];
 	}
 
@@ -54,20 +55,18 @@ class AdsBlock extends Plugin
 		if ($type !== 'ads_block')
 			return;
 
-		$parameters['loader_code']     = FILTER_UNSAFE_RAW;
-		$parameters['ads_placement']   = FILTER_DEFAULT;
-		$parameters['included_boards'] = FILTER_DEFAULT;
-		$parameters['included_topics'] = FILTER_DEFAULT;
-		$parameters['included_pages']  = FILTER_DEFAULT;
-		$parameters['end_date']        = FILTER_DEFAULT;
+		$parameters['loader_code']    = FILTER_UNSAFE_RAW;
+		$parameters['ads_placement']  = FILTER_DEFAULT;
+		$parameters['include_boards'] = FILTER_DEFAULT;
+		$parameters['include_topics'] = FILTER_DEFAULT;
+		$parameters['include_pages']  = FILTER_DEFAULT;
+		$parameters['end_date']       = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
 	{
 		if ($this->context['lp_block']['type'] !== 'ads_block')
 			return;
-
-		$this->prepareTopicList();
 
 		$this->context['posting_fields']['loader_code']['label']['text'] = $this->txt['lp_ads_block']['loader_code'];
 		$this->context['posting_fields']['loader_code']['input'] = [
@@ -107,23 +106,29 @@ class AdsBlock extends Plugin
 		$this->context['posting_fields']['ads_placement']['input']['html'] = '<div id="ads_placement" name="ads_placement"></div>';
 		$this->context['posting_fields']['ads_placement']['input']['tab']  = 'access_placement';
 
-		$this->context['posting_fields']['included_boards']['label']['html'] = '<label for="included_boards">' . $this->txt['lp_ads_block']['included_boards'] . '</label>';
-		$this->context['posting_fields']['included_boards']['input']['html'] = '<div id="included_boards" name="included_boards"></div>';
-		$this->context['posting_fields']['included_boards']['input']['tab']  = 'access_placement';
+		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_ads_block']['include_boards'] . '</label>';
+		$this->context['posting_fields']['include_boards']['input']['tab'] = 'access_placement';
+		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
+			'id'    => 'include_boards',
+			'hint'  => $this->txt['lp_ads_block']['include_boards_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+		]);
 
-		$this->context['lp_selected_boards'] = $this->getBoardList();
+		$this->context['posting_fields']['include_topics']['label']['html'] = '<label for="include_topics">' . $this->txt['lp_ads_block']['include_topics'] . '</label>';
+		$this->context['posting_fields']['include_topics']['input']['tab'] = 'access_placement';
+		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
+			'id'    => 'include_topics',
+			'hint'  => $this->txt['lp_ads_block']['include_topics_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+		]);
 
-		$this->context['posting_fields']['included_topics']['label']['html'] = '<label for="included_topics">' . $this->txt['lp_ads_block']['included_topics'] . '</label>';
-		$this->context['posting_fields']['included_topics']['input']['html'] = '<div id="included_topics" name="included_topics"></div>';
-		$this->context['posting_fields']['included_topics']['input']['tab']  = 'access_placement';
-
-		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
-
-		$this->context['posting_fields']['included_pages']['label']['html'] = '<label for="included_pages">' . $this->txt['lp_ads_block']['included_pages'] . '</label>';
-		$this->context['posting_fields']['included_pages']['input']['html'] = '<div id="included_pages" name="included_pages"></div>';
-		$this->context['posting_fields']['included_pages']['input']['tab']  = 'access_placement';
-
-		$this->context['lp_selected_pages'] = $this->getEntityList('page');
+		$this->context['posting_fields']['include_pages']['label']['html'] = '<label for="include_pages">' . $this->txt['lp_ads_block']['include_pages'] . '</label>';
+		$this->context['posting_fields']['include_pages']['input']['tab'] = 'access_placement';
+		$this->context['posting_fields']['include_pages']['input']['html'] = (new PageSelect)([
+			'id'    => 'include_pages',
+			'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
+		]);
 
 		$this->context['posting_fields']['end_date']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_date'] . '</label>';
 		$this->context['posting_fields']['end_date']['input']['html'] = '
@@ -373,7 +378,7 @@ class AdsBlock extends Plugin
 
 		return array_filter(
 			$this->context['lp_blocks']['ads'],
-			fn ($block) => (
+			fn($block) => (
 				$this->filterByIncludedTopics($block) &&
 				$this->filterByIncludedBoards($block) &&
 				$this->filterByIncludedPages($block) &&
@@ -384,8 +389,8 @@ class AdsBlock extends Plugin
 
 	private function filterByIncludedTopics(array $block): bool
 	{
-		if (! empty($block['parameters']['included_topics']) && ! empty($this->context['current_topic'])) {
-			$topics = array_flip(explode(',', $block['parameters']['included_topics']));
+		if (! empty($block['parameters']['include_topics']) && ! empty($this->context['current_topic'])) {
+			$topics = array_flip(explode(',', $block['parameters']['include_topics']));
 
 			if (! array_key_exists($this->context['current_topic'], $topics)) {
 				return false;
@@ -397,8 +402,8 @@ class AdsBlock extends Plugin
 
 	private function filterByIncludedBoards(array $block): bool
 	{
-		if (! empty($block['parameters']['included_boards']) && ! empty($this->context['current_board']) && empty($this->context['current_topic'])) {
-			$boards = array_flip(explode(',', $block['parameters']['included_boards']));
+		if (! empty($block['parameters']['include_boards']) && ! empty($this->context['current_board']) && empty($this->context['current_topic'])) {
+			$boards = array_flip(explode(',', $block['parameters']['include_boards']));
 
 			if (! array_key_exists($this->context['current_board'], $boards)) {
 				return false;
@@ -410,8 +415,8 @@ class AdsBlock extends Plugin
 
 	private function filterByIncludedPages(array $block): bool
 	{
-		if (! empty($block['parameters']['included_pages']) && ! empty($this->context['lp_page'])) {
-			$pages = array_flip(explode(',', $block['parameters']['included_pages']));
+		if (! empty($block['parameters']['include_pages']) && ! empty($this->context['lp_page'])) {
+			$pages = array_flip(explode(',', $block['parameters']['include_pages']));
 
 			if (! array_key_exists($this->context['lp_page']['id'], $pages)) {
 				return false;
@@ -486,33 +491,5 @@ class AdsBlock extends Plugin
 	{
 		return isset($this->context['lp_ads_block_plugin']['min_replies'])
 			&& $this->context['topicinfo']['num_replies'] < (int) $this->context['lp_ads_block_plugin']['min_replies'];
-	}
-
-	private function getSelectedTopics(): array
-	{
-		if (empty($this->context['lp_block']['options']['parameters']['included_topics']))
-			return [];
-
-		$request = $this->smcFunc['db_query']('', '
-			SELECT t.id_topic, m.subject
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-			WHERE t.id_topic IN ({array_int:topics})',
-			[
-				'topics' => explode(',', $this->context['lp_block']['options']['parameters']['included_topics']),
-			]
-		);
-
-		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$this->censorText($row['subject']);
-
-			$topics[$row['id_topic']] = str_replace(array("'", "\""), "", $row['subject']);
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $topics;
 	}
 }
