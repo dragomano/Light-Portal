@@ -57,8 +57,8 @@ abstract class AbstractMain
 		$this->context['lp_frontpage_topics'] = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
 
 		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
-		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])   ? ['md' => 3, 'lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_left_panel_width'], true, false);
-		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])  ? ['md' => 3, 'lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_right_panel_width'], true, false);
+		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_left_panel_width'], true, false);
+		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_right_panel_width'], true, false);
 		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
 
 		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);

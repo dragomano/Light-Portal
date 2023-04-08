@@ -594,7 +594,7 @@ function template_callback_panel_layout()
 				</div>
 			</div>
 			<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">
-				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
 					</div>
@@ -602,20 +602,7 @@ function template_callback_panel_layout()
 						<ul class="righttext">
 							<li>col-xs-12</li>
 							<li>col-sm-12</li>
-							<li>
-								<label class="centericon" for="lp_left_panel_width[md]">col-md-</label>
-								<select id="lp_left_panel_width[md]" name="lp_left_panel_width[md]">';
-
-	foreach ($context['lp_left_right_width_values'] as $value) {
-		echo '
-									<option value="', $value, '"', $context['lp_left_panel_width']['md'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-	}
-
-	echo '
-								</select>
-							</li>
+							<li>col-md-12</li>
 							<li>
 								<label class="centericon" for="lp_left_panel_width[lg]">col-lg-</label>
 								<select id="lp_left_panel_width[lg]" name="lp_left_panel_width[lg]">';
@@ -684,7 +671,7 @@ function template_callback_panel_layout()
 						</div>
 					</div>
 				</div>
-				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', $context['lp_block_placements']['right'], '</h3>
 					</div>
@@ -692,20 +679,7 @@ function template_callback_panel_layout()
 						<ul class="righttext">
 							<li>col-xs-12</li>
 							<li>col-sm-12</li>
-							<li>
-								<label class="centericon" for="lp_right_panel_width[md]">col-md-</label>
-								<select id="lp_right_panel_width[md]" name="lp_right_panel_width[md]">';
-
-		foreach ($context['lp_left_right_width_values'] as $value) {
-			echo '
-									<option value="', $value, '"', $context['lp_right_panel_width']['md'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-		}
-
-		echo '
-								</select>
-							</li>
+							<li>col-md-12</li>
 							<li>
 								<label class="centericon" for="lp_right_panel_width[lg]">col-lg-</label>
 								<select id="lp_right_panel_width[lg]" name="lp_right_panel_width[lg]">';
