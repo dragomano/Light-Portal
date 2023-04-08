@@ -48,6 +48,7 @@ $txt['lp_frontpage_topics_no_items'] = 'There are no approved topics';
 $txt['lp_show_images_in_articles'] = 'Show images found in articles';
 $txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
+$txt['lp_image_placeholder_subtext'] = 'Used if the option above is disabled.';
 $txt['lp_show_teaser'] = 'Show the article summary';
 $txt['lp_show_author'] = 'Show the article author';
 $txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will show information about the category instead of the author.';

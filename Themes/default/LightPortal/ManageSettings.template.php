@@ -303,7 +303,7 @@ function template_callback_frontpage_mode_settings()
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
-				<a id="setting_lp_image_placeholder"></a> <span><label for="lp_image_placeholder">', $txt['lp_image_placeholder'], '</label></span>
+				<a id="setting_lp_image_placeholder"></a> <span><label for="lp_image_placeholder">', $txt['lp_image_placeholder'], '</label></span><br><span class="smalltext">', $txt['lp_image_placeholder_subtext'], '</span>
 			</dt>
 		</template>
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
