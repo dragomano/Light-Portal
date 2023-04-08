@@ -130,7 +130,7 @@ $txt['lp_panels_info'] = 'Here you can customize the width of some panels, as we
 $txt['lp_swap_header_footer'] = 'Swap the header and the footer';
 $txt['lp_swap_left_right'] = 'Swap the left panel and the right panel';
 $txt['lp_swap_top_bottom'] = 'Swap the center (top) and the center (bottom)';
-$txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window.';
+$txt['lp_panel_layout_preview'] = 'Here you can set the number of columns for some panels, depending on the width of the browser window. The grid system divides the screen into 12 columns and you can mention how much width can be taken for components in mobile devices, tablets and desktops. The breakpoints for xs, sm, md, lg and xl are 576px, 768px, 992px and 1200px. You can see the difference by resizing the browser window of the page.';
 $txt['lp_left_panel_sticky'] = $txt['lp_right_panel_sticky'] = 'Sticky';
 $txt['lp_panel_direction_note'] = 'Here you can change the direction of blocks for each panel.';
 $txt['lp_panel_direction'] = 'The direction of blocks in panels';
