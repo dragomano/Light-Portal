@@ -25,7 +25,7 @@ final class CategoryConfig
 
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageSettings', 'lp_category_settings');
+		$this->loadTemplate('LightPortal/ManageCategories', 'lp_category_settings');
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
