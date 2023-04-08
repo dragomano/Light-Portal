@@ -39,62 +39,18 @@ function template_callback_frontpage_mode_settings()
 					id="lp_frontpage_title"
 					value="', $modSettings['lp_frontpage_title'] ?? '', '"
 					size="80"
-					placeholder="',  str_replace(array("'", "\""), "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
+					placeholder="', str_replace(array("'", "\""), "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
 				>
 			</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_page\'">
 			<dt>
-				<a id="setting_lp_frontpage_alias"></a> <span><label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label><br><span class="smalltext">', $txt['lp_frontpage_alias_subtext'], '</span></span>
+				<a id="setting_lp_frontpage_alias"></a> <span><label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label></span>
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_page\'">
-			<dd>
-				<select id="lp_frontpage_alias" name="lp_frontpage_alias">';
-
-	if (! empty($alias = $modSettings['lp_frontpage_alias'])) {
-		echo '
-					<option value="', $alias, '">', $alias, '</option>';
-	}
-
-	echo '
-				</select>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_alias",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						search: true,
-						placeholder: "', $txt['no'], '",
-						noSearchResultsText: "' . $txt['no_matches'] . '",
-						searchPlaceholderText: "' . $txt['search'] . '",
-						onServerSearch: async function (search, virtualSelect) {
-							fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
-								method: "POST",
-								headers: {
-									"Content-Type": "application/json; charset=utf-8"
-								},
-								body: JSON.stringify({
-									search
-								})
-							})
-							.then(response => response.json())
-							.then(function (json) {
-								let data = [];
-								for (let i = 0; i < json.length; i++) {
-									data.push({label: json[i].value, value: json[i].value})
-								}
-
-								virtualSelect.setServerOptions(data)
-							})
-							.catch(function (error) {
-								virtualSelect.setServerOptions(false)
-							})
-						}
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_alias_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'all_pages\'">
@@ -104,35 +60,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'all_pages\'">
-			<dd>
-				<div id="lp_frontpage_categories" name="lp_frontpage_categories"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_categories",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						placeholder: "', $txt['lp_frontpage_categories_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_all_categories'] as $id => $cat) {
-		echo '
-							{label: "', str_replace(array("'", "\""), "", $cat['name']), '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_categories'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_categories_select'], '</dd>
 		</template>
 
 		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
@@ -142,46 +70,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-			<dd>
-				<div id="lp_frontpage_boards" name="lp_frontpage_boards"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_boards",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						placeholder: "', $txt['lp_frontpage_boards_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['board_list'] as $cat) {
-		echo '
-							{
-								label: "', str_replace(array("'", "\""), "", $cat['name']), '",
-								options: [';
-
-		foreach ($cat['boards'] as $id_board => $board) {
-			echo '
-									{label: "', str_replace(array("'", "\""), "", $board['name']), '", value: "', $id_board, '"},';
-		}
-
-		echo '
-								]
-							},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_boards'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_boards_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_pages\'">
@@ -190,38 +79,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_pages\'">
-			<dd>
-				<div id="lp_frontpage_pages" name="lp_frontpage_pages"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_pages",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						showSelectedOptionsFirst: true,
-						placeholder: "', $txt['lp_frontpage_pages_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						noOptionsText: "', $txt['lp_frontpage_pages_no_items'], '",
-						moreText: "', $txt['post_options'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_all_pages'] as $id => $page) {
-		echo '
-							{label: "', str_replace(array("'", "\""), "", $page['title']), '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_pages'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_pages_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_topics\'">
@@ -230,61 +88,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_topics\'">
-			<dd>
-				<div id="lp_frontpage_topics" name="lp_frontpage_topics"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_topics",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						showSelectedOptionsFirst: true,
-						placeholder: "', $txt['lp_frontpage_topics_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						noOptionsText: "', $txt['lp_frontpage_topics_no_items'], '",
-						moreText: "', $txt['post_options'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_selected_topics'] as $id => $topic) {
-		echo '
-							{label: "', $topic, '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_topics'] ?? '', '],
-						onServerSearch: async function (search, virtualSelect) {
-							fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;topic_list", {
-								method: "POST",
-								headers: {
-									"Content-Type": "application/json; charset=utf-8"
-								},
-								body: JSON.stringify({
-									search
-								})
-							})
-							.then(response => response.json())
-							.then(function (json) {
-								let data = [];
-								for (let i = 0; i < json.length; i++) {
-									data.push({label: json[i].subject, value: json[i].id})
-								}
-
-								virtualSelect.setServerOptions(data)
-							})
-							.catch(function (error) {
-								virtualSelect.setServerOptions(false)
-							})
-						}
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_topics_select'], '</dd>
 		</template>
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">

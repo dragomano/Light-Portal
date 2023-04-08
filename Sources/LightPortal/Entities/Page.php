@@ -33,8 +33,12 @@ final class Page
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
-		if (empty($alias) && $this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias']) {
-			$this->context['lp_page'] = $this->getDataByAlias($this->modSettings['lp_frontpage_alias']);
+		if (empty($alias)) {
+			if ($this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias']) {
+				$this->context['lp_page'] = $this->getDataByAlias($this->modSettings['lp_frontpage_alias']);
+			} else {
+				$this->updateSettings(['lp_frontpage_mode' => 0]);
+			}
 		} else {
 			$alias = explode(';', $alias)[0];
 

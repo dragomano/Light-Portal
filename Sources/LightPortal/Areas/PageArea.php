@@ -298,7 +298,7 @@ final class PageArea
 
 		$this->createList($listOptions);
 
-		$this->changeTableTitle($listOptions);
+		$this->changeTableTitle();
 	}
 
 	/**
@@ -428,7 +428,7 @@ final class PageArea
 		$this->repository->setData($this->context['lp_page']['id']);
 	}
 
-	private function changeTableTitle(array $listOptions): void
+	private function changeTableTitle(): void
 	{
 		$titles = [
 			'all' => [
