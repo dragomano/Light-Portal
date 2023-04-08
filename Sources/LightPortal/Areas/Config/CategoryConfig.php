@@ -66,6 +66,9 @@ final class CategoryConfig
 			'error' => true
 		];
 
+		$name = $this->smcFunc['htmlspecialchars']($name);
+		$desc = $this->smcFunc['htmlspecialchars']($desc);
+
 		$item = (int) $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_categories',
 			[
@@ -138,7 +141,7 @@ final class CategoryConfig
 			SET name = {string:name}
 			WHERE category_id = {int:item}',
 			[
-				'name' => $value,
+				'name' => $this->smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);
@@ -156,7 +159,7 @@ final class CategoryConfig
 			SET description = {string:desc}
 			WHERE category_id = {int:item}',
 			[
-				'desc' => $value,
+				'desc' => $this->smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);
