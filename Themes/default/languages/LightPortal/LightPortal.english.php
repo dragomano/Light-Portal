@@ -228,6 +228,7 @@ $txt['lp_page_types'] = ['BBCode', 'HTML', 'PHP'];
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Keywords';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
+$txt['lp_page_keywords_empty'] = 'No tags yet';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';

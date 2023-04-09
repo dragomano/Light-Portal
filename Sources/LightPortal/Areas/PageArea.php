@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Partials\{KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
@@ -763,25 +764,9 @@ final class PageArea
 			],
 		];
 
-		$this->context['posting_fields']['keywords']['label']['text'] = $this->txt['lp_page_keywords'];
-		$this->context['posting_fields']['keywords']['input'] = [
-			'type'       => 'select',
-			'tab'        => 'seo',
-			'options'    => [],
-			'attributes' => [
-				'name'     => 'keywords',
-				'multiple' => true,
-			],
-		];
-
-		$this->context['lp_tags'] = $this->getEntityList('tag');
-
-		foreach ($this->context['lp_tags'] as $value => $text) {
-			$this->context['posting_fields']['keywords']['input']['options'][$text] = [
-				'value'    => $value,
-				'selected' => isset($this->context['lp_page']['keywords'][$value]),
-			];
-		}
+		$this->context['posting_fields']['keywords']['label']['html'] = '<label for="keywords">' . $this->txt['lp_page_keywords'] . '</label>';
+		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
+		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
 		$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
 		$this->context['posting_fields']['permissions']['input'] = [
@@ -797,6 +782,15 @@ final class PageArea
 				'selected' => $level == $this->context['lp_page']['permissions'],
 			];
 		}
+
+		if ($this->context['user']['is_admin'])
+			$this->addInlineJavaScript('
+		VirtualSelect.init({
+			ele: "#permissions",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
+		});', true);
 
 		$allCategories = $this->getEntityList('category');
 
@@ -815,6 +809,18 @@ final class PageArea
 			];
 		}
 
+		$this->addInlineJavaScript('
+		VirtualSelect.init({
+			ele: "#category",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body",
+			search: true,
+			markSearchResults: true,
+			noSearchResultsText: "' . $this->txt['no_matches'] . '",
+			searchPlaceholderText: "' . $this->txt['search'] . '"
+		});', true);
+
 		if ($this->context['lp_page']['created_at'] >= time()) {
 			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
 			$this->context['posting_fields']['datetime']['input']['html'] = '
@@ -823,10 +829,8 @@ final class PageArea
 		}
 
 		if ($this->context['user']['is_admin']) {
-			$this->prepareMemberList();
-
 			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
-			$this->context['posting_fields']['page_author']['input']['html']  = '<div id="page_author" name="page_author"></div>';
+			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
 			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
 		}
 
@@ -871,47 +875,6 @@ final class PageArea
 		$this->hook('preparePageFields');
 
 		$this->preparePostFields();
-	}
-
-	private function prepareMemberList(): void
-	{
-		if ($this->request()->hasNot('members'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$search = trim($this->smcFunc['strtolower']($search)) . '*';
-		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
-
-		$request = $this->smcFunc['db_query']('', '
-			SELECT id_member, real_name
-			FROM {db_prefix}members
-			WHERE {raw:real_name} LIKE {string:search}
-				AND is_activated IN (1, 11)
-			LIMIT 1000',
-			[
-				'real_name' => $this->smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
-				'search'    => $search,
-			]
-		);
-
-		$members = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$row['real_name'] = strtr($row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']);
-
-			$members[] = [
-				'text'  => $row['real_name'],
-				'value' => $row['id_member'],
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		exit(json_encode($members));
 	}
 
 	private function prepareEditor(): void

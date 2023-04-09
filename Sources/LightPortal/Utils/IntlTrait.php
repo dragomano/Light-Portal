@@ -149,7 +149,7 @@ trait IntlTrait
 	{
 		$dateTime = new DateTime;
 		$dateTime->setTimestamp($timestamp ?: time());
-		$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?? $this->modSettings['default_timezone']));
+		//$dateTime->setTimezone(new DateTimeZone($this->user_settings['timezone'] ?? $this->modSettings['default_timezone']));
 
 		return $dateTime;
 	}

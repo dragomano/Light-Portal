@@ -16,11 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class BoardSelect extends AbstractPartial
 {
-	public function __invoke(array $params): string
+	public function __invoke(array $params = []): string
 	{
-		if (empty($params['data'])) {
-			$params['data'] = $this->getBoardList();
-		}
+		$params['id'] ??= 'lp_frontpage_boards';
+		$params['value'] ??= $this->modSettings['lp_frontpage_boards'] ?? '';
+		$params['data'] ??= $this->getBoardList();
 
 		$data = [];
 		foreach ($params['data'] as $cat) {

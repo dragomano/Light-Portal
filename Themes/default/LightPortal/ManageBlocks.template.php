@@ -321,12 +321,6 @@ function template_block_post()
 	<script>
 		const block = new Block();
 	</script>';
-
-	require_once __DIR__ . '/partials/placement.php';
-	require_once __DIR__ . '/partials/permissions.php';
-	require_once __DIR__ . '/partials/icon.php';
-	require_once __DIR__ . '/partials/title_class.php';
-	require_once __DIR__ . '/partials/content_class.php';
 }
 
 function template_show_areas_info()

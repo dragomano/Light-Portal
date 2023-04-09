@@ -16,11 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class CategorySelect extends AbstractPartial
 {
-	public function __invoke(array $params): string
+	public function __invoke(array $params = []): string
 	{
-		if (empty($params['data'])) {
-			$params['data'] = $this->getEntityList('category');
-		}
+		$params['id'] ??= 'lp_frontpage_categories';
+		$params['value'] ??= $this->modSettings['lp_frontpage_categories'] ?? '';
+		$params['data'] ??= $this->getEntityList('category');
 
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {

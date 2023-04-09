@@ -15,8 +15,10 @@
 namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Entities\FrontPage;
 use Bugo\LightPortal\Partials\{BoardSelect, CategorySelect, PageAliasSelect, PageSelect, TopicSelect};
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,11 +26,13 @@ if (! defined('SMF'))
 final class BasicConfig
 {
 	use Helper;
+	use Query;
 
 	/**
 	 * Output general settings
 	 *
 	 * Выводим общие настройки
+	 * @throws IntlException
 	 */
 	public function show(): void
 	{
@@ -68,30 +72,17 @@ final class BasicConfig
 
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
-		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)([
-			'id'    => 'lp_frontpage_alias',
-			'value' => $this->modSettings['lp_frontpage_alias'] ?? '',
-		]);
+		$this->prepareTopicList();
 
-		$this->context['lp_frontpage_categories_select'] = (new CategorySelect)([
-			'id'    => 'lp_frontpage_categories',
-			'value' => $this->modSettings['lp_frontpage_categories'] ?? '',
-		]);
+		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)();
 
-		$this->context['lp_frontpage_boards_select'] = (new BoardSelect)([
-			'id'    => 'lp_frontpage_boards',
-			'value' => $this->modSettings['lp_frontpage_boards'] ?? '',
-		]);
+		$this->context['lp_frontpage_categories_select'] = (new CategorySelect)();
 
-		$this->context['lp_frontpage_topics_select'] = (new TopicSelect)([
-			'id'    => 'lp_frontpage_topics',
-			'value' => $this->modSettings['lp_frontpage_topics'] ?? '',
-		]);
+		$this->context['lp_frontpage_boards_select'] = (new BoardSelect)();
 
-		$this->context['lp_frontpage_pages_select'] = (new PageSelect)([
-			'id'    => 'lp_frontpage_pages',
-			'value' => $this->modSettings['lp_frontpage_pages'] ?? '',
-		]);
+		$this->context['lp_frontpage_topics_select'] = (new TopicSelect)();
+
+		$this->context['lp_frontpage_pages_select'] = (new PageSelect)();
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],

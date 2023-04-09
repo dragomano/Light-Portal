@@ -16,11 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class TopicSelect extends AbstractPartial
 {
-	public function __invoke(array $params): string
+	public function __invoke(array $params = []): string
 	{
-		if (empty($params['data'])) {
-			$params['data'] = $this->getSelectedTopics($params['value']);
-		}
+		$params['id'] ??= 'lp_frontpage_topics';
+		$params['value'] ??= $this->modSettings['lp_frontpage_topics'] ?? '';
+		$params['data'] ??= $this->getSelectedTopics($params['value']);
 
 		$data = [];
 		foreach ($params['data'] as $id => $topic) {
@@ -51,7 +51,7 @@ final class TopicSelect extends AbstractPartial
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . '],
 				onServerSearch: async function (search, virtualSelect) {
-					fetch("' . $this->scripturl . '?action=lp_ajax;topic_by_subject", {
+					fetch("' . $this->context['canonical_url'] . ';topic_by_subject", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"

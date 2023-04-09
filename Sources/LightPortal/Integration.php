@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{FrontPage, Block, Page, Category, Tag};
-use Bugo\LightPortal\Utils\Ajax;
 use IntlException;
 
 if (! defined('SMF'))
@@ -33,7 +32,6 @@ final class Integration extends AbstractMain
 		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
 		$this->applyHook('actions');
-		$this->applyHook('pre_log_stats');
 		$this->applyHook('default_action');
 		$this->applyHook('current_action');
 		$this->applyHook('menu_buttons');
@@ -59,7 +57,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.1.1');
+		defined('LP_VERSION') || define('LP_VERSION', '2.1.2');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -116,8 +114,6 @@ final class Integration extends AbstractMain
 
 		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
 
-		$actions['lp_ajax'] = [false, [new Ajax, 'process']];
-
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
 			(new Category)->show(new Page);
 
@@ -133,14 +129,6 @@ final class Integration extends AbstractMain
 			if (! empty($this->context['current_action']) && array_key_exists($this->context['current_action'], $this->context['lp_disabled_actions']))
 				$this->redirect();
 		}
-	}
-
-	/**
-	 * @hook integrate_pre_log_stats
-	 */
-	public function preLogStats(array &$no_stat_actions)
-	{
-		$no_stat_actions['lp_ajax'] = true;
 	}
 
 	public function defaultAction()

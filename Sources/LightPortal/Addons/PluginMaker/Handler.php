@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Partials\IconSelect;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Printer;
@@ -248,12 +249,12 @@ class Handler extends Plugin
 			];
 		}
 
-		$this->context['posting_fields']['icon']['label']['text'] = $this->txt['current_icon'];
-		$this->context['posting_fields']['icon']['input'] = [
-			'type'    => 'select',
-			'tab'     => 'content',
-			'options' => [],
-		];
+		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['input']['tab']  = 'content';
+		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)([
+			'icon' => $this->context['lp_plugin']['icon'],
+			'type' => $this->context['lp_plugin']['type']
+		]);
 
 		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'] . '</label>';
 		$this->context['posting_fields']['title']['input']['tab']  = 'content';

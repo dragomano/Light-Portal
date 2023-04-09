@@ -93,9 +93,4 @@ function template_page_post()
 	<script>
 		const page = new Page();
 	</script>';
-
-	require_once __DIR__ . '/partials/keywords.php';
-	require_once __DIR__ . '/partials/permissions.php';
-	require_once __DIR__ . '/partials/category.php';
-	require_once __DIR__ . '/partials/page_author.php';
 }
