@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.23
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -201,7 +201,7 @@ class AdsBlock extends Block
 		if ($this->request()->has('area') && $this->request('area') === 'lp_blocks')
 			$this->setTemplate()->withLayer('ads_block_form');
 
-		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && $this->request()->has('sa') && $this->request('sa') === 'panels') {
+		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && $this->context['current_subaction'] === 'panels') {
 			unset($this->context['lp_block_placements']['ads']);
 
 			$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());

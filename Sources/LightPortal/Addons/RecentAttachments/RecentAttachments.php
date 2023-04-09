@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -31,7 +31,6 @@ class RecentAttachments extends Block
 		$options['recent_attachments']['parameters'] = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
-			'direction'       => 'horizontal',
 		];
 	}
 
@@ -42,7 +41,6 @@ class RecentAttachments extends Block
 
 		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
 		$parameters['extensions']      = FILTER_DEFAULT;
-		$parameters['direction']       = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
@@ -71,24 +69,6 @@ class RecentAttachments extends Block
 				'style'     => 'width: 100%'
 			]
 		];
-
-		$this->context['posting_fields']['direction']['label']['text'] = $this->txt['lp_recent_attachments']['direction'];
-		$this->context['posting_fields']['direction']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'direction'
-			],
-			'options' => []
-		];
-
-		$directions = array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']);
-
-		foreach ($directions as $direction => $title) {
-			$this->context['posting_fields']['direction']['input']['options'][$title] = [
-				'value'    => $direction,
-				'selected' => $direction == $this->context['lp_block']['options']['parameters']['direction']
-			];
-		}
 	}
 
 	public function getData(array $parameters): array
@@ -113,7 +93,7 @@ class RecentAttachments extends Block
 		$fancybox = class_exists('FancyBox');
 
 		echo '
-		<div class="recent_attachments' . ($parameters['direction'] == 'vertical' ? ' column_direction' : '') . '">';
+		<div class="recent_attachments' . ($this->isBlockInPlacements($block_id, ['left', 'right']) ? ' column_direction' : '') . '">';
 
 		foreach ($attachment_list as $attach) {
 			if ($attach['file']['image']) {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.23
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -30,7 +30,7 @@ class PageList extends Block
 	public function blockOptions(array &$options)
 	{
 		$options['page_list']['parameters'] = [
-			'categories' => [],
+			'categories' => '',
 			'sort'       => 'page_id',
 			'num_pages'  => 10,
 		];
