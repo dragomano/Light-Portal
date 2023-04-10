@@ -19,8 +19,6 @@ In this section, you can fully customize the portal frontpage, enable standalone
     * Selected topics
     * Selected boards
 * The frontpage title — you can change the name of the portal used as the page title and the title of the browser tab.
-* Categories - sources of articles for the frontpage — allows you to select portal categories for these frontpage modes: "All pages from selected categories".
-* Boards - sources of articles for the frontpage — allows you to select boards for these frontpage modes: "All topics from selected boards", and "Selected board".
 * Show images that found in articles — check whether to display images found in the text of pages or topics.
 * URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
 * Show the article summary
@@ -45,7 +43,8 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Prohibit all except administrators from creating PHP pages and PHP blocks.
 * Who can view the portal elements — by "elements" we mean blocks and pages.
 * Who can manage own blocks — you can choose user groups who can create, edit and delete blocks, visible only to them.
-* Who can manage own pages — you can choose user groups who can create, edit and delete pages.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Who can post the portal pages without approval — you can choose user groups who will be able to post portal pages without moderation.
 
 ## Pages and blocks
