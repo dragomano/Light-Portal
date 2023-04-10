@@ -39,7 +39,7 @@ function template_callback_frontpage_mode_settings()
 					id="lp_frontpage_title"
 					value="', $modSettings['lp_frontpage_title'] ?? '', '"
 					size="80"
-					placeholder="', str_replace(array("'", "\""), "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
+					placeholder="', str_replace(["'", "\""], "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
 				>
 			</dd>
 		</template>

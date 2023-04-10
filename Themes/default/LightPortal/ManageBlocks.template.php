@@ -257,9 +257,13 @@ function template_block_post()
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
+				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>';
+
+	if ($context['lp_block_tab_appearance']) {
+		echo '
 				<input id="tab3" type="radio" name="tabs">
 				<label for="tab3" class="bg odd">', $context['lp_icon_set']['design'], '<span>', $txt['lp_tab_appearance'], '</span></label>';
+	}
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
@@ -279,13 +283,17 @@ function template_block_post()
 	template_post_tab($fields, 'access_placement');
 
 	echo '
-				</section>
+				</section>';
+
+	if ($context['lp_block_tab_appearance']) {
+		echo '
 				<section id="content-tab3" class="bg even">';
 
-	template_post_tab($fields, 'appearance');
+		template_post_tab($fields, 'appearance');
 
-	echo '
+		echo '
 				</section>';
+	}
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '

@@ -425,7 +425,7 @@ final class BlockArea
 
 		$this->addInlineJavaScript('
 	const placementSelect = document.getElementById("placement");
-	if (placementSelect.style.display !== "none") {
+	if (placementSelect) {
 		VirtualSelect.init({
 			ele: placementSelect,
 			hideClearButton: true,' . ($this->context['right_to_left'] ? '
@@ -452,12 +452,15 @@ final class BlockArea
 			}
 
 			$this->addInlineJavaScript('
-	VirtualSelect.init({
-		ele: "#permissions",
-		hideClearButton: true,' . ($this->context['right_to_left'] ? '
-		textDirection: "rtl",' : '') . '
-		dropboxWrapper: "body"
-	});', true);
+	const permissionsSelect = document.getElementById("permissions");
+	if (permissionsSelect) {
+		VirtualSelect.init({
+			ele: "#permissions",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
+		});
+	}', true);
 		}
 
 		$this->context['posting_fields']['areas']['label']['text'] = $this->txt['lp_block_areas'];
@@ -522,6 +525,8 @@ final class BlockArea
 				$this->createBbcEditor($this->context['lp_block']['content']);
 			}
 		}
+
+		$this->context['lp_block_tab_appearance'] = true;
 
 		$this->hook('prepareBlockFields');
 

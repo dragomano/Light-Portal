@@ -48,7 +48,7 @@ final class BasicConfig
 		// Initial settings
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_frontpage_title']))
-			$addSettings['lp_frontpage_title'] = str_replace(array("'", "\""), "", $this->context['forum_name']);
+			$addSettings['lp_frontpage_title'] = str_replace(["'", "\""], "", $this->context['forum_name']);
 		if (! isset($this->modSettings['lp_frontpage_alias']))
 			$addSettings['lp_frontpage_alias'] = 'home';
 		if (! isset($this->modSettings['lp_show_views_and_comments']))
