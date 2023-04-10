@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardList extends Plugin
+class BoardList extends Block
 {
 	public string $icon = 'far fa-list-alt';
 
@@ -63,11 +63,7 @@ class BoardList extends Plugin
 
 	public function getData(): array
 	{
-		return $this->getBoardList([
-			'ignore_boards'   => true,
-			'use_permissions' => true,
-			'not_redirection' => true,
-		]);
+		return $this->getBoardList();
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)

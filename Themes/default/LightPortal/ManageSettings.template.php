@@ -39,62 +39,18 @@ function template_callback_frontpage_mode_settings()
 					id="lp_frontpage_title"
 					value="', $modSettings['lp_frontpage_title'] ?? '', '"
 					size="80"
-					placeholder="',  str_replace(array("'", "\""), "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
+					placeholder="', str_replace(["'", "\""], "", $context['forum_name']), ' - ', $txt['lp_portal'], '"
 				>
 			</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_page\'">
 			<dt>
-				<a id="setting_lp_frontpage_alias"></a> <span><label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label><br><span class="smalltext">', $txt['lp_frontpage_alias_subtext'], '</span></span>
+				<a id="setting_lp_frontpage_alias"></a> <span><label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label></span>
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_page\'">
-			<dd>
-				<select id="lp_frontpage_alias" name="lp_frontpage_alias">';
-
-	if (! empty($alias = $modSettings['lp_frontpage_alias'])) {
-		echo '
-					<option value="', $alias, '">', $alias, '</option>';
-	}
-
-	echo '
-				</select>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_alias",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						search: true,
-						placeholder: "', $txt['no'], '",
-						noSearchResultsText: "' . $txt['no_matches'] . '",
-						searchPlaceholderText: "' . $txt['search'] . '",
-						onServerSearch: async function (search, virtualSelect) {
-							fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;alias_list", {
-								method: "POST",
-								headers: {
-									"Content-Type": "application/json; charset=utf-8"
-								},
-								body: JSON.stringify({
-									search
-								})
-							})
-							.then(response => response.json())
-							.then(function (json) {
-								let data = [];
-								for (let i = 0; i < json.length; i++) {
-									data.push({label: json[i].value, value: json[i].value})
-								}
-
-								virtualSelect.setServerOptions(data)
-							})
-							.catch(function (error) {
-								virtualSelect.setServerOptions(false)
-							})
-						}
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_alias_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'all_pages\'">
@@ -104,35 +60,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'all_pages\'">
-			<dd>
-				<div id="lp_frontpage_categories" name="lp_frontpage_categories"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_categories",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						placeholder: "', $txt['lp_frontpage_categories_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_all_categories'] as $id => $cat) {
-		echo '
-							{label: "', str_replace(array("'", "\""), "", $cat['name']), '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_categories'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_categories_select'], '</dd>
 		</template>
 
 		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
@@ -142,46 +70,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-			<dd>
-				<div id="lp_frontpage_boards" name="lp_frontpage_boards"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_boards",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						placeholder: "', $txt['lp_frontpage_boards_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['board_list'] as $cat) {
-		echo '
-							{
-								label: "', str_replace(array("'", "\""), "", $cat['name']), '",
-								options: [';
-
-		foreach ($cat['boards'] as $id_board => $board) {
-			echo '
-									{label: "', str_replace(array("'", "\""), "", $board['name']), '", value: "', $id_board, '"},';
-		}
-
-		echo '
-								]
-							},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_boards'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_boards_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_pages\'">
@@ -190,38 +79,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_pages\'">
-			<dd>
-				<div id="lp_frontpage_pages" name="lp_frontpage_pages"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_pages",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						showSelectedOptionsFirst: true,
-						placeholder: "', $txt['lp_frontpage_pages_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						noOptionsText: "', $txt['lp_frontpage_pages_no_items'], '",
-						moreText: "', $txt['post_options'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_all_pages'] as $id => $page) {
-		echo '
-							{label: "', str_replace(array("'", "\""), "", $page['title']), '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_pages'] ?? '', ']
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_pages_select'], '</dd>
 		</template>
 
 		<template x-if="frontpage_mode === \'chosen_topics\'">
@@ -230,61 +88,7 @@ function template_callback_frontpage_mode_settings()
 			</dt>
 		</template>
 		<template x-if="frontpage_mode === \'chosen_topics\'">
-			<dd>
-				<div id="lp_frontpage_topics" name="lp_frontpage_topics"></div>
-				<script>
-					VirtualSelect.init({
-						ele: "#lp_frontpage_topics",', ($context['right_to_left'] ? '
-						textDirection: "rtl",' : ''), '
-						dropboxWrapper: "body",
-						multiple: true,
-						search: true,
-						markSearchResults: true,
-						showSelectedOptionsFirst: true,
-						placeholder: "', $txt['lp_frontpage_topics_select'], '",
-						noSearchResultsText: "', $txt['no_matches'], '",
-						searchPlaceholderText: "', $txt['search'], '",
-						allOptionsSelectedText: "', $txt['all'], '",
-						noOptionsText: "', $txt['lp_frontpage_topics_no_items'], '",
-						moreText: "', $txt['post_options'], '",
-						showValueAsTags: true,
-						maxWidth: "100%",
-						options: [';
-
-	foreach ($context['lp_selected_topics'] as $id => $topic) {
-		echo '
-							{label: "', $topic, '", value: "', $id, '"},';
-	}
-
-	echo '
-						],
-						selectedValue: [', $modSettings['lp_frontpage_topics'] ?? '', '],
-						onServerSearch: async function (search, virtualSelect) {
-							fetch("', $scripturl, '?action=admin;area=lp_settings;sa=basic;topic_list", {
-								method: "POST",
-								headers: {
-									"Content-Type": "application/json; charset=utf-8"
-								},
-								body: JSON.stringify({
-									search
-								})
-							})
-							.then(response => response.json())
-							.then(function (json) {
-								let data = [];
-								for (let i = 0; i < json.length; i++) {
-									data.push({label: json[i].subject, value: json[i].id})
-								}
-
-								virtualSelect.setServerOptions(data)
-							})
-							.catch(function (error) {
-								virtualSelect.setServerOptions(false)
-							})
-						}
-					});
-				</script>
-			</dd>
+			<dd>', $context['lp_frontpage_topics_select'], '</dd>
 		</template>
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
@@ -303,7 +107,7 @@ function template_callback_frontpage_mode_settings()
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
-				<a id="setting_lp_image_placeholder"></a> <span><label for="lp_image_placeholder">', $txt['lp_image_placeholder'], '</label></span>
+				<a id="setting_lp_image_placeholder"></a> <span><label for="lp_image_placeholder">', $txt['lp_image_placeholder'], '</label></span><br><span class="smalltext">', $txt['lp_image_placeholder_subtext'], '</span>
 			</dt>
 		</template>
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
@@ -659,347 +463,6 @@ function template_callback_comment_settings()
 				<input type="checkbox" name="lp_allow_comment_ratings" id="lp_allow_comment_ratings"', empty($modSettings['lp_allow_comment_ratings']) ? '' : ' checked', ' value="1">
 			</dd>
 		</template>';
-}
-
-function template_lp_category_settings()
-{
-	global $txt, $context;
-
-	echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_categories_manage'], '</h3>
-	</div>
-	<div class="windowbg noup">
-		<dl class="lp_categories settings" x-data>
-			<dt>
-				<form accept-charset="', $context['character_set'], '">
-					<table class="table_grid">
-						<tbody id="lp_categories" x-ref="category_list">';
-
-	foreach ($context['lp_categories'] as $id => $cat)
-		show_single_category($id, $cat);
-
-	echo '
-						</tbody>
-					</table>
-				</form>
-			</dt>
-			<dd>
-				<div class="roundframe">
-					<div class="noticebox">
-						<form
-							id="add_category_form"
-							name="add_category_form"
-							accept-charset="', $context['character_set'], '"
-							@submit.prevent="category.add($refs)"
-						>
-							<input
-								name="new_category_name"
-								type="text"
-								placeholder="', $txt['title'], '"
-								maxlength="255"
-								form="add_category_form"
-								required
-								x-ref="cat_name"
-							>
-							<textarea
-								placeholder="', $txt['lp_categories_desc'], '"
-								maxlength="255"
-								x-ref="cat_desc"
-							></textarea>
-						</form>
-					</div>
-					<div class="centertext">
-						<input form="add_category_form" class="button" type="submit" value="', $txt['lp_categories_add'], '">
-					</div>
-				</div>
-			</dd>
-		</dl>
-	</div>
-
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-	<script>
-		const category = new Category();
-		new Sortable(document.getElementById("lp_categories"), {
-			handle: ".handle",
-			animation: 150,
-			onSort: e => category.updatePriority(e)
-		});
-	</script>';
-}
-
-function show_single_category(int $id, array $cat)
-{
-	global $txt, $context;
-
-	echo '
-	<tr class="windowbg" data-id="', $id, '" x-data>
-		<td class="centertext handle">', $context['lp_icon_set']['arrows'], '</td>
-		<td>
-			<span class="floatright">
-				<span @click="category.remove($root)" title="', $txt['remove'], '" class="error">&times;</span>
-			</span>
-			<label for="category_name', $id, '" class="handle">', $txt['lp_category'], ' #', $id, '</label>
-			<input
-				type="text"
-				value="', $cat['name'], '"
-				maxlength="255"
-				@change="category.updateName($root, $event.target)"
-			>
-			<br>
-			<textarea
-				id="category_desc', $id, '"
-				rows="2"
-				placeholder="', $txt['lp_page_description'], '"
-				maxlength="255"
-				@change="category.updateDescription($root, $event.target.value)"
-			>', $cat['desc'], '</textarea>
-		</td>
-	</tr>';
-}
-
-function template_callback_panel_layout()
-{
-	global $txt, $modSettings, $context;
-
-	echo '
-		</dl>
-	</div>
-	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
-	<div class="generic_list_wrapper">
-		<div class="centertext', empty($modSettings['lp_swap_header_footer']) ? '' : ' column-reverse', '">
-			<div class="row center-xs">
-				<div class="col-xs-', $context['lp_header_panel_width'], '">
-					<div class="title_bar">
-						<h3 class="titlebg">', $context['lp_block_placements']['header'], '</h3>
-					</div>
-					<div class="information">
-						<label class="centericon" for="lp_header_panel_width">col-xs-</label>
-						<select id="lp_header_panel_width" name="lp_header_panel_width">';
-
-		foreach ($context['lp_header_footer_width_values'] as $value) {
-			echo '
-							<option value="', $value, '"', $context['lp_header_panel_width'] == $value ? ' selected' : '', '>
-								', $value, '
-							</option>';
-		}
-
-		echo '
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">
-				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_left_panel_width']['md'], ' col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
-					<div class="title_bar">
-						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>
-					</div>
-					<div class="information">
-						<ul class="righttext">
-							<li>col-xs-12</li>
-							<li>col-sm-12</li>
-							<li>
-								<label class="centericon" for="lp_left_panel_width[md]">col-md-</label>
-								<select id="lp_left_panel_width[md]" name="lp_left_panel_width[md]">';
-
-	foreach ($context['lp_left_right_width_values'] as $value) {
-		echo '
-									<option value="', $value, '"', $context['lp_left_panel_width']['md'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-	}
-
-	echo '
-								</select>
-							</li>
-							<li>
-								<label class="centericon" for="lp_left_panel_width[lg]">col-lg-</label>
-								<select id="lp_left_panel_width[lg]" name="lp_left_panel_width[lg]">';
-
-	foreach ($context['lp_left_right_width_values'] as $value) {
-		echo '
-									<option value="', $value, '"', $context['lp_left_panel_width']['lg'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-	}
-
-	echo '
-								</select>
-							</li>
-							<li>
-								<label class="centericon" for="lp_left_panel_width[xl]">col-xl-</label>
-								<select id="lp_left_panel_width[xl]" name="lp_left_panel_width[xl]">';
-
-	foreach ($context['lp_left_right_width_values'] as $value) {
-		echo '
-									<option value="', $value, '"', $context['lp_left_panel_width']['xl'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-	}
-
-	echo '
-								</select>
-							</li>
-						</ul>
-						<hr>
-						<label for="lp_left_panel_sticky">', $txt['lp_left_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_left_panel_sticky" name="lp_left_panel_sticky"', empty($modSettings['lp_left_panel_sticky']) ? '' : ' checked="checked"', '>
-					</div>
-				</div>
-				<div class="col-xs">
-					<div class="windowbg', empty($modSettings['lp_swap_top_bottom']) ? '' : ' column-reverse', '">
-						<strong>col-xs (auto)</strong>
-						<div class="row">
-							<div class="col-xs">
-								<div class="title_bar">
-									<h3 class="titlebg">', $context['lp_block_placements']['top'], '</h3>
-								</div>
-								<div class="information">
-									col-xs (auto)
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs">
-								<div class="descbox alternative">
-									<strong>', $context['lp_icon_set']['content'], '</strong>
-									<div>', $txt['lp_content'], '</div>
-									col-xs (auto)
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-xs">
-								<div class="title_bar">
-									<h3 class="titlebg">', $context['lp_block_placements']['bottom'], '</h3>
-								</div>
-								<div class="information">
-									col-xs (auto)
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-12 col-md-', $context['lp_right_panel_width']['md'], ' col-lg-', $context['lp_right_panel_width']['lg'], ' col-xl-', $context['lp_right_panel_width']['xl'], '">
-					<div class="title_bar">
-						<h3 class="titlebg">', $context['lp_block_placements']['right'], '</h3>
-					</div>
-					<div class="information">
-						<ul class="righttext">
-							<li>col-xs-12</li>
-							<li>col-sm-12</li>
-							<li>
-								<label class="centericon" for="lp_right_panel_width[md]">col-md-</label>
-								<select id="lp_right_panel_width[md]" name="lp_right_panel_width[md]">';
-
-		foreach ($context['lp_left_right_width_values'] as $value) {
-			echo '
-									<option value="', $value, '"', $context['lp_right_panel_width']['md'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-		}
-
-		echo '
-								</select>
-							</li>
-							<li>
-								<label class="centericon" for="lp_right_panel_width[lg]">col-lg-</label>
-								<select id="lp_right_panel_width[lg]" name="lp_right_panel_width[lg]">';
-
-		foreach ($context['lp_left_right_width_values'] as $value) {
-			echo '
-									<option value="', $value, '"', $context['lp_right_panel_width']['lg'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-		}
-
-		echo '
-								</select>
-							</li>
-							<li>
-								<label class="centericon" for="lp_right_panel_width[xl]">col-xl-</label>
-								<select id="lp_right_panel_width[xl]" name="lp_right_panel_width[xl]">';
-
-		foreach ($context['lp_left_right_width_values'] as $value) {
-			echo '
-									<option value="', $value, '"', $context['lp_right_panel_width']['xl'] == $value ? ' selected' : '', '>
-										', $value, '
-									</option>';
-		}
-
-		echo '
-								</select>
-							</li>
-						</ul>
-						<hr>
-						<label for="lp_right_panel_sticky">', $txt['lp_right_panel_sticky'], '</label>
-						<input type="checkbox" id="lp_right_panel_sticky" name="lp_right_panel_sticky"', empty($modSettings['lp_right_panel_sticky']) ? '' : ' checked="checked"', '>
-					</div>
-				</div>
-			</div>
-			<div class="row center-xs">
-				<div class="col-xs-', $context['lp_footer_panel_width'], '">
-					<div class="title_bar">
-						<h3 class="titlebg">', $context['lp_block_placements']['footer'], '</h3>
-					</div>
-					<div class="information">
-						<label class="centericon" for="lp_footer_panel_width">col-xs-</label>
-						<select id="lp_footer_panel_width" name="lp_footer_panel_width">';
-
-		foreach ($context['lp_header_footer_width_values'] as $value) {
-			echo '
-							<option value="', $value, '"', $context['lp_footer_panel_width'] == $value ? ' selected' : '', '>
-								', $value, '
-							</option>';
-		}
-
-		echo '
-						</select>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<br>';
-}
-
-function template_callback_panel_direction()
-{
-	global $txt, $context;
-
-	echo '
-	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_panel_direction'], '</h3>
-	</div>
-	<div class="information">', $txt['lp_panel_direction_note'], '</div>
-	<div class="generic_list_wrapper">
-		<table class="table_grid centertext">
-			<tbody>';
-
-	foreach ($context['lp_block_placements'] as $key => $label) {
-		echo '
-				<tr class="windowbg">
-					<td>
-						<label for="lp_panel_direction_' . $key . '">', $label, '</label>
-					</td>
-					<td>
-						<select id="lp_panel_direction[' . $key . ']" name="lp_panel_direction[' . $key . ']">';
-
-		foreach ($txt['lp_panel_direction_set'] as $value => $direction) {
-			echo '
-							<option value="', $value, '"', !empty($context['lp_panel_direction'][$key]) && $context['lp_panel_direction'][$key] == $value ? ' selected' : '', '>', $direction, '</option>';
-		}
-
-		echo '
-						</select>
-					</td>
-				</tr>';
-	}
-
-	echo '
-			</tbody>
-		</table>
-	<dl class="settings">';
 }
 
 function template_post_tab(array $fields, string $tab = 'content')

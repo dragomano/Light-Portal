@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class UserInfo extends Plugin
+class UserInfo extends Block
 {
 	public string $icon = 'fas fa-user';
 

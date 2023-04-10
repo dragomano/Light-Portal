@@ -10,17 +10,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.22
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\CategorySelect;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageList extends Plugin
+class PageList extends Block
 {
 	public string $icon = 'far fa-file-alt';
 
@@ -29,7 +30,7 @@ class PageList extends Plugin
 	public function blockOptions(array &$options)
 	{
 		$options['page_list']['parameters'] = [
-			'categories' => [],
+			'categories' => '',
 			'sort'       => 'page_id',
 			'num_pages'  => 10,
 		];
@@ -51,7 +52,12 @@ class PageList extends Plugin
 			return;
 
 		$this->context['posting_fields']['categories']['label']['html'] = '<label for="categories">' . $this->txt['lp_categories'] . '</label>';
-		$this->context['posting_fields']['categories']['input']['html'] = '<div id="categories" name="categories"></div>';
+		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
+		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)([
+			'id'    => 'categories',
+			'hint'  => $this->txt['lp_page_list']['categories_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+		]);
 
 		$this->context['posting_fields']['sort']['label']['text'] = $this->txt['lp_page_list']['sort'];
 		$this->context['posting_fields']['sort']['input'] = [
@@ -83,15 +89,14 @@ class PageList extends Plugin
 			]
 		];
 
-		$this->context['all_categories'] = $this->getAllCategories();
-
 		$this->setTemplate()->withLayer('page_list');
 	}
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getAllTitles();
-		$all_categories = $this->getAllCategories();
+		$titles = $this->getEntityList('title');
+
+		$all_categories = $this->getEntityList('category');
 
 		if (empty($parameters['categories']))
 			$parameters['categories'] = [];

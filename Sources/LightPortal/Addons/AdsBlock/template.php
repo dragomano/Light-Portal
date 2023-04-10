@@ -20,6 +20,16 @@ function template_ads_placement_topic_below()
 	lp_show_blocks('topic_bottom');
 }
 
+function template_ads_placement_page_above()
+{
+	lp_show_blocks('page_top');
+}
+
+function template_ads_placement_page_below()
+{
+	lp_show_blocks('page_bottom');
+}
+
 function template_ads_block_form_above() {}
 
 function template_ads_block_form_below()
@@ -75,91 +85,6 @@ function template_ads_block_below()
 			selectAllText: "', $txt['check_all'], '",
 			options: [', implode(',', $data), '],
 			selectedValue: [', implode(',', $items), ']
-		});
-		VirtualSelect.init({
-			ele: "#included_boards",', ($context['right_to_left'] ? '
-			textDirection: "rtl",' : ''), '
-			dropboxWrapper: "body",
-			multiple: true,
-			search: true,
-			markSearchResults: true,
-			placeholder: "', $txt['lp_ads_block']['included_boards_select'], '",
-			noSearchResultsText: "', $txt['no_matches'], '",
-			searchPlaceholderText: "', $txt['search'], '",
-			allOptionsSelectedText: "', $txt['all'], '",
-			showValueAsTags: true,
-			maxWidth: "100%",
-			options: [';
-
-	foreach ($context['lp_selected_boards'] as $cat) {
-		echo '
-				{
-					label: "', str_replace(array("'", "\""), "", $cat['name']), '",
-					options: [';
-
-		foreach ($cat['boards'] as $id_board => $board) {
-			echo '
-						{label: "', str_replace(array("'", "\""), "", $board['name']), '", value: "', $id_board, '"},';
-		}
-
-		echo '
-					]
-				},';
-	}
-
-	echo '
-			],
-			selectedValue: [', $context['lp_block']['options']['parameters']['included_boards'] ?? '', ']
-		});
-		VirtualSelect.init({
-			ele: "#included_topics",', ($context['right_to_left'] ? '
-			textDirection: "rtl",' : ''), '
-			dropboxWrapper: "body",
-			multiple: true,
-			search: true,
-			markSearchResults: true,
-			showSelectedOptionsFirst: true,
-			placeholder: "', $txt['lp_ads_block']['included_topics_select'], '",
-			noSearchResultsText: "', $txt['no_matches'], '",
-			searchPlaceholderText: "', $txt['search'], '",
-			allOptionsSelectedText: "', $txt['all'], '",
-			noOptionsText: "', $txt['lp_frontpage_topics_no_items'], '",
-			moreText: "', $txt['post_options'], '",
-			showValueAsTags: true,
-			maxWidth: "100%",
-			options: [';
-
-	foreach ($context['lp_selected_topics'] as $id => $topic) {
-		echo '
-				{label: "', $topic, '", value: "', $id, '"},';
-	}
-
-	echo '
-			],
-			selectedValue: [', $context['lp_block']['options']['parameters']['included_topics'] ?? '', '],
-			onServerSearch: async function (search, virtualSelect) {
-				fetch("', $context['canonical_url'], ';topic_list", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json; charset=utf-8"
-					},
-					body: JSON.stringify({
-						search
-					})
-				})
-				.then(response => response.json())
-				.then(function (json) {
-					let data = [];
-					for (let i = 0; i < json.length; i++) {
-						data.push({label: json[i].subject, value: json[i].id})
-					}
-
-					virtualSelect.setServerOptions(data)
-				})
-				.catch(function (error) {
-					virtualSelect.setServerOptions(false)
-				})
-			}
 		});
 	</script>';
 }

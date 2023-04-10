@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * PageListInterface.php
+ * AbstractPageList.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,10 +12,9 @@
  * @version 2.1
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Entities\Page;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -31,8 +30,6 @@ abstract class AbstractPageList implements PageListInterface
 	abstract public function getTotalCountPages(): int;
 
 	abstract public function showAll();
-
-	abstract public function getList(): array;
 
 	abstract public function getAll(int $start, int $items_per_page, string $sort): array;
 
@@ -88,7 +85,7 @@ abstract class AbstractPageList implements PageListInterface
 
 			if (isset($row['category_id'])) {
 				$items[$row['page_id']]['section'] = [
-					'name' => $this->getAllCategories()[$row['category_id']]['name'],
+					'name' => $this->getEntityList('category')[$row['category_id']]['name'],
 					'link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id']
 				];
 			}

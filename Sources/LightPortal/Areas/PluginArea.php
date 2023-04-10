@@ -49,7 +49,7 @@ final class PluginArea
 			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-a-plugin'),
 		];
 
-		$this->context['lp_plugins'] = $this->getAllAddons();
+		$this->context['lp_plugins'] = $this->getEntityList('plugin');
 
 		$this->extendPluginList();
 

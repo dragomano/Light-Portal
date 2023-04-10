@@ -47,7 +47,7 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		$this->params += [
 			'start' => $start,
@@ -57,7 +57,7 @@ class PageArticle extends AbstractArticle
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
-				IF (par.value > 0, p.num_comments, 0) AS num_comments, p.created_at,
+				CASE WHEN COALESCE(CAST(par.value AS integer), 0) > 0 THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
 				GREATEST(p.created_at, p.updated_at) AS date, cat.name AS category_name, mem.real_name AS author_name,
 				com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name, com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -165,7 +165,7 @@ class PageArticle extends AbstractArticle
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
 			WHERE p.item_id IN ({array_int:pages})
-				AND FIND_IN_SET(t.tag_id, p.value)
+				AND FIND_IN_SET(t.tag_id, p.value) > 0
 			ORDER BY t.value',
 			[
 				'pages' => array_keys($pages)

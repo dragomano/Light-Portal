@@ -12,7 +12,7 @@
  * @version 2.1
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Entities\Page;
 
@@ -28,13 +28,13 @@ final class Tag extends AbstractPageList
 
 		$this->context['lp_tag'] = $this->request('id', 0);
 
-		if (array_key_exists($this->context['lp_tag'], $this->getAllTags()) === false) {
+		if (array_key_exists($this->context['lp_tag'], $this->getEntityList('tag')) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
 			$this->txt['back'] = $this->txt['lp_all_page_tags'];
 			$this->fatalLangError('lp_tag_not_found', 404);
 		}
 
-		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getAllTags()[$this->context['lp_tag']]);
+		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getEntityList('tag')[$this->context['lp_tag']]);
 		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $this->context['lp_tag'];
 		$this->context['robot_no_index'] = true;
 
@@ -69,7 +69,7 @@ final class Tag extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, 0) AS author_name, ps.value, t.title
+				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -185,26 +185,6 @@ final class Tag extends AbstractPageList
 		$this->createList($listOptions);
 
 		$this->obExit();
-	}
-
-	public function getList(): array
-	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			ORDER BY value',
-			[]
-		);
-
-		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['tag_id']] = $row['value'];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $items;
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array

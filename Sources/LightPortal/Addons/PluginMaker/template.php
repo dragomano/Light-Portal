@@ -2,7 +2,7 @@
 
 function template_plugin_post()
 {
-	global $context, $language, $txt, $settings;
+	global $context, $language, $txt;
 
 	if (! empty($context['lp_addon_dir_is_not_writable'])) {
 		echo '
@@ -261,9 +261,4 @@ function template_plugin_post()
 
 		const plugin = new PluginMaker();
 	</script>';
-
-	$context['lp_block']['icon'] = $context['lp_plugin']['icon'];
-	$context['lp_block']['type'] = $context['lp_plugin']['type'];
-
-	require_once $settings['default_theme_dir'] . '/LightPortal/partials/icon.php';
 }

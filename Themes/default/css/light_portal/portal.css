@@ -208,6 +208,10 @@
     display: none;
   }
 }
+/* Fix for buttons on block/page post areas */
+#lp_post .centertext .button {
+  margin-left: 4px;
+}
 /* Checkbox toggler */
 .checkbox {
   vertical-align: top;
@@ -1289,20 +1293,6 @@ section #display_head span {
 }
 /* Common media queriers */
 @media (max-width: 480px) {
-  .lp_default_blocks th.icon,
-  .lp_additional_blocks th.icon,
-  .lp_default_blocks td.icon,
-  .lp_additional_blocks td.icon,
-  .lp_default_blocks th.type,
-  .lp_additional_blocks th.type,
-  .lp_default_blocks td.type,
-  .lp_additional_blocks td.type,
-  .lp_default_blocks th.areas,
-  .lp_additional_blocks th.areas,
-  .lp_default_blocks td.areas,
-  .lp_additional_blocks td.areas {
-    display: none;
-  }
   #lp_pages th.date,
   #lp_pages td.date {
     display: none;
@@ -1312,16 +1302,6 @@ section #display_head span {
   }
 }
 @media (min-width: 481px) and (max-width: 600px) {
-  .lp_default_blocks th.title,
-  .lp_additional_blocks th.title,
-  .lp_default_blocks td.title,
-  .lp_additional_blocks td.title,
-  .lp_default_blocks th.areas,
-  .lp_additional_blocks th.areas,
-  .lp_default_blocks td.areas,
-  .lp_additional_blocks td.areas {
-    display: none;
-  }
   .related_pages .article_list {
     grid-template-columns: repeat(2, 1fr);
   }

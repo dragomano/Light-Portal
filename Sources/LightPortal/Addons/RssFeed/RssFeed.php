@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RssFeed;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RssFeed extends Plugin
+class RssFeed extends Block
 {
 	public string $icon = 'fas fa-rss';
 

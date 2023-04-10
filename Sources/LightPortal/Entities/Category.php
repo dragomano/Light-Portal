@@ -12,7 +12,7 @@
  * @version 2.1
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Entities\Page;
 
@@ -28,7 +28,7 @@ final class Category extends AbstractPageList
 
 		$this->context['lp_category'] = $this->request('id');
 
-		if (array_key_exists($this->context['lp_category'], $this->getAllCategories()) === false) {
+		if (array_key_exists($this->context['lp_category'], $this->getEntityList('category')) === false) {
 			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
 			$this->txt['back'] = $this->txt['lp_all_categories'];
 			$this->fatalLangError('lp_category_not_found', 404);
@@ -38,7 +38,7 @@ final class Category extends AbstractPageList
 		if (empty($this->context['lp_category'])) {
 			$this->context['page_title'] = $this->txt['lp_all_pages_without_category'];
 		} else {
-			$category = $this->getAllCategories()[$this->context['lp_category']];
+			$category = $this->getEntityList('category')[$this->context['lp_category']];
 			$this->context['page_title'] = sprintf($this->txt['lp_all_pages_with_category'], $category['name']);
 		}
 
@@ -88,7 +88,7 @@ final class Category extends AbstractPageList
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, 0) AS author_name, t.title
+				COALESCE(mem.real_name, \'\') AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
@@ -202,31 +202,6 @@ final class Category extends AbstractPageList
 		$this->createList($listOptions);
 
 		$this->obExit();
-	}
-
-	public function getList(): array
-	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT category_id, name, description, priority
-			FROM {db_prefix}lp_categories
-			ORDER BY priority',
-			[]
-		);
-
-		$items = [0 => ['name' => $this->txt['lp_no_category']]];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$items[$row['category_id']] = [
-				'id'       => $row['category_id'],
-				'name'     => $row['name'],
-				'desc'     => $row['description'],
-				'priority' => $row['priority']
-			];
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $items;
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array

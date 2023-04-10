@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.03.23
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class WhosOnline extends Plugin
+class WhosOnline extends Block
 {
 	public string $type = 'block ssi';
 

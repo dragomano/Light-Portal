@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Lists\PageListInterface;
+use Bugo\LightPortal\Entities\PageListInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,8 +33,12 @@ final class Page
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
-		if (empty($alias) && $this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias']) {
-			$this->context['lp_page'] = $this->getDataByAlias($this->modSettings['lp_frontpage_alias']);
+		if (empty($alias)) {
+			if ($this->modSettings['lp_frontpage_mode'] && $this->modSettings['lp_frontpage_mode'] === 'chosen_page' && $this->modSettings['lp_frontpage_alias']) {
+				$this->context['lp_page'] = $this->getDataByAlias($this->modSettings['lp_frontpage_alias']);
+			} else {
+				$this->updateSettings(['lp_frontpage_mode' => 0]);
+			}
 		} else {
 			$alias = explode(';', $alias)[0];
 
@@ -501,7 +505,7 @@ final class Page
 		$data['post_content'] = '';
 
 		if (! empty($data['category_id']))
-			$data['category'] = $this->getAllCategories()[$data['category_id']]['name'];
+			$data['category'] = $this->getEntityList('category')[$data['category_id']]['name'];
 
 		if (! empty($data['options']['keywords']))
 			$data['tags'] = $this->getTags($data['options']['keywords']);
@@ -532,7 +536,7 @@ final class Page
 		$request = $this->smcFunc['db_query']('', '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
-			WHERE FIND_IN_SET(tag_id, {string:tags})
+			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
 			ORDER BY value',
 			[
 				'tags' => $tags

@@ -25,7 +25,7 @@ final class PanelConfig
 
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageSettings');
+		$this->loadTemplate('LightPortal/ManagePanels');
 
 		$this->addInlineCss('
 		dl.settings {

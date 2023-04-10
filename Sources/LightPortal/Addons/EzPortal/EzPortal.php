@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\EzPortal;
@@ -27,7 +27,7 @@ class EzPortal extends Plugin
 	public function addAdminAreas(array &$admin_areas)
 	{
 		if ($this->user_info['is_admin'])
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ez'] = [$this->txt['lp_ez_portal']['label_name']];
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_ez'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_ez_portal']['label_name']];
 	}
 
 	public function addPageAreas(array &$subActions)

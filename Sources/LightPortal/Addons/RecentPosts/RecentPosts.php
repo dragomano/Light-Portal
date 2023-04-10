@@ -10,17 +10,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.03.23
+ * @version 08.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\{BoardSelect, TopicSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentPosts extends Plugin
+class RecentPosts extends Block
 {
 	public string $type = 'block ssi';
 
@@ -91,49 +92,37 @@ class RecentPosts extends Plugin
 			];
 		}
 
-		$this->context['posting_fields']['exclude_boards']['label']['text'] = $this->txt['lp_recent_posts']['exclude_boards'];
-		$this->context['posting_fields']['exclude_boards']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_recent_posts']['exclude_boards_subtext'],
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
-				'style'     => 'width: 100%'
-			]
-		];
+		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_recent_posts']['exclude_boards'] . '</label>';
+		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
+		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
+			'id'    => 'exclude_boards',
+			'hint'  => $this->txt['lp_recent_posts']['exclude_boards_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+		]);
 
-		$this->context['posting_fields']['include_boards']['label']['text'] = $this->txt['lp_recent_posts']['include_boards'];
-		$this->context['posting_fields']['include_boards']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_recent_posts']['include_boards_subtext'],
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
-				'style'     => 'width: 100%'
-			]
-		];
+		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_recent_posts']['include_boards'] . '</label>';
+		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
+		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
+			'id'    => 'include_boards',
+			'hint'  => $this->txt['lp_recent_posts']['include_boards_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+		]);
 
-		$this->context['posting_fields']['exclude_topics']['label']['text'] = $this->txt['lp_recent_posts']['exclude_topics'];
-		$this->context['posting_fields']['exclude_topics']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_recent_posts']['exclude_topics_subtext'],
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
-				'style'     => 'width: 100%'
-			]
-		];
+		$this->context['posting_fields']['exclude_topics']['label']['html'] = '<label for="exclude_topics">' . $this->txt['lp_recent_posts']['exclude_topics'] . '</label>';
+		$this->context['posting_fields']['exclude_topics']['input']['tab'] = 'content';
+		$this->context['posting_fields']['exclude_topics']['input']['html'] = (new TopicSelect)([
+			'id'    => 'exclude_topics',
+			'hint'  => $this->txt['lp_recent_posts']['exclude_topics_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
+		]);
 
-		$this->context['posting_fields']['include_topics']['label']['text'] = $this->txt['lp_recent_posts']['include_topics'];
-		$this->context['posting_fields']['include_topics']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_recent_posts']['include_topics_subtext'],
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
-				'style'     => 'width: 100%'
-			]
-		];
+		$this->context['posting_fields']['include_topics']['label']['html'] = '<label for="include_topics">' . $this->txt['lp_recent_posts']['include_topics'] . '</label>';
+		$this->context['posting_fields']['include_topics']['input']['tab'] = 'content';
+		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
+			'id'    => 'include_topics',
+			'hint'  => $this->txt['lp_recent_posts']['include_topics_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+		]);
 
 		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_recent_posts']['show_avatars'];
 		$this->context['posting_fields']['show_avatars']['input'] = [

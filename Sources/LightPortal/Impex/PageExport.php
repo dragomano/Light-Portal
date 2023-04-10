@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Impex;
 
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Lists\Category;
 use ArrayIterator;
 use DomDocument;
 use DOMException;
@@ -203,7 +202,7 @@ final class PageExport extends AbstractExport
 
 	protected function getCategories(): array
 	{
-		$categories = (new Category)->getList();
+		$categories = $this->getEntityList('category');
 
 		unset($categories[0]);
 		ksort($categories);
@@ -235,7 +234,7 @@ final class PageExport extends AbstractExport
 				}
 			}
 
-			if ($tags = $this->getAllTags()) {
+			if ($tags = $this->getEntityList('tag')) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
 
 				$tags = fn() => new ArrayIterator($tags);

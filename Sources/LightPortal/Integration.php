@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{Block, Page, FrontPage};
-use Bugo\LightPortal\Lists\{Category, Tag};
+use Bugo\LightPortal\Entities\{FrontPage, Block, Page, Category, Tag};
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -57,7 +57,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.1.1');
+		defined('LP_VERSION') || define('LP_VERSION', '2.1.2');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -422,6 +422,7 @@ final class Integration extends AbstractMain
 
 	/**
 	 * @hook integrate_fetch_alerts
+	 * @throws IntlException
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
@@ -537,7 +538,7 @@ final class Integration extends AbstractMain
 
 		if ($actions['action'] === LP_ACTION) {
 			if ($actions['sa'] === 'tags') {
-				$tags = $this->getAllTags();
+				$tags = $this->getEntityList('tag');
 
 				isset($actions['id'])
 					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])

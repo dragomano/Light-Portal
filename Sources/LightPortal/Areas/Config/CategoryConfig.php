@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Lists\Category;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,11 +25,11 @@ final class CategoryConfig
 
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageSettings', 'lp_category_settings');
+		$this->loadTemplate('LightPortal/ManageCategories', 'lp_category_settings');
 
 		$this->context['page_title'] = $this->txt['lp_categories'];
 
-		$this->context['lp_categories'] = (new Category)->getList();
+		$this->context['lp_categories'] = $this->getEntityList('category');
 
 		unset($this->context['lp_categories'][0]);
 
@@ -66,6 +65,9 @@ final class CategoryConfig
 		$result = [
 			'error' => true
 		];
+
+		$name = $this->smcFunc['htmlspecialchars']($name);
+		$desc = $this->smcFunc['htmlspecialchars']($desc);
 
 		$item = (int) $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_categories',
@@ -139,7 +141,7 @@ final class CategoryConfig
 			SET name = {string:name}
 			WHERE category_id = {int:item}',
 			[
-				'name' => $value,
+				'name' => $this->smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);
@@ -157,7 +159,7 @@ final class CategoryConfig
 			SET description = {string:desc}
 			WHERE category_id = {int:item}',
 			[
-				'desc' => $value,
+				'desc' => $this->smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);

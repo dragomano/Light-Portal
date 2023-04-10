@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Partials\{ContentClassSelect, IconSelect, TitleClassSelect};
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -95,7 +96,7 @@ final class BlockArea
 		$json = $this->request()->json();
 		$type = $json['add_block'] ?? $this->request('add_block', '') ?? '';
 
-		if (empty($type))
+		if (empty($type) && empty($json['search']))
 			return;
 
 		$this->context['current_block']['type'] = $type;
@@ -422,6 +423,17 @@ final class BlockArea
 			];
 		}
 
+		$this->addInlineJavaScript('
+	const placementSelect = document.getElementById("placement");
+	if (placementSelect) {
+		VirtualSelect.init({
+			ele: placementSelect,
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
+		});
+	}', true);
+
 		if ($this->context['user']['is_admin']) {
 			$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
 			$this->context['posting_fields']['permissions']['input'] = [
@@ -438,6 +450,17 @@ final class BlockArea
 					'selected' => $level == $this->context['lp_block']['permissions'],
 				];
 			}
+
+			$this->addInlineJavaScript('
+	const permissionsSelect = document.getElementById("permissions");
+	if (permissionsSelect) {
+		VirtualSelect.init({
+			ele: "#permissions",
+			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			textDirection: "rtl",' : '') . '
+			dropboxWrapper: "body"
+		});
+	}', true);
 		}
 
 		$this->context['posting_fields']['areas']['label']['text'] = $this->txt['lp_block_areas'];
@@ -453,15 +476,12 @@ final class BlockArea
 			],
 		];
 
-		$this->context['posting_fields']['icon']['label']['text'] = $this->txt['current_icon'];
-		$this->context['posting_fields']['icon']['input'] = [
-			'type'    => 'select',
-			'tab'     => 'appearance',
-			'options' => [],
-		];
+		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)();
+		$this->context['posting_fields']['icon']['input']['tab']  = 'appearance';
 
 		$this->context['posting_fields']['title_class']['label']['html'] = '<label for="title_class">' . $this->txt['lp_block_title_class'] . '</label>';
-		$this->context['posting_fields']['title_class']['input']['html'] = '<div id="title_class" name="title_class"></div>';
+		$this->context['posting_fields']['title_class']['input']['html'] = (new TitleClassSelect)();
 		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
 
 		$this->context['posting_fields']['title_style']['label']['text'] = $this->txt['lp_block_title_style'];
@@ -476,7 +496,7 @@ final class BlockArea
 
 		if (empty($this->context['lp_block']['options']['no_content_class'])) {
 			$this->context['posting_fields']['content_class']['label']['html'] = '<label for="content_class">' . $this->txt['lp_block_content_class'] . '</label>';
-			$this->context['posting_fields']['content_class']['input']['html'] = '<div id="content_class" name="content_class"></div>';
+			$this->context['posting_fields']['content_class']['input']['html'] = (new ContentClassSelect)();
 			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
 
 			$this->context['posting_fields']['content_style']['label']['text'] = $this->txt['lp_block_content_style'];
@@ -505,6 +525,8 @@ final class BlockArea
 				$this->createBbcEditor($this->context['lp_block']['content']);
 			}
 		}
+
+		$this->context['lp_block_tab_appearance'] = true;
 
 		$this->hook('prepareBlockFields');
 

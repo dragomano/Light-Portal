@@ -24,16 +24,16 @@ function template_manage_blocks()
 			echo '
 		<thead>
 			<tr class="title_bar">
-				<th scope="col" class="icon">
+				<th scope="col" class="icon hidden-xs hidden-sm">
 					', $txt['custom_profile_icon'], '
 				</th>
 				<th scope="col" class="title">
 					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
 				</th>
-				<th scope="col" class="type">
+				<th scope="col" class="type hidden-xs hidden-sm hidden-md">
 					', $txt['lp_block_type'], '
 				</th>
-				<th scope="col" class="areas">
+				<th scope="col" class="areas hidden-xs hidden-sm">
 					', $txt['lp_block_areas'], '
 				</th>
 				<th scope="col" class="priority">
@@ -108,21 +108,29 @@ function show_block_entry(int $id, array $data)
 		x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false}"
 		x-init="$watch(\'status\', value => block.toggleStatus($el))"
 	>
-		<td class="icon">
+		<td class="icon hidden-xs hidden-sm">
 			', $data['icon'], '
 		</td>
 		<td class="title">
-			', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? '');
-
-	if (empty($title))
-		echo '<div class="hidden-sm hidden-md hidden-lg hidden-xl">', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</div>';
-
-	echo '
+			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? ''), '</div>
+			<div class="hidden-lg hidden-xl">
+				<table class="table_grid">
+					<tbody>
+						', $title ? '<tr class="windowbg">
+							<td colspan="2">' . $title . '</td>
+						</tr>' : '', '
+						<tr class="windowbg">
+							<td>', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</td>
+							<td class="hidden-md">', $data['areas'], '</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</td>
-		<td class="type">
+		<td class="type hidden-xs hidden-sm hidden-md">
 			', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
 		</td>
-		<td class="areas">
+		<td class="areas hidden-xs hidden-sm">
 			', $data['areas'], '
 		</td>
 		<td class="priority">
@@ -249,9 +257,13 @@ function template_block_post()
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
+				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>';
+
+	if ($context['lp_block_tab_appearance']) {
+		echo '
 				<input id="tab3" type="radio" name="tabs">
 				<label for="tab3" class="bg odd">', $context['lp_icon_set']['design'], '<span>', $txt['lp_tab_appearance'], '</span></label>';
+	}
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
@@ -271,13 +283,17 @@ function template_block_post()
 	template_post_tab($fields, 'access_placement');
 
 	echo '
-				</section>
+				</section>';
+
+	if ($context['lp_block_tab_appearance']) {
+		echo '
 				<section id="content-tab3" class="bg even">';
 
-	template_post_tab($fields, 'appearance');
+		template_post_tab($fields, 'appearance');
 
-	echo '
+		echo '
 				</section>';
+	}
 
 	if ($context['lp_block_tab_tuning']) {
 		echo '
@@ -313,12 +329,6 @@ function template_block_post()
 	<script>
 		const block = new Block();
 	</script>';
-
-	require_once __DIR__ . '/partials/placement.php';
-	require_once __DIR__ . '/partials/permissions.php';
-	require_once __DIR__ . '/partials/icon.php';
-	require_once __DIR__ . '/partials/title_class.php';
-	require_once __DIR__ . '/partials/content_class.php';
 }
 
 function template_show_areas_info()

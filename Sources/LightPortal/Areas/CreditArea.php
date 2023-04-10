@@ -19,6 +19,9 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
+/**
+ * See ?action=credits;sa=light_portal
+ */
 final class CreditArea
 {
 	use Helper;
@@ -165,7 +168,7 @@ final class CreditArea
 				'link' => 'https://jscolor.com',
 				'author' => 'Jan Odvárko – East Desire',
 				'license' => [
-					'name' => 'GNU GPL v3',
+					'name' => 'the GNU GPL v3',
 					'link' => 'https://jscolor.com/download/#open-source-license'
 				]
 			],

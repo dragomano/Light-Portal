@@ -10,17 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.12.22
+ * @version 07.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RandomPages extends Plugin
+class RandomPages extends Block
 {
 	public string $icon = 'fas fa-random';
 
@@ -59,7 +59,7 @@ class RandomPages extends Plugin
 		if (empty($num_pages))
 			return [];
 
-		$titles = $this->getAllTitles();
+		$titles = $this->getEntityList('title');
 
 		if ($this->db_type === 'postgresql') {
 			$request = $this->smcFunc['db_query']('', '

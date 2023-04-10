@@ -326,6 +326,15 @@
 	}
 }
 
+/* Fix for buttons on block/page post areas */
+#lp_post {
+	.centertext {
+		.button {
+			margin-left: 4px;
+		}
+	}
+}
+
 /* Checkbox toggler */
 .checkbox {
 	.valign(top);
@@ -1638,17 +1647,6 @@ section {
 
 /* Common media queriers */
 @media (max-width: 480px) {
-	.lp_default_blocks,
-	.lp_additional_blocks {
-		th,
-		td {
-			&.icon,
-			&.type,
-			&.areas {
-				display: none;
-			}
-		}
-	}
 	#lp_pages {
 		th,
 		td {
@@ -1665,16 +1663,6 @@ section {
 }
 
 @media (min-width: 481px) and (max-width: 600px) {
-	.lp_default_blocks,
-	.lp_additional_blocks {
-		th,
-		td {
-			&.title,
-			&.areas {
-				display: none;
-			}
-		}
-	}
 	.related_pages {
 		.article_list {
 			grid-template-columns: repeat(2, 1fr);
@@ -1747,7 +1735,6 @@ section {
 			}
 		}
 	}
-
 	.descbox {
 		&.alternative2 {
 			display: block;

@@ -12,12 +12,7 @@
  * @version 2.1
  */
 
-namespace Bugo\LightPortal\Lists;
-
-use Bugo\LightPortal\Entities\Page;
-
-if (! defined('SMF'))
-	die('No direct access...');
+namespace Bugo\LightPortal\Entities;
 
 interface PageListInterface
 {
@@ -28,8 +23,6 @@ interface PageListInterface
 	public function getTotalCountPages(): int;
 
 	public function showAll();
-
-	public function getList(): array;
 
 	public function getAll(int $start, int $items_per_page, string $sort): array;
 }

@@ -23,6 +23,7 @@ use Bugo\LightPortal\Front\{
 	ChosenPageArticle,
 	ChosenTopicArticle,
 };
+use IntlException;
 
 final class FrontPage
 {
@@ -36,6 +37,9 @@ final class FrontPage
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
+	/**
+	 * @throws IntlException
+	 */
 	public function show()
 	{
 		$this->middleware('light_portal_view');

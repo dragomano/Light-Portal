@@ -15,8 +15,10 @@
 namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Entities\FrontPage;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Partials\{BoardSelect, CategorySelect, PageAliasSelect, PageSelect, TopicSelect};
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,30 +26,19 @@ if (! defined('SMF'))
 final class BasicConfig
 {
 	use Helper;
-
-	private FrontPage $frontPage;
-
-	private PageRepository $pageRepository;
-
-	public function __construct()
-	{
-		$this->frontPage = new FrontPage;
-
-		$this->pageRepository = new PageRepository();
-	}
+	use Query;
 
 	/**
 	 * Output general settings
 	 *
 	 * Выводим общие настройки
+	 * @throws IntlException
 	 */
 	public function show(): void
 	{
-		$this->prepareAliasList();
-		$this->prepareTopicList();
-
-		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_base'];
-		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=basic;save';
+		$this->context['page_title']    = $this->context['settings_title'] = $this->txt['lp_base'];
+		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=basic';
+		$this->context['post_url']      = $this->context['canonical_url'] . ';save';
 
 		$this->context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
@@ -57,7 +48,7 @@ final class BasicConfig
 		// Initial settings
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_frontpage_title']))
-			$addSettings['lp_frontpage_title'] = str_replace(array("'", "\""), "", $this->context['forum_name']);
+			$addSettings['lp_frontpage_title'] = str_replace(["'", "\""], "", $this->context['forum_name']);
 		if (! isset($this->modSettings['lp_frontpage_alias']))
 			$addSettings['lp_frontpage_alias'] = 'home';
 		if (! isset($this->modSettings['lp_show_views_and_comments']))
@@ -77,17 +68,21 @@ final class BasicConfig
 			$this->txt['lp_frontpage_mode_set']
 		);
 
-		$this->context['board_list'] = $this->getBoardList();
-
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
-		$this->context['lp_frontpage_layouts'] = $this->frontPage->getLayouts();
+		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
-		$this->context['lp_all_categories'] = $this->getAllCategories();
+		$this->prepareTopicList();
 
-		$this->context['lp_all_pages'] = $this->pageRepository->getAll(0, $this->pageRepository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
+		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)();
 
-		$this->context['lp_selected_topics'] = $this->getSelectedTopics();
+		$this->context['lp_frontpage_categories_select'] = (new CategorySelect)();
+
+		$this->context['lp_frontpage_boards_select'] = (new BoardSelect)();
+
+		$this->context['lp_frontpage_topics_select'] = (new TopicSelect)();
+
+		$this->context['lp_frontpage_pages_select'] = (new PageSelect)();
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
@@ -153,52 +148,5 @@ final class BasicConfig
 		}
 
 		$this->prepareDBSettingContext($config_vars);
-	}
-
-	private function prepareAliasList(): void
-	{
-		if ($this->request()->hasNot('alias_list'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$results = $this->pageRepository->getAll(0, 30, 'alias', 'AND INSTR(LOWER(p.alias), {string:string}) > 0', ['string' => $this->smcFunc['strtolower']($search)]);
-		$results = array_column($results, 'alias');
-		array_walk($results, function (&$item) {
-			$item = ['value' => $item];
-		});
-
-		exit(json_encode($results));
-	}
-
-	private function getSelectedTopics(): array
-	{
-		if (empty($this->modSettings['lp_frontpage_topics']))
-			return [];
-
-		$request = $this->smcFunc['db_query']('', '
-			SELECT t.id_topic, m.subject
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-			WHERE t.id_topic IN ({array_int:topics})',
-			[
-				'topics' => explode(',', $this->modSettings['lp_frontpage_topics']),
-			]
-		);
-
-		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$this->censorText($row['subject']);
-
-			$topics[$row['id_topic']] = str_replace(array("'", "\""), "", $row['subject']);
-		}
-
-		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries']++;
-
-		return $topics;
 	}
 }
