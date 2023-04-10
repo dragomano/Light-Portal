@@ -25,7 +25,7 @@ function tiny_slider_images(): string
 										</td>
 									</tr>
 									<tr class="windowbg">
-										<td colspan="2">
+										<td colspan="3">
 											<input type="text" x-model="image.title" name="image_title[]" maxlength="255" placeholder="' . $txt['lp_tiny_slider']['title_placeholder'] . '">
 										</td>
 									</tr>

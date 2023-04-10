@@ -21,10 +21,10 @@ final class CategorySelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		$params['data'] = $this->getGalleryCategories();
+		$categories = $this->getGalleryCategories();
 
 		$data = [];
-		foreach ($params['data'] as $id => $title) {
+		foreach ($categories as $id => $title) {
 			$data[] = [
 				'label' => $title,
 				'value' => $id

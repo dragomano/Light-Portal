@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 09.04.23
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -27,8 +27,8 @@ class TinyPortal extends Plugin
 	public function addAdminAreas(array &$admin_areas)
 	{
 		if ($this->user_info['is_admin']) {
-			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = [$this->txt['lp_tiny_portal']['label_name']];
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = [$this->txt['lp_tiny_portal']['label_name']];
+			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal']['label_name']];
+			$admin_areas['lp_portal']['areas']['lp_pages']['subsections']['import_from_tp']  = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal']['label_name']];
 		}
 	}
 
