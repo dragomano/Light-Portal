@@ -19,8 +19,6 @@ I denne delen kan du fullt ut tilpasse portalens forsideside, aktiver hvilemodus
     * Valgte emner
     * Valgte tavler
 * Forsidetittel — du kan endre navnet på portalen som brukes som sidetittel og tittelen på nettleserfanen.
-* Kategorier - kilder til artikler for forsiden — lar deg velge portalkategorier for disse forsideinnstillingene: "Alle sider fra valgte kategorier".
-* Tavler - kilder til artikler for frontsiden — lar deg velge tavler til disse frontside-modusene: "Alle emner fra valgte tavler", og "Valgt tavle".
 * Vis bilder som finnes i artikler — sjekk om det skal vises bilder i siders tekst eller emner.
 * URL-adressen til standard plassholderbilde — hvis alternativet ovenfor er aktivert. men bildet finnes ikke i teksten, den er angitt her og vil bli brukt.
 * Vis artikkelsammendrag
@@ -45,7 +43,8 @@ I denne delen kan du fullt ut tilpasse portalens forsideside, aktiver hvilemodus
 * Send alle unntatt administratorer fra å lage PHP-sider og PHP-blokker.
 * Hvem kan se portalelementene – etter "elementer" mener vi blokker og sider.
 * Hvem kan administrere egne blokker - du kan velge brukergrupper som kan opprette, redigere og slette blokker, bare synlig for dem.
-* Hvem kan administrere egne sider - kan du velge brukergrupper som kan opprette, redigere og slette sider.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Hvem kan poste portalen sider uten godkjenning - kan du velge brukergrupper som vil kunne legge inn portalsider uten moderasjon.
 
 ## Sider og blokker

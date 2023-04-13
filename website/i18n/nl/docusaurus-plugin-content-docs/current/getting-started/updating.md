@@ -3,9 +3,15 @@ sidebar_position: 2
 ---
 
 # Bijwerken van uw versie
-Als er geen notities in het logboek van de laatste versie staan, het is genoeg om de mappen te extraheren `Thema's` en`Bronnen` uit het wijzigingsarchief naar de hoofdmap van uw forum, over de bestaande en de update zal correct zijn. Maar het is het beste om de huidige versie te verwijderen voordat de nieuwe versie geïnstalleerd is. Tegelijkertijd wanneer het wijzigingspakket wordt verwijderd **Selecteer NIET** het voorgestelde vakje als je alle blokken en pagina's die je in de database hebt gemaakt wilt opslaan. Daarna kun je de nieuwe versie installeren en verder werken.
+Als er geen notities in het logboek van de laatste versie staan, het is genoeg om de mappen te extraheren `Thema's` en`Bronnen` uit het wijzigingsarchief naar de hoofdmap van uw forum, over de bestaande en de update zal correct zijn. Maar het is het beste om de huidige versie te verwijderen voordat de nieuwe versie geïnstalleerd is.
 
-![De-installeren](uninstall.png)
+:::info
+
+Since version 2.1.1 you can upgrade without uninstalling the previous version. Simply download the new archive, go to the Package Manager and click "Upgrade" button next to the uploaded package.
+
+![Updating](upgrade.png)
+
+:::
 
 ## Probleemoplossing
 

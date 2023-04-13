@@ -19,8 +19,6 @@ In deze sectie kunt u de portalvoorpagina volledig aanpassen, standalone modus i
     * Geselecteerde onderwerpen
     * Geselecteerde boards
 * De titel van de voorpagina - u kunt de naam van het portaal wijzigen die wordt gebruikt als paginatitel en de titel van het tabblad van de browser.
-* Categorieën - bronnen van artikelen voor de frontpagina - staat u toe om portalcategorieën te selecteren voor deze frontpagina-modus: "Alle pagina's van geselecteerde categorieën".
-* Boards - bronnen van artikelen voor de frontpagina - stelt u in staat om boards te selecteren voor deze frontpagina-modus: "Alle onderwerpen van geselecteerde boards", en "Geselecteerd bord".
 * Toon afbeeldingen die gevonden zijn in artikelen — controleer of afbeeldingen weergegeven worden in de tekst van pagina's of topics.
 * URL van de standaard placeholder afbeelding - als de optie hierboven is ingeschakeld maar de afbeelding is niet gevonden in de tekst, de afbeelding die hier is opgegeven zal worden gebruikt.
 * Toon de samenvatting van het artikel
@@ -45,7 +43,8 @@ In deze sectie kunt u de portalvoorpagina volledig aanpassen, standalone modus i
 * Verbiedt alle behalve beheerders het maken van PHP pagina's en PHP blokken.
 * Wie kan de portalelementen bekijken - met "elementen" bedoelen we blokken en pagina's.
 * Wie kan eigen blokken beheren - je kunt gebruikersgroepen kiezen die blokken kunnen maken, bewerken en verwijderen, die alleen voor hen zichtbaar zijn.
-* Wie kan eigen pagina's beheren — u kunt gebruikersgroepen kiezen die pagina's maken, bewerken en verwijderen.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Wie kan de portalpagina's zonder goedkeuring posten - u kunt gebruikersgroepen kiezen die portalpagina's zonder moderatie kunnen plaatsen.
 
 ## Pagina's en blokken

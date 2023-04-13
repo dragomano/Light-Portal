@@ -84,11 +84,5 @@ Pokud plugin potřebuje načíst data pomocí funkcí SSI, použijte vestavěnou
     $data = $this->getFromSsi('topics', 'views', 10, 'array');
 ```
 
-:::caution
-
-Bez souboru SSI.php nebude výše uvedená metoda fungovat.
-
-:::
-
 ## Používá se editor
 Plugin může používat knihovny třetích stran nainstalované prostřednictvím Composer. Ujistěte se, že soubor `composer.json` je umístěn v adresáři plugin, který obsahuje potřebné závislosti. Před zveřejněním pluginu otevřete adresář pluginu v příkazovém řádku a spusťte příkaz: `composer install --no-dev -o`. Poté může být celý obsah adresáře pluginů zabalen jako samostatná úprava SMF (například viz balíček **PluginMaker**).

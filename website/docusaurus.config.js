@@ -66,7 +66,7 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `<a href="https://crowdin.com/project/light-portal">Help us translate / improve the documentation</a>`,
+        copyright: `<a href="https://crowdin.com/project/light-portal">Help us improve the documentation</a>`,
       },
       prism: {
         theme: lightCodeTheme,
@@ -77,7 +77,7 @@ const config = {
 
     i18n: {
       defaultLocale: 'en',
-      locales: ['en', 'ru', 'el', 'cs', 'da', 'nl', 'no', 'sv'],
+      locales: ['en', 'ru', 'el', 'cs', 'da', 'nl', 'no', 'sv', 'es'],
     },
 
     plugins: [
@@ -91,7 +91,7 @@ const config = {
       [
         require.resolve("@cmfcmf/docusaurus-search-local"),
         {
-          language: ['en', 'ru', 'da', 'nl', 'no', 'sv'],
+          language: ['en', 'ru', 'da', 'nl', 'no', 'sv', 'es'],
           indexBlog: false,
         },
       ],

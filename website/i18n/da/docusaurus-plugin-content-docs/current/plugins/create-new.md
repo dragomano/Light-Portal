@@ -14,18 +14,18 @@ Siden version 1.9 er funktionaliteten til at skabe plugins blevet flyttet til et
 ## Valg af type af plugin
 I øjeblikket er følgende typer af plugins tilgængelige:
 
-* `blok` — plugins, der tilføjer en ny type blokke til portalen
+* `block` — plugins, der tilføjer en ny type blokke til portalen
 * `ssi` — plugins (normalt blokke), der bruger SSI-funktioner til at hente data
 * `editor` — plugins, der tilføjer en tredjeparts-editor til forskellige typer indhold
 * `comment` — plugins, der tilføjer en tredjeparts kommentar widget i stedet for den indbyggede
 * `parser` — plugins, der implementerer parseren for indholdet af sider og blokke
 * `article` — plugins til behandling af indholdet af artikelkort på forsiden
-* `frontside` — plugins til ændring af portalens hovedside
+* `frontpage` — plugins til ændring af portalens hovedside
 * `impex` — plugins til import og eksport af forskellige portalelementer
 * `block_options` og `page_options` — plugins, der tilføjer yderligere parametre for den tilsvarende enhed (blok eller side)
-* `ikoner` — plugins, der tilføjer nye ikonbiblioteker til at erstatte grænsefladeelementer eller til brug i blokoverskrifter
+* `icons` — plugins, der tilføjer nye ikonbiblioteker til at erstatte grænsefladeelementer eller til brug i blokoverskrifter
 * `seo` — plugins, der på en eller anden måde påvirker synligheden af forummet på netværket
-* `andre` — plugins, der ikke er relateret til nogen af ovennævnte kategorier
+* `other` — plugins, der ikke er relateret til nogen af ovennævnte kategorier
 
 ## Opretter en plugin mappe
 Opret en separat mappe til dine plugin-filer, inde i `/Sources/LightPortal/Addons`. For eksempel, hvis dit plugin kaldes `HelloWorld`, skal mappestrukturen se sådan ud:
@@ -83,12 +83,6 @@ Hvis plugin'et skal hente data ved hjælp af SSI-funktioner, skal du bruge den i
     // Se ssi_topTopics-funktionen i SSI.php-filen
     $data = $this->getFromSsi('topTopics', 'views', 10, 'array');
 ```
-
-:::caution
-
-Uden SSI.php fil, vil ovenstående metode ikke fungere.
-
-:::
 
 ## Brug Af Komponist
 Dit plugin kan bruge tredjepartsbiblioteker installeret via Composer. Sørg for, at `composer.json` -filen er placeret i plugin-mappen, som indeholder de nødvendige afhængigheder. Før du publicerer dit plugin, skal du åbne plugin-mappen i kommandolinjen og køre kommandoen: `composer install --no-dev -o`. Derefter kan hele indholdet af plugin mappen pakkes som en separat ændring for SMF (for eksempel se **PluginMaker** pakke).

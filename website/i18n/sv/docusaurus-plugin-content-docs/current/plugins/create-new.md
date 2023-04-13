@@ -84,11 +84,5 @@ Om pluginen behöver hämta data med SSI-funktioner, använd den inbyggda `getFr
     $data = $this->getFromSsi('topics', 'views', 10, 'array');
 ```
 
-:::caution
-
-Utan SSI.php-filen fungerar inte ovanstående metod.
-
-:::
-
 ## Använder Composer
 Din plugin kan använda tredjepartsbibliotek installerade via Composer. Se till att filen `composer.json` finns i plugin-katalogen, som innehåller nödvändiga beroenden. Innan du publicerar din plugin, öppna plugin-katalogen i kommandoraden och kör kommandot: `composer install --no-dev -o`. Efter det kan hela innehållet i plugin-katalogen paketeras som en separat ändring för SMF (till exempel se **PluginMaker** -paketet).

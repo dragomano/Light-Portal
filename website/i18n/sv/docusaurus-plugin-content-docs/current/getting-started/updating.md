@@ -3,9 +3,15 @@ sidebar_position: 2
 ---
 
 # Uppdaterar din version
-Om det inte finns några anteckningar i ändringsloggen av den senaste versionen, det räcker med att extrahera katalogerna `Teman` och`Källor` från ändringsarkivet till roten av ditt forum, över de befintliga, och uppdateringen kommer att vara korrekt. Men det är bäst att avinstallera den aktuella versionen innan du installerar den nya versionen. At the same time, when deleting the modification package, **DO NOT** check the suggested box if you want to save all the blocks and pages you created in the database. Efter det, installera den nya versionen och fortsätta att arbeta.
+Om det inte finns några anteckningar i ändringsloggen av den senaste versionen, det räcker med att extrahera katalogerna `Teman` och`Källor` från ändringsarkivet till roten av ditt forum, över de befintliga, och uppdateringen kommer att vara korrekt. Men det är bäst att avinstallera den aktuella versionen innan du installerar den nya versionen.
 
-![Avinstallera](uninstall.png)
+:::info
+
+Since version 2.1.1 you can upgrade without uninstalling the previous version. Simply download the new archive, go to the Package Manager and click "Upgrade" button next to the uploaded package.
+
+![Updating](upgrade.png)
+
+:::
 
 ## Felsökning
 

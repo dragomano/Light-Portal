@@ -3,9 +3,15 @@ sidebar_position: 2
 ---
 
 # Oppdaterer versjonen
-Hvis det er ingen merknader i endringsloggen til den siste versjonen, det er nok til å trekke ut katalogene `temaer` og`kilder` fra modifikasjonsarkivet til roten av ditt forum, over de eksisterende, og oppdateringen vil være riktig. Men det er best å avinstallere denne versjonen før du installerer den nye versjonen. Samtidig når pakken slettes **IKKE** kryss av i den foreslåtte boksen hvis du ønsker å lagre alle blokker og sider som du har opprettet i databasen. Installer den nye versjonen og fortsett å fungere.
+Hvis det er ingen merknader i endringsloggen til den siste versjonen, det er nok til å trekke ut katalogene `temaer` og`kilder` fra modifikasjonsarkivet til roten av ditt forum, over de eksisterende, og oppdateringen vil være riktig. Men det er best å avinstallere denne versjonen før du installerer den nye versjonen.
 
-![Avinstallerer](uninstall.png)
+:::info
+
+Since version 2.1.1 you can upgrade without uninstalling the previous version. Simply download the new archive, go to the Package Manager and click "Upgrade" button next to the uploaded package.
+
+![Updating](upgrade.png)
+
+:::
 
 ## Feilsøking
 

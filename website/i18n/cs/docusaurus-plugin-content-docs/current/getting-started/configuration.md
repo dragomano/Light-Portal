@@ -19,8 +19,6 @@ V této sekci můžete plně přizpůsobit stránky portálu, povolit samostatn�
     * Vybraná témata
     * Vybrané tabule
 * Název stránky — můžete změnit název portálu používaného jako název stránky a název záložky prohlížeče.
-* Kategorie - zdroje článků pro webové stránky — umožňuje vybrat kategorie portálů pro tyto módy webových stránek: "Všechny stránky z vybraných kategorií".
-* Tabule - zdroje článků pro webové stránky — umožňují vybrat tabule pro tyto módy webových stránek: "Všechna témata z vybraných panelů", a "Vybraná deska".
 * Zobrazit obrázky nalezené v článcích - zkontrolujte, zda zobrazit obrázky nalezené v textu stránek nebo témat.
 * URL výchozího zástupného obrázku – pokud je výše uvedená volba povolena, ale obrázek nebyl nalezen v textu, bude použit zde zadaný obrázek.
 * Zobrazit shrnutí článku
@@ -45,7 +43,8 @@ V této sekci můžete plně přizpůsobit stránky portálu, povolit samostatn�
 * Zakázat všem kromě administrátorů vytvářet PHP stránky a PHP bloky.
 * Kdo může zobrazit prvky portálu — pomocí "prvků" myslíme bloky a stránky.
 * Kdo může spravovat vlastní bloky — můžete si vybrat uživatelské skupiny, které mohou bloky vytvářet, upravovat a odstraňovat, viditelné pouze pro ně.
-* Kdo může spravovat vlastní stránky — můžete si vybrat uživatelské skupiny, které mohou vytvářet, upravovat a mazat stránky.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Kdo může odeslat stránky portálu bez schválení — můžete si vybrat uživatelské skupiny, které budou moci posílat stránky portálu bez moderování.
 
 ## Stránky a bloky

@@ -84,11 +84,5 @@ Als de plugin gegevens moet ophalen met behulp van SSI-functies, gebruik dan de 
     $data = $this->getFromSsi('topTopics', 'views', 10, 'array');
 ```
 
-:::caution
-
-Zonder SSI.php bestand zal de bovenstaande methode niet werken.
-
-:::
-
 ## Gebruik componist
 Uw plugin kan gebruik maken van bibliotheken van derden die zijn geïnstalleerd via Composer. Zorg ervoor dat het bestand `composer.json` zich bevindt in de plugin directory, die de benodigde afhankelijkheden bevat. Voordat u de plugin publiceert, open de plugin map in de command line en voer de opdracht uit: `composer install --no-dev -o`. Daarna kan de gehele inhoud van de plugin directory worden verpakt als een afzonderlijke wijziging voor SMF (bijvoorbeeld zie **PluginMaker** pakket).

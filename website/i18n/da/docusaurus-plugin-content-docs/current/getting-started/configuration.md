@@ -19,8 +19,6 @@ I dette afsnit kan du fuldt ud tilpasse portalens forside, aktivere standalone t
     * Valgte emner
     * Valgte tavler
 * Forsiden titel - du kan ændre navnet på portalen, der bruges som sidetitel og titlen på browseren fanen.
-* Kategorier - artikler til forsiden - giver dig mulighed for at vælge portal kategorier for disse forside-tilstande: "Alle sider fra udvalgte kategorier".
-* Tavler - artikler til forsiden - giver dig mulighed for at vælge tavler til disse forsidetilstande: "Alle emner fra udvalgte tavler", og "Valgte tavle".
 * Vis billeder, der findes i artikler - tjek om billeder fundet i teksten på sider eller emner.
 * URL for standardpladsholder-billedet — hvis indstillingen ovenfor er aktiveret, men billedet er ikke fundet i teksten, den der er angivet her vil blive brugt.
 * Vis artikeloversigt
@@ -45,7 +43,8 @@ I dette afsnit kan du fuldt ud tilpasse portalens forside, aktivere standalone t
 * Forvis alle undtagen administratorer fra at oprette PHP sider og PHP blokke.
 * Hvem kan se portalelementerne — ved "elementer" mener vi blokke og sider.
 * Hvem kan administrere egne blokke - du kan vælge brugergrupper, der kan oprette, redigere og slette blokke, kun synlige for dem.
-* Hvem kan administrere egne sider - du kan vælge brugergrupper, der kan oprette, redigere og slette sider.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Hvem kan sende portalsider uden godkendelse - du kan vælge brugergrupper, der vil være i stand til at sende portalsider uden moderation.
 
 ## Sider og blokke

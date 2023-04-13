@@ -3,9 +3,15 @@ sidebar_position: 2
 ---
 
 # Opdaterer din version
-Hvis der ikke er nogen noter i ændringsloggen til den seneste version, det er nok at udtrække mapperne `Temaer` og`Kilder` fra ændringsarkivet til roden af dit forum, over de eksisterende, og opdateringen vil være korrekt. Men det er bedst at afinstallere den aktuelle version, før du installerer den nye version. Samtidig ved sletning af ændringspakken, **Afkryds IKKE** den foreslåede boks, hvis du vil gemme alle de blokke og sider, du har oprettet i databasen. Derefter skal du installere den nye version og fortsætte med at arbejde.
+Hvis der ikke er nogen noter i ændringsloggen til den seneste version, det er nok at udtrække mapperne `Temaer` og`Kilder` fra ændringsarkivet til roden af dit forum, over de eksisterende, og opdateringen vil være korrekt. Men det er bedst at afinstallere den aktuelle version, før du installerer den nye version.
 
-![Afinstallerer](uninstall.png)
+:::info
+
+Since version 2.1.1 you can upgrade without uninstalling the previous version. Simply download the new archive, go to the Package Manager and click "Upgrade" button next to the uploaded package.
+
+![Updating](upgrade.png)
+
+:::
 
 ## Fejlfinding
 

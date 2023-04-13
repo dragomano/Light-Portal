@@ -19,8 +19,6 @@ I det här avsnittet kan du anpassa portalens framsida, aktivera fristående lä
     * Valda ämnen
     * Valda tavlor
 * Huvudsidans titel — du kan ändra namnet på portalen som används som sidtitel och titeln på webbläsarfliken.
-* Kategorier - källor till artiklar för framsidan — låter dig välja portalkategorier för dessa framsidslägen: "Alla sidor från valda kategorier".
-* Tavlor - källor till artiklar för framsidan — låter dig välja tavlor för dessa framsidslägen: "Alla ämnen från valda tavlor", och "Vald tavla".
 * Visa bilder som finns i artiklar — kontrollera om du vill visa bilder som finns i texten på sidor eller ämnen.
 * URL för standard platshållare bild — om alternativet ovan är aktiverat, men bilden finns inte i texten, den som anges här kommer att användas.
 * Visa sammanfattningen av artikeln
@@ -45,7 +43,8 @@ I det här avsnittet kan du anpassa portalens framsida, aktivera fristående lä
 * Förbjud alla utom administratörer att skapa PHP-sidor och PHP-block.
 * Vem kan se portalelementen – med "element" menar vi block och sidor.
 * Vem kan hantera egna block – du kan välja användargrupper som kan skapa, redigera och ta bort block, endast synliga för dem.
-* Vem kan hantera egna sidor — du kan välja användargrupper som kan skapa, redigera och ta bort sidor.
+* Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
+* Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Vem kan posta portalsidorna utan godkännande — du kan välja användargrupper som kommer att kunna posta portalsidor utan moderation.
 
 ## Sidor och block

@@ -84,11 +84,5 @@ Hvis utvidelsen må hente noen data ved hjelp av SSI-funksjoner, bruk innebygget
     $data = $this->getFromSsi('toptopTopics', 'views', 10, 'array');
 ```
 
-:::caution
-
-Uten SSI.php-filen vil ikke ovennevnte metode fungere.
-
-:::
-
 ## Bruke komponist
 Plugin kan bruke tredjeparts biblioteker installert gjennom komponist. Pass på at filen `composer.json` ligger i plugin mappen som inneholder de nødvendige avhengighetene. Før du publiserer din plugin, åpne plugin mappen i kommandolinjen og kjør kommandoen: `composer install --no-dev -o`. Deretter kan hele innholdet i plugin mappen pakkes som en separat modifikasjon for SMF (for eksempel se **PluginMaker** pakke).
