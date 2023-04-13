@@ -250,8 +250,13 @@ function template_block_post()
 
 	$fields = $context['posting_fields'];
 
+	$titles = '';
+	foreach ($context['languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': \'' . ($context['lp_block']['title'][$lang['filename']] ?? '') . '\'';
+	}
+
 	echo '
-	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }">
+	<form id="lp_post" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '" onsubmit="submitonce(this);" x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\'', $titles, ' }">
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>

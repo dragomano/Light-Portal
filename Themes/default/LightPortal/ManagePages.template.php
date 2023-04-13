@@ -36,6 +36,11 @@ function template_page_post()
 
 	$fields = $context['posting_fields'];
 
+	$titles = '';
+	foreach ($context['languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': \'' . ($context['lp_page']['title'][$lang['filename']] ?? '') . '\'';
+	}
+
 	echo '
 	<form
 		id="lp_post"
@@ -43,7 +48,7 @@ function template_page_post()
 		method="post"
 		accept-charset="', $context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }"
+		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\'', $titles, ' }"
 	>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
@@ -89,7 +94,6 @@ function template_page_post()
 			</div>
 		</div>
 	</form>
-	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
 		const page = new Page();
 	</script>';

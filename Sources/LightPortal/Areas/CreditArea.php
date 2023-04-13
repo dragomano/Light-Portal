@@ -138,11 +138,11 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Transliteration',
-				'link' => 'https://github.com/dzcpy/transliteration',
+				'title' => 'Alpine JS Slug',
+				'link' => 'https://github.com/markmead/alpinejs-slug',
 				'license' => [
 					'name' => 'the MIT License',
-					'link' => 'https://github.com/dzcpy/transliteration/blob/master/LICENSE.txt'
+					'link' => 'https://github.com/markmead/alpinejs-slug/blob/main/LICENSE'
 				]
 			],
 			[

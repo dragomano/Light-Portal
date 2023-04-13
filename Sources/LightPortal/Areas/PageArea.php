@@ -750,7 +750,7 @@ final class PageArea
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'x-ref'     => 'alias',
+				'x-slug.replacement._' => 'title_' . $this->user_info['language'],
 			],
 		];
 

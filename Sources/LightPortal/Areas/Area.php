@@ -69,15 +69,15 @@ trait Area
 				</nav>';
 		}
 
-		$i = 0;
 		foreach ($this->context['languages'] as $lang) {
 			$this->context['posting_fields']['title']['input']['html'] .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
 					<input
 						type="text"
 						name="title_' . $lang['filename'] . '"
+						x-model="title_' . $lang['filename'] . '"
 						value="' . ($this->context['lp_' . $entity]['title'][$lang['filename']] ?? '') . '"
-						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i++ . '"' . ($required ? ' required' : '') : '') . '
+						' . (in_array($lang['filename'], $languages) && $required ? ' required' : '') . '
 					>
 				</div>';
 		}
