@@ -26,9 +26,9 @@ The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via
 * Tree comments for pages.
 * Open Graph markup for pages and comments.
 * Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
-* Built-in ad manager (AdsBlock addon).
+* Built-in ad manager (AdsBlock plugin).
 * Import and export for pages and blocks.
-* Support for addons (+ Plugin Maker).
+* Support for plugins (+ PluginMaker).
 * Support for standalone mode.
 
 ## Описание

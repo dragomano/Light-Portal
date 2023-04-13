@@ -6,7 +6,7 @@
 	<version>2.1.2</version>
 	<type>modification</type>
 
-	<upgrade from="2.1" for="2.1.*">
+	<upgrade from="2.1.*" for="2.1.*">
 		<require-dir name="Sources" destination="$boarddir" />
 		<require-dir name="Themes" destination="$boarddir" />
 	</upgrade>

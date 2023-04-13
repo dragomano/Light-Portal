@@ -18,7 +18,6 @@
             <exclude name="Sources/LightPortal/Addons/Disqus/**" />
             <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
             <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
-            <exclude name="Sources/LightPortal/Addons/GalleryFrontPage/**" />
             <exclude name="Sources/LightPortal/Addons/Giscus/**" />
             <exclude name="Sources/LightPortal/Addons/KarmaPostRating/**" />
             <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
