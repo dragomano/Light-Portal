@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 29.03.23
+ * @version 13.04.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -24,23 +24,23 @@ class Chat
 {
 	use Helper;
 
-	public function getMessages(int $block_id): array
+	public function getMessages(int $block_id = 0): array
 	{
 		$request = $this->smcFunc['db_query']('', '
 			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at,
 				mem.real_name
 			FROM {db_prefix}lp_simple_chat_messages AS chat
-				INNER JOIN {db_prefix}members AS mem ON (chat.user_id = mem.id_member)
-			WHERE block_id = {int:block_id}
+				INNER JOIN {db_prefix}members AS mem ON (chat.user_id = mem.id_member)' . ($block_id ? '
+			WHERE chat.block_id = {int:id}' : '') . '
 			ORDER BY chat.created_at DESC',
 			[
-				'block_id' => $block_id,
+				'id' => $block_id,
 			]
 		);
 
 		$messages = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
-			$messages[] = [
+			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
 				'message'    => parse_bbc($row['message']),
@@ -55,7 +55,7 @@ class Chat
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $messages;
+		return $block_id ? $messages[$block_id] : $messages;
 	}
 
 	public function addMessage(): void
