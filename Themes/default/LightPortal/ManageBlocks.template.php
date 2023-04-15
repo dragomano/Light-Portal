@@ -340,8 +340,6 @@ function template_show_areas_info()
 {
 	global $txt, $context;
 
-	echo $txt['lp_block_areas_subtext'] . '<br>';
-
 	echo '
 	<table class="table_grid">
 		<thead>

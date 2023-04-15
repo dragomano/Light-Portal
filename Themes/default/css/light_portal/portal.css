@@ -1387,6 +1387,9 @@ section #display_head span {
   cursor: pointer;
   border-radius: 0;
 }
+.vscomp-value-tag[data-value^="!"] {
+  background: greenyellow;
+}
 .vscomp-value {
   height: auto !important;
 }

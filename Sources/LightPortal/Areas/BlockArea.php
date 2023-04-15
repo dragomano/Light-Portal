@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Partials\{ContentClassSelect, IconSelect, TitleClassSelect};
+use Bugo\LightPortal\Partials\{AreaSelect, ContentClassSelect, IconSelect, TitleClassSelect};
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -463,18 +463,10 @@ final class BlockArea
 	}', true);
 		}
 
-		$this->context['posting_fields']['areas']['label']['text'] = $this->txt['lp_block_areas'];
-		$this->context['posting_fields']['areas']['input'] = [
-			'type'       => 'text',
-			'after'      => $this->getAreasInfo(),
-			'tab'        => 'access_placement',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['areas'],
-				'required'  => true,
-				'pattern'   => self::AREAS_PATTERN,
-			],
-		];
+		$this->context['posting_fields']['areas']['label']['html']  = '<label for="areas">' . $this->txt['lp_block_areas'] . '</label>';
+		$this->context['posting_fields']['areas']['input']['html']  = (new AreaSelect)();
+		$this->context['posting_fields']['areas']['input']['tab']   = 'access_placement';
+		$this->context['posting_fields']['areas']['input']['after'] = $this->getAreasInfo();
 
 		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
 		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)();
