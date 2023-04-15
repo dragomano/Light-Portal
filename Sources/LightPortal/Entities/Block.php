@@ -50,8 +50,12 @@ final class Block
 
 			$this->context['lp_blocks'][$data['placement']][$item] = $data;
 
-			$title = $this->getTranslatedTitle($data['title']);
-			$icon  = $this->getIcon($this->context['lp_blocks'][$data['placement']][$item]['icon']);
+			if (empty($data['parameters']['hide_header'])) {
+				$title = $this->getTranslatedTitle($data['title']);
+				$icon  = $this->getIcon($this->context['lp_blocks'][$data['placement']][$item]['icon']);
+			} else {
+				$title = $icon = '';
+			}
 
 			$this->context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
