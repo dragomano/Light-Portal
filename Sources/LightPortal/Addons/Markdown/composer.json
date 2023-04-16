@@ -1,5 +1,10 @@
 {
     "require": {
         "league/commonmark": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bugo\\LightPortal\\Addons\\Markdown\\Smf\\": "smf/"
+        }
     }
 }

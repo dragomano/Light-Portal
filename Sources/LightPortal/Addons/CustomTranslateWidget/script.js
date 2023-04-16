@@ -1,14 +1,12 @@
 class YandexTranslate {
 	constructor(params) {
 		this.baseLang = params.baseLang ?? 'en'
-		this.id = 'ytWidget' + (params.id ?? '')
-
 		this.init()
 	}
 
 	init() {
 		let script = document.createElement('script');
-		script.src = `https://translate.yandex.net/website-widget/v1/widget.js?widgetId=${this.id}&pageLang=${this.baseLang}&widgetTheme=light&autoMode=false`;
+		script.src = `https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget&pageLang=${this.baseLang}&widgetTheme=light&autoMode=false`;
 		document.getElementsByTagName('head')[0].appendChild(script);
 
 		let code = this.getCode();

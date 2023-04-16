@@ -10,97 +10,57 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.04.23
+ * @version 16.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslateWidget;
 
-use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CustomTranslateWidget extends Block
+class CustomTranslateWidget extends Plugin
 {
-	public string $icon = 'fas fa-language';
+	public string $type = 'other';
 
 	private array $langCodes = ['ar', 'de', 'el', 'en', 'eo', 'es', 'fr', 'hi', 'it', 'nl', 'pt', 'ru', 'sv', 'tr', 'uk', 'zh'];
 
 	private array $langTitles = ['عربي', 'Deutsch', 'Ελληνικά', 'English', 'Esperanto', 'Español', 'Français', 'हिन्दी', 'Italiano', 'Nederlands', 'Português', 'Русский', 'Svenska', 'Türkçe', 'Українська', '中文 (简体)'];
 
-	public function __construct()
+	public function init()
 	{
-		$this->forumLang = substr($this->language, 0, 2);
-	}
-
-	public function blockOptions(array &$options)
-	{
-		$options['custom_translate_widget']['no_content_class'] = true;
-
-		$options['custom_translate_widget']['parameters'] = [
-			'languages' => '',
-		];
-	}
-
-	public function validateBlockData(array &$parameters, string $type)
-	{
-		if ($type !== 'custom_translate_widget')
+		if (isset($this->context['uninstalling']) || $this->request()->has('xml') || empty($this->context['lp_custom_translate_widget_plugin']['languages']))
 			return;
 
-		$parameters['languages'] = FILTER_DEFAULT;
+		if ($this->context['browser']['is_mobile'] || $this->context['browser']['possibly_robot'] || $this->context['current_action'] === 'helpadmin')
+			return;
+
+		if (in_array($this->context['current_action'], ['jsmodify', 'quotefast', 'xmlhttp']) || $this->context['current_subaction'] === 'showoperations')
+			return;
+
+		$forumLang = substr($this->language, 0, 2);
+
+		$this->addInlineJavaScript('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
+
+		$this->context['ctw_languages'] = array_unique(array_merge([$forumLang], explode(',', $this->context['lp_custom_translate_widget_plugin']['languages'])));
+
+		$this->context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
+
+		$this->setTemplate()->withLayer('custom_translate_widget');
 	}
 
-	public function prepareBlockFields()
+	public function addSettings(array &$config_vars)
 	{
-		if ($this->context['lp_block']['type'] !== 'custom_translate_widget')
-			return;
-
-		$this->context['lp_block_tab_appearance'] = false;
-
-		$this->context['posting_fields']['title'] = ['no'];
-
-		$this->context['custom_translate_widget_languages'] = array_combine($this->langCodes, $this->txt['lp_custom_translate_widget']['languages_set']);
-
-		if (isset($this->context['custom_translate_widget_languages'][$this->forumLang]))
-			unset($this->context['custom_translate_widget_languages'][$this->forumLang]);
-
-		$this->context['posting_fields']['languages']['label']['html'] = '<label for="languages">' . $this->txt['lp_custom_translate_widget']['languages'] . '</label>';
-		$this->context['posting_fields']['languages']['input']['html'] = (new LanguageSelect)();
-		$this->context['posting_fields']['languages']['input']['tab']  = 'content';
+		$config_vars['custom_translate_widget'][] = ['callback', 'languages', [$this, 'selectLanguages']];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function selectLanguages()
 	{
-		if ($type !== 'custom_translate_widget' || isBrowser('is_mobile') || isBrowser('possibly_robot'))
-			return;
-
-		if (empty($parameters['languages']))
-			return;
-
-		$this->addInlineJavaScript('new YandexTranslate({baseLang: "' . $this->forumLang . '", id: "' . $block_id . '"});', true);
-
-		$languages = array_unique(array_merge([$this->forumLang], explode(',', $parameters['languages'])));
-
-		$lang_titles = array_combine($this->langCodes, $this->langTitles);
-
-		echo '
-		<div class="lang lang_fixed">
-			<div id="ytWidget', $block_id, '" style="display: none"></div>
-			<div class="lang__link lang__link_select" data-lang-active="">
-				<div class="lang__code lang_', $this->txt['lang_dictionary'], '"></div>
-			</div>
-			<div class="lang__list" data-lang-list="" translate="no">';
-
-		foreach ($languages as $lang) {
-			echo '
-				<a class="lang__link lang__link_sub" data-ya-lang="', $lang, '" title="', $lang_titles[$lang], '">
-					<div class="lang__code lang_', $lang, '"></div>
-				</a>';
-		}
-
-		echo '
-			</div>
-		</div>';
+		echo (new LanguageSelect)([
+			'data'  => array_combine($this->langCodes, $this->txt['lp_custom_translate_widget']['languages_set']),
+			'value' => $this->context['lp_custom_translate_widget_plugin']['languages'] ?? ''
+		]);
 	}
 
 	public function credits(array &$links)

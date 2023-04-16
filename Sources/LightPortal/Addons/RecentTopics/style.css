@@ -3,9 +3,8 @@
 	padding-left: 0;
 }
 
-.recent_topics li {
+.recent_topics div {
 	margin: 4px 0 0 0;
-	padding: 6px 12px;
 }
 
 .recent_topics .poster_avatar {

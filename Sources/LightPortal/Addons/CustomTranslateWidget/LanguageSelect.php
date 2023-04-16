@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.04.23
+ * @version 16.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslateWidget;
@@ -22,8 +22,6 @@ final class LanguageSelect extends AbstractPartial
 	public function __invoke(array $params = []): string
 	{
 		$params['id'] ??= 'languages';
-		$params['value'] ??= $this->context['lp_block']['options']['parameters']['languages'] ?? '';
-		$params['data'] ??= $this->context['custom_translate_widget_languages'];
 		$params['multiple'] ??= true;
 
 		$data = $items = [];
@@ -39,6 +37,7 @@ final class LanguageSelect extends AbstractPartial
 		}
 
 		return /** @lang text */ '
+		<label for="languages">' . $this->txt['lp_custom_translate_widget']['languages'] . '</label>
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({

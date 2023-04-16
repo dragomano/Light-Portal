@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 15.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -40,16 +40,12 @@ class CodeMirror extends Plugin
 		if (empty($modes = $this->jsonDecode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
 			return;
 
-		if (($object['type'] === 'html' || (isset($object['options']['content']) && $object['options']['content'] === 'html')) && $modes['html'] === 1) {
-			$current_mode = 'html';
-		} elseif (($object['type'] === 'php' || (isset($object['options']['content']) && $object['options']['content'] === 'php')) && $modes['php'] === 1) {
-			$current_mode = 'php';
-		} elseif (($object['type'] === 'markdown' || (isset($object['options']['content']) && $object['options']['content'] === 'markdown')) && $modes['markdown'] === 1) {
-			$current_mode = 'markdown';
-		} elseif (($object['type'] === 'pug' || (isset($object['options']['content']) && $object['options']['content'] === 'pug')) && $modes['pug'] === 1) {
-			$current_mode = 'pug';
-		} elseif (($object['type'] === 'twig' || (isset($object['options']['content']) && $object['options']['content'] === 'twig')) && $modes['twig'] === 1) {
-			$current_mode = 'twig';
+		$types = ['html', 'php', 'markdown', 'pug', 'twig'];
+		foreach ($types as $type) {
+			if (($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type)) && $modes[$type] === 1) {
+				$current_mode = $type;
+				break;
+			}
 		}
 
 		if (empty($current_mode))
