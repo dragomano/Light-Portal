@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 16.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -216,6 +216,7 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : ['english', $this->language];
+		$languages = array_unique(array_merge(['english'], $languages));
 
 		$this->context['posting_fields']['name']['label']['text'] = $this->txt['lp_plugin_maker']['name'];
 		$this->context['posting_fields']['name']['input'] = [
@@ -291,7 +292,7 @@ class Handler extends Plugin
 						name="description_' . $lang['filename'] . '"
 						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"
 						placeholder="' . $this->txt['lp_page_description'] . '"
-						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '" required' : '') . '
+						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === 'english' ? ' required' : '') . '
 					>
 				</div>';
 		}
