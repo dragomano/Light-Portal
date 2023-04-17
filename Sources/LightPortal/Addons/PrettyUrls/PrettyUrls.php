@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 16.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
@@ -40,7 +40,7 @@ class PrettyUrls extends Plugin
 		require_once $file;
 
 		$prettyFilters['lp-pages'] = [
-			'description' => 'Rewrite Light Portal pages URLs',
+			'description' => 'Rewrite URLs for Light Portal pages',
 			'enabled' => 0,
 			'filter' => [
 				'priority' => 30,
@@ -48,7 +48,7 @@ class PrettyUrls extends Plugin
 			],
 			'rewrite' => [
 				'priority' => 30,
-				'rule' => 'RewriteRule ^page/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
+				'rule' => 'RewriteRule ^' . LP_PAGE_PARAM . '/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
 			],
 			'title' => '<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">Light Portal</a> pages',
 		];

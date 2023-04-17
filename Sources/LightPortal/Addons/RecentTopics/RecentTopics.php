@@ -32,12 +32,12 @@ class RecentTopics extends Block
 		$options['recent_topics']['no_content_class'] =  true;
 
 		$options['recent_topics']['parameters'] = [
+			'exclude_boards'   => '',
+			'include_boards'   => '',
 			'use_simple_style' => false,
 			'show_avatars'     => false,
 			'show_icons'       => false,
 			'num_topics'       => 10,
-			'exclude_boards'   => '',
-			'include_boards'   => '',
 			'update_interval'  => 600,
 		];
 	}
@@ -47,12 +47,12 @@ class RecentTopics extends Block
 		if ($type !== 'recent_topics')
 			return;
 
+		$parameters['exclude_boards']   = FILTER_DEFAULT;
+		$parameters['include_boards']   = FILTER_DEFAULT;
 		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
 		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
 		$parameters['show_icons']       = FILTER_VALIDATE_BOOLEAN;
 		$parameters['num_topics']       = FILTER_VALIDATE_INT;
-		$parameters['exclude_boards']   = FILTER_DEFAULT;
-		$parameters['include_boards']   = FILTER_DEFAULT;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 

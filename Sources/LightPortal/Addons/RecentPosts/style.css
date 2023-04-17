@@ -3,9 +3,8 @@
 	padding-left: 0;
 }
 
-.recent_posts li {
+.recent_posts div {
 	margin: 4px 0 0 0;
-	padding: 6px 12px;
 }
 
 .recent_posts .poster_avatar {
@@ -16,4 +15,18 @@
 .recent_posts .avatar {
 	width: 40px;
 	height: 40px;
+}
+
+.recent_posts_list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	grid-gap: 4px;
+}
+
+.recent_posts_list > div {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	text-align: center;
+	margin: 0 !important;
 }

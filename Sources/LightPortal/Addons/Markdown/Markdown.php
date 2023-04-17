@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.03.23
+ * @version 15.03.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -41,18 +41,12 @@ if (! defined('LP_NAME'))
 class Markdown extends Plugin
 {
 	public string $icon = 'fab fa-markdown';
+
 	public string $type = 'parser';
 
 	public function init()
 	{
 		$this->context['lp_content_types']['markdown'] = 'Markdown';
-
-		$this->applyHook('autoload');
-	}
-
-	public function autoload(array &$classMap)
-	{
-		$classMap['Bugo\\LightPortal\\Addons\\Markdown\\Smf\\']  = 'LightPortal/Addons/Markdown/smf/';
 	}
 
 	public function parseContent(string &$content, string $type)

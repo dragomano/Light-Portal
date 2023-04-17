@@ -149,17 +149,7 @@ class Page extends PortalEntity {
 	}
 
 	change(refs) {
-		refs.type.disabled = ! document.querySelector(".pf_content textarea").value;
-
-		if (! refs.title_0.value) refs.title_0.focus();
-
-		// Create a page alias if it does not exist
-		if (refs.alias.value === '' && typeof (slugify) === 'function') {
-			refs.alias.value = slugify(refs.title_0.value, {
-				separator: '_',
-				allowedChars: 'a-zA-Z0-9_'
-			})
-		}
+		refs.type.disabled = ! document.querySelector('.pf_content textarea').value;
 	}
 
 	toggleType(form) {

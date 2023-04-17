@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Partials\{ContentClassSelect, IconSelect, TitleClassSelect};
+use Bugo\LightPortal\Partials\{AreaSelect, ContentClassSelect, IconSelect, TitleClassSelect};
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -271,6 +271,8 @@ final class BlockArea
 
 		$this->hook('blockOptions', [&$options]);
 
+		array_walk($options, fn(&$item) => $item['parameters']['hide_header'] = false);
+
 		return $options;
 	}
 
@@ -304,6 +306,13 @@ final class BlockArea
 			$parameters = [];
 
 			$this->hook('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
+
+			$parameters = array_merge(
+				[
+					'hide_header' => FILTER_VALIDATE_BOOLEAN,
+				],
+				$parameters
+			);
 
 			$post_data['parameters'] = filter_var_array($this->request()->only(array_keys($parameters)), $parameters);
 
@@ -463,18 +472,10 @@ final class BlockArea
 	}', true);
 		}
 
-		$this->context['posting_fields']['areas']['label']['text'] = $this->txt['lp_block_areas'];
-		$this->context['posting_fields']['areas']['input'] = [
-			'type'       => 'text',
-			'after'      => $this->getAreasInfo(),
-			'tab'        => 'access_placement',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['areas'],
-				'required'  => true,
-				'pattern'   => self::AREAS_PATTERN,
-			],
-		];
+		$this->context['posting_fields']['areas']['label']['html']  = '<label for="areas">' . $this->txt['lp_block_areas'] . '</label>';
+		$this->context['posting_fields']['areas']['input']['html']  = (new AreaSelect)();
+		$this->context['posting_fields']['areas']['input']['tab']   = 'access_placement';
+		$this->context['posting_fields']['areas']['input']['after'] = $this->getAreasInfo();
 
 		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
 		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)();
@@ -526,13 +527,20 @@ final class BlockArea
 			}
 		}
 
+		$this->context['posting_fields']['hide_header']['label']['text'] = $this->txt['lp_block_hide_header'];
+		$this->context['posting_fields']['hide_header']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'hide_header',
+				'checked' => (bool) ($this->context['lp_block']['options']['parameters']['hide_header'] ?? false)
+			]
+		];
+
 		$this->context['lp_block_tab_appearance'] = true;
 
 		$this->hook('prepareBlockFields');
 
 		$this->preparePostFields();
-
-		$this->context['lp_block_tab_tuning'] = $this->hasParameters($this->context['posting_fields']);
 	}
 
 	private function getAreasInfo(): string
@@ -561,26 +569,6 @@ final class BlockArea
 		template_show_areas_info();
 
 		return ob_get_clean();
-	}
-
-	/**
-	 * Check whether there are any parameters on the $check_value tab
-	 *
-	 * Проверяем, есть ли какие-нибудь параметры на вкладке $check_value
-	 */
-	private function hasParameters(array $data = [], string $check_key = 'tab', string $check_value = 'tuning'): bool
-	{
-		if (empty($data))
-			return false;
-
-		$result = [];
-		foreach (new RecursiveIteratorIterator(new RecursiveArrayIterator($data), RecursiveIteratorIterator::LEAVES_ONLY) as $key => $value) {
-			if ($check_key === $key) {
-				$result[] = $value;
-			}
-		}
-
-		return in_array($check_value, $result);
 	}
 
 	private function prepareEditor(): void

@@ -36,6 +36,11 @@ function template_page_post()
 
 	$fields = $context['posting_fields'];
 
+	$titles = '';
+	foreach ($context['languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': \'' . ($context['lp_page']['title'][$lang['filename']] ?? '') . '\'';
+	}
+
 	echo '
 	<form
 		id="lp_post"
@@ -43,16 +48,18 @@ function template_page_post()
 		method="post"
 		accept-charset="', $context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\' }"
+		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\'', $titles, ' }"
 	>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
 				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $context['lp_icon_set']['spider'], '<span>', $txt['lp_tab_seo'], '</span></label>
+				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
 				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $context['lp_icon_set']['tools'], '<span>', $txt['lp_tab_tuning'], '</span></label>
+				<label for="tab3" class="bg odd">', $context['lp_icon_set']['spider'], '<span>', $txt['lp_tab_seo'], '</span></label>
+				<input id="tab4" type="radio" name="tabs">
+				<label for="tab4" class="bg odd">', $context['lp_icon_set']['tools'], '<span>', $txt['lp_tab_tuning'], '</span></label>
 				<section id="content-tab1" class="bg even">';
 
 	template_post_tab($fields);
@@ -61,11 +68,17 @@ function template_page_post()
 				</section>
 				<section id="content-tab2" class="bg even">';
 
-	template_post_tab($fields, 'seo');
+	template_post_tab($fields, 'access_placement');
 
 	echo '
 				</section>
 				<section id="content-tab3" class="bg even">';
+
+	template_post_tab($fields, 'seo');
+
+	echo '
+				</section>
+				<section id="content-tab4" class="bg even">';
 
 	template_post_tab($fields, 'tuning');
 
@@ -89,7 +102,6 @@ function template_page_post()
 			</div>
 		</div>
 	</form>
-	<script async defer src="https://cdn.jsdelivr.net/npm/transliteration@2/dist/browser/bundle.umd.min.js"></script>
 	<script>
 		const page = new Page();
 	</script>';

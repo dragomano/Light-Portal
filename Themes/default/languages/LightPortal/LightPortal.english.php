@@ -176,7 +176,7 @@ $txt['lp_block_placement'] = 'Placement';
 $txt['lp_block_placement_set'] = ['Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer'];
 
 $txt['lp_block_areas'] = 'Display areas';
-$txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in:';
+$txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in';
 $txt['lp_block_areas_area_th'] = 'Area';
 $txt['lp_block_areas_display_th'] = 'Display';
 $txt['lp_block_areas_values'][0] = 'everywhere (use "!" to add an exclusion: <strong>all,!custom_action</strong>)';
@@ -197,6 +197,7 @@ $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_content_style'] = 'CSS content style';
+$txt['lp_block_hide_header'] = 'Hide header';
 
 // Internal blocks
 $txt['lp_bbc']['title'] = 'Custom BBCode';

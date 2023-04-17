@@ -57,7 +57,7 @@ class PageArticle extends AbstractArticle
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
-				CASE WHEN COALESCE(CAST(par.value AS integer), 0) > 0 THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
+				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
 				GREATEST(p.created_at, p.updated_at) AS date, cat.name AS category_name, mem.real_name AS author_name,
 				com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name, com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p

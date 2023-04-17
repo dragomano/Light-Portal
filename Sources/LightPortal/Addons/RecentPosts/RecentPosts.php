@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.23
+ * @version 16.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -32,14 +32,15 @@ class RecentPosts extends Block
 		$options['recent_posts']['no_content_class'] = true;
 
 		$options['recent_posts']['parameters'] = [
-			'num_posts'       => 10,
-			'link_type'       => 'link',
-			'exclude_boards'  => '',
-			'include_boards'  => '',
-			'exclude_topics'  => '',
-			'include_topics'  => '',
-			'show_avatars'    => false,
-			'update_interval' => 600,
+			'exclude_boards'   => '',
+			'include_boards'   => '',
+			'exclude_topics'   => '',
+			'include_topics'   => '',
+			'use_simple_style' => false,
+			'show_avatars'     => false,
+			'num_posts'        => 10,
+			'link_type'        => 'link',
+			'update_interval'  => 600,
 		];
 	}
 
@@ -48,20 +49,42 @@ class RecentPosts extends Block
 		if ($type !== 'recent_posts')
 			return;
 
-		$parameters['num_posts']       = FILTER_VALIDATE_INT;
-		$parameters['link_type']       = FILTER_DEFAULT;
-		$parameters['exclude_boards']  = FILTER_DEFAULT;
-		$parameters['include_boards']  = FILTER_DEFAULT;
-		$parameters['exclude_topics']  = FILTER_DEFAULT;
-		$parameters['include_topics']  = FILTER_DEFAULT;
-		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval'] = FILTER_VALIDATE_INT;
+		$parameters['exclude_boards']   = FILTER_DEFAULT;
+		$parameters['include_boards']   = FILTER_DEFAULT;
+		$parameters['exclude_topics']   = FILTER_DEFAULT;
+		$parameters['include_topics']   = FILTER_DEFAULT;
+		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
+		$parameters['num_posts']        = FILTER_VALIDATE_INT;
+		$parameters['link_type']        = FILTER_DEFAULT;
+		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields()
 	{
 		if ($this->context['lp_block']['type'] !== 'recent_posts')
 			return;
+
+		$this->context['posting_fields']['use_simple_style']['label']['text'] = $this->txt['lp_recent_posts']['use_simple_style'];
+		$this->context['posting_fields']['use_simple_style']['input'] = [
+			'type' => 'checkbox',
+			'after' => $this->txt['lp_recent_posts']['use_simple_style_subtext'],
+			'attributes' => [
+				'id'      => 'use_simple_style',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_simple_style']
+			],
+			'tab' => 'appearance'
+		];
+
+		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_recent_posts']['show_avatars'];
+		$this->context['posting_fields']['show_avatars']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'show_avatars',
+				'checked' => $this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
+			],
+			'tab' => 'appearance'
+		];
 
 		$this->context['posting_fields']['num_posts']['label']['text'] = $this->txt['lp_recent_posts']['num_posts'];
 		$this->context['posting_fields']['num_posts']['input'] = [
@@ -80,7 +103,6 @@ class RecentPosts extends Block
 				'id' => 'link_type'
 			],
 			'options' => [],
-			'tab' => 'content'
 		];
 
 		$link_types = array_combine(['link', 'preview'], $this->txt['lp_recent_posts']['type_set']);
@@ -124,16 +146,6 @@ class RecentPosts extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
 		]);
 
-		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_recent_posts']['show_avatars'];
-		$this->context['posting_fields']['show_avatars']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_avatars',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
-			],
-			'tab' => 'appearance'
-		];
-
 		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_recent_posts']['update_interval'];
 		$this->context['posting_fields']['update_interval']['input'] = [
 			'type' => 'number',
@@ -167,7 +179,9 @@ class RecentPosts extends Block
 			$posts = array_filter($posts, fn($item) => array_key_exists($item['topic'], $include_topics));
 		}
 
-		if (! empty($parameters['show_avatars']))
+		array_walk($posts, fn(&$post) => $post['timestamp'] = $this->getFriendlyTime((int) $post['timestamp']));
+
+		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');
 
 		return $posts;
@@ -188,35 +202,8 @@ class RecentPosts extends Block
 		if (empty($recent_posts))
 			return;
 
-		echo '
-		<ul class="recent_posts noup">';
+		$this->setTemplate();
 
-		foreach ($recent_posts as $post) {
-			$post['preview'] = '<a href="' . $post['href'] . '">' . $this->getShortenText($post['preview'], 20) . '</a>';
-
-			echo '
-			<li class="windowbg">';
-
-			if (! empty($parameters['show_avatars']) && $post['poster']['avatar'])
-				echo '
-				<div class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</div>';
-
-			if ($post['is_new'])
-				echo '
-				<a class="new_posts" href="', $this->scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $this->txt['new'], '</a> ';
-
-			echo $post[$parameters['link_type']];
-
-			if (empty($parameters['show_avatars']))
-				echo '
-				<br><span class="smalltext">', $this->txt['by'], ' ', $post['poster']['link'], '</span>';
-
-			echo '
-				<br><span class="smalltext">', $this->getFriendlyTime((int) $post['timestamp']), '</span>
-			</li>';
-		}
-
-		echo '
-		</ul>';
+		show_posts($recent_posts, $parameters, $this->isBlockInPlacements($block_id, ['header', 'top', 'bottom', 'footer']));
 	}
 }

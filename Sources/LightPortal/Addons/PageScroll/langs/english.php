@@ -7,6 +7,6 @@ return [
 	'button_color' => 'Button color',
 	'arrow_color' => 'Arrow color',
 	'placement' => 'Button layout',
-	'placement_set' => array('Lower left corner', 'Lower right corner'),
+	'placement_set' => ['Lower left corner', 'Lower right corner'],
 	'hide_on_mobile' => 'Hide on mobile screens',
 ];

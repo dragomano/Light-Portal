@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 14.04.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -65,6 +65,11 @@ class GalleryBlock extends Block
 
 	public function getData(array $parameters): array
 	{
+		$this->dbExtend('packages');
+
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'gallery_pic')))
+			return [];
+
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
@@ -99,8 +104,8 @@ class GalleryBlock extends Block
 				'date'   => $row['date'],
 				'title'  => $row['title'],
 				'link'   => $this->scripturl . '?action=gallery;sa=view;pic=' . $row['id_picture'],
-				'image'     => $this->modSettings['gallery_url'] ?? ($this->boardurl . '/gallery/') . $row['filename'],
-				'can_edit'  => $this->user_info['is_admin'] || $this->allowedTo('smfgallery_manage') || ($this->allowedTo('smfgallery_edit') && $row['id_member'] == $this->user_info['id']),
+				'image'     => ($this->modSettings['gallery_url'] ?? ($this->boardurl . '/gallery/')) . $row['filename'],
+				'can_edit'  => $this->allowedTo('smfgallery_manage') || ($this->allowedTo('smfgallery_edit') && $row['id_member'] == $this->user_info['id']),
 				'edit_link' => $this->scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 

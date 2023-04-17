@@ -13,6 +13,12 @@ Here you can configure:
 * page type
 * content
 
+## Access and placement
+Here you can configure:
+* permissions — specify who will access your page
+* category — if you like to keep things organized
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Here you can configure:
 * alias — the page will be available at `?page=alias`
@@ -21,8 +27,6 @@ Here you can configure:
 
 ## Tuning tab
 Here you can configure:
-* permissions — specify who will access your page
-* category — if you like to keep things organized
 * date and time of publication — the page can be published on a schedule
 * display the title — can be disabled if you have your own header on the page
 * display the author and creation date

@@ -750,7 +750,7 @@ final class PageArea
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'x-ref'     => 'alias',
+				'x-slug.replacement._' => 'title_' . $this->user_info['language'],
 			],
 		];
 
@@ -771,6 +771,7 @@ final class PageArea
 		$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
 		$this->context['posting_fields']['permissions']['input'] = [
 			'type' => 'select',
+			'tab'  => 'access_placement',
 		];
 
 		foreach ($this->txt['lp_permissions'] as $level => $title) {
@@ -796,7 +797,8 @@ final class PageArea
 
 		$this->context['posting_fields']['category']['label']['text'] = $this->txt['lp_category'];
 		$this->context['posting_fields']['category']['input'] = [
-			'type'       => 'select',
+			'type' => 'select',
+			'tab'  => 'access_placement',
 			'attributes' => [
 				'disabled' => count($allCategories) < 2,
 			],
@@ -831,6 +833,7 @@ final class PageArea
 		if ($this->context['user']['is_admin']) {
 			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
 			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
+			$this->context['posting_fields']['page_author']['input']['tab']   = 'access_placement';
 			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
 		}
 

@@ -56,7 +56,7 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['panels_tour'][0] . '"
 		},
 		{
-			element: document.getElementById("lp_left_panel_width[md]").parentNode.parentNode.parentNode,
+			element: document.getElementById("lp_left_panel_width[xl]").parentNode.parentNode.parentNode,
 			intro: "' . $this->txt['lp_hello_portal']['panels_tour'][1] . '"
 		},
 		{
@@ -70,15 +70,15 @@ return [
 	'misc' => '
 		{
 			element: document.getElementById("setting_lp_show_debug_info_help").parentNode.parentNode,
-			intro: "' . $this->txt['lp_hello_portal']['panels_tour'][0] . '"
+			intro: "' . $this->txt['lp_hello_portal']['misc_tour'][0] . '"
 		},
 		{
 			element: document.getElementById("setting_lp_portal_action").parentNode.parentNode,
-			intro: "' . $this->txt['lp_hello_portal']['panels_tour'][1] . '"
+			intro: "' . $this->txt['lp_hello_portal']['misc_tour'][1] . '"
 		},
 		{
 			element: document.getElementById("lp_weekly_cleaning").parentNode.parentNode,
-			intro: "' . $this->txt['lp_hello_portal']['panels_tour'][2] . '"
+			intro: "' . $this->txt['lp_hello_portal']['misc_tour'][2] . '"
 		}',
 	'blocks' => '
 		{
@@ -174,11 +174,11 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['add_plugins_tour'][1] . '"
 		},
 		{
-			element: document.querySelector(".pf_type div"),
+			element: document.querySelector("#type"),
 			intro: "' . $this->txt['lp_hello_portal']['add_plugins_tour'][2] . '"
 		},
 		{
-			element: document.getElementById("description_english"),
+			element: document.querySelector("input[name=description_' . $this->user_info['language'] . ']"),
 			intro: "' . $this->txt['lp_hello_portal']['add_plugins_tour'][3] . '"
 		},
 		{
