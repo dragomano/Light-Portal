@@ -7,7 +7,7 @@ Plugins er utvidelsen som utvider funksjonaliteten i lett portalen. For å lage 
 
 :::info
 
-Siden versjon 1.9, har funksjonaliteten for å opprette plugins blitt flyttet til en egen plugin — **PluginMaker**. Last ned og aktiver den på siden _Admin -> Portalinnstillinger -> Plugins_.
+You can use the **PluginMaker** as a helper to create your own plugins. Last ned og aktiver den på siden _Admin -> Portalinnstillinger -> Plugins_.
 
 :::
 

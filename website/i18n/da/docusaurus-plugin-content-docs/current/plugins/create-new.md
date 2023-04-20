@@ -7,7 +7,7 @@ Plugins er de udvidelser, der udvider funktionerne i Lysportalen. For at oprette
 
 :::info
 
-Siden version 1.9 er funktionaliteten til at skabe plugins blevet flyttet til et separat plugin — **PluginMaker**. Download og aktiver det på siden _Admin -> Portal indstillinger -> Plugins_.
+You can use the **PluginMaker** as a helper to create your own plugins. Download og aktiver det på siden _Admin -> Portal indstillinger -> Plugins_.
 
 :::
 

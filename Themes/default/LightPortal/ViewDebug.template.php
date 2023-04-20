@@ -4,7 +4,7 @@ function template_docs_above()
 {
 	global $txt;
 
-	$lang = in_array($txt['lang_dictionary'], ['cs', 'da', 'el', 'nl', 'no', 'ru', 'sv']) ? $txt['lang_dictionary'] : '';
+	$lang = in_array($txt['lang_dictionary'], ['cs', 'da', 'el', 'nl', 'no', 'ru', 'sv', 'es']) ? $txt['lang_dictionary'] : '';
 
 	echo '
 	<div class="noticebox"><a class="bbc_link" href="https://dragomano.github.io/Light-Portal/' . $lang . '" target="_blank" rel="noopener">', $txt['admin_search_type_online'], '</a></div>';

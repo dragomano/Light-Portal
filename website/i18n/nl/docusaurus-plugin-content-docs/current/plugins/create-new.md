@@ -7,7 +7,7 @@ Plugins zijn de extensies die de mogelijkheden van de Light Portaal uitbreiden. 
 
 :::info
 
-Sinds versie 1.9 is de functionaliteit voor het maken van plugins verplaatst naar een aparte plugin — **PluginMaker**. Download en activeer het op de pagina _Beheer -> Portal instellingen -> Plugins_.
+You can use the **PluginMaker** as a helper to create your own plugins. Download en activeer het op de pagina _Beheer -> Portal instellingen -> Plugins_.
 
 :::
 

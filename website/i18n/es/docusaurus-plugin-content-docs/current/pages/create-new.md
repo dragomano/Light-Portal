@@ -13,6 +13,12 @@ Aquí puedes configurar:
 * tipo de página
 * contenido
 
+## El acceso y la colocación
+Aquí puedes configurar:
+* permisos — especifique quién accederá a su página
+* categoría — si te gusta mantener las cosas organizadas
+* transfer of authorship — if you want to change the author
+
 ## Pestaña de SEO
 Aquí puedes configurar:
 * alias — la página estará disponible en `?page=alias`
@@ -21,8 +27,6 @@ Aquí puedes configurar:
 
 ## Pestaña de afinación
 Aquí puedes configurar:
-* permisos — especifique quién accederá a su página
-* categoría — si te gusta mantener las cosas organizadas
 * fecha y hora de publicación — la página se puede publicar en un horario
 * mostrar el título — se puede desactivar si tiene su propio encabezado en la página
 * mostrar el autor y la fecha de creación

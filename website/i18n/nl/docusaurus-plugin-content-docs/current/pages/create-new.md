@@ -13,6 +13,12 @@ Hier kunt u configureren:
 * pagina type
 * inhoud
 
+## Toegang en plaatsing
+Hier kunt u configureren:
+* permissies — geef aan wie uw pagina zal bezoeken
+* Categorie - als u wilt dingen georganiseerd houden
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Hier kunt u configureren:
 * alias - de pagina is beschikbaar op `?page=alias`
@@ -21,8 +27,6 @@ Hier kunt u configureren:
 
 ## Tuning tab
 Hier kunt u configureren:
-* permissies — geef aan wie uw pagina zal bezoeken
-* Categorie - als u wilt dingen georganiseerd houden
 * datum en tijdstip van publicatie - de pagina kan worden gepubliceerd op een schema
 * toon de titel - kan worden uitgeschakeld als je je eigen header hebt op de pagina
 * weergave van de auteur en aanmaakdatum

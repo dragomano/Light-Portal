@@ -13,6 +13,12 @@ Här kan du konfigurera:
 * Typ av sida
 * innehåll
 
+## Åtkomst och placering
+Här kan du konfigurera:
+* behörigheter — ange vem som kommer åt din sida
+* kategori — om du vill hålla saker organiserade
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Här kan du konfigurera:
 * alias — sidan kommer att finnas tillgänglig på `?page=alias`
@@ -21,8 +27,6 @@ Här kan du konfigurera:
 
 ## Tuning tab
 Här kan du konfigurera:
-* behörigheter — ange vem som kommer åt din sida
-* kategori — om du vill hålla saker organiserade
 * datum och tid för publicering — sidan kan publiceras i ett schema
 * visa titeln — kan inaktiveras om du har ett eget sidhuvud på sidan
 * visa författar- och skapandedatum

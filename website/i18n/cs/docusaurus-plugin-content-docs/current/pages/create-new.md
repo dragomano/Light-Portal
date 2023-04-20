@@ -13,6 +13,12 @@ Zde můžete nakonfigurovat:
 * typ stránky
 * Obsah
 
+## Přístup a umístění
+Zde můžete nakonfigurovat:
+* oprávnění – upřesněte, kdo bude přistupovat k vaší stránce
+* kategorie — pokud chcete udržet věci organizované
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Zde můžete nakonfigurovat:
 * alias — stránka bude k dispozici na `?page=alias`
@@ -21,8 +27,6 @@ Zde můžete nakonfigurovat:
 
 ## Tuning tab
 Zde můžete nakonfigurovat:
-* oprávnění – upřesněte, kdo bude přistupovat k vaší stránce
-* kategorie — pokud chcete udržet věci organizované
 * datum a čas zveřejnění – stránka může být zveřejněna v plánu
 * zobrazit název — může být zakázán, pokud máte na stránce vlastní záhlaví
 * zobrazit autora a datum vytvoření

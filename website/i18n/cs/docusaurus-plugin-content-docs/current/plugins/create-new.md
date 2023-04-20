@@ -7,7 +7,7 @@ Pluginy jsou rozšíření, která rozšiřují možnosti lehkého portálu. Chc
 
 :::info
 
-Od verze 1.9 byly funkce pro vytváření pluginů přesunuty do samostatného pluginu – **PluginMaker**. Stáhněte a povolte to na stránce _Admin -> Nastavení portálu -> Pluginy_.
+You can use the **PluginMaker** as a helper to create your own plugins. Stáhněte a povolte to na stránce _Admin -> Nastavení portálu -> Pluginy_.
 
 :::
 

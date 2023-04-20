@@ -13,6 +13,12 @@ Her kan du konfigurere:
 * sidetype
 * indhold
 
+## Adgang og placering
+Her kan du konfigurere:
+* tilladelser — angiv hvem der vil tilgå din side
+* kategori — hvis du ønsker at holde tingene organiseret
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Her kan du konfigurere:
 * alias — siden vil være tilgængelig på `?page=alias`
@@ -21,8 +27,6 @@ Her kan du konfigurere:
 
 ## Tuning tab
 Her kan du konfigurere:
-* tilladelser — angiv hvem der vil tilgå din side
-* kategori — hvis du ønsker at holde tingene organiseret
 * dato og klokkeslæt for offentliggørelse — siden kan offentliggøres på en tidsplan
 * vis titlen - kan deaktiveres, hvis du har din egen overskrift på siden
 * vis forfatteren og oprettelsesdato

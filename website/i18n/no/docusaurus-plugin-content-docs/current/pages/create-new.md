@@ -13,6 +13,12 @@ Her kan du konfigurere:
 * type side
 * innhold
 
+## Atkomst og plassering
+Her kan du konfigurere:
+* tillatelser – angi hvem som skal få tilgang til siden din
+* kategori – hvis du vil beholde ting som er organisert
+* transfer of authorship — if you want to change the author
+
 ## SEO tab
 Her kan du konfigurere:
 * alias — siden vil være tilgjengelig på `?page=alias`
@@ -21,8 +27,6 @@ Her kan du konfigurere:
 
 ## Tuning tab
 Her kan du konfigurere:
-* tillatelser – angi hvem som skal få tilgang til siden din
-* kategori – hvis du vil beholde ting som er organisert
 * dato og tidspunkt for publisering — siden kan publiseres i en tidsplan
 * vis tittelen — kan deaktiveres hvis du har din egen topptekst på siden
 * viser forfatterens dato og opprettelse

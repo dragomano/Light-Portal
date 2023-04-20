@@ -26,7 +26,7 @@ En esta sección, puede personalizar completamente la página principal del port
 * Muestra el número de vistas y comentarios.
 * Primero para mostrar los artículos con la mayor cantidad de comentarios: puede mostrar los artículos más comentados primero, independientemente del tipo de clasificación seleccionado.
 * Clasificación de artículos: puede elegir el tipo de clasificación de artículos en la página principal.
-* Diseño de plantilla para tarjetas de artículos: para agregar sus propias plantillas, cree un archivo separado _[CustomFrontPage.template.php](/how-to/create-layout)< /em>.
+* Diseño de plantilla para tarjetas de artículos: para agregar sus propias plantillas, cree un archivo separado _[CustomFrontPage.template.php](/how-to/create-layout)_.
 * Número de columnas para mostrar artículos: especifique el número de columnas en las que se mostrarán las fichas de artículos.
 * Mostrar la paginación: especifique dónde se debe mostrar la paginación de la página.
 * Use paginación simple: muestre enlaces de "página siguiente" y "página anterior" en lugar de navegación completa.

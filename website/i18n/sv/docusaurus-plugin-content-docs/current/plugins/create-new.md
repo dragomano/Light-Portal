@@ -7,7 +7,7 @@ Plugins är de tillägg som expanderar funktionerna i Light Portal. För att ska
 
 :::info
 
-Sedan version 1.9 har funktionaliteten för att skapa plugins flyttats till en separat plugin — **PluginMaker**. Ladda ner och aktivera den på sidan _Admin -> Portalinställningar -> Plugins_.
+You can use the **PluginMaker** as a helper to create your own plugins. Ladda ner och aktivera den på sidan _Admin -> Portalinställningar -> Plugins_.
 
 :::
 
