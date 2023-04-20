@@ -188,7 +188,7 @@ final class PluginArea
 		$this->context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$link = 'https://api.jsonserve.com/WlXlCi';
+			$link = 'https://api.jsonserve.com/BkKVmS';
 
 			$addon_list = $this->fetchWebData($link);
 
