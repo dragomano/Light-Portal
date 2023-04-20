@@ -3,6 +3,7 @@
         "pug-php/pug": "^3.5"
     },
     "config": {
+        "optimize-autoloader": true,
         "allow-plugins": {
             "nodejs-php-fallback/nodejs-php-fallback": false
         }

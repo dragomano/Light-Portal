@@ -6,5 +6,8 @@
         "psr-4": {
             "Bugo\\LightPortal\\Addons\\Markdown\\Smf\\": "smf/"
         }
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }

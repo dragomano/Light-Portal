@@ -1,5 +1,8 @@
 {
     "require": {
-        "twig/twig": "^3.3.8"
+        "twig/twig": "^3.5"
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }
