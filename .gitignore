@@ -11,6 +11,7 @@ Themes/default/languages/LightPortal/*
 **/Addons/**/*.less
 **/Addons/**/langs/*
 
+**/Addons/DiceBear/*
 **/Addons/ExtUpload/*
 **/Addons/GoogleAmp/*
 **/Addons/ImageUpload/*
