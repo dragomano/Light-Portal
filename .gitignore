@@ -11,7 +11,6 @@ Themes/default/languages/LightPortal/*
 **/Addons/**/*.less
 **/Addons/**/langs/*
 
-**/Addons/AvatarGenerator/*
 **/Addons/ExtUpload/*
 **/Addons/GoogleAmp/*
 **/Addons/ImageUpload/*
