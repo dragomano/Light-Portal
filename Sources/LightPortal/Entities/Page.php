@@ -374,7 +374,7 @@ final class Page
 			(
 				SELECT p.alias, t.title
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
 				WHERE p.category_id = {int:category_id}
 					AND p.created_at < {int:created_at}
 					AND p.created_at <= {int:current_time}
@@ -387,7 +387,7 @@ final class Page
 			(
 				SELECT p.alias, t.title
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
 				WHERE p.category_id = {int:category_id}
 					AND p.created_at > {int:created_at}
 					AND p.created_at <= {int:current_time}
