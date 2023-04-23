@@ -160,7 +160,7 @@ function show_plugin_settings(array $plugin)
 
 		if ($value[0] === 'text') {
 			echo '
-					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), ' required>';
+					<br><input type="text" name="', $value[1], '" id="', $value[1], '" value="', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '"', empty($value['pattern']) ? '' : (' pattern="' . $value['pattern'] . '"'), empty($value['required']) ? '' : ' required', '>';
 		} elseif ($value[0] === 'large_text') {
 			echo '
 					<br><textarea name="', $value[1], '" id="', $value[1], '">', $context['lp_' . $plugin['snake_name'] . '_plugin'][$value[1]] ?? '', '</textarea>';
