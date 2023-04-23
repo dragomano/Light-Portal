@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.23
+ * @version 21.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -38,6 +38,7 @@ class RecentTopics extends Block
 			'show_avatars'     => false,
 			'show_icons'       => false,
 			'num_topics'       => 10,
+			'link_type'        => 'link',
 			'update_interval'  => 600,
 		];
 	}
@@ -53,6 +54,7 @@ class RecentTopics extends Block
 		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
 		$parameters['show_icons']       = FILTER_VALIDATE_BOOLEAN;
 		$parameters['num_topics']       = FILTER_VALIDATE_INT;
+		$parameters['link_type']        = FILTER_DEFAULT;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
@@ -101,6 +103,24 @@ class RecentTopics extends Block
 				'value' => $this->context['lp_block']['options']['parameters']['num_topics']
 			]
 		];
+
+		$this->context['posting_fields']['link_type']['label']['text'] = $this->txt['lp_recent_topics']['type'];
+		$this->context['posting_fields']['link_type']['input'] = [
+			'type' => 'radio_select',
+			'attributes' => [
+				'id' => 'link_type'
+			],
+			'options' => [],
+		];
+
+		$link_types = array_combine(['link', 'preview'], $this->txt['lp_recent_topics']['type_set']);
+
+		foreach ($link_types as $key => $value) {
+			$this->context['posting_fields']['link_type']['input']['options'][$value] = [
+				'value'    => $key,
+				'selected' => $key == $this->context['lp_block']['options']['parameters']['link_type']
+			];
+		}
 
 		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_recent_topics']['exclude_boards'] . '</label>';
 		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';

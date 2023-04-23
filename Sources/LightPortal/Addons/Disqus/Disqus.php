@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 23.04.23
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -31,7 +31,7 @@ class Disqus extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext']];
+		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext'], 'required' => true];
 	}
 
 	public function comments()

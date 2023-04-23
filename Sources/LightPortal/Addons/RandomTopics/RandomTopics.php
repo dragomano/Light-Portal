@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 21.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\BoardSelect;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +28,12 @@ class RandomTopics extends Block
 	public function blockOptions(array &$options)
 	{
 		$options['random_topics']['no_content_class'] = true;
-		$options['random_topics']['parameters']['num_topics'] = 10;
+
+		$options['random_topics']['parameters'] = [
+			'exclude_boards' => '',
+			'include_boards' => '',
+			'num_topics'     => 10,
+		];
 	}
 
 	public function validateBlockData(array &$parameters, string $type)
@@ -35,13 +41,31 @@ class RandomTopics extends Block
 		if ($type !== 'random_topics')
 			return;
 
-		$parameters['num_topics'] = FILTER_VALIDATE_INT;
+		$parameters['exclude_boards'] = FILTER_DEFAULT;
+		$parameters['include_boards'] = FILTER_DEFAULT;
+		$parameters['num_topics']     = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields()
 	{
 		if ($this->context['lp_block']['type'] !== 'random_topics')
 			return;
+
+		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_random_topics']['exclude_boards'] . '</label>';
+		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
+		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
+			'id'    => 'exclude_boards',
+			'hint'  => $this->txt['lp_random_topics']['exclude_boards_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+		]);
+
+		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_random_topics']['include_boards'] . '</label>';
+		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
+		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
+			'id'    => 'include_boards',
+			'hint'  => $this->txt['lp_random_topics']['include_boards_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+		]);
 
 		$this->context['posting_fields']['num_topics']['label']['text'] = $this->txt['lp_random_topics']['num_topics'];
 		$this->context['posting_fields']['num_topics']['input'] = [
@@ -54,8 +78,12 @@ class RandomTopics extends Block
 		];
 	}
 
-	public function getData(int $num_topics): array
+	public function getData(array $parameters): array
 	{
+		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
+		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$num_topics     = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
+
 		if (empty($num_topics))
 			return [];
 
@@ -66,20 +94,26 @@ class RandomTopics extends Block
 						SELECT min(t.id_topic), (
 							SELECT t.id_topic FROM {db_prefix}topics AS t
 							WHERE {query_wanna_see_topic_board}
-								AND t.approved = {int:is_approved}
+								AND t.approved = {int:is_approved}' . ($exclude_boards ? '
+								AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+								AND t.id_board IN ({array_int:include_boards})' : '') . '
 							ORDER BY t.id_topic DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
 						WHERE {query_wanna_see_topic_board}
-							AND t.approved = {int:is_approved}
+							AND t.approved = {int:is_approved}' . ($exclude_boards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND t.id_board IN ({array_int:include_boards})' : '') . '
 					)
 					(
 						SELECT t.id_topic, min, max, array[]::integer[] || t.id_topic AS a, 0 AS n
 						FROM {db_prefix}topics AS t, b
 						WHERE {query_wanna_see_topic_board}
 							AND t.id_topic >= min + ((max - min) * random())::int
-							AND	t.approved = {int:is_approved}
+							AND	t.approved = {int:is_approved}' . ($exclude_boards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND t.id_board IN ({array_int:include_boards})' : '') . '
 						LIMIT 1
 					) UNION ALL (
 						SELECT t.id_topic, min, max, a || t.id_topic, r.n + 1 AS n
@@ -88,7 +122,9 @@ class RandomTopics extends Block
 							AND t.id_topic >= min + ((max - min) * random())::int
 							AND t.id_topic <> all(a)
 							AND r.n + 1 < {int:limit}
-							AND t.approved = {int:is_approved}
+							AND t.approved = {int:is_approved}' . ($exclude_boards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND t.id_board IN ({array_int:include_boards})' : '') . '
 						LIMIT 1
 					)
 				)
@@ -96,8 +132,10 @@ class RandomTopics extends Block
 				FROM {db_prefix}topics AS t, r
 				WHERE r.id_topic = t.id_topic',
 				[
-					'is_approved' => 1,
-					'limit'       => $num_topics
+					'is_approved'    => 1,
+					'exclude_boards' => $exclude_boards,
+					'include_boards' => $include_boards,
+					'limit'          => $num_topics
 				]
 			);
 
@@ -109,7 +147,7 @@ class RandomTopics extends Block
 			$this->context['lp_num_queries']++;
 
 			if (empty($topic_ids))
-				return $this->getData($num_topics - 1);
+				return $this->getData(array_merge($parameters, ['num_topics' => $num_topics - 1]));
 
 			$request = $this->smcFunc['db_query']('', '
 				SELECT
@@ -142,12 +180,16 @@ class RandomTopics extends Block
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
-					AND t.approved = {int:is_approved}
+					AND t.approved = {int:is_approved}' . ($exclude_boards ? '
+					AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+					AND t.id_board IN ({array_int:include_boards})' : '') . '
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
 					'current_member' => $this->user_info['id'],
 					'is_approved'    => 1,
+					'exclude_boards' => $exclude_boards,
+					'include_boards' => $include_boards,
 					'limit'          => $num_topics
 				]
 			);
@@ -187,7 +229,7 @@ class RandomTopics extends Block
 
 		$randomTopics = $this->cache('random_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(self::class, 'getData', (int) $parameters['num_topics']);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomTopics) {
 			echo '

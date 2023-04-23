@@ -17,5 +17,6 @@ return [
 	'num_posts' => 'Number of posts to display',
 	'type' => 'What to display as a link to a post',
 	'type_set' => ['Message subject', 'Message preview'],
+	'show_body' => 'Показывать текст сообщения',
 	'update_interval' => 'List refresh interval, in seconds',
 ];

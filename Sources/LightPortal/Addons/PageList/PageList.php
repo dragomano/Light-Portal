@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 21.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -98,10 +98,7 @@ class PageList extends Block
 
 		$all_categories = $this->getEntityList('category');
 
-		if (empty($parameters['categories']))
-			$parameters['categories'] = [];
-
-		$categories = is_array($parameters['categories']) ? $parameters['categories'] : explode(',', $parameters['categories']);
+		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
@@ -111,8 +108,8 @@ class PageList extends Block
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
-				AND p.category_id IN ({array_int:categories})') . '
+				AND p.permissions IN ({array_int:permissions})' . ($categories ? '
+				AND p.category_id IN ({array_int:categories})' : '') . '
 			ORDER BY {raw:sort} DESC' . (empty($parameters['num_pages']) ? '' : '
 			LIMIT {int:limit}'),
 			[

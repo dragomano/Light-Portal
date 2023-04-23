@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 21.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\CategorySelect;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +28,11 @@ class RandomPages extends Block
 	public function blockOptions(array &$options)
 	{
 		$options['random_pages']['no_content_class'] = true;
-		$options['random_pages']['parameters']['num_pages'] = 10;
+
+		$options['random_pages']['parameters'] = [
+			'categories' => '',
+			'num_pages'  => 10,
+		];
 	}
 
 	public function validateBlockData(array &$parameters, string $type)
@@ -35,13 +40,22 @@ class RandomPages extends Block
 		if ($type !== 'random_pages')
 			return;
 
-		$parameters['num_pages'] = FILTER_VALIDATE_INT;
+		$parameters['categories'] = FILTER_DEFAULT;
+		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields()
 	{
 		if ($this->context['lp_block']['type'] !== 'random_pages')
 			return;
+
+		$this->context['posting_fields']['categories']['label']['html'] = '<label for="categories">' . $this->txt['lp_categories'] . '</label>';
+		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
+		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)([
+			'id'    => 'categories',
+			'hint'  => $this->txt['lp_random_pages']['categories_select'],
+			'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+		]);
 
 		$this->context['posting_fields']['num_pages']['label']['text'] = $this->txt['lp_random_pages']['num_pages'];
 		$this->context['posting_fields']['num_pages']['input'] = [
@@ -54,8 +68,11 @@ class RandomPages extends Block
 		];
 	}
 
-	public function getData(int $num_pages): array
+	public function getData(array $parameters): array
 	{
+		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
+		$num_pages  = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
+
 		if (empty($num_pages))
 			return [];
 
@@ -69,14 +86,16 @@ class RandomPages extends Block
 							SELECT p.page_id FROM {db_prefix}lp_pages AS p
 							WHERE p.status = {int:status}
 								AND p.created_at <= {int:current_time}
-								AND p.permissions IN ({array_int:permissions})
+								AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
+								AND p.category_id IN ({array_int:categories})') . '
 							ORDER BY p.page_id DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}lp_pages AS p
 						WHERE p.status = {int:status}
 							AND p.created_at <= {int:current_time}
-							AND p.permissions IN ({array_int:permissions})
+							AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
+							AND p.category_id IN ({array_int:categories})') . '
 					)
 					(
 						SELECT p.page_id, min, max, array[]::integer[] || p.page_id AS a, 0 AS n
@@ -84,7 +103,8 @@ class RandomPages extends Block
 						WHERE p.status = {int:status}
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
-							AND p.page_id >= min + ((max - min) * random())::int
+							AND p.page_id >= min + ((max - min) * random())::int' . (empty($categories) ? '' : '
+							AND p.category_id IN ({array_int:categories})') . '
 						LIMIT 1
 					) UNION ALL (
 						SELECT p.page_id, min, max, a || p.page_id, r.n + 1 AS n
@@ -93,7 +113,8 @@ class RandomPages extends Block
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
 							AND p.page_id >= min + ((max - min) * random())::int
-							AND p.page_id <> all(a)
+							AND p.page_id <> all(a)' . (empty($categories) ? '' : '
+							AND p.category_id IN ({array_int:categories})') . '
 							AND r.n + 1 < {int:limit}
 						LIMIT 1
 					)
@@ -105,6 +126,7 @@ class RandomPages extends Block
 					'status'       => 1,
 					'current_time' => time(),
 					'permissions'  => $this->getPermissions(),
+					'categories'   => $categories,
 					'limit'        => $num_pages
 				]
 			);
@@ -136,7 +158,8 @@ class RandomPages extends Block
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})
+					AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
+					AND p.category_id IN ({array_int:categories})') . '
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
@@ -144,6 +167,7 @@ class RandomPages extends Block
 					'status'       => 1,
 					'current_time' => time(),
 					'permissions'  => $this->getPermissions(),
+					'categories'   => $categories,
 					'limit'        => $num_pages
 				]
 			);
@@ -175,7 +199,7 @@ class RandomPages extends Block
 
 		$randomPages = $this->cache('random_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)
-			->setFallback(self::class, 'getData', (int) $parameters['num_pages']);
+			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomPages) {
 			echo '

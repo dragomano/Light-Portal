@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.23
+ * @version 22.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -40,6 +40,7 @@ class RecentPosts extends Block
 			'show_avatars'     => false,
 			'num_posts'        => 10,
 			'link_type'        => 'link',
+			'show_body'        => false,
 			'update_interval'  => 600,
 		];
 	}
@@ -57,6 +58,7 @@ class RecentPosts extends Block
 		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
 		$parameters['num_posts']        = FILTER_VALIDATE_INT;
 		$parameters['link_type']        = FILTER_DEFAULT;
+		$parameters['show_body']        = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
@@ -145,6 +147,15 @@ class RecentPosts extends Block
 			'hint'  => $this->txt['lp_recent_posts']['include_topics_select'],
 			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
 		]);
+
+		$this->context['posting_fields']['show_body']['label']['text'] = $this->txt['lp_recent_posts']['show_body'];
+		$this->context['posting_fields']['show_body']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'show_body',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_body']
+			],
+		];
 
 		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_recent_posts']['update_interval'];
 		$this->context['posting_fields']['update_interval']['input'] = [

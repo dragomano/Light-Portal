@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.04.23
+ * @version 22.04.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -70,6 +70,8 @@ class GalleryBlock extends Block
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'gallery_pic')))
 			return [];
 
+		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
+
 		$request = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
@@ -77,13 +79,13 @@ class GalleryBlock extends Block
 			FROM {db_prefix}gallery_pic AS p
 				LEFT JOIN {db_prefix}gallery_cat AS c ON (c.id_cat = p.id_cat)
 				LEFT JOIN {db_prefix}members AS m ON (m.id_member = p.id_member)
-			WHERE p.approved = {int:approved}' . (empty($parameters['categories']) ? '' : '
-				AND p.id_cat IN ({array_int:categories})') . '
+			WHERE p.approved = {int:approved}' . ($categories ? '
+				AND p.id_cat IN ({array_int:categories})' : '') . '
 			ORDER BY p.date DESC
 			LIMIT {int:limit}',
 			[
 				'approved'   => 1,
-				'categories' => explode(',', $parameters['categories']),
+				'categories' => $categories,
 				'limit'      => $parameters['num_images']
 			]
 		);
@@ -126,7 +128,7 @@ class GalleryBlock extends Block
 
 		$this->middleware('smfgallery_view');
 
-		$images = $this->cache('gallery_block_addon_u' . $this->context['user']['id'])
+		$images = $this->cache('gallery_block_addon_b' . $block_id . '_u' . $this->context['user']['id'])
 			->setLifeTime($cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
