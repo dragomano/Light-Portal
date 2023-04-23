@@ -35,6 +35,15 @@ trait Area
 		$this->createControlRichedit($editorOptions);
 	}
 
+	public function prepareContent(array $object): string
+	{
+		if ($object['type'] === 'html') {
+			$object['content'] = $this->smcFunc['htmlspecialchars']($object['content']);
+		}
+
+		return $object['content'];
+	}
+
 	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
 	{
 		$this->checkSubmitOnce('register');

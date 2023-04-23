@@ -731,7 +731,7 @@ final class PageArea
 				'type'       => 'textarea',
 				'tab'        => 'content',
 				'attributes' => [
-					'value'    => $this->context['lp_page']['content'],
+					'value'    => $this->prepareContent($this->context['lp_page']),
 					'required' => true,
 					'style'    => 'height: 300px',
 				],

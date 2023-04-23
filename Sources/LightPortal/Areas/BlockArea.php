@@ -519,7 +519,7 @@ final class BlockArea
 					'type'       => 'textarea',
 					'tab'        => 'content',
 					'attributes' => [
-						'value' => $this->context['lp_block']['content'],
+						'value' => $this->prepareContent($this->context['lp_block']),
 					],
 				];
 			} else {
