@@ -148,6 +148,10 @@ $txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter o
 $txt['lp_page_param'] = 'The <strong>page</strong> parameter for portal pages';
 $txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
 
+// Feedback
+$txt['lp_feedback'] = 'Feedback';
+$txt['lp_feedback_info'] = 'Here you can send your suggestions for improving the portal.';
+
 // Actions
 $txt['lp_title'] = 'Title';
 $txt['lp_actions'] = 'Actions';
