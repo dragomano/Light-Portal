@@ -18,7 +18,13 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
-use Bugo\LightPortal\Partials\{KeywordSelect, PageAuthorSelect, StatusSelect};
+use Bugo\LightPortal\Partials\{
+	CategorySelect,
+	KeywordSelect,
+	PageAuthorSelect,
+	PermissionSelect,
+	StatusSelect
+};
 use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
@@ -799,60 +805,19 @@ final class PageArea
 		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
 		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
-		$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
-		$this->context['posting_fields']['permissions']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-		];
+		$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
+		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
-		foreach ($this->txt['lp_permissions'] as $level => $title) {
-			if (empty($this->context['user']['is_admin']) && empty($level))
-				continue;
-
-			$this->context['posting_fields']['permissions']['input']['options'][$title] = [
-				'value'    => $level,
-				'selected' => $level == $this->context['lp_page']['permissions'],
-			];
-		}
-
-		if ($this->context['user']['is_admin'])
-			$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#permissions",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});', true);
-
-		$allCategories = $this->getEntityList('category');
-
-		$this->context['posting_fields']['category']['label']['text'] = $this->txt['lp_category'];
-		$this->context['posting_fields']['category']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-			'attributes' => [
-				'disabled' => count($allCategories) < 2,
-			],
-		];
-
-		foreach ($allCategories as $value => $category) {
-			$this->context['posting_fields']['category']['input']['options'][$category['name']] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_page']['category'],
-			];
-		}
-
-		$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#category",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body",
-			search: true,
-			markSearchResults: true,
-			noSearchResultsText: "' . $this->txt['no_matches'] . '",
-			searchPlaceholderText: "' . $this->txt['search'] . '"
-		});', true);
+		$this->context['posting_fields']['category']['label']['html'] = '<label for="category">' . $this->txt['lp_category'] . '</label>';
+		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
+			'id'         => 'category',
+			'multiple'   => false,
+			'full_width' => false,
+			'data'       => $this->getEntityList('category'),
+			'value'      => $this->context['lp_page']['category']
+		]);
+		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
 			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
@@ -862,9 +827,9 @@ final class PageArea
 		}
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['status']['label']['html']  = '<label for="status">' . $this->txt['status'] . '</label>';
-			$this->context['posting_fields']['status']['input']['html']  = (new StatusSelect)();
-			$this->context['posting_fields']['status']['input']['tab']   = 'access_placement';
+			$this->context['posting_fields']['status']['label']['html'] = '<label for="status">' . $this->txt['status'] . '</label>';
+			$this->context['posting_fields']['status']['input']['html'] = (new StatusSelect)();
+			$this->context['posting_fields']['status']['input']['tab']  = 'access_placement';
 
 			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
 			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();

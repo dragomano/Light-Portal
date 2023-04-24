@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.04.23
+ * @version 24.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -170,25 +170,33 @@ class RecentPosts extends Block
 
 	public function getData(array $parameters): array
 	{
-		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
-		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$exclude_boards = empty($parameters['exclude_boards']) ? [] : explode(',', $parameters['exclude_boards']);
+		$include_boards = empty($parameters['include_boards']) ? [] : explode(',', $parameters['include_boards']);
+		$exclude_topics = empty($parameters['exclude_topics']) ? [] : explode(',', $parameters['exclude_topics']);
+		$include_topics = empty($parameters['include_topics']) ? [] : explode(',', $parameters['include_topics']);
 
-		$posts = $this->getFromSsi('recentPosts', (int) $parameters['num_posts'], $exclude_boards, $include_boards, 'array');
+		$query_where = '
+			m.id_msg >= {int:min_message_id}' . (empty($exclude_boards) ? '' : '
+			AND b.id_board NOT IN ({array_int:exclude_boards})') . (empty($include_boards) ? '' : '
+			AND b.id_board IN ({array_int:include_boards})') . (empty($exclude_topics) ? '' : '
+			AND m.id_topic NOT IN ({array_int:exclude_topics})') . (empty($include_topics) ? '' : '
+			AND m.id_topic IN ({array_int:include_topics})') . '
+			AND {query_wanna_see_board}' . ($this->modSettings['postmod_active'] ? '
+			AND m.approved = {int:is_approved}' : '');
+
+		$query_where_params = [
+			'is_approved'    => 1,
+			'include_boards' => $include_boards,
+			'exclude_boards' => $exclude_boards,
+			'include_topics' => $include_topics,
+			'exclude_topics' => $exclude_topics,
+			'min_message_id' => $this->modSettings['maxMsgID'] - (empty($this->context['min_message_posts']) ? 25 : $this->context['min_message_posts']) * min((int) $parameters['num_posts'], 5),
+		];
+
+		$posts = $this->getFromSsi('queryPosts', $query_where, $query_where_params, (int) $parameters['num_posts'], 'm.id_msg DESC', 'array');
 
 		if (empty($posts))
 			return [];
-
-		if (! empty($parameters['exclude_topics'])) {
-			$exclude_topics = array_flip(explode(',', $parameters['exclude_topics']));
-
-			$posts = array_filter($posts, fn($item) => ! array_key_exists($item['topic'], $exclude_topics));
-		}
-
-		if (! empty($parameters['include_topics'])) {
-			$include_topics = array_flip(explode(',', $parameters['include_topics']));
-
-			$posts = array_filter($posts, fn($item) => array_key_exists($item['topic'], $include_topics));
-		}
 
 		array_walk($posts, fn(&$post) => $post['timestamp'] = $this->getFriendlyTime((int) $post['timestamp']));
 

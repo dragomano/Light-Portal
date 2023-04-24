@@ -16,7 +16,14 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Partials\{AreaSelect, ContentClassSelect, IconSelect, TitleClassSelect};
+use Bugo\LightPortal\Partials\{
+	AreaSelect,
+	ContentClassSelect,
+	IconSelect,
+	PermissionSelect,
+	PlacementSelect,
+	TitleClassSelect
+};
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -419,57 +426,14 @@ final class BlockArea
 			],
 		];
 
-		$this->context['posting_fields']['placement']['label']['text'] = $this->txt['lp_block_placement'];
-		$this->context['posting_fields']['placement']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-		];
-
-		foreach ($this->context['lp_block_placements'] as $level => $title) {
-			$this->context['posting_fields']['placement']['input']['options'][$title] = [
-				'value'    => $level,
-				'selected' => $level == $this->context['lp_block']['placement'],
-			];
-		}
-
-		$this->addInlineJavaScript('
-	const placementSelect = document.getElementById("placement");
-	if (placementSelect) {
-		VirtualSelect.init({
-			ele: placementSelect,
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});
-	}', true);
+		$this->context['posting_fields']['placement']['label']['html'] = '<label for="placement">' . $this->txt['lp_block_placement'] . '</label>';
+		$this->context['posting_fields']['placement']['input']['html'] = (new PlacementSelect)();
+		$this->context['posting_fields']['placement']['input']['tab']  = 'access_placement';
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
-			$this->context['posting_fields']['permissions']['input'] = [
-				'type' => 'select',
-				'tab'  => 'access_placement',
-			];
-
-			foreach ($this->txt['lp_permissions'] as $level => $title) {
-				if (empty($this->context['user']['is_admin']) && empty($level))
-					continue;
-
-				$this->context['posting_fields']['permissions']['input']['options'][$title] = [
-					'value'    => $level,
-					'selected' => $level == $this->context['lp_block']['permissions'],
-				];
-			}
-
-			$this->addInlineJavaScript('
-	const permissionsSelect = document.getElementById("permissions");
-	if (permissionsSelect) {
-		VirtualSelect.init({
-			ele: "#permissions",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});
-	}', true);
+			$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+			$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
+			$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 		}
 
 		$this->context['posting_fields']['areas']['label']['html']  = '<label for="areas">' . $this->txt['lp_block_areas'] . '</label>';
