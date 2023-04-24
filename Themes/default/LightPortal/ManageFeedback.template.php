@@ -7,11 +7,18 @@ function template_feedback()
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">', $txt['lp_feedback'], '</h3>
-	</div>
+	</div>';
+
+	if ($context['feedback_sent'])
+		echo '
+	<div class="infobox">', $txt['lp_thanks'], '</div>';
+
+	echo '
 	<form action="https://api.web3forms.com/submit" method="POST">
 		<input type="hidden" name="access_key" value="6fcc4df7-ec6a-4dbb-a278-a5c71af46631">
 		<input type="hidden" name="from_name" value="', $context['forum_name'], '">
-		<input type="hidden" name="redirect" value="https://web3forms.com/success">
+		<input type="hidden" name="subject" value="New feedback">
+		<input type="hidden" name="redirect" value="', $context['success_url'], '">
 		<input type="checkbox" name="botcheck" class="hidden" style="display: none">
 		<table class="table_grid">
 			<tbody>

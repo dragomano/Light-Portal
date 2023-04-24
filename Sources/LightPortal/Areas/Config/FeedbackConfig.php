@@ -29,6 +29,10 @@ final class FeedbackConfig
 
 		$this->context['page_title'] = $this->txt['lp_feedback'];
 
+		$this->context['success_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=feedback;success';
+
+		$this->context['feedback_sent'] = $this->request()->has('success');
+
 		$this->context['sub_template'] = 'feedback';
 	}
 }

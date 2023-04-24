@@ -151,6 +151,7 @@ $txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
 // Feedback
 $txt['lp_feedback'] = 'Feedback';
 $txt['lp_feedback_info'] = 'Here you can send your suggestions for improving the portal.';
+$txt['lp_thanks'] = 'Thank you!';
 
 // Actions
 $txt['lp_title'] = 'Title';
