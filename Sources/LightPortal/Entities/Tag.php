@@ -75,7 +75,7 @@ final class Tag extends AbstractPageList
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
 			WHERE FIND_IN_SET({int:id}, ps.value) > 0
-				AND p.status = {int:status}
+				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
@@ -83,7 +83,7 @@ final class Tag extends AbstractPageList
 			[
 				'lang'         => $this->user_info['language'],
 				'id'           => $this->context['lp_tag'],
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
@@ -107,12 +107,12 @@ final class Tag extends AbstractPageList
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 			WHERE FIND_IN_SET({int:id}, ps.value) > 0
-				AND p.status = {int:status}
+				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			[
 				'id'           => $this->context['lp_tag'],
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
 			]
@@ -194,14 +194,14 @@ final class Tag extends AbstractPageList
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
-			WHERE p.status = {int:status}
+			WHERE p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			GROUP BY t.tag_id, t.value
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,

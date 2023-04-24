@@ -215,6 +215,8 @@ $txt['lp_pages_manage_own_pages'] = 'Here you can view all your own portal pages
 $txt['lp_pages_manage_description'] = 'Use the corresponding button to add a new page.';
 $txt['lp_pages_unapproved'] = 'Unapproved pages';
 $txt['lp_pages_unapproved_description'] = 'Here you can view all unapproved portal pages. Read them and decide whether to publish or not.';
+$txt['lp_pages_internal'] = 'Internal pages';
+$txt['lp_pages_internal_description'] = 'Here you can view all internal portal pages. They do not participate in general sampling and searching, but remain accessible by direct links.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
 $txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
@@ -234,6 +236,7 @@ $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
 $txt['lp_page_options'] = ['Show the title', 'Show the author and posting date', 'Show related pages', 'Allow comments'];
+$txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
 
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';

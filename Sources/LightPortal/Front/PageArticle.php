@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Bugo\LightPortal\Entities\Page;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -29,7 +31,7 @@ class PageArticle extends AbstractArticle
 			$this->selected_categories = [0];
 
 		$this->params = [
-			'status'              => 1,
+			'status'              => Page::STATUS_ACTIVE,
 			'current_time'        => time(),
 			'permissions'         => $this->getPermissions(),
 			'selected_categories' => $this->selected_categories

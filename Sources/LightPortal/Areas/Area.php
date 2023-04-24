@@ -128,7 +128,7 @@ trait Area
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 END
+			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
 			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
 			[
 				'items' => $items

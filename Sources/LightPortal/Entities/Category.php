@@ -93,7 +93,7 @@ final class Category extends AbstractPageList
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
 			WHERE p.category_id = {int:id}
-				AND p.status = {int:status}
+				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
@@ -101,7 +101,7 @@ final class Category extends AbstractPageList
 			[
 				'lang'         => $this->user_info['language'],
 				'id'           => $this->context['lp_category'],
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
@@ -124,12 +124,12 @@ final class Category extends AbstractPageList
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
-				AND status = {int:status}
+				AND status IN ({array_int:statuses})
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => $this->context['lp_category'],
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
 			]
@@ -210,14 +210,14 @@ final class Category extends AbstractPageList
 			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
-			WHERE p.status = {int:status}
+			WHERE p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			GROUP BY c.category_id, c.name, c.description
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'status'       => 1,
+				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
