@@ -510,21 +510,18 @@ final class BlockArea
 	private function getAreasInfo(): string
 	{
 		$example_areas = [
-			'all',
 			'custom_action',
-			'pages',
+			'!custom_action',
 			LP_PAGE_PARAM . '=alias',
-			'boards',
 			'board=id',
-			'board=id1-id3',
-			'board=id3|id7',
-			'topics',
+			'board=1-3',
+			'board=3|7',
 			'topic=id',
-			'topic=id1-id3',
-			'topic=id3|id7',
+			'topic=1-3',
+			'topic=3|7',
 		];
 
-		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'portal,forum,search');
+		$this->txt['lp_block_areas_values'][0] = sprintf($this->txt['lp_block_areas_values'][0], 'pm,agreement,search');
 
 		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 

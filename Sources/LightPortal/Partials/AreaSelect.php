@@ -20,10 +20,18 @@ final class AreaSelect extends AbstractPartial
 	{
 		$params['data'] = [
 			'all'    => 'all',
+			'portal' => 'portal',
+			'home'   => 'home',
+			'forum'  => 'forum',
 			'pages'  => 'pages',
 			'boards' => 'boards',
 			'topics' => 'topics',
 		];
+
+		$this->txt['lp_block_areas_set']['pm'] = $this->txt['personal_messages'];
+		$this->txt['lp_block_areas_set']['agreement'] = $this->txt['terms_and_rules'];
+		$this->txt['lp_block_areas_set']['search'] = $this->txt['search'];
+		$this->txt['lp_block_areas_set']['help'] = $this->txt['help'];
 
 		$params['value'] = explode(',', $this->context['lp_block']['areas']);
 		$params['data'] = array_merge($params['data'], array_combine($params['value'], $params['value']));
@@ -33,8 +41,10 @@ final class AreaSelect extends AbstractPartial
 			if (in_array($value, $params['value']))
 				$values[] = $value;
 
+			$text = str_replace('!', '', $text);
+
 			$data[] = [
-				'label' => $text,
+				'label' => $this->txt['lp_block_areas_set'][$text] ?? $text,
 				'value' => $value
 			];
 		}
