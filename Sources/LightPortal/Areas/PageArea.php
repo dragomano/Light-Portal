@@ -676,8 +676,8 @@ final class PageArea
 			'options'     => $options,
 		];
 
-		if (empty($this->user_info['is_admin']) && ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'])) {
-			$this->context['lp_page']['status'] = Page::STATUS_ACTIVE;
+		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']) {
+			$this->context['lp_page']['status'] = $post_data['status'] ?? Page::STATUS_ACTIVE;
 		}
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
@@ -810,6 +810,7 @@ final class PageArea
 		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
 		$this->context['posting_fields']['category']['label']['html'] = '<label for="category">' . $this->txt['lp_category'] . '</label>';
+		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
 		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
 			'id'         => 'category',
 			'multiple'   => false,
@@ -817,7 +818,6 @@ final class PageArea
 			'data'       => $this->getEntityList('category'),
 			'value'      => $this->context['lp_page']['category']
 		]);
-		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
 			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
