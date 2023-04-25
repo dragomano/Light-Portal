@@ -5,57 +5,8 @@ function callback_main_menu_table()
 	global $txt, $scripturl, $context;
 
 	echo '
-	<table class="main_menu_list centertext table_grid">
-		<caption class="title_bar">', $txt['lp_portal'], '</caption>
-		<tbody>
-			<tr class="popup_content">
-				<td class="descbox" colspan="2">
-					<strong>', $txt['lp_main_menu']['menu_item'], '</strong>
-				</td>
-			</tr>';
-
-	$i = 0;
-	foreach ($context['languages'] as $lang) {
-		echo '
-			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
-				<td><strong>', $lang['name'], '</strong></td>
-				<td>
-					<input type="text" name="portal_item_langs[', $lang['filename'], ']" placeholder="', $lang['filename'], '" value="', $context['lp_main_menu_addon_portal_langs'][$lang['filename']] ?? '', '">
-				</td>
-			</tr>';
-	}
-
-	echo '
-		</tbody>
-	</table>
-	<table class="main_menu_list centertext table_grid">
-		<caption class="title_bar">', $txt['lp_forum'], '</caption>
-		<tbody>
-			<tr class="popup_content">
-				<td class="descbox" colspan="2">
-					<strong>', $txt['lp_main_menu']['menu_item'], '</strong>
-				</td>
-			</tr>';
-
-	$i = 0;
-	foreach ($context['languages'] as $lang) {
-		echo '
-			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
-				<td><strong>', $lang['name'], '</strong></td>
-				<td>
-					<input type="text" name="forum_item_langs[', $lang['filename'], ']" placeholder="', $lang['filename'], '" value="', $context['lp_main_menu_addon_forum_langs'][$lang['filename']] ?? '', '">
-				</td>
-			</tr>';
-	}
-
-	echo '
-		</tbody>
-	</table>
-
 	<input type="hidden" name="items">
-
 	<table class="main_menu_list centertext" x-data="handleItems()">
-		<caption class="title_bar">', $txt['lp_main_menu']['additional_items'], '</caption>
 		<tbody>
 			<template x-for="(item, index) in items" :key="index">
 				<tr class="popup_content">
@@ -63,13 +14,16 @@ function callback_main_menu_table()
 						<table class="plugin_options table_grid">
 							<tbody>
 								<tr class="windowbg">
-									<td style="width: 200px"><strong>', $txt['lp_main_menu']['unicode'], '</strong></td>
+									<td style="width: 200px"><strong>', $txt['current_icon'], '</strong></td>
 									<td><input type="text" x-model="item.unicode" name="unicode[]" placeholder="f007"></td>
 									<td style="width: 140px">
 										<button type="button" class="button" @click="remove(index)">
 											<span class="main_icons delete"></span> <span class="hidden-xs">', $txt['remove'], '</span>
 										</button>
 									</td>
+								</tr>
+								<tr class="windowbg">
+									<td colspan="3"><div class="infobox">', sprintf($txt['lp_main_menu']['icon_hint'], 'https://imgur.com/a/7o4fWGL', 'https://fontawesome.com/search?o=r&m=free'), '</div></td>
 								</tr>
 								<tr class="windowbg">
 									<td><strong>', $txt['url'], '</strong></td>

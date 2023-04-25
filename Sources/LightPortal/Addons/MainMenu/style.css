@@ -6,8 +6,12 @@
 
 .main_menu_list,
 .main_menu_list table,
-.main_menu_list table button {
+.main_menu_list button {
 	width: 100%;
+}
+
+.main_menu_list td .infobox {
+	margin: 0;
 }
 
 @media screen and (max-width: 680px) {
