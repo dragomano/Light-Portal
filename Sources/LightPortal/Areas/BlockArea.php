@@ -333,8 +333,9 @@ final class BlockArea
 
 		$block_options = $this->context['current_block']['options'] ?? $options[$this->context['current_block']['type']];
 
-		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']))
+		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']) && ! empty($this->context['current_block']['type'])) {
 			$this->context['current_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['current_block']['type']]['icon'];
+		}
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
