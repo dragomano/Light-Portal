@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.23
+ * @version 25.04.23
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -40,6 +40,11 @@ class Trumbowyg extends Plugin
 		$auto_grow = empty($this->context['lp_trumbowyg_plugin']['auto_grow']) ? 0 : (int) $this->context['lp_trumbowyg_plugin']['auto_grow'];
 
 		$this->loadLanguage('Editor');
+
+		$this->addInlineCss('
+		.trumbowyg-editor {
+			height: 300px;
+		}');
 
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js');
