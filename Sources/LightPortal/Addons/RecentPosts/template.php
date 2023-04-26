@@ -36,7 +36,13 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width)
 
 			echo '
 				<br><span class="smalltext">', $post['timestamp'], '</span>
-			</span>
+			</span>';
+
+			if (! empty($parameters['show_body']))
+				echo '
+			<div>', $post['body'], '</div>';
+
+			echo '
 		</div>';
 		}
 	} else {
@@ -48,6 +54,10 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width)
 			<div class="smalltext">', $post['time'], '</div>';
 
 			echo $post[$parameters['link_type']];
+
+			if (! empty($parameters['show_body']))
+				echo '
+			<div>', $post['body'], '</div>';
 
 			echo '
 		</div>';

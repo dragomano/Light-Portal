@@ -25,6 +25,7 @@ use Bugo\LightPortal\{
 	Areas\Config\CategoryConfig,
 	Areas\Config\PanelConfig,
 	Areas\Config\MiscConfig,
+	Areas\Config\FeedbackConfig,
 };
 
 if (! defined('SMF'))
@@ -67,7 +68,8 @@ final class ConfigArea
 								'extra'      => [$this->context['lp_icon_set']['pager'] . $this->txt['lp_extra']],
 								'categories' => [$this->context['lp_icon_set']['sections'] . $this->txt['lp_categories']],
 								'panels'     => [$this->context['lp_icon_set']['panels'] . $this->txt['lp_panels']],
-								'misc'       => [$this->context['lp_icon_set']['tools'] . $this->txt['lp_misc']]
+								'misc'       => [$this->context['lp_icon_set']['tools'] . $this->txt['lp_misc']],
+								'feedback'   => [$this->context['lp_icon_set']['comments'] . $this->txt['lp_feedback']]
 							]
 						],
 						'lp_blocks' => [
@@ -145,7 +147,8 @@ final class ConfigArea
 			'extra'      => [new ExtraConfig, 'show'],
 			'categories' => [new CategoryConfig, 'show'],
 			'panels'     => [new PanelConfig, 'show'],
-			'misc'       => [new MiscConfig, 'show']
+			'misc'       => [new MiscConfig, 'show'],
+			'feedback'   => [new FeedbackConfig, 'show'],
 		];
 
 		$this->dbExtend();
@@ -168,6 +171,9 @@ final class ConfigArea
 				],
 				'misc' => [
 					'description' => $this->txt['lp_misc_info']
+				],
+				'feedback' => [
+					'description' => $this->txt['lp_feedback_info']
 				]
 			]
 		];

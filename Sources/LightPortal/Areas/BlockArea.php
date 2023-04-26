@@ -16,7 +16,14 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Partials\{AreaSelect, ContentClassSelect, IconSelect, TitleClassSelect};
+use Bugo\LightPortal\Partials\{
+	AreaSelect,
+	ContentClassSelect,
+	IconSelect,
+	PermissionSelect,
+	PlacementSelect,
+	TitleClassSelect
+};
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 
@@ -326,8 +333,9 @@ final class BlockArea
 
 		$block_options = $this->context['current_block']['options'] ?? $options[$this->context['current_block']['type']];
 
-		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']))
+		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']) && ! empty($this->context['current_block']['type'])) {
 			$this->context['current_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['current_block']['type']]['icon'];
+		}
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
@@ -419,57 +427,14 @@ final class BlockArea
 			],
 		];
 
-		$this->context['posting_fields']['placement']['label']['text'] = $this->txt['lp_block_placement'];
-		$this->context['posting_fields']['placement']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-		];
-
-		foreach ($this->context['lp_block_placements'] as $level => $title) {
-			$this->context['posting_fields']['placement']['input']['options'][$title] = [
-				'value'    => $level,
-				'selected' => $level == $this->context['lp_block']['placement'],
-			];
-		}
-
-		$this->addInlineJavaScript('
-	const placementSelect = document.getElementById("placement");
-	if (placementSelect) {
-		VirtualSelect.init({
-			ele: placementSelect,
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});
-	}', true);
+		$this->context['posting_fields']['placement']['label']['html'] = '<label for="placement">' . $this->txt['lp_block_placement'] . '</label>';
+		$this->context['posting_fields']['placement']['input']['html'] = (new PlacementSelect)();
+		$this->context['posting_fields']['placement']['input']['tab']  = 'access_placement';
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
-			$this->context['posting_fields']['permissions']['input'] = [
-				'type' => 'select',
-				'tab'  => 'access_placement',
-			];
-
-			foreach ($this->txt['lp_permissions'] as $level => $title) {
-				if (empty($this->context['user']['is_admin']) && empty($level))
-					continue;
-
-				$this->context['posting_fields']['permissions']['input']['options'][$title] = [
-					'value'    => $level,
-					'selected' => $level == $this->context['lp_block']['permissions'],
-				];
-			}
-
-			$this->addInlineJavaScript('
-	const permissionsSelect = document.getElementById("permissions");
-	if (permissionsSelect) {
-		VirtualSelect.init({
-			ele: "#permissions",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});
-	}', true);
+			$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+			$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
+			$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 		}
 
 		$this->context['posting_fields']['areas']['label']['html']  = '<label for="areas">' . $this->txt['lp_block_areas'] . '</label>';
@@ -519,7 +484,7 @@ final class BlockArea
 					'type'       => 'textarea',
 					'tab'        => 'content',
 					'attributes' => [
-						'value' => $this->context['lp_block']['content'],
+						'value' => $this->prepareContent($this->context['lp_block']),
 					],
 				];
 			} else {
@@ -546,21 +511,18 @@ final class BlockArea
 	private function getAreasInfo(): string
 	{
 		$example_areas = [
-			'all',
 			'custom_action',
-			'pages',
+			'!custom_action',
 			LP_PAGE_PARAM . '=alias',
-			'boards',
 			'board=id',
-			'board=id1-id3',
-			'board=id3|id7',
-			'topics',
+			'board=1-3',
+			'board=3|7',
 			'topic=id',
-			'topic=id1-id3',
-			'topic=id3|id7',
+			'topic=1-3',
+			'topic=3|7',
 		];
 
-		$this->txt['lp_block_areas_values'][1] = sprintf($this->txt['lp_block_areas_values'][1], 'portal,forum,search');
+		$this->txt['lp_block_areas_values'][0] = sprintf($this->txt['lp_block_areas_values'][0], 'pm,agreement,search');
 
 		$this->context['lp_possible_areas'] = array_combine($example_areas, $this->txt['lp_block_areas_values']);
 

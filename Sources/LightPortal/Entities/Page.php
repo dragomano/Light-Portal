@@ -20,12 +20,17 @@ use Bugo\LightPortal\Entities\PageListInterface;
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * Status [0 - inactive, 1 - active, 2 - unapproved]
- */
 final class Page
 {
 	use Helper;
+
+	public const STATUS_INACTIVE = 0;
+
+	public const STATUS_ACTIVE = 1;
+
+	public const STATUS_UNAPPROVED = 2;
+
+	public const STATUS_INTERNAL = 3;
 
 	public function show(): void
 	{
@@ -374,7 +379,7 @@ final class Page
 			(
 				SELECT p.alias, t.title
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
 				WHERE p.category_id = {int:category_id}
 					AND p.created_at < {int:created_at}
 					AND p.created_at <= {int:current_time}
@@ -387,7 +392,7 @@ final class Page
 			(
 				SELECT p.alias, t.title
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
 				WHERE p.category_id = {int:category_id}
 					AND p.created_at > {int:created_at}
 					AND p.created_at <= {int:current_time}
@@ -401,7 +406,7 @@ final class Page
 				'category_id'  => $this->context['lp_page']['category_id'],
 				'created_at'   => $this->context['lp_page']['created_at'],
 				'current_time' => time(),
-				'status'       => 1,
+				'status'       => $this->context['lp_page']['status'],
 				'permissions'  => $this->getPermissions()
 			]
 		);
@@ -457,7 +462,7 @@ final class Page
 			LIMIT 4',
 			[
 				'current_lang' => $this->context['user']['language'],
-				'status'       => 1,
+				'status'       => $this->context['lp_page']['status'],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'current_page' => $item['id']
@@ -566,9 +571,11 @@ final class Page
 			$this->smcFunc['db_query']('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
-				WHERE page_id = {int:item}',
+				WHERE page_id = {int:item}
+					AND status IN ({array_int:statuses})',
 				[
-					'item' => $this->context['lp_page']['id']
+					'item'     => $this->context['lp_page']['id'],
+					'statuses' => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL]
 				]
 			);
 

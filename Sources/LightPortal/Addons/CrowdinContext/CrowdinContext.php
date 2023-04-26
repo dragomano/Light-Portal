@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.04.23
+ * @version 24.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -33,7 +33,7 @@ class CrowdinContext extends Plugin
 			'admin_id' => $this->user_info['id'],
 		]);
 
-		$config_vars['crowdin_context'][] = ['int', 'admin_id'];
+		$config_vars['crowdin_context'][] = ['select', 'admin_id', $this->getAdminList()];
 	}
 
 	public function init(): void
@@ -79,5 +79,22 @@ class CrowdinContext extends Plugin
 	private function isCanUse(): bool
 	{
 		return ! empty($this->user_info['is_admin']) && isset($this->context['lp_crowdin_context_plugin']['admin_id']) && (int) $this->context['lp_crowdin_context_plugin']['admin_id'] === $this->user_info['id'];
+	}
+
+	private function getAdminList(): array
+	{
+		$this->require('Subs-Members');
+
+		$ids = membersAllowedTo('admin_forum');
+
+		$this->loadMemberData($ids);
+
+		$names = array_map(function ($user) {
+			$this->loadMemberContext($user);
+			$user = $this->memberContext[$user]['name'];
+			return $user;
+		}, $ids);
+
+		return array_combine($ids, $names);
 	}
 }

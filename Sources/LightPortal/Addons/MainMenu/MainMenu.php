@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.23
+ * @version 25.04.23
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -36,12 +36,6 @@ class MainMenu extends Plugin
 	public function menuButtons(array &$buttons)
 	{
 		$this->prepareVariables();
-
-		if (! empty($this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']]))
-			$buttons[LP_ACTION]['title'] = $this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']];
-
-		if (! empty($this->context['lp_main_menu_addon_forum_langs'][$this->user_info['language']]))
-			$buttons[empty($this->modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title'] = $this->context['lp_main_menu_addon_forum_langs'][$this->user_info['language']];
 
 		if (empty($this->context['lp_main_menu_addon_items']))
 			return;
@@ -93,12 +87,6 @@ class MainMenu extends Plugin
 		}
 	}
 
-	public function frontCustomTemplate()
-	{
-		if (! empty($this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']]) && ! empty($this->context['linktree'][1]))
-			$this->context['linktree'][1]['name'] = $this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']];
-	}
-
 	public function addSettings(array &$config_vars)
 	{
 		$config_vars['main_menu'][] = ['callback', 'items', [$this, 'showList']];
@@ -119,25 +107,6 @@ class MainMenu extends Plugin
 	{
 		if (! isset($plugin_options['items']))
 			return;
-
-		$portal_langs = $forum_langs = [];
-
-		if ($this->request()->has('portal_item_langs')) {
-			foreach ($this->request('portal_item_langs') as $lang => $val) {
-				if (! empty($val))
-					$portal_langs[$lang] = $val;
-			}
-		}
-
-		if ($this->request()->has('forum_item_langs')) {
-			foreach ($this->request('forum_item_langs') as $lang => $val) {
-				if (! empty($val))
-					$forum_langs[$lang] = $val;
-			}
-		}
-
-		$plugin_options['portal_langs'] = json_encode($portal_langs, JSON_UNESCAPED_UNICODE);
-		$plugin_options['forum_langs']  = json_encode($forum_langs, JSON_UNESCAPED_UNICODE);
 
 		$items = $langs = [];
 
@@ -162,8 +131,6 @@ class MainMenu extends Plugin
 
 	private function prepareVariables()
 	{
-		$this->context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_items']        = $this->jsonDecode($this->context['lp_main_menu_plugin']['items'] ?? '', true);
+		$this->context['lp_main_menu_addon_items'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['items'] ?? '', true);
 	}
 }

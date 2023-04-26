@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\Block;
+use Bugo\LightPortal\Entities\{Block, Page};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -226,10 +226,16 @@ abstract class AbstractMain
 						SELECT COUNT(page_id)
 						FROM {db_prefix}lp_pages
 						WHERE status = {int:unapproved}
-					) AS num_unapproved_pages',
+					) AS num_unapproved_pages,
+					(
+						SELECT COUNT(page_id)
+						FROM {db_prefix}lp_pages
+						WHERE status = {int:internal}
+					) AS num_internal_pages',
 				[
-					'active'     => 1,
-					'unapproved' => 2,
+					'active'     => Page::STATUS_ACTIVE,
+					'unapproved' => Page::STATUS_UNAPPROVED,
+					'internal'   => Page::STATUS_INTERNAL,
 					'user_id'    => $this->user_info['id']
 				]
 			);
@@ -248,6 +254,7 @@ abstract class AbstractMain
 			'active_pages'     => $num_entities['num_pages'],
 			'my_pages'         => $num_entities['num_my_pages'],
 			'unapproved_pages' => $num_entities['num_unapproved_pages'],
+			'internal_pages'   => $num_entities['num_internal_pages'],
 		];
 	}
 

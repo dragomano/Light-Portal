@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.03.23
+ * @version 23.04.23
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -54,10 +54,10 @@ class Giscus extends Plugin
 			'theme' => 'light'
 		]);
 
-		$config_vars['giscus'][] = ['text', 'repo', 'subtext' => sprintf($this->txt['lp_giscus']['repo_subtext'], $this->url)];
-		$config_vars['giscus'][] = ['text', 'repo_id', 'subtext' => sprintf($this->txt['lp_giscus']['repo_id_subtext'], $this->url)];
-		$config_vars['giscus'][] = ['text', 'category', 'subtext' => sprintf($this->txt['lp_giscus']['category_subtext'], $this->url)];
-		$config_vars['giscus'][] = ['text', 'category_id', 'subtext' => sprintf($this->txt['lp_giscus']['category_id_subtext'], $this->url)];
+		$config_vars['giscus'][] = ['text', 'repo', 'subtext' => sprintf($this->txt['lp_giscus']['repo_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'repo_id', 'subtext' => sprintf($this->txt['lp_giscus']['repo_id_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'category', 'subtext' => sprintf($this->txt['lp_giscus']['category_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'category_id', 'subtext' => sprintf($this->txt['lp_giscus']['category_id_subtext'], $this->url), 'required' => true];
 		$config_vars['giscus'][] = ['select', 'theme', $this->themes];
 	}
 

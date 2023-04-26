@@ -14,6 +14,8 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width)
 
 	if (empty($parameters['use_simple_style'])) {
 		foreach ($recent_topics as $topic) {
+			$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
+
 			echo '
 		<div class="windowbg">';
 
@@ -26,7 +28,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width)
 			<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
 			echo '
-			<span>', (! empty($parameters['show_icons']) ? $topic['icon'] . ' ' : ''), $topic['link'];
+			<span>', (! empty($parameters['show_icons']) ? $topic['icon'] . ' ' : ''), $topic[$parameters['link_type']];
 
 			if (empty($parameters['show_avatars']))
 				echo '
@@ -39,11 +41,13 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width)
 		}
 	} else {
 		foreach ($recent_topics as $topic) {
+			$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
+
 			echo '
 		<div class="windowbg">
 			<div class="smalltext">', $topic['time'], '</div>';
 
-			echo $topic['link'];
+			echo $topic[$parameters['link_type']];
 
 			echo '
 			<div class="smalltext', $context['right_to_left'] ? ' floatright' : '', '">

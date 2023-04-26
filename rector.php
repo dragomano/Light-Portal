@@ -15,7 +15,6 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/Sources/LightPortal/AddonHandler.php',
         __DIR__ . '**/vendor/*',
         __DIR__ . '**/langs/*',
-        __DIR__ . '/Sources/LightPortal/Addons/AvatarGenerator/Multiavatar.php',
         CountOnNullRector::class,
         JsonThrowOnErrorRector::class,
     ]);

@@ -12,5 +12,7 @@ return [
 	'show_avatars' => 'Show user avatars',
 	'show_icons' => 'Show topic icons',
 	'num_topics' => 'Number of topics to display',
+	'type' => 'What to display as a link to a post',
+	'type_set' => ['Message subject', 'Message preview'],
 	'update_interval' => 'List refresh interval, in seconds',
 ];

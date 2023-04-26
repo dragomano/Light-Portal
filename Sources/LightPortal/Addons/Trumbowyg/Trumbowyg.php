@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 25.04.23
  */
 
 namespace Bugo\LightPortal\Addons\Trumbowyg;
@@ -28,6 +28,7 @@ class Trumbowyg extends Plugin
 	{
 		$config_vars['trumbowyg'][] = ['multicheck', 'dark_themes', $this->getForumThemes()];
 		$config_vars['trumbowyg'][] = ['select', 'auto_grow', $this->txt['lp_trumbowyg']['auto_grow_set']];
+		$config_vars['trumbowyg'][] = ['text', 'client_id', 'subtext' => sprintf($this->txt['lp_trumbowyg']['client_id_subtext'], 'https://api.imgur.com/oauth2/addclient')];
 	}
 
 	public function prepareEditor(array $object)
@@ -40,6 +41,11 @@ class Trumbowyg extends Plugin
 
 		$this->loadLanguage('Editor');
 
+		$this->addInlineCss('
+		.trumbowyg-editor {
+			height: 300px;
+		}');
+
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/ui/trumbowyg.min.css');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/trumbowyg.min.js');
 
@@ -48,7 +54,9 @@ class Trumbowyg extends Plugin
 
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/history/trumbowyg.history.min.js');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteimage/trumbowyg.pasteimage.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/pasteembed/trumbowyg.pasteembed.min.js');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/preformatted/trumbowyg.preformatted.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/upload/trumbowyg.upload.min.js');
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/trumbowyg@2/dist/plugins/table/ui/trumbowyg.table.min.css');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/trumbowyg@2/plugins/table/trumbowyg.table.min.js');
 
@@ -61,7 +69,11 @@ class Trumbowyg extends Plugin
 				},
 				historyRedo: {
 					title: "' . $this->editortxt['redo'] . '"
-				}
+				},' . (empty($this->context['lp_trumbowyg_plugin']['client_id']) ? '' : '
+				image: {
+					dropdown: ["insertImage", "upload"],
+					ico: "insertImage"
+				}') . '
 			},
 			btns: [
 				["historyUndo", "historyRedo"],
@@ -69,13 +81,23 @@ class Trumbowyg extends Plugin
 				["p", "h4"],
 				["superscript", "subscript"],
 				["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"],
-				["insertImage", "link"],
+				["' . (empty($this->context['lp_trumbowyg_plugin']['client_id']) ? 'insertImage' : 'image') . '", "link"],
 				["table", "preformatted", "blockquote"],
 				["unorderedList", "orderedList"],
 				["horizontalRule"],
 				["viewHTML", "removeformat"],
 				["fullscreen"]
-			],
+			],' . (empty($this->context['lp_trumbowyg_plugin']['client_id']) ? '' : ('
+			plugins: {
+				upload: {
+					serverPath: "https://api.imgur.com/3/image",
+					fileFieldName: "image",
+					headers: {
+						"Authorization": "Client-ID ' . $this->context['lp_trumbowyg_plugin']['client_id'] . '"
+					},
+					urlPropertyName: "data.link"
+				}
+			},')) . '
 			semantic: {
 				"div": "div"
 			},

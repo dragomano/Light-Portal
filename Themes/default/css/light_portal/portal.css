@@ -194,6 +194,12 @@
 .lp_tabs section #post_header dd.pf_content {
   width: 100%;
 }
+@media (max-width: 600px) {
+  .lp_tabs section #post_header dt.pf_content,
+  .lp_tabs section #post_header dd.pf_content {
+    text-align: justify;
+  }
+}
 .lp_tabs section .choices__inner {
   border-radius: 6px;
 }
@@ -386,6 +392,9 @@ section #display_head span {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
+.lp_frontpage_articles .pagesection .button {
+  margin: 2px;
 }
 .article_view > div {
   margin-bottom: 10px;

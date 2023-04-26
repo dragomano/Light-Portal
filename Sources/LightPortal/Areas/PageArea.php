@@ -18,7 +18,13 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Entities\Page;
-use Bugo\LightPortal\Partials\{KeywordSelect, PageAuthorSelect};
+use Bugo\LightPortal\Partials\{
+	CategorySelect,
+	KeywordSelect,
+	PageAuthorSelect,
+	PermissionSelect,
+	StatusSelect
+};
 use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
@@ -44,7 +50,7 @@ final class PageArea
 		$this->loadLanguage('Packages');
 		$this->loadTemplate('LightPortal/ManagePages');
 
-		if ($this->isModArea())
+		if ($this->request()->has('moderate'))
 			$this->addInlineCss('
 		#lp_pages .num_views, #lp_pages .num_comments {
 			display: none;
@@ -57,8 +63,11 @@ final class PageArea
 			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
 		];
 
-		if ($this->isModArea())
+		if ($this->request()->has('moderate'))
 			$this->context[$this->context['admin_menu_name']]['tab_data']['description'] = $this->txt['lp_pages_unapproved_description'];
+
+		if ($this->request()->has('internal'))
+			$this->context[$this->context['admin_menu_name']]['tab_data']['description'] = $this->txt['lp_pages_internal_description'];
 
 		$this->doActions();
 		$this->massActions();
@@ -77,16 +86,37 @@ final class PageArea
 			(
 				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
-				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ($this->isModArea() ? ' AND p.status = {int:status}' : ' AND p.status != {int:status}')
+				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
+			) . (
+				$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
+			) . (
+				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
+			) . (
+				$this->request()->hasNot('u') && $this->request()->hasNot('moderate') && $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
 			),
 			[
-				'search' => $this->smcFunc['strtolower']($search_params['string']),
-				'status' => 2
+				'search'            => $this->smcFunc['strtolower']($search_params['string']),
+				'unapproved'        => Page::STATUS_UNAPPROVED,
+				'internal'          => Page::STATUS_INTERNAL,
+				'included_statuses' => [Page::STATUS_INACTIVE, Page::STATUS_ACTIVE]
 			],
 		];
 
-		$this->context['browse_type'] = $this->request()->has('u') ? 'own' : ($this->request()->has('moderate') ? 'mod' : 'all');
-		$type = $this->context['browse_type'] === 'own' ? ';u=' . $this->user_info['id'] : ($this->context['browse_type'] === 'mod' ? ';moderate' : '');
+		$this->context['browse_type'] = 'all';
+		$type = '';
+		$status = Page::STATUS_ACTIVE;
+
+		if ($this->request()->has('u')) {
+			$this->context['browse_type'] = 'own';
+			$type = ';u=' . $this->user_info['id'];
+		} elseif ($this->request()->has('moderate')) {
+			$this->context['browse_type'] = 'mod';
+			$type = ';moderate';
+		} elseif ($this->request()->has('internal')) {
+			$this->context['browse_type'] = 'int';
+			$type = ';internal';
+			$status = Page::STATUS_INTERNAL;
+		}
 
 		$listOptions = [
 			'id' => 'lp_pages',
@@ -192,9 +222,9 @@ final class PageArea
 						'value' => $this->txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>' : '<div x-data="{status: ' . ($entry['status'] === 1 ? 'true' : 'false') . '}">
+							</div>' : '<div x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
 							</div>',
 						'class' => 'centertext',
@@ -447,10 +477,15 @@ final class PageArea
 				$this->txt['awaiting_approval'],
 				$this->context['lp_quantities']['unapproved_pages']
 			],
+			'int' => [
+				';internal',
+				$this->txt['lp_pages_internal'],
+				$this->context['lp_quantities']['internal_pages']
+			]
 		];
 
 		if (! $this->context['allow_light_portal_manage_pages_any']) {
-			unset($titles['all'], $titles['mod']);
+			unset($titles['all'], $titles['mod'], $titles['int']);
 		}
 
 		$this->context['lp_pages']['title'] .= ': ';
@@ -460,7 +495,7 @@ final class PageArea
 
 			$this->context['lp_pages']['title'] .= '<a href="' . $this->scripturl . '?action=admin;area=lp_pages;sa=main' . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
 
-			if ($browse_type !== 'mod' && count($titles) > 1)
+			if ($browse_type !== 'int' && count($titles) > 1)
 				$this->context['lp_pages']['title'] .= ' | ';
 		}
 	}
@@ -587,6 +622,7 @@ final class PageArea
 				'keywords'    => FILTER_DEFAULT,
 				'type'        => FILTER_DEFAULT,
 				'permissions' => FILTER_VALIDATE_INT,
+				'status'      => FILTER_VALIDATE_INT,
 				'date'        => FILTER_DEFAULT,
 				'time'        => FILTER_DEFAULT,
 				'content'     => FILTER_UNSAFE_RAW,
@@ -632,7 +668,7 @@ final class PageArea
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? $this->modSettings['lp_page_editor_type_default'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $this->context['lp_current_page']['status'] ?? 2,
+			'status'      => $post_data['status'] ?? $this->context['lp_current_page']['status'] ?? Page::STATUS_UNAPPROVED,
 			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $dateTime->format('Y-m-d'),
 			'time'        => $post_data['time'] ?? $dateTime->format('H:i'),
@@ -640,8 +676,9 @@ final class PageArea
 			'options'     => $options,
 		];
 
-		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'])
-			$this->context['lp_page']['status'] = 1;
+		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']) {
+			$this->context['lp_page']['status'] = $post_data['status'] ?? Page::STATUS_ACTIVE;
+		}
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
 
@@ -731,7 +768,7 @@ final class PageArea
 				'type'       => 'textarea',
 				'tab'        => 'content',
 				'attributes' => [
-					'value'    => $this->context['lp_page']['content'],
+					'value'    => $this->prepareContent($this->context['lp_page']),
 					'required' => true,
 					'style'    => 'height: 300px',
 				],
@@ -768,60 +805,19 @@ final class PageArea
 		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
 		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
-		$this->context['posting_fields']['permissions']['label']['text'] = $this->txt['edit_permissions'];
-		$this->context['posting_fields']['permissions']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-		];
+		$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
+		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
-		foreach ($this->txt['lp_permissions'] as $level => $title) {
-			if (empty($this->context['user']['is_admin']) && empty($level))
-				continue;
-
-			$this->context['posting_fields']['permissions']['input']['options'][$title] = [
-				'value'    => $level,
-				'selected' => $level == $this->context['lp_page']['permissions'],
-			];
-		}
-
-		if ($this->context['user']['is_admin'])
-			$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#permissions",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});', true);
-
-		$allCategories = $this->getEntityList('category');
-
-		$this->context['posting_fields']['category']['label']['text'] = $this->txt['lp_category'];
-		$this->context['posting_fields']['category']['input'] = [
-			'type' => 'select',
-			'tab'  => 'access_placement',
-			'attributes' => [
-				'disabled' => count($allCategories) < 2,
-			],
-		];
-
-		foreach ($allCategories as $value => $category) {
-			$this->context['posting_fields']['category']['input']['options'][$category['name']] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_page']['category'],
-			];
-		}
-
-		$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#category",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body",
-			search: true,
-			markSearchResults: true,
-			noSearchResultsText: "' . $this->txt['no_matches'] . '",
-			searchPlaceholderText: "' . $this->txt['search'] . '"
-		});', true);
+		$this->context['posting_fields']['category']['label']['html'] = '<label for="category">' . $this->txt['lp_category'] . '</label>';
+		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
+		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
+			'id'         => 'category',
+			'multiple'   => false,
+			'full_width' => false,
+			'data'       => $this->getEntityList('category'),
+			'value'      => $this->context['lp_page']['category']
+		]);
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
 			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
@@ -831,6 +827,10 @@ final class PageArea
 		}
 
 		if ($this->context['user']['is_admin']) {
+			$this->context['posting_fields']['status']['label']['html'] = '<label for="status">' . $this->txt['status'] . '</label>';
+			$this->context['posting_fields']['status']['input']['html'] = (new StatusSelect)();
+			$this->context['posting_fields']['status']['input']['tab']  = 'access_placement';
+
 			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
 			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
 			$this->context['posting_fields']['page_author']['input']['tab']   = 'access_placement';
@@ -931,10 +931,5 @@ final class PageArea
 	{
 		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
 			$this->redirect('action=admin;area=lp_pages;u=' . $this->user_info['id']);
-	}
-
-	private function isModArea(): bool
-	{
-		return $this->request()->has(['sa', 'moderate']) && $this->request('sa') === 'main';
 	}
 }

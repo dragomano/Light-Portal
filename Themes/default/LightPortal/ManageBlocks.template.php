@@ -336,8 +336,7 @@ function template_show_areas_info()
 	<table class="table_grid">
 		<thead>
 			<tr class="title_bar">
-				<th>', $txt['lp_block_areas_area_th'], '</th>
-				<th>', $txt['lp_block_areas_display_th'], '</th>
+				<th colspan="2">', $txt['lp_block_areas_th'], '</th>
 			</tr>
 		</thead>
 		<tbody>';

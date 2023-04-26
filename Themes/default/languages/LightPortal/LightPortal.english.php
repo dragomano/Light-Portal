@@ -148,6 +148,11 @@ $txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter o
 $txt['lp_page_param'] = 'The <strong>page</strong> parameter for portal pages';
 $txt['lp_weekly_cleaning'] = 'Weekly optimization of portal tables';
 
+// Feedback
+$txt['lp_feedback'] = 'Feedback';
+$txt['lp_feedback_info'] = 'Here you can send your suggestions for improving the portal.';
+$txt['lp_thanks'] = 'Thank you!';
+
 // Actions
 $txt['lp_title'] = 'Title';
 $txt['lp_actions'] = 'Actions';
@@ -177,20 +182,23 @@ $txt['lp_block_placement_set'] = ['Header', 'Center (top)', 'Left side', 'Right 
 
 $txt['lp_block_areas'] = 'Display areas';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in';
-$txt['lp_block_areas_area_th'] = 'Area';
-$txt['lp_block_areas_display_th'] = 'Display';
-$txt['lp_block_areas_values'][0] = 'everywhere (use "!" to add an exclusion: <strong>all,!custom_action</strong>)';
-$txt['lp_block_areas_values'][1] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%1$s</em>)';
-$txt['lp_block_areas_values'][2] = 'on all portal pages';
-$txt['lp_block_areas_values'][3] = 'on page <em>index.php?page</em>=<strong>alias</strong>';
-$txt['lp_block_areas_values'][4] = 'in all boards and topics';
-$txt['lp_block_areas_values'][5] = 'only inside the board with identifier <strong>id</strong> (including all topics inside the board)';
-$txt['lp_block_areas_values'][6] = 'in boards id1, id2, id3';
-$txt['lp_block_areas_values'][7] = 'in boards id3, and id7';
-$txt['lp_block_areas_values'][8] = 'in all topics';
-$txt['lp_block_areas_values'][9] = 'only inside the topic with identifier <strong>id</strong>';
-$txt['lp_block_areas_values'][10] = 'in topics id1, id2, id3';
-$txt['lp_block_areas_values'][11] = 'in topics id3, and id7';
+$txt['lp_block_areas_th'] = 'Custom areas';
+$txt['lp_block_areas_values'][0] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%1$s</em>)';
+$txt['lp_block_areas_values'][1] = 'everywhere, except <strong>custom_action</strong> (used as an exception, in addition to the preset areas)';
+$txt['lp_block_areas_values'][2] = 'on page <em>index.php?page</em>=<strong>alias</strong>';
+$txt['lp_block_areas_values'][3] = 'only inside the board with identifier <strong>id</strong> (including all topics inside the board)';
+$txt['lp_block_areas_values'][4] = 'in boards with identifiers 1, 2, 3';
+$txt['lp_block_areas_values'][5] = 'in boards with identifiers 3, and 7';
+$txt['lp_block_areas_values'][6] = 'only inside the topic with identifier <strong>id</strong>';
+$txt['lp_block_areas_values'][7] = 'in topics with identifiers 1, 2, 3';
+$txt['lp_block_areas_values'][8] = 'in topics with identifiers 3, and 7';
+$txt['lp_block_areas_set']['all'] = 'Everywhere';
+$txt['lp_block_areas_set']['home'] = 'Main page of the portal';
+$txt['lp_block_areas_set']['portal'] = 'Portal area (action=portal)';
+$txt['lp_block_areas_set']['forum'] = 'Main page of the forum';
+$txt['lp_block_areas_set']['pages'] = 'All portal pages (pages)';
+$txt['lp_block_areas_set']['boards'] = 'All boards and topics of the forum';
+$txt['lp_block_areas_set']['topics'] = 'All topics of the forum';
 
 $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
@@ -215,6 +223,8 @@ $txt['lp_pages_manage_own_pages'] = 'Here you can view all your own portal pages
 $txt['lp_pages_manage_description'] = 'Use the corresponding button to add a new page.';
 $txt['lp_pages_unapproved'] = 'Unapproved pages';
 $txt['lp_pages_unapproved_description'] = 'Here you can view all unapproved portal pages. Read them and decide whether to publish or not.';
+$txt['lp_pages_internal'] = 'Internal pages';
+$txt['lp_pages_internal_description'] = 'Here you can view all internal portal pages. They do not participate in general sampling and searching, but remain accessible by direct links.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
 $txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
@@ -234,6 +244,7 @@ $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
 $txt['lp_page_options'] = ['Show the title', 'Show the author and posting date', 'Show related pages', 'Allow comments'];
+$txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
 
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';

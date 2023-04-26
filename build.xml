@@ -5,8 +5,8 @@
             <include name="Themes/**" />
             <exclude name="Themes/default/css/light_portal/portal.less" />
             <include name="Sources/**" />
-            <exclude name="Sources/LightPortal/Addons/AvatarGenerator/**" />
             <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
+            <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
             <exclude name="Sources/LightPortal/Addons/Disqus/**" />
             <exclude name="Sources/LightPortal/Addons/ExtUpload/**" />
             <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />

@@ -57,7 +57,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.1.3');
+		defined('LP_VERSION') || define('LP_VERSION', '2.1.4');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -373,7 +373,7 @@ final class Integration extends AbstractMain
 
 		$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
 		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
-		$this->context['permissions_excluded']['light_portal_approve_pages'][]     = 0;
+		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
