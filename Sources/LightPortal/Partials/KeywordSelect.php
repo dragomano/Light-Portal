@@ -21,14 +21,15 @@ final class KeywordSelect extends AbstractPartial
 		$this->context['lp_tags'] = $this->getEntityList('tag');
 
 		$data = $values = [];
-		foreach ($this->context['lp_tags'] as $value => $text) {
-			if (isset($this->context['lp_page']['keywords'][$value]))
-				$values[] = $value;
-
+		foreach ($this->context['lp_tags'] as $value => $label) {
 			$data[] = [
-				'label' => $text,
+				'label' => $label,
 				'value' => $value
 			];
+		}
+
+		foreach ($this->context['lp_page']['keywords'] as $tag_id => $tag_data) {
+			$values[] = is_array($tag_data) ? $tag_id : $this->jsEscape($tag_data);
 		}
 
 		return /** @lang text */ '
