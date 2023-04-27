@@ -178,6 +178,7 @@ $txt['lp_block_type'] = 'Block type';
 $txt['lp_block_note'] = 'Note';
 $txt['lp_block_priority'] = 'Priority';
 $txt['lp_block_placement'] = 'Placement';
+$txt['lp_block_placement_select'] = 'Where should the block be displayed?';
 $txt['lp_block_placement_set'] = ['Header', 'Center (top)', 'Left side', 'Right side', 'Center (bottom)', 'Footer'];
 
 $txt['lp_block_areas'] = 'Display areas';

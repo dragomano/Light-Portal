@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 27.04.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -103,8 +103,11 @@ class AdsBlock extends Block
 		];
 
 		$this->context['posting_fields']['ads_placement']['label']['html'] = '<label for="ads_placement">' . $this->txt['lp_block_placement'] . '</label>';
-		$this->context['posting_fields']['ads_placement']['input']['html'] = '<div id="ads_placement" name="ads_placement"></div>';
 		$this->context['posting_fields']['ads_placement']['input']['tab']  = 'access_placement';
+		$this->context['posting_fields']['ads_placement']['input']['html'] = (new PlacementSelect)([
+			'data'  => $this->getPlacements(),
+			'value' => $this->context['lp_block']['options']['parameters']['ads_placement']
+		]);
 
 		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_ads_block']['include_boards'] . '</label>';
 		$this->context['posting_fields']['include_boards']['input']['tab'] = 'access_placement';
@@ -133,10 +136,6 @@ class AdsBlock extends Block
 		$this->context['posting_fields']['end_date']['label']['html'] = '<label for="end_date">' . $this->txt['lp_ads_block']['end_date'] . '</label>';
 		$this->context['posting_fields']['end_date']['input']['html'] = '
 			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">';
-
-		$this->context['ads_placements'] = $this->getPlacements();
-
-		$this->setTemplate()->withLayer('ads_block');
 	}
 
 	public function findBlockErrors(array $data, array &$post_errors)

@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PlacementSelect extends AbstractPartial
 {
-	public function __invoke(): string
+	public function __invoke(array $params = []): string
 	{
+		$params['id'] ??= 'placement';
+		$params['value'] ??= $this->context['lp_block']['placement'];
+
 		$data = [];
 		foreach ($this->context['lp_block_placements'] as $level => $title) {
 			$data[] = [
@@ -27,15 +30,16 @@ final class PlacementSelect extends AbstractPartial
 		}
 
 		return /** @lang text */ '
-		<div id="placement" name="placement"></div>
+		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#placement",
+				ele: "#' . $params['id'] . '",
 				hideClearButton: true,' . ($this->context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
+				placeholder: "' . $this->txt['lp_block_placement_select'] . '",
 				options: ' . json_encode($data) . ',
-				selectedValue: "' . $this->context['lp_block']['placement'] . '"
+				selectedValue: "' . $params['value'] . '"
 			});
 		</script>';
 	}
