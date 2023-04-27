@@ -96,7 +96,7 @@ final class BlockArea
 
 		$this->txt['lp_blocks_add_instruction'] = sprintf($this->txt['lp_blocks_add_instruction'], $this->scripturl . '?action=admin;area=lp_plugins');
 
-		$this->context['current_block']['placement'] = $this->request('placement', '');
+		$this->context['current_block']['placement'] = $this->request('placement', 'top');
 
 		$this->prepareBlockList();
 
@@ -345,7 +345,7 @@ final class BlockArea
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
 			'note'          => $post_data['note'] ?? $this->context['current_block']['note'] ?? '',
 			'content'       => $post_data['content'] ?? $this->context['current_block']['content'] ?? '',
-			'placement'     => $post_data['placement'] ?? $this->context['current_block']['placement'] ?? '',
+			'placement'     => $post_data['placement'] ?? $this->context['current_block']['placement'] ?? 'top',
 			'priority'      => $post_data['priority'] ?? $this->context['current_block']['priority'] ?? 0,
 			'permissions'   => $post_data['permissions'] ?? $this->context['current_block']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
 			'status'        => $this->context['current_block']['status'] ?? 1,
