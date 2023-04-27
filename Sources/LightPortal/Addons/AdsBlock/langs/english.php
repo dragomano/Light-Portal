@@ -13,7 +13,6 @@ return [
 	'include_topics_select' => 'Select topics to display ads only there. Otherwise, the block will be displayed in all topics.',
 	'include_pages' => 'Pages',
 	'include_pages_select' => 'Select portal pages to display ads only there. Otherwise, the block will be displayed in all pages.',
-	'select_placement' => 'Where should the block be displayed?',
 	'placement_set' => [
 		'At the top of boards',
 		'At the bottom of boards',
