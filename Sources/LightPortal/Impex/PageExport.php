@@ -144,7 +144,7 @@ final class PageExport extends AbstractExport
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)
-				LEFT JOIN smf_lp_ratings AS r ON (com.id = r.content_id AND r.content_type = {literal:comment})' . (empty($pages) ? '' : '
+				LEFT JOIN {db_prefix}lp_ratings AS r ON (com.id = r.content_id AND r.content_type = {literal:comment})' . (empty($pages) ? '' : '
 			WHERE p.page_id IN ({array_int:pages})'),
 			[
 				'pages' => $pages
