@@ -148,6 +148,18 @@ trait SMFTrait
 		return loadMemberContext($user, $display_custom_fields);
 	}
 
+	protected function loadUserInfo(array $ids): array
+	{
+		return loadMinUserInfo($ids);
+	}
+
+	protected function membersAllowedTo(string $permission): array
+	{
+		require_once $this->sourcedir . '/Subs-Members.php';
+
+		return membersAllowedTo($permission);
+	}
+
 	protected function prepareInstalledThemes(): void
 	{
 		require_once $this->sourcedir . '/Subs-Themes.php';

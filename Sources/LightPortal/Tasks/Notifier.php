@@ -15,8 +15,8 @@
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
-use ErrorException;
 use SMF_BackgroundTask;
+use ErrorException;
 
 final class Notifier extends SMF_BackgroundTask
 {
@@ -27,17 +27,16 @@ final class Notifier extends SMF_BackgroundTask
 	 */
 	public function execute(): bool
 	{
-		require_once $this->sourcedir . '/Subs-Members.php';
-		require_once $this->sourcedir . '/Subs-Notify.php';
-
 		$members = match ($this->_details['content_type']) {
-			'new_page' => membersAllowedTo('light_portal_manage_pages_any'),
-			default    => array_intersect(membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
+			'new_page' => $this->membersAllowedTo('light_portal_manage_pages_any'),
+			default    => array_intersect($this->membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
 		};
 
 		// Let's not notify ourselves, okay?
 		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
+
+		require_once $this->sourcedir . '/Subs-Notify.php';
 
 		$prefs = getNotifyPrefs($members, match ($this->_details['content_type']) {
 			'new_comment' => 'page_comment',
