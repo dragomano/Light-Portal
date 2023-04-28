@@ -60,7 +60,7 @@ final class PageRepository extends AbstractRepository
 				'author_name'  => $row['author_name'],
 				'created_at'   => $this->getFriendlyTime((int) $row['date']),
 				'is_front'     => $this->isFrontpage($row['alias']),
-				'title'        => $row['title'] ?: $row['fallback_title'] ?: $row['alias'],
+				'title'        => ($row['title'] ?: $row['fallback_title']) ?: $row['alias'],
 			];
 		}
 
