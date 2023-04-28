@@ -9,7 +9,7 @@
 * **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru) [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-## Description
+## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
 This modification will transform your forum into a portal that includes:
 * the customizable frontpage,
 * separate pages with keywords,
@@ -17,7 +17,7 @@ This modification will transform your forum into a portal that includes:
 
 The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via plugins) content within pages and custom blocks.
 
-### Features:
+### Features
 * Blocks and pages with multilingual titles.
 * Support for the FontAwesome icons and any other similar packs.
 * Using the Flexbox to output blocks.
@@ -30,28 +30,6 @@ The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via
 * Import and export for pages and blocks.
 * Support for plugins (+ PluginMaker).
 * Support for standalone mode.
-
-## Описание
-Модификация преобразует ваш форум в портал:
-* настраиваемая главная страница,
-* отдельные страницы с ключевыми словами,
-* блоки внутри 12-колоночной flexbox-сетки.
-
-Поддержка контента с форумными тегами (BBCode), HTML, PHP, а также Markdown, Pug и даже Twig (через плагины) в страницах и пользовательских блоках.
-
-### Особенности:
-* Блоки и страницы с многоязычными заголовками.
-* Поддержка иконок FontAwesome и любых других подобных.
-* Использование Flexbox для вывода блоков.
-* Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
-* Статьи на главной: отображение тем, разделов или страниц портала.
-* Древовидные комментарии для статей.
-* Разметка Open Graph для страниц и комментариев.
-* Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
-* Встроенный менеджер рекламы (плагин AdsBlock).
-* Импорт и экспорт страниц и блоков.
-* Поддержка плагинов (+ мастер создания плагинов).
-* Поддержка автономного режима.
 
 ## Supported by
 
