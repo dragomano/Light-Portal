@@ -302,12 +302,17 @@ trait SMFTrait
 	{
 		require_once $this->sourcedir . '/Subs-MessageIndex.php';
 
-		return getBoardList(array_merge([
+		$defaultOptions = [
 			'ignore_boards'   => true,
 			'use_permissions' => true,
 			'not_redirection' => true,
 			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
-		], $options));
+		];
+
+		if (isset($options['included_boards']))
+			unset($defaultOptions['excluded_boards']);
+
+		return getBoardList(array_merge($defaultOptions, $options));
 	}
 
 	protected function updateMemberData(array $members, array $data): void

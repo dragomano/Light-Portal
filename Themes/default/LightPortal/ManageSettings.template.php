@@ -451,17 +451,6 @@ function template_callback_comment_settings()
 	echo '
 				</select>
 			</dd>
-		</template>
-
-		<template x-if="comment_block === \'default\'">
-			<dt>
-				<a id="setting_lp_allow_comment_ratings"></a> <span><label for="lp_allow_comment_ratings">', $txt['lp_allow_comment_ratings'], '</label></span>
-			</dt>
-		</template>
-		<template x-if="comment_block === \'default\'">
-			<dd>
-				<input type="checkbox" name="lp_allow_comment_ratings" id="lp_allow_comment_ratings"', empty($modSettings['lp_allow_comment_ratings']) ? '' : ' checked', ' value="1">
-			</dd>
 		</template>';
 }
 

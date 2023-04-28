@@ -71,6 +71,10 @@ final class CreditArea
 				'name' => 'Wylek',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=608635'
 			],
+			[
+				'name' => 'Panoulis64',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=301719'
+			]
 		];
 
 		$this->context['sponsors'] = [
