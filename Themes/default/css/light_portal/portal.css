@@ -1078,12 +1078,6 @@ section #display_head span {
   border-radius: 7px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-.comment_list li .comment_wrapper .entry.positive {
-  background: #bcf5bc;
-}
-.comment_list li .comment_wrapper .entry.negative {
-  opacity: 0.4 !important;
-}
 .comment_list li .comment_wrapper .entry .title {
   display: block;
   font-size: 0.7rem;
@@ -1110,21 +1104,6 @@ section #display_head span {
   vertical-align: top;
   padding: 6px 11px;
 }
-.comment_list li .comment_wrapper .entry .title .rating_area {
-  border: 1px solid #ddd;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 7px;
-  border-bottom-left-radius: 7px;
-  display: inline-block;
-  vertical-align: top;
-  padding: 6px 11px;
-  opacity: 0.8;
-}
-.comment_list li .comment_wrapper .entry .title .rating_area .rating_span {
-  float: right;
-  margin: 0 1.2em 0 1em;
-}
 .comment_list li .comment_wrapper .entry .title .comment_date {
   border: 1px solid #ddd;
   border-top-left-radius: 0;
@@ -1137,7 +1116,6 @@ section #display_head span {
   opacity: 0.8;
 }
 @media screen and (max-width: 468px) {
-  .comment_list li .comment_wrapper .entry .title .rating_area,
   .comment_list li .comment_wrapper .entry .title .comment_date span a {
     display: none;
   }
@@ -1152,7 +1130,6 @@ section #display_head span {
   overflow: hidden !important;
 }
 .comment_list li .comment_wrapper .entry .reply_button,
-.comment_list li .comment_wrapper .entry .like_button,
 .comment_list li .comment_wrapper .entry .modify_button,
 .comment_list li .comment_wrapper .entry .update_button,
 .comment_list li .comment_wrapper .entry .cancel_button,
@@ -1161,7 +1138,6 @@ section #display_head span {
   margin-right: 5px;
 }
 .comment_list li .comment_wrapper .entry .reply_button:hover,
-.comment_list li .comment_wrapper .entry .like_button:hover,
 .comment_list li .comment_wrapper .entry .modify_button:hover,
 .comment_list li .comment_wrapper .entry .update_button:hover,
 .comment_list li .comment_wrapper .entry .cancel_button:hover,

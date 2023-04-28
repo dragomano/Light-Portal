@@ -1384,14 +1384,6 @@ section {
 				.bradius(7px);
 				box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
 
-				&.positive {
-					background: lighten(@comment_bg_color, 10%);
-				}
-
-				&.negative {
-					opacity: .4 !important;
-				}
-
 				.title {
 					display: block;
 					font-size: .7rem;
@@ -1417,20 +1409,6 @@ section {
 						padding: 6px 11px;
 					}
 
-					.rating_area {
-						border: 1px solid @color-light-gray;
-						.bradius(0, 0, 7px, 7px);
-						display: inline-block;
-						.valign(top);
-						padding: 6px 11px;
-						opacity: .8;
-
-						.rating_span {
-							float: right;
-							margin: 0 1.2em 0 1em;
-						}
-					}
-
 					.comment_date {
 						border: 1px solid @color-light-gray;
 						.bradius(0, 7px, 0, 7px);
@@ -1441,7 +1419,6 @@ section {
 					}
 
 					@media screen and (max-width: 468px) {
-						.rating_area,
 						.comment_date span a {
 							display: none;
 						}
@@ -1461,7 +1438,6 @@ section {
 				}
 
 				.reply_button,
-				.like_button,
 				.modify_button,
 				.update_button,
 				.cancel_button,

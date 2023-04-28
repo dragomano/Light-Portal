@@ -16,7 +16,6 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\CommentRepository;
-use JetBrains\PhpStorm\NoReturn;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -47,9 +46,6 @@ final class Comment
 					$this->add();
 				case 'edit_comment':
 					$this->edit();
-				case 'like_comment':
-					$this->like();
-					break;
 				case 'remove_comment':
 					$this->remove();
 					break;
@@ -106,7 +102,7 @@ final class Comment
 		}
 	}
 
-	#[NoReturn] private function add(): void
+	private function add(): void
 	{
 		$result = [
 			'error' => true
@@ -151,18 +147,16 @@ final class Comment
 				'id'          => $item,
 				'start'       => $start,
 				'parent_id'   => $parent,
+				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
+				'created_at'  => date('Y-m-d', $time),
+				'created'     => $this->getFriendlyTime($time),
+				'raw_message' => $this->unPreparseCode($message),
+				'can_edit'    => true,
 				'poster'      => [
 					'id'     => $this->user_info['id'],
 					'name'   => $this->user_info['name'],
 					'avatar' => $this->getUserAvatar($this->user_info['id']),
 				],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
-				'created_at'  => date('Y-m-d', $time),
-				'created'     => $this->getFriendlyTime($time),
-				'raw_message' => $this->unPreparseCode($message),
-				'rating'      => 0,
-				'can_rate'    => false,
-				'can_edit'    => true
 			], $counter + 1, $level + 1);
 
 			$comment = ob_get_clean();
@@ -197,7 +191,7 @@ final class Comment
 		exit(json_encode($result));
 	}
 
-	#[NoReturn] private function edit(): void
+	private function edit(): void
 	{
 		$data = $this->request()->json();
 
@@ -223,29 +217,6 @@ final class Comment
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
 		exit(json_encode($message));
-	}
-
-	private function like(): void
-	{
-		if (empty($this->modSettings['lp_allow_comment_ratings']))
-			return;
-
-		$data = $this->request()->json();
-
-		if (empty($data) || $this->context['user']['is_guest'])
-			exit;
-
-		$item    = (int) $data['comment_id'];
-		$operand = $data['operand'];
-
-		if (empty($item) || empty($operand))
-			exit;
-
-		$this->repository->updateRating($item, $operand);
-
-		$this->cache()->forget('page_' . $this->alias . '_comments');
-
-		exit;
 	}
 
 	private function remove(): void

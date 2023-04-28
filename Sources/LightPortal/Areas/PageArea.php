@@ -554,7 +554,7 @@ final class PageArea
 		}
 
 		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries'] += 6;
+		$this->context['lp_num_queries'] += 5;
 
 		if ($comments) {
 			$this->smcFunc['db_query']('', '
@@ -566,12 +566,11 @@ final class PageArea
 			);
 
 			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_ratings
-				WHERE content_type = {string:type}
-					AND content_id IN ({array_int:items})',
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id IN ({array_int:items})
+					AND type = {literal:comment}',
 				[
-					'type'  => 'comment',
-					'items' => $comments
+					'items' => $comments,
 				]
 			);
 

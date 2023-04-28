@@ -443,7 +443,7 @@ function template_callback_comment_settings()
 			<dd>
 				<select id="lp_comment_sorting" name="lp_comment_sorting">';
 
-	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc'], $txt['lp_sort_by_rating']] as $sort_value => $sort_title) {
+	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc']] as $sort_value => $sort_title) {
 		echo '
 					<option value="', $sort_value, '"', ! empty($modSettings['lp_comment_sorting']) && $modSettings['lp_comment_sorting'] == $sort_value ? ' selected' : '', '>', $sort_title, '</option>';
 	}

@@ -312,9 +312,9 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * Remove comments, ratings, and alerts on deleting members
+	 * Remove comments, and alerts on deleting members
 	 *
-	 * Удаляем комментарии, оценки и оповещения при удалении пользователей
+	 * Удаляем комментарии и оповещения при удалении пользователей
 	 */
 	public function deleteMembers(array $users)
 	{
@@ -324,14 +324,6 @@ final class Integration extends AbstractMain
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
-			[
-				'users' => $users,
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_ratings
-			WHERE user_id IN ({array_int:users})',
 			[
 				'users' => $users,
 			]
