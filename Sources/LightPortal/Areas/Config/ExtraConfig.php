@@ -113,7 +113,6 @@ final class ExtraConfig
 			$save_vars[] = ['int', 'lp_time_to_change_comments'];
 			$save_vars[] = ['int', 'lp_num_comments_per_page'];
 			$save_vars[] = ['int', 'lp_comment_sorting'];
-			$save_vars[] = ['check', 'lp_allow_comment_ratings'];
 
 			$this->saveDBSettings($save_vars);
 
