@@ -371,12 +371,12 @@ final class Integration extends AbstractMain
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
-		$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
+		//$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
 		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
 		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
+		//$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
 		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
 
