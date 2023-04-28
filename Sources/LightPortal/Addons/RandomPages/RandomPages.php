@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.04.23
+ * @version 28.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -139,7 +139,7 @@ class RandomPages extends Block
 			$this->context['lp_num_queries']++;
 
 			if (empty($page_ids))
-				return $this->getData($num_pages - 1);
+				return $this->getData(array_merge($parameters, ['num_pages' => $num_pages - 1]));
 
 			$request = $this->smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
