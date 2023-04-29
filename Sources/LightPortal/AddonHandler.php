@@ -16,6 +16,7 @@ namespace Bugo\LightPortal;
 
 use SplObjectStorage;
 use Bugo\LightPortal\Repositories\PluginRepository;
+use MatthiasMullie\Minify;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -36,6 +37,14 @@ final class AddonHandler
 
 	private PluginStorage $plugins;
 
+	private Minify\CSS $cssMinifier;
+
+	private Minify\JS $jsMinifier;
+
+	private int $maxCssFilemtime = 0;
+
+	private int $maxJsFilemtime = 0;
+
 	private static self $instance;
 
 	private string $prefix = 'lp_';
@@ -44,6 +53,8 @@ final class AddonHandler
 	{
 		$this->pluginSettings = (new PluginRepository())->getSettings();
 		$this->plugins = new PluginStorage();
+		$this->cssMinifier = new Minify\CSS;
+		$this->jsMinifier = new Minify\JS;
 
 		$this->prepareAssets();
 	}
@@ -65,9 +76,6 @@ final class AddonHandler
 		return array_map(fn($item): string => basename($item), $dirs);
 	}
 
-	/**
-	 * @see https://dragomano.github.io/Light-Portal/plugins/all-hooks
-	 */
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
 		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
@@ -93,9 +101,8 @@ final class AddonHandler
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
-				$this->loadLang($path, $snakeName);
-				$this->loadCSS($path, $snakeName);
-				$this->loadJS($path, $snakeName);
+				$this->loadLangs($path, $snakeName);
+				$this->loadAssets($path);
 
 				$this->context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
 				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
@@ -104,6 +111,16 @@ final class AddonHandler
 			if (method_exists($class, $hook)) {
 				$hook === 'init' && in_array($addon, $this->context['lp_enabled_plugins']) ? $class->init() : $class->$hook(...$vars);
 			}
+		}
+
+		$cssFile = $this->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
+		if (! is_file($cssFile) || $this->maxCssFilemtime > filemtime($cssFile)) {
+			$this->cssMinifier->minify($cssFile);
+		}
+
+		$jsFile  = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
+			$this->jsMinifier->minify($jsFile);
 		}
 	}
 
@@ -137,7 +154,7 @@ final class AddonHandler
 		}
 	}
 
-	private function loadLang(string $path, string $snakeName): void
+	private function loadLangs(string $path, string $snakeName): void
 	{
 		if (isset($this->txt[$this->prefix . $snakeName]))
 			return;
@@ -154,37 +171,22 @@ final class AddonHandler
 			$this->txt[$this->prefix . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
 	}
 
-	private function loadCSS(string $path, string $snakeName): void
+	private function loadAssets(string $path): void
 	{
-		if (! is_file($style = $path . 'style.css'))
-			return;
+		$assets = [
+			'css' => $path . 'style.css',
+			'js'  => $path . 'script.js',
+		];
 
-		$addonCss = $this->settings['default_theme_dir'] . '/css/light_portal/addon_' . $snakeName . '.css';
+		foreach ($assets as $type => $file) {
+			if (! is_file($file)) {
+				continue;
+			}
 
-		$isFileExists = true;
-		if (! is_file($addonCss) || filemtime($style) > filemtime($addonCss))
-			$isFileExists = @copy($style, $addonCss);
+			$this->{$type . 'Minifier'}->add($file);
 
-		if (! @is_writable($this->settings['default_theme_dir'] . '/css/light_portal') || ! $isFileExists)
-			return;
-
-		$this->loadCSSFile('light_portal/addon_' . $snakeName . '.css');
-	}
-
-	private function loadJS(string $path, string $snakeName): void
-	{
-		if (! is_file($script = $path . 'script.js'))
-			return;
-
-		$addonJs = $this->settings['default_theme_dir'] . '/scripts/light_portal/addon_' . $snakeName . '.js';
-
-		$isFileExists = true;
-		if (! is_file($addonJs) || filemtime($script) > filemtime($addonJs))
-			$isFileExists = @copy($script, $addonJs);
-
-		if (! @is_writable($this->settings['default_theme_dir'] . '/scripts/light_portal') || ! $isFileExists)
-			return;
-
-		$this->loadJavaScriptFile('light_portal/addon_' . $snakeName . '.js', ['minimize' => true]);
+			if (($maxFilemtime = filemtime($file)) > $this->{'max' . ucfirst($type) . 'Filemtime'})
+				$this->{'max' . ucfirst($type) . 'Filemtime'} = $maxFilemtime;
+		}
 	}
 }
