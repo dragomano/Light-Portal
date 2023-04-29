@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\CommentRepository;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -31,6 +32,9 @@ final class Comment
 		$this->repository = new CommentRepository();
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function prepare(): void
 	{
 		if (empty($this->alias))
@@ -44,8 +48,10 @@ final class Comment
 			switch ($this->request('sa')) {
 				case 'add_comment':
 					$this->add();
+					break;
 				case 'edit_comment':
 					$this->edit();
+					break;
 				case 'remove_comment':
 					$this->remove();
 					break;

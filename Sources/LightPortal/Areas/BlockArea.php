@@ -24,8 +24,6 @@ use Bugo\LightPortal\Partials\{
 	PlacementSelect,
 	TitleClassSelect
 };
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -359,8 +357,6 @@ final class BlockArea
 
 		if ($this->context['lp_block']['icon'] === 'undefined')
 			$this->context['lp_block']['icon'] = '';
-
-		$this->context['lp_block']['icon_template'] = $this->getIcon($this->context['lp_block']['icon']) . $this->context['lp_block']['icon'];
 
 		$this->context['lp_block']['priority'] = empty($this->context['lp_block']['id']) ? $this->getPriority() : $this->context['lp_block']['priority'];
 

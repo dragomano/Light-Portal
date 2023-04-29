@@ -14,14 +14,12 @@
 
 namespace Bugo\LightPortal\Entities;
 
-use Bugo\LightPortal\Entities\Page;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Tag extends AbstractPageList
 {
-	public function show(Page $page)
+	public function show(Page $page): void
 	{
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
@@ -126,7 +124,7 @@ final class Tag extends AbstractPageList
 		return (int) $num_items;
 	}
 
-	public function showAll()
+	public function showAll(): void
 	{
 		$this->context['page_title']     = $this->txt['lp_all_page_tags'];
 		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags';

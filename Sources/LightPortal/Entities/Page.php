@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Entities\PageListInterface;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,6 +32,9 @@ final class Page
 
 	public const STATUS_INTERNAL = 3;
 
+	/**
+	 * @throws IntlException
+	 */
 	public function show(): void
 	{
 		$this->middleware('light_portal_view');
@@ -516,6 +519,9 @@ final class Page
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function prepareComments(): void
 	{
 		if (empty($this->modSettings['lp_show_comment_block']) || empty($this->context['lp_page']['options']['allow_comments']))

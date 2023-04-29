@@ -18,13 +18,17 @@ final class IconSelect extends AbstractPartial
 {
 	public function __invoke(array $params = []): string
 	{
+		$id = empty($params['id']) ? 'icon' : $params['id'];
+
 		$icon = empty($params['icon']) ? ($this->context['lp_block']['icon'] ?? '') : $params['icon'];
 		$type = empty($params['type']) ? ($this->context['lp_block']['type'] ?? '') : $params['type'];
 
+		$template = $this->getIcon($icon) . $icon;
+
 		return /** @lang text */ '
-		<select id="icon" name="icon"></select>
+		<select id="' . $id . '" name="' . $id . '"></select>
 		<script>
-			new TomSelect("#icon", {
+			new TomSelect("#' . $id . '", {
 				plugins: {
 					remove_button:{
 						title: "' . $this->txt['remove'] . '",
@@ -35,7 +39,7 @@ final class IconSelect extends AbstractPartial
 				closeAfterSelect: false,
 				placeholder: "cheese",' . (empty($icon) ? '' : '
 				options: [
-					{text: `' . $this->context['lp_block']['icon_template'] . '`, value: "' . $icon . '"}
+					{text: `' . $template . '`, value: "' . $icon . '"}
 				],
 				items: ["' . $icon . '"],') . '
 				shouldLoad: function (search) {
