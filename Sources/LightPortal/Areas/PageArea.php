@@ -22,6 +22,7 @@ use Bugo\LightPortal\Partials\{
 	CategorySelect,
 	KeywordSelect,
 	PageAuthorSelect,
+	PageIconSelect,
 	PermissionSelect,
 	StatusSelect
 };
@@ -598,6 +599,8 @@ final class PageArea
 	{
 		$options = [
 			'show_title'           => true,
+			'show_in_menu'         => false,
+			'page_icon'            => '',
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
@@ -638,6 +641,8 @@ final class PageArea
 			$parameters = array_merge(
 				[
 					'show_title'           => FILTER_VALIDATE_BOOLEAN,
+					'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
+					'page_icon'            => FILTER_DEFAULT,
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
@@ -804,6 +809,12 @@ final class PageArea
 		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
 		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
+		if ($this->context['user']['is_admin']) {
+			$this->context['posting_fields']['show_in_menu']['label']['html'] = $this->txt['lp_page_show_in_menu'];
+			$this->context['posting_fields']['show_in_menu']['input']['html'] = (new PageIconSelect)();
+			$this->context['posting_fields']['show_in_menu']['input']['tab']  = 'access_placement';
+		}
+
 		$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
 		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
 		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
@@ -836,7 +847,7 @@ final class PageArea
 			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
 		}
 
-		$this->context['posting_fields']['show_title']['label']['text'] = $this->context['lp_page_options']['show_title'];
+		$this->context['posting_fields']['show_title']['label']['text'] = $this->txt['lp_page_show_title'];
 		$this->context['posting_fields']['show_title']['input'] = [
 			'type'       => 'checkbox',
 			'attributes' => [
@@ -845,7 +856,7 @@ final class PageArea
 			],
 		];
 
-		$this->context['posting_fields']['show_author_and_date']['label']['text'] = $this->context['lp_page_options']['show_author_and_date'];
+		$this->context['posting_fields']['show_author_and_date']['label']['text'] = $this->txt['lp_page_show_author_and_date'];
 		$this->context['posting_fields']['show_author_and_date']['input'] = [
 			'type'       => 'checkbox',
 			'attributes' => [
@@ -855,7 +866,7 @@ final class PageArea
 		];
 
 		if (! empty($this->modSettings['lp_show_related_pages'])) {
-			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->context['lp_page_options']['show_related_pages'];
+			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->txt['lp_page_show_related_pages'];
 			$this->context['posting_fields']['show_related_pages']['input'] = [
 				'type'       => 'checkbox',
 				'attributes' => [
@@ -865,7 +876,7 @@ final class PageArea
 		}
 
 		if (! (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] === 'none')) {
-			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->context['lp_page_options']['allow_comments'];
+			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->txt['lp_page_allow_comments'];
 			$this->context['posting_fields']['allow_comments']['input'] = [
 				'type'       => 'checkbox',
 				'attributes' => [

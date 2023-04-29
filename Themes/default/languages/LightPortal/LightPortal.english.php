@@ -242,7 +242,11 @@ $txt['lp_page_keywords_empty'] = 'No tags yet';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = ['Show the title', 'Show the author and posting date', 'Show related pages', 'Allow comments'];
+$txt['lp_page_show_title'] = 'Show the title';
+$txt['lp_page_show_author_and_date'] = 'Show the author and posting date';
+$txt['lp_page_show_related_pages'] = 'Show related pages';
+$txt['lp_page_allow_comments'] = 'Allow comments';
+$txt['lp_page_show_in_menu'] = 'Show in the Main menu';
 $txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
 
 // Modlog

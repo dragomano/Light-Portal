@@ -3,6 +3,14 @@
 .fa-portal::before {
   content: "\f0ac";
 }
+.portal_menu_icons {
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+.portal_menu_icons.fas,
+.portal_menu_icons.far {
+  margin: -3px 8px 0 0;
+}
 /* Context menu for blocks and pages */
 .actions .context_menu {
   position: relative;
