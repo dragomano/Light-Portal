@@ -423,26 +423,26 @@ final class BlockArea
 			],
 		];
 
-		$this->context['posting_fields']['placement']['label']['html'] = '<label for="placement">' . $this->txt['lp_block_placement'] . '</label>';
+		$this->context['posting_fields']['placement']['label']['html'] = $this->txt['lp_block_placement'];
 		$this->context['posting_fields']['placement']['input']['html'] = (new PlacementSelect)();
 		$this->context['posting_fields']['placement']['input']['tab']  = 'access_placement';
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+			$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
 			$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
 			$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 		}
 
-		$this->context['posting_fields']['areas']['label']['html']  = '<label for="areas">' . $this->txt['lp_block_areas'] . '</label>';
+		$this->context['posting_fields']['areas']['label']['html']  = $this->txt['lp_block_areas'];
 		$this->context['posting_fields']['areas']['input']['html']  = (new AreaSelect)();
 		$this->context['posting_fields']['areas']['input']['tab']   = 'access_placement';
 		$this->context['posting_fields']['areas']['input']['after'] = $this->getAreasInfo();
 
-		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['label']['html'] = $this->txt['current_icon'];
 		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)();
 		$this->context['posting_fields']['icon']['input']['tab']  = 'appearance';
 
-		$this->context['posting_fields']['title_class']['label']['html'] = '<label for="title_class">' . $this->txt['lp_block_title_class'] . '</label>';
+		$this->context['posting_fields']['title_class']['label']['html'] = $this->txt['lp_block_title_class'];
 		$this->context['posting_fields']['title_class']['input']['html'] = (new TitleClassSelect)();
 		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
 
@@ -457,7 +457,7 @@ final class BlockArea
 		];
 
 		if (empty($this->context['lp_block']['options']['no_content_class'])) {
-			$this->context['posting_fields']['content_class']['label']['html'] = '<label for="content_class">' . $this->txt['lp_block_content_class'] . '</label>';
+			$this->context['posting_fields']['content_class']['label']['html'] = $this->txt['lp_block_content_class'];
 			$this->context['posting_fields']['content_class']['input']['html'] = (new ContentClassSelect)();
 			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
 

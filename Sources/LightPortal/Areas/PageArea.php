@@ -805,7 +805,7 @@ final class PageArea
 			],
 		];
 
-		$this->context['posting_fields']['keywords']['label']['html'] = '<label for="keywords">' . $this->txt['lp_page_keywords'] . '</label>';
+		$this->context['posting_fields']['keywords']['label']['html'] = $this->txt['lp_page_keywords'];
 		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
 		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
@@ -815,11 +815,11 @@ final class PageArea
 			$this->context['posting_fields']['show_in_menu']['input']['tab']  = 'access_placement';
 		}
 
-		$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+		$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
 		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
 		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
-		$this->context['posting_fields']['category']['label']['html'] = '<label for="category">' . $this->txt['lp_category'] . '</label>';
+		$this->context['posting_fields']['category']['label']['html'] = $this->txt['lp_category'];
 		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
 		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
 			'id'         => 'category',
@@ -830,18 +830,18 @@ final class PageArea
 		]);
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
-			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
+			$this->context['posting_fields']['datetime']['label']['html'] = $this->txt['lp_page_publish_datetime'];
 			$this->context['posting_fields']['datetime']['input']['html'] = '
 			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_page']['date'] . '">
 			<input type="time" name="time" value="' . $this->context['lp_page']['time'] . '">';
 		}
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['status']['label']['html'] = '<label for="status">' . $this->txt['status'] . '</label>';
+			$this->context['posting_fields']['status']['label']['html'] = $this->txt['status'];
 			$this->context['posting_fields']['status']['input']['html'] = (new StatusSelect)();
 			$this->context['posting_fields']['status']['input']['tab']  = 'access_placement';
 
-			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
+			$this->context['posting_fields']['page_author']['label']['html']  = $this->txt['lp_page_author'];
 			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
 			$this->context['posting_fields']['page_author']['input']['tab']   = 'access_placement';
 			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];

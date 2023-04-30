@@ -56,7 +56,7 @@ trait Area
 
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
 
-		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . '</label>';
+		$this->context['posting_fields']['title']['label']['html'] = $this->txt['lp_title'];
 		$this->context['posting_fields']['title']['input']['tab']  = 'content';
 		$this->context['posting_fields']['title']['input']['html'] = '
 			<div>';
@@ -105,6 +105,11 @@ trait Area
 					$tag = 'span';
 
 				$this->context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			}
+
+			// Add label for html type
+			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
+				$this->context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">' . $data['label']['html'] . '</label>';
 			}
 
 			// Fancy checkbox
