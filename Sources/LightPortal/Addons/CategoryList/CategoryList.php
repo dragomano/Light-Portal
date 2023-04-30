@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
@@ -55,8 +55,8 @@ class CategoryList extends Block
 
 		foreach ($categories as $id => $category) {
 			echo '
-				<li class="sub_bar', $currentCat >= 0 && $currentCat === $id ? ' roundframe' : '', '">
-					<div class="subbg">
+				<li class="sub_bar">
+					<div class="subbg"', $currentCat >= 0 && $currentCat === $id ? ' style="background: gainsboro"' : '', '>
 						<a href="', $category['link'], '">', $category['name'], '</a> <span class="floatright amt">', $category['num_pages'], '</span>
 					</div>
 				</li>';

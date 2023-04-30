@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -148,8 +148,6 @@ class Handler extends Plugin
 		if ($this->context['lp_plugin']['type'] !== 'block' || $this->context['lp_plugin']['icon'] === 'undefined')
 			$this->context['lp_plugin']['icon'] = '';
 
-		$this->context['lp_plugin']['icon_template'] = $this->getIcon($this->context['lp_plugin']['icon']) . $this->context['lp_plugin']['icon'];
-
 		if (! empty($post_data['option_name'])) {
 			foreach ($post_data['option_name'] as $id => $option) {
 				if (empty($option))
@@ -250,14 +248,14 @@ class Handler extends Plugin
 			];
 		}
 
-		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['label']['html'] = $this->txt['current_icon'];
 		$this->context['posting_fields']['icon']['input']['tab']  = 'content';
 		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)([
 			'icon' => $this->context['lp_plugin']['icon'],
-			'type' => $this->context['lp_plugin']['type']
+			'type' => $this->context['lp_plugin']['type'],
 		]);
 
-		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'] . '</label>';
+		$this->context['posting_fields']['title']['label']['html'] = $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'];
 		$this->context['posting_fields']['title']['input']['tab']  = 'content';
 		$this->context['posting_fields']['title']['input']['html'] = '
 			<div>';

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 01.05.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -84,13 +84,9 @@ class Likely extends Block
 			$this->context['lp_block']['options']['parameters']['buttons'] = explode(',', $this->context['lp_block']['options']['parameters']['buttons']);
 		}
 
-		$this->context['posting_fields']['buttons']['label']['html'] = '<label for="buttons">' . $this->txt['lp_likely']['buttons'] . '</label>';
-		$this->context['posting_fields']['buttons']['input']['html'] = '<div id="buttons" name="buttons"></div>';
+		$this->context['posting_fields']['buttons']['label']['html'] = $this->txt['lp_likely']['buttons'];
+		$this->context['posting_fields']['buttons']['input']['html'] = (new ButtonSelect)($this->buttons);
 		$this->context['posting_fields']['buttons']['input']['tab']  = 'content';
-
-		$this->context['likely_buttons'] = $this->buttons;
-
-		$this->setTemplate()->withLayer('likely');
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
