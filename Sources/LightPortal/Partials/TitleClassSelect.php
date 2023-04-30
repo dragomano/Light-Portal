@@ -16,13 +16,14 @@ namespace Bugo\LightPortal\Partials;
 
 final class TitleClassSelect extends AbstractPartial
 {
-	public function __invoke(): string
+	public function __invoke(array $params = []): string
 	{
-		if (empty($this->context['lp_all_title_classes']))
-			return '';
+		$params['id'] ??= 'title_class';
+		$params['data'] ??= $this->context['lp_all_title_classes'] ?? [];
+		$params['value'] ??= $this->context['lp_block']['title_class'] ?? '';
 
 		$data = [];
-		foreach ($this->context['lp_all_title_classes'] as $key => $template) {
+		foreach ($params['data'] as $key => $template) {
 			$data[] = [
 				'label' => sprintf($template, empty($key) ? $this->txt['no'] : $key),
 				'value' => $key,
@@ -30,10 +31,10 @@ final class TitleClassSelect extends AbstractPartial
 		}
 
 		return /** @lang text */ '
-		<div id="title_class" name="title_class"></div>
+		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#title_class",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				showSelectedOptionsFirst: true,
@@ -41,7 +42,7 @@ final class TitleClassSelect extends AbstractPartial
 				placeholder: "' . $this->txt['no'] . '",
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
-				selectedValue: "' . ($this->context['lp_block']['title_class'] ?? '') . '",
+				selectedValue: "' . $params['value'] . '",
 				labelRenderer: function (data) {
 					return `<div>${data.label}</div>`;
 				}
