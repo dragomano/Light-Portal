@@ -358,11 +358,11 @@ abstract class AbstractMain
 				WHERE p.status IN ({array_int:statuses})
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
-					AND pp.value = {int:show_in_menu}',
+					AND pp.value = {string:show_in_menu}',
 				[
 					'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 					'current_time' => time(),
-					'show_in_menu' => 1,
+					'show_in_menu' => '1',
 				]
 			);
 
