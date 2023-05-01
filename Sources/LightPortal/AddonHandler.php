@@ -52,8 +52,11 @@ final class AddonHandler
 	private function __construct()
 	{
 		$this->pluginSettings = (new PluginRepository())->getSettings();
+
 		$this->plugins = new PluginStorage();
+
 		$this->cssMinifier = new Minify\CSS;
+
 		$this->jsMinifier = new Minify\JS;
 
 		$this->prepareAssets();
@@ -101,11 +104,13 @@ final class AddonHandler
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
-				$this->loadLangs($path, $snakeName);
-				$this->loadAssets($path);
-
 				$this->context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
 				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
+
+				$this->loadLangs($path, $snakeName);
+
+				if (in_array($addon, $this->context['lp_enabled_plugins']))
+					$this->loadAssets($path);
 			}
 
 			if (method_exists($class, $hook)) {

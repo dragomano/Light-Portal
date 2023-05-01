@@ -73,6 +73,8 @@ final class PluginArea
 
 			$this->updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect($this->context['lp_enabled_plugins'], $this->context['lp_plugins'])))]);
 
+			$this->updateAssetMtime($this->context['lp_plugins'][$plugin_id]);
+
 			$this->cache()->flush();
 
 			exit;
@@ -179,6 +181,21 @@ final class PluginArea
 				$this->context['all_lp_plugins'],
 				fn($item) => ! in_array($filter, array_keys($this->context['lp_plugin_types'])) || in_array($this->context['lp_plugin_types'][$filter], array_keys($item['types']))
 			);
+		}
+	}
+
+	private function updateAssetMtime(string $plugin): void
+	{
+		$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+
+		$assets = [
+			$path . 'style.css',
+			$path . 'script.js',
+		];
+
+		foreach ($assets as $asset) {
+			if (is_file($asset))
+				touch($asset);
 		}
 	}
 
