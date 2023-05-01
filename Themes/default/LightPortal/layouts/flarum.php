@@ -63,7 +63,7 @@ function template_show_articles_flarum_style()
 
 function show_articles()
 {
-	global $context, $txt;
+	global $context, $txt, $modSettings;
 
 	if (empty($context['lp_frontpage_articles']))
 		return;
@@ -80,7 +80,7 @@ function show_articles()
 	foreach ($context['lp_frontpage_articles'] as $article) {
 		echo '
 		<div class="windowbg row">
-			<div class="col-xs-12 col-sm">
+			<div class="col-xs-12">
 				<div class="row">
 					<div class="header_img col-xs-2">
 						<span>', empty($article['image']) ? $context['lp_icon_set']['big_image'] : ('<img class="avatar" loading="lazy" src="' . $article['image'] . '" alt="' . $article['title'] . '">'), '</span>
@@ -106,29 +106,36 @@ function show_articles()
 
 		echo '
 						<div class="smalltext">
-							<span>', empty($article['replies']['num']) ? '' : $context['lp_icon_set']['reply'], '</span>
-							<span>', $article['author']['name'], '</span>
+							<span>', empty($article['replies']['num']) ? '' : $context['lp_icon_set']['reply'], '</span>';
+
+		if (! empty($modSettings['lp_show_author']) && ! empty($article['author'])) {
+			echo '
+							<span>', $article['author']['name'] ?? $txt['guest_title'], '</span>';
+		}
+
+		echo '
 							<span', $context['lp_need_lower_case'] ? ' style="text-transform: lowercase"' : '', '>', $article['date'], '</span>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="righttext smalltext hidden-xs hidden-sm col-xs-2">';
+					<div class="righttext smalltext hidden-xs hidden-sm col-xs-2">';
 
 		if (! empty($article['section']['name'])) {
 			echo '
-				<a class="new_posts ', $labels[rand(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
+						<a class="new_posts ', $labels[rand(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
 		}
 
 		if (! empty($article['replies']['num']))
-			echo '<br>' . str_replace(' class=', ' title="' . $article['replies']['title'] . '" class=', '<i class="far fa-comment"></i> '), $article['replies']['num'];
+			echo '
+						<div>' . str_replace(' class=', ' title="' . $article['replies']['title'] . '" class=', '<i class="far fa-comment"></i> '), $article['replies']['num'], '</div>';
 
 		echo '
+					</div>
+				</div>
 			</div>';
 
 		if (! empty($article['teaser'])) {
 			echo '
-			<div>', $article['teaser'], '</div>';
+			<div class="col-xs-12">', $article['teaser'], '</div>';
 		}
 
 		echo '
