@@ -539,6 +539,7 @@ final class BlockArea
 		if ($this->request()->hasNot('preview'))
 			return;
 
+		$this->cache()->flush();
 		$this->checkSubmitOnce('free');
 
 		$this->context['preview_title']   = $this->context['lp_block']['title'][$this->context['user']['language']] ?? '';
