@@ -185,8 +185,10 @@ function template_block_add()
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
 					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el)">
-						<i class="', $block['icon'], '" aria-hidden="true"></i>
-						<strong>', $block['title'], '</strong>
+						<i class="', $block['icon'], ' fa-2x" aria-hidden="true"></i>
+						<div>
+							<strong>', $block['title'], '</strong>
+						</div>
 						<hr>
 						<p>', $block['desc'], '</p>
 					</div>
