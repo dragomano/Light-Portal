@@ -401,7 +401,7 @@ section #display_head span {
   flex-direction: row;
   flex-wrap: wrap;
 }
-.lp_frontpage_articles .pagesection .button {
+.col-xs-12 .pagesection .button {
   margin: 2px;
 }
 .article_view > div {
