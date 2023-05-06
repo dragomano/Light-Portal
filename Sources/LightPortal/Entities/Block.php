@@ -60,7 +60,7 @@ final class Block
 			$this->context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
-		$this->loadTemplate('LightPortal/ViewBlock');
+		$this->loadTemplate('LightPortal/ViewBlocks');
 
 		$counter = 0;
 		foreach ($this->context['template_layers'] as $layer) {

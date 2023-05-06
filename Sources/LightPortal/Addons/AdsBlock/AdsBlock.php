@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 1.05.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -152,7 +152,7 @@ class AdsBlock extends Block
 	public function init()
 	{
 		if (! function_exists('lp_show_blocks'))
-			$this->loadTemplate('LightPortal/ViewBlock');
+			$this->loadTemplate('LightPortal/ViewBlocks');
 
 		$this->applyHook('menu_buttons');
 		$this->applyHook('admin_areas');
