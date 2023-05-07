@@ -1367,6 +1367,10 @@ section #display_head span {
 #page_comments_toggle {
   cursor: pointer;
 }
+.lp_default_blocks,
+.lp_additional_blocks {
+  margin-bottom: 10px !important;
+}
 .lp_default_blocks th.icon,
 .lp_additional_blocks th.icon,
 .lp_default_blocks th.actions,
