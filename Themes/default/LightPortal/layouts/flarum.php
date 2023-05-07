@@ -8,47 +8,8 @@
 function template_show_articles_flarum_style()
 {
 	echo '
-	<style>
-		.flarum_style .title_bar {
-			margin-bottom: 2px;
-		}
-
-		.flarum_style .header_img {
-			display: grid;
-			place-content: center;
-		}
-
-		.flarum_style .header_area {
-			display: block;
-			margin-left: 20px;
-			width: 70%;
-			text-decoration: none;
-		}
-
-		.flarum_style .header_area h3 {
-			margin: 0 0 3px;
-			line-height: 1.3;
-			font-weight: 400;
-			font-size: 16px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-
-		.flarum_style .header_area .smalltext {
-			opacity: .5;
-		}
-
-		.flarum_style .header_area p {
-			margin-bottom: 5px;
-			overflow: hidden;
-			display: -webkit-box;
-			-webkit-line-clamp: 3;
-			-webkit-box-orient: vertical;
-			line-height: 1.4em;
-		}
-	</style>
 	<div class="row">
-		<div class="flarum_style col-xs-12">';
+		<div class="article_flarum_view col-xs-12">';
 
 	show_pagination();
 
@@ -73,6 +34,7 @@ function show_articles()
 	$labels = ['lp_type_block', 'lp_type_editor', 'lp_type_comment', 'lp_type_parser', 'lp_type_article', 'lp_type_frontpage', 'lp_type_impex', 'lp_type_block_options', 'lp_type_page_options', 'lp_type_icons', 'lp_type_seo', 'lp_type_other', 'lp_type_ssi'];
 
 	echo '
+	<div class="roundframe">
 		<div class="title_bar">
 			<h2 class="titlebg">', $context['page_title'], '</h2>
 		</div>';
@@ -141,4 +103,7 @@ function show_articles()
 		echo '
 		</div>';
 	}
+
+	echo '
+	</div>';
 }
