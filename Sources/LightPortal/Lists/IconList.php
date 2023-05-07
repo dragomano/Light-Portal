@@ -98,7 +98,7 @@ final class IconList implements ListInterface
 		$set['save']      = 'fa-regular fa-circle-check';
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
-		// Plugin authors can use other icon packs
+		// Plugin authors can extend the icon set
 		$this->hook('changeIconSet', [&$set]);
 
 		return array_map(fn($icon): string => $this->getIcon($icon), $set);
