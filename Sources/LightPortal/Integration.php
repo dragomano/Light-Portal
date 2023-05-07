@@ -274,7 +274,6 @@ final class Integration extends AbstractMain
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
 			[
-				//'light_portal_manage_blocks',
 				'light_portal_manage_pages',
 				'light_portal_approve_pages',
 			]
@@ -288,12 +287,10 @@ final class Integration extends AbstractMain
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
-		//$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
 		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
 		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
-		//$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
 		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
 
@@ -374,14 +371,6 @@ final class Integration extends AbstractMain
 		if ($this->context['user']['is_admin'])
 			return;
 
-		$profile_areas['info']['areas']['lp_my_blocks'] = [
-			'label'      => $this->txt['lp_my_blocks'],
-			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
-			'icon'       => 'modifications',
-			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_blocks',
-		];
-
 		$profile_areas['info']['areas']['lp_my_pages'] = [
 			'label'      => $this->txt['lp_my_pages'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
@@ -396,10 +385,7 @@ final class Integration extends AbstractMain
 	 */
 	public function profilePopup(array &$profile_items)
 	{
-		if ($this->context['user']['is_admin'])
-			return;
-
-		if (! ($this->context['allow_light_portal_manage_blocks'] || $this->context['allow_light_portal_manage_pages_own']))
+		if ($this->context['user']['is_admin'] || empty($this->context['allow_light_portal_manage_pages_own']))
 			return;
 
 		$counter = 0;
@@ -410,26 +396,14 @@ final class Integration extends AbstractMain
 				break;
 		}
 
-		$portal_items = [];
-
-		if ($this->context['allow_light_portal_manage_blocks'])
-			$portal_items[] = [
-				'menu' => 'info',
-				'area' => 'lp_my_blocks'
-			];
-
-		if ($this->context['allow_light_portal_manage_pages_own'])
-			$portal_items[] = [
-				'menu' => 'info',
-				'area' => 'lp_my_pages'
-			];
-
-		if (empty($portal_items))
-			return;
-
 		$profile_items = array_merge(
 			array_slice($profile_items, 0, $counter, true),
-			$portal_items,
+			[
+				[
+					'menu' => 'info',
+					'area' => 'lp_my_pages'
+				]
+			],
 			array_slice($profile_items, $counter, null, true)
 		);
 	}

@@ -337,7 +337,7 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => $this->user_info['is_admin'] || ! $this->context['allow_light_portal_manage_blocks'] ? 0 : ($this->context['current_block']['user_id'] ?? $this->user_info['id']),
+			'user_id'       => 0,
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
@@ -427,11 +427,9 @@ final class BlockArea
 		$this->context['posting_fields']['placement']['input']['html'] = (new PlacementSelect)();
 		$this->context['posting_fields']['placement']['input']['tab']  = 'access_placement';
 
-		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
-			$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
-			$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
-		}
+		$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
+		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
+		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
 		$this->context['posting_fields']['areas']['label']['html']  = $this->txt['lp_block_areas'];
 		$this->context['posting_fields']['areas']['input']['html']  = (new AreaSelect)();

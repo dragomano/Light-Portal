@@ -40,7 +40,6 @@ final class BasicConfig
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=basic';
 		$this->context['post_url']      = $this->context['canonical_url'] . ';save';
 
-		//$this->context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
@@ -91,7 +90,6 @@ final class BasicConfig
 			['title', 'edit_permissions'],
 			['check', 'lp_prohibit_php', 'invalid' => true],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
-			//['permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'],
 			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
 			['permissions', 'light_portal_manage_pages_any', 'help' => 'permissionhelp_light_portal_manage_pages'],
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],

@@ -38,7 +38,6 @@ abstract class AbstractMain
 	protected function defineVars(): void
 	{
 		$this->context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_blocks']    = $this->allowedTo('light_portal_manage_blocks');
 		$this->context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
 		$this->context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
 		$this->context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
@@ -396,14 +395,12 @@ abstract class AbstractMain
 					(
 						SELECT COUNT(b.block_id)
 						FROM {db_prefix}lp_blocks b
-						WHERE b.status = {int:active}' . ($this->user_info['is_admin'] ? '
-							AND b.user_id = 0' : '
-							AND b.user_id = {int:user_id}') . '
+						WHERE b.status = {int:active}
 					) AS num_blocks,
 					(
 						SELECT COUNT(p.page_id)
 						FROM {db_prefix}lp_pages p
-						WHERE p.status = {int:active}' . ($this->user_info['is_admin'] ? '' : '
+						WHERE p.status = {int:active}' . ($this->context['allow_light_portal_manage_pages_any'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
 					) AS num_pages,
 					(

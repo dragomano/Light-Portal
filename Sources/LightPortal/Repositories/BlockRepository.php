@@ -21,18 +21,14 @@ final class BlockRepository extends AbstractRepository
 {
 	protected string $entity = 'block';
 
-	public function getAll(bool $with_customs = false): array
+	public function getAll(): array
 	{
 		$request = $this->smcFunc['db_query']('', '
 			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})' . ($this->user_info['is_admin'] ? ($with_customs ? '' : '
-			WHERE b.user_id = 0') : '
-			WHERE b.user_id = {int:user_id}') . '
+				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
-			[
-				'user_id' => $this->user_info['id']
-			]
+			[]
 		);
 
 		$currentBlocks = [];

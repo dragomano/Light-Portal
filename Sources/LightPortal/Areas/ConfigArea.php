@@ -56,7 +56,7 @@ final class ConfigArea
 			[
 				'lp_portal' => [
 					'title' => $this->txt['lp_portal'],
-					'permission' => ['admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_pages_own'],
+					'permission' => ['admin_forum', 'light_portal_manage_pages_any', 'light_portal_manage_pages_own'],
 					'areas' => [
 						'lp_settings' => [
 							'label' => $this->txt['settings'],
@@ -77,7 +77,7 @@ final class ConfigArea
 							'function' => [$this, 'blockAreas'],
 							'icon' => 'modifications',
 							'amt' => $this->context['lp_quantities']['active_blocks'],
-							'permission' => ['admin_forum', 'light_portal_manage_blocks'],
+							'permission' => ['admin_forum'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_blocks_manage']],
 								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_blocks_add']]
@@ -183,7 +183,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		$this->middleware('light_portal_manage_blocks');
+		$this->middleware('admin_forum');
 
 		$subActions = [
 			'main' => [new BlockArea, 'main'],
