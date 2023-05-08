@@ -17,7 +17,14 @@ namespace Bugo\LightPortal\Areas\Config;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Entities\FrontPage;
-use Bugo\LightPortal\Partials\{BoardSelect, CategorySelect, PageAliasSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Partials\{
+	ActionSelect,
+	BoardSelect,
+	CategorySelect,
+	PageAliasSelect,
+	PageSelect,
+	TopicSelect
+};
 use IntlException;
 
 if (! defined('SMF'))
@@ -67,11 +74,11 @@ final class BasicConfig
 			$this->txt['lp_frontpage_mode_set']
 		);
 
+		$this->prepareTopicList();
+
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
-
-		$this->prepareTopicList();
 
 		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)();
 
@@ -82,6 +89,8 @@ final class BasicConfig
 		$this->context['lp_frontpage_topics_select'] = (new TopicSelect)();
 
 		$this->context['lp_frontpage_pages_select'] = (new PageSelect)();
+
+		$this->context['lp_disabled_actions_select'] = (new ActionSelect)();
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],

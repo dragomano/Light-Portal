@@ -269,7 +269,7 @@ function template_callback_frontpage_mode_settings()
 
 function template_callback_standalone_mode_settings()
 {
-	global $modSettings, $txt, $scripturl, $boardurl;
+	global $modSettings, $txt, $scripturl, $boardurl, $context;
 
 	echo '
 	</dl>
@@ -327,16 +327,7 @@ function template_callback_standalone_mode_settings()
 			</dt>
 		</template>
 		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dd>
-				<input
-					type="text"
-					name="lp_disabled_actions"
-					id="lp_disabled_actions"
-					value="', $modSettings['lp_disabled_actions'] ?? '', '"
-					size="80"
-					placeholder="', $txt['lp_example'], 'mlist,calendar"
-				>
-			</dd>
+			<dd>', $context['lp_disabled_actions_select'], '</dd>
 		</template>';
 }
 
