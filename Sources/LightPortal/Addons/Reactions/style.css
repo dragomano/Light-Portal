@@ -1,0 +1,29 @@
+.reactions {
+	display: inline;
+}
+
+.reactions button {
+	font-size: large;
+	margin: 0 1px;
+}
+
+.add_reaction {
+	font-size: large;
+	margin-left: 1em;
+	cursor: pointer;
+}
+
+.reaction_button {
+	opacity: .6;
+	margin-right: 5px;
+}
+
+.reaction_button:hover {
+	cursor: pointer;
+	opacity: 1;
+}
+
+.add_comment_reaction {
+	margin-left: 1em;
+	cursor: pointer;
+}
