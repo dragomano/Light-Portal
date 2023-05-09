@@ -77,6 +77,8 @@ abstract class AbstractMain
 					['seed' => false],
 					'portal_fontawesome'
 				);
+			} else {
+				$this->loadExtJS('https://kit.fontawesome.com/197848597c.js', ['attributes' => ['crossorigin' => 'anonymous']]);
 			}
 		}
 

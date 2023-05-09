@@ -70,7 +70,8 @@ final class ExtraConfig
 					'none'      => $this->txt['no'],
 					'css_cdn'   => $this->txt['lp_fa_source_css_cdn'],
 					'css_local' => $this->txt['lp_fa_source_css_local'],
-					'custom'    => $this->txt['lp_fa_custom']
+					'custom'    => $this->txt['lp_fa_custom'],
+					'kit'       => $this->txt['lp_fa_kit']
 				],
 				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';'
 			],
