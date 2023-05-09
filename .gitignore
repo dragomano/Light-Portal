@@ -8,6 +8,9 @@ Themes/default/languages/LightPortal/*
 !Themes/default/languages/LightPortal/index.php
 !Themes/default/languages/LightPortal/LightPortal.english.php
 
+Themes/default/css/light_portal/plugins.css
+Themes/default/scripts/light_portal/plugins.js
+
 **/Addons/**/*.less
 **/Addons/**/langs/*
 
