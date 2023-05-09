@@ -2,20 +2,20 @@
 
 return [
 	'title' => 'Likely',
-	'description' => 'Displays a list of social sharing buttons.',
+	'description' => 'Displays selected social sharing buttons.',
 	'size' => 'Button size',
-	'size_set' => array(
+	'size_set' => [
 		'small' => 'Small',
 		'big' => 'Big'
-	),
+	],
 	'skin' => 'Button skin',
-	'skin_set' => array(
+	'skin_set' => [
 		'normal' => 'Normal',
 		'light' => 'Light'
-	),
+	],
 	'buttons' => 'Displayed buttons',
 	'select_buttons' => 'Select social buttons to display',
-	'buttons_set' => array(
+	'buttons_set' => [
 		'facebook' => 'Share',
 		'twitter' => 'Tweet',
 		'vkontakte' => 'Share',
@@ -26,5 +26,5 @@ return [
 		'whatsapp' => 'Send',
 		'viber' => 'Send',
 		'reddit' => 'Share',
-	),
+	],
 ];

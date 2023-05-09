@@ -17,7 +17,7 @@ function show_user_info($data)
 		<li>', $data['primary_group'] ?: ($data['post_group'] ?: ''), '</li>
 		<li>', $data['group_icons'], '</li>';
 
-	if ($context['allow_light_portal_manage_blocks']) {
+	if ($context['user']['is_admin']) {
 		echo '
 		<li class="lefttext">
 			<hr>

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 07.05.23
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -34,11 +34,6 @@ class BootstrapIcons extends Plugin
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
 	}
 
-	public function addSettings(array &$config_vars)
-	{
-		$config_vars['bootstrap_icons'][] = ['check', 'replace_ui_icons'];
-	}
-
 	public function prepareIconList(array &$all_icons)
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
@@ -54,80 +49,6 @@ class BootstrapIcons extends Plugin
 		}
 
 		$all_icons = array_merge($all_icons, $icons);
-	}
-
-	public function changeIconSet(array &$set)
-	{
-		if (empty($this->context['lp_bootstrap_icons_plugin']['replace_ui_icons']))
-			return;
-
-		$set['access']        = 'key';
-		$set['arrow_left']    = 'arrow-left';
-		$set['arrow_right']   = 'arrow-right';
-		$set['arrows']        = 'arrows-move';
-		$set['big_image']     = 'image big_image';
-		$set['bold']          = 'type-bold';
-		$set['calendar']      = 'calendar-plus';
-		$set['category']      = 'tablet-landscape';
-		$set['chevron_right'] = 'arrow-right-circle-fill';
-		$set['circle_dot']    = 'record-circle-fill';
-		$set['circle']        = 'circle-fill';
-		$set['close']         = 'x-lg';
-		$set['code']          = 'code';
-		$set['cog_spin']      = 'gear';
-		$set['comments']      = 'chat-fill';
-		$set['content']       = 'newspaper';
-		$set['copyright']     = 'at';
-		$set['date']          = 'clock';
-		$set['design']        = 'fan';
-		$set['dislike']       = 'arrow-down';
-		$set['donate']        = 'currency-dollar';
-		$set['download']      = 'download';
-		$set['edit']          = 'pencil-square';
-		$set['export']        = 'file-arrow-down';
-		$set['gear']          = 'gear-fill';
-		$set['home']          = 'house-door';
-		$set['image']         = 'image';
-		$set['import']        = 'file-arrow-up';
-		$set['italic']        = 'type-italic';
-		$set['like']          = 'arrow-up';
-		$set['link']          = 'link';
-		$set['main']          = 'card-list';
-		$set['map_signs']     = 'map';
-		$set['pager']         = 'inboxes';
-		$set['panels']        = 'columns-gap';
-		$set['plus_circle']   = 'plus-circle-fill';
-		$set['plus']          = 'plus';
-		$set['preview']       = 'check-all';
-		$set['quote']         = 'quote';
-		$set['redirect']      = 'arrow-return-right';
-		$set['remove']        = 'trash';
-		$set['replies']       = 'chat-text-fill';
-		$set['reply']         = 'reply';
-		$set['save_exit']     = 'check-square';
-		$set['save']          = 'check-circle';
-		$set['search']        = 'search';
-		$set['sections']      = 'folder';
-		$set['sign_in_alt']   = 'box-arrow-in-right';
-		$set['sign_out_alt']  = 'box-arrow-right';
-		$set['simple']        = 'list';
-		$set['sort']          = 'sort-numeric-down';
-		$set['spider']        = 'robot';
-		$set['submit']        = 'send';
-		$set['tag']           = 'tag-fill';
-		$set['tags']          = 'tags-fill';
-		$set['tile']          = 'layout-split';
-		$set['toggle']        = 'toggle-';
-		$set['tools']         = 'tools';
-		$set['undo']          = 'backspace';
-		$set['unlike']        = 'heartbreak';
-		$set['user_plus']     = 'person-plus-fill';
-		$set['user']          = 'person-fill';
-		$set['users']         = 'people-fill';
-		$set['views']         = 'eye-fill';
-		$set['youtube']       = 'youtube';
-
-		$set = array_map(fn($icon): string => $this->prefix . $icon, $set);
 	}
 
 	public function credits(array &$links)
