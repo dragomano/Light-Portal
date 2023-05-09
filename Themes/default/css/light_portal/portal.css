@@ -683,6 +683,36 @@
 .article_flarum_view .header_area .smalltext {
   opacity: 0.5;
 }
+.article_spectre_view .card {
+  border: 0;
+  box-shadow: 0 0.25rem 1rem rgba(48, 55, 66, 0.15);
+  height: 100%;
+  border-radius: 0.1rem;
+  display: flex;
+  flex-direction: column;
+}
+.article_spectre_view .card .card-image {
+  padding-top: 0.8rem;
+}
+.article_spectre_view .card .card-image img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+.article_spectre_view .card .card-header {
+  padding: 0.8rem;
+}
+.article_spectre_view .card .card-header .card-title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.article_spectre_view .card .card-header .card-subtitle {
+  color: #bcc3ce !important;
+}
+.article_spectre_view .card .card-body {
+  flex: 1 1 auto;
+  padding: 0.8rem;
+}
 /* Menu, main layout, blocks */
 .fa-portal::before {
   content: "\f0ac";
