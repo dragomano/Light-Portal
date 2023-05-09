@@ -418,49 +418,6 @@ $tables[] = [
 ];
 
 $tables[] = [
-	'name' => 'lp_ratings',
-	'columns' => [
-		[
-			'name'     => 'id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true,
-			'auto'     => true
-		],
-		[
-			'name' => 'value',
-			'type' => 'int',
-			'size' => 11
-		],
-		[
-			'name'    => 'content_type',
-			'type'    => 'varchar',
-			'size'    => 20,
-			'default' => 'comment',
-			'null'    => false
-		],
-		[
-			'name'     => 'content_id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true
-		],
-		[
-			'name'     => 'user_id',
-			'type'     => 'mediumint',
-			'size'     => 8,
-			'unsigned' => true
-		],
-	],
-	'indexes' => [
-		[
-			'type'    => 'primary',
-			'columns' => ['id']
-		]
-	]
-];
-
-$tables[] = [
 	'name' => 'lp_tags',
 	'columns' => [
 		[
