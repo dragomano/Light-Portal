@@ -975,6 +975,13 @@ section #display_head span {
     margin-left: 10px;
   }
 }
+#page_comments .row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+#page_comments_toggle {
+  cursor: pointer;
+}
 /* Portal admin area */
 .actions .context_menu {
   position: relative;
@@ -1358,13 +1365,6 @@ section #display_head span {
 .priority span,
 .status span,
 .actions span {
-  cursor: pointer;
-}
-#page_comments .row {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
-}
-#page_comments_toggle {
   cursor: pointer;
 }
 .lp_default_blocks,
