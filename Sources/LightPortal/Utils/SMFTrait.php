@@ -39,13 +39,14 @@ if (! defined('SMF'))
  * @property-read string $boardurl
  * @property-read string $boarddir
  * @property-read string $sourcedir
+ * @property-read string $cachedir
  */
 trait SMFTrait
 {
 	private array $smfGlobals = [
 		'context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'editortxt',
 		'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings',
-		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir'
+		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir', 'cachedir'
 	];
 
 	/**

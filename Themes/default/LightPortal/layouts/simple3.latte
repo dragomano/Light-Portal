@@ -1,0 +1,27 @@
+{varType array $context}
+{var $teaser_length = 100}
+
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
+
+    {do show_pagination()}
+
+    <div class="lp_frontpage_articles article_simple3_view">
+        <div n:foreach="$context[lp_frontpage_articles] as $article">
+            <img n:if="!empty($article[image])" class="lazy" data-src="{$article[image]}" width="311" height="155" alt="{$article[title]}">
+            <div class="title">
+                <div><a class="bbc_link" href="{$article[link]}">{$article[title]}</a></div>
+                <p n:if="!empty($article[teaser])">{$article[teaser]|truncate:$teaser_length}</p>
+            </div>
+            <div n:if="!empty($article[tags])" n:inner-foreach="$article[tags] as $key" class="tags">
+                <a href="{$key[href]}">#{$key[name]}</a>
+            </div>
+        </div>
+    </div>
+
+    {do show_pagination(bottom)}
+
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}

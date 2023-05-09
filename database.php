@@ -512,7 +512,7 @@ $addSettings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
 if (! isset($modSettings['lp_frontpage_layout']))
-	$addSettings['lp_frontpage_layout'] = 'articles';
+	$addSettings['lp_frontpage_layout'] = 'default.latte';
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'default';
 if (! isset($modSettings['lp_fa_source']))

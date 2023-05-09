@@ -124,6 +124,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Latte',
+				'link' => 'https://latte.nette.org',
+				'author' => 'David Grudl',
+				'license' => [
+					'name' => 'the New BSD License',
+					'link' => 'https://github.com/nette/latte/blob/master/license.md'
+				]
+			],
+			[
 				'title' => '@shat/stylenames',
 				'link' => 'https://github.com/shatstack/stylenames',
 				'author' => 'Kevin Mathmann',

@@ -1,0 +1,6 @@
+{
+    "require": {
+        "latte/latte": "^3.0",
+        "ext-intl": "*"
+    }
+}
