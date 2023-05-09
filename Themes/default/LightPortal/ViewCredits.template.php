@@ -8,17 +8,19 @@ function template_portal_credits()
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['lp_icon_set']['users'], $txt['lp_contributors'], '</h3>
 	</div>
-	<div class="roundframe noup">
+	<div class="windowbg noup">
 		<div class="title_bar">
 			<h4 class="titlebg">', $txt['lp_translators'], '</h4>
 		</div>
-		<div>';
+		<div class="row">';
 
 		foreach ($context['portal_translations'] as $lang => $translators) {
 			echo '
-			<fieldset class="windowbg">
-				<legend class="amt">', $lang, '</legend>', sentence_list($translators), '
-			</fieldset>';
+			<div class="col-xs-12 col-sm-6">
+				<fieldset class="windowbg">
+					<legend class="amt">', $lang, '</legend>', sentence_list($translators), '
+				</fieldset>
+			</div>';
 		}
 
 		echo '
