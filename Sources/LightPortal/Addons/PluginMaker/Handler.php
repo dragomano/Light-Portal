@@ -10,19 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 09.05.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
-use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Partials\IconSelect;
-use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\Printer;
+use Nette\PhpGenerator\{PhpNamespace, PhpFile, Printer};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -82,6 +79,8 @@ class Handler extends Plugin
 
 	private function validateData()
 	{
+		$post_data = [];
+
 		if ($this->request()->has('save')) {
 			$args = [
 				'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
@@ -214,7 +213,7 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : ['english', $this->language];
-		$languages = array_unique(array_merge(['english'], $languages));
+		$languages = array_unique(['english', ...$languages]);
 
 		$this->context['posting_fields']['name']['label']['text'] = $this->txt['lp_plugin_maker']['name'];
 		$this->context['posting_fields']['name']['input'] = [
@@ -260,20 +259,22 @@ class Handler extends Plugin
 		$this->context['posting_fields']['title']['input']['html'] = '
 			<div>';
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+		if (count($this->context['languages']) > 1) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
 			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			foreach ($this->context['languages'] as $lang) {
+				$this->context['posting_fields']['title']['input']['html'] .= '
 				<a
 					class="button floatnone"
 					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
 					@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $lang['filename'] . ']\').focus() }, 50); });"
 				>' . $lang['name'] . '</a>';
-		}
+			}
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+			$this->context['posting_fields']['title']['input']['html'] .= '
 			</nav>';
+		}
 
 		$i = count($languages) - 1;
 		foreach ($this->context['languages'] as $lang) {

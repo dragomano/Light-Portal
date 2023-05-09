@@ -340,9 +340,6 @@ final class Integration extends AbstractMain
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
-		if (empty($alerts))
-			return;
-
 		foreach ($alerts as $id => $alert) {
 			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
 				if ($alert['sender_id'] !== $this->user_info['id']) {

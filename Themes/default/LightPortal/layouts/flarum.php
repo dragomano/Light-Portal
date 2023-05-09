@@ -56,7 +56,7 @@ function show_articles()
 		if (! empty($article['section']['name'])) {
 			echo '
 						<div class="smalltext hidden-md hidden-lg hidden-xl">
-							<span class="new_posts ', $labels[rand(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</span>';
+							<span class="new_posts ', $labels[random_int(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</span>';
 
 			if (! empty($article['replies']['num']))
 				echo '
@@ -83,7 +83,7 @@ function show_articles()
 
 		if (! empty($article['section']['name'])) {
 			echo '
-						<a class="new_posts ', $labels[rand(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
+						<a class="new_posts ', $labels[random_int(0, count($labels) - 1)], '" href="', $article['section']['link'], '">', $article['section']['name'], '</a>';
 		}
 
 		if (! empty($article['replies']['num']))

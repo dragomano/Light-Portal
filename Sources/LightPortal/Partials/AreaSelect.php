@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Partials;
 
 final class AreaSelect extends AbstractPartial
 {
-	public function __invoke(): string
+	public function __invoke(array $params = []): string
 	{
 		$params['data'] = [
 			'all'    => 'all',

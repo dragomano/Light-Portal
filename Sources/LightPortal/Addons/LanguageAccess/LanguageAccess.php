@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 09.05.23
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -26,9 +26,6 @@ class LanguageAccess extends Plugin
 
 	public function init()
 	{
-		if (empty($this->context['lp_active_blocks']))
-			return;
-
 		foreach ($this->context['lp_active_blocks'] as $id => $block) {
 			if (empty($block['parameters']) || empty($block['parameters']['allowed_languages']))
 				continue;
