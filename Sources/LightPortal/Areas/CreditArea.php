@@ -64,6 +64,11 @@ final class CreditArea
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
 			'Greek'      => ['Panoulis64'],
+			'Czech'      => ['Crowdin Translate'],
+			'Danish'     => ['Crowdin Translate'],
+			'Dutch'      => ['Crowdin Translate'],
+			'Norwegian'  => ['Crowdin Translate'],
+			'Swedish'    => ['Crowdin Translate'],
 		];
 
 		$this->context['testers'] = [
