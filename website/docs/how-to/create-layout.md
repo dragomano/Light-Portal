@@ -4,65 +4,63 @@ sidebar_position: 1
 
 # Create own layout for the frontpage
 
+:::info
+
+Since version 2.2.0 we use [Latte](https://latte.nette.org/en/syntax) to render frontpage layouts.
+
+:::
+
 In addition to existing layouts, you can always add your own.
 
-To do this, create a file `CustomFrontPage.template.php` in the `/Themes/default` directory:
+To do this, create a file `custom.latte` in the `/Themes/default/LightPortal/layouts` directory:
 
-```php {8,17}
-<?php
+```latte
+{varType array $txt}
+{varType array $context}
+{varType array $modSettings}
+{var $teaser_length = 100}
 
-/**
- * Custom template layout
- *
- * @return void
- */
-function template_show_articles_custom() // Do not forget change custom name *custom* for your layout
-{
-	global $context;
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
 
-	if (empty($context['lp_active_blocks']))
-		echo '
-	<div class="col-xs">';
+    <div class="lp_frontpage_articles article_custom">
+        {do show_pagination()}
 
-	echo '
-	<div class="lp_frontpage_articles article_custom">'; // Do not forget change custom class *article_custom* for your layout
+            <div
+                n:foreach="$context[lp_frontpage_articles] as $article"
+                class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]}"
+            >
+                <div n:if="!empty($article[image])">
+                    <img src="{$article[image]}" alt="{$article[title]}">
+                </div>
+                <h3>
+                    <a href="{$article[msg_link]}">{$article[title]}</a>
+                </h3>
+                <p n:if="!empty($article[teaser])">
+                    {$article[teaser]|truncate:$teaser_length}
+                </p>
+            </div>
 
-	show_pagination();
+        {do show_pagination(bottom)}
+    </div>
 
-	foreach ($context['lp_frontpage_articles'] as $article) {
-		echo '
-		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
-
-		// Just outputs the $article data as a hint for you
-		echo '<figure class="noticebox">' . parse_bbc('[code]' . print_r($article, true) . '[/code]') . '</figure>';
-
-		// Your code
-
-		echo '
-		</div>';
-	}
-
-	show_pagination('bottom');
-
-	echo '
-	</div>';
-
-	if (empty($context['lp_active_blocks']))
-		echo '
-	</div>';
-}
-
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}
 ```
 
-After that you will see a new frontpage layout - `Custom` - on the portal settings. You can create as many such layouts as you want (`template_show_articles_custom1()`, `template_show_articles_custom2()`, etc.).
+After that you will see a new frontpage layout - `Custom` - on the portal settings:
 
 ![Select custom template](set_custom_template.png)
 
-To customize stylesheets, create a file `custom_frontpage.css` in the `/Themes/default/css` directory:
+You can create as many such layouts as you want. Use `debug.latte` and other layouts in `/Themes/default/LightPortal/layouts` directory as examples.
+
+To customize stylesheets, create a file `light_portal_custom.css` in the `/Themes/default/css` directory:
 
 ```css {3}
 /* Custom layout */
-.article_custom {
+.article_custom_class {
 	/* Your rules */
 }
 ```
