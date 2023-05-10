@@ -1,6 +1,13 @@
 {
     "require": {
-        "latte/latte": "^3.0",
-        "ext-intl": "*"
+        "ext-dom": "*",
+        "ext-intl": "*",
+        "ext-simplexml": "*",
+        "latte/latte": "^3.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }
