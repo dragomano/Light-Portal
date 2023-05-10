@@ -84,12 +84,16 @@ final class CreditArea
 
 		$this->context['sponsors'] = [
 			[
-				'name' => 'vbgamer45',
+				'name' => 'vbgamer45 <span class="amt">$50</span>',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
 			],
 		];
 
-		$this->context['supporters'] = [
+		$this->context['tools'] = [
+			[
+				'name' => 'Visual Studio Code',
+				'link' => 'https://code.visualstudio.com/Download'
+			],
 			[
 				'name' => 'JetBrains',
 				'link' => 'https://www.jetbrains.com/?from=LightPortal'
@@ -98,6 +102,18 @@ final class CreditArea
 				'name' => 'Crowdin',
 				'link' => 'https://crowdin.com/project/light-portal'
 			],
+			[
+				'name' => 'Git Extensions',
+				'link' => 'https://github.com/gitextensions/gitextensions'
+			],
+			[
+				'name' => 'Firefox Developer Edition',
+				'link' => 'https://www.mozilla.org/firefox/developer/'
+			],
+			[
+				'name' => 'Docusaurus',
+				'link' => 'https://docusaurus.io'
+			]
 		];
 
 		$links = [
