@@ -429,11 +429,6 @@ $txt['lp_spiders_set'] = '{spiders, plural, one {# spider} other {# spiders}}';
 $txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
 $txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
 
-// Packages
-$txt['lp_addon_package'] = 'Light Portal plugins';
-$txt['install_lp_addon'] = 'Install plugin';
-$txt['uninstall_lp_addon'] = 'Uninstall plugin';
-
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
 $txt['lp_translators'] = 'Translators';

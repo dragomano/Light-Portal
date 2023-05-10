@@ -45,8 +45,6 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_areas');
 		$this->applyHook('profile_popup');
 		$this->applyHook('whos_online', 'whoisOnline');
-		$this->applyHook('modification_types');
-		$this->applyHook('packages_sort_id');
 		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
 		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
@@ -467,21 +465,5 @@ final class Integration extends AbstractMain
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @hook integrate_modification_types
-	 */
-	public function modificationTypes()
-	{
-		$this->context['modification_types'][] = 'lp_addon';
-	}
-
-	/**
-	 * @hook integrate_packages_sort_id
-	 */
-	public function packagesSortId(array &$sort_id)
-	{
-		$sort_id['lp_addon'] = 1;
 	}
 }
