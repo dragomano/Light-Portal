@@ -1410,6 +1410,9 @@ section #display_head span {
 .handle {
   cursor: grab;
 }
+.additional_row .button {
+  margin: 2px;
+}
 @media (max-width: 887px) {
   .information .righttext {
     text-align: center;
