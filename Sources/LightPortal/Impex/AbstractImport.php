@@ -27,7 +27,7 @@ abstract class AbstractImport implements ImportInterface
 
 	abstract protected function run();
 
-	protected function getXmlFile(string $name = 'import_file'): SimpleXMLElement|bool
+	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
 		if (empty($file = $this->files($name)))
 			return false;
@@ -45,7 +45,7 @@ abstract class AbstractImport implements ImportInterface
 		return simplexml_load_file($file['tmp_name']);
 	}
 
-	protected function replaceTitles(array $titles, array &$results)
+	protected function replaceTitles(array $titles, array &$results): void
 	{
 		if (empty($titles) && empty($results))
 			return;
@@ -71,7 +71,7 @@ abstract class AbstractImport implements ImportInterface
 		}
 	}
 
-	protected function replaceParams(array $params, array &$results)
+	protected function replaceParams(array $params, array &$results): void
 	{
 		if (empty($params) && empty($results))
 			return;
@@ -97,7 +97,7 @@ abstract class AbstractImport implements ImportInterface
 		}
 	}
 
-	protected function finish(array $results, string $type = 'blocks')
+	protected function finish(array $results, string $type = 'blocks'): void
 	{
 		if (empty($results)) {
 			$this->smcFunc['db_transaction']('rollback');

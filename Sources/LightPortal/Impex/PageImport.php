@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 final class PageImport extends AbstractImport
 {
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
@@ -33,12 +33,14 @@ final class PageImport extends AbstractImport
 			'description' => $this->txt['lp_pages_import_description']
 		];
 
+		$this->context['lp_file_type'] = 'text/xml';
+
 		$this->run();
 	}
 
-	protected function run()
+	protected function run(): void
 	{
-		if (empty($xml = $this->getXmlFile()))
+		if (empty($xml = $this->getFile()))
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))

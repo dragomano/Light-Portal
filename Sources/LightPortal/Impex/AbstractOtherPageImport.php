@@ -26,7 +26,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 
 	abstract protected function getItems(array $pages): array;
 
-	protected function run()
+	protected function run(): void
 	{
 		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('import_all'))
 			return;

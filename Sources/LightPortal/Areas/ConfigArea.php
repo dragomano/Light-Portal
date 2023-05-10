@@ -20,6 +20,8 @@ use Bugo\LightPortal\{
 	Impex\BlockImport,
 	Impex\PageExport,
 	Impex\PageImport,
+	Impex\PluginExport,
+	Impex\PluginImport,
 	Areas\Config\BasicConfig,
 	Areas\Config\ExtraConfig,
 	Areas\Config\CategoryConfig,
@@ -119,6 +121,11 @@ final class ConfigArea
 			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += [
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_pages_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
+			];
+
+			$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
+				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
+				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
 			];
 		}
 
@@ -228,6 +235,11 @@ final class ConfigArea
 		$subActions = [
 			'main' => [new PluginArea, 'main']
 		];
+
+		if ($this->user_info['is_admin']) {
+			$subActions['export'] = [new PluginExport, 'main'];
+			$subActions['import'] = [new PluginImport, 'main'];
+		}
 
 		$this->hook('addPluginAreas', [&$subActions]);
 

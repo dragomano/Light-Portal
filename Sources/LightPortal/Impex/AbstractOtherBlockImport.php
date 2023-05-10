@@ -26,7 +26,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 
 	abstract protected function getItems(array $blocks): array;
 
-	protected function run()
+	protected function run(): void
 	{
 		if ($this->request()->isEmpty('blocks') && $this->request()->hasNot('import_all'))
 			return;

@@ -30,7 +30,7 @@ final class BlockExport extends AbstractExport
 		$this->repository = new BlockRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_blocks');
 
@@ -100,7 +100,7 @@ final class BlockExport extends AbstractExport
 		return array_map(fn($item) => array_filter($item), $items);
 	}
 
-	protected function getXmlFile(): string
+	protected function getFile(): string
 	{
 		if (empty($items = $this->getData()))
 			return '';

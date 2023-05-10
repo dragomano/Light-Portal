@@ -263,18 +263,25 @@ $txt['lp_pages_export'] = 'Page export';
 $txt['lp_pages_import'] = 'Page import';
 $txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
 $txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
 $txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
+$txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
+$txt['lp_plugins_export'] = 'Plugin export';
+$txt['lp_plugins_import'] = 'Plugin import';
+$txt['lp_plugins_export_description'] = 'Here you can export the selected plugins to create a backup or transfer them to another forum.';
+$txt['lp_plugin_name'] = 'Name';
+$txt['lp_plugins_import_description'] = 'Here you can import archived portal plugins.';
+$txt['lp_plugins_import_info'] = 'Existing plugins will be overwritten with the plugins from the imported archive.';
+$txt['lp_plugins_import_success'] = 'Import of plugins successfully completed';
 $txt['lp_export_selection'] = 'Export selection';
 $txt['lp_import_selection'] = 'Import selection';
 $txt['lp_import_run'] = 'Run import';
 $txt['lp_export_all'] = 'Export all';
 $txt['lp_import_all'] = 'Import all';
 $txt['lp_import_success'] = 'Imported: %1$s';
-$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
-$txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';

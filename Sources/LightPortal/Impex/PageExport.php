@@ -31,7 +31,7 @@ final class PageExport extends AbstractExport
 		$this->repository = new PageRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_export'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_export'];
@@ -201,7 +201,7 @@ final class PageExport extends AbstractExport
 		return $categories;
 	}
 
-	protected function getXmlFile(): string
+	protected function getFile(): string
 	{
 		if (empty($items = $this->getData()))
 			return '';
