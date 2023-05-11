@@ -65,8 +65,6 @@ final class BasicConfig
 			$addSettings['lp_num_items_per_page'] = 10;
 		if (! isset($this->modSettings['lp_standalone_url']))
 			$addSettings['lp_standalone_url'] = $this->boardurl . '/portal.php';
-		if (! isset($this->modSettings['lp_prohibit_php']))
-			$addSettings['lp_prohibit_php'] = 1;
 		$this->updateSettings($addSettings);
 
 		$this->context['lp_frontpage_modes'] = array_combine(
@@ -97,7 +95,6 @@ final class BasicConfig
 			['title', 'lp_standalone_mode_title'],
 			['callback', 'standalone_mode_settings'],
 			['title', 'edit_permissions'],
-			['check', 'lp_prohibit_php', 'invalid' => true],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
 			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
 			['permissions', 'light_portal_manage_pages_any', 'help' => 'permissionhelp_light_portal_manage_pages'],

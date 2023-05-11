@@ -40,8 +40,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 ### Permissions
 
-* Prohibit all except administrators from creating PHP pages and PHP blocks.
-* Who can view the portal elements — by "elements" we mean blocks and pages.
+* Who can view the portal elements — blocks and pages.
 * Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
 * Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Who can post the portal pages without approval — you can choose user groups who will be able to post portal pages without moderation.

@@ -686,10 +686,6 @@ final class PageArea
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
 
-		if (! (empty($this->modSettings['lp_prohibit_php']) || $this->user_info['is_admin']) && $this->context['lp_page']['type'] === 'php') {
-			$this->context['lp_page']['type'] = 'bbc';
-		}
-
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
 				$post_data[$option] = 0;

@@ -70,7 +70,6 @@ $txt['lp_disabled_actions'] = 'Disabled actions';
 $txt['lp_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
-$txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 $txt['groups_light_portal_view'] = 'Who can view the portal elements — <span class="new_posts lp_type_other">Tourist</span>';
 $txt['groups_light_portal_manage_pages_own'] = 'Who can manage own pages — <span class="new_posts lp_type_editor">Writer</span>';
 $txt['groups_light_portal_manage_pages_any'] = 'Who can manage any pages — <span class="new_posts lp_type_article">Page Moderator</span>';
