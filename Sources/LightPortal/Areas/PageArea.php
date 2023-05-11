@@ -782,13 +782,12 @@ final class PageArea
 			'type'       => 'text',
 			'after'      => $this->txt['lp_page_alias_subtext'],
 			'tab'        => 'seo',
-			'attributes' => [
+			'attributes' => array_merge([
 				'maxlength' => 255,
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'x-slug.replacement._' => 'title_' . $this->user_info['language'],
-			],
+			], empty($this->context['lp_page']['id']) ? ['x-slug.replacement._' => 'title_' . $this->user_info['language']] : []),
 		];
 
 		$this->context['posting_fields']['description']['label']['text'] = $this->txt['lp_page_description'];
