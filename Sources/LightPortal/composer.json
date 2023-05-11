@@ -3,7 +3,8 @@
         "ext-dom": "*",
         "ext-intl": "*",
         "ext-simplexml": "*",
-        "latte/latte": "^3.0"
+        "latte/latte": "^3.0",
+        "wikimedia/less.php": "^4.1"
     },
     "config": {
         "optimize-autoloader": true,

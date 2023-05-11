@@ -15,6 +15,9 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{Block, Page};
+use Less_Parser;
+use Less_Exception_Parser;
+use Exception;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -82,12 +85,35 @@ abstract class AbstractMain
 			}
 		}
 
+		$this->compileLess();
+
 		$this->loadCSSFile('light_portal/flexboxgrid.css');
 		$this->loadCSSFile('light_portal/portal.css');
 		$this->loadCSSFile('light_portal/plugins.css');
 		$this->loadCSSFile('light_portal_custom.css');
 
 		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+	}
+
+	protected function compileLess(): void
+	{
+		$cssFile  = $this->settings['default_theme_dir'] . '/css/light_portal/portal.css';
+		$lessFile = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
+
+		if (is_file($cssFile) && filemtime($lessFile) < filemtime($cssFile))
+			return;
+
+		$parser = new Less_Parser([
+			'compress' => true,
+			'cache_dir' => $this->cachedir,
+		]);
+
+		try {
+			$parser->parseFile($lessFile);
+			file_put_contents($cssFile, $parser->getCss());
+		} catch (Less_Exception_Parser | Exception $e) {
+			$this->logError($e->getMessage(), 'critical');
+		}
 	}
 
 	/**

@@ -154,6 +154,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Less.php',
+				'link' => 'https://github.com/wikimedia/less.php',
+				'author' => 'Wikimedia Foundation',
+				'license' => [
+					'name' => 'the Apache License 2.0',
+					'link' => 'https://github.com/wikimedia/less.php/blob/master/LICENSE'
+				]
+			],
+			[
 				'title' => '@shat/stylenames',
 				'link' => 'https://github.com/shatstack/stylenames',
 				'author' => 'Kevin Mathmann',
