@@ -68,12 +68,14 @@ final class PluginExport extends AbstractExport
 		}
 
 		$zip = new PharData($filename);
+		$zip->startBuffering();
 		foreach ($dirs as $dir) {
 			$zip->buildFromIterator(
 				new RecursiveIteratorIterator(
 					new RecursiveDirectoryIterator(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir, FilesystemIterator::SKIP_DOTS)
 				), LP_ADDON_DIR);
 		}
+		$zip->stopBuffering();
 
 		return $filename;
 	}
