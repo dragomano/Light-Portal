@@ -514,7 +514,7 @@ if (! isset($modSettings['lp_enabled_plugins']))
 if (! isset($modSettings['lp_frontpage_layout']))
 	$addSettings['lp_frontpage_layout'] = 'default.latte';
 if (! isset($modSettings['lp_show_comment_block']))
-	$addSettings['lp_show_comment_block'] = 'default';
+	$addSettings['lp_show_comment_block'] = 'none';
 if (! isset($modSettings['lp_fa_source']))
 	$addSettings['lp_fa_source'] = 'kit';
 updateSettings($addSettings);
