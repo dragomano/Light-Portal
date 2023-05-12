@@ -3,6 +3,7 @@
 **/vendor/
 **/composer.lock
 **/package-lock.json
+Sources/LightPortal/Libs/*
 
 Themes/default/languages/LightPortal/*
 !Themes/default/languages/LightPortal/index.php
