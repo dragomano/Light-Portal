@@ -19,7 +19,7 @@ final class ActionSelect extends AbstractPartial
 	public function __invoke(array $params = []): string
 	{
 		$params['id'] ??= 'lp_disabled_actions';
-		$params['data'] ??= ($this->modSettings['lp_disabled_actions'] ? explode(',', $this->modSettings['lp_disabled_actions']) : []);
+		$params['data'] ??= (empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']));
 		$params['value'] = [];
 
 		$data = [];
