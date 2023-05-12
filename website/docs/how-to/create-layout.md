@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Create own layout for the frontpage
+# Create own frontpage layout
 
 :::info
 
