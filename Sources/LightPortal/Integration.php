@@ -48,6 +48,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
 		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
+		$this->applyHook('clean_cache');
 	}
 
 	public function userInfo()
@@ -465,5 +466,14 @@ final class Integration extends AbstractMain
 		}
 
 		return $result;
+	}
+
+	public function cleanCache()
+	{
+		$file = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
+
+		if (is_file($file)) {
+			touch($file);
+		}
 	}
 }
