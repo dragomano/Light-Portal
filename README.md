@@ -6,7 +6,7 @@
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 8.2.4 / MariaDB 10.11.2, MySQL 5.7.41/8.0.32, PostgreSQL 15.2
-* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek
+* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru) [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
 ## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
@@ -15,7 +15,7 @@ This modification will transform your forum into a portal that includes:
 * separate pages with keywords,
 * blocks within 12-column flexbox grid.
 
-The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via plugins) content within pages and custom blocks.
+The portal supports BBC, HTML, PHP, as well as Markdown content within pages and custom blocks.
 
 ### Features
 * Blocks and pages with multilingual titles.
