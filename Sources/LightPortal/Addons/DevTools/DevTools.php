@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 10.05.23
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -65,12 +65,12 @@ class DevTools extends Plugin
 	public function credits(array &$links)
 	{
 		$links[] = [
-			'title' => 'Lorem Picsum',
-			'link' => 'https://picsum.photos',
-			'author' => 'David Marby & Nijiko Yonskai',
+			'title' => 'LoremFlickr',
+			'link' => 'https://loremflickr.com',
+			'author' => 'Babak Fakhamzadeh',
 			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/DMarby/picsum-photos/blob/main/LICENSE.md'
+				'name' => 'the GPL-2.0 License',
+				'link' => 'https://github.com/MastaBaba/LoremFlickr/blob/master/LICENSE'
 			]
 		];
 	}
