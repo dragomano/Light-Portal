@@ -3,18 +3,19 @@
     <target name="build">
         <fileset dir="." id="files">
             <include name="Themes/**" />
-            <exclude name="Themes/default/css/light_portal/portal.less" />
+            <exclude name="Themes/default/css/light_portal/plugins.css" />
+            <exclude name="Themes/default/scripts/light_portal/plugins.js" />
             <include name="Sources/**" />
             <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
             <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
             <exclude name="Sources/LightPortal/Addons/Disqus/**" />
+            <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
             <exclude name="Sources/LightPortal/Addons/EhPortal/**" />
             <exclude name="Sources/LightPortal/Addons/ExtUpload/**" />
             <exclude name="Sources/LightPortal/Addons/EzPortal/**" />
             <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
             <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
             <exclude name="Sources/LightPortal/Addons/Giscus/**" />
-            <exclude name="Sources/LightPortal/Addons/GoogleAmp/**" />
             <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
             <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
             <exclude name="Sources/LightPortal/Addons/Jodit/**" />
@@ -27,11 +28,9 @@
             <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
             <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
             <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
-            <exclude name="Sources/LightPortal/Addons/Pug/**" />
             <exclude name="Sources/LightPortal/Addons/SiteList/**" />
             <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
             <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
-            <exclude name="Sources/LightPortal/Addons/Twig/**" />
             <exclude name="Sources/LightPortal/Addons/Uicons/**" />
             <exclude name="Sources/LightPortal/Addons/VkComments/**" />
             <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
@@ -42,7 +41,7 @@
             <include name="uninstall.php" />
             <include name="uninstall-optional.php" />
         </fileset>
-        <version releasetype="Bugfix" file="version.txt" property="version.number" />
+        <version releasetype="Minor" file="version.txt" property="version.number" />
         <delete file="light_portal_${version.number}.zip" quiet="true" />
         <zip destfile="light_portal_${version.number}.zip">
             <fileset refid="files" />
