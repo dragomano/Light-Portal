@@ -23,15 +23,19 @@ function template_show_page()
 	if ($context['lp_page']['can_edit']) {
 		echo '
 	<aside class="infobox">
-		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
-		<a class="button floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '">', $context['lp_icon_set']['edit'], '<span class="hidden-xs">', $txt['edit'], '</span></a>';
+		<div>
+			<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+		</div>
+		<div>
+			<a class="button floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '">', $context['lp_icon_set']['edit'], '<span class="hidden-xs">', $txt['edit'], '</span></a>';
 
 		if (! (empty($context['user']['is_admin']) || empty($modSettings['lp_frontpage_mode']) || $modSettings['lp_frontpage_mode'] !== 'chosen_pages')) {
 			echo '
-		<a class="button floatright" href="', $context['canonical_url'], ';promote">', $context['lp_icon_set']['home'], '<span class="hidden-xs hidden-sm">', $txt['lp_' . (in_array($context['lp_page']['id'], $context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
+			<a class="button floatright" href="', $context['canonical_url'], ';promote">', $context['lp_icon_set']['home'], '<span class="hidden-xs hidden-sm">', $txt['lp_' . (in_array($context['lp_page']['id'], $context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
 		}
 
 		echo '
+		</div>
 	</aside>';
 	}
 

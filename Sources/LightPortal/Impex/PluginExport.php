@@ -18,6 +18,7 @@ use PharData;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use FilesystemIterator;
+use Phar;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -67,16 +68,19 @@ final class PluginExport extends AbstractExport
 			unlink($filename);
 		}
 
-		$zip = new PharData($filename);
-		$zip->startBuffering();
+		$phar = new PharData($filename);
+		$phar->startBuffering();
 		foreach ($dirs as $dir) {
-			$zip->buildFromIterator(
+			$phar->buildFromIterator(
 				new RecursiveIteratorIterator(
 					new RecursiveDirectoryIterator(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir, FilesystemIterator::SKIP_DOTS)
 				), LP_ADDON_DIR);
 		}
-		$zip->stopBuffering();
+		$phar->stopBuffering();
 
-		return $filename;
+		$compressed = gzencode(file_get_contents($filename));
+		file_put_contents($filename . '.gz', $compressed);
+
+		return $filename . '.gz';
 	}
 }

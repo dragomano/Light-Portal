@@ -25,7 +25,9 @@ use Bugo\LightPortal\Front\{
 };
 use IntlException;
 use Latte\Engine;
+use Latte\Loaders\FileLoader;
 use Latte\Essential\RawPhpExtension;
+use Exception;
 
 final class FrontPage
 {
@@ -146,6 +148,7 @@ final class FrontPage
 
 		$latte = new Engine;
 		$latte->setTempDirectory($this->cachedir);
+		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
 		$latte->addFunction('icon', function (string $name, string $title = '') {
 			if (empty($title)) {
@@ -163,11 +166,11 @@ final class FrontPage
 
 		ob_start();
 
-		if (! is_file($file = $this->settings['default_theme_dir'] . "/LightPortal/layouts/$layout")) {
-			$file = $this->settings['default_theme_dir'] . "/LightPortal/layouts/default.latte";
+		try {
+			$latte->render($layout, $params);
+		} catch (Exception $e) {
+			$this->fatalError($e->getMessage());
 		}
-
-		$latte->render($file, $params);
 
 		$this->context['lp_layout'] = ob_get_clean();
 	}

@@ -69,22 +69,22 @@ final class PluginImport extends AbstractImport
 		}
 
 		try {
-			$archive = new PharData($file['tmp_name']);
-			$archive->offsetUnset('package-info.xml');
+			$phar = new PharData($file['tmp_name']);
+			$phar->offsetUnset('package-info.xml');
 
 			$plugin = pathinfo($file['name'], PATHINFO_FILENAME);
 
-			if ($archive->offsetExists($plugin . '/' . $plugin . '.php') !== false) {
-				return $archive->extractTo(LP_ADDON_DIR, null, true);
+			if ($phar->offsetExists($plugin . '/' . $plugin . '.php') !== false) {
+				return $phar->extractTo(LP_ADDON_DIR, null, true);
 			}
 
-			if ($archive->offsetExists($plugin . '.php') !== false) {
-				return $archive->extractTo(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin, null, true);
+			if ($phar->offsetExists($plugin . '.php') !== false) {
+				return $phar->extractTo(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin, null, true);
 			}
 
-			foreach ($archive as $f) {
-				if ($f->isDir() && $archive->offsetExists($f->getBasename() . '/' . $f->getBasename() . '.php')) {
-					return $archive->extractTo(LP_ADDON_DIR, null, true);
+			foreach ($phar as $f) {
+				if ($f->isDir() && $phar->offsetExists($f->getBasename() . '/' . $f->getBasename() . '.php')) {
+					return $phar->extractTo(LP_ADDON_DIR, null, true);
 				}
 			}
 
