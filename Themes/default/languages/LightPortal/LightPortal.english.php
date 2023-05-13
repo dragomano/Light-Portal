@@ -445,3 +445,9 @@ $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
 $txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d queries.';
+
+// Quotes
+$txt['lp_quotes'][0] = 'This is the Way ©️';
+$txt['lp_quotes'][1] = 'Stop touching things ©️';
+$txt['lp_quotes'][2] = 'Your name will be legendary ©️';
+$txt['lp_quotes'][3] = 'I will help you. I have spoken ©️';

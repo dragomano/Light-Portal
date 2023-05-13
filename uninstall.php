@@ -18,3 +18,5 @@ $smcFunc['db_query']('', '
 
 if (SMF === 'SSI')
 	echo 'Database changes are complete! Please wait...';
+
+echo 'I\'ll see you again. I promise ©️';

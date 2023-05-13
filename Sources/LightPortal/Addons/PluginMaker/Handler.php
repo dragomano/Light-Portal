@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 12.05.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -220,12 +220,13 @@ class Handler extends Plugin
 			'type' => 'text',
 			'after' => $this->txt['lp_plugin_maker']['name_subtext'],
 			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['name'],
-				'required'  => true,
-				'pattern'   => self::ADDON_NAME_PATTERN,
-				'style'     => 'width: 100%',
-				'@change'   => 'plugin.updateState($event.target.value, $refs)'
+				'maxlength'   => 255,
+				'value'       => $this->context['lp_plugin']['name'],
+				'required'    => true,
+				'placeholder' => $this->txt['lp_quotes'][2],
+				'pattern'     => self::ADDON_NAME_PATTERN,
+				'style'       => 'width: 100%',
+				'@change'     => 'plugin.updateState($event.target.value, $refs)'
 			],
 			'tab' => 'content'
 		];

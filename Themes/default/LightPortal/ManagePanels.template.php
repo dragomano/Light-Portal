@@ -185,7 +185,7 @@ function template_callback_panel_direction()
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_panel_direction'], '</h3>
+		<h3 class="catbg">', $txt['lp_panel_direction'], '<span class="floatright">', $txt['lp_quotes'][0], '</span></h3>
 	</div>
 	<div class="information">', $txt['lp_panel_direction_note'], '</div>
 	<div class="generic_list_wrapper">

@@ -71,7 +71,7 @@ function template_portal_credits()
 		</ul>
 		<br>
 		<div class="title_bar">
-			<h4 class="titlebg">', $txt['lp_tools'], '</h4>
+			<h4 class="titlebg">', $txt['lp_tools'], '<span class="floatright">', $txt['lp_quotes'][1], '</span></h4>
 		</div>
 		<div class="row">';
 
