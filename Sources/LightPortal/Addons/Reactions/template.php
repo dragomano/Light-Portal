@@ -32,7 +32,7 @@ function show_page_reactions(): void
 				<button x-show="reactions[reaction.name] > 0" :title="reaction.title" x-text="reaction.emoji + \' \' + reactions[reaction.name]"></button>
 			</template>
 		</div>
-		<button class="add_reaction" x-show="!showButtons" @click="showButtons = true" :style="reactions == \'\' && { marginLeft: \'0\' }">🙂</button>
+		<button class="add_reaction" x-show="!showButtons" @click="showButtons = true" :style="reactions == \'\' && { marginLeft: \'0\' }">➕</button>
 		<div class="reactions" x-show="showButtons" @click.outside="showButtons = false">
 			<template x-for="reaction in buttons">
 				<button class="button" @click="$dispatch(\'addReaction\', { reaction: reaction.name })" :title="reaction.title" x-text="reaction.emoji"></button>
@@ -94,7 +94,7 @@ function show_comment_reactions(array $comment): void
 		<template x-for="reaction in buttons">
 			<span class="reaction_button" x-show="reactions[reaction.name] > 0" :title="reaction.title" x-text="reaction.emoji + \' \' + reactions[reaction.name]"></span>
 		</template>
-		<span class="add_comment_reaction" x-show="!showButtons" @click="showButtons = true" :style="reactions == \'\' && { marginLeft: \'0\' }">🙂</span>
+		<span class="add_comment_reaction" x-show="!showButtons" @click="showButtons = true" :style="reactions == \'\' && { marginLeft: \'0\' }">➕</span>
 		<span class="reactions" x-show="showButtons" @click.outside="showButtons = false">
 			<template x-for="reaction in buttons">
 				<span class="reaction_button" @click="$dispatch(\'addReaction\', { reaction: reaction.name, comment: ', $comment['id'], ' })" :title="reaction.title" x-text="reaction.emoji"></span>
