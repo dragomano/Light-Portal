@@ -50,11 +50,14 @@ final class AreaSelect extends AbstractPartial
 
 			$text = str_replace('!', '', $text);
 
-			if (str_starts_with($value, 'board'))
+			if (str_starts_with($value, 'board='))
 				$text = $this->txt['board'] . str_replace('board=', ' ', $text);
 
-			if (str_starts_with($value, 'topic'))
+			if (str_starts_with($value, 'topic='))
 				$text = $this->txt['topic'] . str_replace('topic=', ' ', $text);
+
+			if (str_starts_with($value, 'page='))
+				$text = $this->txt['page'] . str_replace('page=', ' ', $text);
 
 			$data[] = [
 				'label' => $this->txt['lp_block_areas_set'][$text] ?? $this->txt[$text] ?? $text,
