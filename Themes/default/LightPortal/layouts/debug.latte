@@ -7,9 +7,9 @@
     <div class="lp_frontpage_articles article_custom">
         {do show_pagination()}
 
-            <div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]} col-xl-{$context[lp_frontpage_num_columns]}">
-                <figure class="noticebox">{php echo parse_bbc('[code]' . print_r($article, true) . '[/code]')}</figure>
-            </div>
+        <div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]} col-xl-{$context[lp_frontpage_num_columns]}">
+            <figure class="noticebox">{php echo parse_bbc('[code]' . print_r($article, true) . '[/code]')}</figure>
+        </div>
 
         {do show_pagination(bottom)}
     </div>
