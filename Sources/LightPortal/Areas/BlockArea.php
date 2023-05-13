@@ -553,6 +553,10 @@ final class BlockArea
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
 		$this->context['preview_title'] = $this->getPreviewTitle($this->getIcon($this->context['lp_block']['icon']));
+
+		if (! empty($this->context['lp_block']['options']['parameters']['hide_header'])) {
+			$this->context['preview_title'] = $this->context['lp_block']['title_class'] = $this->context['lp_block']['title_style'] = '';
+		}
 	}
 
 	private function getPriority(): int
