@@ -157,7 +157,7 @@ final class PageExport extends AbstractExport
 				'category_id'  => $row['category_id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['alias'],
-				'description'  => trim($row['description']),
+				'description'  => trim($row['description'] ?? ''),
 				'content'      => $row['content'],
 				'type'         => $row['type'],
 				'permissions'  => $row['permissions'],
