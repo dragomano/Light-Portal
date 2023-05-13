@@ -64,8 +64,15 @@
 	flex-direction: row-reverse;
 }
 
-.column-reverse {
+.column {
 	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+.column.reverse {
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: reverse;
 	-ms-flex-direction: column-reverse;

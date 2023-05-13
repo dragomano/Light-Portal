@@ -9,7 +9,7 @@ function template_callback_panel_layout()
 	</div>
 	<div class="windowbg">', $txt['lp_panel_layout_preview'], '</div>
 	<div class="generic_list_wrapper">
-		<div class="centertext', empty($modSettings['lp_swap_header_footer']) ? '' : ' column-reverse', '">
+		<div class="centertext', empty($modSettings['lp_swap_header_footer']) ? '' : ' column reverse', '">
 			<div class="row center-xs">
 				<div class="col-xs-', $context['lp_header_panel_width'], '">
 					<div class="title_bar">
@@ -76,7 +76,7 @@ function template_callback_panel_layout()
 					</div>
 				</div>
 				<div class="col-xs">
-					<div class="windowbg', empty($modSettings['lp_swap_top_bottom']) ? '' : ' column-reverse', '">
+					<div class="windowbg', empty($modSettings['lp_swap_top_bottom']) ? '' : ' column reverse', '">
 						<strong>col-xs (auto)</strong>
 						<div class="row">
 							<div class="col-xs">
