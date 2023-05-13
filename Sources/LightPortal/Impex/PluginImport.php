@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use PharData;
+use ZipArchive;
 use Exception;
 
 if (! defined('SMF'))
@@ -36,6 +36,8 @@ final class PluginImport extends AbstractImport
 			'description' => $this->txt['lp_plugins_import_description']
 		];
 
+		$this->context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
+
 		$this->context['lp_file_type'] = 'application/zip';
 
 		$this->run();
@@ -52,39 +54,43 @@ final class PluginImport extends AbstractImport
 	protected function extractPackage(): bool
 	{
 		$file = $this->files('import_file');
-		if (empty($file) || ! empty($file['error']))
+		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
 			return false;
 
 		switch ($file['type']) {
 			case 'application/zip':
 			case 'application/x-zip':
 			case 'application/x-zip-compressed':
-			case 'application/octet-stream':
-			case 'application/x-compress':
-			case 'application/x-compressed':
-			case 'multipart/x-zip':
 				break;
 			default:
 				return false;
 		}
 
 		try {
-			$phar = new PharData($file['tmp_name']);
-			$phar->offsetUnset('package-info.xml');
+			$zip = new ZipArchive();
+			$zip->open($file['tmp_name']);
+			$zip->deleteName('package-info.xml');
 
 			$plugin = pathinfo($file['name'], PATHINFO_FILENAME);
+			$pluginPhp = $plugin . '/' . $plugin . '.php';
+			$addonDir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin;
 
-			if ($phar->offsetExists($plugin . '/' . $plugin . '.php') !== false) {
-				return $phar->extractTo(LP_ADDON_DIR, null, true);
+			if ($zip->locateName($pluginPhp) !== false) {
+				return $zip->extractTo(LP_ADDON_DIR);
+			} elseif ($zip->locateName($plugin . '.php') !== false) {
+				return $zip->extractTo($addonDir);
 			}
 
-			if ($phar->offsetExists($plugin . '.php') !== false) {
-				return $phar->extractTo(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin, null, true);
-			}
+			for ($i = 0; $i < $zip->numFiles; $i++) {
+				$fileInfoArr = $zip->statIndex($i);
 
-			foreach ($phar as $f) {
-				if ($f->isDir() && $phar->offsetExists($f->getBasename() . '/' . $f->getBasename() . '.php')) {
-					return $phar->extractTo(LP_ADDON_DIR, null, true);
+				if (! str_contains($fileInfoArr['name'], '/')) {
+					continue;
+				}
+
+				[$dirName, $fileName] = explode('/', $fileInfoArr['name'], 2);
+				if ($fileName === $dirName . '.php') {
+					return $zip->extractTo(LP_ADDON_DIR);
 				}
 			}
 

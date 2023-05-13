@@ -123,10 +123,11 @@ final class ConfigArea
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
 			];
 
-			$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
-				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
-				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
-			];
+			if (extension_loaded('zip'))
+				$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
+					'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
+					'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
+				];
 		}
 
 		$this->hook('addAdminAreas', [&$admin_areas]);
@@ -236,7 +237,7 @@ final class ConfigArea
 			'main' => [new PluginArea, 'main']
 		];
 
-		if ($this->user_info['is_admin']) {
+		if ($this->user_info['is_admin'] && extension_loaded('zip')) {
 			$subActions['export'] = [new PluginExport, 'main'];
 			$subActions['import'] = [new PluginImport, 'main'];
 		}

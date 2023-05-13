@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Impex;
 
-use PharData;
+use ZipArchive;
+use AppendIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use FilesystemIterator;
-use Phar;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,7 +53,7 @@ final class PluginExport extends AbstractExport
 
 	protected function getFile(): string
 	{
-		if (empty($dirs = $this->getData()) || ! extension_loaded('phar'))
+		if (empty($dirs = $this->getData()))
 			return '';
 
 		return $this->createPackage($dirs) ?? '';
@@ -64,23 +64,24 @@ final class PluginExport extends AbstractExport
 		$archive  = count($dirs) === 1 ? $dirs[0] : 'lp_plugins';
 		$filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $archive . '.zip';
 
-		if (is_file($filename)) {
-			unlink($filename);
-		}
+		$zip = new ZipArchive();
+		$zip->open($filename, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+		$zip->setCompressionIndex(ZipArchive::CM_DEFAULT, ZipArchive::CM_DEFLATE);
 
-		$phar = new PharData($filename);
-		$phar->startBuffering();
+		$iterator = new AppendIterator();
 		foreach ($dirs as $dir) {
-			$phar->buildFromIterator(
-				new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir, FilesystemIterator::SKIP_DOTS)
-				), LP_ADDON_DIR);
+			$iterator->append(new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS)
+			));
 		}
-		$phar->stopBuffering();
 
-		$compressed = gzencode(file_get_contents($filename));
-		file_put_contents($filename . '.gz', $compressed);
+		foreach ($iterator as $file) {
+			$localname = substr($file->getPathname(), strlen(LP_ADDON_DIR) + 1);
+			$zip->addFile($file->getPathname(), $localname);
+		}
 
-		return $filename . '.gz';
+		$zip->close();
+
+		return $filename;
 	}
 }

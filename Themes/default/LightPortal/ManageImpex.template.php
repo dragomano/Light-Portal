@@ -155,6 +155,7 @@ function template_manage_import()
 	<div class="descbox">
 		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
+				<input type="hidden" name="MAX_FILE_SIZE" value="', $context['max_file_size'], '">
 				<input name="import_file" type="file" accept="', $context['lp_file_type'], '">
 				<button class="button floatnone" type="submit">', $txt['lp_import_run'], '</button>
 			</div>
