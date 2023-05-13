@@ -94,7 +94,7 @@ final class Integration extends AbstractMain
 
 		$this->loadAssets();
 
-		AddonHandler::getInstance()->run();
+		$this->hook('init');
 	}
 
 	/**

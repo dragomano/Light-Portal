@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 13.05.23
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
@@ -94,13 +94,7 @@ class Reactions extends Plugin
 		$this->setTemplate();
 	}
 
-	public function init(): void
-	{
-		$this->applyHook('lp_page_content_end', 'pageContentEnd');
-		$this->applyHook('lp_comment_buttons', 'commentButtons');
-	}
-
-	public function pageContentEnd()
+	public function afterPageContent()
 	{
 		if (empty($this->context['lp_page']['options']['allow_reactions']))
 			return;
@@ -184,7 +178,7 @@ class Reactions extends Plugin
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return json_decode($reactions, true) ?? [];
+		return json_decode($reactions ?? '', true) ?? [];
 	}
 
 	private function addReaction(int $id, string $value, string $entity = 'page'): void

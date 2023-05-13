@@ -90,7 +90,7 @@ function template_show_page()
 			<hr>';
 	}
 
-	call_integration_hook('integrate_lp_page_content');
+	call_portal_hook('beforePageContent');
 
 	if (! empty($settings['og_image'])) {
 		echo '
@@ -100,7 +100,7 @@ function template_show_page()
 	echo '
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
 
-	call_integration_hook('integrate_lp_page_content_end');
+	call_portal_hook('afterPageContent');
 
 	echo '
 		</article>';
@@ -351,7 +351,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 					<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)">', $context['lp_icon_set']['undo'], $txt['modify_cancel'], '</span>';
 		}
 
-		call_integration_hook('integrate_lp_comment_buttons', [$comment]);
+		call_portal_hook('commentButtons', [$comment]);
 
 		// Only comment author or admin can remove comments
 		if ($comment['poster']['id'] === $context['user']['id'] || $context['user']['is_admin']) {

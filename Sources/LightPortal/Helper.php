@@ -74,7 +74,7 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
-		AddonHandler::getInstance()->run($hook, $vars, $plugins);
+		call_portal_hook($hook, $vars, $plugins);
 	}
 
 	public function require(string $filename): void
