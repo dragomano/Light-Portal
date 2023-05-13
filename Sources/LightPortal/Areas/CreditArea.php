@@ -230,5 +230,7 @@ final class CreditArea
 		$this->hook('credits', [&$links]);
 
 		$this->context['lp_components'] = $links;
+
+		shuffle($this->context['lp_components']);
 	}
 }
