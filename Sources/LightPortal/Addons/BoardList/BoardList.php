@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Partials\{ContentClassSelect, TitleClassSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,17 +49,20 @@ class BoardList extends Block
 		if ($this->context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$this->context['posting_fields']['category_class']['label']['html'] = '<label for="category_class">' . $this->txt['lp_board_list']['category_class'] . '</label>';
-		$this->context['posting_fields']['category_class']['input']['html'] = '<div id="category_class" name="category_class"></div>';
+		$this->context['posting_fields']['category_class']['label']['html'] = $this->txt['lp_board_list']['category_class'];
 		$this->context['posting_fields']['category_class']['input']['tab']  = 'appearance';
+		$this->context['posting_fields']['category_class']['input']['html'] = (new TitleClassSelect)([
+			'id'    => 'category_class',
+			'data'  => $this->getCategoryClasses(),
+			'value' => $this->context['lp_block']['options']['parameters']['category_class']
+		]);
 
-		$this->context['posting_fields']['board_class']['label']['html'] = '<label for="board_class">' . $this->txt['lp_board_list']['board_class'] . '</label>';
-		$this->context['posting_fields']['board_class']['input']['html'] = '<div id="board_class" name="board_class"></div>';
+		$this->context['posting_fields']['board_class']['label']['html'] = $this->txt['lp_board_list']['board_class'];
 		$this->context['posting_fields']['board_class']['input']['tab']  = 'appearance';
-
-		$this->context['category_classes'] = $this->getCategoryClasses();
-
-		$this->setTemplate()->withLayer('board_list');
+		$this->context['posting_fields']['board_class']['input']['html'] = (new ContentClassSelect)([
+			'id'    => 'board_class',
+			'value' => $this->context['lp_block']['options']['parameters']['board_class'],
+		]);
 	}
 
 	public function getData(): array
@@ -88,21 +92,25 @@ class BoardList extends Block
 				<ul class="smalltext">';
 
 			foreach ($category['boards'] as $board) {
+				$board['selected'] = $board['id'] == $this->context['current_board'];
+
 				$content .= '
-					<li>';
+						<li>';
 
 				if ($board['child_level']) {
 					$content .= '
-						<ul class="smalltext">
-							<li>' . ($this->context['current_board'] == $board['id'] ? '<strong>' : '') . '&raquo; <a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($this->context['current_board'] == $board['id'] ? '</strong>' : '') . '</li>
-						</ul>';
-					} else {
+							<ul>
+								<li style="margin-left: 1em">
+									' . $this->context['lp_icon_set'][$board['selected'] ? 'circle_dot' : 'chevron_right'] . ' <a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
+								</li>
+							</ul>';
+				} else {
 					$content .= '
-						' . ($this->context['current_board'] == $board['id'] ? '<strong>' : '') . '<a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>' . ($this->context['current_board'] == $board['id'] ? '</strong>' : '');
-					}
+							' . $this->context['lp_icon_set']['circle' . ($board['selected'] ? '_dot' : '')] . ' <a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
+				}
 
 				$content .= '
-					</li>';
+						</li>';
 			}
 
 			$content .= '

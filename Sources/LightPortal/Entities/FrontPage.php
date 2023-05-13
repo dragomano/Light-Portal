@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Entities;
@@ -24,6 +24,10 @@ use Bugo\LightPortal\Front\{
 	ChosenTopicArticle,
 };
 use IntlException;
+use Latte\Engine;
+use Latte\Loaders\FileLoader;
+use Latte\Essential\RawPhpExtension;
+use Exception;
 
 final class FrontPage
 {
@@ -108,48 +112,67 @@ final class FrontPage
 		if (empty($this->context['lp_frontpage_articles'])) {
 			$this->context['sub_template'] = 'empty';
 		} else {
-			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'show_' . $this->modSettings['lp_frontpage_layout'];
+			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
 		}
 
 		// Mod authors can define their own templates
 		$this->hook('frontCustomTemplate', [$this->getLayouts()]);
 
-		$this->context['insert_after_template'] .= '
-		<script>window.lazyLoadOptions = {};</script>
-		<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
+		$this->view($this->modSettings['lp_frontpage_layout']);
 	}
 
 	public function getLayouts(): array
 	{
-		$layouts = $values = [];
-
-		$allFunctions = get_defined_functions()['user'];
+		$values = $titles = [];
 
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
-		// Additional layouts
-		$defaultLayouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.php');
+		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
 
-		array_map(fn($layout) => basename($layout) !== 'index.php' ? require_once $layout : false, $defaultLayouts);
-
-		// Support of custom templates
-		if (is_file($customTemplates = $this->settings['theme_dir'] . '/CustomFrontPage.template.php'))
-			require_once $customTemplates;
-
-		$frontPageFunctions = array_values(array_diff(get_defined_functions()['user'], $allFunctions));
-
-		preg_match_all('/template_show_([a-z]+)(.*)/', implode("\n", $frontPageFunctions), $matches);
-
-		if ($matches[1]) {
-			foreach ($matches[1] as $k => $v) {
-				$layouts[] = $name = $v . ($matches[2][$k] ?? '');
-				$values[]  = ! str_contains($name, '_') ? $this->txt['lp_default'] : ucfirst(explode('_', $name)[1]);
-			}
-
-			$layouts = array_combine($layouts, $values);
+		foreach ($layouts as $layout) {
+			$values[] = $title = basename($layout);
+			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : ucfirst(str_replace('.latte', '', $title));
 		}
 
-		return $layouts;
+		$layouts = array_combine($values, $titles);
+		$default = $layouts['default.latte'];
+		unset($layouts['default.latte']);
+
+		return array_merge(['default.latte' => $default], $layouts);
+	}
+
+	public function view(string $layout): void
+	{
+		if (empty($layout))
+			return;
+
+		$latte = new Engine;
+		$latte->setTempDirectory($this->cachedir);
+		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
+		$latte->addExtension(new RawPhpExtension);
+		$latte->addFunction('icon', function (string $name, string $title = '') {
+			if (empty($title)) {
+				return $this->context['lp_icon_set'][$name];
+			}
+
+			return str_replace(' class=', ' title="' . $title . '" class=', $this->context['lp_icon_set'][$name]);
+		});
+
+		$params = [
+			'txt'         => $this->txt,
+			'context'     => $this->context,
+			'modSettings' => $this->modSettings
+		];
+
+		ob_start();
+
+		try {
+			$latte->render($layout, $params);
+		} catch (Exception $e) {
+			$this->fatalError($e->getMessage());
+		}
+
+		$this->context['lp_layout'] = ob_get_clean();
 	}
 
 	/**
@@ -281,10 +304,10 @@ final class FrontPage
 		$paginate = '';
 
 		if ($prev >= 0)
-			$paginate .= '<a class="button" href="' . $url . ';start=' . $prev . '">' . $this->context['lp_icon_set']['arrow_left'] . ' ' . $this->txt['prev'] . '</a>';
+			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">{$this->context['lp_icon_set']['arrow_left']} {$this->txt['prev']}</a>";
 
 		if ($next)
-			$paginate .= '<a class="button" href="' . $url . ';start=' . $next . '">' . $this->txt['next'] . ' ' . $this->context['lp_icon_set']['arrow_right'] . '</a>';
+			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">{$this->txt['next']} {$this->context['lp_icon_set']['arrow_right']}</a>";
 
 		return $paginate;
 	}

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -41,6 +41,7 @@ class RecentPosts extends Block
 			'num_posts'        => 10,
 			'link_type'        => 'link',
 			'show_body'        => false,
+			'limit_body'       => true,
 			'update_interval'  => 600,
 		];
 	}
@@ -59,6 +60,7 @@ class RecentPosts extends Block
 		$parameters['num_posts']        = FILTER_VALIDATE_INT;
 		$parameters['link_type']        = FILTER_DEFAULT;
 		$parameters['show_body']        = FILTER_VALIDATE_BOOLEAN;
+		$parameters['limit_body']       = FILTER_VALIDATE_BOOLEAN;
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
@@ -116,7 +118,7 @@ class RecentPosts extends Block
 			];
 		}
 
-		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_recent_posts']['exclude_boards'] . '</label>';
+		$this->context['posting_fields']['exclude_boards']['label']['html'] = $this->txt['lp_recent_posts']['exclude_boards'];
 		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
 		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
 			'id'    => 'exclude_boards',
@@ -124,7 +126,7 @@ class RecentPosts extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
 		]);
 
-		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_recent_posts']['include_boards'] . '</label>';
+		$this->context['posting_fields']['include_boards']['label']['html'] = $this->txt['lp_recent_posts']['include_boards'];
 		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
 		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
 			'id'    => 'include_boards',
@@ -132,7 +134,7 @@ class RecentPosts extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
 		]);
 
-		$this->context['posting_fields']['exclude_topics']['label']['html'] = '<label for="exclude_topics">' . $this->txt['lp_recent_posts']['exclude_topics'] . '</label>';
+		$this->context['posting_fields']['exclude_topics']['label']['html'] = $this->txt['lp_recent_posts']['exclude_topics'];
 		$this->context['posting_fields']['exclude_topics']['input']['tab'] = 'content';
 		$this->context['posting_fields']['exclude_topics']['input']['html'] = (new TopicSelect)([
 			'id'    => 'exclude_topics',
@@ -140,7 +142,7 @@ class RecentPosts extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
 		]);
 
-		$this->context['posting_fields']['include_topics']['label']['html'] = '<label for="include_topics">' . $this->txt['lp_recent_posts']['include_topics'] . '</label>';
+		$this->context['posting_fields']['include_topics']['label']['html'] = $this->txt['lp_recent_posts']['include_topics'];
 		$this->context['posting_fields']['include_topics']['input']['tab'] = 'content';
 		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
 			'id'    => 'include_topics',
@@ -154,6 +156,15 @@ class RecentPosts extends Block
 			'attributes' => [
 				'id'      => 'show_body',
 				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_body']
+			],
+		];
+
+		$this->context['posting_fields']['limit_body']['label']['text'] = $this->txt['lp_recent_posts']['limit_body'];
+		$this->context['posting_fields']['limit_body']['input'] = [
+			'type' => 'checkbox',
+			'attributes' => [
+				'id'      => 'limit_body',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['limit_body']
 			],
 		];
 
@@ -193,7 +204,7 @@ class RecentPosts extends Block
 			'min_message_id' => $this->modSettings['maxMsgID'] - (empty($this->context['min_message_posts']) ? 25 : $this->context['min_message_posts']) * min((int) $parameters['num_posts'], 5),
 		];
 
-		$posts = $this->getFromSsi('queryPosts', $query_where, $query_where_params, (int) $parameters['num_posts'], 'm.id_msg DESC', 'array');
+		$posts = $this->getFromSsi('queryPosts', $query_where, $query_where_params, (int) $parameters['num_posts'], 'm.id_msg DESC', 'array', (bool) $parameters['limit_body']);
 
 		if (empty($posts))
 			return [];

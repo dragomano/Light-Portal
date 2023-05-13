@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Portal hooks
@@ -156,6 +156,6 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### changeIconSet
 (`&$set`)
-> ability to add or override current interface icons
+> ability to extend interface icons available via `$this->context['lp_icon_set']` array
 
 Not so much, Carl?

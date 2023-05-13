@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Areas\Config;
@@ -70,7 +70,8 @@ final class ExtraConfig
 					'none'      => $this->txt['no'],
 					'css_cdn'   => $this->txt['lp_fa_source_css_cdn'],
 					'css_local' => $this->txt['lp_fa_source_css_local'],
-					'custom'    => $this->txt['lp_fa_custom']
+					'custom'    => $this->txt['lp_fa_custom'],
+					'kit'       => $this->txt['lp_fa_kit']
 				],
 				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';'
 			],

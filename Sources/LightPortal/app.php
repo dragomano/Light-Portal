@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/Libs/autoload.php';
+
 use Bugo\LightPortal\{AddonHandler, Integration};
 
 if (! defined('SMF'))

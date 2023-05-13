@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.02.22
+ * @version 10.05.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -34,7 +34,11 @@ class PluginMaker extends Plugin
 
 	public function addAdminAreas(array &$admin_areas)
 	{
-		$admin_areas['lp_portal']['areas']['lp_plugins']['subsections']['add'] = [$this->context['lp_icon_set']['plus'] . $this->txt['lp_plugin_maker']['add']];
+		$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] = array_merge(
+			['main' => $admin_areas['lp_portal']['areas']['lp_plugins']['subsections']['main']],
+			['add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_plugin_maker']['add']]],
+			$admin_areas['lp_portal']['areas']['lp_plugins']['subsections']
+		);
 	}
 
 	public function addPluginAreas(array &$subActions)
@@ -47,9 +51,9 @@ class PluginMaker extends Plugin
 		$links[] = [
 			'title' => 'Nette PHP Generator',
 			'link' => 'https://github.com/nette/php-generator',
-			'author' => 'Nette Foundation',
+			'author' => 'David Grudl',
 			'license' => [
-				'name' => 'New BSD License',
+				'name' => 'the New BSD License',
 				'link' => 'https://github.com/nette/php-generator/blob/master/license.md'
 			]
 		];

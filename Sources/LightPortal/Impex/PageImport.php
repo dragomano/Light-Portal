@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 final class PageImport extends AbstractImport
 {
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
@@ -33,18 +33,20 @@ final class PageImport extends AbstractImport
 			'description' => $this->txt['lp_pages_import_description']
 		];
 
+		$this->context['lp_file_type'] = 'text/xml';
+
 		$this->run();
 	}
 
-	protected function run()
+	protected function run(): void
 	{
-		if (empty($xml = $this->getXmlFile()))
+		if (empty($xml = $this->getFile()))
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))
 			$this->fatalLangError('lp_wrong_import_file');
 
-		$categories = $tags = $items = $titles = $params = $comments = $ratings = [];
+		$categories = $tags = $items = $titles = $params = $comments = [];
 
 		foreach ($xml as $entity => $element) {
 			if ($entity === 'categories') {
@@ -104,20 +106,6 @@ final class PageImport extends AbstractImport
 									'author_id'  => intval($v['author_id']),
 									'message'    => $v->message,
 									'created_at' => intval($v['created_at'])
-								];
-							}
-						}
-					}
-
-					if ($item->ratings) {
-						foreach ($item->ratings as $rating) {
-							foreach ($rating as $v) {
-								$ratings[] = [
-									'id'           => intval($v['id']),
-									'value'        => intval($v['value']),
-									'content_type' => 'comment',
-									'content_id'   => intval($v['content_id']),
-									'user_id'      => intval($v['user_id'])
 								];
 							}
 						}
@@ -231,29 +219,6 @@ final class PageImport extends AbstractImport
 					],
 					$comments[$i],
 					['id', 'page_id'],
-					2
-				);
-
-				$this->context['lp_num_queries']++;
-			}
-		}
-
-		if ($ratings && $results) {
-			$ratings = array_chunk($ratings, 100);
-			$count   = sizeof($ratings);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
-					'{db_prefix}lp_ratings',
-					[
-						'id'           => 'int',
-						'value'        => 'int',
-						'content_type' => 'string',
-						'content_id'   => 'int',
-						'user_id'      => 'int'
-					],
-					$ratings[$i],
-					['id'],
 					2
 				);
 

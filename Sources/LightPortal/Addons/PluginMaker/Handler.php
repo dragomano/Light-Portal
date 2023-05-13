@@ -10,19 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.23
+ * @version 12.05.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
-use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Partials\IconSelect;
-use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\Printer;
+use Nette\PhpGenerator\{PhpNamespace, PhpFile, Printer};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -82,6 +79,8 @@ class Handler extends Plugin
 
 	private function validateData()
 	{
+		$post_data = [];
+
 		if ($this->request()->has('save')) {
 			$args = [
 				'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
@@ -147,8 +146,6 @@ class Handler extends Plugin
 
 		if ($this->context['lp_plugin']['type'] !== 'block' || $this->context['lp_plugin']['icon'] === 'undefined')
 			$this->context['lp_plugin']['icon'] = '';
-
-		$this->context['lp_plugin']['icon_template'] = $this->getIcon($this->context['lp_plugin']['icon']) . $this->context['lp_plugin']['icon'];
 
 		if (! empty($post_data['option_name'])) {
 			foreach ($post_data['option_name'] as $id => $option) {
@@ -216,19 +213,20 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : ['english', $this->language];
-		$languages = array_unique(array_merge(['english'], $languages));
+		$languages = array_unique(['english', ...$languages]);
 
 		$this->context['posting_fields']['name']['label']['text'] = $this->txt['lp_plugin_maker']['name'];
 		$this->context['posting_fields']['name']['input'] = [
 			'type' => 'text',
 			'after' => $this->txt['lp_plugin_maker']['name_subtext'],
 			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['name'],
-				'required'  => true,
-				'pattern'   => self::ADDON_NAME_PATTERN,
-				'style'     => 'width: 100%',
-				'@change'   => 'plugin.updateState($event.target.value, $refs)'
+				'maxlength'   => 255,
+				'value'       => $this->context['lp_plugin']['name'],
+				'required'    => true,
+				'placeholder' => $this->txt['lp_quotes'][2],
+				'pattern'     => self::ADDON_NAME_PATTERN,
+				'style'       => 'width: 100%',
+				'@change'     => 'plugin.updateState($event.target.value, $refs)'
 			],
 			'tab' => 'content'
 		];
@@ -250,32 +248,34 @@ class Handler extends Plugin
 			];
 		}
 
-		$this->context['posting_fields']['icon']['label']['html'] = '<label for="icon">' . $this->txt['current_icon'] . '</label>';
+		$this->context['posting_fields']['icon']['label']['html'] = $this->txt['current_icon'];
 		$this->context['posting_fields']['icon']['input']['tab']  = 'content';
 		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)([
 			'icon' => $this->context['lp_plugin']['icon'],
-			'type' => $this->context['lp_plugin']['type']
+			'type' => $this->context['lp_plugin']['type'],
 		]);
 
-		$this->context['posting_fields']['title']['label']['html'] = '<label>' . $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'] . '</label>';
+		$this->context['posting_fields']['title']['label']['html'] = $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'];
 		$this->context['posting_fields']['title']['input']['tab']  = 'content';
 		$this->context['posting_fields']['title']['input']['html'] = '
 			<div>';
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+		if (count($this->context['languages']) > 1) {
+			$this->context['posting_fields']['title']['input']['html'] .= '
 			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			foreach ($this->context['languages'] as $lang) {
+				$this->context['posting_fields']['title']['input']['html'] .= '
 				<a
 					class="button floatnone"
 					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
 					@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $lang['filename'] . ']\').focus() }, 50); });"
 				>' . $lang['name'] . '</a>';
-		}
+			}
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+			$this->context['posting_fields']['title']['input']['html'] .= '
 			</nav>';
+		}
 
 		$i = count($languages) - 1;
 		foreach ($this->context['languages'] as $lang) {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.04.23
+ * @version 26.04.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -83,18 +83,10 @@ class CrowdinContext extends Plugin
 
 	private function getAdminList(): array
 	{
-		$this->require('Subs-Members');
+		$ids = $this->membersAllowedTo('admin_forum');
 
-		$ids = membersAllowedTo('admin_forum');
+		$users = $this->loadUserInfo($ids);
 
-		$this->loadMemberData($ids);
-
-		$names = array_map(function ($user) {
-			$this->loadMemberContext($user);
-			$user = $this->memberContext[$user]['name'];
-			return $user;
-		}, $ids);
-
-		return array_combine($ids, $names);
+		return array_column($users, 'name', 'id');
 	}
 }

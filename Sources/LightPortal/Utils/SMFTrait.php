@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Utils;
@@ -39,13 +39,14 @@ if (! defined('SMF'))
  * @property-read string $boardurl
  * @property-read string $boarddir
  * @property-read string $sourcedir
+ * @property-read string $cachedir
  */
 trait SMFTrait
 {
 	private array $smfGlobals = [
 		'context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'editortxt',
 		'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings',
-		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir'
+		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir', 'cachedir'
 	];
 
 	/**
@@ -146,6 +147,18 @@ trait SMFTrait
 	protected function loadMemberContext($user, bool $display_custom_fields = false): bool|array
 	{
 		return loadMemberContext($user, $display_custom_fields);
+	}
+
+	protected function loadUserInfo(array $ids): array
+	{
+		return loadMinUserInfo($ids);
+	}
+
+	protected function membersAllowedTo(string $permission): array
+	{
+		require_once $this->sourcedir . '/Subs-Members.php';
+
+		return membersAllowedTo($permission);
 	}
 
 	protected function prepareInstalledThemes(): void

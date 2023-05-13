@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -25,11 +25,11 @@ abstract class AbstractExport implements ExportInterface
 
 	abstract protected function getData();
 
-	abstract protected function getXmlFile();
+	abstract protected function getFile();
 
-	protected function run()
+	protected function run(): void
 	{
-		if (empty($file = $this->getXmlFile()))
+		if (empty($file = $this->getFile()))
 			return;
 
 		@set_time_limit(600);

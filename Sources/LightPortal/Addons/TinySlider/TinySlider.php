@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 09.05.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -415,7 +415,7 @@ class TinySlider extends Block
 		}
 
 		$this->addInlineJavaScript('
-			let slider' . $block_id . ' = tns({
+			let slider' . ($this->request()->has('preview') ? uniqid() : $block_id) . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",
 				items: ' . (empty($parameters['num_items']) ? $this->params['num_items'] : $parameters['num_items']) . ',

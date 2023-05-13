@@ -20,7 +20,7 @@ return [
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][3] . '"
 		},
 		{
-			element: document.getElementById("setting_lp_prohibit_php").parentNode.parentNode,
+			element: document.getElementById("setting_light_portal_view").parentNode.parentNode,
 			intro: "' . $this->txt['lp_hello_portal']['basic_settings_tour'][4] . '"
 		},
 		{

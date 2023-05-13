@@ -1,0 +1,16 @@
+{
+    "require": {
+        "ext-dom": "*",
+        "ext-intl": "*",
+        "ext-zip": "*",
+        "ext-simplexml": "*",
+        "latte/latte": "^3.0",
+        "wikimedia/less.php": "^4.1"
+    },
+    "config": {
+        "vendor-dir": "Libs",
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

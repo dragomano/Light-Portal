@@ -2,7 +2,7 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 const lightCodeTheme = require('prism-react-renderer/themes/oceanicNext');
-const darkCodeTheme = require('prism-react-renderer/themes/palenight');
+const darkCodeTheme = require('prism-react-renderer/themes/shadesOfPurple');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -71,7 +71,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['php'],
+        additionalLanguages: ['php', 'latte'],
       },
     }),
 

@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -30,7 +30,7 @@ final class BlockExport extends AbstractExport
 		$this->repository = new BlockRepository;
 	}
 
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_blocks');
 
@@ -45,7 +45,7 @@ final class BlockExport extends AbstractExport
 
 		$this->run();
 
-		$this->context['lp_current_blocks'] = $this->repository->getAll(with_customs: true);
+		$this->context['lp_current_blocks'] = $this->repository->getAll();
 	}
 
 	protected function getData(): array
@@ -100,7 +100,7 @@ final class BlockExport extends AbstractExport
 		return array_map(fn($item) => array_filter($item), $items);
 	}
 
-	protected function getXmlFile(): string
+	protected function getFile(): string
 	{
 		if (empty($items = $this->getData()))
 			return '';

@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 final class BlockImport extends AbstractImport
 {
-	public function main()
+	public function main(): void
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
@@ -33,12 +33,14 @@ final class BlockImport extends AbstractImport
 			'description' => $this->txt['lp_blocks_import_description']
 		];
 
+		$this->context['lp_file_type'] = 'text/xml';
+
 		$this->run();
 	}
 
-	protected function run()
+	protected function run(): void
 	{
-		if (empty($xml = $this->getXmlFile()))
+		if (empty($xml = $this->getFile()))
 			return;
 
 		if (! isset($xml->blocks->item[0]['block_id']))

@@ -12,7 +12,6 @@ $txt['lp_no_items'] = 'There are no items to show.';
 $txt['lp_example'] = 'Example: ';
 $txt['lp_content'] = 'Content';
 $txt['lp_caution'] = 'Caution';
-$txt['lp_my_blocks'] = 'My blocks';
 $txt['lp_my_pages'] = 'My pages';
 $txt['lp_page_moderation'] = 'Page moderation';
 $txt['lp_views'] = 'Views';
@@ -71,9 +70,7 @@ $txt['lp_disabled_actions'] = 'Disabled actions';
 $txt['lp_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
 
-$txt['lp_prohibit_php'] = 'Prohibit all except administrators from creating PHP pages and PHP blocks';
 $txt['groups_light_portal_view'] = 'Who can view the portal elements — <span class="new_posts lp_type_other">Tourist</span>';
-$txt['groups_light_portal_manage_blocks'] = 'Who can manage own blocks — <span class="new_posts lp_type_block">Architect</span>';
 $txt['groups_light_portal_manage_pages_own'] = 'Who can manage own pages — <span class="new_posts lp_type_editor">Writer</span>';
 $txt['groups_light_portal_manage_pages_any'] = 'Who can manage any pages — <span class="new_posts lp_type_article">Page Moderator</span>';
 $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages without approval — <span class="new_posts lp_type_comment">The Chosen One</span>';
@@ -94,8 +91,6 @@ $txt['lp_show_comment_block_set'] = ['None', 'Integrated'];
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_comment_sorting'] = 'Sort comments by default';
-$txt['lp_sort_by_rating'] = 'By rating';
-$txt['lp_allow_comment_ratings'] = 'Allow voting for comments';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_editor_type_default'] = 'The default type of the page editor';
 $txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
@@ -106,7 +101,7 @@ $txt['lp_fa_source'] = 'Source for the FontAwesome library';
 $txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
 $txt['lp_fa_source_css_local'] = 'Locally (all.min.css from the theme css folder)';
 $txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
-
+$txt['lp_fa_kit'] = 'Font Awesome Kit';
 $txt['lp_permissions'] = ['Show to admins', 'Show to guests', 'Show to members', 'Show to everybody'];
 
 // Categories
@@ -244,7 +239,11 @@ $txt['lp_page_keywords_empty'] = 'No tags yet';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
-$txt['lp_page_options'] = ['Show the title', 'Show the author and posting date', 'Show related pages', 'Allow comments'];
+$txt['lp_page_show_title'] = 'Show the title';
+$txt['lp_page_show_author_and_date'] = 'Show the author and posting date';
+$txt['lp_page_show_related_pages'] = 'Show related pages';
+$txt['lp_page_allow_comments'] = 'Allow comments';
+$txt['lp_page_show_in_menu'] = 'Show in the Main menu';
 $txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
 
 // Modlog
@@ -263,18 +262,25 @@ $txt['lp_pages_export'] = 'Page export';
 $txt['lp_pages_import'] = 'Page import';
 $txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
 $txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
 $txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
+$txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
+$txt['lp_plugins_export'] = 'Plugin export';
+$txt['lp_plugins_import'] = 'Plugin import';
+$txt['lp_plugins_export_description'] = 'Here you can export the selected plugins to create a backup or transfer them to another forum.';
+$txt['lp_plugin_name'] = 'Name';
+$txt['lp_plugins_import_description'] = 'Here you can import archived portal plugins.';
+$txt['lp_plugins_import_info'] = 'Existing plugins will be overwritten with the plugins from the imported archive.';
+$txt['lp_plugins_import_success'] = 'Import of plugins successfully completed';
 $txt['lp_export_selection'] = 'Export selection';
 $txt['lp_import_selection'] = 'Import selection';
 $txt['lp_import_run'] = 'Run import';
 $txt['lp_export_all'] = 'Export all';
 $txt['lp_import_all'] = 'Import all';
 $txt['lp_import_success'] = 'Imported: %1$s';
-$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
-$txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
@@ -390,8 +396,6 @@ $txt['lp_who_viewing_adding_page'] = 'Adding a page for the portal.';
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
-$txt['permissionname_light_portal_manage_blocks'] = $txt['group_perms_name_light_portal_manage_blocks'] = 'Manage own blocks';
-$txt['permissionhelp_light_portal_manage_blocks'] = 'Access to manage own blocks.';
 $txt['permissionname_light_portal_manage_pages'] = $txt['group_perms_name_light_portal_manage_pages'] = 'Manage pages';
 $txt['permissionhelp_light_portal_manage_pages'] = 'Access to manage the portal pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Moderate - Unapproved pages</em>.';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
@@ -401,7 +405,6 @@ $txt['permissionhelp_light_portal_manage_pages_own'] = 'Access to manage own pag
 $txt['permissionname_light_portal_manage_pages_any'] = $txt['group_perms_name_light_portal_manage_pages_any'] = 'Manage any pages (moderation)';
 $txt['permissionhelp_light_portal_manage_pages_any'] = 'Ability to create and edit any pages on the portal.';
 $txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
-$txt['cannot_light_portal_manage_blocks'] = 'Sorry, you are not allowed to manage blocks!';
 $txt['cannot_light_portal_manage_pages'] = 'Sorry, you are not allowed to manage pages!';
 $txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
 $txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
@@ -432,18 +435,19 @@ $txt['lp_spiders_set'] = '{spiders, plural, one {# spider} other {# spiders}}';
 $txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
 $txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
 
-// Packages
-$txt['lp_addon_package'] = 'Light Portal plugins';
-$txt['install_lp_addon'] = 'Install plugin';
-$txt['uninstall_lp_addon'] = 'Uninstall plugin';
-
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
 $txt['lp_translators'] = 'Translators';
 $txt['lp_testers'] = 'Testers';
 $txt['lp_sponsors'] = 'Sponsors';
-$txt['lp_supporters'] = 'Supported by';
+$txt['lp_tools'] = 'Tools';
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
 $txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d queries.';
+
+// Quotes
+$txt['lp_quotes'][0] = 'This is the Way ©️';
+$txt['lp_quotes'][1] = 'Stop touching things ©️';
+$txt['lp_quotes'][2] = 'Your name will be legendary ©️';
+$txt['lp_quotes'][3] = 'I will help you. I have spoken ©️';

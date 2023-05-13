@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Entities;
@@ -39,7 +39,7 @@ final class Block
 			if ($this->canViewItem($data['permissions'], $data['user_id']) === false)
 				continue;
 
-			$data['can_edit'] = $this->context['user']['is_admin'] || ($this->context['allow_light_portal_manage_blocks'] && $data['user_id'] == $this->context['user']['id']);
+			$data['can_edit'] = $this->context['user']['is_admin'];
 
 			$data['content'] = empty($data['content'])
 				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
@@ -60,7 +60,7 @@ final class Block
 			$this->context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
-		$this->loadTemplate('LightPortal/ViewBlock');
+		$this->loadTemplate('LightPortal/ViewBlocks');
 
 		$counter = 0;
 		foreach ($this->context['template_layers'] as $layer) {

@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -64,6 +64,11 @@ final class CreditArea
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
 			'Greek'      => ['Panoulis64'],
+			'Czech'      => ['Crowdin Translate'],
+			'Danish'     => ['Crowdin Translate'],
+			'Dutch'      => ['Crowdin Translate'],
+			'Norwegian'  => ['Crowdin Translate'],
+			'Swedish'    => ['Crowdin Translate'],
 		];
 
 		$this->context['testers'] = [
@@ -79,12 +84,16 @@ final class CreditArea
 
 		$this->context['sponsors'] = [
 			[
-				'name' => 'vbgamer45',
+				'name' => 'vbgamer45 <span class="amt">$50</span>',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
 			],
 		];
 
-		$this->context['supporters'] = [
+		$this->context['tools'] = [
+			[
+				'name' => 'Visual Studio Code',
+				'link' => 'https://code.visualstudio.com/Download'
+			],
 			[
 				'name' => 'JetBrains',
 				'link' => 'https://www.jetbrains.com/?from=LightPortal'
@@ -93,6 +102,18 @@ final class CreditArea
 				'name' => 'Crowdin',
 				'link' => 'https://crowdin.com/project/light-portal'
 			],
+			[
+				'name' => 'Git Extensions',
+				'link' => 'https://github.com/gitextensions/gitextensions'
+			],
+			[
+				'name' => 'Firefox Developer Edition',
+				'link' => 'https://www.mozilla.org/firefox/developer/'
+			],
+			[
+				'name' => 'Docusaurus',
+				'link' => 'https://docusaurus.io'
+			]
 		];
 
 		$links = [
@@ -121,6 +142,24 @@ final class CreditArea
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
+				]
+			],
+			[
+				'title' => 'Latte',
+				'link' => 'https://latte.nette.org',
+				'author' => 'David Grudl',
+				'license' => [
+					'name' => 'the New BSD License',
+					'link' => 'https://github.com/nette/latte/blob/master/license.md'
+				]
+			],
+			[
+				'title' => 'Less.php',
+				'link' => 'https://github.com/wikimedia/less.php',
+				'author' => 'Wikimedia Foundation',
+				'license' => [
+					'name' => 'the Apache License 2.0',
+					'link' => 'https://github.com/wikimedia/less.php/blob/master/LICENSE'
 				]
 			],
 			[
@@ -191,5 +230,7 @@ final class CreditArea
 		$this->hook('credits', [&$links]);
 
 		$this->context['lp_components'] = $links;
+
+		shuffle($this->context['lp_components']);
 	}
 }

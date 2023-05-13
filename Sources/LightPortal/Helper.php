@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal;
@@ -135,7 +135,7 @@ trait Helper
 	{
 		$types = array_combine(['bbc', 'html', 'php'], $this->txt['lp_page_types']);
 
-		return $this->user_info['is_admin'] || empty($this->modSettings['lp_prohibit_php']) ? $types : array_slice($types, 0, 2);
+		return $this->user_info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
 
 	public function getForumThemes(bool $only_available = false): array

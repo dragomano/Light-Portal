@@ -1,0 +1,55 @@
+.addon_list {
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-column-gap: 10px;
+
+	@media screen and (max-width: 468px) {
+		grid-template-columns: auto;
+	}
+}
+
+.features {
+	.floatleft {
+		width: 80%;
+	}
+
+	.floatright {
+		.pointer;
+
+		.gear {
+			position: relative;
+			top: -5px;
+			right: 5px;
+		}
+
+		i {
+			&[data-toggle="on"] {
+				color: @color-checked;
+			}
+		}
+	}
+
+	form {
+		textarea {
+			width: 100%;
+		}
+	}
+}
+
+.form_settings {
+	> div {
+		margin: 1.2em;
+	}
+	label {
+		font-weight: bold;
+	}
+	input {
+		&[type="text"],
+		&[type="url"] {
+			width: 100%;
+		}
+		&[type="number"] {
+			width: auto;
+		}
+	}
+}

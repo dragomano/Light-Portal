@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\Partials\{
 	CategorySelect,
 	KeywordSelect,
 	PageAuthorSelect,
+	PageIconSelect,
 	PermissionSelect,
 	StatusSelect
 };
@@ -554,7 +555,7 @@ final class PageArea
 		}
 
 		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries'] += 6;
+		$this->context['lp_num_queries'] += 5;
 
 		if ($comments) {
 			$this->smcFunc['db_query']('', '
@@ -566,12 +567,11 @@ final class PageArea
 			);
 
 			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_ratings
-				WHERE content_type = {string:type}
-					AND content_id IN ({array_int:items})',
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id IN ({array_int:items})
+					AND type = {literal:comment}',
 				[
-					'type'  => 'comment',
-					'items' => $comments
+					'items' => $comments,
 				]
 			);
 
@@ -599,6 +599,8 @@ final class PageArea
 	{
 		$options = [
 			'show_title'           => true,
+			'show_in_menu'         => false,
+			'page_icon'            => '',
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
@@ -639,6 +641,8 @@ final class PageArea
 			$parameters = array_merge(
 				[
 					'show_title'           => FILTER_VALIDATE_BOOLEAN,
+					'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
+					'page_icon'            => FILTER_DEFAULT,
 					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
 					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
 					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
@@ -681,10 +685,6 @@ final class PageArea
 		}
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
-
-		if (! (empty($this->modSettings['lp_prohibit_php']) || $this->user_info['is_admin']) && $this->context['lp_page']['type'] === 'php') {
-			$this->context['lp_page']['type'] = 'bbc';
-		}
 
 		foreach ($this->context['lp_page']['options'] as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
@@ -782,13 +782,12 @@ final class PageArea
 			'type'       => 'text',
 			'after'      => $this->txt['lp_page_alias_subtext'],
 			'tab'        => 'seo',
-			'attributes' => [
+			'attributes' => array_merge([
 				'maxlength' => 255,
 				'value'     => $this->context['lp_page']['alias'],
 				'required'  => true,
 				'pattern'   => self::ALIAS_PATTERN,
-				'x-slug.replacement._' => 'title_' . $this->user_info['language'],
-			],
+			], empty($this->context['lp_page']['id']) ? ['x-slug.replacement._' => 'title_' . $this->user_info['language']] : []),
 		];
 
 		$this->context['posting_fields']['description']['label']['text'] = $this->txt['lp_page_description'];
@@ -801,15 +800,21 @@ final class PageArea
 			],
 		];
 
-		$this->context['posting_fields']['keywords']['label']['html'] = '<label for="keywords">' . $this->txt['lp_page_keywords'] . '</label>';
+		$this->context['posting_fields']['keywords']['label']['html'] = $this->txt['lp_page_keywords'];
 		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
 		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
 
-		$this->context['posting_fields']['permissions']['label']['html'] = '<label for="permissions">' . $this->txt['edit_permissions'] . '</label>';
+		if ($this->context['user']['is_admin']) {
+			$this->context['posting_fields']['show_in_menu']['label']['html'] = $this->txt['lp_page_show_in_menu'];
+			$this->context['posting_fields']['show_in_menu']['input']['html'] = (new PageIconSelect)();
+			$this->context['posting_fields']['show_in_menu']['input']['tab']  = 'access_placement';
+		}
+
+		$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
 		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
 		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
 
-		$this->context['posting_fields']['category']['label']['html'] = '<label for="category">' . $this->txt['lp_category'] . '</label>';
+		$this->context['posting_fields']['category']['label']['html'] = $this->txt['lp_category'];
 		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
 		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
 			'id'         => 'category',
@@ -820,24 +825,24 @@ final class PageArea
 		]);
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
-			$this->context['posting_fields']['datetime']['label']['html'] = '<label for="datetime">' . $this->txt['lp_page_publish_datetime'] . '</label>';
+			$this->context['posting_fields']['datetime']['label']['html'] = $this->txt['lp_page_publish_datetime'];
 			$this->context['posting_fields']['datetime']['input']['html'] = '
 			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_page']['date'] . '">
 			<input type="time" name="time" value="' . $this->context['lp_page']['time'] . '">';
 		}
 
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['status']['label']['html'] = '<label for="status">' . $this->txt['status'] . '</label>';
+			$this->context['posting_fields']['status']['label']['html'] = $this->txt['status'];
 			$this->context['posting_fields']['status']['input']['html'] = (new StatusSelect)();
 			$this->context['posting_fields']['status']['input']['tab']  = 'access_placement';
 
-			$this->context['posting_fields']['page_author']['label']['html']  = '<label for="page_author">' . $this->txt['lp_page_author'] . '</label>';
+			$this->context['posting_fields']['page_author']['label']['html']  = $this->txt['lp_page_author'];
 			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
 			$this->context['posting_fields']['page_author']['input']['tab']   = 'access_placement';
 			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
 		}
 
-		$this->context['posting_fields']['show_title']['label']['text'] = $this->context['lp_page_options']['show_title'];
+		$this->context['posting_fields']['show_title']['label']['text'] = $this->txt['lp_page_show_title'];
 		$this->context['posting_fields']['show_title']['input'] = [
 			'type'       => 'checkbox',
 			'attributes' => [
@@ -846,7 +851,7 @@ final class PageArea
 			],
 		];
 
-		$this->context['posting_fields']['show_author_and_date']['label']['text'] = $this->context['lp_page_options']['show_author_and_date'];
+		$this->context['posting_fields']['show_author_and_date']['label']['text'] = $this->txt['lp_page_show_author_and_date'];
 		$this->context['posting_fields']['show_author_and_date']['input'] = [
 			'type'       => 'checkbox',
 			'attributes' => [
@@ -856,7 +861,7 @@ final class PageArea
 		];
 
 		if (! empty($this->modSettings['lp_show_related_pages'])) {
-			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->context['lp_page_options']['show_related_pages'];
+			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->txt['lp_page_show_related_pages'];
 			$this->context['posting_fields']['show_related_pages']['input'] = [
 				'type'       => 'checkbox',
 				'attributes' => [
@@ -866,7 +871,7 @@ final class PageArea
 		}
 
 		if (! (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] === 'none')) {
-			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->context['lp_page_options']['allow_comments'];
+			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->txt['lp_page_allow_comments'];
 			$this->context['posting_fields']['allow_comments']['input'] = [
 				'type'       => 'checkbox',
 				'attributes' => [

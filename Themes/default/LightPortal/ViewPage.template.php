@@ -23,15 +23,19 @@ function template_show_page()
 	if ($context['lp_page']['can_edit']) {
 		echo '
 	<aside class="infobox">
-		<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
-		<a class="button floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '">', $context['lp_icon_set']['edit'], '<span class="hidden-xs">', $txt['edit'], '</span></a>';
+		<div>
+			<strong>', $txt['edit_permissions'], '</strong>: ', $txt['lp_permissions'][$context['lp_page']['permissions']], '
+		</div>
+		<div>
+			<a class="button floatright" href="', $scripturl, '?action=admin;area=lp_pages;sa=edit;id=', $context['lp_page']['id'], '">', $context['lp_icon_set']['edit'], '<span class="hidden-xs">', $txt['edit'], '</span></a>';
 
 		if (! (empty($context['user']['is_admin']) || empty($modSettings['lp_frontpage_mode']) || $modSettings['lp_frontpage_mode'] !== 'chosen_pages')) {
 			echo '
-		<a class="button floatright" href="', $context['canonical_url'], ';promote">', $context['lp_icon_set']['home'], '<span class="hidden-xs hidden-sm">', $txt['lp_' . (in_array($context['lp_page']['id'], $context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
+			<a class="button floatright" href="', $context['canonical_url'], ';promote">', $context['lp_icon_set']['home'], '<span class="hidden-xs hidden-sm">', $txt['lp_' . (in_array($context['lp_page']['id'], $context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
 		}
 
 		echo '
+		</div>
 	</aside>';
 	}
 
@@ -86,6 +90,8 @@ function template_show_page()
 			<hr>';
 	}
 
+	call_integration_hook('integrate_lp_page_content');
+
 	if (! empty($settings['og_image'])) {
 		echo '
 			<meta itemprop="image" content="', $settings['og_image'], '">';
@@ -94,8 +100,7 @@ function template_show_page()
 	echo '
 			<div class="page_', $context['lp_page']['type'], '">', $context['lp_page']['content'], '</div>';
 
-	// Extend with addons
-	echo $context['lp_page']['post_content'] ?? '';
+	call_integration_hook('integrate_lp_page_content_end');
 
 	echo '
 		</article>';
@@ -278,7 +283,7 @@ function show_comment_block()
 
 function show_single_comment(array $comment, int $i = 0, int $level = 1)
 {
-	global $context, $txt, $modSettings;
+	global $context, $txt;
 
 	if (empty($comment['poster']['id']))
 		return;
@@ -308,7 +313,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 		<div class="comment_wrapper"', $context['right_to_left'] ? ' style="padding: 0 55px 0 0"' : '', '>
-			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', ' ', $comment['rating_class'] ?? '', '">
+			<div class="entry bg ', $i % 2 == 0 ? 'odd' : 'even', ' ', $comment['class'] ?? '', '">
 				<div class="title">
 					<span
 						class="bg ', $i % 2 == 0 ? 'even' : 'odd', '"
@@ -318,43 +323,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 						@click="comment.pasteNick($event.target, $refs)"' : '', '
 					>
 						', $comment['poster']['name'], '
-					</span>';
-
-	// Authors cannot vote their own comments
-	if (! empty($modSettings['lp_allow_comment_ratings'])) {
-		echo '
-					<div class="rating_area bg ', $i % 2 == 0 ? 'even' : 'odd', '"', $comment['can_rate'] ? ' @click="comment.like($event.target)"' : '', ' x-show="', $comment['poster']['id'] === $context['user']['id'] ? 'false' : 'true', '">';
-
-		if (empty($comment['is_rated'])) {
-			if ($comment['can_rate'])
-				echo '
-						<span class="like_button floatright" @mouseover="$event.target.classList.toggle(\'error\')" @mouseout="$event.target.classList.toggle(\'error\')">
-							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="dislike" title="' . $txt['lp_dislike_button'] . '" class="', $context['lp_icon_set']['dislike']), '
-						</span>';
-
-			if ($comment['poster']['id'] !== $context['user']['id'])
-				show_rating($comment);
-
-			if ($comment['can_rate'])
-				echo '
-						<span class="like_button floatright" @mouseover="$event.target.classList.toggle(\'success\')" @mouseout="$event.target.classList.toggle(\'success\')">
-							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="like" title="' . $txt['lp_like_button'] . '" class="', $context['lp_icon_set']['like']), '
-						</span>';
-		} else {
-			show_rating($comment);
-
-			if ($comment['can_rate'])
-				echo '
-						<span class="like_button floatright">
-							', str_replace(' class="', ' data-id="' . $comment['id'] . '" data-action="unlike" title="' . $txt['poll_change_vote'] . '" class="', $context['lp_icon_set']['unlike']), '
-						</span>';
-		}
-
-		echo '
-					</div>';
-	}
-
-	echo '
+					</span>
 					<div class="comment_date bg ', $i % 2 == 0 ? 'even' : 'odd', '">
 						<span itemprop="datePublished" content="' , $comment['created_at'], '">
 							', $comment['created'], ' <a class="bbc_link" href="#comment', $comment['id'], '">#' , $comment['id'], '</a>
@@ -381,6 +350,8 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 					<span class="update_button" data-id="', $comment['id'], '" @click.self="comment.update($event.target)">', $context['lp_icon_set']['save'], $txt['save'], '</span>
 					<span class="cancel_button" data-id="', $comment['id'], '" @click.self="comment.cancel($event.target)">', $context['lp_icon_set']['undo'], $txt['modify_cancel'], '</span>';
 		}
+
+		call_integration_hook('integrate_lp_comment_buttons', [$comment]);
 
 		// Only comment author or admin can remove comments
 		if ($comment['poster']['id'] === $context['user']['id'] || $context['user']['is_admin']) {
@@ -439,12 +410,6 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 	</li>';
-}
-
-function show_rating(array $comment)
-{
-	echo '
-	<span class="rating_span', $comment['rating'] < 0 ? ' error' : ($comment['rating'] > 0 ? ' success' : ''), '">', $comment['rating'], '</span>';
 }
 
 function show_toolbar()

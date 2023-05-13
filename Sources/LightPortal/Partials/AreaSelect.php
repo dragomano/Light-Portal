@@ -9,14 +9,14 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Partials;
 
 final class AreaSelect extends AbstractPartial
 {
-	public function __invoke(): string
+	public function __invoke(array $params = []): string
 	{
 		$params['data'] = [
 			'all'    => 'all',
@@ -29,9 +29,16 @@ final class AreaSelect extends AbstractPartial
 		];
 
 		$this->txt['lp_block_areas_set']['pm'] = $this->txt['personal_messages'];
+		$this->txt['lp_block_areas_set']['mlist'] = $this->txt['members_title'];
+		$this->txt['lp_block_areas_set']['recent'] = $this->txt['recent_posts'];
+		$this->txt['lp_block_areas_set']['unread'] = $this->txt['view_unread_category'];
+		$this->txt['lp_block_areas_set']['unreadreplies'] = $this->txt['unread_replies'];
+		$this->txt['lp_block_areas_set']['stats'] = $this->txt['forum_stats'];
+		$this->txt['lp_block_areas_set']['who'] = $this->txt['who_title'];
 		$this->txt['lp_block_areas_set']['agreement'] = $this->txt['terms_and_rules'];
-		$this->txt['lp_block_areas_set']['search'] = $this->txt['search'];
-		$this->txt['lp_block_areas_set']['help'] = $this->txt['help'];
+		$this->txt['lp_block_areas_set']['warehouse'] = $this->txt['warehouse_title'] ?? 'warehouse';
+		$this->txt['lp_block_areas_set']['media'] = $this->txt['levgal'] ?? $this->txt['mgallery_title'] ?? 'media';
+		$this->txt['lp_block_areas_set']['gallery'] = $this->txt['smfgallery_menu'] ?? 'gallery';
 
 		$params['value'] = explode(',', $this->context['lp_block']['areas']);
 		$params['data'] = array_merge($params['data'], array_combine($params['value'], $params['value']));
@@ -43,8 +50,17 @@ final class AreaSelect extends AbstractPartial
 
 			$text = str_replace('!', '', $text);
 
+			if (str_starts_with($value, 'board='))
+				$text = $this->txt['board'] . str_replace('board=', ' ', $text);
+
+			if (str_starts_with($value, 'topic='))
+				$text = $this->txt['topic'] . str_replace('topic=', ' ', $text);
+
+			if (str_starts_with($value, 'page='))
+				$text = $this->txt['page'] . str_replace('page=', ' ', $text);
+
 			$data[] = [
-				'label' => $this->txt['lp_block_areas_set'][$text] ?? $text,
+				'label' => $this->txt['lp_block_areas_set'][$text] ?? $this->txt[$text] ?? $text,
 				'value' => $value
 			];
 		}

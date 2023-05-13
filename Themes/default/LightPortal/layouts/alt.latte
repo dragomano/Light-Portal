@@ -1,0 +1,59 @@
+{varType array $txt}
+{varType array $context}
+{varType array $modSettings}
+{var $teaser_length = 100}
+
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
+
+    <div class="lp_frontpage_articles article_alt_view">
+        {do show_pagination()}
+
+        <div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-{$context[lp_frontpage_num_columns]}">
+            <article class="roundframe">
+                <header>
+                    <div class="title_bar">
+                        <h3>
+                            <a href="{$article[msg_link]}">{$article[title]}</a>
+                            <span n:if="$article[is_new]" class="new_posts">{$txt['new']}</span>
+                        </h3>
+                    </div>
+                    <div>
+                        <span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatleft">
+                            {if !empty($article[views][num])}{icon('views', $article['views']['title'])|noescape}{$article[views][num]}{/if}
+                            {if !empty($article[views][after])}{$article[views][after]}{/if}
+                            {if !empty($article[replies][num])} {icon('replies', $article['replies']['title'])|noescape}{$article[replies][num]}{/if}
+                            {if !empty($article[replies][after])}{$article[replies][after]}{/if}
+                        </span>
+                        <a n:if="!empty($article[section][name])" class="floatright" href="{$article[section][link]}">{icon('category')|noescape}{$article[section][name]}</a>
+                    </div>
+                    <img n:if="!empty($article[image])" class="lazy" data-src="{$article[image]}" width="443" height="221" alt="{$article[title]}">
+                </header>
+                <div n:if="!empty($article[teaser])" class="article_body">
+                    <p>{$article[teaser]|truncate:$teaser_length}</p>
+                </div>
+                <div class="article_footer">
+                    <div class="centertext">
+                        <a class="bbc_link" href="{$article[link]}">{$txt[lp_read_more]}</a>
+                    </div>
+                    <div class="centertext">
+                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]}</time>
+                        {if !empty($modSettings[lp_show_author]) && !empty($article[author])}
+                            {if !empty($article[author][id]) && !empty($article[author][name])}
+                                | {icon('user')|noescape}<a href="{$article[author][link]}" class="card_author">{$article[author][name]}</a>
+                            {else}
+                                | <span class="card_author">{$txt[guest_title]}</span>
+                            {/if}
+                        {/if}
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        {do show_pagination(bottom)}
+    </div>
+
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}

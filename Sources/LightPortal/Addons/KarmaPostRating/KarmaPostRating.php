@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.12.21
+ * @version 09.05.23
  */
 
 namespace Bugo\LightPortal\Addons\KarmaPostRating;
@@ -43,9 +43,6 @@ class KarmaPostRating extends Plugin
 
 	public function frontAssets()
 	{
-		if (empty($this->context['lp_frontpage_articles']))
-			return;
-
 		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['kpr_rating'])) {
 				$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];

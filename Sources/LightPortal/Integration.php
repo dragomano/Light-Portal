@@ -9,12 +9,12 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{FrontPage, Block, Page, Category, Tag};
+use Bugo\LightPortal\Entities\{Block, Category, FrontPage, Page, Tag};
 use IntlException;
 
 if (! defined('SMF'))
@@ -34,6 +34,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('actions');
 		$this->applyHook('default_action');
 		$this->applyHook('current_action');
+		$this->applyHook('current_action', 'currentPage');
 		$this->applyHook('menu_buttons');
 		$this->applyHook('display_buttons');
 		$this->applyHook('delete_members');
@@ -44,11 +45,10 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_areas');
 		$this->applyHook('profile_popup');
 		$this->applyHook('whos_online', 'whoisOnline');
-		$this->applyHook('modification_types');
-		$this->applyHook('packages_sort_id');
 		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
 		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
+		$this->applyHook('clean_cache');
 	}
 
 	public function userInfo()
@@ -57,7 +57,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.1.4');
+		defined('LP_VERSION') || define('LP_VERSION', '2.2.0 Mandalorian Edition');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
@@ -89,7 +89,9 @@ final class Integration extends AbstractMain
 			return;
 
 		$this->loadLanguage('LightPortal/LightPortal');
+
 		$this->defineVars();
+
 		$this->loadAssets();
 
 		AddonHandler::getInstance()->run();
@@ -177,6 +179,16 @@ final class Integration extends AbstractMain
 			$current_action = empty($this->modSettings['lp_standalone_mode']) ? 'home' : (! in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION);
 	}
 
+	public function currentPage(string &$current_action)
+	{
+		if (empty($this->context['lp_page']) || empty($this->context['lp_menu_pages']) || empty($this->context['lp_menu_pages'][$this->context['lp_page']['id']]))
+			return;
+
+		if ($this->request()->url() === LP_PAGE_URL . $this->context['lp_page']['alias']) {
+			$current_action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
+		}
+	}
+
 	public function menuButtons(array &$buttons)
 	{
 		if ($this->isPortalCanBeLoaded() === false)
@@ -184,112 +196,24 @@ final class Integration extends AbstractMain
 
 		(new Block)->show();
 
-		// Display "Portal settings" in Main Menu => Admin
-		if ($this->context['user']['is_admin']) {
-			$counter = 0;
-			foreach (array_keys($buttons['admin']['sub_buttons']) as $area) {
-				$counter++;
+		$this->prepareAdminButtons($buttons);
 
-				if ($area === 'featuresettings')
-					break;
-			}
+		$this->prepareModerationButtons($buttons);
 
-			$buttons['admin']['sub_buttons'] = array_merge(
-				array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
-				[
-					'portal_settings' => [
-						'title'       => $this->txt['lp_settings'],
-						'href'        => $this->scripturl . '?action=admin;area=lp_settings',
-						'show'        => true,
-						'sub_buttons' => [
-							'blocks'  => [
-								'title' => $this->txt['lp_blocks'],
-								'href'  => $this->scripturl . '?action=admin;area=lp_blocks',
-								'amt'   => $this->context['lp_quantities']['active_blocks'],
-								'show'  => true,
-							],
-							'pages'   => [
-								'title' => $this->txt['lp_pages'],
-								'href'  => $this->scripturl . '?action=admin;area=lp_pages',
-								'amt'   => $this->context['lp_quantities']['active_pages'],
-								'show'  => true,
-							],
-							'plugins' => [
-								'title'   => $this->txt['lp_plugins'],
-								'href'    => $this->scripturl . '?action=admin;area=lp_plugins',
-								'amt'     => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
-								'show'    => true,
-								'is_last' => true,
-							],
-						],
-					],
-				],
-				array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
-			);
-		}
-
-		if ($this->context['allow_light_portal_manage_pages_any']) {
-			$buttons['moderate']['show'] = true;
-
-			$buttons['moderate']['sub_buttons'] = [
-				'lp_pages' => [
-					'title' => $this->txt['lp_pages_unapproved'],
-					'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
-					'amt'   => $this->context['lp_quantities']['unapproved_pages'],
-					'show'  => true,
-				],
-			] + $buttons['moderate']['sub_buttons'];
-		}
+		$this->preparePageButtons($buttons);
 
 		$this->showDebugInfo();
 
 		if (empty($this->modSettings['lp_frontpage_mode']))
 			return;
 
-		// Display "Portal" item in Main Menu
-		$buttons = array_merge([
-			LP_ACTION => [
-				'title'       => $this->txt['lp_portal'],
-				'href'        => $this->scripturl,
-				'icon'        => 'home',
-				'show'        => true,
-				'action_hook' => true,
-				'is_last'     => $this->context['right_to_left']
-			],
-		], $buttons);
-
-		// "Forum"
-		$buttons['home']['title'] = $this->txt['lp_forum'];
-		$buttons['home']['href']  = $this->scripturl . '?action=forum';
-		$buttons['home']['icon']  = 'im_on';
-
-		// Standalone mode
-		if (! empty($this->modSettings['lp_standalone_mode'])) {
-			$buttons[LP_ACTION]['title']   = $this->txt['lp_portal'];
-			$buttons[LP_ACTION]['href']    = $this->modSettings['lp_standalone_url'] ?: $this->scripturl;
-			$buttons[LP_ACTION]['icon']    = 'home';
-			$buttons[LP_ACTION]['is_last'] = $this->context['right_to_left'];
-
-			$buttons = array_merge(
-				array_slice($buttons, 0, 2, true),
-				[
-					'forum' => [
-						'title'       => $this->txt['lp_forum'],
-						'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
-						'icon'        => 'im_on',
-						'show'        => true,
-						'action_hook' => true
-					],
-				],
-				array_slice($buttons, 2, null, true)
-			);
-
-			$this->unsetDisabledActions($buttons);
-		}
+		$this->preparePortalButtons($buttons);
 
 		// Other fixes
 		$this->fixCanonicalUrl();
+
 		$this->fixLinktree();
+
 		$this->fixForumIndexing();
 	}
 
@@ -312,9 +236,9 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * Remove comments, ratings, and alerts on deleting members
-	 *
-	 * Удаляем комментарии, оценки и оповещения при удалении пользователей
+	 * Remove comments, and alerts on deleting members
+	 * @TODO Remove all portal content from these users?
+	 * Удаляем комментарии и оповещения при удалении пользователей
 	 */
 	public function deleteMembers(array $users)
 	{
@@ -324,14 +248,6 @@ final class Integration extends AbstractMain
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
-			[
-				'users' => $users,
-			]
-		);
-
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_ratings
-			WHERE user_id IN ({array_int:users})',
 			[
 				'users' => $users,
 			]
@@ -357,7 +273,6 @@ final class Integration extends AbstractMain
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
 			[
-				'light_portal_manage_blocks',
 				'light_portal_manage_pages',
 				'light_portal_approve_pages',
 			]
@@ -371,12 +286,10 @@ final class Integration extends AbstractMain
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
-		//$this->context['permissions_excluded']['light_portal_manage_blocks'][] = 0;
 		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
 		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
-		//$permissionList['membergroup']['light_portal_manage_blocks'] = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
 		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
 
@@ -426,9 +339,6 @@ final class Integration extends AbstractMain
 	 */
 	public function fetchAlerts(array &$alerts)
 	{
-		if (empty($alerts))
-			return;
-
 		foreach ($alerts as $id => $alert) {
 			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
 				if ($alert['sender_id'] !== $this->user_info['id']) {
@@ -457,14 +367,6 @@ final class Integration extends AbstractMain
 		if ($this->context['user']['is_admin'])
 			return;
 
-		$profile_areas['info']['areas']['lp_my_blocks'] = [
-			'label'      => $this->txt['lp_my_blocks'],
-			'custom_url' => $this->scripturl . '?action=admin;area=lp_blocks',
-			'icon'       => 'modifications',
-			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_blocks',
-		];
-
 		$profile_areas['info']['areas']['lp_my_pages'] = [
 			'label'      => $this->txt['lp_my_pages'],
 			'custom_url' => $this->scripturl . '?action=admin;area=lp_pages',
@@ -479,10 +381,7 @@ final class Integration extends AbstractMain
 	 */
 	public function profilePopup(array &$profile_items)
 	{
-		if ($this->context['user']['is_admin'])
-			return;
-
-		if (! ($this->context['allow_light_portal_manage_blocks'] || $this->context['allow_light_portal_manage_pages_own']))
+		if ($this->context['user']['is_admin'] || empty($this->context['allow_light_portal_manage_pages_own']))
 			return;
 
 		$counter = 0;
@@ -493,26 +392,14 @@ final class Integration extends AbstractMain
 				break;
 		}
 
-		$portal_items = [];
-
-		if ($this->context['allow_light_portal_manage_blocks'])
-			$portal_items[] = [
-				'menu' => 'info',
-				'area' => 'lp_my_blocks'
-			];
-
-		if ($this->context['allow_light_portal_manage_pages_own'])
-			$portal_items[] = [
-				'menu' => 'info',
-				'area' => 'lp_my_pages'
-			];
-
-		if (empty($portal_items))
-			return;
-
 		$profile_items = array_merge(
 			array_slice($profile_items, 0, $counter, true),
-			$portal_items,
+			[
+				[
+					'menu' => 'info',
+					'area' => 'lp_my_pages'
+				]
+			],
 			array_slice($profile_items, $counter, null, true)
 		);
 	}
@@ -581,19 +468,12 @@ final class Integration extends AbstractMain
 		return $result;
 	}
 
-	/**
-	 * @hook integrate_modification_types
-	 */
-	public function modificationTypes()
+	public function cleanCache()
 	{
-		$this->context['modification_types'][] = 'lp_addon';
-	}
+		$file = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
 
-	/**
-	 * @hook integrate_packages_sort_id
-	 */
-	public function packagesSortId(array &$sort_id)
-	{
-		$sort_id['lp_addon'] = 1;
+		if (is_file($file)) {
+			touch($file);
+		}
 	}
 }

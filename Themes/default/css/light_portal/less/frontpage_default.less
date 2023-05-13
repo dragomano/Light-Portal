@@ -1,0 +1,148 @@
+.lp_frontpage_articles {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.article_view {
+	> div {
+		margin-bottom: 10px;
+	}
+
+	article {
+		.bradius(12px);
+		transition: all .4s cubic-bezier(.175, .885, 0, 1);
+		position: relative;
+		overflow: hidden;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		height: 95%;
+		min-height: 100%;
+
+		a:hover {
+			text-decoration: none;
+			opacity: .7;
+		}
+
+		&:hover {
+			box-shadow: 0 0 10px 5px rgba(221, 221, 221, 1);
+
+			.new_posts {
+				display: none;
+			}
+
+			.new_hover,
+			.info_hover {
+				opacity: 1;
+				z-index: 1;
+			}
+
+			.card_img_hover {
+				opacity: .5;
+			}
+
+			.card_info {
+				background-color: transparent;
+				position: relative;
+			}
+		}
+
+		.new_hover {
+			position: absolute;
+			padding: 16px;
+			top: 0;
+			left: 0;
+
+			.new_icon {
+				position: relative;
+				z-index: 2;
+			}
+		}
+
+		.info_hover {
+			position: absolute;
+			padding: 16px;
+			opacity: 0;
+			top: 0;
+			right: 0;
+
+			.edit_icon {
+				position: relative;
+				z-index: 2;
+			}
+		}
+
+		.card_img {
+			visibility: hidden;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			width: 100%;
+			height: 235px;
+		}
+
+		.card_img_hover {
+			transition: .2s all ease-out;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			width: 100%;
+			position: absolute;
+			height: 235px;
+			top: 0;
+		}
+
+		.card_info {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: column;
+			justify-content: space-between;
+			padding: 1.2em;
+
+			div {
+				margin-top: 1em;
+			}
+
+			.card_date {
+				font-weight: 500;
+				color: @article-category-color;
+			}
+
+			h3 {
+				font-size: 1.25rem;
+				font-weight: 700;
+				margin: 10px 0 10px 0;
+				overflow: hidden;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				line-height: 1.3em;
+
+				+ div {
+					display: flex;
+					flex-wrap: wrap;
+					flex-direction: row;
+					justify-content: space-between;
+				}
+			}
+
+			p {
+				margin-bottom: 5px;
+				overflow: hidden;
+				//text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				line-height: 1.4em;
+			}
+
+			.card_author {
+				font-weight: 600;
+				text-decoration: none;
+				color: @article-author-color;
+			}
+		}
+	}
+}

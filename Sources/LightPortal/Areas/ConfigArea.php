@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -20,6 +20,8 @@ use Bugo\LightPortal\{
 	Impex\BlockImport,
 	Impex\PageExport,
 	Impex\PageImport,
+	Impex\PluginExport,
+	Impex\PluginImport,
 	Areas\Config\BasicConfig,
 	Areas\Config\ExtraConfig,
 	Areas\Config\CategoryConfig,
@@ -56,7 +58,7 @@ final class ConfigArea
 			[
 				'lp_portal' => [
 					'title' => $this->txt['lp_portal'],
-					'permission' => ['admin_forum', 'light_portal_manage_blocks', 'light_portal_manage_pages_own'],
+					'permission' => ['admin_forum', 'light_portal_manage_pages_any', 'light_portal_manage_pages_own'],
 					'areas' => [
 						'lp_settings' => [
 							'label' => $this->txt['settings'],
@@ -77,7 +79,7 @@ final class ConfigArea
 							'function' => [$this, 'blockAreas'],
 							'icon' => 'modifications',
 							'amt' => $this->context['lp_quantities']['active_blocks'],
-							'permission' => ['admin_forum', 'light_portal_manage_blocks'],
+							'permission' => ['admin_forum'],
 							'subsections' => [
 								'main' => [$this->context['lp_icon_set']['main'] . $this->txt['lp_blocks_manage']],
 								'add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_blocks_add']]
@@ -120,6 +122,12 @@ final class ConfigArea
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_pages_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
 			];
+
+			if (extension_loaded('zip'))
+				$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
+					'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
+					'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
+				];
 		}
 
 		$this->hook('addAdminAreas', [&$admin_areas]);
@@ -183,7 +191,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		$this->middleware('light_portal_manage_blocks');
+		$this->middleware('admin_forum');
 
 		$subActions = [
 			'main' => [new BlockArea, 'main'],
@@ -228,6 +236,11 @@ final class ConfigArea
 		$subActions = [
 			'main' => [new PluginArea, 'main']
 		];
+
+		if ($this->user_info['is_admin'] && extension_loaded('zip')) {
+			$subActions['export'] = [new PluginExport, 'main'];
+			$subActions['import'] = [new PluginImport, 'main'];
+		}
 
 		$this->hook('addPluginAreas', [&$subActions]);
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -51,7 +51,7 @@ class PageList extends Block
 		if ($this->context['lp_block']['type'] !== 'page_list')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['html'] = '<label for="categories">' . $this->txt['lp_categories'] . '</label>';
+		$this->context['posting_fields']['categories']['label']['html'] = $this->txt['lp_categories'];
 		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
 		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)([
 			'id'    => 'categories',

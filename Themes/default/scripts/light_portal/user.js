@@ -164,44 +164,6 @@ class Comment {
 		this.selectContent(commentContent)
 	}
 
-	async like(target) {
-		if (target.tagName !== 'I') return;
-
-		const item = target.dataset.id;
-		const action = target.dataset.action;
-		let operand;
-
-		switch (action) {
-			case 'like':
-				operand = '+';
-				break;
-			case 'dislike':
-				operand = '-';
-				break;
-			default:
-				operand = '!';
-		}
-
-		let response = await fetch(this.pageUrl + 'sa=like_comment', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				comment_id: item,
-				operand: operand
-			})
-		})
-
-		if (! response.ok) return console.error(response);
-
-		const likeButtons = target.parentNode.parentNode.querySelectorAll('.like_button');
-
-		likeButtons.forEach(function (el) {
-			el.style.display = 'none'
-		})
-	}
-
 	focusEditor(item, comment, rawContent) {
 		comment.innerText = this.currentCommentText[item] ?? rawContent.innerText;
 		comment.setAttribute('contenteditable', true);

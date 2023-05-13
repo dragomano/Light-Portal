@@ -9,29 +9,32 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Partials;
 
 final class ContentClassSelect extends AbstractPartial
 {
-	public function __invoke(): string
+	public function __invoke(array $params = []): string
 	{
-		if (empty($this->context['lp_block']['options']['no_content_class'])) {
-			$data = [];
-			foreach ($this->context['lp_all_content_classes'] as $key => $template) {
-				$data[] = [
-					'label' => sprintf($template, empty($key) ? $this->txt['no'] : $key, ''),
-					'value' => $key,
-				];
-			}
+		$params['id'] ??= 'content_class';
+		$params['data'] ??= $this->context['lp_all_content_classes']?? [];
+		$params['value'] ??= $this->context['lp_block']['content_class'] ?? '';
 
-			return /** @lang text */ '
-		<div id="content_class" name="content_class"></div>
+		$data = [];
+		foreach ($params['data'] as $key => $template) {
+			$data[] = [
+				'label' => sprintf($template, empty($key) ? $this->txt['no'] : $key, ''),
+				'value' => $key,
+			];
+		}
+
+		return /** @lang text */ '
+		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#content_class",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				showSelectedOptionsFirst: true,
@@ -39,14 +42,11 @@ final class ContentClassSelect extends AbstractPartial
 				placeholder: "' . $this->txt['no'] . '",
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
-				selectedValue: "' . ($this->context['lp_block']['content_class'] ?? '') . '",
+				selectedValue: "' . $params['value'] . '",
 				labelRenderer: function (data) {
 					return `<div>${data.label}</div>`;
 				}
 			});
 		</script>';
-		}
-
-		return '';
 	}
 }

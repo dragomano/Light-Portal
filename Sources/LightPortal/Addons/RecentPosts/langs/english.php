@@ -18,5 +18,6 @@ return [
 	'type' => 'What to display as a link to a post',
 	'type_set' => ['Message subject', 'Message preview'],
 	'show_body' => 'Show message text',
+	'limit_body' => 'Show only the first 384 characters of the post',
 	'update_interval' => 'List refresh interval, in seconds',
 ];

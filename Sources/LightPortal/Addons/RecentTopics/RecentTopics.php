@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -122,7 +122,7 @@ class RecentTopics extends Block
 			];
 		}
 
-		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_recent_topics']['exclude_boards'] . '</label>';
+		$this->context['posting_fields']['exclude_boards']['label']['html'] = $this->txt['lp_recent_topics']['exclude_boards'];
 		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
 		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
 			'id'    => 'exclude_boards',
@@ -130,7 +130,7 @@ class RecentTopics extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
 		]);
 
-		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_recent_topics']['include_boards'] . '</label>';
+		$this->context['posting_fields']['include_boards']['label']['html'] = $this->txt['lp_recent_topics']['include_boards'];
 		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
 		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
 			'id'    => 'include_boards',

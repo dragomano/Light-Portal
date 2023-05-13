@@ -8,7 +8,7 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Impex;
@@ -26,7 +26,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 
 	abstract protected function getItems(array $pages): array;
 
-	protected function run()
+	protected function run(): void
 	{
 		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('import_all'))
 			return;

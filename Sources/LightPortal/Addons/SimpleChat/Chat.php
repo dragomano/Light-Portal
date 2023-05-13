@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 13.04.23
+ * @version 12.05.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -55,7 +55,7 @@ class Chat
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		return $block_id ? $messages[$block_id] : $messages;
+		return $messages[$block_id] ?? [];
 	}
 
 	public function addMessage(): void

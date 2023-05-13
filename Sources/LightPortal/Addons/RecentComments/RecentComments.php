@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 27.04.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -34,7 +34,6 @@ class RecentComments extends Block
 		$options['recent_comments']['parameters'] = [
 			'num_comments' => 10,
 			'length'       => 80,
-			'show_rating'  => false,
 		];
 	}
 
@@ -46,7 +45,6 @@ class RecentComments extends Block
 		$parameters = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
-			'show_rating'  => FILTER_VALIDATE_BOOLEAN,
 		];
 	}
 
@@ -74,15 +72,6 @@ class RecentComments extends Block
 				'value' => $this->context['lp_block']['options']['parameters']['length']
 			]
 		];
-
-		$this->context['posting_fields']['show_rating']['label']['text'] = $this->txt['lp_recent_comments']['show_rating'];
-		$this->context['posting_fields']['show_rating']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_rating',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_rating']
-			]
-		];
 	}
 
 	public function getData(int $num_comments, int $length = 80): array
@@ -92,7 +81,6 @@ class RecentComments extends Block
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
-			(SELECT SUM(r.value) FROM {db_prefix}lp_ratings AS r WHERE com.id = r.content_id) AS rating,
 			(SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2 WHERE com2.parent_id = 0 AND com2.page_id = com.page_id) AS num_comments
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN (
@@ -131,7 +119,6 @@ class RecentComments extends Block
 				'message'     => $this->getTeaser($this->parseBbc($row['message']), $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
-				'rating'      => (int) $row['rating'],
 			];
 		}
 
@@ -159,7 +146,7 @@ class RecentComments extends Block
 		foreach ($comments as $comment) {
 			echo '
 			<li class="windowbg">
-				<a href="', $comment['link'], '">', $comment['message'], '</a>', empty($parameters['show_rating']) ? '' : (empty($comment['rating']) ? '' : ' <span class="amt floatright">' . $comment['rating'] . '</span>'), '
+				<a href="', $comment['link'], '">', $comment['message'], '</a>
 				<br><span class="smalltext">', $this->txt['by'], ' ', $comment['author_name'], '</span>
 				<br><span class="smalltext">', $this->getFriendlyTime($comment['created_at']), '</span>
 			</li>';

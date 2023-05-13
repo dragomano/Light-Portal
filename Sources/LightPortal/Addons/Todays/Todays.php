@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 06.05.23
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -143,13 +143,13 @@ class Todays extends Block
 
 				$hiddenContent = '';
 				foreach ($hiddenItems as $member) {
-					$hiddenContent .= '
+					if ($member['is_today'])
+						$hiddenContent .= '
 		<a href="' . $this->scripturl . '?action=profile;u=' . $member['id'] . '">
 			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
 		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
-				// HTML5 spoiler
 				if ($hiddenContent)
 					echo $this->txt['lp_todays']['and_more'], '
 		<details>

@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.04.23
+ * @version 30.04.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Partials\{PageSelect, TopicSelect};
+use Bugo\LightPortal\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,9 +55,12 @@ class ArticleList extends Block
 		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
 
-		$this->context['posting_fields']['body_class']['label']['html'] = '<label for="body_class">' . $this->txt['lp_article_list']['body_class'] . '</label>';
-		$this->context['posting_fields']['body_class']['input']['html'] = '<div id="body_class" name="body_class"></div>';
+		$this->context['posting_fields']['body_class']['label']['html'] = $this->txt['lp_article_list']['body_class'];
 		$this->context['posting_fields']['body_class']['input']['tab']  = 'appearance';
+		$this->context['posting_fields']['body_class']['input']['html'] = (new ContentClassSelect)([
+			'id'    => 'body_class',
+			'value' => $this->context['lp_block']['options']['parameters']['body_class'],
+		]);
 
 		$this->context['posting_fields']['display_type']['label']['text'] = $this->txt['lp_article_list']['display_type'];
 		$this->context['posting_fields']['display_type']['input'] = [
@@ -76,7 +79,7 @@ class ArticleList extends Block
 			];
 		}
 
-		$this->context['posting_fields']['include_topics']['label']['html'] = '<label for="include_topics">' . $this->txt['lp_article_list']['include_topics'] . '</label>';
+		$this->context['posting_fields']['include_topics']['label']['html'] = $this->txt['lp_article_list']['include_topics'];
 		$this->context['posting_fields']['include_topics']['input']['tab'] = 'content';
 		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
 			'id'    => 'include_topics',
@@ -84,7 +87,7 @@ class ArticleList extends Block
 			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
 		]);
 
-		$this->context['posting_fields']['include_pages']['label']['html'] = '<label for="include_pages">' . $this->txt['lp_article_list']['include_pages'] . '</label>';
+		$this->context['posting_fields']['include_pages']['label']['html'] = $this->txt['lp_article_list']['include_pages'];
 		$this->context['posting_fields']['include_pages']['input']['tab'] = 'content';
 		$this->context['posting_fields']['include_pages']['input']['html'] = (new PageSelect)([
 			'id'    => 'include_pages',
@@ -100,8 +103,6 @@ class ArticleList extends Block
 				'checked' => (bool) $this->context['lp_block']['options']['parameters']['seek_images']
 			]
 		];
-
-		$this->setTemplate()->withLayer('article_list');
 	}
 
 	public function getTopics(array $parameters): array

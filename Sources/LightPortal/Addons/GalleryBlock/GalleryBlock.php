@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.04.23
+ * @version 01.05.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -46,9 +46,9 @@ class GalleryBlock extends Block
 		if ($this->context['lp_block']['type'] !== 'gallery_block')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['html'] = '<label for="categories">' . $this->txt['lp_gallery_block']['categories'] . '</label>';
-		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
+		$this->context['posting_fields']['categories']['label']['html'] = $this->txt['lp_gallery_block']['categories'];
 		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)();
+		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
 
 		$this->context['posting_fields']['num_images']['label']['text'] = $this->txt['lp_gallery_block']['num_images'];
 		$this->context['posting_fields']['num_images']['input'] = [

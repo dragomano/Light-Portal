@@ -26,7 +26,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Show the number of views and comments
 * First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
-* Template layout for article cards — to add your own templates create a separate file _[CustomFrontPage.template.php](/how-to/create-layout)_.
+* Template layout for article cards — you can add _[your own template](/how-to/create-layout)_, if you want.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 * Show the pagination — specify where the page pagination should be displayed.
 * Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
@@ -40,9 +40,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 
 ### Permissions
 
-* Prohibit all except administrators from creating PHP pages and PHP blocks.
-* Who can view the portal elements — by "elements" we mean blocks and pages.
-* Who can manage own blocks — you can choose user groups who can create, edit and delete blocks, visible only to them.
+* Who can view the portal elements — blocks and pages.
 * Who can manage own pages — you can choose user groups who can create, edit and delete own pages.
 * Who can manage any pages — you can choose user groups who can create, edit and delete any pages.
 * Who can post the portal pages without approval — you can choose user groups who will be able to post portal pages without moderation.
@@ -59,7 +57,6 @@ In this section, you can change the general settings of pages and blocks used bo
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
 * Sorting comments by default — select the desired sorting type for comments on portal pages.
-* Allow voting for comments — "Like" and "Dislike" buttons will appear under each comment. The background of comments will change depending on the number of positive or negative ratings.
 * Show items on tag/category pages as cards — you can display items as a table, or as cards.
 * The type of page editor by default — if you constantly create pages of the same type, you can set this type as default.
 * The maximum number of keywords that can be added to a page — when creating portal pages, you will not be able to specify the number of keywords greater than the specified number.

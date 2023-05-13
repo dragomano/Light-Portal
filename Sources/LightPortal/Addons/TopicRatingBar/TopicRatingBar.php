@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.21
+ * @version 09.05.23
  */
 
 namespace Bugo\LightPortal\Addons\TopicRatingBar;
@@ -55,9 +55,6 @@ class TopicRatingBar extends Plugin
 	 */
 	public function frontAssets()
 	{
-		if (empty($this->context['lp_frontpage_articles']))
-			return;
-
 		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['rating'])) {
 				$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];

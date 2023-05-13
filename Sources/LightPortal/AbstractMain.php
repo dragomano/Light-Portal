@@ -9,12 +9,15 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{Block, Page};
+use Less_Parser;
+use Less_Exception_Parser;
+use Exception;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -38,7 +41,6 @@ abstract class AbstractMain
 	protected function defineVars(): void
 	{
 		$this->context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_blocks']    = $this->allowedTo('light_portal_manage_blocks');
 		$this->context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
 		$this->context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
 		$this->context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
@@ -48,7 +50,6 @@ abstract class AbstractMain
 		$this->context['lp_all_title_classes']   = $this->getTitleClasses();
 		$this->context['lp_all_content_classes'] = $this->getContentClasses();
 		$this->context['lp_block_placements']    = $this->getBlockPlacements();
-		$this->context['lp_page_options']        = $this->getPageOptions();
 		$this->context['lp_plugin_types']        = $this->getPluginTypes();
 		$this->context['lp_content_types']       = $this->getContentTypes();
 
@@ -79,12 +80,40 @@ abstract class AbstractMain
 					['seed' => false],
 					'portal_fontawesome'
 				);
+			} else {
+				$this->loadExtJS('https://kit.fontawesome.com/197848597c.js', ['attributes' => ['crossorigin' => 'anonymous']]);
 			}
 		}
 
+		$this->compileLess();
+
 		$this->loadCSSFile('light_portal/flexboxgrid.css');
 		$this->loadCSSFile('light_portal/portal.css');
-		$this->loadCSSFile('custom_frontpage.css');
+		$this->loadCSSFile('light_portal/plugins.css');
+		$this->loadCSSFile('light_portal_custom.css');
+
+		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+	}
+
+	protected function compileLess(): void
+	{
+		$cssFile  = $this->settings['default_theme_dir'] . '/css/light_portal/portal.css';
+		$lessFile = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
+
+		if (is_file($cssFile) && filemtime($lessFile) < filemtime($cssFile))
+			return;
+
+		$parser = new Less_Parser([
+			'compress' => true,
+			'cache_dir' => $this->cachedir,
+		]);
+
+		try {
+			$parser->parseFile($lessFile);
+			file_put_contents($cssFile, $parser->getCss());
+		} catch (Less_Exception_Parser | Exception $e) {
+			$this->logError($e->getMessage(), 'critical');
+		}
 	}
 
 	/**
@@ -181,6 +210,150 @@ abstract class AbstractMain
 		);
 	}
 
+	/**
+	 * Display "Portal settings" in Main Menu => Admin
+	 *
+	 * Отображаем "Настройки портала" в Главном меню => Админка
+	 */
+	protected function prepareAdminButtons(array &$buttons): void
+	{
+		if ($this->context['user']['is_admin'] === false)
+			return;
+
+		$counter = 0;
+		foreach (array_keys($buttons['admin']['sub_buttons']) as $area) {
+			$counter++;
+
+			if ($area === 'featuresettings')
+				break;
+		}
+
+		$buttons['admin']['sub_buttons'] = array_merge(
+			array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
+			[
+				'portal_settings' => [
+					'title'       => $this->txt['lp_settings'],
+					'href'        => $this->scripturl . '?action=admin;area=lp_settings',
+					'show'        => true,
+					'sub_buttons' => [
+						'blocks'  => [
+							'title' => $this->txt['lp_blocks'],
+							'href'  => $this->scripturl . '?action=admin;area=lp_blocks',
+							'amt'   => $this->context['lp_quantities']['active_blocks'],
+							'show'  => true,
+						],
+						'pages'   => [
+							'title' => $this->txt['lp_pages'],
+							'href'  => $this->scripturl . '?action=admin;area=lp_pages',
+							'amt'   => $this->context['lp_quantities']['active_pages'],
+							'show'  => true,
+						],
+						'plugins' => [
+							'title'   => $this->txt['lp_plugins'],
+							'href'    => $this->scripturl . '?action=admin;area=lp_plugins',
+							'amt'     => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
+							'show'    => true,
+							'is_last' => true,
+						],
+					],
+				],
+			],
+			array_slice($buttons['admin']['sub_buttons'], $counter, null, true)
+		);
+	}
+
+	protected function prepareModerationButtons(array &$buttons): void
+	{
+		if ($this->context['allow_light_portal_manage_pages_any'] === false)
+			return;
+
+		$buttons['moderate']['show'] = true;
+
+		$buttons['moderate']['sub_buttons'] = [
+			'lp_pages' => [
+				'title' => $this->txt['lp_pages_unapproved'],
+				'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+				'amt'   => $this->context['lp_quantities']['unapproved_pages'],
+				'show'  => true,
+			],
+		] + $buttons['moderate']['sub_buttons'];
+	}
+
+	protected function preparePageButtons(array &$buttons): void
+	{
+		if (empty($this->context['lp_menu_pages'] = $this->getMenuPages()))
+			return;
+
+		$page_buttons = [];
+		foreach ($this->context['lp_menu_pages'] as $item) {
+			$page_buttons['portal_page_' . $item['alias']] = [
+				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['title']),
+				'href'  => LP_PAGE_URL . $item['alias'],
+				'icon'  => '" style="display: none"></span><span',
+				'show'  => $this->canViewItem($item['permissions'])
+			];
+		}
+
+		$counter = -1;
+		foreach (array_keys($buttons) as $area) {
+			$counter++;
+
+			if ($area === 'admin')
+				break;
+		}
+
+		$buttons = array_merge(
+			array_slice($buttons, 0, $counter, true),
+			$page_buttons,
+			array_slice($buttons, $counter, null, true)
+		);
+	}
+
+	protected function preparePortalButtons(array &$buttons): void
+	{
+		// Display "Portal" item in Main Menu
+		$buttons = array_merge([
+			LP_ACTION => [
+				'title'       => $this->txt['lp_portal'],
+				'href'        => $this->scripturl,
+				'icon'        => 'home',
+				'show'        => true,
+				'action_hook' => true,
+				'is_last'     => $this->context['right_to_left']
+			],
+		], $buttons);
+
+		// "Forum"
+		$buttons['home']['title'] = $this->txt['lp_forum'];
+		$buttons['home']['href']  = $this->scripturl . '?action=forum';
+		$buttons['home']['icon']  = 'im_on';
+
+		// Standalone mode
+		if (empty($this->modSettings['lp_standalone_mode']))
+			return;
+
+		$buttons[LP_ACTION]['title']   = $this->txt['lp_portal'];
+		$buttons[LP_ACTION]['href']    = $this->modSettings['lp_standalone_url'] ?: $this->scripturl;
+		$buttons[LP_ACTION]['icon']    = 'home';
+		$buttons[LP_ACTION]['is_last'] = $this->context['right_to_left'];
+
+		$buttons = array_merge(
+			array_slice($buttons, 0, 2, true),
+			[
+				'forum' => [
+					'title'       => $this->txt['lp_forum'],
+					'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
+					'icon'        => 'im_on',
+					'show'        => true,
+					'action_hook' => true
+				],
+			],
+			array_slice($buttons, 2, null, true)
+		);
+
+		$this->unsetDisabledActions($buttons);
+	}
+
 	protected function promoteTopic(): void
 	{
 		if (empty($this->user_info['is_admin']) || $this->request()->hasNot('t'))
@@ -199,6 +372,49 @@ abstract class AbstractMain
 		$this->redirect('topic=' . $topic);
 	}
 
+	private function getMenuPages(): array
+	{
+		if (($pages = $this->cache()->get('menu_pages')) === null) {
+			$titles = $this->getEntityList('title');
+
+			$request = $this->smcFunc['db_query']('', '
+				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
+				FROM {db_prefix}lp_pages AS p
+					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
+					LEFT JOIN {db_prefix}lp_params AS pp2 ON (p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon})
+				WHERE p.status IN ({array_int:statuses})
+					AND p.created_at <= {int:current_time}
+					AND pp.name = {literal:show_in_menu}
+					AND pp.value = {string:show_in_menu}',
+				[
+					'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
+					'current_time' => time(),
+					'show_in_menu' => '1',
+				]
+			);
+
+			$pages = [];
+			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+				$pages[$row['page_id']] = [
+					'id'          => $row['page_id'],
+					'alias'       => $row['alias'],
+					'permissions' => (int) $row['permissions'],
+					'title'       => [],
+					'icon'        => $row['icon'],
+				];
+
+				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
+			}
+
+			$this->smcFunc['db_free_result']($request);
+			$this->context['lp_num_queries']++;
+
+			$this->cache()->put('menu_pages', $pages);
+		}
+
+		return $pages;
+	}
+
 	private function calculateNumberOfEntities(): void
 	{
 		if (($num_entities = $this->cache()->get('num_active_entities_u' . $this->user_info['id'])) === null) {
@@ -207,14 +423,12 @@ abstract class AbstractMain
 					(
 						SELECT COUNT(b.block_id)
 						FROM {db_prefix}lp_blocks b
-						WHERE b.status = {int:active}' . ($this->user_info['is_admin'] ? '
-							AND b.user_id = 0' : '
-							AND b.user_id = {int:user_id}') . '
+						WHERE b.status = {int:active}
 					) AS num_blocks,
 					(
 						SELECT COUNT(p.page_id)
 						FROM {db_prefix}lp_pages p
-						WHERE p.status = {int:active}' . ($this->user_info['is_admin'] ? '' : '
+						WHERE p.status = {int:active}' . ($this->context['allow_light_portal_manage_pages_any'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
 					) AS num_pages,
 					(
@@ -261,11 +475,6 @@ abstract class AbstractMain
 	private function getBlockPlacements(): array
 	{
 		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], $this->txt['lp_block_placement_set']);
-	}
-
-	private function getPageOptions(): array
-	{
-		return array_combine(['show_title', 'show_author_and_date', 'show_related_pages', 'allow_comments'], $this->txt['lp_page_options']);
 	}
 
 	private function getPluginTypes(): array

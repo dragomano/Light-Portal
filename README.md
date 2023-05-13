@@ -6,18 +6,18 @@
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 
 * **Tested on:** PHP 8.2.4 / MariaDB 10.11.2, MySQL 5.7.41/8.0.32, PostgreSQL 15.2
-* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek
+* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish
 * [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru) [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-## Description
+## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
 This modification will transform your forum into a portal that includes:
 * the customizable frontpage,
 * separate pages with keywords,
 * blocks within 12-column flexbox grid.
 
-The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via plugins) content within pages and custom blocks.
+The portal supports BBC, HTML, PHP, as well as Markdown content within pages and custom blocks.
 
-### Features:
+### Features
 * Blocks and pages with multilingual titles.
 * Support for the FontAwesome icons and any other similar packs.
 * Using the Flexbox to output blocks.
@@ -30,28 +30,6 @@ The portal supports BBC, HTML, PHP, as well as Markdown, Pug, and even Twig (via
 * Import and export for pages and blocks.
 * Support for plugins (+ PluginMaker).
 * Support for standalone mode.
-
-## Описание
-Модификация преобразует ваш форум в портал:
-* настраиваемая главная страница,
-* отдельные страницы с ключевыми словами,
-* блоки внутри 12-колоночной flexbox-сетки.
-
-Поддержка контента с форумными тегами (BBCode), HTML, PHP, а также Markdown, Pug и даже Twig (через плагины) в страницах и пользовательских блоках.
-
-### Особенности:
-* Блоки и страницы с многоязычными заголовками.
-* Поддержка иконок FontAwesome и любых других подобных.
-* Использование Flexbox для вывода блоков.
-* Доступные панели: шапка, левый и правый сайдбары, центр (верх и низ), подвал.
-* Статьи на главной: отображение тем, разделов или страниц портала.
-* Древовидные комментарии для статей.
-* Разметка Open Graph для страниц и комментариев.
-* Drag-n-drop перетаскивание блоков между панелями, с обновлением приоритета.
-* Встроенный менеджер рекламы (плагин AdsBlock).
-* Импорт и экспорт страниц и блоков.
-* Поддержка плагинов (+ мастер создания плагинов).
-* Поддержка автономного режима.
 
 ## Supported by
 

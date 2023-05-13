@@ -9,13 +9,13 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Entities\PageListInterface;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,6 +32,9 @@ final class Page
 
 	public const STATUS_INTERNAL = 3;
 
+	/**
+	 * @throws IntlException
+	 */
 	public function show(): void
 	{
 		$this->middleware('light_portal_view');
@@ -507,8 +510,6 @@ final class Page
 			$data['content'] = $this->unPreparseCode($data['content']);
 		}
 
-		$data['post_content'] = '';
-
 		if (! empty($data['category_id']))
 			$data['category'] = $this->getEntityList('category')[$data['category_id']]['name'];
 
@@ -518,6 +519,9 @@ final class Page
 		$this->hook('preparePageData', [&$data, $is_author]);
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function prepareComments(): void
 	{
 		if (empty($this->modSettings['lp_show_comment_block']) || empty($this->context['lp_page']['options']['allow_comments']))

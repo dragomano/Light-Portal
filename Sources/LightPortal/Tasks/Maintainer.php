@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Tasks;
@@ -114,12 +114,11 @@ final class Maintainer extends SMF_BackgroundTask
 			);
 
 			$this->smcFunc['db_query']('', '
-				DELETE FROM {db_prefix}lp_ratings
-				WHERE content_type = {string:type}
-					AND content_id IN ({array_int:items})',
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id IN ({array_int:items})
+					AND type = {literal:comment}',
 				[
-					'type'  => 'comment',
-					'items' => $comments
+					'items' => $comments,
 				]
 			);
 		}

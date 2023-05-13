@@ -9,19 +9,17 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Entities;
-
-use Bugo\LightPortal\Entities\Page;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Category extends AbstractPageList
 {
-	public function show(Page $page)
+	public function show(Page $page): void
 	{
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
@@ -143,7 +141,7 @@ final class Category extends AbstractPageList
 		return (int) $num_items;
 	}
 
-	public function showAll()
+	public function showAll(): void
 	{
 		$this->context['page_title']     = $this->txt['lp_all_categories'];
 		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories';

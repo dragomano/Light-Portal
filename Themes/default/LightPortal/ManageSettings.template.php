@@ -269,7 +269,7 @@ function template_callback_frontpage_mode_settings()
 
 function template_callback_standalone_mode_settings()
 {
-	global $modSettings, $txt, $scripturl, $boardurl;
+	global $modSettings, $txt, $scripturl, $boardurl, $context;
 
 	echo '
 	</dl>
@@ -327,16 +327,7 @@ function template_callback_standalone_mode_settings()
 			</dt>
 		</template>
 		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dd>
-				<input
-					type="text"
-					name="lp_disabled_actions"
-					id="lp_disabled_actions"
-					value="', $modSettings['lp_disabled_actions'] ?? '', '"
-					size="80"
-					placeholder="', $txt['lp_example'], 'mlist,calendar"
-				>
-			</dd>
+			<dd>', $context['lp_disabled_actions_select'], '</dd>
 		</template>';
 }
 
@@ -443,7 +434,7 @@ function template_callback_comment_settings()
 			<dd>
 				<select id="lp_comment_sorting" name="lp_comment_sorting">';
 
-	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc'], $txt['lp_sort_by_rating']] as $sort_value => $sort_title) {
+	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc']] as $sort_value => $sort_title) {
 		echo '
 					<option value="', $sort_value, '"', ! empty($modSettings['lp_comment_sorting']) && $modSettings['lp_comment_sorting'] == $sort_value ? ' selected' : '', '>', $sort_title, '</option>';
 	}

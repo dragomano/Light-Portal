@@ -108,7 +108,7 @@ function template_manage_plugins()
 				echo '
 					<a href="', $context['lp_can_download'][$plugin['name']]['link'], '" rel="noopener" target="_blank">', $context['lp_icon_set']['download'], '</a>';
 			}
-		} else {
+		} elseif (! isset($plugin['types'][$txt['not_applicable']])) {
 			echo str_replace([' class="', 'toggle-'], [' @click.self="plugin.toggle($event.target)" data-toggle="' . $plugin['status'] . '" class="', 'toggle-' . $plugin['status']], $context['lp_icon_set']['toggle']);
 		}
 

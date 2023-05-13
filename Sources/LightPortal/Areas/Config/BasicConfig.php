@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.1
+ * @version 2.2
  */
 
 namespace Bugo\LightPortal\Areas\Config;
@@ -17,7 +17,14 @@ namespace Bugo\LightPortal\Areas\Config;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Entities\FrontPage;
-use Bugo\LightPortal\Partials\{BoardSelect, CategorySelect, PageAliasSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Partials\{
+	ActionSelect,
+	BoardSelect,
+	CategorySelect,
+	PageAliasSelect,
+	PageSelect,
+	TopicSelect
+};
 use IntlException;
 
 if (! defined('SMF'))
@@ -40,7 +47,6 @@ final class BasicConfig
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=basic';
 		$this->context['post_url']      = $this->context['canonical_url'] . ';save';
 
-		//$this->context['permissions_excluded']['light_portal_manage_blocks']    = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
@@ -49,8 +55,6 @@ final class BasicConfig
 		$addSettings = [];
 		if (! isset($this->modSettings['lp_frontpage_title']))
 			$addSettings['lp_frontpage_title'] = str_replace(["'", "\""], "", $this->context['forum_name']);
-		if (! isset($this->modSettings['lp_frontpage_alias']))
-			$addSettings['lp_frontpage_alias'] = 'home';
 		if (! isset($this->modSettings['lp_show_views_and_comments']))
 			$addSettings['lp_show_views_and_comments'] = 1;
 		if (! isset($this->modSettings['lp_frontpage_article_sorting']))
@@ -59,8 +63,6 @@ final class BasicConfig
 			$addSettings['lp_num_items_per_page'] = 10;
 		if (! isset($this->modSettings['lp_standalone_url']))
 			$addSettings['lp_standalone_url'] = $this->boardurl . '/portal.php';
-		if (! isset($this->modSettings['lp_prohibit_php']))
-			$addSettings['lp_prohibit_php'] = 1;
 		$this->updateSettings($addSettings);
 
 		$this->context['lp_frontpage_modes'] = array_combine(
@@ -68,11 +70,11 @@ final class BasicConfig
 			$this->txt['lp_frontpage_mode_set']
 		);
 
+		$this->prepareTopicList();
+
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
-
-		$this->prepareTopicList();
 
 		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)();
 
@@ -84,14 +86,14 @@ final class BasicConfig
 
 		$this->context['lp_frontpage_pages_select'] = (new PageSelect)();
 
+		$this->context['lp_disabled_actions_select'] = (new ActionSelect)();
+
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
 			['title', 'lp_standalone_mode_title'],
 			['callback', 'standalone_mode_settings'],
 			['title', 'edit_permissions'],
-			['check', 'lp_prohibit_php', 'invalid' => true],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
-			//['permissions', 'light_portal_manage_blocks', 'help' => 'permissionhelp_light_portal_manage_blocks'],
 			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
 			['permissions', 'light_portal_manage_pages_any', 'help' => 'permissionhelp_light_portal_manage_pages'],
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],

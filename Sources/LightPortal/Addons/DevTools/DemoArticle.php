@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 10.05.23
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -63,7 +63,7 @@ class DemoArticle extends AbstractArticle
 					'title' => $this->txt['lp_replies']
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
-				'image'     => 'https://picsum.photos/200/300?random=' . $article['id'],
+				'image'     => 'https://loremflickr.com/470/235?random=' . $article['id'],
 				'can_edit'  => $this->user_info['is_admin'],
 				'edit_link' => $this->scripturl . '?action=post;msg=' . ($msg_id = $this->smcFunc['random_int'](0, 9999)) . ';topic=' . $article['id'] . '.0',
 				'teaser'    => empty($this->modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4)),

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 10.05.23
  */
 
 namespace Bugo\LightPortal\Addons\DevTools;
@@ -49,20 +49,28 @@ class DevTools extends Plugin
 
 		$this->context['frontpage_layouts'] = $layouts;
 
-		$this->context['current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'articles');
+		if ($this->session()->isEmpty('lp_frontpage_layout')) {
+			$this->context['current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
+		} else {
+			$this->context['current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
+		}
 
-		$this->setTemplate('show_' . $this->context['current_layout'])->withLayer('layout_switcher');
+		$this->session()->put('lp_frontpage_layout', $this->context['current_layout']);
+
+		$this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+
+		$this->setTemplate()->withLayer('layout_switcher');
 	}
 
 	public function credits(array &$links)
 	{
 		$links[] = [
-			'title' => 'Lorem Picsum',
-			'link' => 'https://picsum.photos',
-			'author' => 'David Marby & Nijiko Yonskai',
+			'title' => 'LoremFlickr',
+			'link' => 'https://loremflickr.com',
+			'author' => 'Babak Fakhamzadeh',
 			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://github.com/DMarby/picsum-photos/blob/main/LICENSE.md'
+				'name' => 'the GPL-2.0 License',
+				'link' => 'https://github.com/MastaBaba/LoremFlickr/blob/master/LICENSE'
 			]
 		];
 	}

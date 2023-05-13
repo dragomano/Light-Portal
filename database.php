@@ -418,49 +418,6 @@ $tables[] = [
 ];
 
 $tables[] = [
-	'name' => 'lp_ratings',
-	'columns' => [
-		[
-			'name'     => 'id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true,
-			'auto'     => true
-		],
-		[
-			'name' => 'value',
-			'type' => 'int',
-			'size' => 11
-		],
-		[
-			'name'    => 'content_type',
-			'type'    => 'varchar',
-			'size'    => 20,
-			'default' => 'comment',
-			'null'    => false
-		],
-		[
-			'name'     => 'content_id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true
-		],
-		[
-			'name'     => 'user_id',
-			'type'     => 'mediumint',
-			'size'     => 8,
-			'unsigned' => true
-		],
-	],
-	'indexes' => [
-		[
-			'type'    => 'primary',
-			'columns' => ['id']
-		]
-	]
-];
-
-$tables[] = [
 	'name' => 'lp_tags',
 	'columns' => [
 		[
@@ -555,11 +512,11 @@ $addSettings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'HelloPortal,ThemeSwitcher,Trumbowyg,UserInfo';
 if (! isset($modSettings['lp_frontpage_layout']))
-	$addSettings['lp_frontpage_layout'] = 'articles';
+	$addSettings['lp_frontpage_layout'] = 'default.latte';
 if (! isset($modSettings['lp_show_comment_block']))
-	$addSettings['lp_show_comment_block'] = 'default';
+	$addSettings['lp_show_comment_block'] = 'none';
 if (! isset($modSettings['lp_fa_source']))
-	$addSettings['lp_fa_source'] = 'css_cdn';
+	$addSettings['lp_fa_source'] = 'kit';
 updateSettings($addSettings);
 
 if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))
