@@ -22,8 +22,6 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 {
 	use Helper;
 
-	protected array $tempCache = [];
-
 	abstract protected function getItems(array $blocks): array;
 
 	protected function run(): void
@@ -33,10 +31,6 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 
 		// Might take some time.
 		@set_time_limit(600);
-
-		// Don't allow the cache to get too full
-		$this->tempCache = $this->db_cache;
-		$this->db_cache = [];
 
 		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all') ? $this->request('blocks') : [];
 
@@ -110,9 +104,6 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 
 		if (empty($results))
 			$this->fatalLangError('lp_import_failed');
-
-		// Restore the cache
-		$this->db_cache = $this->tempCache;
 
 		$this->cache()->flush();
 	}
