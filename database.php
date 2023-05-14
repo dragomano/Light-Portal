@@ -27,13 +27,6 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name'     => 'user_id',
-			'type'     => 'mediumint',
-			'size'     => 8,
-			'unsigned' => true,
-			'default'  => 0
-		],
-		[
 			'name' => 'icon',
 			'type' => 'varchar',
 			'size' => 255,

@@ -52,7 +52,6 @@ final class BlockImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'block_id'      => $block_id = intval($item['block_id']),
-					'user_id'       => intval($item['user_id']),
 					'icon'          => $item->icon,
 					'type'          => str_replace('md', 'markdown', (string) $item->type),
 					'note'          => $item->note,
@@ -111,7 +110,6 @@ final class BlockImport extends AbstractImport
 					'{db_prefix}lp_blocks',
 					[
 						'block_id'      => 'int',
-						'user_id'       => 'int',
 						'icon'          => 'string',
 						'type'          => 'string',
 						'note'          => 'string',

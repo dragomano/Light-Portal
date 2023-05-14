@@ -364,7 +364,6 @@ $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';
 $txt['lp_page_visible_but_disabled'] = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found'] = 'Block not found!';
-$txt['lp_block_not_editable'] = 'You are not allowed to edit this block!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias'] = 'The <strong>alias</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_alias'] = 'The specified alias is not correct!';

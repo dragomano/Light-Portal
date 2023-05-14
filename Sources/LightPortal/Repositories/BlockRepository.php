@@ -24,7 +24,7 @@ final class BlockRepository extends AbstractRepository
 	public function getAll(): array
 	{
 		$request = $this->smcFunc['db_query']('', '
-			SELECT b.block_id, b.user_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
@@ -34,7 +34,6 @@ final class BlockRepository extends AbstractRepository
 		$currentBlocks = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
-				'user_id'     => $row['user_id'],
 				'icon'        => $this->getIcon($row['icon']),
 				'type'        => $row['type'],
 				'note'        => $row['note'],
@@ -62,7 +61,8 @@ final class BlockRepository extends AbstractRepository
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.user_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style, bt.lang, bt.title, bp.name, bp.value
+				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
@@ -87,7 +87,6 @@ final class BlockRepository extends AbstractRepository
 
 			$data ??= [
 				'id'            => (int) $row['block_id'],
-				'user_id'       => (int) $row['user_id'],
 				'icon'          => $row['icon'],
 				'type'          => $row['type'],
 				'note'          => $row['note'],
@@ -160,7 +159,6 @@ final class BlockRepository extends AbstractRepository
 		$item = (int) $this->smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
 			[
-				'user_id'       => 'int',
 				'icon'          => 'string',
 				'type'          => 'string',
 				'note'          => 'string',
@@ -176,7 +174,6 @@ final class BlockRepository extends AbstractRepository
 				'content_style' => 'string',
 			],
 			[
-				$this->context['lp_block']['user_id'],
 				$this->context['lp_block']['icon'],
 				$this->context['lp_block']['type'],
 				$this->context['lp_block']['note'],

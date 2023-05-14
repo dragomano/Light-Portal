@@ -137,9 +137,6 @@ final class BlockArea
 
 		$this->context['current_block'] = $this->repository->getData($item);
 
-		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			$this->fatalLangError('lp_block_not_editable');
-
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
 
@@ -337,7 +334,6 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => 0,
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',

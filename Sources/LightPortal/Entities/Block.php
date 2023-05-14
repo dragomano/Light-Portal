@@ -36,7 +36,7 @@ final class Block
 
 		// Block placement
 		foreach ($blocks as $item => $data) {
-			if ($this->canViewItem($data['permissions'], $data['user_id']) === false)
+			if ($this->canViewItem($data['permissions']) === false)
 				continue;
 
 			$data['can_edit'] = $this->context['user']['is_admin'];
@@ -85,7 +85,7 @@ final class Block
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
 			$request = $this->smcFunc['db_query']('', '
 				SELECT
-					b.block_id, b.user_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
 					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -103,7 +103,6 @@ final class Block
 
 				$active_blocks[$row['block_id']] ??= [
 					'id'            => (int) $row['block_id'],
-					'user_id'       => (int) $row['user_id'],
 					'icon'          => $row['icon'],
 					'type'          => $row['type'],
 					'content'       => $row['content'],
