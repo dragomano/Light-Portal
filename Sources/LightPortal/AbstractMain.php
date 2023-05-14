@@ -175,16 +175,6 @@ abstract class AbstractMain
 	}
 
 	/**
-	 * Allow forum action page indexing
-	 *
-	 * Разрешаем индексацию главной страницы форума
-	 */
-	protected function fixForumIndexing(): void
-	{
-		$this->context['robot_no_index'] = false;
-	}
-
-	/**
 	 * Show the script execution time and the number of the portal queries
 	 *
 	 * Отображаем время выполнения скрипта и количество запросов к базе

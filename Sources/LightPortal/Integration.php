@@ -209,12 +209,9 @@ final class Integration extends AbstractMain
 
 		$this->preparePortalButtons($buttons);
 
-		// Other fixes
 		$this->fixCanonicalUrl();
 
 		$this->fixLinktree();
-
-		$this->fixForumIndexing();
 	}
 
 	/**
