@@ -2,7 +2,7 @@
 
 function template_feedback()
 {
-	global $txt, $context;
+	global $txt, $context, $modSettings;
 
 	echo '
 	<div class="cat_bar">
@@ -19,6 +19,10 @@ function template_feedback()
 		<input type="hidden" name="from_name" value="', $context['forum_name'], '">
 		<input type="hidden" name="subject" value="New feedback">
 		<input type="hidden" name="redirect" value="', $context['success_url'], '">
+		<input type="hidden" name="portal_version" value="', LP_VERSION, '">
+		<input type="hidden" name="smf_version" value="', SMF_VERSION, '">
+		<input type="hidden" name="php_version" value="', PHP_VERSION, '">
+		<input type="hidden" name="enabled_plugins" value="', str_replace(',', "\n", $modSettings['lp_enabled_plugins']), '">
 		<input type="checkbox" name="botcheck" class="hidden" style="display: none">
 		<table class="table_grid">
 			<tbody>
