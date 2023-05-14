@@ -27,6 +27,11 @@ abstract class AbstractImport implements ImportInterface
 
 	abstract protected function run();
 
+	public function __construct()
+	{
+		$this->context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
+	}
+
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
 		if (empty($file = $this->files($name)))
