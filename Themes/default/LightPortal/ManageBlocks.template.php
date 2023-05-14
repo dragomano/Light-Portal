@@ -212,18 +212,11 @@ function template_block_post()
 	global $context, $txt, $language;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
-		if (! empty($context['lp_block']['title_style']))
-			$context['preview_title'] = '<span style="' . $context['lp_block']['title_style'] . '">' . $context['preview_title'] . '</span>';
-
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
-
-		$style = '';
-		if (! empty($context['lp_block']['content_style']))
-			$style = ' style="' . $context['lp_block']['content_style'] . '"';
 
 		echo '
 	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content'], $style), '
+		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
 	</div>';
 	} else {
 		echo '

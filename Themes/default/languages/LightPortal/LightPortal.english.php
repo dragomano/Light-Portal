@@ -198,9 +198,7 @@ $txt['lp_block_areas_set']['topics'] = 'All topics of the forum';
 
 $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
-$txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
-$txt['lp_block_content_style'] = 'CSS content style';
 $txt['lp_block_hide_header'] = 'Hide header';
 
 // Internal blocks

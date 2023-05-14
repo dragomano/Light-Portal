@@ -57,7 +57,7 @@ final class BlockExport extends AbstractExport
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {literal:block})
@@ -82,9 +82,7 @@ final class BlockExport extends AbstractExport
 				'status'        => $row['status'],
 				'areas'         => $row['areas'],
 				'title_class'   => $row['title_class'],
-				'title_style'   => $row['title_style'],
 				'content_class' => $row['content_class'],
-				'content_style' => $row['content_style']
 			];
 
 			if ($row['lang'] && $row['title'])

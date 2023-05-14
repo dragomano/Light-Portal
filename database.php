@@ -90,19 +90,7 @@ $tables[] = [
 			'null' => true
 		],
 		[
-			'name' => 'title_style',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
 			'name' => 'content_class',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
-			'name' => 'content_style',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => true

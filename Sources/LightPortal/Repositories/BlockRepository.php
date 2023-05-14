@@ -61,7 +61,7 @@ final class BlockRepository extends AbstractRepository
 
 		$request = $this->smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -97,9 +97,7 @@ final class BlockRepository extends AbstractRepository
 				'status'        => (int) $row['status'],
 				'areas'         => $row['areas'],
 				'title_class'   => $row['title_class'],
-				'title_style'   => $row['title_style'],
 				'content_class' => $row['content_class'],
-				'content_style' => $row['content_style'],
 			];
 
 			$data['title'][$row['lang']] = $row['title'];
@@ -169,9 +167,7 @@ final class BlockRepository extends AbstractRepository
 				'status'        => 'int',
 				'areas'         => 'string',
 				'title_class'   => 'string',
-				'title_style'   => 'string',
 				'content_class' => 'string',
-				'content_style' => 'string',
 			],
 			[
 				$this->context['lp_block']['icon'],
@@ -184,9 +180,7 @@ final class BlockRepository extends AbstractRepository
 				$this->context['lp_block']['status'],
 				$this->context['lp_block']['areas'],
 				$this->context['lp_block']['title_class'],
-				$this->context['lp_block']['title_style'],
 				$this->context['lp_block']['content_class'],
-				$this->context['lp_block']['content_style'],
 			],
 			['block_id'],
 			1
@@ -215,7 +209,7 @@ final class BlockRepository extends AbstractRepository
 
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
-			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, title_style = {string:title_style}, content_class = {string:content_class}, content_style = {string:content_style}
+			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, content_class = {string:content_class}
 			WHERE block_id = {int:block_id}',
 			[
 				'icon'          => $this->context['lp_block']['icon'],
@@ -226,9 +220,7 @@ final class BlockRepository extends AbstractRepository
 				'permissions'   => $this->context['lp_block']['permissions'],
 				'areas'         => $this->context['lp_block']['areas'],
 				'title_class'   => $this->context['lp_block']['title_class'],
-				'title_style'   => $this->context['lp_block']['title_style'],
 				'content_class' => $this->context['lp_block']['content_class'],
-				'content_style' => $this->context['lp_block']['content_style'],
 				'block_id'      => $item,
 			]
 		);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 14.05.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -223,7 +223,7 @@ class ArticleList extends Block
 
 					$content .= '<a href="' . $this->scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
 
-					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content, null);
+					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content);
 				}
 			} else {
 				foreach ($article_list as $page) {
@@ -240,7 +240,7 @@ class ArticleList extends Block
 
 					$content .= '<a href="' . LP_PAGE_URL . $page['alias'] . '">' . $title . '</a>';
 
-					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content, null);
+					echo sprintf($this->context['lp_all_content_classes'][$parameters['body_class']], $content);
 				}
 			}
 

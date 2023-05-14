@@ -85,7 +85,7 @@ final class Block
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
 			$request = $this->smcFunc['db_query']('', '
 				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.title_style, b.content_class, b.content_style,
+					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.content_class,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
 					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -111,9 +111,7 @@ final class Block
 					'permissions'   => (int) $row['permissions'],
 					'areas'         => explode(',', $row['areas']),
 					'title_class'   => $row['title_class'],
-					'title_style'   => $row['title_style'],
 					'content_class' => $row['content_class'],
-					'content_style' => $row['content_style'],
 				];
 
 				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];

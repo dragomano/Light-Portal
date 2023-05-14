@@ -294,9 +294,7 @@ final class BlockArea
 				'permissions'   => FILTER_VALIDATE_INT,
 				'areas'         => FILTER_DEFAULT,
 				'title_class'   => FILTER_DEFAULT,
-				'title_style'   => FILTER_DEFAULT,
 				'content_class' => FILTER_DEFAULT,
-				'content_style' => FILTER_DEFAULT,
 			];
 
 			foreach ($this->context['languages'] as $lang) {
@@ -345,9 +343,7 @@ final class BlockArea
 			'status'        => $this->context['current_block']['status'] ?? 1,
 			'areas'         => $post_data['areas'] ?? $this->context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $this->context['current_block']['title_class'] ?? array_key_first($this->context['lp_all_title_classes']),
-			'title_style'   => $post_data['title_style'] ?? $this->context['current_block']['title_style'] ?? '',
 			'content_class' => $post_data['content_class'] ?? $this->context['current_block']['content_class'] ?? array_key_first($this->context['lp_all_content_classes']),
-			'content_style' => $post_data['content_style'] ?? $this->context['current_block']['content_style'] ?? '',
 			'options'       => $options[$this->context['current_block']['type']],
 		];
 
@@ -440,30 +436,10 @@ final class BlockArea
 		$this->context['posting_fields']['title_class']['input']['html'] = (new TitleClassSelect)();
 		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
 
-		$this->context['posting_fields']['title_style']['label']['text'] = $this->txt['lp_block_title_style'];
-		$this->context['posting_fields']['title_style']['input'] = [
-			'type'       => 'textarea',
-			'tab'        => 'appearance',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['title_style'],
-			],
-		];
-
 		if (empty($this->context['lp_block']['options']['no_content_class'])) {
 			$this->context['posting_fields']['content_class']['label']['html'] = $this->txt['lp_block_content_class'];
 			$this->context['posting_fields']['content_class']['input']['html'] = (new ContentClassSelect)();
 			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
-
-			$this->context['posting_fields']['content_style']['label']['text'] = $this->txt['lp_block_content_style'];
-			$this->context['posting_fields']['content_style']['input'] = [
-				'type'       => 'textarea',
-				'tab'        => 'appearance',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_block']['content_style'],
-				],
-			];
 		}
 
 		if (isset($this->context['lp_block']['options']['content'])) {
@@ -551,7 +527,7 @@ final class BlockArea
 		$this->context['preview_title'] = $this->getPreviewTitle($this->getIcon($this->context['lp_block']['icon']));
 
 		if (! empty($this->context['lp_block']['options']['parameters']['hide_header'])) {
-			$this->context['preview_title'] = $this->context['lp_block']['title_class'] = $this->context['lp_block']['title_style'] = '';
+			$this->context['preview_title'] = $this->context['lp_block']['title_class'] = '';
 		}
 	}
 
