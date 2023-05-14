@@ -121,8 +121,9 @@ final class BlockArea
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
-		if (empty($item))
+		if (empty($item)) {
 			$this->fatalLangError('lp_block_not_found', 404);
+		}
 
 		$this->loadTemplate('LightPortal/ManageBlocks', 'block_post');
 
@@ -557,20 +558,7 @@ final class BlockArea
 	{
 		$plugins = array_merge($this->context['lp_enabled_plugins'], array_keys($this->getContentTypes()));
 
-		$this->context['lp_loaded_addons'] = array_merge(
-			$this->context['lp_loaded_addons'] ?? [],
-			[
-				'bbc' => [
-					'icon' => 'fab fa-bimobject'
-				],
-				'html' => [
-					'icon' => 'fab fa-html5'
-				],
-				'php' => [
-					'icon' => 'fab fa-php'
-				]
-			]
-		);
+		$this->context['lp_loaded_addons'] = array_merge($this->context['lp_loaded_addons'] ?? [], $this->getDefaultTypes());
 
 		$this->context['lp_all_blocks'] = [];
 		foreach ($plugins as $addon) {

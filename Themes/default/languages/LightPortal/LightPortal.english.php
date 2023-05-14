@@ -201,13 +201,13 @@ $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_hide_header'] = 'Hide header';
 
-// Internal blocks
+// Default types
 $txt['lp_bbc']['title'] = 'Custom BBCode';
 $txt['lp_html']['title'] = 'Custom HTML';
 $txt['lp_php']['title'] = 'Custom PHP';
-$txt['lp_bbc']['description'] = 'In this block, you can use any allowed BBCode tags as content.';
-$txt['lp_html']['description'] = 'In this block, you can use any HTML tags as content.';
-$txt['lp_php']['description'] = 'In this block, you can use any PHP code as content.';
+$txt['lp_bbc']['description'] = 'Here you can use any allowed BBCode tags as content.';
+$txt['lp_html']['description'] = 'Here you can use any HTML tags as content.';
+$txt['lp_php']['description'] = 'Here you can use any PHP code as content.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';
@@ -221,7 +221,8 @@ $txt['lp_pages_internal'] = 'Internal pages';
 $txt['lp_pages_internal_description'] = 'Here you can view all internal portal pages. They do not participate in general sampling and searching, but remain accessible by direct links.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
-$txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
+$txt['lp_pages_add_description'] = 'Pages can contain any content, depending on their type.';
+$txt['lp_pages_add_instruction'] = 'Select the desired page type from the list below.';
 $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
