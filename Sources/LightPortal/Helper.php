@@ -133,7 +133,7 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(['bbc', 'html', 'php'], $this->txt['lp_page_types']);
+		$types = array_combine(['bbc', 'html', 'php'], [$this->txt['lp_bbc']['title'], $this->txt['lp_html']['title'], $this->txt['lp_php']['title']]);
 
 		return $this->user_info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}

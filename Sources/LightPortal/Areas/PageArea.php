@@ -938,9 +938,9 @@ final class PageArea
 		foreach ($this->context['lp_content_types'] as $type => $title) {
 			$this->context['lp_all_pages'][$type] = [
 				'type'  => $type,
-				'icon'  => $defaultTypes[$type]['icon'] ?? $this->context['lp_loaded_addons'][$type]['icon'] ?? '',
-				'title' => $title,
-				'desc'  => $this->txt['lp_' . $type]['block_desc'] ?? $this->txt['lp_' . $type]['description'] ?? ''
+				'icon'  => $defaultTypes[$type]['icon'] ?? $this->context['lp_loaded_addons'][$type]['icon'],
+				'title' => $this->txt['lp_' . $type]['title'] ?? $title,
+				'desc'  => $this->txt['lp_' . $type]['block_desc'] ?? $this->txt['lp_' . $type]['description']
 			];
 		}
 

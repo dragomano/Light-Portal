@@ -230,7 +230,6 @@ $txt['lp_pages_search'] = 'Alias or title';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type'] = 'Page type';
-$txt['lp_page_types'] = ['BBCode', 'HTML', 'PHP'];
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Keywords';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
