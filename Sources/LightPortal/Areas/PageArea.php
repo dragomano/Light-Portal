@@ -206,7 +206,7 @@ final class PageArea
 						'value' => $this->txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . ($this->context['lp_loaded_addons'][$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . ($this->getDefaultTypes()[$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
