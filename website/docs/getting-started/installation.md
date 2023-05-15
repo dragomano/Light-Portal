@@ -5,6 +5,14 @@ sidebar_position: 1
 # Installation
 There are no subtleties here. Light Portal can be installed like any other modification for SMF - through the package manager.
 
+## Requirements
+* Modern browser with JavaScript enabled
+* Internet (the portal and many plugins load scripts and styles from CDN)
+* PHP 8.0 or higher
+* PHP extension `intl` to localize some language strings properly
+* PHP extensions `dom` and `implexml` to export/import pages and blocks
+* PHP extension `zip` to export/import plugins
+
 :::info
 
 It is enough to download the archive with the portal files (in SMF this is called a package) from the [official catalog](https://custom.simplemachines.org/mods/index.php?mod=4244) and upload via the package manager on your forum.

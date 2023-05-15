@@ -84,8 +84,18 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 (`&$data`, `$is_author`)
 > additional preparing the portal current page data
 
+### beforePageContent
+> ability to display something before the portal page content
+
+### afterPageContent
+> ability to display something after the portal page content
+
 ### comments
 > adding custom comment script to the portal current page view
+
+### commentButtons
+(`$comment`)
+> adding custom buttons below each comment
 
 ## Work with plugins
 
