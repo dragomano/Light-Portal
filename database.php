@@ -283,6 +283,13 @@ $tables[] = [
 			'default'  => 0
 		],
 		[
+			'name'     => 'deleted_at',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
+		],
+		[
 			'name'     => 'last_comment_id',
 			'type'     => 'int',
 			'size'     => 10,
