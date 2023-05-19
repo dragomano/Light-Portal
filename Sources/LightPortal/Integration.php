@@ -25,7 +25,7 @@ if (! defined('SMF'))
  */
 final class Integration extends AbstractMain
 {
-	public function hooks()
+	public function hooks(): void
 	{
 		$this->applyHook('user_info');
 		$this->applyHook('pre_css_output');
@@ -44,6 +44,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('fetch_alerts');
 		$this->applyHook('profile_areas');
 		$this->applyHook('profile_popup');
+		$this->applyHook('download_request');
 		$this->applyHook('whos_online', 'whoisOnline');
 		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
 		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
@@ -51,7 +52,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('clean_cache');
 	}
 
-	public function userInfo()
+	public function userInfo(): void
 	{
 		$this->context['lp_load_time'] ??= microtime(true);
 		$this->context['lp_num_queries'] ??= 0;
@@ -66,10 +67,7 @@ final class Integration extends AbstractMain
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 	}
 
-	/**
-	 * @hook integrate_pre_css_output
-	 */
-	public function preCssOutput()
+	public function preCssOutput(): void
 	{
 		if (SMF === 'BACKGROUND')
 			return;
@@ -83,7 +81,7 @@ final class Integration extends AbstractMain
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 	}
 
-	public function loadTheme()
+	public function loadTheme(): void
 	{
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
@@ -100,7 +98,7 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_redirect
 	 */
-	public function changeRedirect(string &$setLocation)
+	public function changeRedirect(string &$setLocation): void
 	{
 		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
 			return;
@@ -109,7 +107,7 @@ final class Integration extends AbstractMain
 			$setLocation = $this->scripturl . '?action=forum';
 	}
 
-	public function actions(array &$actions)
+	public function actions(array &$actions): void
 	{
 		if (! empty($this->modSettings['lp_frontpage_mode']))
 			$actions[LP_ACTION] = [false, [new FrontPage, 'show']];
@@ -152,7 +150,7 @@ final class Integration extends AbstractMain
 	 *
 	 * Добавляем выделение для некоторых пунктов меню при переходе в указанные области
 	 */
-	public function currentAction(string &$current_action)
+	public function currentAction(string &$current_action): void
 	{
 		if (empty($this->modSettings['lp_frontpage_mode']))
 			return;
@@ -179,7 +177,10 @@ final class Integration extends AbstractMain
 			$current_action = empty($this->modSettings['lp_standalone_mode']) ? 'home' : (! in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION);
 	}
 
-	public function currentPage(string &$current_action)
+	/**
+	 * @hook integrate_current_page
+	 */
+	public function currentPage(string &$current_action): void
 	{
 		if (empty($this->context['lp_page']) || empty($this->context['lp_menu_pages']) || empty($this->context['lp_menu_pages'][$this->context['lp_page']['id']]))
 			return;
@@ -189,7 +190,7 @@ final class Integration extends AbstractMain
 		}
 	}
 
-	public function menuButtons(array &$buttons)
+	public function menuButtons(array &$buttons): void
 	{
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
@@ -218,10 +219,8 @@ final class Integration extends AbstractMain
 	 * Add "Promote to frontpage" (or "Remove from frontpage") button if the "Selected topics" portal mode is selected
 	 *
 	 * Добавляем кнопку «Добавить на главную» (или «Убрать с главной»), если выбран режим портала «Выбранные темы»
-	 *
-	 * @hook integrate_display_buttons
 	 */
-	public function displayButtons()
+	public function displayButtons(): void
 	{
 		if (empty($this->user_info['is_admin']) || empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_topics')
 			return;
@@ -237,7 +236,7 @@ final class Integration extends AbstractMain
 	 * @TODO Remove all portal content from these users?
 	 * Удаляем комментарии и оповещения при удалении пользователей
 	 */
-	public function deleteMembers(array $users)
+	public function deleteMembers(array $users): void
 	{
 		if (empty($users))
 			return;
@@ -262,10 +261,7 @@ final class Integration extends AbstractMain
 		$this->cache()->flush();
 	}
 
-	/**
-	 * @hook integrate_load_illegal_guest_permissions
-	 */
-	public function loadIllegalGuestPermissions()
+	public function loadIllegalGuestPermissions(): void
 	{
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
@@ -276,10 +272,7 @@ final class Integration extends AbstractMain
 		);
 	}
 
-	/**
-	 * @hook integrate_load_permissions
-	 */
-	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups)
+	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups): void
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
 
@@ -293,10 +286,7 @@ final class Integration extends AbstractMain
 		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
 	}
 
-	/**
-	 * @hook integrate_alert_types
-	 */
-	public function alertTypes(array &$types)
+	public function alertTypes(array &$types): void
 	{
 		$this->txt['alert_group_light_portal'] = $this->txt['lp_portal'];
 
@@ -331,10 +321,9 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * @hook integrate_fetch_alerts
 	 * @throws IntlException
 	 */
-	public function fetchAlerts(array &$alerts)
+	public function fetchAlerts(array &$alerts): void
 	{
 		foreach ($alerts as $id => $alert) {
 			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
@@ -356,10 +345,7 @@ final class Integration extends AbstractMain
 		}
 	}
 
-	/**
-	 * @hook integrate_profile_areas
-	 */
-	public function profileAreas(array &$profile_areas)
+	public function profileAreas(array &$profile_areas): void
 	{
 		if ($this->context['user']['is_admin'])
 			return;
@@ -373,10 +359,7 @@ final class Integration extends AbstractMain
 		];
 	}
 
-	/**
-	 * @hook integrate_profile_popup
-	 */
-	public function profilePopup(array &$profile_items)
+	public function profilePopup(array &$profile_items): void
 	{
 		if ($this->context['user']['is_admin'] || empty($this->context['allow_light_portal_manage_pages_own']))
 			return;
@@ -402,8 +385,15 @@ final class Integration extends AbstractMain
 	}
 
 	/**
-	 * @hook integrate_whos_online
+	 * @hook integrate_download_request
 	 */
+	public function downloadRequest(&$attachRequest): void
+	{
+		$this->loadTheme();
+
+		$this->hook('downloadRequest', [&$attachRequest]);
+	}
+
 	public function whoisOnline(array $actions): string
 	{
 		$result = '';
@@ -465,7 +455,7 @@ final class Integration extends AbstractMain
 		return $result;
 	}
 
-	public function cleanCache()
+	public function cleanCache(): void
 	{
 		$file = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
 

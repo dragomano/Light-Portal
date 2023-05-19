@@ -391,7 +391,7 @@ final class BlockArea
 		if ($data['areas'] && empty($this->validate($data['areas'], ['options' => ['regexp' => '/' . self::AREAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_areas';
 
-		$this->hook('findBlockErrors', [$data, &$post_errors]);
+		$this->hook('findBlockErrors', [&$post_errors, $data]);
 
 		if ($post_errors) {
 			$this->request()->put('preview', true);

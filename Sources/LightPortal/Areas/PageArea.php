@@ -518,6 +518,8 @@ final class PageArea
 		if (empty($items))
 			return;
 
+		$this->hook('onPageRemoving', [$items]);
+
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
@@ -544,15 +546,6 @@ final class PageArea
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}user_likes
-			WHERE content_id IN ({array_int:items})
-				AND content_type = {literal:lpp}',
-			[
-				'items' => $items,
-			]
-		);
-
 		$request = $this->smcFunc['db_query']('', '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
@@ -567,7 +560,7 @@ final class PageArea
 		}
 
 		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries'] += 5;
+		$this->context['lp_num_queries'] += 4;
 
 		if ($comments) {
 			$this->smcFunc['db_query']('', '
@@ -589,8 +582,6 @@ final class PageArea
 
 			$this->context['lp_num_queries'] += 2;
 		}
-
-		$this->hook('onPageRemoving', [$items]);
 	}
 
 	private function promote(array $items, string $type = 'up'): void
@@ -738,7 +729,7 @@ final class PageArea
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [$data, &$post_errors]);
+		$this->hook('findPageErrors', [&$post_errors, $data]);
 
 		if ($post_errors) {
 			$this->request()->put('preview', true);

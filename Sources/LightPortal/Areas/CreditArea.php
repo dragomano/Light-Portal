@@ -131,7 +131,7 @@ final class CreditArea
 				'link' => 'https://fontawesome.com',
 				'author' => 'Fonticons, Inc.',
 				'license' => [
-					'name' => 'the Font Awesome Free License (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)',
+					'name' => 'the Font Awesome Free License',
 					'link' => 'https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt'
 				]
 			],
@@ -183,6 +183,7 @@ final class CreditArea
 			[
 				'title' => 'Alpine JS Slug',
 				'link' => 'https://github.com/markmead/alpinejs-slug',
+				'author' => 'Mark Mead',
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/markmead/alpinejs-slug/blob/main/LICENSE'

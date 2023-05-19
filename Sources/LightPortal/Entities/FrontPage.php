@@ -150,18 +150,20 @@ final class FrontPage
 		$latte->setTempDirectory($this->cachedir);
 		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
-		$latte->addFunction('icon', function (string $name, string $title = '') {
+		$latte->addFunction('icon', function (string $name, string $title = ''): string {
+			$icon = $this->context['lp_icon_set'][$name];
+
 			if (empty($title)) {
-				return $this->context['lp_icon_set'][$name];
+				return $icon;
 			}
 
-			return str_replace(' class=', ' title="' . $title . '" class=', $this->context['lp_icon_set'][$name]);
+			return str_replace(' class=', ' title="' . $title . '" class=', $icon);
 		});
 
 		$params = [
 			'txt'         => $this->txt,
 			'context'     => $this->context,
-			'modSettings' => $this->modSettings
+			'modSettings' => $this->modSettings,
 		];
 
 		ob_start();
@@ -238,8 +240,10 @@ final class FrontPage
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{
 		return array_map(function ($item) use ($article) {
-			if ($this->context['user']['is_guest'])
+			if ($this->context['user']['is_guest']) {
 				$item['is_new'] = false;
+				$item['views']['num'] = 0;
+			}
 
 			if (isset($item['date'])) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
@@ -255,7 +259,7 @@ final class FrontPage
 			if (empty($item['image']) && ! empty($this->modSettings['lp_image_placeholder']))
 				$item['image'] = $this->modSettings['lp_image_placeholder'];
 
-			if (isset($item['views']['num']))
+			if (! empty($item['views']['num']))
 				$item['views']['num'] = $this->getFriendlyNumber((int) $item['views']['num']);
 
 			return $item;

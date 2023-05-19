@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 1.05.23
+ * @version 20.05.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -138,7 +138,7 @@ class AdsBlock extends Block
 			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">';
 	}
 
-	public function findBlockErrors(array $data, array &$post_errors)
+	public function findBlockErrors(array &$post_errors, array $data)
 	{
 		if ($data['placement'] !== 'ads')
 			return;
