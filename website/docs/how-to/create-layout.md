@@ -6,13 +6,13 @@ sidebar_position: 1
 
 :::info
 
-Since version 2.2.0 we use [Latte](https://latte.nette.org/en/syntax) to render frontpage layouts.
+Since version 2.2.0 we use [Latte](https://latte.nette.org/syntax) to render frontpage layouts.
 
 :::
 
 In addition to existing layouts, you can always add your own.
 
-To do this, create a file `custom.latte` in the `/Themes/default/LightPortal/layouts` directory:
+To do this, create a file `custom.latte` in the `/Themes/default/custom_frontpage_layouts` directory:
 
 ```latte
 {varType array $txt}
