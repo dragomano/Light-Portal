@@ -71,20 +71,7 @@ abstract class AbstractMain
 
 	protected function loadAssets(): void
 	{
-		if (! empty($this->modSettings['lp_fa_source'])) {
-			if ($this->modSettings['lp_fa_source'] === 'css_local') {
-				$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
-			} elseif ($this->modSettings['lp_fa_source'] === 'custom' && $this->modSettings['lp_fa_custom']) {
-				$this->loadExtCSS(
-					$this->modSettings['lp_fa_custom'],
-					['seed' => false],
-					'portal_fontawesome'
-				);
-			} else {
-				$this->loadExtJS('https://kit.fontawesome.com/197848597c.js', ['attributes' => ['crossorigin' => 'anonymous']]);
-			}
-		}
-
+		$this->loadFontAwesome();
 		$this->compileLess();
 
 		$this->loadCSSFile('light_portal/flexboxgrid.css');
@@ -93,6 +80,24 @@ abstract class AbstractMain
 		$this->loadCSSFile('light_portal_custom.css');
 
 		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+	}
+
+	protected function loadFontAwesome(): void
+	{
+		if (empty($this->modSettings['lp_fa_source']))
+			return;
+
+		if ($this->modSettings['lp_fa_source'] === 'css_local') {
+			$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
+		} elseif ($this->modSettings['lp_fa_source'] === 'custom' && isset($this->modSettings['lp_fa_custom'])) {
+			$this->loadExtCSS(
+				$this->modSettings['lp_fa_custom'],
+				['seed' => false],
+				'portal_fontawesome'
+			);
+		} elseif (isset($this->modSettings['lp_fa_kit'])) {
+			$this->loadExtJS($this->modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
+		}
 	}
 
 	protected function compileLess(): void

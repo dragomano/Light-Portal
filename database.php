@@ -504,7 +504,7 @@ if (! isset($modSettings['lp_frontpage_layout']))
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'none';
 if (! isset($modSettings['lp_fa_source']))
-	$addSettings['lp_fa_source'] = 'kit';
+	$addSettings['lp_fa_source'] = 'css_cdn';
 updateSettings($addSettings);
 
 if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))

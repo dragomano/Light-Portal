@@ -73,12 +73,19 @@ final class ExtraConfig
 					'custom'    => $this->txt['lp_fa_custom'],
 					'kit'       => $this->txt['lp_fa_kit']
 				],
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';'
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
 			],
 			[
 				'text',
 				'lp_fa_custom',
 				'disabled' => isset($this->modSettings['lp_fa_source']) && $this->modSettings['lp_fa_source'] !== 'custom',
+				'size' => 75
+			],
+			[
+				'text',
+				'lp_fa_kit',
+				'disabled' => isset($this->modSettings['lp_fa_kit']) && $this->modSettings['lp_fa_source'] !== 'kit',
+				'placeholder' => 'https://kit.fontawesome.com/xxx.js',
 				'size' => 75
 			],
 		];
@@ -106,6 +113,9 @@ final class ExtraConfig
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
 				$this->post()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
+
+			if ($this->request()->isNotEmpty('lp_fa_kit'))
+				$this->post()->put('lp_fa_kit', $this->validate($this->request('lp_fa_kit'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_show_comment_block'];
