@@ -16,4 +16,4 @@ Some plugins are not included with the portal, they need to be installed separat
 
 ![Download additional plugins](download_plugins.png)
 
-The plugin package can be installed as a regular modification through **SMF Package Manager**. But you can also just extract the plugin folder from the downloaded archive and move it to the directory `Sources/LightPortal/Addons`.
+The separate plugin package can be installed on the [Plugin import](/plugins/impex) page. But you can also just extract the plugin folder from the downloaded archive and move it to the directory `Sources/LightPortal/Addons`.

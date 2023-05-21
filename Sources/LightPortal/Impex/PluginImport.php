@@ -36,8 +36,6 @@ final class PluginImport extends AbstractImport
 			'description' => $this->txt['lp_plugins_import_description']
 		];
 
-		$this->context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
-
 		$this->context['lp_file_type'] = 'application/zip';
 
 		$this->run();

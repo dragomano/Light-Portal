@@ -121,8 +121,9 @@ final class BlockArea
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
-		if (empty($item))
+		if (empty($item)) {
 			$this->fatalLangError('lp_block_not_found', 404);
+		}
 
 		$this->loadTemplate('LightPortal/ManageBlocks', 'block_post');
 
@@ -136,9 +137,6 @@ final class BlockArea
 		$this->prepareForumLanguages();
 
 		$this->context['current_block'] = $this->repository->getData($item);
-
-		if (empty($this->context['user']['is_admin']) && $this->context['user']['id'] != $this->context['current_block']['user_id'])
-			$this->fatalLangError('lp_block_not_editable');
 
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
@@ -297,9 +295,7 @@ final class BlockArea
 				'permissions'   => FILTER_VALIDATE_INT,
 				'areas'         => FILTER_DEFAULT,
 				'title_class'   => FILTER_DEFAULT,
-				'title_style'   => FILTER_DEFAULT,
 				'content_class' => FILTER_DEFAULT,
-				'content_style' => FILTER_DEFAULT,
 			];
 
 			foreach ($this->context['languages'] as $lang) {
@@ -337,7 +333,6 @@ final class BlockArea
 
 		$this->context['lp_block'] = [
 			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'user_id'       => 0,
 			'title'         => $this->context['current_block']['title'] ?? [],
 			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
 			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
@@ -349,9 +344,7 @@ final class BlockArea
 			'status'        => $this->context['current_block']['status'] ?? 1,
 			'areas'         => $post_data['areas'] ?? $this->context['current_block']['areas'] ?? 'all',
 			'title_class'   => $post_data['title_class'] ?? $this->context['current_block']['title_class'] ?? array_key_first($this->context['lp_all_title_classes']),
-			'title_style'   => $post_data['title_style'] ?? $this->context['current_block']['title_style'] ?? '',
 			'content_class' => $post_data['content_class'] ?? $this->context['current_block']['content_class'] ?? array_key_first($this->context['lp_all_content_classes']),
-			'content_style' => $post_data['content_style'] ?? $this->context['current_block']['content_style'] ?? '',
 			'options'       => $options[$this->context['current_block']['type']],
 		];
 
@@ -398,7 +391,7 @@ final class BlockArea
 		if ($data['areas'] && empty($this->validate($data['areas'], ['options' => ['regexp' => '/' . self::AREAS_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_areas';
 
-		$this->hook('findBlockErrors', [$data, &$post_errors]);
+		$this->hook('findBlockErrors', [&$post_errors, $data]);
 
 		if ($post_errors) {
 			$this->request()->put('preview', true);
@@ -444,30 +437,10 @@ final class BlockArea
 		$this->context['posting_fields']['title_class']['input']['html'] = (new TitleClassSelect)();
 		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
 
-		$this->context['posting_fields']['title_style']['label']['text'] = $this->txt['lp_block_title_style'];
-		$this->context['posting_fields']['title_style']['input'] = [
-			'type'       => 'textarea',
-			'tab'        => 'appearance',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['title_style'],
-			],
-		];
-
 		if (empty($this->context['lp_block']['options']['no_content_class'])) {
 			$this->context['posting_fields']['content_class']['label']['html'] = $this->txt['lp_block_content_class'];
 			$this->context['posting_fields']['content_class']['input']['html'] = (new ContentClassSelect)();
 			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
-
-			$this->context['posting_fields']['content_style']['label']['text'] = $this->txt['lp_block_content_style'];
-			$this->context['posting_fields']['content_style']['input'] = [
-				'type'       => 'textarea',
-				'tab'        => 'appearance',
-				'attributes' => [
-					'maxlength' => 255,
-					'value'     => $this->context['lp_block']['content_style'],
-				],
-			];
 		}
 
 		if (isset($this->context['lp_block']['options']['content'])) {
@@ -553,6 +526,10 @@ final class BlockArea
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
 		$this->context['preview_title'] = $this->getPreviewTitle($this->getIcon($this->context['lp_block']['icon']));
+
+		if (! empty($this->context['lp_block']['options']['parameters']['hide_header'])) {
+			$this->context['preview_title'] = $this->context['lp_block']['title_class'] = '';
+		}
 	}
 
 	private function getPriority(): int
@@ -581,20 +558,7 @@ final class BlockArea
 	{
 		$plugins = array_merge($this->context['lp_enabled_plugins'], array_keys($this->getContentTypes()));
 
-		$this->context['lp_loaded_addons'] = array_merge(
-			$this->context['lp_loaded_addons'] ?? [],
-			[
-				'bbc' => [
-					'icon' => 'fab fa-bimobject'
-				],
-				'html' => [
-					'icon' => 'fab fa-html5'
-				],
-				'php' => [
-					'icon' => 'fab fa-php'
-				]
-			]
-		);
+		$this->context['lp_loaded_addons'] = array_merge($this->context['lp_loaded_addons'] ?? [], $this->getDefaultTypes());
 
 		$this->context['lp_all_blocks'] = [];
 		foreach ($plugins as $addon) {

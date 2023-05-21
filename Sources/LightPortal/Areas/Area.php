@@ -158,4 +158,19 @@ trait Area
 	{
 		return '<span class="float' . $direction . '">' . $text . '</span>';
 	}
+
+	public function getDefaultTypes(): array
+	{
+		return [
+			'bbc' => [
+				'icon' => 'fab fa-bimobject'
+			],
+			'html' => [
+				'icon' => 'fab fa-html5'
+			],
+			'php' => [
+				'icon' => 'fab fa-php'
+			]
+		];
+	}
 }

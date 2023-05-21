@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 4.03.23
+ * @version 14.05.23
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -50,13 +50,12 @@ class EasyMarkdownEditor extends Plugin
 		$this->addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
+			autoDownloadFontAwesome: false,
 			autofocus: true,
 			spellChecker: false,
 			placeholder: "' . $this->txt['lp_post_error_no_content'] . '",
 			forceSync: true,
-			onToggleFullScreen: function () {
-				toggleStickedPanels();
-			},
+			direction: "' . ($this->context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			toolbar: [
 				{
 					name: "bold",
@@ -90,7 +89,7 @@ class EasyMarkdownEditor extends Plugin
 				{
 					name: "image",
 					action: EasyMDE.drawImage,
-					className: "fas fa-picture-o",
+					className: "fas fa-image",
 					title: "' . $this->editortxt['insert_image'] . '"
 				},
 				{
@@ -148,61 +147,13 @@ class EasyMarkdownEditor extends Plugin
 				},
 				"|",
 				{
-					name: "preview",
-					action: EasyMDE.togglePreview,
-					className: "fas fa-eye no-disable",
-					title: "' . $this->txt['preview'] . '"
-				},
-				{
-					name: "side-by-side",
-					action: EasyMDE.toggleSideBySide,
-					className: "fas fa-columns no-disable no-mobile",
-					title: "' . $this->txt['lp_easy_markdown_editor']['toggle'] . '"
-				},
-				{
-					name: "fullscreen",
-					action: EasyMDE.toggleFullScreen,
-					className: "fas fa-arrows-alt no-disable no-mobile",
-					title: "' . $this->editortxt['maximize'] . '"
-				},
-				"|",
-				{
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
 					title: "' . $this->txt['lp_easy_markdown_editor']['guide'] . '"
 				}
 			]
-		});
-
-		function toggleStickedPanels() {
-			let stickedPanels = document.getElementsByClassName("sticky_sidebar");
-			let noticeBlocks = document.getElementsByClassName("noticebox");
-			let scrollingButtons = document.getElementById("gtb_pos");
-
-			if (!stickedPanels && !noticeBlocks && !scrollingButtons)
-				return;
-
-			if (easymde.isFullscreenActive()) {
-				stickedPanels.forEach(function (el) {
-					el.style.position = "initial";
-				})
-				noticeBlocks.forEach(function (el) {
-					el.style.display = "none";
-				})
-				if (scrollingButtons)
-					scrollingButtons.style.display = "none";
-			} else {
-				stickedPanels.forEach(function (el) {
-					el.style.position = "sticky";
-				})
-				noticeBlocks.forEach(function (el) {
-					el.style.display = "block";
-				})
-				if (scrollingButtons)
-					scrollingButtons.style.display = "block";
-			}
-		}', true);
+		});', true);
 	}
 
 	public function credits(array &$links)

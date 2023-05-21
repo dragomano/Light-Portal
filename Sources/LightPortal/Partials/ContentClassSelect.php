@@ -19,13 +19,13 @@ final class ContentClassSelect extends AbstractPartial
 	public function __invoke(array $params = []): string
 	{
 		$params['id'] ??= 'content_class';
-		$params['data'] ??= $this->context['lp_all_content_classes']?? [];
+		$params['data'] ??= $this->context['lp_all_content_classes'] ?? [];
 		$params['value'] ??= $this->context['lp_block']['content_class'] ?? '';
 
 		$data = [];
 		foreach ($params['data'] as $key => $template) {
 			$data[] = [
-				'label' => sprintf($template, empty($key) ? $this->txt['no'] : $key, ''),
+				'label' => sprintf($template, empty($key) ? $this->txt['no'] : $key),
 				'value' => $key,
 			];
 		}

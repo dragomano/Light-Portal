@@ -23,9 +23,10 @@ abstract class AbstractImport implements ImportInterface
 {
 	use Helper;
 
-	protected array $tempCache = [];
-
-	abstract protected function run();
+	public function __construct()
+	{
+		$this->context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
+	}
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
@@ -34,10 +35,6 @@ abstract class AbstractImport implements ImportInterface
 
 		// Might take some time.
 		@set_time_limit(600);
-
-		// Don't allow the cache to get too full
-		$this->tempCache = $this->db_cache ?? [];
-		$this->db_cache = [];
 
 		if ($file['type'] !== 'text/xml')
 			return false;
@@ -108,9 +105,8 @@ abstract class AbstractImport implements ImportInterface
 
 		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => $this->context['import_successful']]));
 
-		// Restore the cache
-		$this->db_cache = $this->tempCache;
-
 		$this->cache()->flush();
 	}
+
+	abstract protected function run();
 }

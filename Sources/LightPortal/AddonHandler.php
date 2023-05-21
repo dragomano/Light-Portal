@@ -16,7 +16,7 @@ namespace Bugo\LightPortal;
 
 use SplObjectStorage;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use MatthiasMullie\Minify;
+use MatthiasMullie\Minify\{CSS, JS};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,9 +37,9 @@ final class AddonHandler
 
 	private PluginStorage $plugins;
 
-	private Minify\CSS $cssMinifier;
+	private CSS $cssMinifier;
 
-	private Minify\JS $jsMinifier;
+	private JS $jsMinifier;
 
 	private int $maxCssFilemtime = 0;
 
@@ -55,9 +55,9 @@ final class AddonHandler
 
 		$this->plugins = new PluginStorage();
 
-		$this->cssMinifier = new Minify\CSS;
+		$this->cssMinifier = new CSS;
 
-		$this->jsMinifier = new Minify\JS;
+		$this->jsMinifier = new JS;
 
 		$this->prepareAssets();
 	}
@@ -134,9 +134,6 @@ final class AddonHandler
 		$assets = [];
 
 		$this->run('prepareAssets', [&$assets]);
-
-		if (empty($assets))
-			return;
 
 		foreach (['css', 'scripts'] as $type) {
 			if (! isset($assets[$type]))

@@ -1,6 +1,5 @@
 {varType array $txt}
 {varType array $context}
-{var $teaser_length = 100}
 
 {if empty($context[lp_active_blocks])}
 <div class="col-xs">
@@ -13,7 +12,7 @@
             <div n:if="!empty($article[image])" class="article_image lazy" data-bg="{$article[image]}"></div>
             <div class="mt-6 body">
                 <a class="article_title" href="{$article[link]}">{$article[title]}</a>
-                <p n:if="!empty($article[teaser])" class="article_teaser">{$article[teaser]|truncate:$teaser_length}</p>
+                <p n:if="!empty($article[teaser])" class="article_teaser">{teaser($article[teaser])}</p>
             </div>
             <div class="mt-6">
                 <a class="bbc_link" href="{$article[link]}">{$txt[lp_read_more]}</a>

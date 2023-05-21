@@ -148,18 +148,11 @@ class Page extends PortalEntity {
 		this.workUrl = smf_scripturl + '?action=admin;area=lp_pages;actions'
 	}
 
-	change(refs) {
-		refs.type.disabled = ! document.querySelector('.pf_content textarea').value;
-	}
+	add(target) {
+		const thisForm = document.forms.page_add_form;
 
-	toggleType(form) {
-		const pageContent = document.getElementById('content');
-
-		ajax_indicator(true);
-
-		if (! pageContent.value) pageContent.value = ' ';
-
-		form.preview.click()
+		thisForm.add_page.value = target.dataset.type;
+		thisForm.submit()
 	}
 }
 

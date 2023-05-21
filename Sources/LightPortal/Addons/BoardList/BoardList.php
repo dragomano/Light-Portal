@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 14.05.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -116,7 +116,7 @@ class BoardList extends Block
 			$content .= '
 				</ul>';
 
-			echo sprintf($this->context['lp_all_content_classes'][$parameters['board_class']], $content, null);
+			echo sprintf($this->context['lp_all_content_classes'][$parameters['board_class']], $content);
 		}
 	}
 

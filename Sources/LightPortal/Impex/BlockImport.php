@@ -52,7 +52,6 @@ final class BlockImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'block_id'      => $block_id = intval($item['block_id']),
-					'user_id'       => intval($item['user_id']),
 					'icon'          => $item->icon,
 					'type'          => str_replace('md', 'markdown', (string) $item->type),
 					'note'          => $item->note,
@@ -63,9 +62,7 @@ final class BlockImport extends AbstractImport
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
 					'title_class'   => str_contains((string) $item->title_class, 'div.') ? 'cat_bar' : $item->title_class,
-					'title_style'   => $item->title_style,
 					'content_class' => str_contains((string) $item->content_class, 'div.') ? 'roundframe' : $item->content_class,
-					'content_style' => $item->content_style
 				];
 
 				if ($item->titles) {
@@ -111,7 +108,6 @@ final class BlockImport extends AbstractImport
 					'{db_prefix}lp_blocks',
 					[
 						'block_id'      => 'int',
-						'user_id'       => 'int',
 						'icon'          => 'string',
 						'type'          => 'string',
 						'note'          => 'string',
@@ -122,9 +118,7 @@ final class BlockImport extends AbstractImport
 						'status'        => 'int',
 						'areas'         => 'string',
 						'title_class'   => 'string',
-						'title_style'   => 'string',
 						'content_class' => 'string',
-						'content_style' => 'string'
 					],
 					$items[$i],
 					['block_id'],

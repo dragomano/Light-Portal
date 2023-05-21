@@ -44,7 +44,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom validating rules when block adding/edition
 
 ### findBlockErrors
-(`$data, &$post_errors`)
+(`&$post_errors, $data`)
 > adding custom error handling when block adding/edition
 
 ### onBlockSaving
@@ -69,7 +69,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 > adding custom validating rules when page adding/edition
 
 ### findPageErrors
-(`$data, &$post_errors`)
+(`&$post_errors, $data`)
 > adding custom error handling when page adding/edition
 
 ### onPageSaving
@@ -84,8 +84,18 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 (`&$data`, `$is_author`)
 > additional preparing the portal current page data
 
+### beforePageContent
+> ability to display something before the portal page content
+
+### afterPageContent
+> ability to display something after the portal page content
+
 ### comments
 > adding custom comment script to the portal current page view
+
+### commentButtons
+(`$comment`)
+> adding custom buttons below each comment
 
 ## Work with plugins
 

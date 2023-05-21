@@ -28,6 +28,7 @@ use Latte\Engine;
 use Latte\Loaders\FileLoader;
 use Latte\Essential\RawPhpExtension;
 use Exception;
+use Latte\RuntimeException;
 
 final class FrontPage
 {
@@ -128,6 +129,8 @@ final class FrontPage
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
+		$customs = glob($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/*.latte');
+		$layouts = array_merge($layouts, $customs);
 
 		foreach ($layouts as $layout) {
 			$values[] = $title = basename($layout);
@@ -150,24 +153,38 @@ final class FrontPage
 		$latte->setTempDirectory($this->cachedir);
 		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
-		$latte->addFunction('icon', function (string $name, string $title = '') {
+		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
+			$text = $latte->invokeFilter('stripHtml', [$text]);
+
+			return $latte->invokeFilter('truncate', [$text, $length]);
+		});
+		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): string {
+			$icon = $this->context['lp_icon_set'][$name];
+
 			if (empty($title)) {
-				return $this->context['lp_icon_set'][$name];
+				return $icon;
 			}
 
-			return str_replace(' class=', ' title="' . $title . '" class=', $this->context['lp_icon_set'][$name]);
+			return str_replace(' class=', ' title="' . $title . '" class=', $icon);
 		});
 
 		$params = [
 			'txt'         => $this->txt,
 			'context'     => $this->context,
-			'modSettings' => $this->modSettings
+			'modSettings' => $this->modSettings,
 		];
 
 		ob_start();
 
 		try {
 			$latte->render($layout, $params);
+		} catch (RuntimeException $e) {
+			if (is_file($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/' . $layout)) {
+				$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/'));
+				$latte->render($layout, $params);
+			} else {
+				$this->fatalError($e->getMessage());
+			}
 		} catch (Exception $e) {
 			$this->fatalError($e->getMessage());
 		}
@@ -238,8 +255,10 @@ final class FrontPage
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{
 		return array_map(function ($item) use ($article) {
-			if ($this->context['user']['is_guest'])
+			if ($this->context['user']['is_guest']) {
 				$item['is_new'] = false;
+				$item['views']['num'] = 0;
+			}
 
 			if (isset($item['date'])) {
 				$item['datetime'] = date('Y-m-d', (int) $item['date']);
@@ -255,7 +274,7 @@ final class FrontPage
 			if (empty($item['image']) && ! empty($this->modSettings['lp_image_placeholder']))
 				$item['image'] = $this->modSettings['lp_image_placeholder'];
 
-			if (isset($item['views']['num']))
+			if (! empty($item['views']['num']))
 				$item['views']['num'] = $this->getFriendlyNumber((int) $item['views']['num']);
 
 			return $item;

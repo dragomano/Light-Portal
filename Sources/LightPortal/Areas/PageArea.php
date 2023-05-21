@@ -206,7 +206,7 @@ final class PageArea
 						'value' => $this->txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . ($this->context['lp_loaded_addons'][$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . ($this->getDefaultTypes()[$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -386,16 +386,26 @@ final class PageArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
+		$this->loadTemplate('LightPortal/ManagePages', 'page_add');
 
-		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_add_title'];
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_add_title'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_add_title'];
-		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_pages;sa=add';
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => $this->txt['lp_pages_add_description'],
 		];
+
+		$this->preparePageList();
+
+		$json = $this->request()->json();
+		$type = $json['add_page'] ?? $this->request('add_page', '') ?? '';
+
+		if (empty($type) && empty($json['search']))
+			return;
+
+		$this->context['lp_current_page']['type'] = $type;
 
 		$this->prepareForumLanguages();
 		$this->validateData();
@@ -404,11 +414,13 @@ final class PageArea
 		$this->preparePreview();
 
 		$this->repository->setData();
+
+		$this->context['sub_template'] = 'page_post';
 	}
 
 	public function edit(): void
 	{
-		$item = (int) $this->request('id');
+		$item = (int) ($this->request('page_id') ?: $this->request('id'));
 
 		if (empty($item)) {
 			$this->fatalLangError('lp_page_not_found', 404);
@@ -506,6 +518,8 @@ final class PageArea
 		if (empty($items))
 			return;
 
+		$this->hook('onPageRemoving', [$items]);
+
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
@@ -532,15 +546,6 @@ final class PageArea
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}user_likes
-			WHERE content_id IN ({array_int:items})
-				AND content_type = {literal:lpp}',
-			[
-				'items' => $items,
-			]
-		);
-
 		$request = $this->smcFunc['db_query']('', '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
@@ -555,7 +560,7 @@ final class PageArea
 		}
 
 		$this->smcFunc['db_free_result']($request);
-		$this->context['lp_num_queries'] += 5;
+		$this->context['lp_num_queries'] += 4;
 
 		if ($comments) {
 			$this->smcFunc['db_query']('', '
@@ -577,8 +582,6 @@ final class PageArea
 
 			$this->context['lp_num_queries'] += 2;
 		}
-
-		$this->hook('onPageRemoving', [$items]);
 	}
 
 	private function promote(array $items, string $type = 'up'): void
@@ -711,8 +714,7 @@ final class PageArea
 	{
 		$post_errors = [];
 
-		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' .
-			$this->context['user']['language']]))
+		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' . $this->context['user']['language']]))
 			$post_errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -727,7 +729,7 @@ final class PageArea
 		if (empty($data['content']))
 			$post_errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [$data, &$post_errors]);
+		$this->hook('findPageErrors', [&$post_errors, $data]);
 
 		if ($post_errors) {
 			$this->request()->put('preview', true);
@@ -742,24 +744,6 @@ final class PageArea
 	{
 		$this->prepareTitleFields();
 
-		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_page_type'];
-		$this->context['posting_fields']['type']['input'] = [
-			'type'       => 'select',
-			'tab'        => 'content',
-			'attributes' => [
-				'disabled' => empty($this->context['lp_page']['title'][$this->context['user']['language']]) && empty($this->context['lp_page']['alias']),
-				'@change'  => 'page.toggleType($root)',
-				'x-ref'    => 'type',
-			],
-		];
-
-		foreach ($this->context['lp_content_types'] as $value => $text) {
-			$this->context['posting_fields']['type']['input']['options'][$text] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_page']['type'],
-			];
-		}
-
 		$this->context['posting_fields']['content']['label']['html'] = ' ';
 		$this->context['posting_fields']['content']['input']['tab'] = 'content';
 
@@ -768,9 +752,8 @@ final class PageArea
 				'type'       => 'textarea',
 				'tab'        => 'content',
 				'attributes' => [
-					'value'    => $this->prepareContent($this->context['lp_page']),
-					'required' => true,
-					'style'    => 'height: 300px',
+					'value' => $this->prepareContent($this->context['lp_page']),
+					'style' => 'height: 300px',
 				],
 			];
 		} else {
@@ -897,7 +880,7 @@ final class PageArea
 
 		$this->checkSubmitOnce('free');
 
-		$this->context['preview_title'] = $this->context['lp_page']['title'][$this->context['user']['language']];
+		$this->context['preview_title']   = $this->context['lp_page']['title'][$this->context['user']['language']];
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_page']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);
@@ -907,7 +890,7 @@ final class PageArea
 		if ($this->context['preview_content'])
 			$this->context['preview_content'] = parse_content($this->context['preview_content'], $this->context['lp_page']['type']);
 
-		$this->context['page_title'] = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
+		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
 		$this->context['preview_title'] = $this->getPreviewTitle();
 	}
 
@@ -936,5 +919,23 @@ final class PageArea
 	{
 		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
 			$this->redirect('action=admin;area=lp_pages;u=' . $this->user_info['id']);
+	}
+
+	private function preparePageList(): void
+	{
+		$defaultTypes = $this->getDefaultTypes();
+
+		$this->context['lp_all_pages'] = [];
+		foreach ($this->context['lp_content_types'] as $type => $title) {
+			$this->context['lp_all_pages'][$type] = [
+				'type'  => $type,
+				'icon'  => $defaultTypes[$type]['icon'] ?? $this->context['lp_loaded_addons'][$type]['icon'],
+				'title' => $this->txt['lp_' . $type]['title'] ?? $title,
+				'desc'  => $this->txt['lp_' . $type]['block_desc'] ?? $this->txt['lp_' . $type]['description']
+			];
+		}
+
+		$titles = array_column($this->context['lp_all_pages'], 'title');
+		array_multisort($titles, SORT_ASC, $this->context['lp_all_pages']);
 	}
 }

@@ -1,6 +1,5 @@
 {varType array $txt}
 {varType array $context}
-{var $teaser_length = 100}
 
 {if empty($context[lp_active_blocks])}
 <div class="col-xs">
@@ -27,7 +26,7 @@
                         <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{$article[date]}</time>
                         <h3>{$article[title]}</h3>
                         <p n:if="!empty($article[teaser])" class="article_teaser">
-                            {$article[teaser]|truncate:$teaser_length}
+                            {teaser($article[teaser])}
                         </p>
                         <a class="read_more" href="{$article[link]}">
                             <span>{$txt[lp_read_more]}</span>

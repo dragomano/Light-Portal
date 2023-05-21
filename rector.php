@@ -13,6 +13,8 @@ return static function (RectorConfig $rectorConfig): void {
 
     $rectorConfig->skip([
         __DIR__ . '/Sources/LightPortal/AddonHandler.php',
+        __DIR__ . '/database.php',
+        __DIR__ . '**/Libs/*',
         __DIR__ . '**/vendor/*',
         __DIR__ . '**/langs/*',
         CountOnNullRector::class,

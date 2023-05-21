@@ -6,12 +6,12 @@
             <exclude name="Themes/default/css/light_portal/plugins.css" />
             <exclude name="Themes/default/scripts/light_portal/plugins.js" />
             <include name="Sources/**" />
+            <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
             <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
             <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
             <exclude name="Sources/LightPortal/Addons/Disqus/**" />
             <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
             <exclude name="Sources/LightPortal/Addons/EhPortal/**" />
-            <exclude name="Sources/LightPortal/Addons/ExtUpload/**" />
             <exclude name="Sources/LightPortal/Addons/EzPortal/**" />
             <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
             <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
@@ -31,6 +31,7 @@
             <exclude name="Sources/LightPortal/Addons/SiteList/**" />
             <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
             <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
+            <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
             <exclude name="Sources/LightPortal/Addons/Uicons/**" />
             <exclude name="Sources/LightPortal/Addons/VkComments/**" />
             <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />

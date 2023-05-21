@@ -3,17 +3,17 @@
 /**
  * LanguageSelect.php
  *
- * @package CustomTranslateWidget (Light Portal)
+ * @package CustomTranslate (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.04.23
+ * @version 20.05.23
  */
 
-namespace Bugo\LightPortal\Addons\CustomTranslateWidget;
+namespace Bugo\LightPortal\Addons\CustomTranslate;
 
 use Bugo\LightPortal\Partials\AbstractPartial;
 
@@ -37,7 +37,7 @@ final class LanguageSelect extends AbstractPartial
 		}
 
 		return /** @lang text */ '
-		<label for="languages">' . $this->txt['lp_custom_translate_widget']['languages'] . '</label>
+		<label for="languages">' . $this->txt['lp_custom_translate']['languages'] . '</label>
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
@@ -48,7 +48,7 @@ final class LanguageSelect extends AbstractPartial
 				search: true,
 				markSearchResults: true,
 				showSelectedOptionsFirst: true,
-				placeholder: "' . ($params['hint'] ?? $this->txt['lp_custom_translate_widget']['languages_select']) . '",
+				placeholder: "' . ($params['hint'] ?? $this->txt['lp_custom_translate']['languages_select']) . '",
 				noSearchResultsText: "' . $this->txt['no_matches'] . '",
 				searchPlaceholderText: "' . $this->txt['search'] . '",
 				allOptionsSelectedText: "' . $this->txt['all'] . '",

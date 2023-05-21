@@ -1,7 +1,7 @@
 {varType array $txt}
 {varType array $context}
 {varType array $modSettings}
-{var $teaser_length = 100}
+
 {var $need_lower_case = $txt[lang_dictionary] in [pl, es, ru, uk]}
 {var $labels = [lp_type_block, lp_type_editor, lp_type_comment, lp_type_parser, lp_type_article, lp_type_frontpage, lp_type_impex, lp_type_block_options, lp_type_page_options, lp_type_icons, lp_type_seo, lp_type_other, lp_type_ssi]}
 
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <div n:if="!empty($article[teaser])" class="col-xs-12">{$article[teaser]|truncate:$teaser_length}</div>
+                <div n:if="!empty($article[teaser])" class="col-xs-12">{teaser($article[teaser])}</div>
             </div>
         </div>
 

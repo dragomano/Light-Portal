@@ -23,7 +23,6 @@ if (! defined('SMF'))
  * @property array $context
  * @property array $modSettings
  * @property array $txt
- * @property array $db_cache
  * @property-read array $smcFunc
  * @property-read array $editortxt
  * @property-read array $user_info
@@ -44,9 +43,8 @@ if (! defined('SMF'))
 trait SMFTrait
 {
 	private array $smfGlobals = [
-		'context', 'modSettings', 'txt', 'db_cache', 'smcFunc', 'editortxt',
-		'user_info', 'user_profile', 'user_settings', 'memberContext', 'settings',
-		'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir', 'cachedir'
+		'context', 'modSettings', 'txt', 'smcFunc', 'editortxt', 'user_info', 'user_profile', 'user_settings', 'memberContext',
+		'settings', 'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir', 'cachedir'
 	];
 
 	/**
@@ -392,18 +390,18 @@ trait SMFTrait
 	private function getContentClasses(): array
 	{
 		return [
-			'roundframe'           => '<div class="roundframe noup" %2$s>%1$s</div>',
-			'roundframe2'          => '<div class="roundframe" %2$s>%1$s</div>',
-			'windowbg'             => '<div class="windowbg noup" %2$s>%1$s</div>',
-			'windowbg2'            => '<div class="windowbg" %2$s>%1$s</div>',
-			'information'          => '<div class="information" %2$s>%1$s</div>',
-			'errorbox'             => '<div class="errorbox" %2$s>%1$s</div>',
-			'noticebox'            => '<div class="noticebox" %2$s>%1$s</div>',
-			'infobox'              => '<div class="infobox" %2$s>%1$s</div>',
-			'descbox'              => '<div class="descbox" %2$s>%1$s</div>',
-			'bbc_code'             => '<div class="bbc_code" %2$s>%1$s</div>',
-			'generic_list_wrapper' => '<div class="generic_list_wrapper" %2$s>%1$s</div>',
-			''                     => '<div%2$s>%1$s</div>',
+			'roundframe'           => '<div class="roundframe noup">%1$s</div>',
+			'roundframe2'          => '<div class="roundframe">%1$s</div>',
+			'windowbg'             => '<div class="windowbg noup">%1$s</div>',
+			'windowbg2'            => '<div class="windowbg">%1$s</div>',
+			'information'          => '<div class="information">%1$s</div>',
+			'errorbox'             => '<div class="errorbox">%1$s</div>',
+			'noticebox'            => '<div class="noticebox">%1$s</div>',
+			'infobox'              => '<div class="infobox">%1$s</div>',
+			'descbox'              => '<div class="descbox">%1$s</div>',
+			'bbc_code'             => '<div class="bbc_code">%1$s</div>',
+			'generic_list_wrapper' => '<div class="generic_list_wrapper">%1$s</div>',
+			''                     => '<div>%1$s</div>',
 		];
 	}
 }

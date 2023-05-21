@@ -27,13 +27,6 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name'     => 'user_id',
-			'type'     => 'mediumint',
-			'size'     => 8,
-			'unsigned' => true,
-			'default'  => 0
-		],
-		[
 			'name' => 'icon',
 			'type' => 'varchar',
 			'size' => 255,
@@ -97,19 +90,7 @@ $tables[] = [
 			'null' => true
 		],
 		[
-			'name' => 'title_style',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
 			'name' => 'content_class',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
-			'name' => 'content_style',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => true
@@ -296,6 +277,13 @@ $tables[] = [
 		],
 		[
 			'name'     => 'updated_at',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
+		],
+		[
+			'name'     => 'deleted_at',
 			'type'     => 'int',
 			'size'     => 10,
 			'unsigned' => true,
@@ -516,7 +504,7 @@ if (! isset($modSettings['lp_frontpage_layout']))
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'none';
 if (! isset($modSettings['lp_fa_source']))
-	$addSettings['lp_fa_source'] = 'kit';
+	$addSettings['lp_fa_source'] = 'css_cdn';
 updateSettings($addSettings);
 
 if (! @is_writable($layouts = $settings['default_theme_dir'] . '/LightPortal'))

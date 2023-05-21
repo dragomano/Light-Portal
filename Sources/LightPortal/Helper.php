@@ -74,7 +74,7 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
-		AddonHandler::getInstance()->run($hook, $vars, $plugins);
+		call_portal_hook($hook, $vars, $plugins);
 	}
 
 	public function require(string $filename): void
@@ -133,7 +133,7 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(['bbc', 'html', 'php'], $this->txt['lp_page_types']);
+		$types = array_combine(['bbc', 'html', 'php'], [$this->txt['lp_bbc']['title'], $this->txt['lp_html']['title'], $this->txt['lp_php']['title']]);
 
 		return $this->user_info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
@@ -210,6 +210,7 @@ trait Helper
 
 	public function getTeaser(string $text, int $length = 150): string
 	{
+		$text = html_entity_decode($text);
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
 		return $this->getShortenText(strip_tags($text), $length) ?: '...';

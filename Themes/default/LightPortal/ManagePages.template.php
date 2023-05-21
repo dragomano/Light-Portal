@@ -1,8 +1,46 @@
 <?php
 
+function template_page_add()
+{
+	global $txt, $context;
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', $txt['lp_pages'], '</h3>
+	</div>
+	<div class="information">', $txt['lp_pages_add_instruction'], '</div>
+	<div id="lp_blocks">
+		<form name="page_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
+			<div class="row">';
+
+	foreach ($context['lp_all_pages'] as $page) {
+		echo '
+				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
+					<div class="item roundframe" data-type="', $page['type'], '" @click="page.add($el)">
+						<i class="', $page['icon'], ' fa-2x" aria-hidden="true"></i>
+						<div>
+							<strong>', $page['title'], '</strong>
+						</div>
+						<hr>
+						<p>', $page['desc'], '</p>
+					</div>
+				</div>';
+	}
+
+	echo '
+			</div>
+			<input type="hidden" name="add_page">
+		</form>
+	</div>
+
+	<script>
+		const page = new Page();
+	</script>';
+}
+
 function template_page_post()
 {
-	global $context, $language, $txt;
+	global $context, $txt, $language;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
 		echo '
@@ -16,6 +54,9 @@ function template_page_post()
 		echo '
 	<div class="cat_bar">
 		<h3 class="catbg">', $context['page_area_title'], '</h3>
+	</div>
+	<div class="information">
+		', $txt['lp_' . $context['lp_page']['type']]['description'], '
 	</div>';
 	}
 
@@ -50,7 +91,7 @@ function template_page_post()
 		onsubmit="submitonce(this);"
 		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\'', $titles, ' }"
 	>
-		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '" @change="page.change($refs)">
+		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">
 			<div class="lp_tabs">
 				<input id="tab1" type="radio" name="tabs" checked>
 				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
@@ -87,6 +128,8 @@ function template_page_post()
 			</div>
 			<br class="clear">
 			<div class="centertext">
+				<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
+				<input type="hidden" name="add_page" value="', $context['lp_page']['type'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
 

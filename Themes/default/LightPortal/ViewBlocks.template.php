@@ -39,6 +39,12 @@ function template_lp_portal_above()
 	$lg = 12 - ((empty($context['lp_blocks']['left']) ? 0 : $context['lp_left_panel_width']['lg']) + (empty($context['lp_blocks']['right']) ? 0 : $context['lp_right_panel_width']['lg']));
 	$xl = 12 - ((empty($context['lp_blocks']['left']) ? 0 : $context['lp_left_panel_width']['xl']) + (empty($context['lp_blocks']['right']) ? 0 : $context['lp_right_panel_width']['xl']));
 
+	// Test hack for lg screens
+	if ($context['lp_left_panel_width']['lg'] == 4) {
+		$lg = 8;
+		$context['lp_right_panel_width']['lg'] = 12;
+	}
+
 	echo '
 			<div class="col-xs', ! empty($context['lp_blocks']['left']) || ! empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-12 col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
 				<div', empty($modSettings['lp_swap_top_bottom']) ? '' : ' class="column reverse"', '>';
@@ -138,9 +144,6 @@ function lp_show_blocks(string $placement = '')
 		echo '
 			<aside id="block_', $block['id'], '" class="', $class, '">';
 
-		if (! empty($block['title_style']) && ! empty($block['title']))
-			$block['title'] = '<span style="' . $block['title_style'] . '">' . $block['title'] . '</span>';
-
 		if (! empty($block['can_edit']) && ! empty($block['title']))
 			$block['title'] = $block['title'] . '<a class="floatright block_edit" href="' . $scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . $context['lp_icon_set']['tools'] . '</a>';
 
@@ -153,17 +156,7 @@ function lp_show_blocks(string $placement = '')
 		if (empty($block['content_class']))
 			$block['content_class'] = '';
 
-		if (empty($block['content_style']))
-			$block['content_style'] = '';
-
-		if (empty($block['title_class']))
-			$block['content_style'] = 'border-radius: 7px;' . $block['content_style'];
-
-		$style = '';
-		if (! empty($block['content_style']))
-			$style = ' style="' . $block['content_style'] . '"';
-
-		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content'], $style);
+		echo sprintf($context['lp_all_content_classes'][$block['content_class']], $block['content']);
 
 		echo '
 			</aside>';

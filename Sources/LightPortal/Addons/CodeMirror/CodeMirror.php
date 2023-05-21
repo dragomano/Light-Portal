@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.23
+ * @version 14.05.23
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -41,7 +41,7 @@ class CodeMirror extends Plugin
 		if (empty($modes = $this->jsonDecode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
 			return;
 
-		$types = ['html', 'php', 'markdown', 'pug', 'twig'];
+		$types = array_keys($this->modes);
 		foreach ($types as $type) {
 			if (($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type)) && $modes[$type] === 1) {
 				$current_mode = $type;

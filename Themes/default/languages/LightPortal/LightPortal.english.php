@@ -198,18 +198,16 @@ $txt['lp_block_areas_set']['topics'] = 'All topics of the forum';
 
 $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
-$txt['lp_block_title_style'] = 'CSS title style';
 $txt['lp_block_content_class'] = 'CSS content class';
-$txt['lp_block_content_style'] = 'CSS content style';
 $txt['lp_block_hide_header'] = 'Hide header';
 
-// Internal blocks
+// Default types
 $txt['lp_bbc']['title'] = 'Custom BBCode';
 $txt['lp_html']['title'] = 'Custom HTML';
 $txt['lp_php']['title'] = 'Custom PHP';
-$txt['lp_bbc']['description'] = 'In this block, you can use any allowed BBCode tags as content.';
-$txt['lp_html']['description'] = 'In this block, you can use any HTML tags as content.';
-$txt['lp_php']['description'] = 'In this block, you can use any PHP code as content.';
+$txt['lp_bbc']['description'] = 'Here you can use any allowed BBCode tags as content.';
+$txt['lp_html']['description'] = 'Here you can use any HTML tags as content.';
+$txt['lp_php']['description'] = 'Here you can use any PHP code as content.';
 
 // Pages
 $txt['lp_pages'] = 'Pages';
@@ -223,7 +221,8 @@ $txt['lp_pages_internal'] = 'Internal pages';
 $txt['lp_pages_internal_description'] = 'Here you can view all internal portal pages. They do not participate in general sampling and searching, but remain accessible by direct links.';
 $txt['lp_pages_add'] = 'Add page';
 $txt['lp_pages_add_title'] = 'Adding a page';
-$txt['lp_pages_add_description'] = 'Fill in the page title. After that, you can change its type, use preview and save.';
+$txt['lp_pages_add_description'] = 'Pages can contain any content, depending on their type.';
+$txt['lp_pages_add_instruction'] = 'Select the desired page type from the list below.';
 $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
@@ -231,7 +230,6 @@ $txt['lp_pages_search'] = 'Alias or title';
 $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscore.';
 $txt['lp_page_type'] = 'Page type';
-$txt['lp_page_types'] = ['BBCode', 'HTML', 'PHP'];
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_keywords'] = 'Keywords';
 $txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
@@ -364,7 +362,6 @@ $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';
 $txt['lp_page_visible_but_disabled'] = 'The page is visible to you, but not activated!';
 $txt['lp_block_not_found'] = 'Block not found!';
-$txt['lp_block_not_editable'] = 'You are not allowed to edit this block!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_alias'] = 'The <strong>alias</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_alias'] = 'The specified alias is not correct!';
@@ -450,4 +447,4 @@ $txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d 
 $txt['lp_quotes'][0] = 'This is the Way ©️';
 $txt['lp_quotes'][1] = 'Stop touching things ©️';
 $txt['lp_quotes'][2] = 'Your name will be legendary ©️';
-$txt['lp_quotes'][3] = 'I will help you. I have spoken ©️';
+$txt['lp_quotes'][3] = 'I will help you. Many have passed through. They seek the same one as you ©️';
