@@ -1,7 +1,6 @@
 {varType array $txt}
 {varType array $context}
 {varType array $modSettings}
-{var $teaser_length = 100}
 
 {if empty($context[lp_active_blocks])}
 <div class="col-xs">
@@ -37,7 +36,7 @@
                     <h3>
                         <a href="{$article[msg_link]}">{$article[title]}</a>
                     </h3>
-                    <p n:if="!empty($article[teaser])">{$article[teaser]|truncate:$teaser_length}</p>
+                    <p n:if="!empty($article[teaser])">{teaser($article[teaser])}</p>
                     <div>
                         <span n:if="!empty($article[category])" class="card_author">{icon('category')|noescape}{$article[category]}</span>
                         {if !empty($modSettings[lp_show_author]) && !empty($article[author])}

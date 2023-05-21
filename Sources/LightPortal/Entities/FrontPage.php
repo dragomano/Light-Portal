@@ -28,6 +28,7 @@ use Latte\Engine;
 use Latte\Loaders\FileLoader;
 use Latte\Essential\RawPhpExtension;
 use Exception;
+use Latte\RuntimeException;
 
 final class FrontPage
 {
@@ -128,6 +129,8 @@ final class FrontPage
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
+		$customs = glob($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/*.latte');
+		$layouts = array_merge($layouts, $customs);
 
 		foreach ($layouts as $layout) {
 			$values[] = $title = basename($layout);
@@ -150,7 +153,12 @@ final class FrontPage
 		$latte->setTempDirectory($this->cachedir);
 		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
-		$latte->addFunction('icon', function (string $name, string $title = ''): string {
+		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
+			$text = $latte->invokeFilter('stripHtml', [$text]);
+
+			return $latte->invokeFilter('truncate', [$text, $length]);
+		});
+		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): string {
 			$icon = $this->context['lp_icon_set'][$name];
 
 			if (empty($title)) {
@@ -170,6 +178,13 @@ final class FrontPage
 
 		try {
 			$latte->render($layout, $params);
+		} catch (RuntimeException $e) {
+			if (is_file($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/' . $layout)) {
+				$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/'));
+				$latte->render($layout, $params);
+			} else {
+				$this->fatalError($e->getMessage());
+			}
 		} catch (Exception $e) {
 			$this->fatalError($e->getMessage());
 		}

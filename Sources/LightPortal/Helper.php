@@ -210,6 +210,7 @@ trait Helper
 
 	public function getTeaser(string $text, int $length = 150): string
 	{
+		$text = html_entity_decode($text);
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
 		return $this->getShortenText(strip_tags($text), $length) ?: '...';
