@@ -1,8 +1,8 @@
 <?php
 
-function template_custom_translate_widget_above() {}
+function template_custom_translate_above() {}
 
-function template_custom_translate_widget_below()
+function template_custom_translate_below()
 {
 	global $txt, $context;
 
