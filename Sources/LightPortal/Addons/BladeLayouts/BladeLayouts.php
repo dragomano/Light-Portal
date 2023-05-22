@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 20.05.23
+ * @version 22.05.23
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
@@ -63,7 +63,7 @@ class BladeLayouts extends Plugin
 		ob_start();
 
 		try {
-			$blade = new BladeOne($templates, $this->cachedir);
+			$blade = new BladeOne($templates, empty($this->modSettings['cache_enable']) ? null : $this->cachedir);
 			$blade->setAuth($this->context['user']['is_logged'] ? $this->context['user']['name'] : null);
 			echo $blade->run($this->context['lp_blade_layouts_plugin']['template'], $params);
 		} catch (Exception $e) {

@@ -150,7 +150,7 @@ final class FrontPage
 			return;
 
 		$latte = new Engine;
-		$latte->setTempDirectory($this->cachedir);
+		$latte->setTempDirectory(empty($this->modSettings['cache_enable']) ? null : $this->cachedir);
 		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
 		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {

@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 20.05.23
+ * @version 22.05.23
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -63,7 +63,10 @@ class TwigLayouts extends Plugin
 		try {
 			$loader = new FilesystemLoader(__DIR__ . '/layouts/');
 			$loader->addPath($this->settings['default_theme_dir'] . '/custom_frontpage_layouts');
-			$twig = new Environment($loader, ['cache' => $this->cachedir, 'debug' => false]);
+			$twig = new Environment($loader, [
+				'cache' => empty($this->modSettings['cache_enable']) ? false : $this->cachedir,
+				'debug' => false
+			]);
 			$twig->addExtension(new DebugExtension());
 			$show_pagination_function = new TwigFunction('show_pagination', function (string $position = 'top') {
 				show_pagination($position);
