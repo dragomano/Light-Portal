@@ -110,7 +110,7 @@ abstract class AbstractMain
 
 		$parser = new Less_Parser([
 			'compress' => true,
-			'cache_dir' => $this->cachedir,
+			'cache_dir' => empty($this->modSettings['cache_enable']) ? null : $this->cachedir,
 		]);
 
 		try {
