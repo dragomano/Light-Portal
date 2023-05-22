@@ -89,6 +89,11 @@ abstract class AbstractPageList implements PageListInterface
 					'link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id']
 				];
 			}
+
+			if ($this->context['user']['is_guest']) {
+				$items[$row['page_id']]['is_new'] = false;
+				$items[$row['page_id']]['views']['num'] = 0;
+			}
 		}
 
 		return $this->getItemsWithUserAvatars($items);
