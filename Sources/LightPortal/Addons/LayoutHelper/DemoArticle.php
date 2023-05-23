@@ -3,17 +3,17 @@
 /**
  * DemoArticle.php
  *
- * @package DevTools (Light Portal)
+ * @package LayoutHelper (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.05.23
+ * @version 23.05.23
  */
 
-namespace Bugo\LightPortal\Addons\DevTools;
+namespace Bugo\LightPortal\Addons\LayoutHelper;
 
 use Bugo\LightPortal\Front\AbstractArticle;
 use DateTime;
@@ -27,11 +27,11 @@ class DemoArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$products = $this->cache('dev_tools_addon_demo_products')
+		$products = $this->cache('layout_helper_addon_demo_products')
 			->setLifeTime(21600)
 			->setFallback(self::class, 'getProducts');
 
-		$users = $this->cache('dev_tools_addon_demo_users')
+		$users = $this->cache('layout_helper_addon_demo_users')
 			->setLifeTime(21600)
 			->setFallback(self::class, 'getUsers');
 
@@ -84,7 +84,7 @@ class DemoArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		$products = $this->cache('dev_tools_addon_demo_products')
+		$products = $this->cache('layout_helper_addon_demo_products')
 			->setLifeTime(21600)
 			->setFallback(self::class, 'getProducts');
 

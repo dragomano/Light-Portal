@@ -16,7 +16,7 @@ function template_layout_switcher_above()
 		echo '
 		<div class="floatright">
 			<form method="post">
-				<label for="layout" style="vertical-align: middle">', $txt['lp_dev_tools']['template'], '</label>
+				<label for="layout" style="vertical-align: middle">', $txt['lp_layout_helper']['template'], '</label>
 				<select id="layout" name="layout" onchange="this.form.submit()">';
 
 		foreach ($context['frontpage_layouts'] as $layout => $title) {

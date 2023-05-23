@@ -3,17 +3,17 @@
 /**
  * Lorem.php
  *
- * @package DevTools (Light Portal)
+ * @package LayoutHelper (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.22
+ * @version 23.05.22
  */
 
-namespace Bugo\LightPortal\Addons\DevTools;
+namespace Bugo\LightPortal\Addons\LayoutHelper;
 
 use Exception;
 

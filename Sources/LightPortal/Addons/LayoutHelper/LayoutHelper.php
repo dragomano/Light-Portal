@@ -1,40 +1,40 @@
 <?php
 
 /**
- * DevTools.php
+ * LayoutHelper.php
  *
- * @package DevTools (Light Portal)
+ * @package LayoutHelper (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.05.23
+ * @version 23.05.23
  */
 
-namespace Bugo\LightPortal\Addons\DevTools;
+namespace Bugo\LightPortal\Addons\LayoutHelper;
 
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class DevTools extends Plugin
+class LayoutHelper extends Plugin
 {
 	public string $type = 'frontpage';
 
-	private string $mode = 'dev_tools_addon_mode';
+	private string $mode = 'layout_helper_addon_mode';
 
 	public function addSettings(array &$config_vars)
 	{
-		$config_vars['dev_tools'][] = ['check', 'show_template_switcher'];
-		$config_vars['dev_tools'][] = ['check', 'fake_cards', 'subtext' => $this->txt['lp_dev_tools']['fake_cards_subtext']];
+		$config_vars['layout_helper'][] = ['check', 'show_template_switcher'];
+		$config_vars['layout_helper'][] = ['check', 'fake_cards', 'subtext' => $this->txt['lp_layout_helper']['fake_cards_subtext']];
 	}
 
 	public function frontModes(array &$modes)
 	{
-		if (empty($this->context['lp_dev_tools_plugin']['fake_cards']))
+		if (empty($this->context['lp_layout_helper_plugin']['fake_cards']))
 			return;
 
 		$modes[$this->mode] = DemoArticle::class;
@@ -44,7 +44,7 @@ class DevTools extends Plugin
 
 	public function frontCustomTemplate(array $layouts)
 	{
-		if (empty($this->context['lp_dev_tools_plugin']['show_template_switcher']))
+		if (empty($this->context['lp_layout_helper_plugin']['show_template_switcher']))
 			return;
 
 		$this->context['frontpage_layouts'] = $layouts;
