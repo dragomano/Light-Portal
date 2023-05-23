@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 07.04.23
+ * @version 23.05.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -105,8 +105,7 @@ class SimpleChat extends Block
 			return;
 
 		$this->loadCssFile('admin.css');
-
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['defer' => true]);
+		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
 
 		$messages = $this->cache('simple_chat_addon_b' . $block_id)
 			->setLifeTime($cache_time)

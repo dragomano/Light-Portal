@@ -2,7 +2,7 @@
 
 function template_manage_blocks()
 {
-	global $context, $scripturl, $txt;
+	global $context, $scripturl, $txt, $settings;
 
 	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
 		$block_group_type = in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']) ? 'default' : 'additional';
@@ -65,7 +65,7 @@ function template_manage_blocks()
 	}
 
 	echo '
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
 	<script>
 		const block = new Block(),
 			defaultBlocks = document.querySelectorAll(".lp_default_blocks tbody"),

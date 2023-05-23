@@ -25,6 +25,9 @@ final class IconSelect extends AbstractPartial
 
 		$template = $this->getIcon($icon) . $icon;
 
+		$this->loadCSSFile('light_portal/tom-select.min.css');
+		$this->loadJavaScriptFile('light_portal/tom-select.complete.min.js');
+
 		return /** @lang text */ '
 		<select id="' . $id . '" name="' . $id . '"></select>
 		<script>

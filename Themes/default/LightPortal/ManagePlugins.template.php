@@ -26,7 +26,6 @@ function template_manage_plugins()
 			</span>
 		</h3>
 	</div>
-	<script src="https://cdn.jsdelivr.net/npm/@shat/stylenames@v1/lib/index.umd.js"></script>
 	<div class="information" x-data>
 		', $txt['lp_plugins_desc'], '
 		<div class="hidden-xs floatright" style="cursor: pointer">

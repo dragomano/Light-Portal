@@ -39,14 +39,10 @@ final class ConfigArea
 
 	public function adminAreas(array &$admin_areas): void
 	{
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/virtual-select-plugin/dist/virtual-select.min.js');
+		$this->loadCSSFile('light_portal/virtual-select.min.css');
+		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js');
-
-		$this->loadExtJS('https://unpkg.com/alpinejs-slug@latest/dist/slug.min.js', ['defer' => true]);
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', ['defer' => true]);
+		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
 		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		$this->loadLanguage('ManageSettings');

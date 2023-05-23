@@ -18,13 +18,13 @@ function template_wrong_template()
 
 function template_layout()
 {
-	global $context;
+	global $context, $settings;
 
 	echo $context['lp_layout'] ?? '';
 
 	echo '
 	<script>window.lazyLoadOptions = {};</script>
-	<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17/dist/lazyload.min.js"></script>';
+	<script type="module" src="', $settings['default_theme_url'], '/scripts/light_portal/lazyload.esm.min.js" async></script>';
 }
 
 /**

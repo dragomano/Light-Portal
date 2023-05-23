@@ -2,7 +2,7 @@
 
 function template_lp_category_settings()
 {
-	global $txt, $context;
+	global $txt, $context, $settings;
 
 	echo '
 	<div class="cat_bar">
@@ -56,7 +56,7 @@ function template_lp_category_settings()
 		</dl>
 	</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
 	<script>
 		const category = new Category();
 		new Sortable(document.getElementById("lp_categories"), {

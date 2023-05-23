@@ -14,6 +14,13 @@
     },
     "scripts": {
         "check": "vendor/bin/rector process --dry-run --clear-cache",
-        "build": "vendor/bin/phing"
+        "mix": [
+            "npm update",
+            "npm run prod"
+        ],
+        "build": [
+            "composer mix",
+            "vendor/bin/phing"
+        ]
     }
 }
