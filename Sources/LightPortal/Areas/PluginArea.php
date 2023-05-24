@@ -287,10 +287,10 @@ final class PluginArea
 		ksort($typeCount);
 
 		$this->context['insert_after_template'] .= '
-		<script src="https://cdn.jsdelivr.net/npm/chart.js@3/dist/chart.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			const pageChart = document.querySelector("#addonChart");
-			new Chart(pageChart, {
+			const myChart = new Chart(pageChart, {
 				type: "pie",
 				data: {
 					labels: ["' . implode('", "', $this->context['lp_plugin_types']) . '"],
