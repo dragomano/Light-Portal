@@ -22,6 +22,7 @@
             <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
             <exclude name="Sources/LightPortal/Addons/Jodit/**" />
             <exclude name="Sources/LightPortal/Addons/KarmaPostRating/**" />
+            <exclude name="Sources/LightPortal/Addons/KintDebugger/**" />
             <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
             <exclude name="Sources/LightPortal/Addons/Markdown/**" />
             <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />

@@ -1,0 +1,8 @@
+{
+    "require": {
+        "kint-php/kint": "^5.0"
+    },
+    "autoload": {
+        "files": ["functions.php"]
+    }
+}
