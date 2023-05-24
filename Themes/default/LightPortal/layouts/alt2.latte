@@ -16,7 +16,7 @@
             <div class="article_body">
                 <div>
                     <header>
-                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]}</time>
+                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]|noescape}</time>
                         <h3><a href="{$article[msg_link]}">{$article[title]}</a></h3>
                     </header>
                     <section n:if="!empty($article[teaser])">

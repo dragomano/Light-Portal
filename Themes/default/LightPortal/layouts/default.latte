@@ -31,7 +31,7 @@
                     <span class="card_date smalltext">
                         <a n:if="!empty($article[section][name])" class="floatleft" href="{$article[section][link]}">{icon('category')|noescape}{$article[section][name]}</a>
                         &nbsp;<span n:if="$article[is_new] && empty($article[image])" class="new_posts">{$txt['new']}</span>
-                        <time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]}</time>
+                        <time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]|noescape}</time>
                     </span>
                     <h3>
                         <a href="{$article[msg_link]}">{$article[title]}</a>

@@ -23,7 +23,7 @@
                         {if !empty($article[replies][after])}{$article[replies][after]}{/if}
                     </span>
                     <a class="card-title" href="{$article[link]}">{$article[title]}</a>
-                    <div class="card-subtitle">{$article[date]}</div>
+                    <div class="card-subtitle">{$article[date]|noescape}</div>
                 </div>
                 <div n:if="!empty($article[teaser])" class="card-body">{teaser($article[teaser])}</div>
             </div>

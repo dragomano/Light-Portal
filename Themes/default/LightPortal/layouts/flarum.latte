@@ -32,7 +32,7 @@
                             <div class="smalltext">
                                 <span n:if="!empty($article[replies][num])">{icon('reply')|noescape}</span>
                                 <span n:if="!empty($modSettings[lp_show_author]) && !empty($article[author])">{$article[author][name] ?? $txt[guest_title]}</span>
-                                <span n:attr="style: $need_lower_case ? 'text-transform: lowercase' : ''">{$article[date]}</span>
+                                <span n:attr="style: $need_lower_case ? 'text-transform: lowercase' : ''">{$article[date]|noescape}</span>
                             </div>
                         </div>
                         <div class="righttext smalltext hidden-xs hidden-sm col-xs-2">

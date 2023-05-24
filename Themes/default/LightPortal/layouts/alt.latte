@@ -37,7 +37,7 @@
                         <a class="bbc_link" href="{$article[link]}">{$txt[lp_read_more]}</a>
                     </div>
                     <div class="centertext">
-                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]}</time>
+                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]|noescape}</time>
                         {if !empty($modSettings[lp_show_author]) && !empty($article[author])}
                             {if !empty($article[author][id]) && !empty($article[author][name])}
                                 | {icon('user')|noescape}<a href="{$article[author][link]}" class="card_author">{$article[author][name]}</a>
