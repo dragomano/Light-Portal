@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 22.05.23
+ * @version 25.05.23
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
@@ -40,7 +40,7 @@ class BladeLayouts extends Plugin
 			'subtext' => sprintf(
 				$this->txt['lp_blade_layouts']['template_subtext'],
 				'.blade.php',
-				$this->settings['default_theme_dir'] . '/custom_frontpage_layouts'
+				$this->settings['default_theme_dir'] . '/portal_layouts'
 			)
 		];
 	}
@@ -51,7 +51,7 @@ class BladeLayouts extends Plugin
 
 		$templates = [
 			__DIR__ . '/layouts/',
-			$this->settings['default_theme_dir'] . '/custom_frontpage_layouts'
+			$this->settings['default_theme_dir'] . '/portal_layouts'
 		];
 
 		$params = [
@@ -91,7 +91,7 @@ class BladeLayouts extends Plugin
 	private function getLayouts(): array
 	{
 		$layouts = glob(__DIR__ . '/layouts/*.blade.php');
-		$customs = glob($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/*.blade.php');
+		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.blade.php');
 		$layouts = array_merge($layouts, $customs);
 
 		$results = [];

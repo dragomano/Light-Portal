@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.05.23
+ * @version 24.05.23
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -37,7 +37,7 @@ class BootstrapIcons extends Plugin
 	public function prepareIconList(array &$all_icons)
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
-			$content = file_get_contents('https://raw.githubusercontent.com/twbs/icons/main/font/bootstrap-icons.json');
+			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
 			$json = array_flip($this->jsonDecode($content, true));
 
 			$icons = [];

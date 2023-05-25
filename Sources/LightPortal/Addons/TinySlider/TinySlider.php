@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 24.05.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -25,7 +25,6 @@ class TinySlider extends Block
 	public string $icon = 'far fa-images';
 
 	private array $params = [
-		'use_cdn'            => true,
 		'axis'               => 'horizontal',
 		'num_items'          => 1,
 		'gutter'             => 0,
@@ -74,7 +73,6 @@ class TinySlider extends Block
 			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
-		$parameters['use_cdn']            = FILTER_VALIDATE_BOOLEAN;
 		$parameters['axis']               = FILTER_DEFAULT;
 		$parameters['num_items']          = FILTER_VALIDATE_INT;
 		$parameters['gutter']             = FILTER_VALIDATE_INT;
@@ -100,16 +98,6 @@ class TinySlider extends Block
 	{
 		if ($this->context['lp_block']['type'] !== 'tiny_slider')
 			return;
-
-		$this->context['posting_fields']['use_cdn']['label']['text'] = $this->txt['lp_tiny_slider']['use_cdn'];
-		$this->context['posting_fields']['use_cdn']['label']['after'] = ' <img src="https://data.jsdelivr.com/v1/package/npm/tiny-slider/badge?style=rounded" alt="">';
-		$this->context['posting_fields']['use_cdn']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'use_cdn',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_cdn']
-			]
-		];
 
 		$this->context['posting_fields']['axis']['label']['text'] = $this->txt['lp_tiny_slider']['axis'];
 		$this->context['posting_fields']['axis']['input'] = [
@@ -406,13 +394,8 @@ class TinySlider extends Block
 		if (empty($tiny_slider_html))
 			return;
 
-		if ($parameters['use_cdn']) {
-			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css');
-			$this->loadExtJS('https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js');
-		} else {
-			$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-			$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
-		}
+		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
+		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
 
 		$this->addInlineJavaScript('
 			let slider' . ($this->request()->has('preview') ? uniqid() : $block_id) . ' = tns({

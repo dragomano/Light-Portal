@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 24.05.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -28,9 +28,9 @@ class Likely extends Block
 
 	public function blockOptions(array &$options)
 	{
-		$options['likely']['parameters']['size']    = 'small';
-		$options['likely']['parameters']['skin']    = 'normal';
-		$options['likely']['parameters']['buttons'] = $this->buttons;
+		$options['likely']['parameters']['size']      = 'small';
+		$options['likely']['parameters']['dark_mode'] = false;
+		$options['likely']['parameters']['buttons']   = $this->buttons;
 	}
 
 	public function validateBlockData(array &$parameters, string $type)
@@ -38,9 +38,9 @@ class Likely extends Block
 		if ($type !== 'likely')
 			return;
 
-		$parameters['size']    = FILTER_DEFAULT;
-		$parameters['skin']    = FILTER_DEFAULT;
-		$parameters['buttons'] = FILTER_DEFAULT;
+		$parameters['size']      = FILTER_DEFAULT;
+		$parameters['dark_mode'] = FILTER_VALIDATE_BOOLEAN;
+		$parameters['buttons']   = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields()
@@ -64,53 +64,49 @@ class Likely extends Block
 			];
 		}
 
-		$this->context['posting_fields']['skin']['label']['text'] = $this->txt['lp_likely']['skin'];
-		$this->context['posting_fields']['skin']['input'] = [
-			'type' => 'radio_select',
+		$this->context['posting_fields']['dark_mode']['label']['text'] = $this->txt['lp_likely']['dark_mode'];
+		$this->context['posting_fields']['dark_mode']['input'] = [
+			'type' => 'checkbox',
 			'attributes' => [
-				'id' => 'skin'
+				'id'      => 'dark_mode',
+				'checked' => (bool) $this->context['lp_block']['options']['parameters']['dark_mode']
 			],
-			'options' => []
 		];
 
-		foreach ($this->txt['lp_likely']['skin_set'] as $value => $title) {
-			$this->context['posting_fields']['skin']['input']['options'][$title] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_block']['options']['parameters']['skin']
-			];
-		}
-
-		if (! is_array($this->context['lp_block']['options']['parameters']['buttons'])) {
-			$this->context['lp_block']['options']['parameters']['buttons'] = explode(',', $this->context['lp_block']['options']['parameters']['buttons']);
-		}
-
 		$this->context['posting_fields']['buttons']['label']['html'] = $this->txt['lp_likely']['buttons'];
-		$this->context['posting_fields']['buttons']['input']['html'] = (new ButtonSelect)($this->buttons);
+		$this->context['posting_fields']['buttons']['input']['html'] = (new ButtonSelect)([
+			'data'  => $this->buttons,
+			'value' => is_array($this->context['lp_block']['options']['parameters']['buttons']) ? $this->context['lp_block']['options']['parameters']['buttons'] : explode(',', $this->context['lp_block']['options']['parameters']['buttons'])
+		]);
 		$this->context['posting_fields']['buttons']['input']['tab']  = 'content';
+	}
+
+	public function prepareAssets(array &$assets)
+	{
+		$assets['css']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
+		$assets['scripts']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
-		if ($type !== 'likely')
+		if ($type !== 'likely' || empty($parameters['buttons']))
 			return;
 
-		if (empty($parameters['buttons']))
-			return;
-
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/ilyabirman-likely@2/release/likely.min.js');
+		$this->loadCSSFile('light_portal/likely/likely.min.css');
+		$this->loadJavaScriptFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
 		echo '
 			<div class="centertext likely_links">
-				<div class="likely likely-', $parameters['size'], ($parameters['skin'] == 'light' ? ' likely-light' : ''), '">';
+				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
 
 		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
 
 		foreach ($buttons as $service) {
-			if (! empty($this->txt['lp_likely']['buttons_set'][$service])) {
-				echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', $this->txt['lp_likely']['buttons_set'][$service], '"', (! empty($this->modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $this->modSettings['optimus_tw_cards'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $this->settings['og_image'] . '"' : ''), '>', $this->txt['lp_likely']['buttons_set'][$service], '</div>';
-			}
+			if (empty($this->txt['lp_likely']['buttons_set'][$service]))
+				continue;
+
+			echo '
+					<div class="', $service, '" tabindex="0" role="link" aria-label="', $this->txt['lp_likely']['buttons_set'][$service], '"', (! empty($this->modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $this->modSettings['optimus_tw_cards'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $this->settings['og_image'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'odnoklassniki' ? ' data-imageurl="' . $this->settings['og_image'] . '"' : ''), '>', $this->txt['lp_likely']['buttons_set'][$service], '</div>';
 		}
 
 		echo '
@@ -123,9 +119,9 @@ class Likely extends Block
 		$links[] = [
 			'title' => 'Likely',
 			'link' => 'https://github.com/NikolayRys/Likely',
-			'author' => 'Artem Sapegin, Evgeny Steblinsky, Ilya Birman',
+			'author' => 'Nikolay Rys, Ilya Birman, Evgeny Steblinsky, Artem Sapegin',
 			'license' => [
-				'name' => 'the MIT License',
+				'name' => 'the ISC License',
 				'link' => 'https://github.com/NikolayRys/Likely/blob/master/license.txt'
 			]
 		];

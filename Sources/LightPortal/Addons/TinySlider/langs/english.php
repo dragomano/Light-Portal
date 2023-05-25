@@ -3,7 +3,6 @@
 return [
 	'title' => 'Image slider',
 	'description' => 'Tiny slider for all purposes.',
-	'use_cdn' => 'Download scripts and styles from CDN',
 	'axis' => 'The axis of the slider',
 	'num_items' => 'Number of slides being displayed in the viewport',
 	'num_items_subtext' => 'If slides less or equal than items, the slider won\'t be initialized.',

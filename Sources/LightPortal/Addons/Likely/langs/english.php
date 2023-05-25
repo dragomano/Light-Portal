@@ -8,11 +8,7 @@ return [
 		'small' => 'Small',
 		'big' => 'Big'
 	],
-	'skin' => 'Button skin',
-	'skin_set' => [
-		'normal' => 'Normal',
-		'light' => 'Light'
-	],
+	'dark_mode' => 'Use buttons for dark mode',
 	'buttons' => 'Displayed buttons',
 	'select_buttons' => 'Select social buttons to display',
 	'buttons_set' => [

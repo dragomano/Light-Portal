@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 22.05.23
+ * @version 25.05.23
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -43,7 +43,7 @@ class TwigLayouts extends Plugin
 			'subtext' => sprintf(
 				$this->txt['lp_twig_layouts']['template_subtext'],
 				'.twig',
-				$this->settings['default_theme_dir'] . '/custom_frontpage_layouts'
+				$this->settings['default_theme_dir'] . '/portal_layouts'
 			)
 		];
 	}
@@ -62,7 +62,7 @@ class TwigLayouts extends Plugin
 
 		try {
 			$loader = new FilesystemLoader(__DIR__ . '/layouts/');
-			$loader->addPath($this->settings['default_theme_dir'] . '/custom_frontpage_layouts');
+			$loader->addPath($this->settings['default_theme_dir'] . '/portal_layouts');
 			$twig = new Environment($loader, [
 				'cache' => empty($this->modSettings['cache_enable']) ? false : $this->cachedir,
 				'debug' => false
@@ -102,7 +102,7 @@ class TwigLayouts extends Plugin
 	private function getLayouts(): array
 	{
 		$layouts = glob(__DIR__ . '/layouts/*.twig');
-		$customs = glob($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/*.twig');
+		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.twig');
 		$layouts = array_merge($layouts, $customs);
 
 		$results = [];

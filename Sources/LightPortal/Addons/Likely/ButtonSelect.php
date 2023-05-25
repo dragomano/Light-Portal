@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 24.05.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -19,13 +19,16 @@ use Bugo\LightPortal\Partials\AbstractPartial;
 
 final class ButtonSelect extends AbstractPartial
 {
-	public function __invoke(array $buttons): string
+	public function __invoke(array $params = []): string
 	{
+		$params['data']  ??= [];
+		$params['value'] ??= [];
+
 		$data = $items = [];
-		foreach ($buttons as $button) {
+		foreach ($params['data'] as $button) {
 			$data[] = '{label: "' . $button . '", value: "' . $button . '"}';
 
-			if (in_array($button, $this->context['lp_block']['options']['parameters']['buttons'])) {
+			if (in_array($button, $params['value'])) {
 				$items[] = $this->jsEscape($button);
 			}
 		}
