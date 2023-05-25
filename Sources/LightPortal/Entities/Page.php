@@ -378,34 +378,49 @@ final class Page
 		if (empty($this->context['lp_page']) || empty($this->modSettings['lp_show_prev_next_links']))
 			return;
 
+		$titles = $this->getEntityList('title');
+
+		$orders = [
+			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
+			'p.created_at DESC',
+			'p.created_at',
+			'date DESC'
+		];
+
+		$within_category = str_contains(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'action=portal;sa=categories;id');
+
 		$request = $this->smcFunc['db_query']('', '
 			(
-				SELECT p.alias, t.title
+				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date, CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
-				WHERE p.category_id = {int:category_id}
-					AND p.created_at < {int:created_at}
+					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
+					LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
+				WHERE p.page_id != {int:page_id}' . ($within_category ? '
+					AND p.category_id = {int:category_id}' : '') . '
+					AND p.created_at <= {int:created_at}
 					AND p.created_at <= {int:current_time}
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
-				ORDER BY created_at DESC
+					ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT 1
 			)
 			UNION ALL
 			(
-				SELECT p.alias, t.title
+				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date, CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang} AND t.type = {literal:page})
-				WHERE p.category_id = {int:category_id}
-					AND p.created_at > {int:created_at}
+					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
+					LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
+				WHERE p.page_id != {int:page_id}' . ($within_category ? '
+					AND p.category_id = {int:category_id}' : '') . '
+					AND p.created_at >= {int:created_at}
 					AND p.created_at <= {int:current_time}
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
-				ORDER BY created_at DESC
+				ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 				LIMIT 1
 			)',
 			[
-				'current_lang' => $this->context['user']['language'],
+				'page_id'      => $this->context['lp_page']['id'],
 				'category_id'  => $this->context['lp_page']['category_id'],
 				'created_at'   => $this->context['lp_page']['created_at'],
 				'current_time' => time(),
@@ -414,23 +429,23 @@ final class Page
 			]
 		);
 
-		[$prev_alias, $prev_title] = $this->smcFunc['db_fetch_row']($request);
-		[$next_alias, $next_title] = $this->smcFunc['db_fetch_row']($request);
+		[$prev_id, $prev_alias] = $this->smcFunc['db_fetch_row']($request);
+		[$next_id, $next_alias] = $this->smcFunc['db_fetch_row']($request);
 
 		$this->smcFunc['db_free_result']($request);
 		$this->context['lp_num_queries']++;
 
-		if (!empty($prev_alias)) {
+		if (! empty($prev_alias)) {
 			$this->context['lp_page']['prev'] = [
 				'link'  => LP_PAGE_URL . $prev_alias,
-				'title' => $prev_title
+				'title' => $this->getTranslatedTitle($titles[$prev_id])
 			];
 		}
 
-		if (!empty($next_alias)) {
+		if (! empty($next_alias)) {
 			$this->context['lp_page']['next'] = [
 				'link'  => LP_PAGE_URL . $next_alias,
-				'title' => $next_title
+				'title' => $this->getTranslatedTitle($titles[$next_id])
 			];
 		}
 	}
