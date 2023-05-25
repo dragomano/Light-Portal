@@ -12,13 +12,12 @@ Since version 2.2.0 we use [Latte](https://latte.nette.org/syntax) to render fro
 
 In addition to existing layouts, you can always add your own.
 
-To do this, create a file `custom.latte` in the `/Themes/default/custom_frontpage_layouts` directory:
+To do this, create a file `custom.latte` in the `/Themes/default/portal_layouts` directory:
 
 ```latte
 {varType array $txt}
 {varType array $context}
 {varType array $modSettings}
-{var $teaser_length = 100}
 
 {if empty($context[lp_active_blocks])}
 <div class="col-xs">
@@ -38,7 +37,7 @@ To do this, create a file `custom.latte` in the `/Themes/default/custom_frontpag
                     <a href="{$article[msg_link]}">{$article[title]}</a>
                 </h3>
                 <p n:if="!empty($article[teaser])">
-                    {$article[teaser]|truncate:$teaser_length}
+                    {teaser($article[teaser])}
                 </p>
             </div>
 
@@ -56,7 +55,7 @@ After that you will see a new frontpage layout - `Custom` - on the portal settin
 
 You can create as many such layouts as you want. Use `debug.latte` and other layouts in `/Themes/default/LightPortal/layouts` directory as examples.
 
-To customize stylesheets, create a file `light_portal_custom.css` in the `/Themes/default/css` directory:
+To customize stylesheets, create a file `portal_custom.css` in the `/Themes/default/css` directory:
 
 ```css {3}
 /* Custom layout */

@@ -129,7 +129,7 @@ final class FrontPage
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
-		$customs = glob($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/*.latte');
+		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.latte');
 		$layouts = array_merge($layouts, $customs);
 
 		foreach ($layouts as $layout) {
@@ -179,8 +179,8 @@ final class FrontPage
 		try {
 			$latte->render($layout, $params);
 		} catch (RuntimeException $e) {
-			if (is_file($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/' . $layout)) {
-				$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/custom_frontpage_layouts/'));
+			if (is_file($this->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
+				$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/portal_layouts/'));
 				$latte->render($layout, $params);
 			} else {
 				$this->fatalError($e->getMessage());

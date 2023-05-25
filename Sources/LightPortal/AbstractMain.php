@@ -77,7 +77,7 @@ abstract class AbstractMain
 		$this->loadCSSFile('light_portal/flexboxgrid.css');
 		$this->loadCSSFile('light_portal/portal.css');
 		$this->loadCSSFile('light_portal/plugins.css');
-		$this->loadCSSFile('light_portal_custom.css');
+		$this->loadCSSFile('portal_custom.css');
 
 		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
 	}
