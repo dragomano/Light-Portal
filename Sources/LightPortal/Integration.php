@@ -412,46 +412,27 @@ final class Integration extends AbstractMain
 			return $result;
 
 		if ($actions['action'] === LP_ACTION) {
-			if ($actions['sa'] === 'tags') {
+			$result = sprintf($this->txt['lp_who_viewing_frontpage'], LP_BASE_URL);
+
+			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
 				$tags = $this->getEntityList('tag');
 
 				isset($actions['id'])
 					? $result = sprintf($this->txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
 					: $result = sprintf($this->txt['lp_who_viewing_tags'], LP_BASE_URL . ';sa=tags');
-			} else {
-				$result = sprintf($this->txt['lp_who_viewing_frontpage'], LP_BASE_URL);
+			}
+
+			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
+				$categories = $this->getEntityList('category');
+
+				isset($actions['id'])
+					? $result = sprintf($this->txt['lp_who_viewing_the_category'], LP_BASE_URL . ';sa=categories;id=' . $actions['id'], $categories[$actions['id']]['name'])
+					: $result = sprintf($this->txt['lp_who_viewing_categories'], LP_BASE_URL . ';sa=categories');
 			}
 		}
 
 		if ($actions['action'] === 'forum')
 			$result = sprintf($this->txt['who_index'], $this->scripturl . '?action=forum', $this->context['forum_name']);
-
-		if ($actions['action'] === 'lp_settings')
-			$result = sprintf($this->txt['lp_who_viewing_portal_settings'], $this->scripturl . '?action=admin;area=lp_settings');
-
-		if ($actions['action'] === 'lp_blocks') {
-			if ($actions['area'] === 'lp_blocks') {
-				$result = sprintf($this->txt['lp_who_viewing_portal_blocks'], $this->scripturl . '?action=admin;area=lp_blocks');
-
-				if ($actions['sa'] === 'edit' && $actions['id'])
-					$result = sprintf($this->txt['lp_who_viewing_editing_block'], $actions['id']);
-
-				if ($actions['sa'] === 'add')
-					$result = $this->txt['lp_who_viewing_adding_block'];
-			}
-		}
-
-		if ($actions['action'] === 'lp_pages') {
-			if ($actions['area'] === 'lp_pages') {
-				$result = sprintf($this->txt['lp_who_viewing_portal_pages'], $this->scripturl . '?action==admin;area=lp_pages');
-
-				if ($actions['sa'] === 'edit' && $actions['id'])
-					$result = sprintf($this->txt['lp_who_viewing_editing_page'], $actions['id']);
-
-				if ($actions['sa'] === 'add')
-					$result = $this->txt['lp_who_viewing_adding_page'];
-			}
-		}
 
 		return $result;
 	}
