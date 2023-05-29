@@ -673,7 +673,7 @@ final class PageArea
 			'alias'       => $post_data['alias'] ?? $this->context['lp_current_page']['alias'] ?? '',
 			'description' => $post_data['description'] ?? $this->context['lp_current_page']['description'] ?? '',
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
-			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? $this->modSettings['lp_page_editor_type_default'] ?? 'bbc',
+			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
 			'status'      => $post_data['status'] ?? $this->context['lp_current_page']['status'] ?? Page::STATUS_UNAPPROVED,
 			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),

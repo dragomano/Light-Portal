@@ -58,7 +58,6 @@ final class ExtraConfig
 			['callback', 'comment_settings'],
 			'',
 			['check', 'lp_show_items_as_articles'],
-			['select', 'lp_page_editor_type_default', $this->context['lp_content_types']],
 			['int', 'lp_page_maximum_keywords', 'min' => 1],
 			['select', 'lp_permissions_default', $this->txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_acp'],
