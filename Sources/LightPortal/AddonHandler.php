@@ -135,7 +135,7 @@ final class AddonHandler
 
 		$this->run('prepareAssets', [&$assets]);
 
-		foreach (['css', 'scripts'] as $type) {
+		foreach (['css', 'scripts', 'images'] as $type) {
 			if (! isset($assets[$type]))
 				continue;
 
