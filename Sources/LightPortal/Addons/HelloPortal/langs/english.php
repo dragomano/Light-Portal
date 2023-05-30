@@ -51,7 +51,7 @@ return [
 		'Each line in this table represents a corresponding page.',
 		'Date - generalized field for the date of page creation and the date of page updating.',
 		'You want to know how many times this or that page has been viewed, don\'t you?',
-		'Page alias is a part of page after %s in address bar',
+		'Page alias is the part of the address after %s',
 		'Status is status! Turn pages on or off with a single tap.',
 		'In the additional actions, editing and deleting pages are hidden.',
 		'When it gets to be a lot of pages, a search will come in handy!',
@@ -65,7 +65,7 @@ return [
 	],
 	'add_plugins_tour' => [
 		'Which is more interesting - to study ready-made plugins or to make your own?',
-		'Whatever you call the ship, that is how it sails. Does this apply to plugins? Who knows....',
+		'As you name the boat, so shall it float.',
 		'No way to make a plugin without a type. Like a ship without an anchor.',
 		'The description should be clear to anyone.',
 		'No way to make a plugin without a census. The world needs to know its heroes!',

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.05.23
+ * @version 28.05.23
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -46,7 +46,9 @@ class EasyMarkdownEditor extends Plugin
 		.CodeMirror pre {
 			max-height: none;
 		}');
+
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
+
 		$this->addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),

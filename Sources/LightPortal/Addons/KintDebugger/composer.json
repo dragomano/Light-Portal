@@ -4,5 +4,8 @@
     },
     "autoload": {
         "files": ["functions.php"]
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }

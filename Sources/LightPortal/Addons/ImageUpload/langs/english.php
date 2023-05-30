@@ -2,7 +2,7 @@
 
 return [
 	'description' => 'Adds attaching local images to portal pages.',
-	'allowed_extensions' => 'Allowed image extensions for download',
+	'allowed_extensions' => 'Allowed image extensions for upload',
 	'allowed_extensions_subtext' => 'For example: <strong>.jpg,.jpeg,.png</strong> or <strong>image/*</strong> (all image types).',
 	'max_filesize' => 'Maximum file size',
 	'image_width' => 'Maximum width of uploaded images',

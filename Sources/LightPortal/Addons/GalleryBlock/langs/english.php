@@ -2,7 +2,7 @@
 
 return [
 	'title' => 'Images from SMF Gallery',
-	'description' => 'Displays images from selected categories <a class="bbc_link" href="https://custom.simplemachines.org/index.php?mod=473">SMF Gallery</a>.',
+	'description' => 'Displays images from selected <a class="bbc_link" href="https://custom.simplemachines.org/index.php?mod=473">SMF Gallery</a> categories.',
 	'categories' => 'Image categories',
 	'categories_select' => 'If you do not need all the images, but only from certain categories',
 	'num_images' => 'Number of images to display',
