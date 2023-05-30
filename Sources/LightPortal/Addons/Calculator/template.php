@@ -25,5 +25,5 @@ function show_calculator_block(int $block_id): void
 			<button class="button active key--equal" data-action="calculate">=</button>
 		</div>
 	</div>
-	<script defer>new Calc(', $block_id, ')</script>';
+	<script>new Calc(', $block_id, ')</script>';
 }

@@ -28,7 +28,7 @@ final class PageIconSelect extends AbstractPartial
 		<div id="' . $id . '" name="' . $id . '"></div>
 		<input type="checkbox" name="show_in_menu" id="show_in_menu"' . ($this->context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . ' class="checkbox">
 		<label class="label" for="show_in_menu" style="margin-left: 1em"></label>
-		<script defer>
+		<script>
 			VirtualSelect.init({
 				ele: "#' . $id . '",' . ($this->context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '

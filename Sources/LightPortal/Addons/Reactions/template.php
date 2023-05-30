@@ -40,7 +40,7 @@ function show_page_reactions(): void
 		</div>
 	</div>
 
-	<script defer>
+	<script>
 		document.addEventListener("alpine:init", () => {
 			document.addEventListener("addReaction", (event) => {
 				let isComment = typeof event.detail.comment !== "undefined"
