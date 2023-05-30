@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <project name="Light Portal" default="build">
     <target name="build">
-        <fileset dir="." id="files">
+        <fileset dir="." id="license">
+            <include name="LICENSE" />
+        </fileset>
+        <fileset dir="./src" id="files">
             <include name="Themes/**" />
             <exclude name="Themes/default/css/light_portal/plugins.css" />
             <exclude name="Themes/default/css/light_portal/portal.css" />
@@ -39,7 +42,6 @@
             <exclude name="Sources/LightPortal/Addons/VkComments/**" />
             <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
             <include name="database.php" />
-            <include name="LICENSE" />
             <include name="package-info.xml" />
             <include name="portal.php" />
             <include name="uninstall.php" />
@@ -48,6 +50,7 @@
         <version releasetype="Minor" file="version.txt" property="version.number" />
         <delete file="light_portal_${version.number}.zip" quiet="true" />
         <zip destfile="light_portal_${version.number}.zip">
+            <fileset refid="license" />
             <fileset refid="files" />
         </zip>
     </target>

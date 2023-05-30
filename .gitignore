@@ -5,21 +5,22 @@
 **/package-lock.json
 node_modules/
 mix-manifest.json
-Sources/LightPortal/Libs/*
+src/Sources/LightPortal/Libs/*
 
-Themes/default/languages/LightPortal/*
-!Themes/default/languages/LightPortal/index.php
-!Themes/default/languages/LightPortal/LightPortal.english.php
+src/Themes/default/languages/LightPortal/*
+!src/Themes/default/languages/LightPortal/index.php
+!src/Themes/default/languages/LightPortal/LightPortal.english.php
 
-Themes/default/css/light_portal/plugins.css
-Themes/default/css/light_portal/portal.css
-Themes/default/css/light_portal/tom-select.min.css
-Themes/default/css/light_portal/virtual-select.min.css
+src/Themes/default/css/light_portal/plugins.css
+src/Themes/default/css/light_portal/portal.css
+src/Themes/default/css/light_portal/tom-select.min.css
+src/Themes/default/css/light_portal/virtual-select.min.css
 
-Themes/default/scripts/light_portal/*
-!Themes/default/scripts/light_portal/admin.js
-!Themes/default/scripts/light_portal/app.js
-!Themes/default/scripts/light_portal/user.js
+src/Themes/default/scripts/light_portal/*
+!src/Themes/default/scripts/light_portal/index.php
+!src/Themes/default/scripts/light_portal/admin.js
+!src/Themes/default/scripts/light_portal/app.js
+!src/Themes/default/scripts/light_portal/user.js
 
 **/Addons/**/*.less
 **/Addons/**/langs/*

@@ -8,12 +8,12 @@ use Rector\Set\ValueObject\LevelSetList;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
-        __DIR__ . '/*',
+        __DIR__ . '/src/*',
     ]);
 
     $rectorConfig->skip([
-        __DIR__ . '/Sources/LightPortal/AddonHandler.php',
-        __DIR__ . '/database.php',
+        __DIR__ . '/src/Sources/LightPortal/AddonHandler.php',
+        __DIR__ . '/src/database.php',
         __DIR__ . '**/Libs/*',
         __DIR__ . '**/vendor/*',
         __DIR__ . '**/langs/*',

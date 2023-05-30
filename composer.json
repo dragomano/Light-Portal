@@ -1,7 +1,7 @@
 {
     "autoload": {
         "psr-4": {
-            "Bugo\\LightPortal\\": "Sources\\LightPortal"
+            "Bugo\\LightPortal\\": "src\\Sources\\LightPortal"
         }
     },
     "require": {
@@ -19,7 +19,6 @@
             "npm run prod"
         ],
         "build": [
-            "composer mix",
             "vendor/bin/phing"
         ]
     }
