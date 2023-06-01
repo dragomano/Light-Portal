@@ -3,14 +3,24 @@
 **/vendor/
 **/composer.lock
 **/package-lock.json
-Sources/LightPortal/Libs/*
+node_modules/
+mix-manifest.json
+src/Sources/LightPortal/Libs/*
 
-Themes/default/languages/LightPortal/*
-!Themes/default/languages/LightPortal/index.php
-!Themes/default/languages/LightPortal/LightPortal.english.php
+src/Themes/default/languages/LightPortal/*
+!src/Themes/default/languages/LightPortal/index.php
+!src/Themes/default/languages/LightPortal/LightPortal.english.php
 
-Themes/default/css/light_portal/plugins.css
-Themes/default/scripts/light_portal/plugins.js
+src/Themes/default/css/light_portal/plugins.css
+src/Themes/default/css/light_portal/portal.css
+src/Themes/default/css/light_portal/tom-select.min.css
+src/Themes/default/css/light_portal/virtual-select.min.css
+
+src/Themes/default/scripts/light_portal/*
+!src/Themes/default/scripts/light_portal/index.php
+!src/Themes/default/scripts/light_portal/admin.js
+!src/Themes/default/scripts/light_portal/app.js
+!src/Themes/default/scripts/light_portal/user.js
 
 **/Addons/**/*.less
 **/Addons/**/langs/*
@@ -27,3 +37,5 @@ Themes/default/scripts/light_portal/plugins.js
 !**/Addons/**/index.php
 !**/Addons/**/langs
 !**/Addons/**/langs/english.php
+
+*.zip

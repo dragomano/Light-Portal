@@ -85,4 +85,4 @@ If the plugin needs to retrieve any data using SSI functions, use the built-in `
 ```
 
 ## Using Composer
-Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file is located in the plugin directory, which contains the necessary dependencies. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).
+Your plugin can use third-party libraries installed through Composer. Make sure that the `composer.json` file, which contains the necessary dependencies, is located in the plugin directory. Before publishing your plugin, open the plugin directory in the command line and run the command: `composer install --no-dev -o`. After that, the entire contents of the plugin directory can be packaged as a separate modification for SMF (for example see **PluginMaker** package).

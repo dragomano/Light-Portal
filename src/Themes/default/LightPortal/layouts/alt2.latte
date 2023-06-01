@@ -1,0 +1,44 @@
+{varType array $txt}
+{varType array $context}
+{varType array $modSettings}
+
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
+
+    <div class="lp_frontpage_articles article_alt2_view">
+        {do show_pagination()}
+
+        <article n:foreach="$context[lp_frontpage_articles] as $article" class="descbox">
+            <a n:if="!empty($article[image])" class="article_image_link" href="{$article[link]}">
+                <div class="lazy" data-bg="{$article[image]}"></div>
+            </a>
+            <div class="article_body">
+                <div>
+                    <header>
+                        <time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]|noescape}</time>
+                        <h3><a href="{$article[msg_link]}">{$article[title]}</a></h3>
+                    </header>
+                    <section n:if="!empty($article[teaser])">
+                        <p>{teaser($article[teaser])}</p>
+                    </section>
+                </div>
+                <footer n:if="!empty($modSettings[lp_show_author]) && !empty($article[author])">
+                    {if !empty($article[author][avatar])}{$article[author][avatar]|noescape}{/if}
+                    <span>
+                        {if !empty($article[author][id]) && !empty($article[author][name])}
+                            <a href="{$article[author][link]}">{$article[author][name]}</a>
+                        {else}
+                            <span>{$txt[guest_title]}</span>
+                        {/if}
+                    </span>
+                </footer>
+            </div>
+        </article>
+
+        {do show_pagination(bottom)}
+    </div>
+
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}

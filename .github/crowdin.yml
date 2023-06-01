@@ -6,11 +6,13 @@ preserve_hierarchy: true
 
 files: [
   {
-    source: "Themes/default/languages/LightPortal/LightPortal.english.php",
+    source: "/src/Themes/default/languages/LightPortal/LightPortal.english.php",
+    dest: "/Themes/default/languages/LightPortal/LightPortal.english.php",
     translation: "%original_path%/LightPortal.%language%.php",
   },
   {
-    source: "Sources/LightPortal/Addons/**/langs/english.php",
+    source: "/src/Sources/LightPortal/Addons/**/langs/english.php",
+    dest: "/Sources/LightPortal/Addons/**/langs/english.php",
     translation: "%original_path%/%language%.php",
   },
   {
@@ -20,6 +22,10 @@ files: [
   {
     source: "/website/i18n/en/docusaurus-plugin-content-docs/current.json",
     translation: "/website/i18n/%two_letters_code%/docusaurus-plugin-content-docs/%original_file_name%",
+  },
+  {
+    source: "/website/i18n/en/docusaurus-theme-classic/footer.json",
+    translation: "/website/i18n/%two_letters_code%/docusaurus-theme-classic/%original_file_name%",
   },
   {
     source: "/website/i18n/en/docusaurus-theme-classic/navbar.json",

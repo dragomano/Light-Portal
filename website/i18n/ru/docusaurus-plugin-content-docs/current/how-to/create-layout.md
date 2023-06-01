@@ -2,72 +2,67 @@
 sidebar_position: 1
 ---
 
-# Как создать макет главной страницы
+# Создание макета главной страницы
+
+:::info
+
+Начиная с версии 2.2.0 мы используем [Latte](https://latte.nette.org/syntax) для рендеринга макетов главной страницы.
+
+:::
 
 В дополнение к уже имеющимся макетам всегда можно добавить собственные.
 
-Для этого в директории `/Themes/default` создайте файл `CustomFrontPage.template.php`:
+Для этого создайте файл `custom.latte` в директории `/Themes/default/portal_layouts`:
 
-```php {8,17}
-<?php
+```latte
+{varType array $txt}
+{varType array $context}
+{varType array $modSettings}
 
-/**
- * Custom template layout
- *
- * @return void
- */
-function template_show_articles_custom() // Не забудьте поменять *_custom* на что-нибудь другое, для уникализации
-{
-    global $context;
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
 
-    if (empty($context['lp_active_blocks']))
-        echo '
-    <div class="col-xs">';
+    <div class="lp_frontpage_articles article_custom">
+        {do show_pagination()}
 
-    echo '
-    <div class="lp_frontpage_articles article_custom">'; // Не забудьте поменять *article_custom* на что-нибудь другое, для уникализации
+            <div
+                n:foreach="$context[lp_frontpage_articles] as $article"
+                class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]}"
+            >
+                <div n:if="!empty($article[image])">
+                    <img src="{$article[image]}" alt="{$article[title]}">
+                </div>
+                <h3>
+                    <a href="{$article[msg_link]}">{$article[title]}</a>
+                </h3>
+                <p n:if="!empty($article[teaser])">
+                    {teaser($article[teaser])}
+                </p>
+            </div>
 
-    show_pagination();
+        {do show_pagination(bottom)}
+    </div>
 
-    foreach ($context['lp_frontpage_articles'] as $article) {
-        echo '
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
-
-        // Отображение содержимого переменной $article, в качестве подсказки
-        echo '<figure class="noticebox">' . parse_bbc('[code]' . print_r($article, true) . '[/code]') . '</figure>';
-
-        // Ваш код
-
-        echo '
-        </div>';
-    }
-
-    show_pagination('bottom');
-
-    echo '
-    </div>';
-
-    if (empty($context['lp_active_blocks']))
-        echo '
-    </div>';
-}
-
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}
 ```
 
-После этого в настройках портала появится макет главной страницы под названием `Custom`. При желании в этом же файле можно добавить дополнительные макеты (`template_show_articles_custom1()`, `template_show_articles_custom2()` и т. д.).
+После этого в настройках портала появится макет главной страницы под названием `Custom`:
 
 ![Выбираем кастомный макет](set_custom_template.png)
 
-Для кастомизации таблиц стилей создайте файл `custom_frontpage.css` в директории `/Themes/default/css`:
+Вы можете создать столько макетов, сколько захотите. Используйте `debug.latte` и другие макеты в директории `/Themes/default/LightPortal/layouts` в качестве примеров.
+
+Для кастомизации таблиц стилей создайте файл `portal_custom.css` в директории `/Themes/default/css`:
 
 ```css {3}
-/* Custom layout */
-.article_custom {
+/* Ваш макет */
+.article_custom_class {
     /* Ваши правила */
 }
 ```
-
-Преимущество этого способа в том, что при удалении или обновлении портала созданные вами файлы останутся нетронутыми.
 
 :::tip
 

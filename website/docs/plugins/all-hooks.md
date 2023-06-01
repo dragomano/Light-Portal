@@ -3,7 +3,7 @@ sidebar_position: 4
 ---
 
 # Portal hooks
-Light Portal is wonderfully extensible thanks to plugins. And hooks help to plugins interact with various components of the portal.
+Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins to interact with various components of the portal.
 
 ## Basic hooks
 
@@ -41,11 +41,11 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### validateBlockData
 (`&$parameters, $context['current_block']['type']`)
-> adding custom validating rules when block adding/edition
+> adding custom validating rules when block adding/editing
 
 ### findBlockErrors
 (`&$post_errors, $data`)
-> adding custom error handling when block adding/edition
+> adding custom error handling when block adding/editing
 
 ### onBlockSaving
 (`$item`)
@@ -66,11 +66,11 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help to plug
 
 ### validatePageData
 (`&$parameters`)
-> adding custom validating rules when page adding/edition
+> adding custom validating rules when page adding/editing
 
 ### findPageErrors
 (`&$post_errors, $data`)
-> adding custom error handling when page adding/edition
+> adding custom error handling when page adding/editing
 
 ### onPageSaving
 (`$item`)
