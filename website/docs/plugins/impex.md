@@ -9,4 +9,4 @@ Plugins can be exported as compressed archives, for easy transfer between forums
 In this section, you can export all or only selected plugins to an archive file.
 
 ## Import plugins
-In this section, you can import previously saved plugins from an archive file. You can also install in the same way "downloadable" plugins distributed as archives.
+In this section, you can import previously saved plugins from an archive file. You can also install "downloadable" plugins distributed as archives in the same way.

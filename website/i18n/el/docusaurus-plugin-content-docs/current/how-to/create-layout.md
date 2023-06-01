@@ -2,75 +2,70 @@
 sidebar_position: 1
 ---
 
-# Δημιουργήστε τη δική σας διάταξη για την πρώτη σελίδα
+# Δημιουργήστε τη δική σας διάταξη πρώτης σελίδας
+
+:::info
+
+Από την έκδοση 2.2.0 χρησιμοποιούμε [Latte](https://latte.nette.org/syntax) για την διαμόρφωση των διατάξεων πρώτης σελίδας.
+
+:::
 
 Εκτός από τις υπάρχουσες διατάξεις, μπορείτε πάντα να προσθέσετε τις δικές σας.
 
-Για να το κάνετε αυτό, δημιουργήστε ένα αρχείο `CustomFrontPage.template.php` στον κατάλογο `/Themes/default`:
+Για να το κάνετε αυτό, δημιουργήστε ένα αρχείο `custom.latte` στον κατάλογο `/Themes/default/portal_layouts`:
 
-```php {8,17}
-<?php
+```latte
+{varType array $txt}
+{varType array $context}
+{varType array $modSettings}
 
-/**
- * Custom template layout
- *
- * @return void
- */
-function template_show_articles_custom() // Do not forget change custom name *custom* for your layout
-{
-    global $context;
+{if empty($context[lp_active_blocks])}
+<div class="col-xs">
+{/if}
 
-    if (empty($context['lp_active_blocks']))
-        echo '
-    <div class="col-xs">';
+    <div class="lp_frontpage_articles article_custom">
+        {do show_pagination()}
 
-    echo '
-    <div class="lp_frontpage_articles article_custom">'; // Do not forget change custom class *article_custom* for your layout
+            <div
+                n:foreach="$context[lp_frontpage_articles] as $article"
+                class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]}"
+            >
+                <div n:if="!empty($article[image])">
+                    <img src="{$article[image]}" alt="{$article[title]}">
+                </div>
+                <h3>
+                    <a href="{$article[msg_link]}">{$article[title]}</a>
+                </h3>
+                <p n:if="!empty($article[teaser])">
+                    {teaser($article[teaser])}
+                </p>
+            </div>
 
-    show_pagination();
+        {do show_pagination(bottom)}
+    </div>
 
-    foreach ($context['lp_frontpage_articles'] as $article) {
-        echo '
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-', $context['lp_frontpage_num_columns'], ' col-xl-', $context['lp_frontpage_num_columns'], '">';
-
-        // Just outputs the $article data as a hint for you
-        echo '<figure class="noticebox">' . parse_bbc('[code]' . print_r($article, true) . '[/code]') . '</figure>';
-
-        // Your code
-
-        echo '
-        </div>';
-    }
-
-    show_pagination('bottom');
-
-    echo '
-    </div>';
-
-    if (empty($context['lp_active_blocks']))
-        echo '
-    </div>';
-}
-
+{if empty($context[lp_active_blocks])}
+</div>
+{/if}
 ```
 
-Μετά από αυτό, θα δείτε μια νέα διάταξη πρώτης σελίδας - `Προσαρμοσμένη` - στις ρυθμίσεις της πύλης. Μπορείτε να δημιουργήσετε όσες τέτοιες διατάξεις θέλετε (`template_show_articles_custom1()`, `template_show_articles_custom2()`, κ.λπ.).
+Μετά από αυτό, θα δείτε μια νέα διάταξη πρώτης σελίδας - `Προσαρμοσμένη` - στις ρυθμίσεις της πύλης:
 
 ![Επιλέξτε προσαρμοσμένο πρότυπο](set_custom_template.png)
 
-Για να προσαρμόσετε τα φύλλα στυλ, δημιουργήστε ένα αρχείο `custom_frontpage.css` στον κατάλογο `/Themes/default/css`:
+Μπορείτε να δημιουργήσετε όσες τέτοιες διατάξεις πύλης θέλετε. Χρησιμοποιήστε το `debug.latte` και άλλες διατάξεις στον κατάλογο `/Themes/default/LightPortal/layouts` ως παραδείγματα.
+
+Για να προσαρμόσετε τα φύλλα στυλ, δημιουργήστε ένα αρχείο `portal_custom.css` στον κατάλογο `/Themes/default/css`:
 
 ```css {3}
-/* Custom layout */
-.article_custom {
-    /* Your rules */
+/* Προσαρμοσμένη διάταξη */
+.article_custom_class {
+     /* Οι κανόνες σου */
 }
 ```
 
-Το πλεονέκτημα αυτής της μεθόδου είναι ότι εάν διαγράψετε ή ενημερώσετε την πύλη, τα αρχεία που δημιουργήσατε θα παραμείνουν ανέπαφα.
-
 :::tip
 
-Εάν έχετε δημιουργήσει το δικό σας πρότυπο πρώτης σελίδας και θέλετε να το μοιραστείτε με τον προγραμματιστή και άλλους χρήστες, χρησιμοποιήστε τη διεύθυνση https://codepen.io/pen/ ή άλλους παρόμοιους πόρους.
+Εάν έχετε δημιουργήσει το δικό σας πρότυπο αρχικής σελίδας και θέλετε να το μοιραστείτε με τον προγραμματιστή και άλλους χρήστες, χρησιμοποιήστε τη διεύθυνση https://codepen.io/pen/ ή άλλους παρόμοιους πόρους.
 
 :::

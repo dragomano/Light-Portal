@@ -19,8 +19,8 @@ In this section, you can fully customize the portal frontpage, enable standalone
     * Selected topics
     * Selected boards
 * The frontpage title — you can change the name of the portal used as the page title and the title of the browser tab.
-* Show images that found in articles — check whether to display images found in the text of pages or topics.
-* URL of the default placeholder image — if the option above is enabled, but the image is not found in the text, the one specified here will be used.
+* Show images found in articles — check whether to display images found in the text of pages or topics.
+* URL of the default placeholder image — if the option above is enabled, but no image is found in the text, the one specified here will be used.
 * Show the article summary
 * Show the article author
 * Show the number of views and comments
@@ -28,7 +28,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 * Sorting articles — you can choose the type of sorting of articles on the frontpage.
 * Template layout for article cards — you can add _[your own template](/how-to/create-layout)_, if you want.
 * Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
-* Show the pagination — specify where the page pagination should be displayed.
+* Show the pagination — specify where the pagination should be displayed.
 * Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
 * Number of items per page (for pagination) — specify the maximum number of cards to display on one page.
 
@@ -58,7 +58,6 @@ In this section, you can change the general settings of pages and blocks used bo
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
 * Sorting comments by default — select the desired sorting type for comments on portal pages.
 * Show items on tag/category pages as cards — you can display items as a table, or as cards.
-* The type of page editor by default — if you constantly create pages of the same type, you can set this type as default.
 * The maximum number of keywords that can be added to a page — when creating portal pages, you will not be able to specify the number of keywords greater than the specified number.
 * Permissions for pages and blocks by default — if you constantly create pages and blocks with the same permissions, you can set these permissions as default.
 * Hide active blocks in the admin area — if blocks bother you in the admin panel, you can hide them.

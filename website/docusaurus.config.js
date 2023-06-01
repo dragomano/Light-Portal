@@ -1,8 +1,7 @@
 // @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
 
 const lightCodeTheme = require('prism-react-renderer/themes/oceanicNext');
-const darkCodeTheme = require('prism-react-renderer/themes/shadesOfPurple');
+const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -13,8 +12,8 @@ const config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'favicon.ico',
-  organizationName: 'dragomano', // Usually your GitHub org/user name.
-  projectName: 'Light-Portal', // Usually your repo name.
+  organizationName: 'dragomano',
+  projectName: 'Light-Portal',
   trailingSlash: false,
 
   presets: [
@@ -26,7 +25,6 @@ const config = {
           routeBasePath: '/',
           sidebarCollapsed: false,
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
           editUrl: 'https://github.com/dragomano/Light-Portal/edit/master/website/',
           editLocalizedFiles: true,
         },
@@ -77,7 +75,7 @@ const config = {
 
     i18n: {
       defaultLocale: 'en',
-      locales: ['en', 'ru', 'el', 'cs', 'da', 'nl', 'no', 'sv', 'es'],
+      locales: ['en', 'ru', 'el', 'de'],
     },
 
     plugins: [
@@ -91,7 +89,7 @@ const config = {
       [
         require.resolve("@cmfcmf/docusaurus-search-local"),
         {
-          language: ['en', 'ru', 'da', 'nl', 'no', 'sv', 'es'],
+          language: ['en', 'ru', 'es', 'de'],
           indexBlog: false,
         },
       ],
