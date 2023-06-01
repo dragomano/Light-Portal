@@ -5,32 +5,31 @@
 <div class="col-xs">
 {/if}
 
-    <div class="lp_frontpage_articles article_spectre_view">
-        {do show_pagination()}
+	<div class="lp_frontpage_articles article_spectre_view">
+		{do show_pagination()}
 
-        <div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-{$context[lp_frontpage_num_columns]}">
-            <div class="card">
-                <a n:if="!empty($article[image])" class="card-image" href="{$article[link]}">
-                    <img src="{$article[image]}" alt="{$article[title]}">
-                </a>
-                <div class="card-header">
-                    <span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatright">
-                        {if !empty($article[views][num])}{icon('views', $article[views][title])|noescape}{$article[views][num]}{/if}
-                        {if !empty($article[views][after])}{$article[views][after]}{/if}
-                        {if !empty($article[is_redirect])}{icon('redirect')|noescape}
-                        {elseif !empty($article[replies][num])}&nbsp;{icon('replies', $article[replies][title])|noescape}{$article[replies][num]}
-                        {/if}
-                        {if !empty($article[replies][after])}{$article[replies][after]}{/if}
-                    </span>
-                    <a class="card-title" href="{$article[link]}">{$article[title]}</a>
-                    <div class="card-subtitle">{$article[date]|noescape}</div>
-                </div>
-                <div n:if="!empty($article[teaser])" class="card-body">{teaser($article[teaser])}</div>
-            </div>
-        </div>
+		<div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-{$context[lp_frontpage_num_columns]}">
+			<div class="card">
+				<a n:if="!empty($article[image])" class="card-image" href="{$article[link]}">
+					<img src="{$article[image]}" alt="{$article[title]}">
+				</a>
+				<div class="card-header">
+					<span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatright">
+						{if !empty($article[views][num])}{icon('views', $article[views][title])|noescape}{$article[views][num]}{/if}
+						{if !empty($article[views][after])}{$article[views][after]}{/if}
+						{if !empty($article[is_redirect])}{icon('redirect')|noescape}{/if}
+						{if !empty($article[replies][num])}{icon('replies', $article[replies][title])|noescape}{$article[replies][num]}{/if}
+						{if !empty($article[replies][after])}{$article[replies][after]}{/if}
+					</span>
+					<a class="card-title" href="{$article[link]}">{$article[title]}</a>
+					<div class="card-subtitle">{$article[date]|noescape}</div>
+				</div>
+				<div n:if="!empty($article[teaser])" class="card-body">{teaser($article[teaser])}</div>
+			</div>
+		</div>
 
-        {do show_pagination(bottom)}
-    </div>
+		{do show_pagination(bottom)}
+	</div>
 
 {if empty($context[lp_active_blocks])}
 </div>
