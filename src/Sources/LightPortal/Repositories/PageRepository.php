@@ -108,6 +108,7 @@ final class PageRepository extends AbstractRepository
 		$this->prepareBbcContent($this->context['lp_page']);
 
 		if (empty($item)) {
+			$this->context['lp_page']['title'] = array_filter($this->context['lp_page']['title']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);

@@ -133,6 +133,7 @@ final class BlockRepository extends AbstractRepository
 		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'] ?? [];
 
 		if (empty($item)) {
+			$this->context['lp_block']['title'] = array_filter($this->context['lp_block']['title']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);

@@ -45,9 +45,6 @@ final class Block
 				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
 				: parse_content($data['content'], $data['type']);
 
-			if (empty($data['title'][$this->context['user']['language']]))
-				$data['title'][$this->context['user']['language']] = $this->context['lp_active_blocks'][$data['id']]['title'][$this->context['user']['language']] ?? '';
-
 			$this->context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
@@ -115,6 +112,7 @@ final class Block
 				];
 
 				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
+				$active_blocks[$row['block_id']]['title'] = array_filter($active_blocks[$row['block_id']]['title']);
 
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
