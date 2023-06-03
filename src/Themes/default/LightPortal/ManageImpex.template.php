@@ -23,7 +23,7 @@ function template_manage_export_blocks()
 						', $txt['lp_block_placement'], '
 					</th>
 					<th scope="col" class="actions">
-						<input type="checkbox" onclick="invertAll(this, this.form);" checked>
+						<input type="checkbox" onclick="invertAll(this, this.form);">
 					</th>
 				</tr>
 			</thead>
@@ -64,7 +64,7 @@ function template_manage_export_blocks()
 						', $context['lp_block_placements'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
 					</td>
 					<td class="actions centertext">
-						<input type="checkbox" value="' . $id . '" name="blocks[]" checked>
+						<input type="checkbox" value="' . $id . '" name="blocks[]">
 					</td>
 				</tr>';
 					}
@@ -100,7 +100,7 @@ function template_manage_export_plugins()
 						', $txt['lp_plugin_name'], '
 					</th>
 					<th scope="col" class="actions">
-						<input type="checkbox" onclick="invertAll(this, this.form);" checked>
+						<input type="checkbox" onclick="invertAll(this, this.form);">
 					</th>
 				</tr>
 			</thead>
@@ -122,7 +122,7 @@ function template_manage_export_plugins()
 						', $name, '
 					</td>
 					<td class="actions centertext">
-						<input type="checkbox" value="' . $name . '" name="plugins[]" checked>
+						<input type="checkbox" value="' . $name . '" name="plugins[]">
 					</td>
 				</tr>';
 			}

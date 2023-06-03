@@ -104,10 +104,10 @@ final class PageExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
 						'class' => 'centertext'
 					]
 				]
