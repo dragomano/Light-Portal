@@ -205,7 +205,7 @@ final class Page
 		return $data;
 	}
 
-	public function showAsCards(PageListInterface $entity): void
+	public function showAsCards(AbstractPageList $entity): void
 	{
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
