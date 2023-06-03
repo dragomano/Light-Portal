@@ -170,7 +170,7 @@ abstract class AbstractMain
 	 */
 	protected function fixLinktree(): void
 	{
-		if (empty($this->context['current_board']) && $this->request()->hasNot('c') || empty($this->context['linktree'][1]))
+		if (empty($this->context['current_board']) && $this->request()->hasNot('c') || empty($this->context['linktree'][1]) || empty($this->context['linktree'][1]['url']))
 			return;
 
 		$old_url = explode('#', $this->context['linktree'][1]['url']);
