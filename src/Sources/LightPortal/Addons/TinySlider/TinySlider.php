@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -378,14 +378,18 @@ class TinySlider extends Block
 
 	public function prepareAssets(array &$assets)
 	{
-		$assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js';
+		$assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'tiny_slider')
 			return;
+
+		$parameters['nav'] ??= false;
+		$parameters['controls'] ??= false;
+		$parameters['nav_as_thumbnails'] ??= false;
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($cache_time)
@@ -395,7 +399,7 @@ class TinySlider extends Block
 			return;
 
 		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
+		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
 		$this->addInlineJavaScript('
 			let slider' . ($this->request()->has('preview') ? uniqid() : $block_id) . ' = tns({

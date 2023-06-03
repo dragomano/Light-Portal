@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -87,6 +87,9 @@ class WhosOnline extends Block
 		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
+		$parameters['show_group_key'] ??= false;
+		$parameters['show_avatars'] ??= false;
+
 		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
@@ -111,7 +114,7 @@ class WhosOnline extends Block
 			echo ' (' . $this->sentenceList($online_list) . ')';
 
 		// With avatars
-		if (! empty($parameters['show_avatars'])) {
+		if ($parameters['show_avatars']) {
 			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whos_online['users_online']);
 
 			$whos_online['list_users_online'] = [];
@@ -123,7 +126,7 @@ class WhosOnline extends Block
 		echo '
 			<br>' . implode(', ', $whos_online['list_users_online']);
 
-		if (! empty($parameters['show_group_key']) && $whos_online['online_groups']) {
+		if ($parameters['show_group_key'] && $whos_online['online_groups']) {
 			$groups = [];
 
 			foreach ($whos_online['online_groups'] as $group) {

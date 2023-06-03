@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -128,6 +128,8 @@ class TopPosters extends Block
 	{
 		if ($type !== 'top_posters')
 			return;
+
+		$parameters['show_numbers_only'] ??= false;
 
 		$top_posters = $this->cache('top_posters_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -211,7 +211,7 @@ class RecentPosts extends Block
 
 		array_walk($posts, fn(&$post) => $post['timestamp'] = $this->getFriendlyTime((int) $post['timestamp']));
 
-		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style']))
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');
 
 		return $posts;
@@ -224,6 +224,9 @@ class RecentPosts extends Block
 
 		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
+
+		$parameters['show_avatars'] ??= false;
+		$parameters['limit_body'] ??= false;
 
 		$recent_posts = $this->cache('recent_posts_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
