@@ -160,7 +160,7 @@ class Reactions extends Plugin
 
 	private function getReactions(int $id, string $entity = 'page'): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT value
 			FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}
@@ -173,9 +173,9 @@ class Reactions extends Plugin
 			]
 		);
 
-		[$reactions] = $this->smcFunc['db_fetch_row']($request);
+		[$reactions] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return json_decode($reactions ?? '', true) ?? [];

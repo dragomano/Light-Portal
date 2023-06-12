@@ -546,7 +546,7 @@ final class PageArea
 			]
 		);
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -555,11 +555,11 @@ final class PageArea
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$comments[] = $row['id'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries'] += 4;
 
 		if ($comments) {
@@ -896,7 +896,7 @@ final class PageArea
 
 	private function isUnique(array $data): bool
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -907,9 +907,9 @@ final class PageArea
 			]
 		);
 
-		[$count] = $this->smcFunc['db_fetch_row']($request);
+		[$count] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $count == 0;

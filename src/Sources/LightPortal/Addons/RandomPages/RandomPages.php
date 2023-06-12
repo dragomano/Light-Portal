@@ -79,7 +79,7 @@ class RandomPages extends Block
 		$titles = $this->getEntityList('title');
 
 		if ($this->db_type === 'postgresql') {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(p.page_id), (
@@ -132,16 +132,16 @@ class RandomPages extends Block
 			);
 
 			$page_ids = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request))
+			while ($row = $this->smcFunc['db_fetch_assoc']($result))
 				$page_ids[] = $row['page_id'];
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			if (empty($page_ids))
 				return $this->getData(array_merge($parameters, ['num_pages' => $num_pages - 1]));
 
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -152,7 +152,7 @@ class RandomPages extends Block
 				]
 			);
 		} else {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -174,7 +174,7 @@ class RandomPages extends Block
 		}
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$pages[] = [
 				'page_id'     => $row['page_id'],
 				'alias'       => $row['alias'],
@@ -186,7 +186,7 @@ class RandomPages extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $pages;

@@ -54,7 +54,7 @@ class TopicArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (empty($this->modSettings['lp_show_images_in_articles']) ? '' : '(
 					SELECT id_attach
@@ -88,7 +88,7 @@ class TopicArticle extends AbstractArticle
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if (! isset($topics[$row['id_topic']])) {
 				$this->cleanBbcode($row['subject']);
 
@@ -169,7 +169,7 @@ class TopicArticle extends AbstractArticle
 			$this->hook('frontTopicsOutput', [&$topics, $row]);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($topics);
@@ -180,7 +180,7 @@ class TopicArticle extends AbstractArticle
 		if (empty($this->selected_boards) && $this->modSettings['lp_frontpage_mode'] === 'all_topics')
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(t.id_topic)
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (empty($this->tables) ? '' : '
@@ -194,9 +194,9 @@ class TopicArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_topics] = $this->smcFunc['db_fetch_row']($request);
+		[$num_topics] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_topics;

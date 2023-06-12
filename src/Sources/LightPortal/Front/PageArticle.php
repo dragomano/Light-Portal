@@ -56,7 +56,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
@@ -80,7 +80,7 @@ class PageArticle extends AbstractArticle
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if (! isset($pages[$row['page_id']])) {
 				$row['content'] = parse_content($row['content'], $row['type']);
 
@@ -125,7 +125,7 @@ class PageArticle extends AbstractArticle
 			$this->hook('frontPagesOutput', [&$pages, $row]);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		$pages = $this->getItemsWithUserAvatars($pages);
@@ -137,7 +137,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
@@ -149,9 +149,9 @@ class PageArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_pages] = $this->smcFunc['db_fetch_row']($request);
+		[$num_pages] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_pages;
@@ -162,7 +162,7 @@ class PageArticle extends AbstractArticle
 		if (empty($pages))
 			return;
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, p.item_id
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
@@ -174,14 +174,14 @@ class PageArticle extends AbstractArticle
 			]
 		);
 
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$pages[$row['item_id']]['tags'][] = [
 				'name' => $row['value'],
 				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 	}
 }

@@ -372,7 +372,7 @@ abstract class AbstractMain
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
 			$titles = $this->getEntityList('title');
 
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
@@ -389,7 +389,7 @@ abstract class AbstractMain
 			);
 
 			$pages = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => $row['page_id'],
 					'alias'       => $row['alias'],
@@ -401,7 +401,7 @@ abstract class AbstractMain
 				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
 			}
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			$this->cache()->put('menu_pages', $pages);
@@ -413,7 +413,7 @@ abstract class AbstractMain
 	private function calculateNumberOfEntities(): void
 	{
 		if (($num_entities = $this->cache()->get('num_active_entities_u' . $this->user_info['id'])) === null) {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT
 					(
 						SELECT COUNT(b.block_id)
@@ -449,10 +449,10 @@ abstract class AbstractMain
 				]
 			);
 
-			$num_entities = $this->smcFunc['db_fetch_assoc']($request);
+			$num_entities = $this->smcFunc['db_fetch_assoc']($result);
 			array_walk($num_entities, fn(&$item) => $item = (int) $item);
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			$this->cache()->put('num_active_entities_u' . $this->user_info['id'], $num_entities);

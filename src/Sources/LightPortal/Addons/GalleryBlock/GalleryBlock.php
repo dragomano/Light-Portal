@@ -72,7 +72,7 @@ class GalleryBlock extends Block
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
 				p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
@@ -91,7 +91,7 @@ class GalleryBlock extends Block
 		);
 
 		$images = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$images[$row['id_picture']] = [
 				'id' => $row['id_picture'],
 				'section' => [
@@ -115,7 +115,7 @@ class GalleryBlock extends Block
 				$images[$row['id_picture']]['teaser'] = $this->getTeaser($row['description']);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $images;

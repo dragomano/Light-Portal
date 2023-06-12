@@ -124,7 +124,7 @@ class BlockImport extends AbstractOtherBlockImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id, type, title, bar
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})
@@ -139,7 +139,7 @@ class BlockImport extends AbstractOtherBlockImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id']] = [
 				'id'        => $row['id'],
 				'type'      => $this->txt['lp_' . $this->getType($row['type'])]['title'],
@@ -148,7 +148,7 @@ class BlockImport extends AbstractOtherBlockImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;
@@ -161,7 +161,7 @@ class BlockImport extends AbstractOtherBlockImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})',
@@ -170,9 +170,9 @@ class BlockImport extends AbstractOtherBlockImport
 			]
 		);
 
-		[$num_blocks] = $this->smcFunc['db_fetch_row']($request);
+		[$num_blocks] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_blocks;
@@ -180,7 +180,7 @@ class BlockImport extends AbstractOtherBlockImport
 
 	protected function getItems(array $blocks): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id, type, title, body, access, bar
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
@@ -192,7 +192,7 @@ class BlockImport extends AbstractOtherBlockImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$permissions = explode(',', $row['access']);
 
 			$perm = 0;
@@ -218,7 +218,7 @@ class BlockImport extends AbstractOtherBlockImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

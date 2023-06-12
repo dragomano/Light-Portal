@@ -26,7 +26,7 @@ class Chat
 
 	public function getMessages(int $block_id = 0): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at,
 				mem.real_name
 			FROM {db_prefix}lp_simple_chat_messages AS chat
@@ -39,7 +39,7 @@ class Chat
 		);
 
 		$messages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
@@ -52,7 +52,7 @@ class Chat
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $messages[$block_id] ?? [];

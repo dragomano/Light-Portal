@@ -80,7 +80,7 @@ final class Block
 			return [];
 
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT
 					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.content_class,
 					bt.lang, bt.title, bp.name, bp.value
@@ -95,7 +95,7 @@ final class Block
 			);
 
 			$active_blocks = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 				$this->censorText($row['content']);
 
 				$active_blocks[$row['block_id']] ??= [
@@ -117,7 +117,7 @@ final class Block
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			$this->cache()->put('active_blocks', $active_blocks);

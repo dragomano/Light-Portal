@@ -119,7 +119,7 @@ class Import extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id_page, date, title, views
 			FROM {db_prefix}ezp_page
 			ORDER BY {raw:sort}
@@ -132,7 +132,7 @@ class Import extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
 				'alias'      => $this->smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
@@ -145,7 +145,7 @@ class Import extends AbstractOtherPageImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;
@@ -158,15 +158,15 @@ class Import extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_page',
 			[]
 		);
 
-		[$num_pages] = $this->smcFunc['db_fetch_row']($request);
+		[$num_pages] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_pages;
@@ -174,7 +174,7 @@ class Import extends AbstractOtherPageImport
 
 	protected function getItems(array $pages): array
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_page, date, title, content, views, permissions
 			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
@@ -184,7 +184,7 @@ class Import extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$permissions = explode(',', $row['permissions']);
 
 			$perm = 0;
@@ -215,7 +215,7 @@ class Import extends AbstractOtherPageImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

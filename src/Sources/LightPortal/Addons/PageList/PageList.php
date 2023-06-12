@@ -100,7 +100,7 @@ class PageList extends Block
 
 		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
@@ -124,7 +124,7 @@ class PageList extends Block
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -144,7 +144,7 @@ class PageList extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $pages;

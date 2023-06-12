@@ -94,7 +94,7 @@ class TinyPortal extends Plugin
 
 	private function getComments(array $pages): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT *
 			FROM {db_prefix}tp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
@@ -107,7 +107,7 @@ class TinyPortal extends Plugin
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($row['item_id'] < 0 || empty($row['comment']))
 				continue;
 
@@ -121,7 +121,7 @@ class TinyPortal extends Plugin
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $comments;

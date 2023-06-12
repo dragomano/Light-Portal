@@ -120,7 +120,7 @@ final class Page
 		if (empty($params))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
@@ -137,7 +137,7 @@ final class Page
 			)
 		);
 
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['content']);
 
 			$og_image = null;
@@ -175,7 +175,7 @@ final class Page
 			$data['options'][$row['name']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -389,7 +389,7 @@ final class Page
 
 		$within_category = str_contains(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'action=portal;sa=categories;id');
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			(
 				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date, CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -429,10 +429,10 @@ final class Page
 			]
 		);
 
-		[$prev_id, $prev_alias] = $this->smcFunc['db_fetch_row']($request);
-		[$next_id, $next_alias] = $this->smcFunc['db_fetch_row']($request);
+		[$prev_id, $prev_alias] = $this->smcFunc['db_fetch_row']($result);
+		[$next_id, $next_alias] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		if (! empty($prev_alias)) {
@@ -467,7 +467,7 @@ final class Page
 			$search_formula .= ' + CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($alias_words) - $key) . ' ELSE 0 END';
 		}
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT p.page_id, p.alias, p.content, p.type, (' . $search_formula . ') AS related, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -488,7 +488,7 @@ final class Page
 		);
 
 		$this->context['lp_page']['related_pages'] = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -505,7 +505,7 @@ final class Page
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 	}
 
@@ -557,7 +557,7 @@ final class Page
 
 	private function getTags(string $tags): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
 			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
@@ -568,14 +568,14 @@ final class Page
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['tag_id']] = [
 				'name' => $row['value'],
 				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

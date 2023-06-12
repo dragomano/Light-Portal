@@ -47,17 +47,17 @@ final class PluginRepository
 	public function getSettings(): array
 	{
 		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
-			$request = $this->smcFunc['db_query']('', /** @lang text */ '
+			$result = $this->smcFunc['db_query']('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 				[]
 			);
 
 			$settings = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request))
+			while ($row = $this->smcFunc['db_fetch_assoc']($result))
 				$settings[$row['name']][$row['config']] = $row['value'];
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			$this->cache()->put('plugin_settings', $settings, 259200);

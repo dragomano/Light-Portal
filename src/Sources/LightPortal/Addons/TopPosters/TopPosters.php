@@ -79,7 +79,7 @@ class TopPosters extends Block
 
 	public function getData(array $parameters): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id_member, real_name, posts
 			FROM {db_prefix}members
 			WHERE posts > {int:num_posts}
@@ -91,7 +91,7 @@ class TopPosters extends Block
 			]
 		);
 
-		$result = $this->smcFunc['db_fetch_all']($request);
+		$result = $this->smcFunc['db_fetch_all']($result);
 
 		if (empty($result))
 			return [];
@@ -118,7 +118,7 @@ class TopPosters extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $posters;

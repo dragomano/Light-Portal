@@ -82,7 +82,7 @@ final class TopicSelect extends AbstractPartial
 		if (empty($topics))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -93,13 +93,13 @@ final class TopicSelect extends AbstractPartial
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['subject']);
 
 			$topics[$row['id_topic']] = $row['subject'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $topics;

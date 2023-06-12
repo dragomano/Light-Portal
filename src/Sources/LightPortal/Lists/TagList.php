@@ -25,7 +25,7 @@ final class TagList implements ListInterface
 
 	public function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
 			ORDER BY value',
@@ -33,11 +33,11 @@ final class TagList implements ListInterface
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['tag_id']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

@@ -123,7 +123,7 @@ class PageImport extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id, date, subject, author_id, off, views, shortname, type
 			FROM {db_prefix}tp_articles
 			ORDER BY {raw:sort}
@@ -136,7 +136,7 @@ class PageImport extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
 				'alias'      => $row['shortname'],
@@ -149,7 +149,7 @@ class PageImport extends AbstractOtherPageImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;
@@ -162,15 +162,15 @@ class PageImport extends AbstractOtherPageImport
 		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_articles',
 			[]
 		);
 
-		[$num_pages] = $this->smcFunc['db_fetch_row']($request);
+		[$num_pages] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_pages;
@@ -178,7 +178,7 @@ class PageImport extends AbstractOtherPageImport
 
 	protected function getItems(array $pages): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
 			FROM {db_prefix}tp_articles AS a
 				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (empty($pages) ? '' : '
@@ -190,7 +190,7 @@ class PageImport extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$permissions = explode(',', $row['value3']);
 
 			$perm = 0;
@@ -222,7 +222,7 @@ class PageImport extends AbstractOtherPageImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

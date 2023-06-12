@@ -79,7 +79,7 @@ class RecentComments extends Block
 		if (empty($num_comments))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
 			(SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2 WHERE com2.parent_id = 0 AND com2.page_id = com.page_id) AS num_comments
 			FROM {db_prefix}lp_comments AS com
@@ -107,7 +107,7 @@ class RecentComments extends Block
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['message']);
 
 			$limit     = $this->modSettings['lp_num_comments_per_page'];
@@ -122,7 +122,7 @@ class RecentComments extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $comments;

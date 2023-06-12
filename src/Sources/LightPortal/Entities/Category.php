@@ -83,7 +83,7 @@ final class Category extends AbstractPageList
 
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, t.title
@@ -108,9 +108,9 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		$rows = $this->smcFunc['db_fetch_all']($request);
+		$rows = $this->smcFunc['db_fetch_all']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
@@ -118,7 +118,7 @@ final class Category extends AbstractPageList
 
 	public function getTotalCountPages(): int
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
@@ -133,9 +133,9 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		[$num_items] = $this->smcFunc['db_fetch_row']($request);
+		[$num_items] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_items;
@@ -204,7 +204,7 @@ final class Category extends AbstractPageList
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
@@ -225,7 +225,7 @@ final class Category extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($row['description'] && str_contains($row['description'], ']')) {
 				$row['description'] = $this->parseBbc($row['description']);
 			}
@@ -238,7 +238,7 @@ final class Category extends AbstractPageList
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

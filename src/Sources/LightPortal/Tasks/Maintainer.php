@@ -61,7 +61,7 @@ final class Maintainer extends SMF_BackgroundTask
 
 		$value = $this->smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT ' . $value . ' AS value
 			FROM {db_prefix}lp_params
 			WHERE type = {literal:page}
@@ -69,8 +69,8 @@ final class Maintainer extends SMF_BackgroundTask
 			[]
 		);
 
-		[$usedTags] = $this->smcFunc['db_fetch_row']($request);
-		$this->smcFunc['db_free_result']($request);
+		[$usedTags] = $this->smcFunc['db_fetch_row']($result);
+		$this->smcFunc['db_free_result']($result);
 
 		if ($usedTags) {
 			$this->smcFunc['db_query']('', '
@@ -90,7 +90,7 @@ final class Maintainer extends SMF_BackgroundTask
 			]
 		);
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
@@ -98,11 +98,11 @@ final class Maintainer extends SMF_BackgroundTask
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$comments[] = $row['id'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 
 		if ($comments) {
 			$this->smcFunc['db_query']('', '
@@ -126,7 +126,7 @@ final class Maintainer extends SMF_BackgroundTask
 
 	private function updateNumComments()
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, COUNT(c.id) AS amount
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -136,10 +136,10 @@ final class Maintainer extends SMF_BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))
 			$pages[$row['page_id']] = $row['amount'];
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 
 		if (empty($pages))
 			return;
@@ -162,7 +162,7 @@ final class Maintainer extends SMF_BackgroundTask
 
 	private function updateLastCommentIds()
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, MAX(c.id) AS last_comment_id
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -172,10 +172,10 @@ final class Maintainer extends SMF_BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))
 			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 
 		if (empty($pages))
 			return;

@@ -101,7 +101,7 @@ class Search extends Block
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) . ' ELSE 0 END';
 		}
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $search_formula . ') AS related, t.title, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -121,7 +121,7 @@ class Search extends Block
 		);
 
 		$results = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))	{
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))	{
 			$row['content'] = parse_content($row['content'], $row['type']);
 
 			$results[] = [
@@ -133,7 +133,7 @@ class Search extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $results;
