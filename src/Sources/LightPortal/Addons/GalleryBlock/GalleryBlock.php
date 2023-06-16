@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -137,10 +137,8 @@ class GalleryBlock extends Block
 			return;
 		}
 
-		$is_sidebar = $this->isBlockInPlacements($block_id, ['left', 'right']);
-
 		echo '
-		<div class="gallery_block"' . ($is_sidebar ? ' style="grid-auto-flow: row"' : '') . '>';
+		<div class="gallery_block"' . ($this->isInSidebar($block_id) ? ' style="grid-auto-flow: row"' : '') . '>';
 
 		foreach ($images as $image) {
 			echo '

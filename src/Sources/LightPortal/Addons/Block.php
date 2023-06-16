@@ -19,8 +19,13 @@ if (! defined('SMF'))
 
 abstract class Block extends Plugin
 {
-	public function isBlockInPlacements(int $block_id, array $positions): bool
+	public function isInPlacements(int $block_id, array $positions): bool
 	{
 		return in_array(($this->context['lp_active_blocks'][$block_id] ?? $this->context['lp_block'])['placement'], $positions);
+	}
+
+	public function isInSidebar(int $block_id): bool
+	{
+		return $this->isInPlacements($block_id, ['left', 'right']);
 	}
 }

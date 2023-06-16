@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -186,6 +186,6 @@ class RecentTopics extends Block
 
 		$this->setTemplate();
 
-		show_topics($recent_topics, $parameters, $this->isBlockInPlacements($block_id, ['header', 'top', 'bottom', 'footer']));
+		show_topics($recent_topics, $parameters, $this->isInSidebar($block_id) === false);
 	}
 }

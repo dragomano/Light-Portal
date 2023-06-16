@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 03.06.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -117,7 +117,7 @@ class SimpleChat extends Block
 
 		$this->setTemplate();
 
-		show_chat_block($block_id, (bool) $parameters['show_avatars'], $this->isBlockInPlacements($block_id, ['left', 'right']));
+		show_chat_block($block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($block_id));
 	}
 
 	public function onBlockRemoving(array $items)
