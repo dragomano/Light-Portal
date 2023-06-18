@@ -175,19 +175,6 @@ final class PageArea
 						'reverse' => 'p.num_views',
 					],
 				],
-				'num_comments' => [
-					'header' => [
-						'value' => str_replace(' class=', ' title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
-					],
-					'data' => [
-						'db' => 'num_comments',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'p.num_comments DESC',
-						'reverse' => 'p.num_comments',
-					],
-				],
 				'alias' => [
 					'header' => [
 						'value' => $this->txt['lp_page_alias'],
