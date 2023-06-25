@@ -88,21 +88,21 @@ final class FrontPage
 			$this->cache()->put('articles_u' . $this->context['user']['id'] . '_' . $start . '_' . $limit, $data);
 		}
 
-		[$articles, $total_items] = [$data['articles'], $data['total']];
+		[$articles, $itemsCount] = [$data['articles'], $data['total']];
 
-		$this->context['total_articles'] = $total_items;
+		$this->context['total_articles'] = $itemsCount;
 
 		$articles = $this->postProcess($article, $articles);
 
 		$this->preLoadImages($articles);
 
-		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $itemsCount, $limit);
 		$this->context['start'] = $this->request()->get('start');
 
 		if (! empty($this->modSettings['lp_use_simple_pagination']))
-			$this->context['page_index'] = $this->simplePaginate(LP_BASE_URL, $total_items, $limit);
+			$this->context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 
-		$this->context['portal_next_page'] = $this->request('start') + $limit < $total_items ? LP_BASE_URL . ';start=' . ($this->request('start') + $limit) : '';
+		$this->context['portal_next_page'] = $this->request('start') + $limit < $itemsCount ? LP_BASE_URL . ';start=' . ($this->request('start') + $limit) : '';
 		$this->context['lp_frontpage_articles'] = $articles;
 
 		$this->hook('frontAssets');

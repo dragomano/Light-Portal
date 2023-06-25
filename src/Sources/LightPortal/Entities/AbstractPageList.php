@@ -27,7 +27,7 @@ abstract class AbstractPageList
 
 	abstract public function getPages(int $start, int $items_per_page, string $sort): array;
 
-	abstract public function getTotalCountPages(): int;
+	abstract public function getTotalCount(): int;
 
 	abstract public function showAll();
 

@@ -63,7 +63,7 @@ final class Category extends AbstractPageList
 			'function' => [$this, 'getPages']
 		];
 		$listOptions['get_count'] = [
-			'function' => [$this, 'getTotalCountPages']
+			'function' => [$this, 'getTotalCount']
 		];
 
 		if (isset($category['desc'])) {
@@ -116,7 +116,7 @@ final class Category extends AbstractPageList
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCountPages(): int
+	public function getTotalCount(): int
 	{
 		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(page_id)

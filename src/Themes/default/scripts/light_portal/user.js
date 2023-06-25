@@ -3,7 +3,7 @@ class Comment {
 		this.pageUrl = data.pageUrl
 		this.start = data.start
 		this.lastStart = data.lastStart
-		this.totalParentComments = data.totalParentComments
+		this.parentCommentsCount = data.parentCommentsCount
 		this.commentsPerPage = data.commentsPerPage
 		this.currentComment = []
 		this.currentCommentText = []
@@ -36,7 +36,7 @@ class Comment {
 			},
 			body: JSON.stringify({
 				parent_id: 0,
-				counter: this.totalParentComments - 1,
+				counter: this.parentCommentsCount - 1,
 				level: 0,
 				start: this.lastStart,
 				commentator: 0,
@@ -61,7 +61,7 @@ class Comment {
 
 		if (toolbar) toolbar.style.display = 'none';
 
-		this.totalParentComments++;
+		this.parentCommentsCount++;
 
 		this.goToComment(data)
 	}
@@ -136,7 +136,7 @@ class Comment {
 		const firstSeparator = window.location.search ? '=' : '.';
 		const lastSeparator  = window.location.search ? '' : '/';
 
-		if (data.parent === 0 && this.totalParentComments > this.commentsPerPage) {
+		if (data.parent === 0 && this.parentCommentsCount > this.commentsPerPage) {
 			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + data.item)
 		}
 
@@ -174,8 +174,8 @@ class Comment {
 	}
 
 	selectContent(commentContent) {
-		let selection = window.getSelection();
-		let range = document.createRange();
+		const selection = window.getSelection();
+		const range = document.createRange();
 
 		range.selectNodeContents(commentContent);
 		selection.removeAllRanges();
@@ -190,7 +190,7 @@ class Comment {
 
 		this.currentCommentText[item] = message.innerText;
 
-		let response = await fetch(this.pageUrl + 'sa=edit_comment', {
+		const response = await fetch(this.pageUrl + 'sa=edit_comment', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -203,7 +203,7 @@ class Comment {
 
 		if (! response.ok) return console.error(response);
 
-		let comment = await response.json();
+		const comment = await response.json();
 
 		this.cancel(target, comment)
 	}
@@ -229,7 +229,7 @@ class Comment {
 	async remove(target) {
 		const item = target.dataset.id;
 
-		if (target.dataset.level === '1') this.totalParentComments--;
+		if (target.dataset.level === '1') this.parentCommentsCount--;
 
 		if (! item) return;
 
@@ -241,7 +241,7 @@ class Comment {
 			if (el.dataset.id) items.push(el.dataset.id)
 		})
 
-		let response = await fetch(this.pageUrl + 'sa=remove_comment', {
+		const response = await fetch(this.pageUrl + 'sa=remove_comment', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -264,7 +264,7 @@ class Toolbar {
 	pressButton(target) {
 		if (target.tagName !== 'I') return;
 
-		let type = target.dataset.type;
+		const type = target.dataset.type;
 
 		this.message = target.parentNode.nextElementSibling;
 
@@ -282,14 +282,14 @@ class Toolbar {
 	}
 
 	insertTags(open, close) {
-		let start = this.message.selectionStart;
-		let	end   = this.message.selectionEnd;
-		let	text  = this.message.value;
+		const start = this.message.selectionStart;
+		const end   = this.message.selectionEnd;
+		const text  = this.message.value;
 
 		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
 		this.message.focus();
 
-		let sel = open.length + end;
+		const sel = open.length + end;
 
 		this.message.setSelectionRange(sel, sel);
 

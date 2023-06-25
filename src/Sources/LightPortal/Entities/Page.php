@@ -210,15 +210,15 @@ final class Page
 		$start = (int) $this->request('start');
 		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
 
-		$total_items = $entity->getTotalCountPages();
+		$itemsCount = $entity->getTotalCount();
 
 		$front = new FrontPage;
-		$front->updateStart($total_items, $start, $limit);
+		$front->updateStart($itemsCount, $start, $limit);
 
 		$sort     = $front->getOrderBy();
 		$articles = $entity->getPages($start, $limit, $sort);
 
-		$this->context['page_index'] = $this->constructPageIndex($this->context['canonical_url'], $this->request()->get('start'), $total_items, $limit);
+		$this->context['page_index'] = $this->constructPageIndex($this->context['canonical_url'], $this->request()->get('start'), $itemsCount, $limit);
 		$this->context['start']      = $this->request()->get('start');
 
 		$this->context['lp_frontpage_articles']    = $articles;

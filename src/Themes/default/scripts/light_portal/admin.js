@@ -8,7 +8,7 @@ class PortalEntity {
 
 		if (! item) return false;
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -28,7 +28,7 @@ class PortalEntity {
 
 		if (! item) return false;
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -46,12 +46,12 @@ class PortalEntity {
 
 		for (let i = 0; i < formElements.length; i++) {
 			if ((formElements[i].required && formElements[i].value === '') || ! formElements[i].checkValidity()) {
-				let elem = formElements[i].closest('section').id;
+				const elem = formElements[i].closest('section').id;
 
 				document.getElementsByName('tabs').checked = false;
 				document.getElementById(elem.replace('content-', '')).checked = true;
 
-				let focusElement = document.getElementById(formElements[i].id);
+				const focusElement = document.getElementById(formElements[i].id);
 
 				focusElement ? focusElement.focus() : document.querySelector(".pf_title a").click()
 
@@ -72,7 +72,7 @@ class Block extends PortalEntity {
 
 		if (! item) return false;
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -118,7 +118,7 @@ class Block extends PortalEntity {
 			if (key !== null) priority.push(key)
 		}
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -166,7 +166,7 @@ class Plugin extends PortalEntity {
 		const plugin = target.closest('.features').dataset.id;
 		const status = target.dataset.toggle;
 
-		let response = await fetch(this.workUrl + ';toggle', {
+		const response = await fetch(this.workUrl + ';toggle', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -220,7 +220,7 @@ class Plugin extends PortalEntity {
 			formData.append(val.getAttribute('name'), val.matches(':checked'))
 		})
 
-		let response = await fetch(this.workUrl + ';save', {
+		const response = await fetch(this.workUrl + ';save', {
 			method: 'POST',
 			body: formData
 		})
@@ -279,7 +279,7 @@ class Category extends PortalEntity {
 			if (id !== null) priority.push(id)
 		}
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -295,7 +295,7 @@ class Category extends PortalEntity {
 	async add(refs) {
 		if (! refs.cat_name) return false;
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
@@ -322,7 +322,7 @@ class Category extends PortalEntity {
 		const item = target.dataset.id;
 
 		if (item && event.value) {
-			let response = await fetch(this.workUrl, {
+			const response = await fetch(this.workUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json; charset=utf-8'
@@ -344,7 +344,7 @@ class Category extends PortalEntity {
 
 		if (! item) return false;
 
-		let response = await fetch(this.workUrl, {
+		const response = await fetch(this.workUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8'
