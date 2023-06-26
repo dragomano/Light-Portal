@@ -71,6 +71,14 @@
 	transition: background 0.3s;
 }
 
+.block_tiny_slider .customize-tools .controls li.prev span {
+	float: left !important;
+}
+
+.block_tiny_slider .customize-tools .controls li.next span {
+	float: right !important;
+}
+
 .block_tiny_slider .customize-tools .controls li span::selection {
 	text-shadow: none;
 	background: initial;
