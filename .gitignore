@@ -14,6 +14,7 @@ src/Themes/default/languages/LightPortal/*
 src/Themes/default/css/light_portal/plugins.css
 src/Themes/default/css/light_portal/portal.css
 src/Themes/default/css/light_portal/tom-select.min.css
+src/Themes/default/css/light_portal/tom-select.min.css.map
 src/Themes/default/css/light_portal/virtual-select.min.css
 
 src/Themes/default/scripts/light_portal/*
