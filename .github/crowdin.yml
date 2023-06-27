@@ -11,8 +11,8 @@ files: [
     translation: "%original_path%/LightPortal.%language%.php",
   },
   {
-    source: "/src/Sources/LightPortal/Addons/**/langs/english.php",
-    dest: "/Sources/LightPortal/Addons/**/langs/english.php",
+    source: "/src/Sources/LightPortal/Addons/**/english.php",
+    dest: "/Sources/LightPortal/Addons/**/english.php",
     translation: "%original_path%/%language%.php",
   },
   {
