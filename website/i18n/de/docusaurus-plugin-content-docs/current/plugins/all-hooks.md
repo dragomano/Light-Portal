@@ -12,7 +12,7 @@ Dank Plugins ist Light Portal wundervoll erweiterbar. Hooks helfen Plugins, mit 
 
 ### prepareEditor
 (`$context['lp_block']` for block, `$context['lp_page']` for page)
-> Beliebigen Code zum Block-/Seite-Bearbeiten-Feld hinzufügen
+> Beliebigen Code zum Block-/Seite-Bearbeiten-Bereich hinzufügen
 
 ### parseContent
 (`&$content, $type`)
@@ -167,5 +167,3 @@ Dank Plugins ist Light Portal wundervoll erweiterbar. Hooks helfen Plugins, mit 
 ### changeIconSet
 (`&$set`)
 > Bietet die Möglichkeit, Interface-Symbole, die über das `$this->context['lp_icon_set']`-Array verfügbar sind, zu erweitern
-
-Not so much, Carl?
