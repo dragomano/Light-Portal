@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 15.03.23
+ * @version 02.06.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -55,6 +55,19 @@ class Markdown extends Plugin
 			$content = $this->getParsedContent($content);
 	}
 
+	public function credits(array &$links)
+	{
+		$links[] = [
+			'title' => 'league/commonmark',
+			'link' => 'https://github.com/thephpleague/commonmark',
+			'author' => 'Colin O\'Dell & The League of Extraordinary Packages',
+			'license' => [
+				'name' => 'the BSD-3-Clause License',
+				'link' => 'https://github.com/thephpleague/commonmark/blob/main/LICENSE'
+			]
+		];
+	}
+
 	private function getParsedContent(string $text): string
 	{
 		require_once __DIR__ . '/vendor/autoload.php';
@@ -96,18 +109,5 @@ class Markdown extends Plugin
 		$converter = new MarkdownConverter($environment);
 
 		return $converter->convert($this->unHtmlSpecialChars($text));
-	}
-
-	public function credits(array &$links)
-	{
-		$links[] = [
-			'title' => 'league/commonmark',
-			'link' => 'https://github.com/thephpleague/commonmark',
-			'author' => 'Colin O\'Dell & The League of Extraordinary Packages',
-			'license' => [
-				'name' => 'the BSD-3-Clause License',
-				'link' => 'https://github.com/thephpleague/commonmark/blob/main/LICENSE'
-			]
-		];
 	}
 }

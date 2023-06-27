@@ -25,7 +25,7 @@ final class TitleList implements ListInterface
 
 	public function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
@@ -38,11 +38,11 @@ final class TitleList implements ListInterface
 		);
 
 		$titles = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$titles[$row['item_id']][$row['lang']] = $row['title'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $titles;

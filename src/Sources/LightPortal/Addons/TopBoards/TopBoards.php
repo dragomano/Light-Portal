@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -92,6 +92,8 @@ class TopBoards extends Block
 	{
 		if ($type !== 'top_boards')
 			return;
+
+		$parameters['show_numbers_only'] ??= false;
 
 		$top_boards = $this->cache('top_boards_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)

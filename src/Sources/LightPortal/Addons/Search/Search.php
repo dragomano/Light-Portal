@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 12.06.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -101,7 +101,7 @@ class Search extends Block
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) . ' ELSE 0 END';
 		}
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $search_formula . ') AS related, t.title, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -120,11 +120,11 @@ class Search extends Block
 			]
 		);
 
-		$results = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))	{
+		$items = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))	{
 			$row['content'] = parse_content($row['content'], $row['type']);
 
-			$results[] = [
+			$items[] = [
 				'link'    => LP_PAGE_URL . $row['alias'],
 				'title'   => $row['title'],
 				'content' => $this->getTeaser($row['content']),
@@ -133,10 +133,16 @@ class Search extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
-		return $results;
+		return $items;
+	}
+
+	public function prepareAssets(array &$assets)
+	{
+		$assets['css']['search'][]     = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
+		$assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
 	public function prepareContent(string $type)
@@ -144,8 +150,8 @@ class Search extends Block
 		if ($type !== 'search')
 			return;
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js');
+		$this->loadCSSFile('light_portal/search/auto-complete.css');
+		$this->loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">

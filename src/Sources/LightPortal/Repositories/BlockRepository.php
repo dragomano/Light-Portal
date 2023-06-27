@@ -23,7 +23,7 @@ final class BlockRepository extends AbstractRepository
 
 	public function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -32,7 +32,7 @@ final class BlockRepository extends AbstractRepository
 		);
 
 		$currentBlocks = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
 				'icon'        => $this->getIcon($row['icon']),
 				'type'        => $row['type'],
@@ -48,7 +48,7 @@ final class BlockRepository extends AbstractRepository
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $currentBlocks);
@@ -59,7 +59,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty($item))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				bt.lang, bt.title, bp.name, bp.value
@@ -72,13 +72,13 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		if (empty($this->smcFunc['db_num_rows']($request))) {
+		if (empty($this->smcFunc['db_num_rows']($result))) {
 			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
 
 			$this->fatalLangError('lp_block_not_found', 404);
 		}
 
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($row['type'] === 'bbc') {
 				$row['content'] = $this->unPreparseCode($row['content']);
 			}
@@ -108,7 +108,7 @@ final class BlockRepository extends AbstractRepository
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -133,6 +133,7 @@ final class BlockRepository extends AbstractRepository
 		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'] ?? [];
 
 		if (empty($item)) {
+			$this->context['lp_block']['title'] = array_filter($this->context['lp_block']['title']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);

@@ -136,7 +136,7 @@ class Polls extends Block
 
 	private function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT t.id_topic, p.question
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)
@@ -149,10 +149,10 @@ class Polls extends Block
 		);
 
 		$polls = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request))
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))
 			$polls[$row['id_topic']] = $row['question'];
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $polls;

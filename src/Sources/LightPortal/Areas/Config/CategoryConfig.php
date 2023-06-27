@@ -197,15 +197,15 @@ final class CategoryConfig
 
 	private function getPriority(): int
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_categories',
 			[]
 		);
 
-		[$priority] = $this->smcFunc['db_fetch_row']($request);
+		[$priority] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $priority;

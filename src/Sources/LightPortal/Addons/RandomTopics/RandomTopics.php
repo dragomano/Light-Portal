@@ -88,7 +88,7 @@ class RandomTopics extends Block
 			return [];
 
 		if ($this->db_type === 'postgresql') {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -140,16 +140,16 @@ class RandomTopics extends Block
 			);
 
 			$topic_ids = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request))
+			while ($row = $this->smcFunc['db_fetch_assoc']($result))
 				$topic_ids[] = $row['id_topic'];
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			if (empty($topic_ids))
 				return $this->getData(array_merge($parameters, ['num_topics' => $num_topics - 1]));
 
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
@@ -168,7 +168,7 @@ class RandomTopics extends Block
 				]
 			);
 		} else {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
@@ -200,7 +200,7 @@ class RandomTopics extends Block
 			$icon_sources[$icon] = 'images_url';
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if (! empty($this->modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = file_exists($this->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
 			} elseif (! isset($icon_sources[$row['icon']])) {
@@ -216,7 +216,7 @@ class RandomTopics extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $topics;

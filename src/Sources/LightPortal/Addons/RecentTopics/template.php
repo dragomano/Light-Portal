@@ -19,7 +19,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width)
 			echo '
 		<div class="windowbg">';
 
-			if (! empty($parameters['show_avatars']) && $topic['poster']['avatar'])
+			if (! empty($parameters['show_avatars']) && isset($topic['poster']['avatar']))
 				echo '
 			<div class="poster_avatar" title="', $topic['poster']['name'], '">', $topic['poster']['avatar'], '</div>';
 
@@ -28,7 +28,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width)
 			<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
 
 			echo '
-			<span>', (! empty($parameters['show_icons']) ? $topic['icon'] . ' ' : ''), $topic[$parameters['link_type']];
+			<span>', (empty($parameters['show_icons']) ? '' : ($topic['icon'] . ' ')), $topic[$parameters['link_type']];
 
 			if (empty($parameters['show_avatars']))
 				echo '

@@ -19,7 +19,7 @@ use Bugo\LightPortal\Helper;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractPageList implements PageListInterface
+abstract class AbstractPageList
 {
 	use Helper;
 
@@ -27,7 +27,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	abstract public function getPages(int $start, int $items_per_page, string $sort): array;
 
-	abstract public function getTotalCountPages(): int;
+	abstract public function getTotalCount(): int;
 
 	abstract public function showAll();
 

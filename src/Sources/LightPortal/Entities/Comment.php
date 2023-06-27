@@ -72,25 +72,25 @@ final class Comment
 
 		$limit = (int) ($this->modSettings['lp_num_comments_per_page'] ?? 10);
 		$commentTree = $this->getTree($comments);
-		$totalParentComments = sizeof($commentTree);
+		$parentCommentsCount = sizeof($commentTree);
 
 		$this->context['current_start'] = $this->request('start');
 
 		$this->context['page_index'] = $this->constructPageIndex(
 			$this->getPageIndexUrl(),
 			$this->request()->get('start'),
-			$totalParentComments,
+			$parentCommentsCount,
 			$limit
 		);
 
 		$start = $this->request('start');
 
 		$this->context['page_info'] = [
-			'num_pages' => $num_pages = floor($totalParentComments / $limit) + 1,
+			'num_pages' => $num_pages = floor($parentCommentsCount / $limit) + 1,
 			'start'     => $num_pages * $limit - $limit
 		];
 
-		if ($this->context['current_start'] > $totalParentComments)
+		if ($this->context['current_start'] > $parentCommentsCount)
 			$this->sendStatus(404);
 
 		$this->context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
@@ -101,7 +101,7 @@ final class Comment
 			pageUrl: "' . $this->context['canonical_url'] . ($this->request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
 			start: ' . $start . ',
 			lastStart: ' . $this->context['page_info']['start'] . ',
-			totalParentComments: ' . count($this->context['lp_page']['comments']) . ',
+			parentCommentsCount: ' . count($this->context['lp_page']['comments']) . ',
 			commentsPerPage: ' . $limit . '
 		});
 		const toolbar = new Toolbar();');

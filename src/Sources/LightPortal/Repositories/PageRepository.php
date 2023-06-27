@@ -25,7 +25,7 @@ final class PageRepository extends AbstractRepository
 
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.num_comments,
 				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_pages AS p
@@ -47,7 +47,7 @@ final class PageRepository extends AbstractRepository
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
 				'category_id'  => (int) $row['category_id'],
@@ -64,7 +64,7 @@ final class PageRepository extends AbstractRepository
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;
@@ -72,7 +72,7 @@ final class PageRepository extends AbstractRepository
 
 	public function getTotalCount(string $query_string = '', array $query_params = []): int
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
@@ -84,9 +84,9 @@ final class PageRepository extends AbstractRepository
 			])
 		);
 
-		[$num_entries] = $this->smcFunc['db_fetch_row']($request);
+		[$num_entries] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_entries;
@@ -108,6 +108,7 @@ final class PageRepository extends AbstractRepository
 		$this->prepareBbcContent($this->context['lp_page']);
 
 		if (empty($item)) {
+			$this->context['lp_page']['title'] = array_filter($this->context['lp_page']['title']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -277,10 +278,10 @@ final class PageRepository extends AbstractRepository
 
 	private function getAutoIncrementValue(): int
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ "SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))");
-		[$value] = $this->smcFunc['db_fetch_row']($request);
+		$result = $this->smcFunc['db_query']('', /** @lang text */ "SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))");
+		[$value] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $value + 1;

@@ -3,8 +3,13 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>Bugo:LightPortal</id>
 	<name>Light Portal</name>
-	<version>2.2.0</version>
+	<version>2.2.1</version>
 	<type>modification</type>
+
+	<upgrade from="2.2.*" for="2.1.*">
+		<require-dir name="Sources/LightPortal" destination="$sourcedir" />
+		<require-dir name="Themes/default" destination="$themes_dir" />
+	</upgrade>
 
 	<install for="2.1.*">
 		<database>database.php</database>

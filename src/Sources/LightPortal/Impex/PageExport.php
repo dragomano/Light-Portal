@@ -104,10 +104,10 @@ final class PageExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
 						'class' => 'centertext'
 					]
 				]
@@ -136,7 +136,7 @@ final class PageExport extends AbstractExport
 
 		$pages = $this->request('pages') && $this->request()->hasNot('export_all') ? $this->request('pages') : null;
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -151,7 +151,7 @@ final class PageExport extends AbstractExport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['page_id']] ??= [
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
@@ -185,7 +185,7 @@ final class PageExport extends AbstractExport
 			}
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

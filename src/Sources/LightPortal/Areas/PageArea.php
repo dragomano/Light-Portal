@@ -175,19 +175,6 @@ final class PageArea
 						'reverse' => 'p.num_views',
 					],
 				],
-				'num_comments' => [
-					'header' => [
-						'value' => str_replace(' class=', ' title="' . $this->txt['lp_comments'] . '" class=', $this->context['lp_icon_set']['replies'])
-					],
-					'data' => [
-						'db' => 'num_comments',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'p.num_comments DESC',
-						'reverse' => 'p.num_comments',
-					],
-				],
 				'alias' => [
 					'header' => [
 						'value' => $this->txt['lp_page_alias'],
@@ -206,7 +193,7 @@ final class PageArea
 						'value' => $this->txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . ($this->getDefaultTypes()[$entry['type']]['icon'] ?? 'fab fa-bimobject') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . ($this->getDefaultTypes()[$entry['type']]['icon'] ?? 'fas fa-question') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -546,7 +533,7 @@ final class PageArea
 			]
 		);
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -555,11 +542,11 @@ final class PageArea
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$comments[] = $row['id'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries'] += 4;
 
 		if ($comments) {
@@ -896,7 +883,7 @@ final class PageArea
 
 	private function isUnique(array $data): bool
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -907,9 +894,9 @@ final class PageArea
 			]
 		);
 
-		[$count] = $this->smcFunc['db_fetch_row']($request);
+		[$count] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $count == 0;

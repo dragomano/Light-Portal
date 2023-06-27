@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 26.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -311,7 +311,7 @@ class TinySlider extends Block
 		$this->context['posting_fields']['images']['input']['tab']  = 'content';
 	}
 
-	public function getData(int $block_id, array $parameters): array
+	public function getData(int|string $block_id, array $parameters): array
 	{
 		if (empty($parameters['images']))
 			return [];
@@ -343,7 +343,7 @@ class TinySlider extends Block
 
 		if ($parameters['nav'] && $parameters['nav_as_thumbnails']) {
 			$html .= '
-			<ul class="thumbnails customize-thumbnails"' . (empty($parameters['controls']) ? '' : (' style="margin-bottom: -30px"')) . '>';
+			<ul id="tiny_slider_thumbnails' . $block_id . '" class="thumbnails customize-thumbnails"' . (empty($parameters['controls']) ? '' : (' style="margin-bottom: -30px"')) . '>';
 
 			foreach ($images as $image) {
 				[$link, $title] = [$image['link'], $image['title']];
@@ -360,12 +360,12 @@ class TinySlider extends Block
 			$buttons = array_combine(['prev', 'next'], $this->txt['lp_tiny_slider']['controls_buttons']);
 
 			$html .= '
-			<ul class="controls customize-controls">
+			<ul id="tiny_slider_controls' . $block_id . '" class="controls customize-controls">
 				<li class="prev">
-					<span class="button floatleft"><i class="fas fa-arrow-left"></i> ' . $buttons['prev'] . '</span>
+					<span class="button"><i class="fas fa-arrow-left"></i> ' . $buttons['prev'] . '</span>
 				</li>
 				<li class="next">
-					<span class="button floatright">' . $buttons['next'] . ' <i class="fas fa-arrow-right"></i></span>
+					<span class="button">' . $buttons['next'] . ' <i class="fas fa-arrow-right"></i></span>
 				</li>
 			</ul>';
 		}
@@ -378,14 +378,20 @@ class TinySlider extends Block
 
 	public function prepareAssets(array &$assets)
 	{
-		$assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.min.js';
+		$assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 	}
 
 	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
 	{
 		if ($type !== 'tiny_slider')
 			return;
+
+		$parameters['nav'] ??= false;
+		$parameters['controls'] ??= false;
+		$parameters['nav_as_thumbnails'] ??= false;
+
+		$block_id = $this->request()->has('preview') ? uniqid() : $block_id;
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($cache_time)
@@ -395,10 +401,10 @@ class TinySlider extends Block
 			return;
 
 		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.min.js', ['minimize' => true]);
+		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
 		$this->addInlineJavaScript('
-			let slider' . ($this->request()->has('preview') ? uniqid() : $block_id) . ' = tns({
+			const slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",
 				items: ' . (empty($parameters['num_items']) ? $this->params['num_items'] : $parameters['num_items']) . ',
@@ -407,10 +413,10 @@ class TinySlider extends Block
 				fixedWidth: ' . (empty($parameters['fixed_width']) ? $this->params['fixed_width'] : $parameters['fixed_width']) . ',
 				slideBy: ' . (empty($parameters['slide_by']) ? $this->params['slide_by'] : $parameters['slide_by']) . ',
 				controls: ' . (empty($parameters['controls']) ? 'false' : 'true') . ',
-				controlsContainer: ".customize-controls",
+				controlsContainer: "#tiny_slider_controls' . $block_id . '",
 				nav: ' . (empty($parameters['nav']) ? 'false' : 'true') . ',
 				navPosition: "bottom",' . ($parameters['nav'] && $parameters['nav_as_thumbnails'] ? '
-				navContainer: ".customize-thumbnails",' : '') . '
+				navContainer: "#tiny_slider_thumbnails' . $block_id . '",' : '') . '
 				navAsThumbnails: ' . (empty($parameters['nav_as_thumbnails']) ? 'false' : 'true') . ',
 				arrowKeys: ' . (empty($parameters['arrow_keys']) ? 'false' : 'true') . ',
 				speed: ' . (empty($parameters['speed']) ? $this->params['speed'] : $parameters['speed']) . ',

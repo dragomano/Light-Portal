@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 23.05.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -93,7 +93,7 @@ class SimpleChat extends Block
 	{
 		$messages = $this->chat->getMessages($block_id);
 
-		if (! empty($parameters['show_avatars']))
+		if ($parameters['show_avatars'])
 			$messages = $this->getItemsWithUserAvatars($messages);
 
 		return $messages;
@@ -107,6 +107,8 @@ class SimpleChat extends Block
 		$this->loadCssFile('admin.css');
 		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
 
+		$parameters['show_avatars'] ??= false;
+
 		$messages = $this->cache('simple_chat_addon_b' . $block_id)
 			->setLifeTime($cache_time)
 			->setFallback(self::class, 'getData', $block_id, $parameters);
@@ -115,7 +117,7 @@ class SimpleChat extends Block
 
 		$this->setTemplate();
 
-		show_chat_block($block_id, (bool) ($parameters['show_avatars'] ?? 0), $this->isBlockInPlacements($block_id, ['left', 'right']));
+		show_chat_block($block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($block_id));
 	}
 
 	public function onBlockRemoving(array $items)

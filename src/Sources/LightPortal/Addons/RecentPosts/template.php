@@ -2,7 +2,7 @@
 
 function show_posts(array $recent_posts, array $parameters, bool $full_width)
 {
-	global $scripturl, $txt, $context;
+	global $scripturl, $txt;
 
 	if ($full_width) {
 		echo '
@@ -19,7 +19,7 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width)
 			echo '
 		<div class="windowbg">';
 
-			if (! empty($parameters['show_avatars']) && $post['poster']['avatar'])
+			if ($parameters['show_avatars'] && isset($post['poster']['avatar']))
 				echo '
 			<div class="poster_avatar" title="', $post['poster']['name'], '">', $post['poster']['avatar'], '</div>';
 

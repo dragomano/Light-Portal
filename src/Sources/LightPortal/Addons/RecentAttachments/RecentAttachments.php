@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -93,7 +93,7 @@ class RecentAttachments extends Block
 		$fancybox = class_exists('FancyBox');
 
 		echo '
-		<div class="recent_attachments' . ($this->isBlockInPlacements($block_id, ['left', 'right']) ? ' column_direction' : '') . '">';
+		<div class="recent_attachments' . ($this->isInSidebar($block_id) ? ' column_direction' : '') . '">';
 
 		foreach ($attachment_list as $attach) {
 			if ($attach['file']['image']) {

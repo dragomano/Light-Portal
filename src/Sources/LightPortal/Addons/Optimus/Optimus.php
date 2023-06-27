@@ -55,7 +55,7 @@ class Optimus extends Plugin
 		if (empty($topic))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT ok.id, ok.name, olk.topic_id
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
@@ -64,14 +64,14 @@ class Optimus extends Plugin
 		);
 
 		$keywords = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$keywords[$row['topic_id']][] = [
 				'name' => $row['name'],
 				'href' => $this->scripturl . '?action=keywords;id=' . $row['id']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $keywords[$topic] ?? [];

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -72,7 +72,7 @@ class GalleryBlock extends Block
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
 				p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
@@ -91,7 +91,7 @@ class GalleryBlock extends Block
 		);
 
 		$images = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$images[$row['id_picture']] = [
 				'id' => $row['id_picture'],
 				'section' => [
@@ -115,7 +115,7 @@ class GalleryBlock extends Block
 				$images[$row['id_picture']]['teaser'] = $this->getTeaser($row['description']);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $images;
@@ -137,10 +137,8 @@ class GalleryBlock extends Block
 			return;
 		}
 
-		$is_sidebar = $this->isBlockInPlacements($block_id, ['left', 'right']);
-
 		echo '
-		<div class="gallery_block"' . ($is_sidebar ? ' style="grid-auto-flow: row"' : '') . '>';
+		<div class="gallery_block"' . ($this->isInSidebar($block_id) ? ' style="grid-auto-flow: row"' : '') . '>';
 
 		foreach ($images as $image) {
 			echo '

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -104,6 +104,8 @@ class Translator extends Block
 	{
 		if ($type !== 'translator')
 			return;
+
+		$parameters['auto_mode'] ??= false;
 
 		if ($parameters['engine'] === 'yandex') {
 			echo '

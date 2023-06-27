@@ -110,7 +110,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_topics']))
 			return [];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
@@ -127,7 +127,7 @@ class ArticleList extends Block
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['subject']);
 			$this->censorText($row['body']);
 
@@ -145,7 +145,7 @@ class ArticleList extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $topics;
@@ -158,7 +158,7 @@ class ArticleList extends Block
 
 		$titles = $this->getEntityList('title');
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
@@ -175,7 +175,7 @@ class ArticleList extends Block
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -192,7 +192,7 @@ class ArticleList extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $pages;

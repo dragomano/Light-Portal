@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 16.06.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -161,7 +161,7 @@ class RecentTopics extends Block
 
 		array_walk($topics, fn(&$topic) => $topic['timestamp'] = $this->getFriendlyTime((int) $topic['timestamp']));
 
-		if (! empty($parameters['show_avatars']) && empty($parameters['use_simple_style']))
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
 
 		return $topics;
@@ -175,6 +175,8 @@ class RecentTopics extends Block
 		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
+		$parameters['show_avatars'] ??= false;
+
 		$recent_topics = $this->cache('recent_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)
 			->setFallback(self::class, 'getData', $parameters);
@@ -184,6 +186,6 @@ class RecentTopics extends Block
 
 		$this->setTemplate();
 
-		show_topics($recent_topics, $parameters, $this->isBlockInPlacements($block_id, ['header', 'top', 'bottom', 'footer']));
+		show_topics($recent_topics, $parameters, $this->isInSidebar($block_id) === false);
 	}
 }

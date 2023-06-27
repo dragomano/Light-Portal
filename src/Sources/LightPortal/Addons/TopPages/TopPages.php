@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -90,7 +90,7 @@ class TopPages extends Block
 	{
 		$titles = $this->getEntityList('title');
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
@@ -107,7 +107,7 @@ class TopPages extends Block
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -119,7 +119,7 @@ class TopPages extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $pages;
@@ -129,6 +129,8 @@ class TopPages extends Block
 	{
 		if ($type !== 'top_pages')
 			return;
+
+		$parameters['show_numbers_only'] ??= false;
 
 		$top_pages = $this->cache('top_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)

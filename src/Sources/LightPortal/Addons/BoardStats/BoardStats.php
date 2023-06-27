@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -130,6 +130,8 @@ class BoardStats extends Block
 
 		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
+
+		$parameters['show_latest_member'] ??= false;
 
 		$board_stats = $this->cache('board_stats_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $cache_time)

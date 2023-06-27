@@ -51,7 +51,7 @@ class BoardArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 				m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . ($this->user_info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : ' (CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (empty($this->modSettings['lp_show_images_in_articles']) ? '' : ', COALESCE(a.id_attach, 0) AS attach_id') . (empty($this->columns) ? '' : ',
@@ -71,7 +71,7 @@ class BoardArticle extends AbstractArticle
 		);
 
 		$boards = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$board_name  = $this->parseBbc($row['name'], false, '', $this->context['description_allowed_tags']);
 			$description = $this->parseBbc($row['description'], false, '', $this->context['description_allowed_tags']);
 			$cat_name    = $this->parseBbc($row['cat_name'], false, '', $this->context['description_allowed_tags']);
@@ -119,7 +119,7 @@ class BoardArticle extends AbstractArticle
 			$this->hook('frontBoardsOutput', [&$boards, $row]);
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $boards;
@@ -130,7 +130,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selected_boards))
 			return 0;
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(b.id_board)
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (empty($this->tables) ? '' : '
@@ -141,9 +141,9 @@ class BoardArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_boards] = $this->smcFunc['db_fetch_row']($request);
+		[$num_boards] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_boards;

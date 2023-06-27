@@ -39,12 +39,6 @@ function template_lp_portal_above()
 	$lg = 12 - ((empty($context['lp_blocks']['left']) ? 0 : $context['lp_left_panel_width']['lg']) + (empty($context['lp_blocks']['right']) ? 0 : $context['lp_right_panel_width']['lg']));
 	$xl = 12 - ((empty($context['lp_blocks']['left']) ? 0 : $context['lp_left_panel_width']['xl']) + (empty($context['lp_blocks']['right']) ? 0 : $context['lp_right_panel_width']['xl']));
 
-	// Test hack for lg screens
-	if ($context['lp_left_panel_width']['lg'] == 4) {
-		$lg = 8;
-		$context['lp_right_panel_width']['lg'] = 12;
-	}
-
 	echo '
 			<div class="col-xs', ! empty($context['lp_blocks']['left']) || ! empty($context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-12 col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
 				<div', empty($modSettings['lp_swap_top_bottom']) ? '' : ' class="column reverse"', '>';

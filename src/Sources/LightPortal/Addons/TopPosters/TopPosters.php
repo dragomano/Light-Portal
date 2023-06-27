@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -79,7 +79,7 @@ class TopPosters extends Block
 
 	public function getData(array $parameters): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT id_member, real_name, posts
 			FROM {db_prefix}members
 			WHERE posts > {int:num_posts}
@@ -91,7 +91,7 @@ class TopPosters extends Block
 			]
 		);
 
-		$result = $this->smcFunc['db_fetch_all']($request);
+		$result = $this->smcFunc['db_fetch_all']($result);
 
 		if (empty($result))
 			return [];
@@ -118,7 +118,7 @@ class TopPosters extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $posters;
@@ -128,6 +128,8 @@ class TopPosters extends Block
 	{
 		if ($type !== 'top_posters')
 			return;
+
+		$parameters['show_numbers_only'] ??= false;
 
 		$top_posters = $this->cache('top_posters_addon_b' . $block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($cache_time)

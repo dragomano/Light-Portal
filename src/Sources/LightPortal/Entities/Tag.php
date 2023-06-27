@@ -54,7 +54,7 @@ final class Tag extends AbstractPageList
 			'function' => [$this, 'getPages']
 		];
 		$listOptions['get_count'] = [
-			'function' => [$this, 'getTotalCountPages']
+			'function' => [$this, 'getTotalCount']
 		];
 
 		$this->createList($listOptions);
@@ -64,7 +64,7 @@ final class Tag extends AbstractPageList
 
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
@@ -90,17 +90,17 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		$rows = $this->smcFunc['db_fetch_all']($request);
+		$rows = $this->smcFunc['db_fetch_all']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCountPages(): int
+	public function getTotalCount(): int
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
@@ -116,9 +116,9 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		[$num_items] = $this->smcFunc['db_fetch_row']($request);
+		[$num_items] = $this->smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return (int) $num_items;
@@ -187,7 +187,7 @@ final class Tag extends AbstractPageList
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
@@ -209,7 +209,7 @@ final class Tag extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['tag_id']] = [
 				'value'     => $row['value'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
@@ -217,7 +217,7 @@ final class Tag extends AbstractPageList
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

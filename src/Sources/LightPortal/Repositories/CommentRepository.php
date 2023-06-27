@@ -32,7 +32,7 @@ final class CommentRepository
 
 	public function getById(int $id): array
 	{
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT *
 			FROM {db_prefix}lp_comments
 			WHERE id = {int:id}',
@@ -41,9 +41,9 @@ final class CommentRepository
 			]
 		);
 
-		$data = $this->smcFunc['db_fetch_assoc']($request);
+		$data = $this->smcFunc['db_fetch_assoc']($result);
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -56,7 +56,7 @@ final class CommentRepository
 			'com.created_at DESC',
 		];
 
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name, par.name, par.value
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)
@@ -70,7 +70,7 @@ final class CommentRepository
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['message']);
 
 			$comments[$row['id']] = [
@@ -91,7 +91,7 @@ final class CommentRepository
 				$comments[$row['id']]['params'][$row['name']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($comments, 'poster');

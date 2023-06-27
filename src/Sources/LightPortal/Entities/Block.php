@@ -45,9 +45,6 @@ final class Block
 				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
 				: parse_content($data['content'], $data['type']);
 
-			if (empty($data['title'][$this->context['user']['language']]))
-				$data['title'][$this->context['user']['language']] = $this->context['lp_active_blocks'][$data['id']]['title'][$this->context['user']['language']] ?? '';
-
 			$this->context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
@@ -83,7 +80,7 @@ final class Block
 			return [];
 
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT
 					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.content_class,
 					bt.lang, bt.title, bp.name, bp.value
@@ -98,7 +95,7 @@ final class Block
 			);
 
 			$active_blocks = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 				$this->censorText($row['content']);
 
 				$active_blocks[$row['block_id']] ??= [
@@ -115,11 +112,12 @@ final class Block
 				];
 
 				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
+				$active_blocks[$row['block_id']]['title'] = array_filter($active_blocks[$row['block_id']]['title']);
 
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 			$this->context['lp_num_queries']++;
 
 			$this->cache()->put('active_blocks', $active_blocks);

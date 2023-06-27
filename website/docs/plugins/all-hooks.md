@@ -167,5 +167,3 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins
 ### changeIconSet
 (`&$set`)
 > ability to extend interface icons available via `$this->context['lp_icon_set']` array
-
-Not so much, Carl?

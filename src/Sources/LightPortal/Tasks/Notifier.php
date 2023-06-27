@@ -113,7 +113,7 @@ final class Notifier extends SMF_BackgroundTask
 			loadEssentialThemeData();
 
 			$emails = [];
-			$request = $this->smcFunc['db_query']('', '
+			$result = $this->smcFunc['db_query']('', '
 				SELECT id_member, lngfile, email_address
 				FROM {db_prefix}members
 				WHERE id_member IN ({array_int:members})',
@@ -122,14 +122,14 @@ final class Notifier extends SMF_BackgroundTask
 				]
 			);
 
-			while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 				if (empty($row['lngfile']))
 					$row['lngfile'] = $this->language;
 
 				$emails[$row['lngfile']][$row['id_member']] = $row['email_address'];
 			}
 
-			$this->smcFunc['db_free_result']($request);
+			$this->smcFunc['db_free_result']($result);
 
 			foreach ($emails as $this_lang => $recipients) {
 				$replacements = [

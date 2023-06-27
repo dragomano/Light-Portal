@@ -55,7 +55,7 @@ final class BlockExport extends AbstractExport
 
 		$blocks = $this->request('blocks') && $this->request()->hasNot('export_all') ? $this->request('blocks') : null;
 
-		$request = $this->smcFunc['db_query']('', '
+		$result = $this->smcFunc['db_query']('', '
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				pt.lang, pt.title, pp.name, pp.value
@@ -69,7 +69,7 @@ final class BlockExport extends AbstractExport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['block_id']] ??= [
 				'block_id'      => $row['block_id'],
 				'icon'          => $row['icon'],
@@ -92,7 +92,7 @@ final class BlockExport extends AbstractExport
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return array_map(fn($item) => array_filter($item), $items);

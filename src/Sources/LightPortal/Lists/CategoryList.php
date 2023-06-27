@@ -25,7 +25,7 @@ final class CategoryList implements ListInterface
 
 	public function getAll(): array
 	{
-		$request = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT category_id, name, description, priority
 			FROM {db_prefix}lp_categories
 			ORDER BY priority',
@@ -33,7 +33,7 @@ final class CategoryList implements ListInterface
 		);
 
 		$items = [0 => ['name' => $this->txt['lp_no_category']]];
-		while ($row = $this->smcFunc['db_fetch_assoc']($request)) {
+		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['category_id']] = [
 				'id'       => $row['category_id'],
 				'name'     => $row['name'],
@@ -42,7 +42,7 @@ final class CategoryList implements ListInterface
 			];
 		}
 
-		$this->smcFunc['db_free_result']($request);
+		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
 		return $items;

@@ -1,26 +1,26 @@
 <?php
 
 /**
- * RssFeed.php
+ * SimpleFeeder.php
  *
- * @package RssFeed (Light Portal)
+ * @package SimpleFeeder (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 03.06.23
  */
 
-namespace Bugo\LightPortal\Addons\RssFeed;
+namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RssFeed extends Block
+class SimpleFeeder extends Block
 {
 	public string $icon = 'fas fa-rss';
 
@@ -85,6 +85,8 @@ class RssFeed extends Block
 	{
 		if ($type !== 'rss_feed')
 			return;
+
+		$parameters['show_text'] ??= false;
 
 		$feed = $this->cache('rss_feed_addon_b' . $block_id)
 			->setLifeTime($cache_time)
