@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 28.06.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
 use Bugo\LightPortal\Addons\Block;
+use Exception;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -91,19 +92,19 @@ class TopPosters extends Block
 			]
 		);
 
-		$result = $this->smcFunc['db_fetch_all']($result);
+		$members = $this->smcFunc['db_fetch_all']($result);
 
-		if (empty($result))
+		if (empty($members))
 			return [];
 
-		$loadedUserIds = $this->loadMemberData(array_column($result, 'id_member'));
+		$loadedUserIds = $this->loadMemberData(array_column($members, 'id_member'));
 
 		$posters = [];
-		foreach ($result as $row) {
+		foreach ($members as $row) {
 			if (! isset($this->memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
 				try {
 					$this->loadMemberContext($row['id_member']);
-				} catch (\Exception $e) {
+				} catch (Exception $e) {
 					$this->logError('[LP] TopPosters addon: ' . $e->getMessage());
 				}
 			}
