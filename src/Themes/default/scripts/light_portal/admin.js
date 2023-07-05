@@ -244,6 +244,8 @@ class Plugin extends PortalEntity {
 	}
 
 	toggleToListView(el) {
+		if (! this.isCardView()) return;
+
 		document.getElementById('addon_list').classList.toggle('addon_list');
 		localStorage.setItem('lpAddonListView', 'list');
 		el.style.opacity = 1;
@@ -251,6 +253,8 @@ class Plugin extends PortalEntity {
 	}
 
 	toggleToCardView(el) {
+		if (this.isCardView()) return;
+
 		document.getElementById('addon_list').classList.toggle('addon_list');
 		localStorage.setItem('lpAddonListView', 'card');
 		el.style.opacity = 1;
