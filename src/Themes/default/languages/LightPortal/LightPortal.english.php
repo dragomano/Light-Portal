@@ -395,10 +395,10 @@ $txt['permissionname_light_portal_manage_pages_own'] = $txt['group_perms_name_li
 $txt['permissionhelp_light_portal_manage_pages_own'] = 'Access to manage own pages.';
 $txt['permissionname_light_portal_manage_pages_any'] = $txt['group_perms_name_light_portal_manage_pages_any'] = 'Manage any pages (moderation)';
 $txt['permissionhelp_light_portal_manage_pages_any'] = 'Ability to create and edit any pages on the portal.';
-$txt['cannot_light_portal_view'] = 'Sorry, you are not allowed to view the portal!';
-$txt['cannot_light_portal_manage_pages'] = 'Sorry, you are not allowed to manage pages!';
-$txt['cannot_light_portal_approve_pages'] = 'Sorry, you are not allowed to post pages without approval!';
-$txt['cannot_light_portal_view_page'] = 'Sorry, you are not allowed to view this page!';
+$txt['cannot_light_portal_view'] = 'You aren\'t allowed to view the portal!';
+$txt['cannot_light_portal_manage_pages'] = 'You aren\'t allowed to manage pages!';
+$txt['cannot_light_portal_approve_pages'] = 'You aren\'t allowed to post pages without approval!';
+$txt['cannot_light_portal_view_page'] = 'You aren\'t allowed to view this page!';
 
 // Time units
 $txt['lp_months_set'] = '{months, plural, one {a month} other {# months}}';
