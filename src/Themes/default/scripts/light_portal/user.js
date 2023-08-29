@@ -132,19 +132,19 @@ class Comment {
 		this.addNode(el.querySelector('ul.comment_list'), comment)
 	}
 
-	goToComment(data) {
+	goToComment({item, parent}) {
 		const firstSeparator = window.location.search ? '=' : '.';
 		const lastSeparator  = window.location.search ? '' : '/';
 
-		if (data.parent === 0 && this.parentCommentsCount > this.commentsPerPage) {
-			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + data.item)
+		if (parent === 0 && this.parentCommentsCount > this.commentsPerPage) {
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + item)
 		}
 
 		if (this.start) {
-			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.start + lastSeparator + '#comment' + data.item)
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.start + lastSeparator + '#comment' + item)
 		}
 
-		window.location.replace((window.location.search ? (smf_scripturl + window.location.search) : this.pageUrl) + '#comment' + data.item)
+		window.location.replace((window.location.search ? (smf_scripturl + window.location.search) : this.pageUrl) + '#comment' + item)
 	}
 
 	modify(target) {
