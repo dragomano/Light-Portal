@@ -1,4 +1,8 @@
 class PortalEntity {
+	constructor() {
+		this.workUrl = smf_scripturl + '?action=admin'
+	}
+
 	toggleSpin(target) {
 		target.classList.toggle('fa-spin')
 	}
@@ -179,23 +183,20 @@ class Plugin extends PortalEntity {
 
 		if (! response.ok) return console.error(response);
 
-		let togglerClass;
-
-		const classes = ['fa', 'bi']
-		classes.forEach(function(item) {
+		let toggledClass;
+		['fa', 'bi'].forEach(function(item) {
 			if ((new RegExp(item, 'i')).test(target.classList[1])) {
-				togglerClass = item;
-				return
+				toggledClass = item;
 			}
 		});
 
 		if (target.dataset.toggle === 'on') {
-			target.classList.toggle(togglerClass + '-toggle-on');
-			target.classList.toggle(togglerClass + '-toggle-off');
+			target.classList.toggle(toggledClass + '-toggle-on');
+			target.classList.toggle(toggledClass + '-toggle-off');
 			target.setAttribute('data-toggle', 'off')
 		} else {
-			target.classList.toggle(togglerClass + '-toggle-off');
-			target.classList.toggle(togglerClass + '-toggle-on');
+			target.classList.toggle(toggledClass + '-toggle-off');
+			target.classList.toggle(toggledClass + '-toggle-on');
 			target.setAttribute('data-toggle', 'on')
 		}
 	}
@@ -208,8 +209,8 @@ class Plugin extends PortalEntity {
 		setTimeout(() => this.toggleSpin(target), 1000);
 	}
 
-	hideSettings(target) {
-		document.getElementById(target.parentNode.parentNode.id).style.display = 'none'
+	hideSettings(refs) {
+		refs.settings.style.display = 'none'
 	}
 
 	async saveSettings(target, refs) {

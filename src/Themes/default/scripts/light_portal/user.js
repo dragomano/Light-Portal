@@ -216,7 +216,7 @@ class Comment {
 		const cancelButton = document.querySelector('#comment' + item + ' .cancel_button');
 
 		commentContent.innerHTML = source ?? this.currentComment[item];
-		commentContent.setAttribute('contenteditable', false);
+		commentContent.setAttribute('contenteditable', 'false');
 		commentContent.style.boxShadow = 'none';
 		commentContent.style.borderRadius = 0;
 		commentContent.style.padding = '0 14px';
